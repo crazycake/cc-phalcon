@@ -111,6 +111,7 @@ class PhalconAppServices
         $di->set('url', function() {
             $url = new \Phalcon\Mvc\Url();
             $url->setBaseUri("./");
+            $url->setStaticBaseUri(APP_BASE_URL);
             return $url;
         }, true);
 
@@ -136,9 +137,9 @@ class PhalconAppServices
         });
 
         //Extended encryption, Cryptify adapter (cryptography helper)
-        if(class_exists('Cryptify')) {
+        if(class_exists('\CrazyCake\Utils\Cryptify')) {
             $di->set('cryptify', function() {
-                return new \CrazyCake\Utils\Cryptify($config->app->cryptKey);
+                return new \CrazyCake\Utils\Cryptify($this->config->app->cryptKey);
             });
         }
     }

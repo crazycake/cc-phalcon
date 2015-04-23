@@ -12,7 +12,7 @@ abstract class PhalconAppLoader
 {
     /** const **/
     const CCLIBS_NAMESPACE   = "CrazyCake\\";
-    const CCLIBS_FOLDER_NAME = "cclibs";
+    const CCLIBS_FOLDER_NAME = "cc-phalcon";
 
     /**
      * Child required methods
@@ -114,22 +114,61 @@ abstract class PhalconAppLoader
     }
 
     /**
-     * Start execution
+     * Start app execution
      * @access public
      * @param mixed
      */
     public function start($routes_fn = null)
     {
-        if($this->module == "api") {
-            $application = new \Phalcon\Mvc\Micro($this->di);
-
-            //apply a routes function if param given
-            if(is_callable($routes_fn)) {
-                $routes_fn($application);
+        if($this->module == "cli") {
+            //new cli app
+            $application = new \Phalcon\CLI\Console();
+            //loop through args
+            $arguments = array();
+            foreach ($argv as $k => $arg) {
+                switch ($k) {
+                    case 1: $arguments['task']     = $arg; break;
+                    case 2: $arguments['action']   = $arg; break;
+                    case 3: $arguments['params'][] = $arg; break;
+                    default: break;
+                }
             }
+
+            //define global constants for the current task and action
+            define('CLI_TASK', (isset($argv[1]) ? $argv[1] : null));
+            define('CLI_ACTION', (isset($argv[2]) ? $argv[2] : null));
+            //handle incoming arguments
+            $application->handle($arguments);
+        }
+        elseif($this->module == "api") {
+            //new micro app
+            $application = new \Phalcon\Mvc\Micro($this->di);
+            //apply a routes function if param given (must be done before object instance)
+            if(is_callable($routes_fn))
+                $routes_fn($application);
 
             //Handle the request
             echo $application->handle();
+        }
+        else {
+            //apply a routes function if param given (must be done after object instance)
+            if(is_callable($routes_fn)) {
+                //creates a router object (for use custom URL behavior use 'false' param)
+                $router = new \Phalcon\Mvc\Router();
+                //Remove trailing slashes automatically
+                $router->removeExtraSlashes(true);
+                //apply a routes function
+                $routes_fn($router);
+                //Register the router in the DI
+                $this->di->set('router', function() use (&$router) {
+                    return $router;
+                });
+            }
+
+            //new mvc app
+            $application = new \Phalcon\Mvc\Application($this->di);
+            //Handle the request
+            echo $application->handle()->getContent();
         }
     }
 
