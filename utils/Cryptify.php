@@ -1,0 +1,111 @@
+<?php
+/**
+ * Cryptify : helper that encrypts & decrypts sensitive data for URL format.
+ * Also encrypts integers IDs
+ * Uses Crypt Phalcon adapter and Hashids library
+ * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
+ */
+
+namespace CrazyCake\Utils;
+
+//imports
+use Hashids\Hashids;
+use Phalcon\Crypt;
+use Phalcon\Exception;
+
+class Cryptify
+{
+    /* consts */
+    const DEFAULT_CIPHER = 'blowfish';
+
+    /**
+     * Phalcon Crypt Library Instance
+     * @var object
+     * @access private
+     */
+    private $crypt;
+
+    /**
+     * HashIds Library Instance
+     * @var object
+     * @access private
+     * @link http://hashids.org/php/
+     */
+    private $hashids;
+
+    /**
+     * constructor
+     * @param string $key The salt key
+     */
+    public function __construct($key = null)
+    {
+        //validate key is not empty or null
+        if (empty($key))
+            throw new Exception("Cryptify helper -> Key parameter in constructor is required.");
+
+        //set crypt adapter
+        $this->crypt = new Crypt(); //must be included in Phalcon loader configs
+        $this->crypt->setKey($key);
+        //set algorithm cipher
+        $this->crypt->setCipher(self::DEFAULT_CIPHER);
+
+        //instance hashids library
+        $this->hashids = new Hashids($key);
+    }
+
+    /**
+     * Encrypts data to be passed in a GET request
+     * @param string $text
+     * @return string The encrypted string
+     */
+    public function encryptForGetRequest($text)
+    {
+        //key must be set in DI service
+        $encrypted = $this->crypt->encrypt($text);
+
+        //encrypt string
+        $encrypted_string = str_replace('%', '-', rawurlencode(base64_encode($encrypted)));
+
+        return $encrypted_string;
+    }
+
+    /**
+     * Decrypts data received in a GET request
+     * @param string $encrypted_text The encrypted text
+     * @return string The decrypted string
+     */
+    public function decryptForGetResponse($encrypted_text)
+    {
+        //decrypt string
+        $decrypted_string = $this->crypt->decrypt(base64_decode(rawurldecode(str_replace('-', '%', $encrypted_text))));
+        //remove null bytes in string
+        $filtered_string = str_replace(chr(0), '', $decrypted_string);
+
+        return $filtered_string;
+    }
+
+    /**
+     * Encrypts a numeric ID and returns the hash
+     * @param int $input_id
+     * @return string
+     */
+    public function encryptHashId($input_id)
+    {
+        return $this->hashids->encode($input_id);
+    }
+
+    /**
+     * Decrypt a numeric ID and returns the hash
+     * @param string $hash
+     * @return mixed
+     */
+    public function decryptHashId($hash)
+    {
+        $data = $this->hashids->decode($hash);
+
+        if (count($data) > 0)
+            return $data[0];
+        else
+            return false;
+    }
+}

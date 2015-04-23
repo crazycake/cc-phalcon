@@ -1,4 +1,11 @@
 CrazyCake Phalcon Libraries
 ===========================
 
-CrazyCake Core classes for PhalconPHP framework
+PhalconPHP Version: 2.0.0
+
+Namespaces
+__________
+
+- Core
+- Utils
+- QR
