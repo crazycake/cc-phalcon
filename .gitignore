@@ -1,0 +1,30 @@
+# Linux
+*~
+*.bak
+*.gz
+*.log
+
+# Apache
+!.htaccess
+
+# DB & MySQL Workbench
+!*.sql.gz
+*.mwb.*
+
+# GetText
+*.mo
+*.pot
+
+# OSX
+.DS_Store
+.ds_store
+
+# PHPStorm
+.idea/*
+
+# Composer
+composer/vendor/*
+composer/composer.lock
+
+# PhalconPHP
+.phalcon
