@@ -124,13 +124,17 @@ abstract class PhalconAppLoader
      * @access public
      * @param mixed
      */
-    public function start($routes_fn = null)
+    public function start($routes_fn = null, $argv = null)
     {
         if($this->module == "cli") {
             //new cli app
-            $application = new \Phalcon\CLI\Console();
+            $application = new \Phalcon\CLI\Console($this->di);
             //loop through args
             $arguments = array();
+
+            if(is_null($argv))
+                die("Phalcon Console -> no args supplied\n");
+
             foreach ($argv as $k => $arg) {
                 switch ($k) {
                     case 1: $arguments['task']     = $arg; break;
@@ -139,7 +143,7 @@ abstract class PhalconAppLoader
                     default: break;
                 }
             }
-
+            
             //define global constants for the current task and action
             define('CLI_TASK', isset($argv[1]) ? $argv[1] : null);
             define('CLI_ACTION', isset($argv[2]) ? $argv[2] : null);
@@ -191,7 +195,7 @@ abstract class PhalconAppLoader
             $this->app_props = array_merge($this->app_props, $module_configs);
 
         //check for langs supported
-        if(is_array($this->modules_langs) && isset($this->modules_langs[$this->module])) {
+        if(isset($this->modules_langs[$this->module])) {
             $this->app_props['langs'] = $this->modules_langs[$this->module];
         }
 
@@ -242,7 +246,7 @@ abstract class PhalconAppLoader
         $app_dirs['controllers'] = APP_PATH.'controllers/';
         $app_dirs['logs']        = APP_PATH.'logs/';
 
-        if(is_array($this->modules_components[$this->module])) {
+        if(isset($this->modules_components[$this->module])) {
             foreach ($this->modules_components[$this->module] as $dir) {
                 $public = false;
                 //check if directory is public
@@ -270,7 +274,7 @@ abstract class PhalconAppLoader
         $loader->registerDirs($this->app_config["directories"]);
 
         //check for any 3rd party lib
-        if(is_array($this->modules_cclibs[$this->module])) {
+        if(isset($this->modules_cclibs[$this->module])) {
             $namespaces = array();
             foreach ($this->modules_cclibs[$this->module] as $lib) {
                 $namespaces[self::CCLIBS_NAMESPACE.ucfirst($lib)] = PROJECT_PATH.self::CCLIBS_FOLDER_NAME."/".$lib."/";

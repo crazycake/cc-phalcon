@@ -78,6 +78,7 @@ class GetText extends Adapter implements AdapterInterface
         $this->directory       = $options['directory'];
         $this->domain          = $options['domain'];
         $this->supportedLangs  = $options['supported'];
+        //print_r($this->supportedLangs);exit;
         //set language
         $this->setLanguage();
     }
