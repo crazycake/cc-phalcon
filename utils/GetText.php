@@ -77,7 +77,7 @@ class GetText extends Adapter implements AdapterInterface
         $this->default_locale  = (php_uname('s') == "Darwin") ? "en_US.UTF-8" : "en_US.utf8"; //OSX or Ubuntu
         $this->directory       = $options['directory'];
         $this->domain          = $options['domain'];
-        $this->supportedLangs  = array_keys($options['supported']);
+        $this->supportedLangs  = $options['supported'];
         //set language
         $this->setLanguage();
     }

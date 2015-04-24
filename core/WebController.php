@@ -464,8 +464,11 @@ abstract class WebController extends Controller
         }
 
         //first-time properties. This static properties are saved in session.
-        //set language
-        $this->translate->setLanguage($this->config->app->langDefault ?: $this->request->getBestLanguage());
+        //set language, if only one lang is supported, force it.
+        if(count($this->config->app->langs) > 1)
+            $this->translate->setLanguage($this->request->getBestLanguage());
+        else
+            $this->translate->setLanguage($this->config->app->langs[0]);
 
         //create a client object
         $this->client           = new \stdClass();

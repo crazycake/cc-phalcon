@@ -20,7 +20,6 @@ class PhalconAppServices
      */
     private $config;
 
-
     /**
      * Constructor
      * @param string $mod The app module
@@ -60,7 +59,6 @@ class PhalconAppServices
     {
         //Get a new Micro DI
         $di = new \Phalcon\DI\FactoryDefault();
-        $di->set('config', $this->config);
         $this->_setCommonServices($di);
         $this->_setDatabaseService($di);
         return $di;
@@ -74,7 +72,7 @@ class PhalconAppServices
     {
         //Get a new Micro DI
         $di = new \Phalcon\DI\FactoryDefault\CLI();
-        $di->set('config', $this->config);
+        $this->_setCommonServices($di);
         $this->_setDatabaseService($di);
         $this->_setTranslationService($di);
         return $di;
@@ -92,7 +90,6 @@ class PhalconAppServices
 
         //Get a new Micro DI
         $di = new \Phalcon\DI\FactoryDefault();
-        $di->set('config', $this->config);
         $this->_setCommonServices($di);
         $this->_setDatabaseService($di);
         $this->_setTranslationService($di);
@@ -107,6 +104,9 @@ class PhalconAppServices
      */
     private function _setCommonServices(&$di)
     {
+        //Set the config
+        $di->set('config', $this->config);
+
         //The URL component is used to generate all kind of urls in the application
         $di->set('url', function() {
             $url = new \Phalcon\Mvc\Url();
@@ -177,7 +177,7 @@ class PhalconAppServices
         $di->set('translate', function() {
             return new \CrazyCake\Utils\GetText(array(
                 'domain'    => $this->config->app->name,
-                'supported' => (array)$this->config->app->langsSupported,
+                'supported' => (array)$this->config->app->langs,
                 'directory' => $this->config->directories->langs
             ));
         });

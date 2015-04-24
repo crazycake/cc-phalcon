@@ -50,6 +50,12 @@ abstract class PhalconAppLoader
     protected $modules_cclibs;
 
     /**
+     * Module supported langs
+     * @var string
+     */
+    protected $modules_langs;
+
+    /**
      * App properties for configuration array, access by config->app->property
      * @var array
      */
@@ -65,7 +71,7 @@ abstract class PhalconAppLoader
      * The App Dependency injector
      * @var object
      */
-    protected $di;
+    private $di;
 
     /**
      * Constructor
@@ -80,11 +86,11 @@ abstract class PhalconAppLoader
         if(is_null($this->app_path))
             throw new Exception("PhalconAppLoader::__construct -> app_path property is not set.");
 
-        if(is_null($mod) || !isset($this->modules_components[$mod]))
-            throw new Exception("PhalconAppLoader::__construct -> invalid module parameter.");
+        if(is_null($mod))
+            throw new Exception("PhalconAppLoader::__construct -> invalid input module.");
+
         //set directory and create if not exists
         $this->module = $mod;
-
         //define APP contants
         define("PROJECT_PATH", $this->app_path);
         define("COMPOSER_PATH", PROJECT_PATH."composer/vendor/");
@@ -114,7 +120,7 @@ abstract class PhalconAppLoader
     }
 
     /**
-     * Start app execution
+     * Start app module execution
      * @access public
      * @param mixed
      */
@@ -135,8 +141,8 @@ abstract class PhalconAppLoader
             }
 
             //define global constants for the current task and action
-            define('CLI_TASK', (isset($argv[1]) ? $argv[1] : null));
-            define('CLI_ACTION', (isset($argv[2]) ? $argv[2] : null));
+            define('CLI_TASK', isset($argv[1]) ? $argv[1] : null);
+            define('CLI_ACTION', isset($argv[2]) ? $argv[2] : null);
             //handle incoming arguments
             $application->handle($arguments);
         }
@@ -175,7 +181,7 @@ abstract class PhalconAppLoader
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
-     * Get Database configurations
+     * Set Module configurations
      * @access private
      */
     private function _moduleConfigurationSetUp($module_configs = array())
@@ -184,9 +190,9 @@ abstract class PhalconAppLoader
         if(!empty($module_configs))
             $this->app_props = array_merge($this->app_props, $module_configs);
 
-        //set environment dynamic props
-        if(isset($this->app_props['awsS3Bucket'])) {
-            $this->app_props['awsS3Bucket'] .= (APP_ENVIRONMENT == 'production') ? '-prod' : '-dev';
+        //check for langs supported
+        if(is_array($this->modules_langs) && isset($this->modules_langs[$this->module])) {
+            $this->app_props['langs'] = $this->modules_langs[$this->module];
         }
 
         //set local backend upload uri
@@ -196,13 +202,18 @@ abstract class PhalconAppLoader
             $uri = APP_BASE_URL . $this->app_props['localBackendUploadsUri'];
             $this->app_props['localBackendUploadsUri'] = str_replace($placeholders, $new_values, $uri);
         }
+
+        //set environment dynamic props
+        if(isset($this->app_props['awsS3Bucket'])) {
+            $this->app_props['awsS3Bucket'] .= (APP_ENVIRONMENT == 'production') ? '-prod' : '-dev';
+        }
         
         //finally, set app properties
         $this->app_config["app"] = $this->app_props;
     }
 
     /**
-     * Get Database configurations
+     * Set Database configurations
      * @access private
      */
     private function _databaseSetup()
@@ -221,27 +232,27 @@ abstract class PhalconAppLoader
     }
 
     /**
-     * Get Directories configurations
+     * Set Directories configurations
      * @access private
      */
     private function _directoriesSetup()
     {
         $app_dirs = array();
-
         //default directories
         $app_dirs['controllers'] = APP_PATH.'controllers/';
         $app_dirs['logs']        = APP_PATH.'logs/';
 
-        foreach ($this->modules_components[$this->module] as $dir) {
-
-            $public = false;
-            //check if directory is public
-            if (substr($dir, 0, 1) === "@") {
-                $public = true;
-                $dir    = substr($dir, 1);
+        if(is_array($this->modules_components[$this->module])) {
+            foreach ($this->modules_components[$this->module] as $dir) {
+                $public = false;
+                //check if directory is public
+                if (substr($dir, 0, 1) === "@") {
+                    $public = true;
+                    $dir    = substr($dir, 1);
+                }
+                //set directory path
+                $app_dirs[$dir] = $public ? PUBLIC_PATH.$dir."/" : APP_PATH.$dir."/";
             }
-
-            $app_dirs[$dir] = $public ? PUBLIC_PATH.$dir."/" : APP_PATH.$dir."/";
         }
 
         //set directories
@@ -254,21 +265,21 @@ abstract class PhalconAppLoader
      */
     private function _autoloadClasses()
     {
-        if(is_null($this->modules_cclibs))
-            throw new Exception("PhalconAppLoader::_autoloadClasses -> var 'modules_cclibs' is not defined.");
-
         //load app directories
         $loader = new \Phalcon\Loader();
         $loader->registerDirs($this->app_config["directories"]);
 
-        $namespaces = array();
-        foreach ($this->modules_cclibs[$this->module] as $lib) {
-            $namespaces[self::CCLIBS_NAMESPACE.ucfirst($lib)] = PROJECT_PATH.self::CCLIBS_FOLDER_NAME."/".$lib."/";
+        //check for any 3rd party lib
+        if(is_array($this->modules_cclibs[$this->module])) {
+            $namespaces = array();
+            foreach ($this->modules_cclibs[$this->module] as $lib) {
+                $namespaces[self::CCLIBS_NAMESPACE.ucfirst($lib)] = PROJECT_PATH.self::CCLIBS_FOLDER_NAME."/".$lib."/";
+            }
+            //register namespaces
+            $loader->registerNamespaces($namespaces);
         }
-        //load app cc_libs
-        $loader->registerNamespaces($namespaces);
 
-        //use composer auto load?
+        //Composer libs, use composer auto load for production
         if (APP_ENVIRONMENT === 'production') {
             //autoload classes (se debe pre-generar autoload_classmap)
             $loader->registerClasses(require COMPOSER_PATH.'composer/autoload_classmap.php');
@@ -278,9 +289,8 @@ abstract class PhalconAppLoader
 
                 $autoload_files = require COMPOSER_PATH.'composer/autoload_files.php';
                 //include classes?
-                foreach ($autoload_files as $file) {
+                foreach ($autoload_files as $file)
                     include_once $file;
-                }
             }
         }
         else {
