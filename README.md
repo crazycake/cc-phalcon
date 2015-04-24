@@ -29,10 +29,16 @@ Box Project
 ```
 
 ###Commands
+Get phar box library
+```
+curl -LSs https://box-project.github.io/box2/installer.php | php
+```
+
 Library help
 ```
 box help
 ```
+
 Building phar file
 ```
 box build -v
