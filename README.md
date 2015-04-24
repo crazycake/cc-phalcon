@@ -34,6 +34,11 @@ Get phar box library
 curl -LSs https://box-project.github.io/box2/installer.php | php
 ```
 
+Update phar library
+```
+box update
+```
+
 Library help
 ```
 box help
