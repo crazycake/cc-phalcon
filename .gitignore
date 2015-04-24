@@ -22,9 +22,8 @@
 # PHPStorm
 .idea/*
 
-# Composer
-composer/vendor/*
-composer/composer.lock
+# PHP Phar files
+*.phar
 
 # PhalconPHP
 .phalcon
