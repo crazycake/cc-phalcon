@@ -9,8 +9,13 @@ namespace CrazyCake\Core;
 //imports
 use Phalcon\CLI\Task;
 
-class TaskController extends Task
+abstract class TaskController extends Task
 {
+    /**
+     * child required methods
+     */
+    abstract protected function mainAction();
+
     /**
      * Print Output with Colors
      * @access protected
