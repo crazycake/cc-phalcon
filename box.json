@@ -1,7 +1,8 @@
 {
 	"blacklist": [],
-    "directories": ["core", "utils", "qr"],
+    "directories": ["phalcon","core", "utils", "qr"],
     "main": "AppLoader.php",
     "output": "cc-phalcon.phar",
+    "shebang": false,
     "stub": true
 }
