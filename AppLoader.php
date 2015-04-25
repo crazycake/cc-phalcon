@@ -353,7 +353,7 @@ abstract class AppLoader
                 $app_environment = 'production';
             }
         }
-        $app_environment = 'production'; //DEBUG PRODUCTION
+        //$app_environment = 'production'; //DEBUG PRODUCTION
 
         //set environment consts
         define("APP_ENVIRONMENT", $app_environment);
