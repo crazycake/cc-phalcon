@@ -38,7 +38,7 @@ class BaseModel extends \Phalcon\Mvc\Model
      * @param  int $length The code length
      * @return string
      */
-    private function _generateAlphanumericCode($length = 8)
+    protected function _generateAlphanumericCode($length = 8)
     {
         $code = "";
 
