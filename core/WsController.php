@@ -302,7 +302,6 @@ abstract class WsController extends Controller
 
             if ((empty($number) && $_max_num >= 1) || ($number > $_max_num))
                 $number = $_max_num;
-
         }
         else {
             $number = empty($_max_num) ? 1 : $_max_num;

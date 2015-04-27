@@ -166,7 +166,6 @@ abstract class WebController extends Controller
 
             if ((empty($number) && $max_num >= 1) || ($number > $max_num))
                 $number = $max_num;
-
         }
         else {
             $number = empty($max_num) ? 1 : $max_num;
