@@ -4,7 +4,7 @@
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
-namespace CrazyCake\Core;
+namespace CrazyCake\Models;
 
 class BaseModel extends \Phalcon\Mvc\Model
 {
