@@ -13,7 +13,6 @@ class CCWebpayClient
 {
 	public function initInscription($username, $email, $url_comercio)
 	{
-
 		$oneClickService = new CCOneClick();
 		$oneClickInscriptionInput = new oneClickInscriptionInput();
 		$oneClickInscriptionInput->username = $username;
@@ -95,7 +94,6 @@ class CCWebpayClient
 		$soapValidation = new SoapValidation($xmlResponse, WP_TRANSBANK_CERT); //Si la firma es válida
 		
 		return $codeReverseOneClickResponse->return;
-
 	}
 
 	public function removeUser($tbkUser, $commerceUser){
@@ -111,6 +109,5 @@ class CCWebpayClient
 		$soapValidation = new SoapValidation($xmlResponse, WP_TRANSBANK_CERT); //Si la firma es válida
 		
 		return $removeUserResponse->return; // Valor booleano que indica si el usuario fue removido.
-		
 	}
 }

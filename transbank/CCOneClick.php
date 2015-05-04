@@ -16,9 +16,10 @@ class CCOneClick
     var $soapClient;
 
     //consts
-    const WP_ONE_CLICK_PAYMENT_URL = 'https://webpay3g.orangepeople.cl/webpayserver/wswebpay/OneClickPaymentService?wsdl';
+    const WP_ONE_CLICK_DEV_PAYMENT_URL = 'https://webpay3g.orangepeople.cl/webpayserver/wswebpay/OneClickPaymentService?wsdl';
     
-    private static $classmap = array('removeUser' => 'removeUser',
+    private static $classmap = array(
+        'removeUser' => 'removeUser',
         'oneClickRemoveUserInput' => 'oneClickRemoveUserInput',
         'baseBean' => 'baseBean',
         'removeUserResponse' => 'removeUserResponse',
@@ -42,7 +43,7 @@ class CCOneClick
         'reverseResponse' => 'reverseResponse'
     );
     
-    function __construct($url=self::WP_ONE_CLICK_PAYMENT_URL)
+    function __construct($url=self::WP_ONE_CLICK_DEV_PAYMENT_URL)
     {
         $this->soapClient = new CCSoapClient($url,array("classmap"=>self::$classmap,"trace" => true,"exceptions" => true));
     }
