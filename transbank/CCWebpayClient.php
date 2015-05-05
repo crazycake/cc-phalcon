@@ -22,12 +22,12 @@ class CCWebpayClient
 		$oneClickInscriptionResponse = $oneClickService->initInscription(array("arg0" => $oneClickInscriptionInput));
 		
 		$xmlResponse = $oneClickService->soapClient->__getLastResponse();
-		$soapValidation = new SoapValidation($xmlResponse, WP_TRANSBANK_CERT);
+		$soapValidation = new \SoapValidation($xmlResponse, WP_TRANSBANK_CERT);
 		$soapValidation->getValidationResult(); //Esto valida si el mensaje está firmado por Transbank
 		
 		$oneClickInscriptionOutput = $oneClickInscriptionResponse->return; //Esto obtiene el resultado de la operación
 
-		$return = new stdClass();
+		$return = new \stdClass();
 		$return->token = $oneClickInscriptionOutput->token; //Token de resultado
 		$return->inscriptionURL = $oneClickInscriptionOutput->urlWebpay;//URL para realizar el post
 		return $return;
@@ -42,12 +42,12 @@ class CCWebpayClient
 		$oneClickFinishInscriptionResponse = $oneClickService->finishInscription(array( "arg0" => $oneClickFinishInscriptionInput));
 		
 		$xmlResponse = $oneClickService->soapClient->__getLastResponse();
-		$soapValidation = new SoapValidation($xmlResponse, WP_TRANSBANK_CERT); 
+		$soapValidation = new \SoapValidation($xmlResponse, WP_TRANSBANK_CERT); 
 
 		$oneClickFinishInscriptionOutput = $oneClickFinishInscriptionResponse->return;//Si la firma es válida
 		
 		//Datos de resultado de la inscripción OneClick
-		$return = new stdClass();
+		$return = new \stdClass();
 		$return->responseCode = $oneClickFinishInscriptionOutput->responseCode;
 		$return->authCode = $oneClickFinishInscriptionOutput->authCode;
 		$return->creditCardType = $oneClickFinishInscriptionOutput->creditCardType;
@@ -69,12 +69,12 @@ class CCWebpayClient
 		$oneClickauthorizeResponse = $oneClickService->authorize(array ("arg0" => $oneClickPayInput));
 		
 		$xmlResponse = $oneClickService->soapClient->__getLastResponse();
-		$soapValidation = new SoapValidation($xmlResponse, WP_TRANSBANK_CERT);
+		$soapValidation = new \SoapValidation($xmlResponse, WP_TRANSBANK_CERT);
 		
 		$oneClickPayOutput = $oneClickauthorizeResponse->return;
 
 		//Resultado de la autorización
-		$return = new stdClass();
+		$return = new \stdClass();
 		$return->authorizationCode = $oneClickPayOutput->authorizationCode;
 		$return->creditCardType = $oneClickPayOutput->creditCardType;
 		$return->last4CardDigits = $oneClickPayOutput->last4CardDigits;
@@ -91,7 +91,7 @@ class CCWebpayClient
 		$codeReverseOneClickResponse = $oneClickService->codeReverseOneClick(array("arg0" => $oneClickReverseInput));
 		
 		$xmlResponse = $oneClickService->soapClient->__getLastResponse();
-		$soapValidation = new SoapValidation($xmlResponse, WP_TRANSBANK_CERT); //Si la firma es válida
+		$soapValidation = new \SoapValidation($xmlResponse, WP_TRANSBANK_CERT); //Si la firma es válida
 		
 		return $codeReverseOneClickResponse->return;
 	}
@@ -106,7 +106,7 @@ class CCWebpayClient
 		$removeUserResponse = $oneClickService->removeUser(array("arg0" => $oneClickRemoveUserInput));
 		
 		$xmlResponse = $oneClickService->soapClient->__getLastResponse();
-		$soapValidation = new SoapValidation($xmlResponse, WP_TRANSBANK_CERT); //Si la firma es válida
+		$soapValidation = new \SoapValidation($xmlResponse, WP_TRANSBANK_CERT); //Si la firma es válida
 		
 		return $removeUserResponse->return; // Valor booleano que indica si el usuario fue removido.
 	}

@@ -17,7 +17,7 @@ class Slug
      * Creates a slug to be used for pretty URLs
      * @link http://cubiq.org/the-perfect-php-clean-url-generator
      * @param string $string
-     * @param  array $replace
+     * @param  array $replace placeholders to be replaced
      * @param  string $delimiter
      * @throws Exception
      * @return mixed
