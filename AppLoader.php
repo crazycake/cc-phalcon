@@ -338,11 +338,11 @@ abstract class AppLoader
             $app_base_url = (isset($_SERVER["HTTPS"]) ? "https://" : "http://") . $_SERVER['HTTP_HOST'] . preg_replace('@/+$@', '', dirname($_SERVER['SCRIPT_NAME'])) . '/';
 
             //SET APP_ENVIRONMENT
-            if (strpos($_SERVER['SERVER_NAME'], 'localhost') !== false || strpos($_SERVER['SERVER_NAME'], '192.168.') !== false || strpos($_SERVER['SERVER_NAME'], 'ngrok') !== false) {
+            if (strpos($_SERVER['SERVER_NAME'], 'localhost') !== false || strpos($_SERVER['SERVER_NAME'], '192.168.') !== false) {
                 ini_set('display_errors', 1);
                 error_reporting(E_ALL);
             }
-            elseif (strpos($_SERVER['SERVER_NAME'], '.testing.') !== false) {
+            elseif (strpos($_SERVER['SERVER_NAME'], '.testing.') !== false || strpos($_SERVER['SERVER_NAME'], '.ngrok.io' ) !== false) {
                 ini_set('display_errors', 1);
                 error_reporting(E_ALL);
                 $app_environment = 'testing';

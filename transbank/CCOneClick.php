@@ -45,7 +45,7 @@ class CCOneClick
     
     function __construct($url=self::WP_ONE_CLICK_DEV_PAYMENT_URL)
     {
-        $this->soapClient = new CCSoapClient($url,array("classmap"=>self::$classmap,"trace" => true,"exceptions" => true));
+        $this->soapClient = new CCSoapClient($url, array("classmap"=>self::$classmap, "trace" => true,"exceptions" => true));
     }
     
     function removeUser($removeUser)

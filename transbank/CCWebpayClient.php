@@ -11,13 +11,20 @@ require_once 'CCOneClick.php';
 
 class CCWebpayClient
 {
-	public function initInscription($username, $email, $url_comercio)
+	/**
+	 * The init process to credit card inscription
+	 * @param  string $username     The username as namespace
+	 * @param  string $email        The user email
+	 * @param  string $response_url [description]
+	 * @return object with token & inscription URL
+	 */
+	public function initInscription($username, $email, $response_url)
 	{
 		$oneClickService = new CCOneClick();
 		$oneClickInscriptionInput = new oneClickInscriptionInput();
 		$oneClickInscriptionInput->username = $username;
 		$oneClickInscriptionInput->email = $email;
-		$oneClickInscriptionInput->responseURL = $url_comercio;
+		$oneClickInscriptionInput->responseURL = $response_url;
 		
 		$oneClickInscriptionResponse = $oneClickService->initInscription(array("arg0" => $oneClickInscriptionInput));
 		
@@ -28,16 +35,21 @@ class CCWebpayClient
 		$oneClickInscriptionOutput = $oneClickInscriptionResponse->return; //Esto obtiene el resultado de la operación
 
 		$return = new \stdClass();
-		$return->token = $oneClickInscriptionOutput->token; //Token de resultado
+		$return->token 	= $oneClickInscriptionOutput->token; //Token de resultado
 		$return->inscriptionURL = $oneClickInscriptionOutput->urlWebpay;//URL para realizar el post
 		return $return;
 	}
 
-	public function finishIscription($tokenOneClick)
+	/**
+	 * The finish process of credit card inscription
+	 * @param  string $received_token The received token by WebPay server
+	 * @return object with successful inscription data
+	 */
+	public function finishIscription($received_token)
 	{
 		$oneClickService = new CCOneClick();
 		$oneClickFinishInscriptionInput = new oneClickFinishInscriptionInput();
-		$oneClickFinishInscriptionInput->token = $tokenOneClick; // es el token de resultado obtenido en el metodo initInscription.
+		$oneClickFinishInscriptionInput->token = $received_token; // es el token de resultado obtenido en el metodo initInscription.
 		
 		$oneClickFinishInscriptionResponse = $oneClickService->finishInscription(array( "arg0" => $oneClickFinishInscriptionInput));
 		
