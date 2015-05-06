@@ -51,8 +51,13 @@ class CCOneClick
      */
     public $soapClient;
     
-    function __construct($url=self::WP_ONE_CLICK_DEV_PAYMENT_URL)
+    /**
+     * constructor
+     * @param string $url The Soap URL service
+     */
+    function __construct($url = self::WP_ONE_CLICK_DEV_PAYMENT_URL)
     {
+        //options for SSL configuration
         $opts = array(
             'ssl' => array('ciphers' => 'RC4-SHA', 'verify_peer' => false, 'verify_peer_name' => false)
         );
@@ -68,7 +73,6 @@ class CCOneClick
     
     function removeUser($removeUser)
     {
-        
         $removeUserResponse = $this->soapClient->removeUser($removeUser);
         return $removeUserResponse;
         
@@ -81,21 +85,18 @@ class CCOneClick
     }
     function finishInscription($finishInscription)
     {
-        
         $finishInscriptionResponse = $this->soapClient->finishInscription($finishInscription);
         return $finishInscriptionResponse;
         
     }
     function authorize($authorize)
     {
-        
         $authorizeResponse = $this->soapClient->authorize($authorize);
         return $authorizeResponse;
         
     }
     function codeReverseOneClick($codeReverseOneClick)
     {
-        
         $codeReverseOneClickResponse = $this->soapClient->codeReverseOneClick($codeReverseOneClick);
         return $codeReverseOneClickResponse;
         
@@ -107,27 +108,34 @@ class CCOneClick
     }
 }
 
-class removeUser{
+/** WSDL2 Handler classes (Required for SOAP client) */
+
+class removeUser {
     var $arg0;
     //oneClickRemoveUserInput
 }
-class oneClickRemoveUserInput{
+
+class oneClickRemoveUserInput {
     var $tbkUser;
     //string
     var $username;
     //string
 }
-class baseBean{
+
+class baseBean {
 }
-class removeUserResponse{
+
+class removeUserResponse {
     var $return;
     //boolean
 }
-class initInscription{
+
+class initInscription {
     var $arg0;
     //oneClickInscriptionInput
 }
-class oneClickInscriptionInput{
+
+class oneClickInscriptionInput {
     var $email;
     //string
     var $responseURL;
@@ -135,29 +143,35 @@ class oneClickInscriptionInput{
     var $username;
     //string
 }
-class initInscriptionResponse{
+
+class initInscriptionResponse {
     var $return;
     //oneClickInscriptionOutput
 }
-class oneClickInscriptionOutput{
+
+class oneClickInscriptionOutput {
     var $token;
     //string
     var $urlWebpay;
     //string
 }
-class finishInscription{
+
+class finishInscription {
     var $arg0;
     //oneClickFinishInscriptionInput
 }
-class oneClickFinishInscriptionInput{
+
+class oneClickFinishInscriptionInput {
     var $token;
     //string
 }
-class finishInscriptionResponse{
+
+class finishInscriptionResponse {
     var $return;
     //oneClickFinishInscriptionOutput
 }
-class oneClickFinishInscriptionOutput{
+
+class oneClickFinishInscriptionOutput {
     var $authCode;
     //string
     var $creditCardType;
@@ -169,29 +183,35 @@ class oneClickFinishInscriptionOutput{
     var $tbkUser;
     //string
 }
-class codeReverseOneClick{
+
+class codeReverseOneClick {
     var $arg0;
     //oneClickReverseInput
 }
-class oneClickReverseInput{
+
+class oneClickReverseInput {
     var $buyorder;
     //long
 }
-class codeReverseOneClickResponse{
+
+class codeReverseOneClickResponse {
     var $return;
     //oneClickReverseOutput
 }
-class oneClickReverseOutput{
+
+class oneClickReverseOutput {
     var $reverseCode;
     //long
     var $reversed;
     //boolean
 }
-class authorize{
+
+class authorize {
     var $arg0;
     //oneClickPayInput
 }
-class oneClickPayInput{
+
+class oneClickPayInput {
     var $amount;
     //decimal
     var $buyOrder;
@@ -201,11 +221,13 @@ class oneClickPayInput{
     var $username;
     //string
 }
-class authorizeResponse{
+
+class authorizeResponse {
     var $return;
     //oneClickPayOutput
 }
-class oneClickPayOutput{
+
+class oneClickPayOutput {
     var $authorizationCode;
     //string
     var $creditCardType;
@@ -217,11 +239,13 @@ class oneClickPayOutput{
     var $transactionId;
     //long
 }
-class reverse{
+
+class reverse {
     var $arg0;
     //oneClickReverseInput
 }
-class reverseResponse{
+
+class reverseResponse {
     var $return;
     //boolean
 }
