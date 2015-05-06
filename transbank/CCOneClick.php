@@ -12,12 +12,14 @@ require_once 'soap/soap-validation.php';
 
 class CCOneClick
 {
-	//vars
-    var $soapClient;
-
-    //consts
+    /* consts */
     const WP_ONE_CLICK_DEV_PAYMENT_URL = 'https://webpay3g.orangepeople.cl/webpayserver/wswebpay/OneClickPaymentService?wsdl';
     
+    /**
+     * class map aray
+     * @static
+     * @var array
+     */
     private static $classmap = array(
         'removeUser'                      => __NAMESPACE__.'\\removeUser',
         'oneClickRemoveUserInput'         => __NAMESPACE__.'\\oneClickRemoveUserInput',
@@ -42,6 +44,12 @@ class CCOneClick
         'reverse'                         => __NAMESPACE__.'\\reverse',
         'reverseResponse'                 => __NAMESPACE__.'\\reverseResponse'
     );
+
+    /**
+     * soap client
+     * @var object
+     */
+    public $soapClient;
     
     function __construct($url=self::WP_ONE_CLICK_DEV_PAYMENT_URL)
     {
