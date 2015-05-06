@@ -183,11 +183,12 @@ abstract class WebController extends Controller
      * @access protected
      * @param array $required_fields
      * @param string $method
+     * @param string $send_json Sends json response for ajax calls
      * @example { $data, array( "_name" => "string"), POST }
      * @link   http://docs.phalconphp.com/en/latest/reference/filter.html#sanitizing-data
      * @return array
      */
-    protected function _handleRequestParams($required_fields = array(), $method = 'POST')
+    protected function _handleRequestParams($required_fields = array(), $method = 'POST', $send_json = true)
     {
         //is post request? (method now allowed)
         if ($method == 'POST' && !$this->request->isPost())
@@ -246,7 +247,7 @@ abstract class WebController extends Controller
             //get value from data array & sanitize it
             $value = empty($data_type) ? $data[$field] : $this->filter->sanitize($data[$field], $data_type);
 
-            //check data (empty considers zero value )
+            //check data (empty fn considers zero value )
             if ($is_optional_field && (is_null($value) || $value == ''))
                 $data[$field] = null;
             elseif (is_null($value) || $value == '')
@@ -257,9 +258,8 @@ abstract class WebController extends Controller
 
         //check for invalid data
         if ($invalid_data)
-            $this->_sendJsonResponse(400);
+            return $send_json ? $this->_sendJsonResponse(400) : false;
         
-        //var_dump($data);exit;
         return $data;
     }
 
