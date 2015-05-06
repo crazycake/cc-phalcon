@@ -19,33 +19,43 @@ class CCOneClick
     const WP_ONE_CLICK_DEV_PAYMENT_URL = 'https://webpay3g.orangepeople.cl/webpayserver/wswebpay/OneClickPaymentService?wsdl';
     
     private static $classmap = array(
-        'removeUser' => 'removeUser',
-        'oneClickRemoveUserInput' => 'oneClickRemoveUserInput',
-        'baseBean' => 'baseBean',
-        'removeUserResponse' => 'removeUserResponse',
-        'initInscription' => 'initInscription',
-        'oneClickInscriptionInput' => 'oneClickInscriptionInput',
-        'initInscriptionResponse' => 'initInscriptionResponse',
-        'oneClickInscriptionOutput' => 'oneClickInscriptionOutput',
-        'finishInscription' => 'finishInscription',
-        'oneClickFinishInscriptionInput' => 'oneClickFinishInscriptionInput',
-        'finishInscriptionResponse' => 'finishInscriptionResponse',
-        'oneClickFinishInscriptionOutput' => 'oneClickFinishInscriptionOutput',
-        'codeReverseOneClick' => 'codeReverseOneClick',
-        'oneClickReverseInput' => 'oneClickReverseInput',
-        'codeReverseOneClickResponse' => 'codeReverseOneClickResponse',
-        'oneClickReverseOutput' => 'oneClickReverseOutput',
-        'authorize' => 'authorize',
-        'oneClickPayInput' => 'oneClickPayInput',
-        'authorizeResponse' => 'authorizeResponse',
-        'oneClickPayOutput' => 'oneClickPayOutput',
-        'reverse' => 'reverse',
-        'reverseResponse' => 'reverseResponse'
+        'removeUser'                      => __NAMESPACE__.'\\removeUser',
+        'oneClickRemoveUserInput'         => __NAMESPACE__.'\\oneClickRemoveUserInput',
+        'baseBean'                        => __NAMESPACE__.'\\baseBean',
+        'removeUserResponse'              => __NAMESPACE__.'\\removeUserResponse',
+        'initInscription'                 => __NAMESPACE__.'\\initInscription',
+        'oneClickInscriptionInput'        => __NAMESPACE__.'\\oneClickInscriptionInput',
+        'initInscriptionResponse'         => __NAMESPACE__.'\\initInscriptionResponse',
+        'oneClickInscriptionOutput'       => __NAMESPACE__.'\\oneClickInscriptionOutput',
+        'finishInscription'               => __NAMESPACE__.'\\finishInscription',
+        'oneClickFinishInscriptionInput'  => __NAMESPACE__.'\\oneClickFinishInscriptionInput',
+        'finishInscriptionResponse'       => __NAMESPACE__.'\\finishInscriptionResponse',
+        'oneClickFinishInscriptionOutput' => __NAMESPACE__.'\\oneClickFinishInscriptionOutput',
+        'codeReverseOneClick'             => __NAMESPACE__.'\\codeReverseOneClick',
+        'oneClickReverseInput'            => __NAMESPACE__.'\\oneClickReverseInput',
+        'codeReverseOneClickResponse'     => __NAMESPACE__.'\\codeReverseOneClickResponse',
+        'oneClickReverseOutput'           => __NAMESPACE__.'\\oneClickReverseOutput',
+        'authorize'                       => __NAMESPACE__.'\\authorize',
+        'oneClickPayInput'                => __NAMESPACE__.'\\oneClickPayInput',
+        'authorizeResponse'               => __NAMESPACE__.'\\authorizeResponse',
+        'oneClickPayOutput'               => __NAMESPACE__.'\\oneClickPayOutput',
+        'reverse'                         => __NAMESPACE__.'\\reverse',
+        'reverseResponse'                 => __NAMESPACE__.'\\reverseResponse'
     );
     
     function __construct($url=self::WP_ONE_CLICK_DEV_PAYMENT_URL)
     {
-        $this->soapClient = new CCSoapClient($url, array("classmap"=>self::$classmap, "trace" => true,"exceptions" => true));
+        $opts = array(
+            'ssl' => array('ciphers' => 'RC4-SHA', 'verify_peer' => false, 'verify_peer_name' => false)
+        );
+
+        //new soap client
+        $this->soapClient = new CCSoapClient($url, array(
+            "classmap"       => self::$classmap,
+            "trace"          => true,
+            "exceptions"     => true,
+            'stream_context' => stream_context_create($opts))
+        );
     }
     
     function removeUser($removeUser)
@@ -56,8 +66,7 @@ class CCOneClick
         
     }
     function initInscription($initInscription)
-    {
-        
+    {        
         $initInscriptionResponse = $this->soapClient->initInscription($initInscription);
         return $initInscriptionResponse;
         

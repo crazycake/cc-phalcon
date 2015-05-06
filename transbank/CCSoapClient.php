@@ -19,13 +19,13 @@ class CCSoapClient extends \SoapClient
         $doc->loadXML($request);
 
         $objWSSE = new \WSSESoap($doc);
-        $objKey  = new \XMLSecurityKey(XMLSecurityKey::RSA_SHA1,array('type' => 'private'));
+        $objKey  = new \XMLSecurityKey(\XMLSecurityKey::RSA_SHA1,array('type' => 'private'));
         $objKey->loadKey(WP_PRIVATE_KEY, TRUE);
 
         $options = array("insertBefore" => TRUE);
         $objWSSE->signSoapDoc($objKey, $options);
         $objWSSE->addIssuerSerial(WP_CERT_FILE);
-        $objKey = new \XMLSecurityKey(XMLSecurityKey::AES256_CBC);
+        $objKey = new \XMLSecurityKey(\XMLSecurityKey::AES256_CBC);
         $objKey->generateSessionKey();
         
         $retVal = parent::__doRequest($objWSSE->saveXML(), $location, $saction, $version);

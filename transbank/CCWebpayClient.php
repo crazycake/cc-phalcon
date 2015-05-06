@@ -27,11 +27,11 @@ class CCWebpayClient
 		$oneClickInscriptionInput->responseURL = $response_url;
 		
 		$oneClickInscriptionResponse = $oneClickService->initInscription(array("arg0" => $oneClickInscriptionInput));
-		
+
 		$xmlResponse = $oneClickService->soapClient->__getLastResponse();
 		$soapValidation = new \SoapValidation($xmlResponse, WP_TRANSBANK_CERT);
 		$soapValidation->getValidationResult(); //Esto valida si el mensaje está firmado por Transbank
-		
+
 		$oneClickInscriptionOutput = $oneClickInscriptionResponse->return; //Esto obtiene el resultado de la operación
 
 		$return = new \stdClass();
