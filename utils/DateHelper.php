@@ -12,16 +12,16 @@ use Phalcon\Exception;
 class DateHelper
 {
     /**
-     * Returns days passed from Now and given date
+     * Returns daytime passed from Now and given date
      * @static
      * @param date $date with Format Y-m-d H:i:s or a DateTime object
      * @return int
      */
-    public static function getDaysPassedFromDate($date = null)
+    public static function getTimePassedFromDate($date = null, $f = "days")
     {
         //validation
         if (is_null($date))
-            throw new Exception("DateHelper::getDaysPassedFromDate -> invalid date parameter, must be string or DateTime object.");
+            throw new Exception("DateHelper::getTimePassedFromDate -> invalid date parameter, must be string or DateTime object.");
 
         //check if is a DateTime object
         $target_date = null;
@@ -36,7 +36,7 @@ class DateHelper
         $interval = $today->diff($target_date);
 
         //return days property
-        return $interval->days;
+        return $interval->$f;
     } 
 
     /**
