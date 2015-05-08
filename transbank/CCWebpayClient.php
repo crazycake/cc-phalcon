@@ -34,10 +34,10 @@ class CCWebpayClient
 
 		$oneClickInscriptionOutput = $oneClickInscriptionResponse->return; //Esto obtiene el resultado de la operación
 
-		$return = new \stdClass();
-		$return->token 	= $oneClickInscriptionOutput->token; //Token de resultado
-		$return->inscriptionURL = $oneClickInscriptionOutput->urlWebpay;//URL para realizar el post
-		return $return;
+		$payload = new \stdClass();
+		$payload->token 	= $oneClickInscriptionOutput->token; //Token de resultado
+		$payload->inscriptionURL = $oneClickInscriptionOutput->urlWebpay;//URL para realizar el post
+		return $payload;
 	}
 
 	/**
@@ -45,7 +45,7 @@ class CCWebpayClient
 	 * @param  string $received_token The received token by WebPay server
 	 * @return object with successful inscription data
 	 */
-	public function finishIscription($received_token)
+	public function finishInscription($received_token)
 	{
 		$oneClickService = new CCOneClick();
 		$oneClickFinishInscriptionInput = new oneClickFinishInscriptionInput();
@@ -59,13 +59,13 @@ class CCWebpayClient
 		$oneClickFinishInscriptionOutput = $oneClickFinishInscriptionResponse->return;//Si la firma es válida
 		
 		//Datos de resultado de la inscripción OneClick
-		$return = new \stdClass();
-		$return->responseCode = $oneClickFinishInscriptionOutput->responseCode;
-		$return->authCode = $oneClickFinishInscriptionOutput->authCode;
-		$return->creditCardType = $oneClickFinishInscriptionOutput->creditCardType;
-		$return->last4CardDigits = $oneClickFinishInscriptionOutput->last4CardDigits;
-		$return->tbkUser = $oneClickFinishInscriptionOutput->tbkUser;
-		return $return;
+		$payload = new \stdClass();
+		$payload->response_code   = $oneClickFinishInscriptionOutput->responseCode;
+		$payload->auth_code 	  = $oneClickFinishInscriptionOutput->authCode;
+		$payload->card_type 	  = $oneClickFinishInscriptionOutput->creditCardType;
+		$payload->last_digits 	  = $oneClickFinishInscriptionOutput->last4CardDigits;
+		$payload->gateway_user 	  = $oneClickFinishInscriptionOutput->tbkUser;
+		return $payload;
 
 	}
 
@@ -86,13 +86,13 @@ class CCWebpayClient
 		$oneClickPayOutput = $oneClickauthorizeResponse->return;
 
 		//Resultado de la autorización
-		$return = new \stdClass();
-		$return->authorizationCode = $oneClickPayOutput->authorizationCode;
-		$return->creditCardType = $oneClickPayOutput->creditCardType;
-		$return->last4CardDigits = $oneClickPayOutput->last4CardDigits;
-		$return->responseCode = $oneClickPayOutput->responseCode;
-		$return->transactionId = $oneClickPayOutput->transactionId;
-		return $return;
+		$payload = new \stdClass();
+		$payload->authorizationCode = $oneClickPayOutput->authorizationCode;
+		$payload->creditCardType = $oneClickPayOutput->creditCardType;
+		$payload->last4CardDigits = $oneClickPayOutput->last4CardDigits;
+		$payload->responseCode = $oneClickPayOutput->responseCode;
+		$payload->transactionId = $oneClickPayOutput->transactionId;
+		return $payload;
 	}
 
 	public function codeReverseOneClickResponse($buyOrder){

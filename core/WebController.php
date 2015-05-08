@@ -184,11 +184,12 @@ abstract class WebController extends Controller
      * @param array $required_fields
      * @param string $method
      * @param string $send_json Sends json response for ajax calls
+     * @param boolean $check_csrf_token Checks a form CSRF token
      * @example { $data, array( "_name" => "string"), POST }
      * @link   http://docs.phalconphp.com/en/latest/reference/filter.html#sanitizing-data
      * @return array
      */
-    protected function _handleRequestParams($required_fields = array(), $method = 'POST', $send_json = true)
+    protected function _handleRequestParams($required_fields = array(), $method = 'POST', $send_json = true, $check_csrf_token = true)
     {
         //is post request? (method now allowed)
         if ($method == 'POST' && !$this->request->isPost())
@@ -199,7 +200,7 @@ abstract class WebController extends Controller
             $this->_sendJsonResponse(405);
 
         //validate always CSRF Token (prevents also headless browsers, POST only)
-        if (!$this->_checkCsrfToken())
+        if ($check_csrf_token && !$this->_checkCsrfToken())
             $this->_sendJsonResponse(498);
 
         //get POST or GET data
@@ -332,6 +333,28 @@ abstract class WebController extends Controller
     {
         $this->response->redirect($this->_baseUrl("not_found"), true);
         $this->response->send();
+    }
+
+    /** 
+     * Dispatch to Internal Error
+     * @param string $message The human error message
+     * @param string $go_back_url A go-back link URL
+     * @param string $object_id An option id for logic flux
+     * @param string $log_error The debug message to log
+     * 
+     */
+    protected function _dispatchInternalError($message = null, $go_back_url = null, $object_id = 0, $log_error = "n/a")
+    {
+        //dispatch to internal
+        $this->logger->info("WebController::_dispatchInternalError -> Something ocurred (object_id: ".$object_id."). Error: ".$log_error);
+        //set message
+        if(!is_null($message))
+            $this->view->setVar("error_message", str_replace(".", ".<br/>", $message));
+
+        if(!is_null($go_back_url))
+            $this->view->setVar("go_back", $go_back_url);
+
+        $this->dispatcher->forward(array("controller" => "errors", "action" => "internal"));
     }
 
     /**
