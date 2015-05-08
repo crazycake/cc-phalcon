@@ -41,7 +41,7 @@ class BaseModel extends \Phalcon\Mvc\Model
         $result = new \Phalcon\Mvc\Model\Resultset\Simple(null, $object, $object->getReadConnection()->query($sql));
         $result = $result->getFirst();
 
-        return $result ? $result->{$prop} : false;
+        return $result ? $result->{$prop} : 0;
     }
 
     /**
