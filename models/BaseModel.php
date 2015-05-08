@@ -19,8 +19,6 @@ class BaseModel extends \Phalcon\Mvc\Model
 
     /**
      * Find Object by ID
-     * @access public
-     * @static
      * @param int $id
      * @return Object
      */
@@ -31,31 +29,32 @@ class BaseModel extends \Phalcon\Mvc\Model
         ));
     }
 
-    /** ------------------------------------------ § ------------------------------------------------- **/
+    /**
+     * Get an object property value by executing a SQL query
+     * @param  string $sql  The SQL string
+     * @param  string $prop The object property
+     * @return mixed
+     */
+    public static function getObjectPropertyByQuery($sql = "SELECT 1", $prop = "id")
+    {
+        $object = new self();
+        $result = new \Phalcon\Mvc\Model\Resultset\Simple(null, $object, $object->getReadConnection()->query($sql));
+        $result = $result->getFirst();
+
+        return $result ? $result->{$prop} : false;
+    }
 
     /**
-     * Generates an alphanumeric code
-     * @access public
-     * @static
-     * @param  int $length The code length
-     * @return string
+     * Get a Resulset by SQL query.
+     * @todo Fix child afterFetch call
+     * @param string $sql  The SQL string
+     * @return mixed
      */
-    protected static function _generateAlphanumericCode($length = 8)
+    public static function getObjectsByQuery($sql = "SELECT 1")
     {
-        $code = "";
+        $objects = new self();
+        $result  = new \Phalcon\Mvc\Model\Resultset\Simple(null, $objects, $objects->getReadConnection()->query($sql));
 
-        for($k = 0; $k < $length; $k++) {
-
-            $num  = chr(rand(48,57));
-            $char = strtoupper(chr(rand(97,122)));
-            $p    = rand(1,2);
-            //append
-            $code .= ($p == 1) ? $num : $char;
-        }
-        //replace ambiguos chars
-        $placeholders = array("O", "I", "J", "B");
-        $replacers    = array("0", "1", "X", "3");
-
-        return str_replace($placeholders, $replacers, $code);
+        return empty($result) ? false : $result;
     }
 }

@@ -15,11 +15,11 @@ class Slug
 {
     /**
      * Creates a slug to be used for pretty URLs
+     * @static
      * @link http://cubiq.org/the-perfect-php-clean-url-generator
      * @param string $string
-     * @param  array $replace placeholders to be replaced
-     * @param  string $delimiter
-     * @throws Exception
+     * @param array $replace placeholders to be replaced
+     * @param string $delimiter
      * @return mixed
      */
     public static function generate($string, $replace = array(), $delimiter = '-')

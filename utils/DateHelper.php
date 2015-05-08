@@ -13,11 +13,11 @@ class DateHelper
 {
     /**
      * Returns days passed from Now and given date
+     * @static
      * @param date $date with Format Y-m-d H:i:s or a DateTime object
-     * @throws \Phalcon\Exception for invalid input
      * @return int
      */
-    public function getDaysPassedFromDate($date = null)
+    public static function getDaysPassedFromDate($date = null)
     {
         //validation
         if (is_null($date))
@@ -47,7 +47,7 @@ class DateHelper
      * @param  object $translate  The DI Gettext translation adapter reference
      * @return string             The translated month name
      */
-    public function getTranslatedMonthName($month = null, $abbr = false, $translate)
+    public static function getTranslatedMonthName($month = null, $abbr = false, $translate)
     {
         if(empty($month) || empty($translate))
             throw new Exception("DateHelper::getTranslatedMonthName -> 'month' and 'translate' params are required");
@@ -72,5 +72,20 @@ class DateHelper
         }
         
         return $month;
+    }
+
+    /**
+     * Format seconds to HH:MM style, example 23:45 or 23h 45m
+     * @static
+     * @param int $seconds
+     * @param boolean $human For human style format
+     * @return string
+     */
+    public static function formatSecondsToHHMM($seconds, $human = true)
+    {
+        $hours = floor($seconds / 3600);
+        $mins  = floor(($seconds / 60) % 60);
+
+        return $human ? $hours."h ".$mins."m" : $hours.":".$mins;       
     }
 }
