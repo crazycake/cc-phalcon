@@ -8,7 +8,7 @@
 namespace CrazyCake\Core;
 
 //imports
-use Phalcon\Mvc\Controller;     //Phalcon Controller
+use Phalcon\Mvc\Controller; //Phalcon Controller
 use Phalcon\Exception;
 
 abstract class WsController extends Controller
