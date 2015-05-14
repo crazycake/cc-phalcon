@@ -66,7 +66,6 @@ class CCWebpayClient
 		$payload->last_digits 	  = $oneClickFinishInscriptionOutput->last4CardDigits;
 		$payload->gateway_user 	  = $oneClickFinishInscriptionOutput->tbkUser;
 		return $payload;
-
 	}
 
 	public function authorize($amount, $buyOrder, $tbkUser, $username)
@@ -87,11 +86,12 @@ class CCWebpayClient
 
 		//Resultado de la autorización
 		$payload = new \stdClass();
-		$payload->authorizationCode = $oneClickPayOutput->authorizationCode;
-		$payload->creditCardType = $oneClickPayOutput->creditCardType;
-		$payload->last4CardDigits = $oneClickPayOutput->last4CardDigits;
-		$payload->responseCode = $oneClickPayOutput->responseCode;
-		$payload->transactionId = $oneClickPayOutput->transactionId;
+		$payload->response_code	  = $oneClickPayOutput->responseCode;
+		$payload->auth_code 	  = $oneClickPayOutput->authorizationCode;
+		$payload->card_type  	  = $oneClickPayOutput->creditCardType;
+		$payload->last_digits 	  = $oneClickPayOutput->last4CardDigits;
+		//set webpay transaction_id
+		$payload->gateway_transaction_id = $oneClickPayOutput->transactionId;
 		return $payload;
 	}
 
