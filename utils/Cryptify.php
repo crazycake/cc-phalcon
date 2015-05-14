@@ -61,7 +61,7 @@ class Cryptify
     public function encryptForGetRequest($text)
     {
         //key must be set in DI service
-        $encrypted = $this->crypt->encrypt($text);
+        $encrypted = $this->crypt->encrypt((string)$text);
 
         //encrypt string
         $encrypted_string = str_replace('%', '-', rawurlencode(base64_encode($encrypted)));
