@@ -14,7 +14,8 @@ use Phalcon\Exception;
 abstract class WsController extends Controller
 {
     /* consts */
-    const HEADER_API_KEY = 'X_API_KEY'; //HTTP header keys uses '_' for '-' in Phalcon
+    const HEADER_API_KEY       = 'X_API_KEY'; //HTTP header keys uses '_' for '-' in Phalcon
+    const JSON_RESPONSE_STRUCT = '{"response":{"code":"200","status":"ok","payload":@payload}}';
 
     /**
      * child required methods
@@ -123,6 +124,23 @@ abstract class WsController extends Controller
         $this->response->setStatusCode(200, "OK");
         $this->response->setContentType('application/json'); //set JSON as Content-Type header
         $this->response->setContent($content);
+        $this->response->send();
+        die(); //exit
+    }
+
+    /**
+     * Sends a file to buffer output response
+     * @param integer $code [description]
+     */
+    protected function _sendFileToBuffer($data = "", $type = 'application/json')
+    {
+        //append struct as string if data type is JSON
+        if($type == 'application/json')
+            $data = str_replace("@payload", $data, self::JSON_RESPONSE_STRUCT);
+
+        $this->response->setStatusCode(200, "OK");
+        $this->response->setContentType($type);
+        $this->response->setContent($data);
         $this->response->send();
         die(); //exit
     }
