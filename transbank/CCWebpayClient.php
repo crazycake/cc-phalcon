@@ -18,7 +18,7 @@ class CCWebpayClient
 	 * @param  string $response_url [description]
 	 * @return object with token & inscription URL
 	 */
-	public function initInscription($username, $email, $response_url)
+	public function initCardInscription($username, $email, $response_url)
 	{
 		$oneClickService = new CCOneClick();
 		$oneClickInscriptionInput = new oneClickInscriptionInput();
@@ -45,7 +45,7 @@ class CCWebpayClient
 	 * @param  string $received_token The received token by WebPay server
 	 * @return object with successful inscription data
 	 */
-	public function finishInscription($received_token)
+	public function finishCardInscription($received_token)
 	{
 		$oneClickService = new CCOneClick();
 		$oneClickFinishInscriptionInput = new oneClickFinishInscriptionInput();
@@ -68,7 +68,36 @@ class CCWebpayClient
 		return $payload;
 	}
 
-	public function authorize($amount, $buyOrder, $tbkUser, $username)
+	/**
+	 * Remove a card inscription
+	 * @param  int $tbkUser      The gateway user id
+	 * @param  string $commerceUser The username
+	 * @return boolean
+	 */
+	public function removeCardInscription($tbkUser, $commerceUser){
+		$oneClickService = new CCOneClick();
+		$oneClickRemoveUserInput = new oneClickRemoveUserInput();
+
+		$oneClickRemoveUserInput->tbkUser = $tbkUser; // identificador de usuario entregado en el servicio finishInscription
+		$oneClickRemoveUserInput->username = $commerceUser; // identificador de usuario del comercio
+		
+		$removeUserResponse = $oneClickService->removeUser(array("arg0" => $oneClickRemoveUserInput));
+		
+		$xmlResponse = $oneClickService->soapClient->__getLastResponse();
+		$soapValidation = new \SoapValidation($xmlResponse, WP_TRANSBANK_CERT); //Si la firma es válida
+		
+		return $removeUserResponse->return; // Valor booleano que indica si el usuario fue removido.
+	}
+
+	/**
+	 * Authorize a card payment
+	 * @param  int $amount   The amount
+	 * @param  string $buyOrder The buy order
+	 * @param  int $tbkUser  The gateway user id 
+	 * @param  string $username The username
+	 * @return object
+	 */
+	public function authorizeCardPayment($amount, $buyOrder, $tbkUser, $username)
 	{
 		$oneClickService = new CCOneClick();
 		$oneClickPayInput = new oneClickPayInput();
@@ -95,31 +124,27 @@ class CCWebpayClient
 		return $payload;
 	}
 
-	public function codeReverseOneClickResponse($buyOrder){
+	/**
+	 * Reverse a transaction payment done with authorize method
+	 * @param  string $buyOrder The buy order
+	 * @return mixed
+	 */
+	public function reverseCardTransaction($buyOrder){
 		$oneClickService = new CCOneClick();
 		$oneClickReverseInput = new oneClickReverseInput();
 		$oneClickReverseInput->buyorder= $buyOrder;
 
-		$codeReverseOneClickResponse = $oneClickService->codeReverseOneClick(array("arg0" => $oneClickReverseInput));
+		$revertTransaction = $oneClickService->codeReverseOneClick(array("arg0" => $oneClickReverseInput));
 		
 		$xmlResponse = $oneClickService->soapClient->__getLastResponse();
 		$soapValidation = new \SoapValidation($xmlResponse, WP_TRANSBANK_CERT); //Si la firma es válida
 		
-		return $codeReverseOneClickResponse->return;
-	}
+		$response = $revertTransaction->return;
 
-	public function removeUser($tbkUser, $commerceUser){
-		$oneClickService = new CCOneClick();
-		$oneClickRemoveUserInput = new oneClickRemoveUserInput();
+		$payload = new \stdClass();
+		$payload->reversed 	 = $response ? $response->reversed : false;
+		$payload->reverse_id = $response ? $response->reverseCode  : false;
 
-		$oneClickRemoveUserInput->tbkUser = $tbkUser; // identificador de usuario entregado en el servicio finishInscription
-		$oneClickRemoveUserInput->username = $commerceUser; // identificador de usuario del comercio
-		
-		$removeUserResponse = $oneClickService->removeUser(array("arg0" => $oneClickRemoveUserInput));
-		
-		$xmlResponse = $oneClickService->soapClient->__getLastResponse();
-		$soapValidation = new \SoapValidation($xmlResponse, WP_TRANSBANK_CERT); //Si la firma es válida
-		
-		return $removeUserResponse->return; // Valor booleano que indica si el usuario fue removido.
+		return $payload;
 	}
 }

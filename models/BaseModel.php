@@ -55,6 +55,36 @@ class BaseModel extends \Phalcon\Mvc\Model
         $objects = new self();
         $result  = new \Phalcon\Mvc\Model\Resultset\Simple(null, $objects, $objects->getReadConnection()->query($sql));
 
-        return empty($result) ? false : $result;
+        return empty($result->count()) ? false : $result;
+    }
+
+    /**
+     * Get Objects by PHQL language
+     * @param string $sql The PHQL query string
+     * @param array $binds The binding params array
+     * @return array
+     */
+    public static function getObjectsByPhql($phql = "SELECT 1", $binds = array())
+    {
+        $query = new \Phalcon\Mvc\Model\Query($phql, \Phalcon\DI::getDefault());
+        //Executing with bound parameters
+        $objects = $query->execute($binds);
+
+        return empty($objects->count()) ? false : $objects;
+    }
+
+    /**
+     * Executes a PHQL Query, used for INSERT, UPDATE, DELETE
+     * @param string $phql The PHQL query string
+     * @param array $binds The binding params array
+     * @return boolean
+     */
+    public static function executePhql($phql = "SELECT 1", $binds = array())
+    {
+        $query = new \Phalcon\Mvc\Model\Query($phql, \Phalcon\DI::getDefault());
+        //Executing with bound parameters
+        $status = $query->execute($binds);
+
+        return $status ? $status->success() : false;
     }
 }
