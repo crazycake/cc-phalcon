@@ -31,7 +31,7 @@ abstract class TaskController extends Task
      * @param  string $status Can be OK, ERROR, WARNING OR NOTE
      * @return string
      */
-    protected function _colorize($text, $status, $die = false)
+    protected function _colorize($text = "", $status = "OK", $die = false)
     {
         $open  = "";
         $close = "\033[0m";
