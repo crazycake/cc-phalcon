@@ -31,7 +31,7 @@ abstract class TaskController extends Task
      * @param  string $status Can be OK, ERROR, WARNING OR NOTE
      * @return string
      */
-    protected function _colorize($text, $status)
+    protected function _colorize($text, $status, $die = false)
     {
         $open  = "";
         $close = "\033[0m";
@@ -53,7 +53,12 @@ abstract class TaskController extends Task
                 throw new Exception("CoreTask:_colorize -> invalid status: " . $status);
         }
         //return outout, chr(27 ) -> escape key
-        return chr(27) . $open . $text . chr(27) . $close . "\n";
+        $output = chr(27) . $open . $text . chr(27) . $close . "\n";
+
+        if($die)
+            die($output);
+
+        return $output;
     }
 
     /**
