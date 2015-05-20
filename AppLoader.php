@@ -135,6 +135,7 @@ abstract class AppLoader
             if(is_null($argv))
                 die("Phalcon Console -> no args supplied\n");
 
+            //set args data
             foreach ($argv as $k => $arg) {
                 switch ($k) {
                     case 0: break;
@@ -143,6 +144,10 @@ abstract class AppLoader
                     default: $arguments['params'][$k] = $arg; break;
                 }
             }
+
+            //checks that array param was set
+            if(!isset($arguments['params']))
+                $arguments['params'] = array();
 
             //order params
             if(count($arguments['params']) > 0) {
