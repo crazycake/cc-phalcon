@@ -50,7 +50,7 @@ abstract class TaskController extends Task
                 $open = "\033[94m";     //Blue color
                 break;
             default:
-                throw new Exception("CoreTask:_colorize -> invalid status: " . $status);
+                throw new \Exception("CoreTask:_colorize -> invalid status: " . $status);
         }
         //return outout, chr(27 ) -> escape key
         $output = chr(27) . $open . $text . chr(27) . $close . "\n";

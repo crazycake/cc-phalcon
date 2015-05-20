@@ -137,11 +137,17 @@ abstract class AppLoader
 
             foreach ($argv as $k => $arg) {
                 switch ($k) {
-                    case 1: $arguments['task']     = $arg; break;
-                    case 2: $arguments['action']   = $arg; break;
-                    case 3: $arguments['params'][] = $arg; break;
-                    default: break;
+                    case 0: break;
+                    case 1: $arguments['task']   = $arg; break;
+                    case 2: $arguments['action'] = $arg; break;
+                    default: $arguments['params'][$k] = $arg; break;
                 }
+            }
+
+            //order params
+            if(count($arguments['params']) > 0) {
+                $params = array_values($arguments['params']);
+                $arguments['params'] = $params;
             }
             
             //define global constants for the current task and action
