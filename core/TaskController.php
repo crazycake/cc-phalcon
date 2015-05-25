@@ -58,7 +58,8 @@ abstract class TaskController extends Task
         if($die)
             die($output);
 
-        return $output;
+        //echo output
+        echo $output;
     }
 
     /**
@@ -71,7 +72,7 @@ abstract class TaskController extends Task
     protected function _validatesModuleArg($params = array(), $index = 0, $check_folder = true)
     {
         if(empty($params) || !isset($params[$index])) {
-            echo $this->_colorize("An argument [module] is missing", "ERROR") . "\n";
+            $this->_colorize("An argument [module] is missing", "ERROR") . "\n";
             exit;
         }
 
@@ -79,7 +80,7 @@ abstract class TaskController extends Task
 
         //check for folder
         if($check_folder && !is_dir($module)) {
-            echo $this->_colorize("The input module folder ($module) was not found", "ERROR") . "\n";
+            $this->_colorize("The input module folder ($module) was not found", "ERROR") . "\n";
             exit;
         }
 
@@ -99,7 +100,7 @@ abstract class TaskController extends Task
         $module = $this->_validatesModuleArg($params, 0);
 
         if(!is_dir($module.self::MODULE_LANGS_FOLDER)) {
-            echo $this->_colorize("No langs directories found", "ERROR") . "\n";
+            $this->_colorize("No langs directories found", "ERROR") . "\n";
             return;
         }
 
@@ -116,7 +117,7 @@ abstract class TaskController extends Task
         }
 
         if(empty($supportedLangs)) {
-            echo $this->_colorize("No lang_codes folders found", "ERROR") . "\n";
+            $this->_colorize("No lang_codes folders found", "ERROR") . "\n";
             return;
         }
 
@@ -136,11 +137,11 @@ abstract class TaskController extends Task
             //create JS file
             $js_filename = str_replace("%code%", $this->translate->getLanguage(), self::JS_LANGS_FILENAME);
 
-            echo $this->_colorize("Creating file " . $js_filename . " ...", "WARNING");
+            $this->_colorize("Creating file " . $js_filename . " ...", "WARNING");
             //creates file
             file_put_contents($module.self::MODULE_JS_PATH. $js_filename, $output);
         }
         //response
-        echo $this->_colorize("JS Files successfully created at path: ".$module.self::MODULE_JS_PATH, "OK") . "\n";
+        $this->_colorize("JS Files successfully created at path: ".$module.self::MODULE_JS_PATH, "OK") . "\n";
     }
 }
