@@ -1,6 +1,7 @@
 {
 	"blacklist": [],
     "directories": ["phalcon","core", "models","utils", "qr"],
+    "bootstrap" : "Bootstrap.php",
     "main": "AppLoader.php",
     "output": "cc-phalcon.phar",
     "shebang": false,

@@ -319,6 +319,7 @@ abstract class AppLoader
     /**
      * Loads statics libs from sym-link or phar file.
      * Use Phar::running() to get path of current phar running
+     * Use get_included_files() to see all files that has loaded
      * it seems that phalcon's loader->registerNamespaces don't consider phar inside paths
      * @param  object $loader   Phalcon loader object
      * @param  array  $packages Modules array
@@ -334,13 +335,15 @@ abstract class AppLoader
 
         //load classes directly form phar
         if(!$class_path) {
+            //get class map array
+            $class_map = include "phalcon/AppClassMap.php";
+
             foreach ($packages as $lib) {
-                $dir   = __DIR__."/$lib/";
-                $files = scandir($dir);
                 //loop through package files
-                foreach ($files as $class)
-                    require $dir.$class;
+                foreach ($class_map[$lib] as $class)
+                    require Phar::running()."/$lib/".$class;
             }
+            //var_dump(get_included_files());exit;
             return;
         }
 
