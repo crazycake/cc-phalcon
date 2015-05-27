@@ -95,18 +95,21 @@ abstract class WebController extends Controller
      * Parse ORM validation messages struct
      * @access protected
      * @param object $obj
+     * @param boolean $json_encode Returns a json string
      * @return mixed array|string
      */
-    protected function _parseOrmMessages($obj)
+    protected function _parseOrmMessages($obj, $json_encode = false)
     {
         $data = array();
 
         if (!method_exists($obj, 'getMessages'))
             return ($data[0] = "Unknown ORM Error");
 
-        foreach ($obj->getMessages() as $msg) {
+        foreach ($obj->getMessages() as $msg)
             array_push($data, $msg->getMessage());
-        }
+
+        if($json_encode)
+            $data = json_encode($data);
 
         return $data;
     }
