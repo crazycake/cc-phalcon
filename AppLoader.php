@@ -275,20 +275,21 @@ abstract class AppLoader
     }
 
     /**
-     * Phalcon Auto Load Classes
+     * Phalcon Auto Load Classes, Composer and Static Libs
      * @access private
      */
     private function _autoloadClasses()
     {
-        //load app directories
+        //1.- Load app directories (components)
         $loader = new \Phalcon\Loader();
         $loader->registerDirs($this->app_config["directories"]);
-        //register static libs?
+
+        //2.- Register any static libs (like cclibs)
         if(isset($this->modules_cclibs[$this->module]))
             $this->_loadStaticLibs($loader, $this->modules_cclibs[$this->module]);
 
-        //Composer libs, use composer auto load for production
-        if (APP_ENVIRONMENT === 'production') {
+        //3.- Composer libs, use composer auto load for production
+        if (APP_ENVIRONMENT !== 'development') {
 
             //autoload classes (se debe pre-generar autoload_classmap)
             $loader->registerClasses(require COMPOSER_PATH.'vendor/composer/autoload_classmap.php');
@@ -305,28 +306,49 @@ abstract class AppLoader
 
             //autoload composer file
             if (!is_file(COMPOSER_PATH.'vendor/autoload.php'))
-                throw new Exception("AppLoader::_autoloadClasses -> Composer libraries are missing, please run environment bash file.");
+                throw new Exception("AppLoader::_autoloadClasses -> Composer libraries are missing, please run environment bash file (-composer option).");
 
             //autoload composer file
             require COMPOSER_PATH.'vendor/autoload.php';
         }
 
-        //register phalcon loader
+        //4.- Register phalcon loader
         $loader->register();
     }
 
+    /**
+     * Loads statics libs from sym-link or phar file.
+     * Use Phar::running() to get path of current phar running
+     * it seems that phalcon's loader->registerNamespaces don't consider phar inside paths
+     * @param  object $loader   Phalcon loader object
+     * @param  array  $packages Modules array
+     * @return void
+     */
     private function _loadStaticLibs($loader = null, $packages = array())
     {
         if(is_null($loader) || empty($packages))
             return;
 
         //check if library was loaded from dev environment
-        $class_path = is_link(PROJECT_PATH.self::CCLIBS_NAMESPACE) ? PROJECT_PATH.self::CCLIBS_NAMESPACE : __DIR__;
+        $class_path = is_link(PROJECT_PATH.self::CCLIBS_NAMESPACE) ? PROJECT_PATH.self::CCLIBS_NAMESPACE : false;
+
+        //load classes directly form phar
+        if(!$class_path) {
+            foreach ($packages as $lib) {
+                $dir   = __DIR__."/$lib/";
+                $files = scandir($dir);
+                //loop through package files
+                foreach ($files as $class)
+                    require $dir.$class;
+            }
+            return;
+        }
 
         $namespaces = array();
         foreach ($packages as $lib) {
-            $namespaces[self::CCLIBS_PACKAGE.ucfirst($lib)] = $class_path."/".$lib."/";
+            $namespaces[self::CCLIBS_PACKAGE.ucfirst($lib)] = "$class_path/$lib/";
         }
+        //var_dump($class_path, $namespaces);
 
         //register namespaces
         if(!empty($namespaces))
