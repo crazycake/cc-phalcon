@@ -314,6 +314,7 @@ abstract class AppLoader
 
         //4.- Register phalcon loader
         $loader->register();
+        //var_dump(get_included_files());exit;
     }
 
     /**
@@ -341,9 +342,8 @@ abstract class AppLoader
             foreach ($packages as $lib) {
                 //loop through package files
                 foreach ($class_map[$lib] as $class)
-                    require Phar::running()."/$lib/".$class;
+                    require_once Phar::running()."/$lib/".$class;
             }
-            //var_dump(get_included_files());exit;
             return;
         }
 
