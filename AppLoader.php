@@ -347,6 +347,7 @@ abstract class AppLoader
             return;
         }
 
+        //load classes from symlink
         $namespaces = array();
         foreach ($packages as $lib) {
             $namespaces[self::CCLIBS_PACKAGE.ucfirst($lib)] = "$class_path/$lib/";
