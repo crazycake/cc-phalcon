@@ -21,11 +21,9 @@ Box Project
 ###Loading phar file
 ```
 <?php
-	//Load phar file
+	//Load phar file,
+	//Classes are autoloaded with 'Phalcon\Loader->registerNamespaces()' function.
 	require 'cc-phalcon.phar';
-	new \CrazyCake\Loader($loader, $packages);
-
-	/* Classes are autoloaded with 'Phalcon\Loader::registerNamespaces()' function */
 ?>
 ```
 
@@ -49,3 +47,9 @@ Building phar file
 ```
 box build -v
 ```
+
+Listing phar file contents
+```
+php box.phar info -l <filepath>
+```
+
