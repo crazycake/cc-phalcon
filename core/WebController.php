@@ -249,7 +249,10 @@ abstract class WebController extends Controller
             }
 
             //get value from data array & sanitize it
-            $value = empty($data_type) ? $data[$field] : $this->filter->sanitize($data[$field], $data_type);
+            if(empty($data_type) || $data_type == 'array')
+                $value = $data[$field];
+            else
+                $value = $this->filter->sanitize($data[$field], $data_type);
 
             //check data (empty fn considers zero value )
             if ($is_optional_field && (is_null($value) || $value == ''))
