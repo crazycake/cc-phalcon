@@ -11,13 +11,6 @@ namespace CrazyCake\Qr;
 //imports
 use Phalcon\Exception;
 
-//lib root path
-define("QR_LIB_NAMESPACE",'\\CrazyCake\\Qr\\');
-define("QR_SRC_PATH", __DIR__ . "/src/");
-
-//lib files
-require_once QR_SRC_PATH . "/qrconf.php";
-
 /**
  * QRMaker Class
  * @author Nicolas Pulido
@@ -25,48 +18,60 @@ require_once QR_SRC_PATH . "/qrconf.php";
 class QRMaker
 {
 	/* consts */
-	const QR_HIGH_QUALITY = true; 
-	const PNG_MAX_SIZE    = 1024;
+	const QR_LIB_NAMESPACE = '\\CrazyCake\\Qr\\'; //lib root path
+	const QR_ASSETS_DIR    = __DIR__."/assets/";
+	const QR_ASSETS_URI	   = 'qr/assets/';
+	const QR_HIGH_QUALITY  = true;
+	const QR_PNG_MAX_SIZE  = 1024;
 
 	/**
 	 * constructor
-	 * @param string $log_path   Log directory path
-	 * @param string $cache_path Cache directory path
+	 * @param string $log_path   Log directory path, required
+	 * @param string $cache_path Cache directory path, required
 	 */
 	function __construct($log_path, $cache_path = null)
 	{
 		if (empty($log_path))
 			throw new Exception("QRMaker Library -> App Log path parameters are required.");
-
-		if ( !is_dir($log_path) )
+		else if (!is_dir($log_path))
 			throw new Exception("QRMaker Library -> App Log path (".$log_path.") not found.");
-
-		if ( !is_null($cache_path) && !is_dir($cache_path) )
+		else if (!is_dir($cache_path))
 			throw new Exception("QRMaker Library -> App Cache path (".$cache_path.") not found.");
 
-		// use cache - more disk reads but less CPU power, masks and format templates are stored there
-		if (!defined('QR_CACHEABLE')) define('QR_CACHEABLE', (is_null($cache_path) ? false : true));
-		
-		// used when QR_CACHEABLE === true
-		if (!defined('QR_CACHE_DIR')) define('QR_CACHE_DIR', $cache_path);
-		
-		// default error logs dir
-		if (!defined('QR_LOG_DIR')) define('QR_LOG_DIR', $log_path);
-		
-		// if true, estimates best mask (spec. default, but extremally slow; set to false to significant performance boost but (propably) worst quality code
-		if (self::QR_HIGH_QUALITY) {
-			if (!defined('QR_FIND_BEST_MASK')) define('QR_FIND_BEST_MASK', true);
-		} 
+		//use cache - more disk reads but less CPU power, masks and format templates are stored there
+		define('QR_CACHEABLE', (is_null($cache_path) ? false : true));
+		define('QR_CACHE_DIR', $cache_path."qr/");
+		define('QR_LOG_DIR', $log_path);
+
+		//create cache dir if not exists
+		if(!is_dir(QR_CACHE_DIR))
+			mkdir(QR_CACHE_DIR, 0775);
+
+		//Check if library is running from a Phar file, if does, assets must be copied to cache folder.
+		//For reading assets from a phar directly, see: http://php.net/manual/en/phar.webphar.php
+		if(\Phar::running()) {
+			define("QR_ASSETS_PATH", \AppLoader::extractAssetsFromPhar(self::QR_ASSETS_URI, $cache_path));
+		}
 		else {
-			if (!defined('QR_FIND_BEST_MASK')) define('QR_FIND_BEST_MASK', false);
-			if (!defined('QR_DEFAULT_MASK')) define('QR_DEFAULT_MASK', false);
+			define("QR_ASSETS_PATH", self::QR_ASSETS_DIR);
 		}
 		
-		// if false, checks all masks available, otherwise value tells count of masks need to be checked, mask id are got randomly
-		if (!defined('QR_FIND_FROM_RANDOM')) define('QR_FIND_FROM_RANDOM', false);
+		//if true, estimates best mask (spec. default, but extremally slow; set to false to significant performance boost but (propably) worst quality code
+		if (self::QR_HIGH_QUALITY) {
+			define('QR_FIND_BEST_MASK', true);
+		} 
+		else {
+			define('QR_FIND_BEST_MASK', false);
+			define('QR_DEFAULT_MASK', false);
+		}
 		
-		// maximum allowed png image width (in pixels), tune to make sure GD and PHP can handle such big images
-		if (!defined('QR_PNG_MAXIMUM_SIZE')) define('QR_PNG_MAXIMUM_SIZE',  self::PNG_MAX_SIZE);
+		//if false, checks all masks available, otherwise value tells count of masks need to be checked, mask id are got randomly
+		define('QR_FIND_FROM_RANDOM', false);
+		//maximum allowed png image width (in pixels), tune to make sure GD and PHP can handle such big images
+		define('QR_PNG_MAXIMUM_SIZE',  self::QR_PNG_MAX_SIZE);
+
+		//load QR library
+		require_once "src/qrconf.php";
 	}
 	
 	/**
@@ -85,7 +90,7 @@ class QRMaker
 	  
 		//shape dot object
 		if( isset($params['dot_shape_class']) && $this->_class_exists($params['dot_shape_class']) ) {
-			$class    = QR_LIB_NAMESPACE.$params['dot_shape_class'];
+			$class    = self::QR_LIB_NAMESPACE.$params['dot_shape_class'];
 			$shapeDot = new $class();
 		}
 		else {
@@ -100,7 +105,7 @@ class QRMaker
 
 		//frame dot object
 		if( isset($params['dot_frame_class']) && $this->_class_exists($params['dot_frame_class']) ) {
-			$class    = QR_LIB_NAMESPACE.$params['dot_frame_class'];
+			$class    = self::QR_LIB_NAMESPACE.$params['dot_frame_class'];
 			$frameDot = new $class();
 		}
 		else {
@@ -114,7 +119,7 @@ class QRMaker
 
 		//main frame object
 		if( isset($params['frame_class']) && $this->_class_exists($params['frame_class']) ) {
-			$class = QR_LIB_NAMESPACE.$params['frame_class'];
+			$class = self::QR_LIB_NAMESPACE.$params['frame_class'];
 			$frame = new $class();
 		}
 		else {
@@ -186,6 +191,6 @@ class QRMaker
 	 */
 	private function _class_exists($class_name)
 	{
-		return class_exists(QR_LIB_NAMESPACE.$class_name);
+		return class_exists(self::QR_LIB_NAMESPACE.$class_name);
 	}
 }

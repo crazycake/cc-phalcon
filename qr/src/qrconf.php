@@ -46,26 +46,26 @@ define('QR_ECLEVEL_H', 3);
 define('QR_FORMAT_TEXT', 0);
 define('QR_FORMAT_PNG',  1);
 
-define("QR_FONT_PATH_EDGES", dirname(__DIR__) . '/assets/fonts/edges.ttf');
-define("QR_FONT_PATH_FRAMES", dirname(__DIR__) . '/assets/fonts/frames.ttf');
-define("QR_FONT_PATH_DOTS", dirname(__DIR__) . '/assets/fonts/dots.ttf');
-define("QR_FONT_PATH_BDOTS", dirname(__DIR__) . '/assets/fonts/bodydots.ttf');
-define("QR_FONT_PATH_HAROP", dirname(__DIR__) . '/assets/fonts/harop.ttf');
-define("QR_FONT_PATH_SQUARETHINGS", dirname(__DIR__) . '/assets/fonts/squarethings.ttf');
-define("QR_IMAGES_PATH", dirname(__DIR__) . '/assets/images/');
+//set assets path (relative paths)
+define("QR_FONT_PATH_EDGES", QR_ASSETS_PATH . 'edges.ttf');
+define("QR_FONT_PATH_FRAMES", QR_ASSETS_PATH . 'frames.ttf');
+define("QR_FONT_PATH_DOTS", QR_ASSETS_PATH . 'dots.ttf');
+define("QR_FONT_PATH_BDOTS", QR_ASSETS_PATH . 'bodydots.ttf');
+define("QR_FONT_PATH_HAROP", QR_ASSETS_PATH . 'harop.ttf');
+define("QR_FONT_PATH_SQUARETHINGS", QR_ASSETS_PATH . 'squarethings.ttf');
 
-//load files
-require_once QR_SRC_PATH . "/qrtools.php";
-require_once QR_SRC_PATH . "/qrspec.php";
-require_once QR_SRC_PATH . "/qrimage.php";
-require_once QR_SRC_PATH . "/qrinput.php";
-require_once QR_SRC_PATH . "/qrbitstream.php";
-require_once QR_SRC_PATH . "/qrsplit.php";
-require_once QR_SRC_PATH . "/qrrscode.php";
-require_once QR_SRC_PATH . "/qrmask.php";
-require_once QR_SRC_PATH . "/qrencode.php";
-require_once QR_SRC_PATH . "/imageSmoothArc.php";
-require_once QR_SRC_PATH . "/qrtag.php";
+//load files (relative paths)
+require_once "qrtools.php";
+require_once "qrspec.php";
+require_once "qrimage.php";
+require_once "qrinput.php";
+require_once "qrbitstream.php";
+require_once "qrsplit.php";
+require_once "qrrscode.php";
+require_once "qrmask.php";
+require_once "qrencode.php";
+require_once "imageSmoothArc.php";
+require_once "qrtag.php";
 //modules
-require_once QR_SRC_PATH . "/qrtagsdots.php";
-require_once QR_SRC_PATH . "/qrtagsframes.php";
+require_once "qrtagsdots.php";
+require_once "qrtagsframes.php";

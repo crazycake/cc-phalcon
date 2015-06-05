@@ -350,7 +350,7 @@ class QrTag {
     }
 
     public static function installedShapes() {
-        $path = QR_IMAGES_PATH;
+        $path = QR_ASSETS_PATH;
         $out = array();
 
         // get all dots
