@@ -378,14 +378,14 @@ abstract class WebController extends Controller
         if (empty($method))
             throw new Exception("WebController::_sendAsyncMailMessage -> method param is required.");
 
-        if($as_action)
-        {
+        if($as_action) {
+            
             if(is_array($data))
                 $data = json_encode($data);
 
             $encrypted_data = $this->cryptify->encryptForGetRequest($data);
-            //guzzle request async with promise
-            $url  = $this->_baseUrl("mailer/$method/$encrypted_data");
+            //set url
+            $url = $this->_baseUrl("mailer/$method/$encrypted_data");
 
             if(APP_ENVIRONMENT == "development")
                 $this->logger->debug('WebController::_sendAsyncMailMessage -> Method: '.$method.' & URL: ' . $url);

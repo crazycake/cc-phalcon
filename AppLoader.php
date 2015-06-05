@@ -194,7 +194,23 @@ abstract class AppLoader
     }
 
     /**
+     * Get a module URL from current environment
+     * @static
+     * @param  string $base_url The base url
+     * @param  string $module The module name
+     * @return string
+     */
+    public static function getModuleEnviromentURL($module = "")
+    {        
+        if(APP_ENVIRONMENT === 'development')
+            return str_replace(array('/api/','/frontend/','/backend/'), "/$module/", APP_BASE_URL);
+        else 
+            return str_replace(array('.api.','.frontend.','.backend.'), ".$module.", APP_BASE_URL);
+    }
+
+    /**
      * Extract assets inside the phar file
+     * @static
      * @param  string $assets_uri The phar assets phar as URI, not absolute & must end with a slash
      * @param  string $cache_path The app cache path, must end with a slash
      * @param  string $force_extract Forces extraction not validating contents in given cache path
@@ -438,7 +454,7 @@ abstract class AppLoader
         }
         //$app_environment = 'production'; //DEBUG PRODUCTION
 
-        //set environment consts
+        //set environment consts & self vars
         define("APP_ENVIRONMENT", $app_environment);
         define("APP_BASE_URL", $app_base_url);
     }
