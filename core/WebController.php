@@ -151,37 +151,6 @@ abstract class WebController extends Controller
     }
 
     /**
-     * Validate search number & offset parameters
-     * @access protected
-     * @param int $input_num Input number
-     * @param int $input_off Input offset
-     * @param int $max_num Maximun number
-     * @return array
-     */
-    protected function _handleNumberAndOffsetParams($input_num = null, $input_off = null, $max_num = null)
-    {
-        if (!is_null($input_num)) {
-            $number = $input_num;
-            $offset = $input_off;
-
-            if ($number < 0 || !is_numeric($number))
-                $number = 0;
-
-            if ($offset < 0 || !is_numeric($offset))
-                $offset = 1;
-
-            if ((empty($number) && $max_num >= 1) || ($number > $max_num))
-                $number = $max_num;
-        }
-        else {
-            $number = empty($max_num) ? 1 : $max_num;
-            $offset = 0;
-        }
-
-        return array("number" => $number, "offset" => $offset);
-    }
-
-    /**
      * Handle the request params data validating required parameters.
      * Also Check if get/post data is valid, if validation fails send an HTTP code, onSuccess returns a data array.
      * Required field may have a "_" prefix to establish that is just an optional field to be sanitized.
@@ -271,6 +240,37 @@ abstract class WebController extends Controller
             return $send_json ? $this->_sendJsonResponse(400) : false;
         
         return $data;
+    }
+
+    /**
+     * Validate search number & offset parameters
+     * @access protected
+     * @param int $input_num Input number
+     * @param int $input_off Input offset
+     * @param int $max_num Maximun number
+     * @return array
+     */
+    protected function _handleNumberAndOffsetParams($input_num = null, $input_off = null, $max_num = null)
+    {
+        if (!is_null($input_num)) {
+            $number = $input_num;
+            $offset = $input_off;
+
+            if ($number < 0 || !is_numeric($number))
+                $number = 0;
+
+            if ($offset < 0 || !is_numeric($offset))
+                $offset = 1;
+
+            if ((empty($number) && $max_num >= 1) || ($number > $max_num))
+                $number = $max_num;
+        }
+        else {
+            $number = empty($max_num) ? 1 : $max_num;
+            $offset = 0;
+        }
+
+        return array("number" => $number, "offset" => $offset);
     }
 
     /**
@@ -422,59 +422,6 @@ abstract class WebController extends Controller
     }
 
     /**
-     * Load Javascript files in Core Collection
-     * @access protected
-     * @param array $files CSS Files to be loaded
-     * @param string $collection Name of the collection
-     */
-    protected function _loadCssFiles($files = array(), $collection = "css_view")
-    {
-        if (empty($files))
-            return;
-
-        //loop through CSS files
-        foreach ($files as $file) {
-            //check for mobile prefix
-            if (!$this->client->isMobile && $file[0] === "@")
-                continue;
-            else
-                $file = str_replace("@", "", $file);
-
-            $this->assets->collection($collection)->addCss("css/$file");
-        }
-    }
-
-    /**
-     * Load Javascript files in Core Collection
-     * @access protected
-     * @param array $files JS Files to be loaded
-     * @param string $collection Name of the collection
-     */
-    protected function _loadJavascriptFiles($files = array(), $collection = "js_view")
-    {
-        if (empty($files))
-            return;
-
-        //loop through JS files
-        foreach ($files as $file) {
-            //check for mobile prefix
-            if (!$this->client->isMobile && $file[0] === "@")
-                continue;
-            else
-                $file = str_replace("@", "", $file);
-
-            //has dynamic params? (for example file_name.{property}.js, useful for js lang files)
-            if (preg_match("/^(.{1,})\\{([a-z]{1,})\\}(.{1,})$/", $file, $regex)) {
-                //lang case
-                if ($regex[2] === "lang")
-                    $file = $regex[1] . $this->client->lang . $regex[3];
-            }
-
-            $this->assets->collection($collection)->addCss("js/$file");
-        }
-    }
-
-    /**
      * Loads app assets, files are located in each module config file
      * @access protected
      */
@@ -562,26 +509,6 @@ abstract class WebController extends Controller
     }
 
     /**
-     * Set javascript vars for rendering view, call child method for customization.
-     * @access private
-     */
-    private function _setAppJavascriptObjectForView()
-    {
-        //set javascript global objects
-        $app_js = new \stdClass();
-        $app_js->name    = $this->config->app->name;
-        $app_js->baseUrl = APP_BASE_URL;
-        $app_js->dev     = (APP_ENVIRONMENT == 'production') ? 1 : 0;
-
-        //set custom properties
-        $this->setAppJavascriptProperties($app_js);
-
-        //send javascript vars to view as JSON enconded
-        $this->view->setVar("app_js", json_encode($app_js, JSON_UNESCAPED_SLASHES)); 
-        $this->view->setVar("client_js", json_encode($this->client, JSON_UNESCAPED_SLASHES)); 
-    }
-
-    /**
      * Extends client session data
      * @access private
      */
@@ -611,6 +538,79 @@ abstract class WebController extends Controller
         $sent_token = $this->request->getPost($this->client->tokenKey);
 
         return ($session_token === $sent_token) ? true : false;
+    }
+
+    /**
+     * Set javascript vars for rendering view, call child method for customization.
+     * @access private
+     */
+    private function _setAppJavascriptObjectForView()
+    {
+        //set javascript global objects
+        $app_js = new \stdClass();
+        $app_js->name    = $this->config->app->name;
+        $app_js->baseUrl = APP_BASE_URL;
+        $app_js->dev     = (APP_ENVIRONMENT == 'production') ? 1 : 0;
+
+        //set custom properties
+        $this->setAppJavascriptProperties($app_js);
+
+        //send javascript vars to view as JSON enconded
+        $this->view->setVar("app_js", json_encode($app_js, JSON_UNESCAPED_SLASHES)); 
+        $this->view->setVar("client_js", json_encode($this->client, JSON_UNESCAPED_SLASHES)); 
+    }
+
+    /**
+     * Load Javascript files in Core Collection
+     * @access private
+     * @param array $files CSS Files to be loaded
+     * @param string $collection Name of the collection
+     */
+    private function _loadCssFiles($files = array(), $collection = "css_view")
+    {
+        if (empty($files))
+            return;
+
+        //loop through CSS files
+        foreach ($files as $file) {
+            //check for mobile prefix
+            if (!$this->client->isMobile && $file[0] === "@")
+                continue;
+            else
+                $file = str_replace("@", "", $file);
+
+            $this->assets->collection($collection)->addCss("css/$file");
+        }
+    }
+
+    /**
+     * Load Javascript files in Core Collection
+     * @access private
+     * @param array $files JS Files to be loaded
+     * @param string $collection Name of the collection
+     */
+    private function _loadJavascriptFiles($files = array(), $collection = "js_view")
+    {
+        if (empty($files))
+            return;
+
+        //loop through JS files
+        foreach ($files as $file) {
+            //check for mobile prefix
+            if (!$this->client->isMobile && $file[0] === "@")
+                continue;
+            else
+                $file = str_replace("@", "", $file);
+
+            //has dynamic params? (for example file_name.{property}.js, useful for js lang files)
+            if (preg_match("/^(.{1,})\\{([a-z]{1,})\\}(.{1,})$/", $file, $regex)) {
+                //lang case
+                if ($regex[2] === "lang")
+                    $file = $regex[1] . $this->client->lang . $regex[3];
+            }
+
+            $this->assets->collection($collection)->addCss("js/$file");
+        }
     }
 
     /**
