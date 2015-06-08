@@ -196,7 +196,6 @@ abstract class AppLoader
     /**
      * Get a module URL from current environment
      * @static
-     * @param  string $base_url The base url
      * @param  string $module The module name
      * @return string
      */
@@ -272,12 +271,10 @@ abstract class AppLoader
             $this->app_props['langs'] = $this->modules_langs[$this->module];
         }
 
-        //set local backend upload uri
-        if(isset($this->app_props['localBackendUploadsUri']) && $this->module == "api") {
-            $placeholders = array("api", "public/");
-            $new_values   = array("backend", "");
-            $uri = APP_BASE_URL . $this->app_props['localBackendUploadsUri'];
-            $this->app_props['localBackendUploadsUri'] = str_replace($placeholders, $new_values, $uri);
+        //set local shared resourced path, setting is an array where index 0 => module_name & 1 => the uri
+        if(isset($this->app_props['sharedResourcesUri'])) {
+            $props = $this->app_props['sharedResourcesUri'];
+            $this->app_props['sharedResourcesUri'] = $this->getModuleEnviromentURL($props[0]).$props[1];
         }
 
         //set environment dynamic props

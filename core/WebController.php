@@ -604,7 +604,7 @@ abstract class WebController extends Controller
         $app_js = new \stdClass();
         $app_js->name    = $this->config->app->name;
         $app_js->baseUrl = APP_BASE_URL;
-        $app_js->dev     = (APP_ENVIRONMENT == 'production') ? 1 : 0;
+        $app_js->dev     = (APP_ENVIRONMENT == 'production') ? 0 : 1;
 
         //set custom properties
         $this->setAppJavascriptProperties($app_js);
