@@ -453,6 +453,60 @@ abstract class WebController extends Controller
         ), self::ASSETS_MIN_FOLDER_PATH, $this->config->app->deploy_version);
     }
 
+
+    /**
+     * Load Javascript files in Core Collection
+     * @access protected
+     * @param array $files CSS Files to be loaded
+     * @param string $collection Name of the collection
+     */
+    protected function _loadCssFiles($files = array(), $collection = "css_view")
+    {
+        if (empty($files))
+            return;
+
+        //loop through CSS files
+        foreach ($files as $file) {
+            //check for mobile prefix
+            if (!$this->client->isMobile && $file[0] === "@")
+                continue;
+            else
+                $file = str_replace("@", "", $file);
+
+            $this->assets->collection($collection)->addCss("css/$file");
+        }
+    }
+
+    /**
+     * Load Javascript files in Core Collection
+     * @access protected
+     * @param array $files JS Files to be loaded
+     * @param string $collection Name of the collection
+     */
+    protected function _loadJavascriptFiles($files = array(), $collection = "js_view")
+    {
+        if (empty($files))
+            return;
+
+        //loop through JS files
+        foreach ($files as $file) {
+            //check for mobile prefix
+            if (!$this->client->isMobile && $file[0] === "@")
+                continue;
+            else
+                $file = str_replace("@", "", $file);
+
+            //has dynamic params? (for example file_name.{property}.js, useful for js lang files)
+            if (preg_match("/^(.{1,})\\{([a-z]{1,})\\}(.{1,})$/", $file, $regex)) {
+                //lang case
+                if ($regex[2] === "lang")
+                    $file = $regex[1] . $this->client->lang . $regex[3];
+            }
+
+            $this->assets->collection($collection)->addCss("js/$file");
+        }
+    }
+
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
@@ -558,59 +612,6 @@ abstract class WebController extends Controller
         //send javascript vars to view as JSON enconded
         $this->view->setVar("app_js", json_encode($app_js, JSON_UNESCAPED_SLASHES)); 
         $this->view->setVar("client_js", json_encode($this->client, JSON_UNESCAPED_SLASHES)); 
-    }
-
-    /**
-     * Load Javascript files in Core Collection
-     * @access private
-     * @param array $files CSS Files to be loaded
-     * @param string $collection Name of the collection
-     */
-    private function _loadCssFiles($files = array(), $collection = "css_view")
-    {
-        if (empty($files))
-            return;
-
-        //loop through CSS files
-        foreach ($files as $file) {
-            //check for mobile prefix
-            if (!$this->client->isMobile && $file[0] === "@")
-                continue;
-            else
-                $file = str_replace("@", "", $file);
-
-            $this->assets->collection($collection)->addCss("css/$file");
-        }
-    }
-
-    /**
-     * Load Javascript files in Core Collection
-     * @access private
-     * @param array $files JS Files to be loaded
-     * @param string $collection Name of the collection
-     */
-    private function _loadJavascriptFiles($files = array(), $collection = "js_view")
-    {
-        if (empty($files))
-            return;
-
-        //loop through JS files
-        foreach ($files as $file) {
-            //check for mobile prefix
-            if (!$this->client->isMobile && $file[0] === "@")
-                continue;
-            else
-                $file = str_replace("@", "", $file);
-
-            //has dynamic params? (for example file_name.{property}.js, useful for js lang files)
-            if (preg_match("/^(.{1,})\\{([a-z]{1,})\\}(.{1,})$/", $file, $regex)) {
-                //lang case
-                if ($regex[2] === "lang")
-                    $file = $regex[1] . $this->client->lang . $regex[3];
-            }
-
-            $this->assets->collection($collection)->addCss("js/$file");
-        }
     }
 
     /**
