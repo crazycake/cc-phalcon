@@ -8,17 +8,23 @@
 namespace CrazyCake\Core;
 
 //imports
-use Phalcon\Mvc\Controller;     //Phalcon Controller
-use Phalcon\Exception;
+use Phalcon\Mvc\Controller;         //Phalcon Controller
+use Phalcon\Exception;              //Phalcon Exception
+//phalcon imports
+use Phalcon\Assets\Filters\Cssmin;  //CSS resources minification
+use Phalcon\Assets\Filters\Jsmin;   //JS resources minification
 //CrazyCake Utils
 use CrazyCake\Utils\UserAgent;  //User Agent identifier
 
 abstract class WebController extends Controller
 {
+    /* consts */
+    const ASSETS_MIN_FOLDER_PATH = 'uploads/assets/';
+
     /**
      * child required methods
      */
-    abstract protected function loadAppAssets();
+    abstract protected function setAppJavascriptProperties($obj);
     abstract protected function checkBrowserSupport();
     abstract protected function sendAsyncRequest();
 
@@ -58,11 +64,6 @@ abstract class WebController extends Controller
             //Set App common vars
             $this->view->setVar("app", $this->config->app); //app configuration vars
             $this->view->setVar("client", $this->client);   //client object
-            $this->view->setVar("url", $this->url);         //URL service object
-
-            //CSRF, dont regenerate tokens for AJAX request
-            $this->view->setVar("csrf_key", $this->client->tokenKey);
-            $this->view->setVar("csrf_token", $this->client->token);
         }
     }
     /** ---------------------------------------------------------------------------------------------------------------
@@ -72,10 +73,12 @@ abstract class WebController extends Controller
     {
         //for non-ajax only
         if (!$this->request->isAjax()) {
-            //load app assets (child method)
-            $this->loadAppAssets();
-            //extend session data
+            //extend session data, last visited uri must be set here in afterExecuteRoute
             $this->_extendsClientSessionData();
+            //load app assets
+            $this->_loadAppAssets();
+            //set javascript vars in view
+            $this->_setAppJavascriptObjectForView();
         }
     }
     /* --------------------------------------------------- § -------------------------------------------------------- */
@@ -379,7 +382,7 @@ abstract class WebController extends Controller
             throw new Exception("WebController::_sendAsyncMailMessage -> method param is required.");
 
         if($as_action) {
-            
+
             if(is_array($data))
                 $data = json_encode($data);
 
@@ -420,11 +423,11 @@ abstract class WebController extends Controller
 
     /**
      * Load Javascript files in Core Collection
-     * @access public
+     * @access protected
      * @param array $files CSS Files to be loaded
      * @param string $collection Name of the collection
      */
-    public function _loadCssFiles($files = array(), $collection = "css_view")
+    protected function _loadCssFiles($files = array(), $collection = "css_view")
     {
         if (empty($files))
             return;
@@ -443,11 +446,11 @@ abstract class WebController extends Controller
 
     /**
      * Load Javascript files in Core Collection
-     * @access public
+     * @access protected
      * @param array $files JS Files to be loaded
      * @param string $collection Name of the collection
      */
-    public function _loadJavascriptFiles($files = array(), $collection = "js_view")
+    protected function _loadJavascriptFiles($files = array(), $collection = "js_view")
     {
         if (empty($files))
             return;
@@ -469,6 +472,38 @@ abstract class WebController extends Controller
 
             $this->assets->collection($collection)->addCss("js/$file");
         }
+    }
+
+    /**
+     * Loads app assets, files are located in each module config file
+     * @access protected
+     */
+    protected function _loadAppAssets()
+    {
+        //CSS Head files, already minified
+        $this->_loadCssFiles($this->config->app->cssHead, 'css_head');
+
+        //check specials cases for legacy js files
+        if($this->router->getControllerName() == "errors") {
+            $this->_loadJavascriptFiles($this->config->app->jsHead, 'js_head');
+            $this->_loadJavascriptFiles($this->config->app->jsLegacy, 'js_core');
+            return;
+        }
+
+        //CSS core files (plugins)
+        $this->_loadCssFiles($this->config->app->cssCore, 'css_core');
+        //JS files loaded in head tag (already minified)
+        $this->_loadJavascriptFiles($this->config->app->jsHead, 'js_head');
+        //load JS Core Files (loads at bottom of page)
+        $this->_loadJavascriptFiles($this->config->app->jsCore, 'js_core');
+        //minify collections
+        $this->_minifyAssetsCollections(array(
+            "css_core",
+            "css_view",
+            "js_core",
+            "js_view",
+            "js_dom"
+        ), self::ASSETS_MIN_FOLDER_PATH, $this->config->app->deploy_version);
     }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
@@ -500,20 +535,19 @@ abstract class WebController extends Controller
 
         //create a client object
         $this->client           = new \stdClass();
-        $this->client->ua       = $this->request->getUserAgent();
         $this->client->lang     = $this->translate->getLanguage();
         $this->client->tokenKey = $this->security->getTokenKey();  //CSRF token key
         $this->client->token    = $this->security->getToken();     //CSRF token
 
         //parse user agent
-        $userAgent = new UserAgent($this->request->getUserAgent($this->client->ua));
+        $userAgent = new UserAgent($this->request->getUserAgent());
         $userAgent = $userAgent->parseUserAgent();
         //set properties
         $this->client->platform      = $userAgent['platform'];
         $this->client->browser       = $userAgent['browser'];
         $this->client->version       = $userAgent['version'];
         $this->client->short_version = $userAgent['short_version'];
-        $this->client->isMobile      = $userAgent['mobile'];
+        $this->client->isMobile      = $userAgent['is_mobile'];
         //set vars to distinguish pecific platforms
         $this->client->isIE = ($this->client->browser == "MSIE") ? true : false;
         //set legacy property
@@ -528,7 +562,27 @@ abstract class WebController extends Controller
     }
 
     /**
-     * Extends client session data to set custom app properties
+     * Set javascript vars for rendering view, call child method for customization.
+     * @access private
+     */
+    private function _setAppJavascriptObjectForView()
+    {
+        //set javascript global objects
+        $app_js = new \stdClass();
+        $app_js->name    = $this->config->app->name;
+        $app_js->baseUrl = APP_BASE_URL;
+        $app_js->dev     = (APP_ENVIRONMENT == 'production') ? 1 : 0;
+
+        //set custom properties
+        $this->setAppJavascriptProperties($app_js);
+
+        //send javascript vars to view as JSON enconded
+        $this->view->setVar("app_js", json_encode($app_js, JSON_UNESCAPED_SLASHES)); 
+        $this->view->setVar("client_js", json_encode($this->client, JSON_UNESCAPED_SLASHES)); 
+    }
+
+    /**
+     * Extends client session data
      * @access private
      */
     private function _extendsClientSessionData()
@@ -557,5 +611,52 @@ abstract class WebController extends Controller
         $sent_token = $this->request->getPost($this->client->tokenKey);
 
         return ($session_token === $sent_token) ? true : false;
+    }
+
+    /**
+     * Minify Assets collections for view output
+     * @access private
+     * @param array $collections Phalcon Assets collections
+     * @param string $cache_path The cache path
+     */
+    private function _minifyAssetsCollections($collections = array(), $cache_path = null, $deploy_version = "0.1")
+    {
+        if (empty($collections) || empty($cache_path))
+            return;
+
+        //loop through collections
+        foreach ($collections as $cname) {
+            $collection_exists = true;
+            //handle exceptions
+            try {
+                $this->assets->get($cname);
+            }
+            catch (\Exception $e) {
+                $collection_exists = false;
+            }
+            //check collection exists
+            if (!$collection_exists)
+                continue;
+
+            $props = explode("_", $cname);
+            $fname = $props[1].".".$props[0];
+            $path  = PUBLIC_PATH.$cache_path.$fname;
+            $uri   = $cache_path."$fname?v=".$deploy_version;
+            //minify assets
+            $this->assets
+                ->collection($cname)
+                ->setTargetPath($path)
+                ->setTargetUri($uri)
+                ->join(true)
+                ->addFilter(($props[0] == "css" ? new Cssmin() : new Jsmin()));
+
+            //for js_dom, generate file & supress output (echo calls)
+            if ($cname == "js_dom") {
+                ob_start();
+                $this->assets->outputJs($cname);
+                ob_end_clean();
+                $this->assets->js_dom = file_get_contents($path);
+            }
+        }
     }
 }
