@@ -1,15 +1,16 @@
 CrazyCake Phalcon Libraries
 ===========================
 
-- PhalconPHP Version: 2.0.0
+- PhalconPHP Version: `2.x`
 
 Packages
-__________
-
-- Core
-- Utils
-- QR
-- Transbank
+--------
+- phalcon
+- core
+- utils
+- models
+- qr
+- transbank
 
 Box Project
 -----------
