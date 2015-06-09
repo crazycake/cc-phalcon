@@ -51,6 +51,7 @@ trait SesTrait
 
 	/**
      * Generates a new HTML styled with inline CSS as style attribute
+     * DI dependency injector must have simpleView service
      * @param string $mail The mail template
      * @param array $data The view data
      * @return string

@@ -19,7 +19,7 @@ class BaseModel extends \Phalcon\Mvc\Model
 
     /**
      * Find Object by ID
-     * @param int $id
+     * @param int $id the object ID
      * @return Object
      */
     public static function getObjectById($id)
