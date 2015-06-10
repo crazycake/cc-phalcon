@@ -161,5 +161,18 @@ abstract class BaseUsersModel extends BaseModel
         $conditions = implode(" AND ", $conditions);
 
         return self::findFirst( array("conditions" => $conditions) );
-    }   
+    }
+
+    /**
+     * Validates if a namespace exists
+     * @static
+     * @param string $namespace
+     * @return boolean
+     */
+    public static function validateNamespaceExists($namespace = "")
+    {
+        $user = Users::findFirst("namespace = '".$namespace."'");
+
+        return $user ? true : false;
+    } 
 }
