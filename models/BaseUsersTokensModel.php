@@ -1,0 +1,153 @@
+<?php
+/**
+ * Base Users Tokens Model
+ * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
+ */
+
+namespace CrazyCake\Models;
+
+//imports
+use Phalcon\Mvc\Model\Validator\InclusionIn;
+//other imports
+use CrazyCake\Utils\DateHelper;
+
+abstract class BaseUsersTokensModel extends BaseModel
+{
+    //this static method can be 'overrided' as late binding
+    public static $TOKEN_EXPIRES_THRESHOLD = 2; //days
+
+    /* properties */
+    
+    /**
+     * @var int
+     */
+    public $user_id;
+
+    /**
+     * @var string
+     */
+    public $token;
+
+    /**
+     * @var string
+     */
+    public $type;
+
+    /**
+     * @var string
+     */
+    public $created_at;
+
+    /* inclusion vars */
+
+    /**
+     * @var array
+     */
+    static $TOKEN_TYPES = array('activation', 'pass');
+
+    /** -------------------------------------------- § ------------------------------------------------- 
+        Init
+    ------------------------------------------------------------------------------------------------- **/
+    public function initialize()
+    {
+        //Skips fields/columns on both INSERT/UPDATE operations
+        $this->skipAttributes(array('created_at'));
+    }
+    /** -------------------------------------------------------------------------------------------------
+        Validations
+    ------------------------------------------------------------------------------------------------- **/
+    public function validation()
+    {        
+        //type
+        $this->validate(new InclusionIn(array(
+            "field"   => "type",
+            "domain"  => self::$TOKEN_TYPES,
+            "message" => 'Invalid token type. Types supported: '.implode(", ", self::$TOKEN_TYPES)
+        )));
+
+        //check validations
+        if ($this->validationHasFailed() == true)
+            return false;
+    }
+    /** ------------------------------------------- § ------------------------------------------------ **/
+
+    /**
+     * Find Token By User and Value (make sure record exists)
+     * @static
+     * @param int $user_id
+     * @param string $token
+     * @param string $type
+     * @return UsersTokens
+     */
+    public static function getTokenByUserAndValue($user_id, $token, $type = 'activation')
+    {
+        $conditions = "user_id = ?1 AND token = ?2 AND type = ?3";
+        $parameters = array(1 => $user_id, 2 => $token, 3 => $type);
+
+        return self::findFirst( array($conditions, "bind" => $parameters) );
+    }
+
+    /**
+     * Find Token By User and Token Type
+     * @static
+     * @param int $user_id
+     * @param string $type
+     * @return UsersTokens
+     */
+    public static function getTokenByUserAndType($user_id, $type = 'activation')
+    {
+        $conditions = "user_id = ?1 AND type = ?2";
+        $parameters = array(1 => $user_id, 2 => $type);
+
+        return self::findFirst( array($conditions, "bind" => $parameters) );
+    }
+
+    /**
+     * Saves a new ORM object
+     * @static
+     * @param int $user_id
+     * @param string $type
+     * @return mixed
+     */
+    public static function saveNewToken($user_id, $type = 'activation')
+    {
+        //Save a new temporal token
+        $class = static::who();
+        $token = new $class();
+        $token->user_id = $user_id;     
+        $token->token   = uniqid();  //creates a 13 len token  
+        $token->type    = $type;
+
+        if( $token->save() )
+            return $token;
+        else
+            return false;
+    }
+
+    /**
+     * Check token date and generate a new user token if expired, returns a token object
+     * @param int $user_id
+     * @param string $type
+     * @return string
+     */
+    public static function generateNewTokenIfExpired($user_id, $type)
+    {
+        //search if a token already exists and delete it.
+        $token = self::getTokenByUserAndType($user_id, $type);
+        if ($token) {
+            //check token 'days passed'
+            $days_passed = DateHelper::getTimePassedFromDate($token->created_at);
+
+            if ($days_passed > static::$TOKEN_EXPIRES_THRESHOLD) {
+                //if token has expired delete it and generate a new one
+                $token->delete();
+                $token = self::saveNewToken($user_id, $type);
+            }
+        }
+        else {
+            $token = self::saveNewToken($user_id, $type);
+        }
+
+        return $token;
+    }
+}

@@ -18,6 +18,15 @@ class BaseModel extends \Phalcon\Mvc\Model
     /** ------------------------------------------ § ------------------------------------------------- **/
 
     /**
+     * late static binding
+     * @link http://php.net/manual/en/language.oop5.late-static-bindings.php
+     * @return string
+     */
+    public static function who() {
+        return __CLASS__;
+    }
+
+    /**
      * Find Object by ID
      * @param int $id the object ID
      * @return Object

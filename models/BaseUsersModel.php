@@ -1,6 +1,6 @@
 <?php
 /**
- * Base User Model
+ * Base Users Model
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
@@ -11,7 +11,7 @@ use Phalcon\Mvc\Model\Validator\Email;
 use Phalcon\Mvc\Model\Validator\InclusionIn;
 use Phalcon\Mvc\Model\Validator\Uniqueness;
 
-abstract class BaseUserModel extends BaseModel
+abstract class BaseUsersModel extends BaseModel
 {
     /**
      * child required methods
