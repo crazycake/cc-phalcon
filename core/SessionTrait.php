@@ -152,32 +152,37 @@ trait SessionTrait
 
     /**
      * Add a new custom object to user session
-     * @param string $key The key name of the object
-     * @param string $obj The object
-     * @param string $id_property The ID keyholder of the object
+     * @param string $key The key name of the session (required)
+     * @param string $obj The object (required)
+     * @param string $index The index of the array (optional)
      * @return boolean
      */
-    protected function _addSessionObject($key = 'custom', $obj = null, $id_property = 'id')
+    protected function _addSessionObject($key = 'session_objects', $obj = null, $index = null)
     {
         if(is_null($obj))
             return false;
 
-        //set user-event data
+        //get array stored in session
         $objects = array();
         if ($this->session->has($key))
             $objects = $this->session->get($key);
 
-        //set as key value
-        $objects[$id_property] = $obj;
+        //push object to array
+        if(is_null($index))
+            array_push($objects, $obj);
+        else
+            $objects[$index] = $obj;
         //save in session
         $this->session->set($key, $objects);
+        return true;
     }
 
     /**
      * Get custom objects stored in session
-     * @param string $key The key name of the object
+     * @param string $key The key name of the session
+     * @return mixed[boolean|array]
      */
-    protected function _getSessionObjects($key)
+    protected function _getSessionObjects($key = 'session_objects')
     {
         if (!$this->session->has($key))
             return false;
@@ -187,29 +192,35 @@ trait SessionTrait
 
     /**
      * Removes custom session object
-     * @param string $key The key name of the object
-     * @param string $id_property The ID keyholder of the object
+     * @param string $key The key name of the session
+     * @param string $index The index in array to be removed
+     * @return boolean
      */
-    protected function _removeSessionObject($key = 'custom', $id_property = 'id')
+    protected function _removeSessionObject($key = 'session_objects', $index = null)
     {
-        if (!$this->session->has($key))
-            return;
+        if (!$this->session->has($key) || is_null($index))
+            return false;
 
         $objects = $this->_getSessionObjects($key);
         //unset
-        unset($objects[$id_property]);
+        unset($objects[$index]);
         //save again in session
         $this->session->set($key, $objects);
+        return true;
     }
 
     /**
      * Destroy session custom objects stored in session
+     * @param string $key The key name of the session
      */
-    protected function _destroySessionObjects($key)
+    protected function _destroySessionObjects($key = 'session_objects')
     {
-        //unset data
-        if ($this->session->has($key))
-            $this->session->remove($key);
+        //check if data exists
+        if (!$this->session->has($key))
+            return false;
+
+        $this->session->remove($key);
+        return true;
     }
 
     /**
