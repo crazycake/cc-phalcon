@@ -47,9 +47,6 @@ trait AccountPassTrait
      */
     public function newAction($encrypted_data = null)
     {
-        //if user is already loggedIn redirect
-        $this->_redirectToProfileControllerIfLoggedIn();
-
         //get decrypted data
         try {
             //handle the encrypted data with parent controller

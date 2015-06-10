@@ -65,7 +65,7 @@ trait AccountAuthTrait
         $this->view->setVar("html_title", $this->accountConfig['text_title_sign_up']);
         
         //send birthday data for form
-        if(isset($this->accountConfig['birthday_enabled']) && $this->accountConfig['birthday_enabled'])
+        if(isset($this->accountConfig['birthday_form_fields']) && $this->accountConfig['birthday_form_fields'])
             $this->view->setVar("bday_elements", $this->__getBirthdaySelectors());
 
         //call abstract method
