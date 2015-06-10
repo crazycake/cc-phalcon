@@ -14,7 +14,7 @@ use CrazyCake\Utils\DateHelper;
 trait SessionTrait
 {
 	/**
-     * child required methods
+     * abstract required methods
      */
     abstract protected function getUserSessionData($session);
     abstract protected function setUserSessionAsLoggedIn($user);
@@ -69,7 +69,7 @@ trait SessionTrait
         if (!$user)
             return;
 
-        //call child method
+        //call abstract method
         $user_data = $this->setUserSessionAsLoggedIn($user);
 
         if(empty($user_data))
@@ -96,7 +96,7 @@ trait SessionTrait
         //get user session
         $user_session = $this->session->get("user");
 
-        //call child method
+        //call abstract method
         $new_session = $this->getUserSessionData($user_session);
 
         //save again session?
@@ -149,8 +149,8 @@ trait SessionTrait
         if ($this->session->has("user"))
             $this->session->remove("user");
 
-        //redirect to login
-        $this->_redirectToLogin();
+        //redirect to given url, login as default
+        $this->_redirectTo($uri);
     }
 
     /**

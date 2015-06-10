@@ -16,7 +16,7 @@ use Mandrill;
 trait SesTrait
 {
 	/**
-     * child required methods
+     * abstract required methods
      */
     abstract public function setConfigurations();
 
@@ -25,10 +25,10 @@ trait SesTrait
     public static $URI_SET_NEW_PASSWORD   = 'password/new/';
 
 	/**
-	 * Config var for SES
+	 * Config var
 	 * @var array
 	 */
-	public $ses;
+	public $sesConfig;
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
@@ -45,12 +45,17 @@ trait SesTrait
     		return false;
 
         //set message properties
-        $subject = "Contacto ".$this->ses['appName'];
-        $to      = $this->ses['contactEmail'];
+        $subject = "Contacto ".$this->sesConfig['appName'];
+        $to      = $this->sesConfig['contactEmail'];
         $tags    = array('contact');
 
+        //add prefix to array
+        $view_data = array_combine( array_map(function($k) { return 'data_'.$k; }, array_keys($message_data)), $message_data);
+
+        print_r($view_data);exit;
+
         //get HTML
-        $html_raw = $this->_getInlineStyledHtml("contact", $message_data);
+        $html_raw = $this->_getInlineStyledHtml("contact", $view_data);
 
         //sends async email
         return $this->_sendMessage($html_raw, $subject, $to, $tags);
@@ -72,14 +77,14 @@ trait SesTrait
             $this->_sendJsonResponse(403);
 
         //get user token
-        $token_class = $this->getModuleClassName('users_tokens');
-        $token = $token_class::generateNewTokenIfExpired($user_id, 'activation');
+        $tokens_class = $this->getModuleClassName('users_tokens');
+        $token = $tokens_class::generateNewTokenIfExpired($user_id, 'activation');
         if (!$token) {
             $this->_sendJsonResponse(500);
         }
 
         //set message properties
-        $subject = $this->ses['subjectActivationAccount'];
+        $subject = $this->sesConfig['subjectActivationAccount'];
         $to      = $user->email;
         $tags    = array('account', 'activation');
 
@@ -87,10 +92,10 @@ trait SesTrait
         $encrypted_data = $this->cryptify->encryptForGetRequest($token->user_id . "#" . $token->type . "#" . $token->token);
 
         //set rendered view
-        $this->message_data["user"] = $user;
-        $this->message_data["url"]  = $this->_baseUrl(self::$URI_ACCOUNT_ACTIVATION.$encrypted_data);
+        $this->sesConfig["data_user"] = $user;
+        $this->sesConfig["data_url"]  = $this->_baseUrl(self::$URI_ACCOUNT_ACTIVATION.$encrypted_data);
         //get HTML
-        $html_raw = $this->_getInlineStyledHtml("activation", $this->message_data);
+        $html_raw = $this->_getInlineStyledHtml("activation", $this->sesConfig);
 
         //sends async email
         return $this->_sendMessage($html_raw, $subject, $to, $tags);
@@ -113,25 +118,25 @@ trait SesTrait
             $this->_sendJsonResponse(403);
 
         //get user token
-        $token_class = $this->getModuleClassName('users_tokens');
-        $token = $token_class::generateNewTokenIfExpired($user_id, 'pass');
+        $tokens_class = $this->getModuleClassName('users_tokens');
+        $token = $tokens_class::generateNewTokenIfExpired($user_id, 'pass');
         if (!$token) {
             $this->_sendJsonResponse(500);
         }
 
         //set message properties
-        $subject = $this->ses['subjectPasswordRecovery'];
+        $subject = $this->sesConfig['subjectPasswordRecovery'];
         $to      = $user->email;
         $tags    = array('account', 'password', 'recovery');
 
         //set link url
         $encrypted_data = $this->cryptify->encryptForGetRequest($token->user_id . "#" . $token->type . "#" . $token->token);
         //set rendered view
-        $this->message_data["user"] = $user;
-        $this->message_data["url"]  = $this->_baseUrl(self::$URI_SET_NEW_PASSWORD.$encrypted_data);
-        $this->message_data["token_expiration"] = $token_class::$TOKEN_EXPIRES_THRESHOLD;
+        $this->sesConfig["data_user"] = $user;
+        $this->sesConfig["data_url"]  = $this->_baseUrl(self::$URI_SET_NEW_PASSWORD.$encrypted_data);
+        $this->sesConfig["data_token_expiration"] = $tokens_class::$TOKEN_EXPIRES_THRESHOLD;
         //get HTML
-        $html_raw = $this->_getInlineStyledHtml("passwordRecovery", $this->message_data);
+        $html_raw = $this->_getInlineStyledHtml("passwordRecovery", $this->sesConfig);
 
         //sends async email
         return $this->_sendMessage($html_raw, $subject, $to, $tags);
@@ -150,7 +155,7 @@ trait SesTrait
 
         //get the style file
         $html = $this->simpleView->render("mails/$mail", $data);
-        $css  = file_get_contents($this->ses['cssFile']);
+        $css  = file_get_contents($this->sesConfig['cssFile']);
 
         $emogrifier = new Emogrifier($html, $css);
         $html       = $emogrifier->emogrify();
@@ -188,14 +193,14 @@ trait SesTrait
 
         //set default subject
         if (empty($subject))
-            $subject = $this->ses['appName'];
+            $subject = $this->sesConfig['appName'];
 
         //Send message email!
         $message = array(
             'html'       => $html_raw,
             'subject'    => $subject,
-            'from_email' => $this->ses['senderEmail'],
-            'from_name'  => $this->ses['appName'],
+            'from_email' => $this->sesConfig['senderEmail'],
+            'from_name'  => $this->sesConfig['appName'],
             'to'         => $to,
             'tags'       => $tags
             //'inline_css' => true //same as __getInlineStyledHtml method. (generates more delay time)
@@ -210,7 +215,7 @@ trait SesTrait
 
         try {
         	//mandrill lib instance
-        	$mandrill = new Mandrill($this->ses['mandrillKey']);
+        	$mandrill = new Mandrill($this->sesConfig['mandrillKey']);
             $response = $mandrill->messages->send($message, $async);
         }
         catch (Mandrill_Error $e) {
@@ -229,10 +234,10 @@ trait SesTrait
      */
     private function _checkConfigurations()
     {
-        if (!isset($this->ses['appName']) || !isset($this->ses['mandrillKey']) || !isset($this->ses['cssFile']))
+        if (!isset($this->sesConfig['appName']) || !isset($this->sesConfig['mandrillKey']) || !isset($this->sesConfig['cssFile']))
             throw new \Exception("SesTrait::_checkConfigurations -> SES configuration properties are not defined. (appName, mandrillKey, cssFile)");
 
-        if (!isset($this->ses['senderEmail']) || !isset($this->ses['contactEmail']))
+        if (!isset($this->sesConfig['senderEmail']) || !isset($this->sesConfig['contactEmail']))
         	throw new \Exception("SesTrait::_checkConfigurations -> SES sender & contact emails are not defined.");
     }
 }

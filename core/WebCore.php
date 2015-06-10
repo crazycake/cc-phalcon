@@ -22,7 +22,7 @@ abstract class WebCore extends Controller
     const ASSETS_MIN_FOLDER_PATH = 'uploads/assets/';
 
     /**
-     * child required methods
+     * abstract required methods
      */
     abstract protected function getModuleClassName($key);
     abstract protected function setAppJavascriptProperties($obj);
@@ -50,6 +50,8 @@ abstract class WebCore extends Controller
     {
         //set client object with its properties (User-Agent)
         $this->_setClientObject();
+        //set message keys
+        $this->MSG_KEYS = array();
     }
     /** ---------------------------------------------------------------------------------------------------------------
      * Init function,'$this' is the dependency injector reference

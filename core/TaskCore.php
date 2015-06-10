@@ -12,7 +12,7 @@ use Phalcon\CLI\Task;
 abstract class TaskCore extends Task
 {
     /**
-     * child required methods
+     * abstract required methods
      */
     abstract protected function mainAction();
 

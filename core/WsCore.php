@@ -18,7 +18,7 @@ abstract class WsCore extends Controller
     const JSON_RESPONSE_STRUCT = '{"response":{"code":"200","status":"ok","payload":@payload}}';
 
     /**
-     * child required methods
+     * abstract required methods
      */
     abstract protected function welcome();
 
