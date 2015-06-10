@@ -258,42 +258,4 @@ trait SessionTrait
         $this->response->send();
         die();
     }
-
-    /**
-     * Validates user & temp-token data. Input data is encrypted with cryptify lib. Returns decrypted data.
-     * DI dependency injector must have cryptify service
-     * UserTokens must be set in models
-     * @param string $encrypted_data
-     * @param int $expiration_threshold The expiration Threshold number (days)
-     * @throws \Exception
-     * @return array
-     */
-    protected function _handleUserTokenValidation($encrypted_data = null, $expiration_threshold = 2)
-    {
-        if (is_null($encrypted_data))
-            throw new \Exception("sent input null encrypted_data");
-
-        $data = explode("#", $this->cryptify->decryptForGetResponse($encrypted_data));
-
-        //validate data (user_id, token_type and token)
-        if (count($data) != 3)
-            throw new \Exception("decrypted data is not a 2 dimension array.");
-
-        //set vars values
-        list($user_id, $token_type, $token) = $data;
-
-        //search for user and token combination
-        $token = \UsersTokens::getTokenByUserAndValue($user_id, $token, $token_type);
-
-        if (!$token)
-            throw new \Exception("temporal token dont exists.");
-
-        //get days passed
-        $days_passed = DateHelper::getTimePassedFromDate($token->created_at);
-
-        if ($days_passed > $expiration_threshold)
-            throw new \Exception("temporal token (id: " . $token->id . ") has expired (" . $days_passed . " days passed)");
-
-        return $data;
-    }
 }
