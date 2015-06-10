@@ -171,7 +171,7 @@ abstract class BaseUsersModel extends BaseModel
      */
     public static function validateNamespaceExists($namespace = "")
     {
-        $user = Users::findFirst("namespace = '".$namespace."'");
+        $user = self::findFirst("namespace = '".$namespace."'");
 
         return $user ? true : false;
     } 

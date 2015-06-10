@@ -1,7 +1,8 @@
 <?php
 /**
- * Simple Email Service Trait, requires Emogrifier class (composer)
- * Requires a Frontend, Backend or CLI DI services
+ * Session Trait
+ * Requires a Frontend or Backend Module with CoreController
+ * Requires Users models
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 

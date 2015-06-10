@@ -18,9 +18,10 @@ class BaseModel extends \Phalcon\Mvc\Model
     /** ------------------------------------------ § ------------------------------------------------- **/
 
     /**
-     * late static binding
+     * Late static binding
+     * Useful for save ORM actions
      * @link http://php.net/manual/en/language.oop5.late-static-bindings.php
-     * @return string
+     * @return string The current class name
      */
     public static function who() {
         return __CLASS__;

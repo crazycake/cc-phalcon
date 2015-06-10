@@ -1,7 +1,9 @@
 <?php
 /**
- * Simple Email Service Trait, requires Emogrifier class (composer)
- * Requires a Frontend, Backend or CLI DI services
+ * Simple Email Service Trait
+ * Requires Emogrifier & Mandrill class (composer)
+ * Requires a Frontend or Backend Module with CoreController
+ * Requires Users & UserTokens models
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
@@ -18,6 +20,10 @@ trait SesTrait
      */
     abstract public function setConfigurations();
 
+    /* consts */
+    public static $URI_ACCOUNT_ACTIVATION = 'account/activation/';
+    public static $URI_SET_NEW_PASSWORD   = 'password/new/';
+
 	/**
 	 * Config var for SES
 	 * @var array
@@ -25,6 +31,7 @@ trait SesTrait
 	public $ses;
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
+
 	/**
      * Async Handler - Sends contact email (always used)
      * @param array $message_data Must contains keys 'name', 'email' & 'message'
@@ -44,6 +51,83 @@ trait SesTrait
 
         //get HTML
         $html_raw = $this->_getInlineStyledHtml("contact", $message_data);
+
+        //sends async email
+        return $this->_sendMessage($html_raw, $subject, $to, $tags);
+    }
+
+    /**
+     * Async Handler - Sends mail account-checker
+     * Sends an activation message
+     * @param int $user_id
+     * @return json response
+     */
+    public function sendMailForAccountActivation($user_id)
+    {
+        $this->_checkConfigurations();
+
+        $user = \Users::getObjectById($user_id);
+        if (!$user)
+            $this->_sendJsonResponse(403);
+
+        //get user token
+        $token = \UsersTokens::generateNewTokenIfExpired($user_id, 'activation');
+        if (!$token) {
+            $this->_sendJsonResponse(500);
+        }
+
+        //set message properties
+        $subject = $this->ses['subjectActivationAccount'];
+        $to      = $user->email;
+        $tags    = array('account', 'activation');
+
+        //set link url
+        $encrypted_data = $this->cryptify->encryptForGetRequest($token->user_id . "#" . $token->type . "#" . $token->token);
+
+        //set rendered view
+        $this->message_data["user"] = $user;
+        $this->message_data["url"]  = $this->_baseUrl(self::$URI_ACCOUNT_ACTIVATION.$encrypted_data);
+        //get HTML
+        $html_raw = $this->_getInlineStyledHtml("activation", $this->message_data);
+
+        //sends async email
+        return $this->_sendMessage($html_raw, $subject, $to, $tags);
+    }
+
+    /**
+     * Async Handler - Sends mail pass-word recovery
+     * Contiene la logica de generar y enviar un token
+     * @param int $user_id
+     * @return json response
+     */
+    public function sendMailForPasswordRecovery($user_id)
+    {
+        $this->_checkConfigurations();
+
+        $user = \Users::getObjectById($user_id);
+        //if invalid user, send permission denied response
+        if (!$user)
+            $this->_sendJsonResponse(403);
+
+        //get user token
+        $token = \UsersTokens::generateNewTokenIfExpired($user_id, 'pass');
+        if (!$token) {
+            $this->_sendJsonResponse(500);
+        }
+
+        //set message properties
+        $subject = $this->ses['subjectPasswordRecovery'];
+        $to      = $user->email;
+        $tags    = array('account', 'password', 'recovery');
+
+        //set link url
+        $encrypted_data = $this->cryptify->encryptForGetRequest($token->user_id . "#" . $token->type . "#" . $token->token);
+        //set rendered view
+        $this->message_data["user"] = $user;
+        $this->message_data["url"]  = $this->_baseUrl(self::$URI_SET_NEW_PASSWORD.$encrypted_data);
+        $this->message_data["token_expiration"] = \UsersTokens::$TOKEN_EXPIRES_THRESHOLD;
+        //get HTML
+        $html_raw = $this->_getInlineStyledHtml("passwordRecovery", $this->message_data);
 
         //sends async email
         return $this->_sendMessage($html_raw, $subject, $to, $tags);
