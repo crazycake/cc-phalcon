@@ -1,8 +1,8 @@
 <?php
 /**
  * Simple Email Service Trait
- * Requires Emogrifier & Mandrill class (composer)
  * Requires a Frontend or Backend Module with CoreController
+ * Requires Emogrifier & Mandrill class (composer)
  * Requires Users & UserTokens models
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
@@ -66,12 +66,14 @@ trait SesTrait
     {
         $this->_checkConfigurations();
 
-        $user = \Users::getObjectById($user_id);
+        $users_class = $this->getModuleClassName('users');
+        $user = $users_class::getObjectById($user_id);
         if (!$user)
             $this->_sendJsonResponse(403);
 
         //get user token
-        $token = \UsersTokens::generateNewTokenIfExpired($user_id, 'activation');
+        $token_class = $this->getModuleClassName('users_tokens');
+        $token = $token_class::generateNewTokenIfExpired($user_id, 'activation');
         if (!$token) {
             $this->_sendJsonResponse(500);
         }
@@ -104,13 +106,15 @@ trait SesTrait
     {
         $this->_checkConfigurations();
 
-        $user = \Users::getObjectById($user_id);
+        $users_class = $this->getModuleClassName('users');
+        $user = $users_class::getObjectById($user_id);
         //if invalid user, send permission denied response
         if (!$user)
             $this->_sendJsonResponse(403);
 
         //get user token
-        $token = \UsersTokens::generateNewTokenIfExpired($user_id, 'pass');
+        $token_class = $this->getModuleClassName('users_tokens');
+        $token = $token_class::generateNewTokenIfExpired($user_id, 'pass');
         if (!$token) {
             $this->_sendJsonResponse(500);
         }
@@ -125,7 +129,7 @@ trait SesTrait
         //set rendered view
         $this->message_data["user"] = $user;
         $this->message_data["url"]  = $this->_baseUrl(self::$URI_SET_NEW_PASSWORD.$encrypted_data);
-        $this->message_data["token_expiration"] = \UsersTokens::$TOKEN_EXPIRES_THRESHOLD;
+        $this->message_data["token_expiration"] = $token_class::$TOKEN_EXPIRES_THRESHOLD;
         //get HTML
         $html_raw = $this->_getInlineStyledHtml("passwordRecovery", $this->message_data);
 

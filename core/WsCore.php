@@ -11,7 +11,7 @@ namespace CrazyCake\Core;
 use Phalcon\Mvc\Controller; //Phalcon Controller
 use Phalcon\Exception;
 
-abstract class WsController extends Controller
+abstract class WsCore extends Controller
 {
     /* consts */
     const HEADER_API_KEY       = 'X_API_KEY'; //HTTP header keys uses '_' for '-' in Phalcon

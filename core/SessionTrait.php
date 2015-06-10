@@ -2,7 +2,7 @@
 /**
  * Session Trait
  * Requires a Frontend or Backend Module with CoreController
- * Requires Users models
+ * Requires USERS_CLASS var
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
@@ -16,8 +16,8 @@ trait SessionTrait
 	/**
      * child required methods
      */
-    abstract public function getUserSessionData($session);
-    abstract public function setUserSessionAsLoggedIn($user);
+    abstract protected function getUserSessionData($session);
+    abstract protected function setUserSessionAsLoggedIn($user);
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
 	
@@ -49,8 +49,8 @@ trait SessionTrait
         if (!is_array($user_session) || !isset($user_session['id']) || !isset($user_session['auth']))
             return false;
 
-        //make sure user exists (can be ommited)
-        if (\Users::getObjectById($user_session['id']) == false)
+        $users_class = $this->getModuleClassName('users');
+        if ($users_class::getObjectById($user_session['id']) == false)
             return false;
 
         return $user_session['auth'] ? true : false;
@@ -63,12 +63,13 @@ trait SessionTrait
     protected function _setUserSessionAsLoggedIn($user_id)
     {
         //get user data from DB
-        $user = \Users::getObjectById($user_id);
+        $users_class = $this->getModuleClassName('users');
+        $user = $users_class::getObjectById($user_id);
 
         if (!$user)
             return;
 
-        //set user data, call child method
+        //call child method
         $user_data = $this->setUserSessionAsLoggedIn($user);
 
         if(empty($user_data))
@@ -95,7 +96,7 @@ trait SessionTrait
         //get user session
         $user_session = $this->session->get("user");
 
-        //call child method to extend properties,  
+        //call child method
         $new_session = $this->getUserSessionData($user_session);
 
         //save again session?
@@ -124,7 +125,8 @@ trait SessionTrait
         //get user session
         $user_session = $this->session->get("user");
         //assumed that users use BaseModel
-        $user = \Users::getObjectById($user_session['id']);
+        $users_class = $this->getModuleClassName('users');
+        $user = $users_class::getObjectById($user_session['id']);
 
         if (!$user)
             return false;

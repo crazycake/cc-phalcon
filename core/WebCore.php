@@ -14,9 +14,9 @@ use Phalcon\Exception;              //Phalcon Exception
 use Phalcon\Assets\Filters\Cssmin;  //CSS resources minification
 use Phalcon\Assets\Filters\Jsmin;   //JS resources minification
 //CrazyCake Utils
-use CrazyCake\Utils\UserAgent;  //User Agent identifier
+use CrazyCake\Utils\UserAgent;      //User Agent identifier
 
-abstract class WebController extends Controller
+abstract class WebCore extends Controller
 {
     /* consts */
     const ASSETS_MIN_FOLDER_PATH = 'uploads/assets/';
@@ -24,9 +24,10 @@ abstract class WebController extends Controller
     /**
      * child required methods
      */
+    abstract protected function getModuleClassName($key);
     abstract protected function setAppJavascriptProperties($obj);
     abstract protected function checkBrowserSupport();
-    abstract protected function sendAsyncRequest();
+    abstract protected function sendAsyncRequest($url = null, $method = null);
 
     /**
      * User agent properties
@@ -355,7 +356,7 @@ abstract class WebController extends Controller
     protected function _dispatchInternalError($message = null, $go_back_url = null, $object_id = 0, $log_error = "n/a")
     {
         //dispatch to internal
-        $this->logger->info("WebController::_dispatchInternalError -> Something ocurred (object_id: ".$object_id."). Error: ".$log_error);
+        $this->logger->info("WebCore::_dispatchInternalError -> Something ocurred (object_id: ".$object_id."). Error: ".$log_error);
         //set message
         if(!is_null($message))
             $this->view->setVar("error_message", str_replace(".", ".<br/>", $message));
@@ -379,7 +380,7 @@ abstract class WebController extends Controller
     {
         //simple input validation
         if (empty($method))
-            throw new Exception("WebController::_sendAsyncMailMessage -> method param is required.");
+            throw new Exception("WebCore::_sendAsyncMailMessage -> method param is required.");
 
         if($as_action) {
 
@@ -391,21 +392,25 @@ abstract class WebController extends Controller
             $url = $this->_baseUrl("mailer/$method/$encrypted_data");
 
             if(APP_ENVIRONMENT == "development")
-                $this->logger->debug('WebController::_sendAsyncMailMessage -> Method: '.$method.' & URL: ' . $url);
+                $this->logger->debug('WebCore::_sendAsyncMailMessage -> Method: '.$method.' & URL: ' . $url);
 
             //child method
             $this->sendAsyncRequest($url, $method);
         }
         else {
-            //checks that a MailerController exists
-            if(!class_exists('MailerController'))
-                throw new Exception("WebController::_sendAsyncMailMessage -> A Mailer Controller is required.");
 
-            $mailer = new \MailerController();
+            //get the mailer controller name
+            $mailer_class = $this->getModuleClassName("mailer");
+
+            //checks that a MailerController exists
+            if(!class_exists(str_replace('\\', '', $mailer_class)))
+                throw new Exception("WebCore::_sendAsyncMailMessage -> A Mailer Controller is required.");
+
+            $mailer = new $mailer_class();
 
             //checks that a MailerController exists
             if(!method_exists($mailer, $method))
-                throw new Exception("WebController::_sendAsyncMailMessage -> Method $method is not defined in Mailer Controller.");
+                throw new Exception("WebCore::_sendAsyncMailMessage -> Method $method is not defined in Mailer Controller.");
 
             //call mailer class method (reflection)
             $response = $mailer->{$method}($data);
@@ -415,7 +420,7 @@ abstract class WebController extends Controller
 
             //save response only for non production-environment
             if(APP_ENVIRONMENT !== "production")
-                $this->logger->debug('WebController::_sendAsyncMailMessage -> Got response from MailerController:\n' . $response);
+                $this->logger->debug('WebCore::_sendAsyncMailMessage -> Got response from MailerController:\n' . $response);
 
             return $response;
         } 
@@ -549,10 +554,9 @@ abstract class WebController extends Controller
         $this->client->version       = $userAgent['version'];
         $this->client->short_version = $userAgent['short_version'];
         $this->client->isMobile      = $userAgent['is_mobile'];
+        $this->client->isLegacy      = $userAgent['is_legacy'];
         //set vars to distinguish pecific platforms
         $this->client->isIE = ($this->client->browser == "MSIE") ? true : false;
-        //set legacy property
-        $this->client->isLegacy = false;
         //set HTTP protocol
         $this->client->protocol = isset($_SERVER["HTTPS"]) ? "https://" : "http://";
 

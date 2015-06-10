@@ -35,7 +35,7 @@ class UserAgent
     public function parseUserAgent()
     {
         //parse user agent
-        $data = $this->_parse_ua($this->user_agent);
+        $data = $this->_parser($this->user_agent);
         //check if is mobile agent
         $is_mobile         = preg_match('!(tablet|pad|mobile|phone|symbian|android|ipod|ios|blackberry|webos)!i', $this->user_agent) ? true : false;
         $data['is_mobile'] = $is_mobile;
@@ -51,12 +51,34 @@ class UserAgent
             $short_version = current($array);
         }
         $data['short_version'] = $short_version;
+        //check if user agent is legacy
+        $data['is_legacy'] = $this->_isUserAgentLegacy($data);
 
         //var_dump($data);exit;
         return $data;
     }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
+
+    /**
+     * Check if user agent is legacy
+     * @return boolean
+     */
+    private function _isUserAgentLegacy($data = array())
+    {
+        //mark some browsers as legacy
+        if( ($data['browser'] == "MSIE"    && $data['short_version'] < 9) ||
+            ($data['browser'] == "Chrome"  && $data['short_version'] < 3) ||
+            ($data['browser'] == "Firefox" && $data['short_version'] < 4) ||
+            ($data['browser'] == "Safari"  && $data['short_version'] < 3) ||
+            ($data['browser'] == "Opera"   && $data['short_version'] < 4) 
+        ) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
 
     /**
      * Parses a user agent string into its important parts
@@ -68,7 +90,7 @@ class UserAgent
      * @throws InvalidArgumentException on not having a proper user agent to parse.
      * @return string[] an array with browser, version and platform keys
      */
-    private function _parse_ua( $u_agent = null ) {
+    private function _parser( $u_agent = null ) {
         if( is_null($u_agent) ) {
             if( isset($_SERVER['HTTP_USER_AGENT']) ) {
                 $u_agent = $_SERVER['HTTP_USER_AGENT'];
