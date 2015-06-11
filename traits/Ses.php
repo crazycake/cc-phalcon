@@ -20,10 +20,6 @@ trait Ses
      */
     abstract public function setConfigurations();
 
-    /* consts */
-    public static $URI_ACCOUNT_ACTIVATION = 'account/activation/';
-    public static $URI_SET_NEW_PASSWORD   = 'password/new/';
-
 	/**
 	 * Config var
 	 * @var array
@@ -110,8 +106,10 @@ trait Ses
         $encrypted_data = $this->cryptify->encryptForGetRequest($token->user_id . "#" . $token->type . "#" . $token->token);
 
         //set rendered view
+        $activation_uri = $this->sesConfig['account_auth_controller']."/activation/";
+        //set properties
         $this->sesConfig["data_user"] = $user;
-        $this->sesConfig["data_url"]  = $this->_baseUrl(self::$URI_ACCOUNT_ACTIVATION.$encrypted_data);
+        $this->sesConfig["data_url"]  = $this->_baseUrl($activation_uri.$encrypted_data);
         //get HTML
         $html_raw = $this->_getInlineStyledHtml("activation", $this->sesConfig);
 
@@ -149,9 +147,12 @@ trait Ses
 
         //set link url
         $encrypted_data = $this->cryptify->encryptForGetRequest($token->user_id . "#" . $token->type . "#" . $token->token);
+
+        //set rendered view
+        $new_pass_uri = $this->sesConfig['account_pass_controller']."/new/";
         //set rendered view
         $this->sesConfig["data_user"] = $user;
-        $this->sesConfig["data_url"]  = $this->_baseUrl(self::$URI_SET_NEW_PASSWORD.$encrypted_data);
+        $this->sesConfig["data_url"]  = $this->_baseUrl($new_pass_uri.$encrypted_data);
         $this->sesConfig["data_token_expiration"] = $tokens_class::$TOKEN_EXPIRES_THRESHOLD;
         //get HTML
         $html_raw = $this->_getInlineStyledHtml("passwordRecovery", $this->sesConfig);
