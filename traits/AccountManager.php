@@ -68,13 +68,19 @@ trait AccountManager
     public function updateProfileAction()
     {
         //get post params
-        $data = $this->_handleRequestParams(array(
+        $default_params = array(
             'first_name'     => 'string',
             'last_name'      => 'string',
             '@current_pass'  => 'string',
             '@pass'          => 'string'
-        ));
+        );
 
+        $setting_params = isset($this->accountConfig['register_request_params']) ? $this->accountConfig['register_request_params'] : array();
+
+        //validate and filter request params data, second params are the required fields
+        $data = $this->_handleRequestParams(array_merge($default_params, $setting_params));
+
+        //get model class name
         $users_class = $this->getModuleClassName('users');
 
         //get user
