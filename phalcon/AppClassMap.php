@@ -3,14 +3,16 @@
 return array (
   'core' => 
   array (
-    0 => 'SesTrait.php',
-    1 => 'TaskController.php',
-    2 => 'WebController.php',
-    3 => 'WsController.php',
+    0 => 'TaskCore.php',
+    1 => 'WebCore.php',
+    2 => 'WsCore.php',
   ),
   'models' => 
   array (
-    0 => 'BaseModel.php',
+    0 => 'BaseDictionaryModel.php',
+    1 => 'BaseModel.php',
+    2 => 'BaseUsersModel.php',
+    3 => 'BaseUsersTokensModel.php',
   ),
   'phalcon' => 
   array (
@@ -21,6 +23,17 @@ return array (
   'qr' => 
   array (
     0 => 'QRMaker.php',
+  ),
+  'traits' => 
+  array (
+    0 => 'AccountAuth.php',
+    1 => 'AccountPass.php',
+    2 => 'Errors.php',
+    3 => 'Facebook.php',
+    4 => 'Guzzle.php',
+    5 => 'Ses.php',
+    6 => 'Session.php',
+    7 => 'TicketStorage.php',
   ),
   'transbank' => 
   array (

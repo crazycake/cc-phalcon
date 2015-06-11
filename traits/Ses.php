@@ -7,13 +7,13 @@
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
-namespace CrazyCake\Core;
+namespace CrazyCake\Traits;
 
 //imports
 use Pelago\Emogrifier;
 use Mandrill;
 
-trait SesTrait
+trait Ses
 {
 	/**
      * abstract required methods
@@ -32,6 +32,26 @@ trait SesTrait
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
+    /**
+     * Ajax Handler Action - Send the contact to message to our app
+     * Requires email, name, message POST params
+     */
+    public function sendContactAction()
+    {
+        $data = $this->_handleRequestParams(array(
+            'email'   => 'email',
+            'name'    => 'string',
+            'message' => 'string'
+        ));
+
+        //send contact email
+        $this->_sendAsyncMailMessage('sendMailForContact', $data);
+
+        //send JSON response
+        $this->_sendJsonResponse(200);
+        return;
+    }
+
 	/**
      * Async Handler - Sends contact email (always used)
      * @param array $message_data Must contains keys 'name', 'email' & 'message'
@@ -49,10 +69,8 @@ trait SesTrait
         $to      = $this->sesConfig['contactEmail'];
         $tags    = array('contact');
 
-        //add prefix to array
+        //add prefix "data" to each element in array
         $view_data = array_combine( array_map(function($k) { return 'data_'.$k; }, array_keys($message_data)), $message_data);
-
-        print_r($view_data);exit;
 
         //get HTML
         $html_raw = $this->_getInlineStyledHtml("contact", $view_data);
@@ -180,7 +198,7 @@ trait SesTrait
 
         //validation
         if (empty($html_raw) || empty($subject) || empty($recipients))
-            throw new \Exception("SesTrait::_sendMessage -> Invalid params data for sending email");
+            throw new \Exception("Ses::_sendMessage -> Invalid params data for sending email");
 
         //parse recipients
         if (is_string($recipients))
@@ -221,7 +239,7 @@ trait SesTrait
         catch (Mandrill_Error $e) {
             $response = false;
             // Mandrill errors are thrown as exceptions
-            $this->logger->error("SesTrait::_sendMessage -> A mandrill error occurred sending a message (" . get_class($e) . "), trace: " . $e->getMessage());
+            $this->logger->error("Ses::_sendMessage -> A mandrill error occurred sending a message (" . get_class($e) . "), trace: " . $e->getMessage());
         }
 
         return $response;
@@ -235,9 +253,9 @@ trait SesTrait
     private function _checkConfigurations()
     {
         if (!isset($this->sesConfig['appName']) || !isset($this->sesConfig['mandrillKey']) || !isset($this->sesConfig['cssFile']))
-            throw new \Exception("SesTrait::_checkConfigurations -> SES configuration properties are not defined. (appName, mandrillKey, cssFile)");
+            throw new \Exception("Ses::_checkConfigurations -> SES configuration properties are not defined. (appName, mandrillKey, cssFile)");
 
         if (!isset($this->sesConfig['senderEmail']) || !isset($this->sesConfig['contactEmail']))
-        	throw new \Exception("SesTrait::_checkConfigurations -> SES sender & contact emails are not defined.");
+        	throw new \Exception("Ses::_checkConfigurations -> SES sender & contact emails are not defined.");
     }
 }

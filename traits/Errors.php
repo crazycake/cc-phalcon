@@ -6,9 +6,9 @@
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
-namespace CrazyCake\Core;
+namespace CrazyCake\Traits;
 
-trait ErrorsTrait
+trait Errors
 {
 	//....
 

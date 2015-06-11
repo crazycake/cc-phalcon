@@ -6,7 +6,7 @@
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
-namespace CrazyCake\Core;
+namespace CrazyCake\Traits;
 
 //Facebook PHP SDK
 use Facebook\FacebookSession;
@@ -23,7 +23,7 @@ use CrazyCake\Utils\DateHelper;
 /**
  * Account Password Trait
  */
-trait FacebookTrait
+trait Facebook
 {
     /**
      * abstract required methods
@@ -95,7 +95,7 @@ trait FacebookTrait
 
         //send and error if session is NULL
         if($response['fb_error']) {
-            $this->logger->error("FacebookController::loginByRedirectAction -> An error ocurred: ".$response['fb_error']);
+            $this->logger->error("Facebook::loginByRedirectAction -> An error ocurred: ".$response['fb_error']);
             //set message
             $this->view->setVar("error_message", $this->facebookConfig['text_oauth_redirected']);
             $this->dispatcher->forward(array("controller" => "errors", "action" => "internal"));
@@ -273,7 +273,7 @@ trait FacebookTrait
             
             //email validation
             if (empty($properties['email']) || !filter_var($properties['email'], FILTER_VALIDATE_EMAIL)) {
-                $this->logger->error("FacebookController::__loginUserFacebook() -> Facebook Session (" . $properties['fb_id'] . ") invalid email: " . $properties['email']);
+                $this->logger->error("Facebook::__loginUserFacebook() -> Facebook Session (" . $properties['fb_id'] . ") invalid email: " . $properties['email']);
                 throw new \Exception(str_replace("#email#", $properties['email'], $this->facebookConfig['text_invalid_email']));
             } 
 
@@ -282,7 +282,7 @@ trait FacebookTrait
 
             //check if user is logged in and is attempting to loggin to facebook with another account
             if ($session_data && $session_data["fb_id"] && $session_data["fb_id"] != $fb_id) {
-                $this->logger->error("FacebookController::__loginUserFacebook() -> App Session fb_id (" . $session_data["fb_id"]. ") & sdk session (" . $fb_id . ") data doesn't match.");
+                $this->logger->error("Facebook::__loginUserFacebook() -> App Session fb_id (" . $session_data["fb_id"]. ") & sdk session (" . $fb_id . ") data doesn't match.");
                 throw new \Exception($this->facebookConfig['text_session_switched']);
             } 
     
@@ -397,7 +397,7 @@ trait FacebookTrait
     private function __requestLongLiveAccessToken($user_fb = null, $short_live_fac = null, $session = null)
     {
         if(!$user_fb) {
-            $this->logger->log('FacebookController::__requestLongLiveAccessToken -> Invalid ORM user facebook prama');
+            $this->logger->log('Facebook::__requestLongLiveAccessToken -> Invalid ORM user facebook prama');
             return;
         }
 
@@ -422,7 +422,7 @@ trait FacebookTrait
 
             //check if access token is about to expire
             if ($days_left < $this->facebookConfig['access_token_expiration_threshold']) {
-                $this->logger->log('FacebookController::__requestLongLiveAccessToken -> Requested a new long live access token for user_fb_id: ' . $user_fb->id);
+                $this->logger->log('Facebook::__requestLongLiveAccessToken -> Requested a new long live access token for user_fb_id: ' . $user_fb->id);
 
                 $fac_obj->save = true;
                 $session = $session->getLongLivedSession();
@@ -436,10 +436,10 @@ trait FacebookTrait
             $fac_obj->days_left  = $days_left;
         }
         catch (FacebookRequestException $e) {
-            $this->logger->error('FacebookController::__requestLongLiveAccessToken -> Error opening session for user_fb_id' . $user_fb->id . ". Trace: " . $e->getMessage());
+            $this->logger->error('Facebook::__requestLongLiveAccessToken -> Error opening session for user_fb_id' . $user_fb->id . ". Trace: " . $e->getMessage());
         }
         catch (\Exception $e) {
-            $this->logger->error('FacebookController::__requestLongLiveAccessToken -> Error opening session for user_fb_id' . $user_fb->id . ". Trace: " . $e->getMessage());
+            $this->logger->error('Facebook::__requestLongLiveAccessToken -> Error opening session for user_fb_id' . $user_fb->id . ". Trace: " . $e->getMessage());
         }
 
         return $fac_obj;
@@ -466,7 +466,7 @@ trait FacebookTrait
         $user_fb->expires_at = $token_expiration;
 
         if (!$user_fb->save()) {
-            $this->logger->error("FacebookController::__saveNewUserFacebook() -> Error Insertion User Facebook data. userId -> ".$user_id.", FBUserId -> ".$fb_id.", trace: ".$this->_parseOrmMessages($user_fb, true));
+            $this->logger->error("Facebook::__saveNewUserFacebook() -> Error Insertion User Facebook data. userId -> ".$user_id.", FBUserId -> ".$fb_id.", trace: ".$this->_parseOrmMessages($user_fb, true));
             $user = $users_class::getObjectById($user_id);
             $user->delete();
             throw new \Exception($this->facebookConfig['text_session_error']); //raise an error
@@ -538,7 +538,7 @@ trait FacebookTrait
         $data = json_decode($base64_decode_url($payload), true);
         //check algorithm
         if (strtoupper($data['algorithm']) !== 'HMAC-SHA256') {
-            $this->logger->error('FacebookController::__parseSignedRequest -> Unknown algorithm. Expected HMAC-SHA256');
+            $this->logger->error('Facebook::__parseSignedRequest -> Unknown algorithm. Expected HMAC-SHA256');
             return false;
         }
         //adding the verification of the signed_request below
@@ -546,7 +546,7 @@ trait FacebookTrait
         $signature    = $base64_decode_url($encoded_sig);
 
         if ($signature !== $expected_sig) {
-            $this->logger->error('FacebookController::__parseSignedRequest -> Invalid JSON Signature!');
+            $this->logger->error('Facebook::__parseSignedRequest -> Invalid JSON Signature!');
             return false;
         }
 

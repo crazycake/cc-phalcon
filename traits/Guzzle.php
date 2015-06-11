@@ -6,12 +6,12 @@
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
-namespace CrazyCake\Core;
+namespace CrazyCake\Traits;
 
 //imports
 use GuzzleHttp\Client as GuzzleClient;  //Guzzle client for requests
 
-trait GuzzleTrait
+trait Guzzle
 {
 	//....
 
@@ -26,7 +26,7 @@ trait GuzzleTrait
     {
         //simple input validation
         if (empty($url))
-            throw new \Exception("GuzzleTrait::sendAsyncRequest -> url method param is required.");
+            throw new \Exception("Guzzle::sendAsyncRequest -> url method param is required.");
 
         $response = (new GuzzleClient())->get($url, ['future' => true]);
         $this->logGuzzleResponse($response, $method);
@@ -51,9 +51,9 @@ trait GuzzleTrait
 
             //handle response (OK status)
             if ($response->getStatusCode() == 200)
-                $this->logger->log('GuzzleTrait::logGuzzleResponse -> Method: ' . $method . ', response:' . $body);
+                $this->logger->log('Guzzle::logGuzzleResponse -> Method: ' . $method . ', response:' . $body);
             else
-                $this->logger->error('GuzzleTrait::logGuzzleResponse -> Error on request: ' . $method .', response: ' . $body);
+                $this->logger->error('Guzzle::logGuzzleResponse -> Error on request: ' . $method .', response: ' . $body);
         });
     }
 }

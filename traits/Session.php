@@ -6,12 +6,12 @@
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
-namespace CrazyCake\Core;
+namespace CrazyCake\Traits;
 
 //CrazyCake Utils
 use CrazyCake\Utils\DateHelper;
 
-trait SessionTrait
+trait Session
 {
 	/**
      * abstract required methods

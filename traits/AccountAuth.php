@@ -6,7 +6,7 @@
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
-namespace CrazyCake\Core;
+namespace CrazyCake\Traits;
 
 //imports
 //Google reCaptcha Helper
@@ -16,7 +16,7 @@ use CrazyCake\Utils\DateHelper;
 /**
  * Account Authentication Trait
  */
-trait AccountAuthTrait
+trait AccountAuth
 {
 	/**
      * abstract required methods
@@ -108,7 +108,7 @@ trait AccountAuthTrait
             return;
         }
         catch (\Exception $e) {
-            $this->logger->error('AccountAuthTrait::activationAction -> Error in account activation, encrypted data ('.$encrypted_data."). Trace: ".$e->getMessage());
+            $this->logger->error('AccountAuth::activationAction -> Error in account activation, encrypted data ('.$encrypted_data."). Trace: ".$e->getMessage());
             $this->dispatcher->forward(array("controller" => "errors", "action" => "expired"));
             return;
         }

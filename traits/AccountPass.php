@@ -6,7 +6,7 @@
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
-namespace CrazyCake\Core;
+namespace CrazyCake\Traits;
 
 //imports
 use CrazyCake\Utils\ReCaptcha;
@@ -14,7 +14,7 @@ use CrazyCake\Utils\ReCaptcha;
 /**
  * Account Password Trait
  */
-trait AccountPassTrait
+trait AccountPass
 {
     /**
      * abstract required methods
@@ -61,7 +61,7 @@ trait AccountPassTrait
             $this->view->setVar("edata", $encrypted_data); //pass to view the encrypted data
         }
         catch (\Exception $e) {
-            $this->logger->error('AccountPasswordTrait::newAction -> Error in account activation, encrypted data (' . $encrypted_data . "). Trace: " . $e->getMessage());
+            $this->logger->error('AccountPass::newAction -> Error in account activation, encrypted data (' . $encrypted_data . "). Trace: " . $e->getMessage());
             $this->dispatcher->forward(array("controller" => "errors", "action" => "expired"));
         }
     }
@@ -148,7 +148,7 @@ trait AccountPassTrait
             $payload = true;
         }
         catch (\Exception $e) {
-            $this->logger->error("AccountPasswordTrait::saveNewPasswordAction -> Error saving new password. Trace: " . $e->getMessage());
+            $this->logger->error("AccountPass::saveNewPasswordAction -> Error saving new password. Trace: " . $e->getMessage());
             $this->_sendJsonResponse(400);
             return;
         }

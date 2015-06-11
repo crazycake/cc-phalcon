@@ -7,14 +7,14 @@
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
-namespace CrazyCake\Core;
+namespace CrazyCake\Traits;
 
 //libs
 use CrazyCake\Utils\StorageS3;  //AWS S3 File Storage helper
 use CrazyCake\Qr\QRMaker;       //CrazyCake QR
 use CrazyCake\Utils\PdfHelper;  //PDF generator
 
-trait TicketStorageTrait
+trait TicketStorage
 {
 	/**
      * abstract required methods
@@ -127,7 +127,7 @@ trait TicketStorageTrait
         }
         catch (\Exception $e) {
             //fallback for file
-            $this->logger->error("StorageController::ticketAction -> Error loading image: ".$hashed_id." - Exception:".$e->getMessage());
+            $this->logger->error("TicketStorage::getTicket -> Error loading image: ".$hashed_id." - Exception:".$e->getMessage());
             $binary = file_get_contents($this->_baseUrl($this->storageConfig['image_fallback_uri']));
         }
 
@@ -175,7 +175,7 @@ trait TicketStorageTrait
         }
 
         if($error_occurred) {
-            $this->logger->error('TicketStorageTrait::generateQRForTicket -> Error while generating and storing QR: '.$error_occurred);
+            $this->logger->error('TicketStorage::generateQRForTicket -> Error while generating and storing QR: '.$error_occurred);
             return false;
         }
 
@@ -242,7 +242,7 @@ trait TicketStorageTrait
         }
 
         if($error_occurred) {
-            $this->logger->error('TicketStorageTrait::generatePDFForTicket -> Error while generating and storing PDF: '.$error_occurred);
+            $this->logger->error('TicketStorage::generatePDFForTicket -> Error while generating and storing PDF: '.$error_occurred);
             return false;
         }
 
