@@ -37,11 +37,10 @@ trait Facebook
     public $facebookConfig;
 
     /**
-     * static vars
+     * Facebook URI user image
+     * @static
+     * @var string
      */
-    public static $EXTEND_ACCESS_TOKEN_URI  = 'facebook/extendAccessToken/';
-    public static $REDIRECT_AFTER_LOGIN_URI = 'facebook/loginByRedirect/';
-    //open graph uris
     public static $FB_USER_IMAGE_URI = "graph.facebook.com/<fb_id>/picture?type=<size>";
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
@@ -88,7 +87,9 @@ trait Facebook
      */
     public function loginByRedirectAction()
     {
-        $helper  = new FacebookRedirectLoginHelper($this->_baseUrl(self::$REDIRECT_AFTER_LOGIN_URI));
+        $login_uri = $this->facebookConfig['facebook_controller_name']."/loginByRedirect/";
+        //get helper object
+        $helper  = new FacebookRedirectLoginHelper($this->_baseUrl($login_uri));
         $session = $helper->getSessionFromRedirect();
         //check login
         $response = $this->__loginUserFacebook($session);
@@ -223,8 +224,10 @@ trait Facebook
      */
     public function loadFacebookLoginURL($redirect_url = false)
     {
+        $login_uri = $this->facebookConfig['facebook_controller_name']."/loginByRedirect/";
+
         if(!$redirect_url)
-            $redirect_url = $this->_baseUrl(self::$REDIRECT_AFTER_LOGIN_URI);
+            $redirect_url = $this->_baseUrl($login_uri);
 
         //get vars
         $app_id     = $this->config->app->facebookAppID;
@@ -323,9 +326,10 @@ trait Facebook
             //Guzzle Async operation to extend access token (append fb userID and short live access token)
             $encrypted_data = $this->cryptify->encryptForGetRequest($fb_id."#".$fac);
             //request async with promises
-            $response = (new GuzzleClient())->get($this->_baseUrl(self::$EXTEND_ACCESS_TOKEN_URI . $encrypted_data), ['future' => true]);
+            $extend_token_uri = $this->facebookConfig['facebook_controller_name']."/extendAccessToken/";
+            $response = (new GuzzleClient())->get($this->_baseUrl($extend_token_uri.$encrypted_data), ['future' => true]);
             //save response only for non production-environment
-            $this->logGuzzleResponse($response, self::$EXTEND_ACCESS_TOKEN_URI);
+            $this->logGuzzleResponse($response, $extend_token_uri);
         }
         catch (\Exception $e) {
             //an error ocurred
