@@ -27,13 +27,14 @@ return array (
   'traits' => 
   array (
     0 => 'AccountAuth.php',
-    1 => 'AccountPass.php',
-    2 => 'Errors.php',
-    3 => 'Facebook.php',
-    4 => 'Guzzle.php',
-    5 => 'Ses.php',
-    6 => 'Session.php',
-    7 => 'TicketStorage.php',
+    1 => 'AccountManager.php',
+    2 => 'AccountPassRecovery.php',
+    3 => 'Errors.php',
+    4 => 'Facebook.php',
+    5 => 'Guzzle.php',
+    6 => 'Ses.php',
+    7 => 'Session.php',
+    8 => 'TicketStorage.php',
   ),
   'transbank' => 
   array (

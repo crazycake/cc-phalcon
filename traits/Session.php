@@ -227,20 +227,21 @@ trait Session
     }
 
     /**
-     * Redirect to profile controller if user is logged in
+     * Redirect to account controller, cames from a loggedIn
+     * @param boolean $check_logged_in Checks if user is logged in, if not skips redirect
      */
-    protected function _redirectToProfileControllerIfLoggedIn()
+    protected function _redirectToAccount($check_logged_in = false)
     {
-        if ($this->_checkUserIsLoggedIn())
-            $this->_redirectToProfileController();
-    }
 
-    /**
-     * Redirect to profile controller, cames from a loggedIn
-     */
-    protected function _redirectToProfileController()
-    {
-        $this->_redirectTo("profile");
+        if ($check_logged_in) {
+
+            if($this->_checkUserIsLoggedIn())
+                $this->_redirectTo("account");
+
+            return;
+        }
+    
+        $this->_redirectTo("account");
     }
 
     /**

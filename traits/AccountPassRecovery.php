@@ -14,7 +14,7 @@ use CrazyCake\Utils\ReCaptcha;
 /**
  * Account Password Trait
  */
-trait AccountPass
+trait AccountPassRecovery
 {
     /**
      * abstract required methods
@@ -28,6 +28,16 @@ trait AccountPass
     public $accountConfig;
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
+
+     /**
+      * Init Phalcon Controller
+      */
+    protected function initialize()
+    {
+        parent::initialize();
+        //if loggedIn redirect to account
+        $this->_redirectToAccount(true);
+    }
 
     /**
      * View - Password recovery Action (send instructions view)
@@ -96,7 +106,7 @@ trait AccountPass
         //send email message with password recovery steps
         $this->_sendAsyncMailMessage($this->accountConfig['method_mailer_pass_recovery'], $user->id);
 
-        //set a flash message to show on profile controller
+        //set a flash message to show on account controller
         $this->flash->success(str_replace("#email#", $data['email'], $this->accountConfig['text_pass_mail_sent']));
 
         //send JSON response
@@ -139,7 +149,7 @@ trait AccountPass
             //delete user token
             $token->delete();
 
-            //set a flash message to show on profile controller
+            //set a flash message to show on account controller
             $this->flash->success($this->accountConfig['text_new_pass_saved']);
 
             //abstract parent controller

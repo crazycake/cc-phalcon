@@ -1,7 +1,7 @@
 <?php
 /**
- * Account Auth Trait
- * This class has common actions for account auth controllers
+ * Account Manager Trait
+ * This class has common actions for account manager controllers
  * Requires a Frontend or Backend Module with CoreController and SessionTrait
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
@@ -38,8 +38,8 @@ trait AccountAuth
      */
     public function signInAction()
     {
-        //if loggedIn redirect to profile
-        $this->_redirectToProfileControllerIfLoggedIn();
+        //if loggedIn redirect to account
+        $this->_redirectToAccount(true);
         //load javascript
         $this->_loadJavascriptFiles($this->accountConfig['javascript_files']);
 
@@ -56,8 +56,8 @@ trait AccountAuth
      */
     public function signUpAction()
     {
-        //if loggedIn redirect to profile
-        $this->_redirectToProfileControllerIfLoggedIn();
+        //if loggedIn redirect to account
+        $this->_redirectToAccount(true);
         //load javascript
         $this->_loadJavascriptFiles($this->accountConfig['javascript_files']);
 
@@ -79,7 +79,7 @@ trait AccountAuth
     public function activationAction($encrypted_data = null)
     {
         //if user is already loggedIn redirect
-        $this->_redirectToProfileControllerIfLoggedIn();
+        $this->_redirectToAccount(true);
 
         //get decrypted data
         try {
@@ -99,12 +99,12 @@ trait AccountAuth
             //save new account flag state
             $user->update( array("account_flag" => $users_class::$ACCOUNT_FLAGS['enabled']) );
 
-            //set a flash message to show on profile controller
+            //set a flash message to show on account controller
             $this->flash->success($this->accountConfig['text_activation_success']);
 
             //save session data
             $this->_setUserSessionAsLoggedIn($user_id);
-            $this->_redirectToProfileController();
+            $this->_redirectToAccount();
             return;
         }
         catch (\Exception $e) {
@@ -204,7 +204,7 @@ trait AccountAuth
 
         //send activation account email
         $this->_sendAsyncMailMessage($this->accountConfig['method_mailer_activation'], $user->id);
-        //set a flash message to show on profile controller
+        //set a flash message to show on account controller
         $this->flash->success(str_replace("#email#", $user->email, $this->accountConfig['text_activation_pending']));
 
         //send JSON response

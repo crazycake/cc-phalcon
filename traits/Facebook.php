@@ -112,15 +112,12 @@ trait Facebook
                 $this->setUserFacebookPublishPerm($user_session["id"]);
 
                 //redirect
-                $this->response->redirect($this->_baseUrl("profile/socials"), true);
-                $this->response->send();
-                return;
+                $this->_redirectTo($this->facebookConfig['facebook_socials_uri']);
             }
         }
 
         //redirect
-        $this->response->redirect($this->_baseUrl("profile"), true);
-        $this->response->send();
+        $this->_redirectToAccount();
     }
 
     /**
