@@ -107,7 +107,7 @@ trait Session
 
         //filter unwanted props
         if(!empty($filter)) {
-            foreach ($filter as $key => $value)
+            foreach ($filter as $key)
                 unset($user_session[$key]);
         }
 
