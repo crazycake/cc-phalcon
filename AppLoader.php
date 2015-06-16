@@ -93,7 +93,8 @@ abstract class AppLoader
         $this->module = $mod;
         //define APP contants
         define("PROJECT_PATH", $this->app_path);
-        define("COMPOSER_PATH", PROJECT_PATH."composer/");
+        define("PACKAGES_PATH", PROJECT_PATH."packages/");
+        define("COMPOSER_PATH", PACKAGES_PATH."composer/");
         define("MODULE_PATH", PROJECT_PATH.$this->module."/");
         define("APP_PATH", MODULE_PATH."app/" );
         define("PUBLIC_PATH", MODULE_PATH."public/");
@@ -351,7 +352,12 @@ abstract class AppLoader
         if (APP_ENVIRONMENT !== 'development') {
 
             //autoload classes (se debe pre-generar autoload_classmap)
-            $loader->registerClasses(require COMPOSER_PATH.'vendor/composer/autoload_classmap.php');
+            $classmap = COMPOSER_PATH.'vendor/composer/autoload_classmap.php';
+
+            if(!is_file($classmap))
+                throw new Exception("AppLoader::_autoloadClasses -> Composer libraries are missing, please run environment bash file (-composer option).");
+
+            $loader->registerClasses(require $classmap);
             //check if autoload files must be loaded
             if (file_exists(COMPOSER_PATH.'vendor/composer/autoload_files.php')) {
 
