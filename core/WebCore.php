@@ -19,7 +19,7 @@ use CrazyCake\Utils\UserAgent;      //User Agent identifier
 abstract class WebCore extends Controller
 {
     /* consts */
-    const ASSETS_MIN_FOLDER_PATH = 'uploads/assets/';
+    const ASSETS_MIN_FOLDER_PATH = 'assets/';
 
     /**
      * abstract required methods
