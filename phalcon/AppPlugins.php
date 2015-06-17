@@ -4,16 +4,10 @@
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
-use \Phalcon\Mvc\User\Plugin;
-use \Phalcon\Events\Event;
-use \Phalcon\Dispatcher;
-use \Phalcon\Mvc\Dispatcher\Exception as DispatcherException;
-use \Phalcon\Mvc\Dispatcher as MvcDispatcher;
-
 /**
  * Class for MVC module that handles 404 (Not Found) app routes
  */
-class Route404Plugin extends Plugin
+class Route404Plugin extends \Phalcon\Mvc\User\Plugin
 {
 	/**
 	 * Constructor
@@ -31,15 +25,15 @@ class Route404Plugin extends Plugin
 	 * @param Exception $exception
 	 * @return boolean
 	 */
-	public function beforeException(Event $event, MvcDispatcher $dispatcher, Exception $exception)
+	public function beforeException(\Phalcon\Events\Event $event, \Phalcon\Mvc\Dispatcher $dispatcher, Exception $exception)
 	{
 		//Handle 404 exceptions
-		if ($exception instanceof DispatcherException) {
+		if ($exception instanceof \Phalcon\Mvc\Dispatcher\Exception) {
 			
 			switch ($exception->getCode()) {
 				//dispatch to not found action
-				case Dispatcher::EXCEPTION_HANDLER_NOT_FOUND:
-				case Dispatcher::EXCEPTION_ACTION_NOT_FOUND:
+				case \Phalcon\Dispatcher::EXCEPTION_HANDLER_NOT_FOUND:
+				case \Phalcon\Dispatcher::EXCEPTION_ACTION_NOT_FOUND:
 					$dispatcher->forward( array(
 						'controller' => 'errors',
 						'action' 	 => 'notFound'
@@ -66,3 +60,16 @@ class Route404Plugin extends Plugin
 		return false;
 	}
 }
+
+/**
+ * Custom Assets filter for already minified files
+ */
+class minifiedFilter implements \Phalcon\Assets\FilterInterface
+{
+    public function filter($contents)
+    {
+        //$contents = str_replace(array("\n", "\r", " "), '', $contents);
+        return $contents;
+    }
+}
+

@@ -661,7 +661,7 @@ abstract class WebCore extends Controller
             if($minify)
                 $this->assets->collection($cname)->addFilter(($props[0] == "css" ? new Cssmin() : new Jsmin()));
             else
-                $this->assets->collection($cname)->addFilter(new webCoreFilter());
+                $this->assets->collection($cname)->addFilter(new \minifiedFilter());
 
             //for js_dom, generate file & supress output (echo calls)
             if ($cname == "js_dom") {
@@ -671,17 +671,5 @@ abstract class WebCore extends Controller
                 $this->assets->js_dom = file_get_contents($path);
             }
         }
-    }
-}
-
-/**
- * Custom Assets filter
- */
-class webCoreFilter implements \Phalcon\Assets\FilterInterface
-{
-    public function filter($contents)
-    {
-        //$contents = str_replace(array("\n", "\r", " "), '', $contents);
-        return $contents;
     }
 }
