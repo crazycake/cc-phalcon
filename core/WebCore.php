@@ -450,14 +450,15 @@ abstract class WebCore extends Controller
         $this->_loadJavascriptFiles($this->config->app->jsHead, 'js_head');
         //load JS lib files (already minified, loads at bottom of page)
         $this->_loadJavascriptFiles($this->config->app->jsLibs, 'js_libs');
-        //load JS model files
-        $this->_loadJavascriptFiles($this->config->app->jsModels, 'js_models');
+        //load JS core files (webapp core file)
+        $this->_loadJavascriptFiles($this->config->app->jsCore, 'js_core');
         //join and minify collections
         $this->_joinAssetsCollections(array(
             "css_head" => false,
             "css_libs" => false,
             "js_head" => false,
             "js_libs" => false,
+            "js_core" => true,
             "js_models" => true,
             "js_dom" => true
         ), self::ASSETS_MIN_FOLDER_PATH, $this->config->app->deploy_version);
