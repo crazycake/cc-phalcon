@@ -493,7 +493,7 @@ abstract class WebCore extends Controller
      * @param array $files JS Files to be loaded
      * @param string $collection Name of the collection
      */
-    protected function _loadJavascriptFiles($files = array(), $collection = "js_view")
+    protected function _loadJavascriptFiles($files = array(), $collection = "js_models")
     {
         if (empty($files))
             return;
