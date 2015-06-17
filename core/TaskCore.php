@@ -89,6 +89,19 @@ abstract class TaskCore extends Task
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
+     /**
+     * Outputs app configuration in JSON format
+     * @param array $params, The args array, the 1st arg is the filter config property
+     * @return string
+     */
+    public function appConfigAction($params = array())
+    {
+        if(empty($params))
+            echo json_encode($this->config, JSON_UNESCAPED_SLASHES);
+        else
+            echo json_encode($this->config->{$params[0]}, JSON_UNESCAPED_SLASHES);
+    }
+
     /**
      * Create JS Files for app supported languages
      * @param array $params The input args
