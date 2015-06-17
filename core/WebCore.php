@@ -436,27 +436,30 @@ abstract class WebCore extends Controller
     {
         //CSS Head files, already minified
         $this->_loadCssFiles($this->config->app->cssHead, 'css_head');
+        //CSS libs files (for js libs)
+        $this->_loadCssFiles($this->config->app->cssLibs, 'css_libs');
 
         //check specials cases for legacy js files
         if($this->router->getControllerName() == "errors") {
             $this->_loadJavascriptFiles($this->config->app->jsHead, 'js_head');
-            $this->_loadJavascriptFiles($this->config->app->jsLegacy, 'js_core');
+            $this->_loadJavascriptFiles($this->config->app->jsLegacy, 'js_libs');
             return;
         }
 
-        //CSS core files (plugins)
-        $this->_loadCssFiles($this->config->app->cssCore, 'css_core');
         //JS files loaded in head tag (already minified)
         $this->_loadJavascriptFiles($this->config->app->jsHead, 'js_head');
-        //load JS Core Files (loads at bottom of page)
-        $this->_loadJavascriptFiles($this->config->app->jsCore, 'js_core');
-        //minify collections
-        $this->_minifyAssetsCollections(array(
-            "css_core",
-            "css_view",
-            "js_core",
-            "js_view",
-            "js_dom"
+        //load JS lib files (already minified, loads at bottom of page)
+        $this->_loadJavascriptFiles($this->config->app->jsLibs, 'js_libs');
+        //load JS model files
+        $this->_loadJavascriptFiles($this->config->app->jsModels, 'js_models');
+        //join and minify collections
+        $this->_joinAssetsCollections(array(
+            "css_head" => false,
+            "css_libs" => false,
+            "js_head" => false,
+            "js_libs" => false,
+            "js_models" => true,
+            "js_dom" => true
         ), self::ASSETS_MIN_FOLDER_PATH, $this->config->app->deploy_version);
     }
 
@@ -467,7 +470,7 @@ abstract class WebCore extends Controller
      * @param array $files CSS Files to be loaded
      * @param string $collection Name of the collection
      */
-    protected function _loadCssFiles($files = array(), $collection = "css_view")
+    protected function _loadCssFiles($files = array(), $collection = "css_libs")
     {
         if (empty($files))
             return;
@@ -507,10 +510,10 @@ abstract class WebCore extends Controller
             if (preg_match("/^(.{1,})\\{([a-z]{1,})\\}(.{1,})$/", $file, $regex)) {
                 //lang case
                 if ($regex[2] === "lang")
-                    $file = $regex[1] . $this->client->lang . $regex[3];
+                    $file = $regex[1].$this->client->lang.$regex[3];
             }
 
-            $this->assets->collection($collection)->addCss("js/$file");
+            $this->assets->collection($collection)->addJs("js/$file");
         }
     }
 
@@ -621,18 +624,18 @@ abstract class WebCore extends Controller
     }
 
     /**
-     * Minify Assets collections for view output
+     * Join and Minify Assets collections for view output
      * @access private
-     * @param array $collections Phalcon Assets collections
+     * @param array $collections Phalcon Assets collections, the key is a boolean minimize flag.
      * @param string $cache_path The cache path
      */
-    private function _minifyAssetsCollections($collections = array(), $cache_path = null, $deploy_version = "0.1")
+    private function _joinAssetsCollections($collections = array(), $cache_path = null, $deploy_version = "0.1")
     {
         if (empty($collections) || empty($cache_path))
             return;
 
         //loop through collections
-        foreach ($collections as $cname) {
+        foreach ($collections as $cname => $minify) {
             $collection_exists = true;
             //handle exceptions
             try {
@@ -649,13 +652,15 @@ abstract class WebCore extends Controller
             $fname = $props[1].".".$props[0];
             $path  = PUBLIC_PATH.$cache_path.$fname;
             $uri   = $cache_path."$fname?v=".$deploy_version;
-            //minify assets
-            $this->assets
-                ->collection($cname)
-                ->setTargetPath($path)
-                ->setTargetUri($uri)
-                ->join(true)
-                ->addFilter(($props[0] == "css" ? new Cssmin() : new Jsmin()));
+
+            //set assets props
+            $this->assets->collection($cname)->setTargetPath($path)->setTargetUri($uri)->join(true);
+
+            //minify assets?
+            if($minify)
+                $this->assets->collection($cname)->addFilter(($props[0] == "css" ? new Cssmin() : new Jsmin()));
+            else
+                $this->assets->collection($cname)->addFilter(new webCoreFilter());
 
             //for js_dom, generate file & supress output (echo calls)
             if ($cname == "js_dom") {
@@ -665,5 +670,17 @@ abstract class WebCore extends Controller
                 $this->assets->js_dom = file_get_contents($path);
             }
         }
+    }
+}
+
+/**
+ * Custom Assets filter
+ */
+class webCoreFilter implements \Phalcon\Assets\FilterInterface
+{
+    public function filter($contents)
+    {
+        //$contents = str_replace(array("\n", "\r", " "), '', $contents);
+        return $contents;
     }
 }
