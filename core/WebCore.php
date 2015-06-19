@@ -616,6 +616,10 @@ abstract class WebCore extends Controller
         $app_js->baseUrl = APP_BASE_URL;
         $app_js->dev     = (APP_ENVIRONMENT == 'production') ? 0 : 1;
 
+        //set UI properties?
+        if(isset($this->config->app->ui_settings))
+            $app_js->UI = (object)$this->config->app->ui_settings;
+
         //set custom properties
         $this->setAppJavascriptProperties($app_js);
 
