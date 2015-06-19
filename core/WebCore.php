@@ -25,7 +25,7 @@ abstract class WebCore extends Controller
      * abstract required methods
      */
     abstract protected function getModuleClassName($key);
-    abstract protected function setAppJavascriptProperties($obj);
+    abstract protected function setAppJavascriptProperties($app_js);
     abstract protected function checkBrowserSupport();
     abstract protected function sendAsyncRequest($url = null, $method = null);
 
