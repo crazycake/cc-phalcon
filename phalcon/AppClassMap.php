@@ -24,6 +24,10 @@ return array (
   array (
     0 => 'QRMaker.php',
   ),
+  'soap' => 
+  array (
+    0 => 'SoapClientHelper.php',
+  ),
   'traits' => 
   array (
     0 => 'AccountAuth.php',
@@ -39,9 +43,8 @@ return array (
   'transbank' => 
   array (
     0 => 'OneClick.php',
-    1 => 'SoapClient.php',
+    1 => 'OneClickClient.php',
     2 => 'Webpay.php',
-    3 => 'OneClickClient.php',
   ),
   'utils' => 
   array (

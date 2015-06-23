@@ -14,6 +14,11 @@ class OneClickClient
 	 */
 	protected $oneclick;
 
+	/**
+	 * @var string
+	 */
+	protected $transbank_cert;
+
 	/** 
 	 * Constructor
 	 */
@@ -23,16 +28,15 @@ class OneClickClient
     	if(!isset($setup['OneClickKey']) || !isset($setup['OneClickCert']) || !isset($setup['OneClickTransbankCert']))
     		throw new \Exception('OneClickClient -> Invalid webpay setup input array.');
 
-    	//consts
-		define('WP_ON_PRIVATE_KEY', $setup['OneClickKey']);
-		define('WP_ON_CERT_FILE',	 $setup['OneClickCert']);
-		define('WP_ON_TRANSBANK_CERT', $setup['OneClickTransbankCert']);
-
 		//validate files
-		if(!is_file(WP_ON_PRIVATE_KEY) || !is_file(WP_ON_CERT_FILE) || !is_file(WP_ON_TRANSBANK_CERT))
+		if(!is_file($setup['OneClickKey']) || !is_file($setup['OneClickCert']) || !is_file($setup['OneClickTransbankCert']))
 			throw new \Exception('OneClickClient -> Invalid webpay files, files not found!');
 
-    	$this->oneclick = new OneClick(WP_ON_PRIVATE_KEY, WP_ON_CERT_FILE);
+		//set gateway cert file
+		$this->transbank_cert = $setup['OneClickTransbankCert'];
+
+		//module class
+    	$this->oneclick = new OneClick($setup['OneClickKey'], $setup['OneClickCert']);
     }
 
 	/**
@@ -52,7 +56,7 @@ class OneClickClient
 		$oneClickInscriptionResponse = $this->oneclick->initInscription(array("arg0" => $oneClickInscriptionInput));
 
 		$xmlResponse = $this->oneclick->soapClient->__getLastResponse();
-		$soapValidation = new \SoapValidation($xmlResponse, WP_ON_TRANSBANK_CERT);
+		$soapValidation = new \SoapValidation($xmlResponse, $this->transbank_cert);
 		$soapValidation->getValidationResult(); //Esto valida si el mensaje está firmado por Transbank
 		$oneClickInscriptionOutput = $oneClickInscriptionResponse->return; //Esto obtiene el resultado de la operación
 
@@ -75,7 +79,7 @@ class OneClickClient
 		$oneClickFinishInscriptionResponse = $this->oneclick->finishInscription(array( "arg0" => $oneClickFinishInscriptionInput));
 		
 		$xmlResponse = $this->oneclick->soapClient->__getLastResponse();
-		$soapValidation = new \SoapValidation($xmlResponse, WP_ON_TRANSBANK_CERT); 
+		$soapValidation = new \SoapValidation($xmlResponse, $this->transbank_cert); 
 
 		$oneClickFinishInscriptionOutput = $oneClickFinishInscriptionResponse->return;//Si la firma es válida
 		
@@ -105,7 +109,7 @@ class OneClickClient
 		$removeUserResponse = $this->oneclick->removeUser(array("arg0" => $oneClickRemoveUserInput));
 		
 		$xmlResponse = $this->oneclick->soapClient->__getLastResponse();
-		$soapValidation = new \SoapValidation($xmlResponse, WP_ON_TRANSBANK_CERT); //Si la firma es válida
+		$soapValidation = new \SoapValidation($xmlResponse, $this->transbank_cert); //Si la firma es válida
 		
 		return $removeUserResponse->return; // Valor booleano que indica si el usuario fue removido.
 	}
@@ -129,7 +133,7 @@ class OneClickClient
 		$oneClickauthorizeResponse = $this->oneclick->authorize(array ("arg0" => $oneClickPayInput));
 		
 		$xmlResponse = $this->oneclick->soapClient->__getLastResponse();
-		$soapValidation = new \SoapValidation($xmlResponse, WP_ON_TRANSBANK_CERT);
+		$soapValidation = new \SoapValidation($xmlResponse, $this->transbank_cert);
 		
 		$oneClickPayOutput = $oneClickauthorizeResponse->return;
 
@@ -157,7 +161,7 @@ class OneClickClient
 		$revertTransaction = $this->oneclick->codeReverseOneClick(array("arg0" => $oneClickReverseInput));
 		
 		$xmlResponse = $this->oneclick->soapClient->__getLastResponse();
-		$soapValidation = new \SoapValidation($xmlResponse, WP_ON_TRANSBANK_CERT); //Si la firma es válida
+		$soapValidation = new \SoapValidation($xmlResponse, $this->transbank_cert); //Si la firma es válida
 		
 		$response = $revertTransaction->return;
 
