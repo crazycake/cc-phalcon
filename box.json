@@ -1,6 +1,6 @@
 {
 	"blacklist": [],
-    "directories": ["phalcon","core","models","traits","utils","qr","transbank"],
+    "directories": ["phalcon","core","models","traits","utils","qr","soap","transbank"],
     "bootstrap" : "Bootstrap.php",
     "main": "AppLoader.php",
     "output": "cc-phalcon.phar",

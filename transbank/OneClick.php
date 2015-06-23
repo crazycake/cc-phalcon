@@ -2,15 +2,12 @@
 /**
  * CrazyCake OneClick
  * @author Cristhoper Jaña <cristhoper.jana@crazycake.cl>
- * @contibutors Nicolas Pulido <nicolas.pulido@crazycake.cl>
+ * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
 namespace CrazyCake\Transbank;
 
-require_once 'CCSoapClient.php';
-require_once 'soap/soap-validation.php';
-
-class CCOneClick
+class OneClick
 {
     /* consts */
     const WP_ONE_CLICK_DEV_PAYMENT_URL = 'https://webpay3g.orangepeople.cl/webpayserver/wswebpay/OneClickPaymentService?wsdl';
@@ -53,22 +50,31 @@ class CCOneClick
     
     /**
      * constructor
-     * @param string $url The Soap URL service
+     * @param string $key_file_path The Key file path
+     * @param string $cert_file_path The Cert file path
+     * @param string $url The Soap URL service (optional)
      */
-    function __construct($url = self::WP_ONE_CLICK_DEV_PAYMENT_URL)
+    function __construct($key_file_path, $cert_file_path, $url = self::WP_ONE_CLICK_DEV_PAYMENT_URL)
     {
         //options for SSL configuration
         $opts = array(
             'ssl' => array('ciphers' => 'RC4-SHA', 'verify_peer' => false, 'verify_peer_name' => false)
         );
 
-        //new soap client
-        $this->soapClient = new CCSoapClient($url, array(
-            "classmap"       => self::$classmap,
-            "trace"          => true,
-            "exceptions"     => true,
-            'stream_context' => stream_context_create($opts))
-        );
+        try {
+            //new soap client
+            $this->soapClient = new \CrazyCake\Soap\SoapClientHelper($url, array(
+                "classmap"       => self::$classmap,
+                "trace"          => true,
+                "exceptions"     => true,
+                'stream_context' => stream_context_create($opts))
+            );
+            //set security files
+            $this->soapClient->setSecurityFiles($key_file_path, $cert_file_path);
+        }
+        catch(\Exception $e) {
+            throw new \Exception("OneClick -> Soap Client Lib is required");
+        }
     }
     
     function removeUser($removeUser)

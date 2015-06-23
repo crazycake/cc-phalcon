@@ -1,16 +1,40 @@
 <?php
 /**
- * CrazyCake Webpay client
+ * CrazyCake OneClickClient
  * @author Cristhoper Jaña <cristhoper.jana@crazycake.cl>
- * @contibutors Nicolas Pulido <nicolas.pulido@crazycake.cl>
+ * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
 namespace CrazyCake\Transbank;
 
-require_once 'CCOneClick.php';
-
-class CCWebpayClient
+class OneClickClient
 {
+	/**
+	 * @var object
+	 */
+	protected $oneclick;
+
+	/** 
+	 * Constructor
+	 */
+    public function __construct($setup = array())
+    {
+		//check required files	
+    	if(!isset($setup['OneClickKey']) || !isset($setup['OneClickCert']) || !isset($setup['OneClickTransbankCert']))
+    		throw new \Exception('OneClickClient -> Invalid webpay setup input array.');
+
+    	//consts
+		define('WP_ON_PRIVATE_KEY', $setup['OneClickKey']);
+		define('WP_ON_CERT_FILE',	 $setup['OneClickCert']);
+		define('WP_ON_TRANSBANK_CERT', $setup['OneClickTransbankCert']);
+
+		//validate files
+		if(!is_file(WP_ON_PRIVATE_KEY) || !is_file(WP_ON_CERT_FILE) || !is_file(WP_ON_TRANSBANK_CERT))
+			throw new \Exception('OneClickClient -> Invalid webpay files, files not found!');
+
+    	$this->oneclick = new OneClick(WP_ON_PRIVATE_KEY, WP_ON_CERT_FILE);
+    }
+
 	/**
 	 * The init process to credit card inscription
 	 * @param  string $username     The username as namespace
@@ -20,18 +44,16 @@ class CCWebpayClient
 	 */
 	public function initCardInscription($username, $email, $response_url)
 	{
-		$oneClickService = new CCOneClick();
 		$oneClickInscriptionInput = new oneClickInscriptionInput();
 		$oneClickInscriptionInput->username = $username;
 		$oneClickInscriptionInput->email = $email;
 		$oneClickInscriptionInput->responseURL = $response_url;
 		
-		$oneClickInscriptionResponse = $oneClickService->initInscription(array("arg0" => $oneClickInscriptionInput));
+		$oneClickInscriptionResponse = $this->oneclick->initInscription(array("arg0" => $oneClickInscriptionInput));
 
-		$xmlResponse = $oneClickService->soapClient->__getLastResponse();
-		$soapValidation = new \SoapValidation($xmlResponse, WP_TRANSBANK_CERT);
+		$xmlResponse = $this->oneclick->soapClient->__getLastResponse();
+		$soapValidation = new \SoapValidation($xmlResponse, WP_ON_TRANSBANK_CERT);
 		$soapValidation->getValidationResult(); //Esto valida si el mensaje está firmado por Transbank
-
 		$oneClickInscriptionOutput = $oneClickInscriptionResponse->return; //Esto obtiene el resultado de la operación
 
 		$payload = new \stdClass();
@@ -47,14 +69,13 @@ class CCWebpayClient
 	 */
 	public function finishCardInscription($received_token)
 	{
-		$oneClickService = new CCOneClick();
 		$oneClickFinishInscriptionInput = new oneClickFinishInscriptionInput();
 		$oneClickFinishInscriptionInput->token = $received_token; // es el token de resultado obtenido en el metodo initInscription.
 		
-		$oneClickFinishInscriptionResponse = $oneClickService->finishInscription(array( "arg0" => $oneClickFinishInscriptionInput));
+		$oneClickFinishInscriptionResponse = $this->oneclick->finishInscription(array( "arg0" => $oneClickFinishInscriptionInput));
 		
-		$xmlResponse = $oneClickService->soapClient->__getLastResponse();
-		$soapValidation = new \SoapValidation($xmlResponse, WP_TRANSBANK_CERT); 
+		$xmlResponse = $this->oneclick->soapClient->__getLastResponse();
+		$soapValidation = new \SoapValidation($xmlResponse, WP_ON_TRANSBANK_CERT); 
 
 		$oneClickFinishInscriptionOutput = $oneClickFinishInscriptionResponse->return;//Si la firma es válida
 		
@@ -74,17 +95,17 @@ class CCWebpayClient
 	 * @param  string $commerceUser The username
 	 * @return boolean
 	 */
-	public function removeCardInscription($tbkUser, $commerceUser){
-		$oneClickService = new CCOneClick();
+	public function removeCardInscription($tbkUser, $commerceUser)
+	{
 		$oneClickRemoveUserInput = new oneClickRemoveUserInput();
 
 		$oneClickRemoveUserInput->tbkUser = $tbkUser; // identificador de usuario entregado en el servicio finishInscription
 		$oneClickRemoveUserInput->username = $commerceUser; // identificador de usuario del comercio
 		
-		$removeUserResponse = $oneClickService->removeUser(array("arg0" => $oneClickRemoveUserInput));
+		$removeUserResponse = $this->oneclick->removeUser(array("arg0" => $oneClickRemoveUserInput));
 		
-		$xmlResponse = $oneClickService->soapClient->__getLastResponse();
-		$soapValidation = new \SoapValidation($xmlResponse, WP_TRANSBANK_CERT); //Si la firma es válida
+		$xmlResponse = $this->oneclick->soapClient->__getLastResponse();
+		$soapValidation = new \SoapValidation($xmlResponse, WP_ON_TRANSBANK_CERT); //Si la firma es válida
 		
 		return $removeUserResponse->return; // Valor booleano que indica si el usuario fue removido.
 	}
@@ -99,17 +120,16 @@ class CCWebpayClient
 	 */
 	public function authorizeCardPayment($amount, $buyOrder, $tbkUser, $username)
 	{
-		$oneClickService = new CCOneClick();
 		$oneClickPayInput = new oneClickPayInput();
 		$oneClickPayInput->amount = $amount; // monto de pago
 		$oneClickPayInput->buyOrder = $buyOrder; // orden de compra
 		$oneClickPayInput->tbkUser = $tbkUser; // identificador de usuario entregado en el servicio finishInscription
 		$oneClickPayInput->username = $username; // identificador de usuario del comercio
 
-		$oneClickauthorizeResponse = $oneClickService->authorize(array ("arg0" => $oneClickPayInput));
+		$oneClickauthorizeResponse = $this->oneclick->authorize(array ("arg0" => $oneClickPayInput));
 		
-		$xmlResponse = $oneClickService->soapClient->__getLastResponse();
-		$soapValidation = new \SoapValidation($xmlResponse, WP_TRANSBANK_CERT);
+		$xmlResponse = $this->oneclick->soapClient->__getLastResponse();
+		$soapValidation = new \SoapValidation($xmlResponse, WP_ON_TRANSBANK_CERT);
 		
 		$oneClickPayOutput = $oneClickauthorizeResponse->return;
 
@@ -129,15 +149,15 @@ class CCWebpayClient
 	 * @param  string $buyOrder The buy order
 	 * @return mixed
 	 */
-	public function reverseCardTransaction($buyOrder){
-		$oneClickService = new CCOneClick();
+	public function reverseCardTransaction($buyOrder)
+	{
 		$oneClickReverseInput = new oneClickReverseInput();
 		$oneClickReverseInput->buyorder= $buyOrder;
 
-		$revertTransaction = $oneClickService->codeReverseOneClick(array("arg0" => $oneClickReverseInput));
+		$revertTransaction = $this->oneclick->codeReverseOneClick(array("arg0" => $oneClickReverseInput));
 		
-		$xmlResponse = $oneClickService->soapClient->__getLastResponse();
-		$soapValidation = new \SoapValidation($xmlResponse, WP_TRANSBANK_CERT); //Si la firma es válida
+		$xmlResponse = $this->oneclick->soapClient->__getLastResponse();
+		$soapValidation = new \SoapValidation($xmlResponse, WP_ON_TRANSBANK_CERT); //Si la firma es válida
 		
 		$response = $revertTransaction->return;
 

@@ -38,10 +38,10 @@ return array (
   ),
   'transbank' => 
   array (
-    0 => 'CCOneClick.php',
-    1 => 'CCSoapClient.php',
-    2 => 'CCWebpay.php',
-    3 => 'CCWebpayClient.php',
+    0 => 'OneClick.php',
+    1 => 'SoapClient.php',
+    2 => 'Webpay.php',
+    3 => 'OneClickClient.php',
   ),
   'utils' => 
   array (
