@@ -256,7 +256,7 @@ class AppServices
                 'success' => 'success',
                 'error'   => 'alert',
                 'notice'  => 'notice',
-                'warning' => 'warning',
+                'warning' => 'warning'
             ));
             return $flash;
         });

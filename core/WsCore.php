@@ -212,7 +212,7 @@ abstract class WsCore extends Controller
 
             array_push($objects, $new_obj);
         }
-        
+
         return $objects;
     }
 
@@ -273,7 +273,7 @@ abstract class WsCore extends Controller
                     $invalid_data = true;
                     break;
                 }
-               
+
                 $data[$field] = null;
                 continue;
             }
@@ -293,7 +293,7 @@ abstract class WsCore extends Controller
         //check invalid data
         if ($invalid_data)
             return $this->_sendJsonResponse(400);
-            
+
         //var_dump($data);exit;
         return $data;
     }
@@ -330,7 +330,7 @@ abstract class WsCore extends Controller
     }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
-    
+
     /**
      * API key Validation
      * @return void
