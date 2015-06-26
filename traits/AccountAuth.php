@@ -63,7 +63,7 @@ trait AccountAuth
 
         //view vars
         $this->view->setVar("html_title", $this->accountConfig['text_title_sign_up']);
-        
+
         //send birthday data for form
         if(isset($this->accountConfig['birthday_form_fields']) && $this->accountConfig['birthday_form_fields'])
             $this->view->setVar("bday_elements", $this->__getBirthdaySelectors());
@@ -205,7 +205,7 @@ trait AccountAuth
         //send activation account email
         $this->_sendAsyncMailMessage($this->accountConfig['method_mailer_activation'], $user->id);
         //set a flash message to show on account controller
-        $this->flash->success(str_replace("#email#", $user->email, $this->accountConfig['text_activation_pending']));
+        $this->flash->success(str_replace("{email}", $user->email, $this->accountConfig['text_activation_pending']));
 
         //send JSON response
         $this->_sendJsonResponse(200);
@@ -238,13 +238,13 @@ trait AccountAuth
 
         //if user was not found send error message
         if (!$user)
-            $this->_sendJsonResponse(200, $this->accountConfig['text_account_not_found'], 'alert'); 
+            $this->_sendJsonResponse(200, $this->accountConfig['text_account_not_found'], 'alert');
 
         //send email message with password recovery steps
         $this->_sendAsyncMailMessage($this->accountConfig['method_mailer_activation'], $user->id);
 
         //set payload
-        $payload = str_replace("#email#", $data['email'], $this->accountConfig['text_activation_pending']);
+        $payload = str_replace("{email}", $data['email'], $this->accountConfig['text_activation_pending']);
 
         //send JSON response
         $this->_sendJsonResponse(200, $payload);

@@ -163,7 +163,7 @@ trait Facebook
 
     /**
      * Handler - Deauthorize a facebook user
-     * @param int $user_id 
+     * @param int $user_id
      * @return mixed (boolean|array)
      */
     public function deauthorizeAction($user_id = 0)
@@ -174,7 +174,7 @@ trait Facebook
     /**
      * Handler - Get user facebook properties from a already created session
      * @param string $fac Facebook AccesToken
-     * @param int $user_id 
+     * @param int $user_id
      * @return mixed (boolean|array)
      */
     public function getUserFacebookSessionProperties($fac = null, $user_id = 0)
@@ -187,7 +187,7 @@ trait Facebook
 
         // Get the graph-user object for the current user (validation)
         $fb_data = (new FacebookRequest($fb_session, 'GET', '/me'))->execute()->getGraphObject(GraphUser::className());
-        
+
         if(!$fb_data)
             return false;
 
@@ -199,8 +199,8 @@ trait Facebook
 
     /**
      * Handler - Set user facebook publish perm
-     * @param int $user_id 
-     * @param int $perm 
+     * @param int $user_id
+     * @param int $perm
      * @return boolean
      */
     public function setUserFacebookPublishPerm($user_id, $perm = 1)
@@ -259,7 +259,7 @@ trait Facebook
 
             if(is_null($session))
                 throw new \Exception($this->facebookConfig['text_oauth_redirected']);
-                
+
             //get session data
             $fac   = $session->getToken();
             $fb_id = $session->getSessionInfo()->getId();
@@ -270,12 +270,12 @@ trait Facebook
             //validate fb session properties
             if(!$properties)
                 throw new \Exception($this->facebookConfig['text_session_error']);
-            
+
             //email validation
             if (empty($properties['email']) || !filter_var($properties['email'], FILTER_VALIDATE_EMAIL)) {
                 $this->logger->error("Facebook::__loginUserFacebook() -> Facebook Session (" . $properties['fb_id'] . ") invalid email: " . $properties['email']);
-                throw new \Exception(str_replace("#email#", $properties['email'], $this->facebookConfig['text_invalid_email']));
-            } 
+                throw new \Exception(str_replace("{email}", $properties['email'], $this->facebookConfig['text_invalid_email']));
+            }
 
             //OK, check if user exists in Users Facebook table
             $session_data = $this->_getUserSessionData();
@@ -284,8 +284,8 @@ trait Facebook
             if ($session_data && $session_data["fb_id"] && $session_data["fb_id"] != $fb_id) {
                 $this->logger->error("Facebook::__loginUserFacebook() -> App Session fb_id (" . $session_data["fb_id"]. ") & sdk session (" . $fb_id . ") data doesn't match.");
                 throw new \Exception($this->facebookConfig['text_session_switched']);
-            } 
-    
+            }
+
             //check if user has already a account registered by email
             $user = $users_class::getUserByEmail($properties['email']);
             //skip user insertion?
@@ -298,15 +298,15 @@ trait Facebook
                     $properties['account_flag'] = $users_class::$ACCOUNT_FLAGS['enabled'];
                 }
                 else if ($user->account_flag == $users_class::$ACCOUNT_FLAGS['disabled']) {
-                    throw new \Exception($this->facebookConfig['text_account_disabled']); 
+                    throw new \Exception($this->facebookConfig['text_account_disabled']);
                 }
-                
+
                 //update user ignoring arbitrary set keys
                 $user->update($properties);
             }
             else {
                 $user = new $users_class();
-                //extend properties                 
+                //extend properties
                 $properties['account_flag'] = $users_class::$ACCOUNT_FLAGS['enabled']; //set account flag as active
                 //insert user
                 if (!$user->save($properties)){
@@ -344,11 +344,11 @@ trait Facebook
 
         return $login_data;
     }
-    
+
     /**
      * Get user fb session by Facebook PHP SDK
      * @param string $fac (optional) Access token
-     * @param int $user_id 
+     * @param int $user_id
      * @throws Exception
      * @return mixed (boolean|string|object)
      */
@@ -515,7 +515,7 @@ trait Facebook
 
     /**
      * Parse facebook signed request got from Javascript SDK
-     * This should be used 
+     * This should be used
      * @link https://developers.facebook.com/docs/games/canvas/login
      * @param string $signed_request
      * @return mixed

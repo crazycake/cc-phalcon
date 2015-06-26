@@ -107,13 +107,13 @@ trait AccountPassRecovery
         $this->_sendAsyncMailMessage($this->accountConfig['method_mailer_pass_recovery'], $user->id);
 
         //set a flash message to show on account controller
-        $this->flash->success(str_replace("#email#", $data['email'], $this->accountConfig['text_pass_mail_sent']));
+        $this->flash->success(str_replace("{email}", $data['email'], $this->accountConfig['text_pass_mail_sent']));
 
         //send JSON response
         $this->_sendJsonResponse(200);
         return;
     }
-    
+
     /**
      * Ajax - Saves a new password set by the user in the post-recovery password view
      */
