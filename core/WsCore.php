@@ -74,7 +74,7 @@ abstract class WsCore extends Controller
     /**
      * Sends a JSON response
      * @access protected
-     * @param string $code (200, 404, etc)
+     * @param string $code The app message code, the HTTP statusCode is always 200.
      * @param null $data Payload to send
      * @return string The response
      */
