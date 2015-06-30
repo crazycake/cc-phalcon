@@ -1,7 +1,7 @@
 <?php
 /**
  * Ticket Storage Trait
- * This class manages tickets resources to AWS S3. 
+ * This class manages tickets resources to AWS S3.
  * Files are uploaded automatically to S3 in a defined URI.
  * Requires a Frontend or Backend Module with CoreController
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
@@ -14,7 +14,7 @@ use CrazyCake\Utils\StorageS3;  //AWS S3 File Storage helper
 use CrazyCake\Qr\QRMaker;       //CrazyCake QR
 use CrazyCake\Utils\PdfHelper;  //PDF generator
 
-trait TicketStorage
+trait TicketManager
 {
 	/**
      * abstract required methods
@@ -71,11 +71,10 @@ trait TicketStorage
         $this->s3 = new StorageS3($this->config->app->awsAccessKey,
                                   $this->config->app->awsSecretKey,
                                   $this->config->app->awsS3Bucket);
-
         //set PDF settings
         $this->pdf_settings = array(
             'app_name' => $this->config->app->name,
-        );        
+        );
     }
     /**
      * Binary Image - Outputs QR ticket image as binary with Content-Type png
@@ -95,9 +94,9 @@ trait TicketStorage
 
             if(empty($hashed_id))
                 throw new \Exception("Invalid ticket hashed_id");
-                    
+
             $ticket_id = $this->cryptify->decryptHashId($hashed_id);
-            
+
             //validates that ticket belongs to user
             //get anonymous function from settings
             $get_user_ticket_fn = $this->storageConfig["get_user_ticket_function"];
@@ -114,7 +113,7 @@ trait TicketStorage
             $s3_path         = self::$DEFAULT_S3_URI."/".$user_id."/".$ticket_filename;
             //get image in S3
             $binary = $this->s3->getObject($s3_path, true);
-            
+
             //regenerate image?
             if(!$binary) {
                 if($file_type == "png") {
@@ -148,7 +147,7 @@ trait TicketStorage
     {
         //set qr settings
         $this->qr_settings = $this->storageConfig['qr_settings'];
-        
+
         $qr_filename = $user_ticket->qr_hash.".png";
         $qr_savepath = $this->storageConfig['local_temp_path'].$qr_filename;
         $s3_path     = self::$DEFAULT_S3_URI."/".$user_ticket->user_id."/".$qr_filename;
