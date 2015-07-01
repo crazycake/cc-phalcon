@@ -54,11 +54,11 @@ class StorageS3
         $this->secretKey  = $secret;
         $this->bucketName = $bucket;
 
-        try { 
+        try {
             $this->s3 = new S3($this->accessKey, $this->secretKey);
         }
         catch (Exception $e) {
-            throw new Exception("StorageS3::__construct -> An error raises authenticating S3");
+            throw new Exception("StorageS3::__construct -> An error occurred authenticating S3");
         }
     }
 
@@ -72,7 +72,12 @@ class StorageS3
     {
         $private = $private ? S3::ACL_PRIVATE : S3::ACL_PUBLIC_READ;
 
-        S3::putObject(S3::inputFile($file, false), $this->bucketName, $uploadName, $private);
+        try {
+            S3::putObject(S3::inputFile($file, false), $this->bucketName, $uploadName, $private);
+        }
+        catch (Exception $e) {
+            throw new Exception("StorageS3::putObject -> An error occurred pushing resource (".$file.") to S3. Error: ".$e->getMessage());
+        }
     }
 
     /**
