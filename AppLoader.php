@@ -105,9 +105,9 @@ abstract class AppLoader
         $this->_directoriesSetup();
         $this->_autoloadClasses();
     }
-    
+
     /**
-     * Set App Dependency Injector 
+     * Set App Dependency Injector
      * @access public
      * @param array $module_configs extended module configs
      */
@@ -155,14 +155,14 @@ abstract class AppLoader
                 $params = array_values($arguments['params']);
                 $arguments['params'] = $params;
             }
-            
+
             //define global constants for the current task and action
             define('CLI_TASK', isset($argv[1]) ? $argv[1] : null);
             define('CLI_ACTION', isset($argv[2]) ? $argv[2] : null);
             //handle incoming arguments
             $application->handle($arguments);
         }
-        elseif($this->module == "api") {
+        else if($this->module == "api") {
             //new micro app
             $application = new \Phalcon\Mvc\Micro($this->di);
             //apply a routes function if param given (must be done before object instance)
@@ -189,8 +189,12 @@ abstract class AppLoader
 
             //new mvc app
             $application = new \Phalcon\Mvc\Application($this->di);
+            $output = $application->handle()->getContent();
             //Handle the request
-            echo $application->handle()->getContent();
+            if(APP_ENVIRONMENT !== 'development')
+                ob_start(array($this,"_minifyHTML"));
+
+            echo $output;
         }
     }
 
@@ -201,10 +205,10 @@ abstract class AppLoader
      * @return string
      */
     public static function getModuleEnviromentURL($module = "")
-    {        
+    {
         if(APP_ENVIRONMENT === 'development')
             return str_replace(array('/api/','/frontend/','/backend/'), "/$module/", APP_BASE_URL);
-        else 
+        else
             return str_replace(array('.api.','.frontend.','.backend.'), ".$module.", APP_BASE_URL);
     }
 
@@ -250,7 +254,7 @@ abstract class AppLoader
         $phar = new Phar(Phar::running());
         //extract all files in a given directory
         $phar->extractTo($cache_path, $assets, true);
-               
+
         //return path
         return $output_path;
     }
@@ -282,7 +286,7 @@ abstract class AppLoader
         if(isset($this->app_props['awsS3Bucket'])) {
             $this->app_props['awsS3Bucket'] .= (APP_ENVIRONMENT == 'production') ? '-prod' : '-dev';
         }
-        
+
         //finally, set app properties
         $this->app_config["app"] = $this->app_props;
     }
@@ -461,4 +465,19 @@ abstract class AppLoader
         define("APP_ENVIRONMENT", $app_environment);
         define("APP_BASE_URL", $app_base_url);
     }
+
+    /**
+     * Minifies HTML output
+     * @param string $buffer The buffer
+     */
+     private function _minifyHTML($buffer)
+     {
+        $search  = array('/\>[^\S ]+/s', '/[^\S ]+\</s', '/(\s)+/s');
+        $replace = array('>','<','\\1');
+
+        if (preg_match("/\<html/i",$buffer) == 1 && preg_match("/\<\/html\>/i",$buffer) == 1)
+            $buffer = preg_replace($search, $replace, $buffer);
+
+        return $buffer;
+     }
 }
