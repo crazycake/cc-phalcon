@@ -214,9 +214,9 @@ trait TicketManager
             //get ticket object with UI properties
             $user_ticket_ui = $get_user_ticket_ui_fn($user->id, $user_ticket);
             //set extended pdf data
-            $this->pdf_settings["user"]    = $user;
-            $this->pdf_settings["ticket"]  = $user_ticket_ui;
-            $this->pdf_settings["qr_path"] = $qr_savepath;
+            $this->pdf_settings["data_user"]    = $user;
+            $this->pdf_settings["data_ticket"]  = $user_ticket_ui;
+            $this->pdf_settings["data_qr_path"] = $qr_savepath;
 
             //get template
             $html_raw = $this->simpleView->render($this->storageConfig['ticket_pdf_template_view'], $this->pdf_settings);

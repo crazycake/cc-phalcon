@@ -106,26 +106,7 @@ abstract class BaseUsersTicketsModel extends BaseModel
      */
     protected function generateRandomCode($length = 8)
     {
-        $code = "";
-        //exclude some chars for legible strings
-        $excluded_nums  = array("0", "2", "5");
-		$excluded_chars = array("O", "Z", "S", "I", "V");
-
-        for ($k = 1; $k <= $length; $k++) {
-
-            $num  = chr(rand(48, 57));
-            $char = strtoupper(chr(rand(97, 122)));
-            $p 	  = rand(1,2);
-
-            if(in_array($num, $excluded_nums))
-				$num  = ($p == 1) ? "4" : "G";
-
-            if(in_array($char, $excluded_chars))
-                $char = ($p == 1) ? "C" : "7";
-
-            //append string
-            $code .= ($p == 1) ? $num : $char;
-        }
+        $code = $this->getDI()->get('cryptify')->generateAlphanumericCode($length);
 
         //unique constrait
         $exists = self::findFirst(array(
