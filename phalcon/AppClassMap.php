@@ -12,7 +12,8 @@ return array (
     0 => 'BaseDictionaryModel.php',
     1 => 'BaseModel.php',
     2 => 'BaseUsersModel.php',
-    3 => 'BaseUsersTokensModel.php',
+    3 => 'BaseUsersTicketsModel.php',
+    4 => 'BaseUsersTokensModel.php',
   ),
   'phalcon' => 
   array (
@@ -38,7 +39,7 @@ return array (
     5 => 'Guzzle.php',
     6 => 'Ses.php',
     7 => 'Session.php',
-    8 => 'TicketStorage.php',
+    8 => 'TicketManager.php',
   ),
   'transbank' => 
   array (
