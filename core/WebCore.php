@@ -121,24 +121,22 @@ abstract class WebCore extends Controller
     }
 
     /**
-     * Filter ORM null properties and returns a simple array
+     * Parse ORM properties and returns a simple array
      * @access protected
      * @param object $result Phalcon Resulset
-     * @return mixed array|boolean
+     * @return mixed array
      */
-    protected function _filterOrmResultset($result)
+    protected function _parseOrmResultset($result)
     {
-        if(!method_exists($result,'count'))
-            return false;
-
-        if(empty($result->count()))
-            return false;
+        if(!method_exists($result,'count') || empty($result->count()))
+            return array();
 
         $objects = array();
         foreach ($result as $object) {
             $object = (object) array_filter((array) $object);
             array_push($objects, $object);
         }
+
         return $objects;
     }
 
@@ -241,7 +239,7 @@ abstract class WebCore extends Controller
         //check for invalid data
         if ($invalid_data)
             return $send_json ? $this->_sendJsonResponse(400) : false;
-        
+
         return $data;
     }
 
@@ -347,13 +345,13 @@ abstract class WebCore extends Controller
         $this->response->send();
     }
 
-    /** 
+    /**
      * Dispatch to Internal Error
      * @param string $message The human error message
      * @param string $go_back_url A go-back link URL
      * @param string $object_id An option id for logic flux
      * @param string $log_error The debug message to log
-     * 
+     *
      */
     protected function _dispatchInternalError($message = null, $go_back_url = null, $object_id = 0, $log_error = "n/a")
     {
@@ -425,7 +423,7 @@ abstract class WebCore extends Controller
                 $this->logger->debug('WebCore::_sendAsyncMailMessage -> Got response from MailerController:\n' . $response);
 
             return $response;
-        } 
+        }
     }
 
     /**
@@ -624,8 +622,8 @@ abstract class WebCore extends Controller
         $this->setAppJavascriptProperties($app_js);
 
         //send javascript vars to view as JSON enconded
-        $this->view->setVar("app_js", json_encode($app_js, JSON_UNESCAPED_SLASHES)); 
-        $this->view->setVar("client_js", json_encode($this->client, JSON_UNESCAPED_SLASHES)); 
+        $this->view->setVar("app_js", json_encode($app_js, JSON_UNESCAPED_SLASHES));
+        $this->view->setVar("client_js", json_encode($this->client, JSON_UNESCAPED_SLASHES));
     }
 
     /**
