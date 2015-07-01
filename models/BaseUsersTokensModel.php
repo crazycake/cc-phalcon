@@ -17,7 +17,7 @@ abstract class BaseUsersTokensModel extends BaseModel
     public static $TOKEN_EXPIRES_THRESHOLD = 2; //days
 
     /* properties */
-    
+
     /**
      * @var int
      */
@@ -45,7 +45,7 @@ abstract class BaseUsersTokensModel extends BaseModel
      */
     static $TOKEN_TYPES = array('activation', 'pass');
 
-    /** -------------------------------------------- § ------------------------------------------------- 
+    /** -------------------------------------------- § -------------------------------------------------
         Init
     ------------------------------------------------------------------------------------------------- **/
     public function initialize()
@@ -57,7 +57,7 @@ abstract class BaseUsersTokensModel extends BaseModel
         Validations
     ------------------------------------------------------------------------------------------------- **/
     public function validation()
-    {        
+    {
         //type
         $this->validate(new InclusionIn(array(
             "field"   => "type",
@@ -114,8 +114,8 @@ abstract class BaseUsersTokensModel extends BaseModel
         //Save a new temporal token
         $class = static::who();
         $token = new $class();
-        $token->user_id = $user_id;     
-        $token->token   = uniqid();  //creates a 13 len token  
+        $token->user_id = $user_id;
+        $token->token   = uniqid();  //creates a 13 len token
         $token->type    = $type;
 
         if( $token->save() )
@@ -166,7 +166,7 @@ abstract class BaseUsersTokensModel extends BaseModel
             throw new \Exception("sent input null encrypted_data");
 
         $di   = \Phalcon\DI::getDefault();
-        $data = explode("#", $di->getCryptify()->decryptForGetResponse($encrypted_data));
+        $data = $di->getCryptify()->decryptForGetResponse($encrypted_data, "#");
 
         //validate data (user_id, token_type and token)
         if (count($data) != 3)

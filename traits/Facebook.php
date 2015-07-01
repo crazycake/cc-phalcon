@@ -131,7 +131,7 @@ trait Facebook
             return $this->_sendJsonResponse(405); //method now allowed
 
         //get encrypted facebook user id and short live access token
-        $data = explode("#", $this->cryptify->decryptForGetResponse($encrypted_data));
+        $data = $this->cryptify->decryptForGetResponse($encrypted_data, "#");
         //set vars
         list($fb_id, $short_live_fac) = $data;
 
