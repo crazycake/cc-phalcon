@@ -84,7 +84,7 @@ trait AccountPassRecovery
         //validate and filter request params data, second params are the required fields
         $data = $this->_handleRequestParams(array(
             'email'                => 'email',
-            'g-recaptcha-response' => 'string',
+            '@g-recaptcha-response' => 'string',
         ));
 
         //google reCaptcha helper
