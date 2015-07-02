@@ -19,12 +19,12 @@ class OneClickClient
 	 */
 	protected $transbank_cert;
 
-	/** 
+	/**
 	 * Constructor
 	 */
     public function __construct($setup = array())
     {
-		//check required files	
+		//check required files
     	if(!isset($setup['OneClickKey']) || !isset($setup['OneClickCert']) || !isset($setup['OneClickTransbankCert']))
     		throw new \Exception('OneClickClient -> Invalid webpay setup input array.');
 
@@ -52,7 +52,7 @@ class OneClickClient
 		$oneClickInscriptionInput->username = $username;
 		$oneClickInscriptionInput->email = $email;
 		$oneClickInscriptionInput->responseURL = $response_url;
-		
+
 		$oneClickInscriptionResponse = $this->oneclick->initInscription(array("arg0" => $oneClickInscriptionInput));
 
 		$xmlResponse = $this->oneclick->soapClient->__getLastResponse();
@@ -75,14 +75,14 @@ class OneClickClient
 	{
 		$oneClickFinishInscriptionInput = new oneClickFinishInscriptionInput();
 		$oneClickFinishInscriptionInput->token = $received_token; // es el token de resultado obtenido en el metodo initInscription.
-		
+
 		$oneClickFinishInscriptionResponse = $this->oneclick->finishInscription(array( "arg0" => $oneClickFinishInscriptionInput));
-		
+
 		$xmlResponse = $this->oneclick->soapClient->__getLastResponse();
-		$soapValidation = new \SoapValidation($xmlResponse, $this->transbank_cert); 
+		$soapValidation = new \SoapValidation($xmlResponse, $this->transbank_cert);
 
 		$oneClickFinishInscriptionOutput = $oneClickFinishInscriptionResponse->return;//Si la firma es válida
-		
+
 		//Datos de resultado de la inscripción OneClick
 		$payload = new \stdClass();
 		$payload->response_code   = $oneClickFinishInscriptionOutput->responseCode;
@@ -105,12 +105,12 @@ class OneClickClient
 
 		$oneClickRemoveUserInput->tbkUser = $tbkUser; // identificador de usuario entregado en el servicio finishInscription
 		$oneClickRemoveUserInput->username = $commerceUser; // identificador de usuario del comercio
-		
+
 		$removeUserResponse = $this->oneclick->removeUser(array("arg0" => $oneClickRemoveUserInput));
-		
+
 		$xmlResponse = $this->oneclick->soapClient->__getLastResponse();
 		$soapValidation = new \SoapValidation($xmlResponse, $this->transbank_cert); //Si la firma es válida
-		
+
 		return $removeUserResponse->return; // Valor booleano que indica si el usuario fue removido.
 	}
 
@@ -118,7 +118,7 @@ class OneClickClient
 	 * Authorize a card payment
 	 * @param  int $amount   The amount
 	 * @param  string $buyOrder The buy order
-	 * @param  int $tbkUser  The gateway user id 
+	 * @param  int $tbkUser  The gateway user id
 	 * @param  string $username The username
 	 * @return object
 	 */
@@ -131,18 +131,18 @@ class OneClickClient
 		$oneClickPayInput->username = $username; // identificador de usuario del comercio
 
 		$oneClickauthorizeResponse = $this->oneclick->authorize(array ("arg0" => $oneClickPayInput));
-		
+
 		$xmlResponse = $this->oneclick->soapClient->__getLastResponse();
 		$soapValidation = new \SoapValidation($xmlResponse, $this->transbank_cert);
-		
+
 		$oneClickPayOutput = $oneClickauthorizeResponse->return;
 
 		//Resultado de la autorización
 		$payload = new \stdClass();
-		$payload->response_code	  = $oneClickPayOutput->responseCode;
-		$payload->auth_code 	  = $oneClickPayOutput->authorizationCode;
-		$payload->card_type  	  = $oneClickPayOutput->creditCardType;
-		$payload->last_digits 	  = $oneClickPayOutput->last4CardDigits;
+		$payload->response_code	   = $oneClickPayOutput->responseCode;
+		$payload->auth_code 	   = $oneClickPayOutput->authorizationCode;
+		$payload->card_type  	   = $oneClickPayOutput->creditCardType;
+		$payload->card_last_digits = $oneClickPayOutput->last4CardDigits;
 		//set webpay transaction_id
 		$payload->gateway_transaction_id = $oneClickPayOutput->transactionId;
 		return $payload;
@@ -159,10 +159,10 @@ class OneClickClient
 		$oneClickReverseInput->buyorder= $buyOrder;
 
 		$revertTransaction = $this->oneclick->codeReverseOneClick(array("arg0" => $oneClickReverseInput));
-		
+
 		$xmlResponse = $this->oneclick->soapClient->__getLastResponse();
 		$soapValidation = new \SoapValidation($xmlResponse, $this->transbank_cert); //Si la firma es válida
-		
+
 		$response = $revertTransaction->return;
 
 		$payload = new \stdClass();
