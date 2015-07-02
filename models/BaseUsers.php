@@ -11,7 +11,7 @@ use Phalcon\Mvc\Model\Validator\Email;
 use Phalcon\Mvc\Model\Validator\InclusionIn;
 use Phalcon\Mvc\Model\Validator\Uniqueness;
 
-abstract class BaseModelUsers extends BaseModel
+abstract class BaseUsers extends Base
 {
     /**
      * child required methods

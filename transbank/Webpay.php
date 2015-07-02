@@ -17,7 +17,7 @@ class Webpay
 		"kcc" 	   => __NAMESPACE__."\\KccClient"
 	);
 
-	/** 
+	/**
 	 * Constructor
 	 * @param array $setup The cert & key files path (OneClickKey, OneClickCert, OneClickTransbankCert)
 	 */

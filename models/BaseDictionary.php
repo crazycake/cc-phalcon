@@ -7,7 +7,7 @@
 
 namespace CrazyCake\Models;
 
-class BaseModelDictionary
+class BaseDictionary
 {
      /* properties */
 
@@ -29,7 +29,7 @@ class BaseModelDictionary
      function __construct($obj_id = null)
      {
         if(is_null($obj_id))
-            throw new \Exception("BaseModelDictionary::__construct -> param obj_id is required and must be an non-empty value.");
+            throw new \Exception("BaseDictionary::__construct -> param obj_id is required and must be an non-empty value.");
 
         //set properties
         $this->id = $obj_id;
@@ -45,7 +45,7 @@ class BaseModelDictionary
     public function setValueForKey($key = "0", $data = null)
     {
         if(empty($key))
-            throw new \Exception("BaseModelDictionary::setValueForKey -> key must not be empty.");
+            throw new \Exception("BaseDictionary::setValueForKey -> key must not be empty.");
 
         $this->objects[$key] = $data;
     }

@@ -35,7 +35,7 @@ abstract class TaskCore extends Task
     {
         $open  = "";
         $close = "\033[0m";
-        
+
         switch ($status) {
             case "OK":
                 $open = "\033[92m";     //Green color

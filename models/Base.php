@@ -6,10 +6,10 @@
 
 namespace CrazyCake\Models;
 
-class BaseModel extends \Phalcon\Mvc\Model
+class Base extends \Phalcon\Mvc\Model
 {
     /* properties */
-    
+
     /**
      * @var int
      */

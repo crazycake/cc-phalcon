@@ -9,7 +9,7 @@ namespace CrazyCake\Models;
 //imports
 //...
 
-class BaseModelUsersFacebook extends BaseModel
+class BaseUsersFacebook extends Base
 {
     /* properties */
 

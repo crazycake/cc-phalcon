@@ -9,11 +9,13 @@ return array (
   ),
   'models' => 
   array (
-    0 => 'BaseDictionaryModel.php',
-    1 => 'BaseModel.php',
-    2 => 'BaseUsersModel.php',
-    3 => 'BaseUsersTicketsModel.php',
-    4 => 'BaseUsersTokensModel.php',
+    0 => 'Base.php',
+    1 => 'BaseDictionary.php',
+    2 => 'BaseTickets.php',
+    3 => 'BaseUsers.php',
+    4 => 'BaseUsersFacebook.php',
+    5 => 'BaseUsersTickets.php',
+    6 => 'BaseUsersTokens.php',
   ),
   'phalcon' => 
   array (

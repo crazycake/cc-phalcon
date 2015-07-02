@@ -20,7 +20,7 @@ trait Session
     abstract protected function setUserSessionAsLoggedIn($user);
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
-	
+
     /**
      * Set user data object for view
      * @param array $filter A string array of properties to filter
@@ -124,8 +124,8 @@ trait Session
     {
         //get user session
         $user_session = $this->session->get("user");
-        //assumed that users use BaseModel
-        $users_class = $this->getModuleClassName('users');
+        $users_class  = $this->getModuleClassName('users');
+        //get user
         $user = $users_class::getObjectById($user_session['id']);
 
         if (!$user)
@@ -240,7 +240,7 @@ trait Session
 
             return;
         }
-    
+
         $this->_redirectTo("account");
     }
 

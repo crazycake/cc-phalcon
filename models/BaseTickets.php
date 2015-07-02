@@ -11,7 +11,7 @@ use Phalcon\Mvc\Model\Validator\InclusionIn;
 //other imports
 use CrazyCake\Utils\DateHelper;
 
-class BaseModelTickets extends BaseModel
+class BaseTickets extends Base
 {
     //this static method can be 'overrided' as late binding
     public static $CHECKOUT_MAX_NUMBER = 10;

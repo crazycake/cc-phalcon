@@ -9,7 +9,7 @@ namespace CrazyCake\Models;
 //other imports
 use CrazyCake\Utils\DateHelper;
 
-class BaseModelUsersTickets extends BaseModel
+class BaseUsersTickets extends Base
 {
     //this static methods can be 'overrided' as late binding
     public static $TOKEN_EXPIRES_THRESHOLD = 2; //days
@@ -107,11 +107,8 @@ class BaseModelUsersTickets extends BaseModel
     protected function generateRandomCode($length = 8)
     {
         $code = $this->getDI()->get('cryptify')->generateAlphanumericCode($length);
-
         //unique constrait
-        $exists = self::findFirst(array(
-            "code = '".$code."'"
-        ));;
+        $exists = self::findFirst( array("code = '".$code."'") );
 
         return $exists ? $this->generateRandomCode($length) : $code;
     }
