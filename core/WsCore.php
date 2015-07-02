@@ -166,12 +166,12 @@ abstract class WsCore extends Controller
     }
 
     /**
-     * Parse ORM Resulset to send as json objects
+     * Split ORM Resulset object properties
      * @access protected
      * @param Simple Resulset $result
      * @return array
      */
-    protected function _parseOrmResulsetForJsonStruct($result)
+    protected function _splitOrmResulset($result)
     {
         if(!$result)
             return array();

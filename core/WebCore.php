@@ -98,7 +98,7 @@ abstract class WebCore extends Controller
     }
 
     /**
-     * Parse ORM validation messages struct
+     * Split ORM Resulset object properties
      * @access protected
      * @param object $obj
      * @param boolean $json_encode Returns a json string
@@ -124,9 +124,10 @@ abstract class WebCore extends Controller
      * Parse ORM properties and returns a simple array
      * @access protected
      * @param object $result Phalcon Resulset
+     * @param boolean $split Split objects flag
      * @return mixed array
      */
-    protected function _parseOrmResultset($result)
+    protected function _parseOrmResultset($result, $split = false)
     {
         if(!method_exists($result,'count') || empty($result->count()))
             return array();
@@ -135,6 +136,56 @@ abstract class WebCore extends Controller
         foreach ($result as $object) {
             $object = (object) array_filter((array) $object);
             array_push($objects, $object);
+        }
+
+        return $split ? $this->_splitOrmResulset($objects) : $objects;
+    }
+
+    /**
+     * Parse ORM resultset for Json Struct
+     * @access protected
+     * @param array $result
+     */
+    protected function _splitOrmResulset($result)
+    {
+        if(!$result)
+            return array();
+
+        $objects = array();
+        //loop each object
+        foreach ($result as $obj) {
+            //get object properties
+            $props = get_object_vars($obj);
+
+            if(empty($props))
+                continue;
+
+            $new_obj = new \stdClass();
+
+            foreach ($props as $k => $v) {
+                //filter properties than has a class prefix
+                $namespace = explode("_", $k);
+
+                //validate property namespace, check if class exists in models (append plural noun)
+                if(empty($namespace) || !class_exists(ucfirst($namespace[0]."s")))
+                    continue;
+
+                $type = $namespace[0];
+                $prop = str_replace($type."_","",$k);
+
+                //creates the object struct
+                if(!isset($new_obj->{$type}))
+                    $new_obj->{$type} = new \stdClass();
+
+                //set props
+                $new_obj->{$type}->{$prop} = $v;
+            }
+
+            //check for a non-props object
+            if(empty(get_object_vars($new_obj)))
+                continue;
+
+            array_push($objects, $new_obj);
         }
 
         return $objects;
