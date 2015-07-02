@@ -101,6 +101,7 @@ class BaseModelTickets extends BaseModel
 
     /**
      * Formats price
+     * @todo Complete other global coins formats
      * @static
      * @param numeric $price
      * @param string $coin
@@ -111,12 +112,11 @@ class BaseModelTickets extends BaseModel
         $formatted = $price;
 
         switch ($coin) {
-            case 'CL':
+            case 'CLP':
                 $formatted = "$".str_replace(".00", "", number_format($formatted));
                 $formatted = str_replace(",", ".", $formatted);
                 break;
-            case 'US':
-                //todo...
+            case 'USD':
                 break;
             default:
                 break;
