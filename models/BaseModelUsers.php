@@ -11,7 +11,7 @@ use Phalcon\Mvc\Model\Validator\Email;
 use Phalcon\Mvc\Model\Validator\InclusionIn;
 use Phalcon\Mvc\Model\Validator\Uniqueness;
 
-abstract class BaseUsersModel extends BaseModel
+abstract class BaseModelUsers extends BaseModel
 {
     /**
      * child required methods
@@ -19,7 +19,7 @@ abstract class BaseUsersModel extends BaseModel
     abstract protected function getModelMessage($key);
 
     /* properties */
-    
+
     /**
      * @var string
      */
@@ -58,7 +58,7 @@ abstract class BaseUsersModel extends BaseModel
     public $account_flag;
 
     /* inclusion vars */
-    
+
     /**
      * @static
      * @var array
@@ -69,7 +69,7 @@ abstract class BaseUsersModel extends BaseModel
                                     'disabled' => 'd'
                                 );
 
-    /** ------------------------------------------- § -------------------------------------------------- 
+    /** ------------------------------------------- § --------------------------------------------------
         Init
     ------------------------------------------------------------------------------------------------- **/
     public function initialize()
@@ -109,7 +109,7 @@ abstract class BaseUsersModel extends BaseModel
     }
     /** ---------------------------------------------------------------------------------------------- **/
     public function notSave()
-    {        
+    {
         //...
     }
     /** -------------------------------------------------------------------------------------------------
@@ -174,5 +174,5 @@ abstract class BaseUsersModel extends BaseModel
         $user = self::findFirst("namespace = '".$namespace."'");
 
         return $user ? true : false;
-    } 
+    }
 }

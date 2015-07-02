@@ -11,7 +11,7 @@ use Phalcon\Mvc\Model\Validator\InclusionIn;
 //other imports
 use CrazyCake\Utils\DateHelper;
 
-abstract class BaseUsersTokensModel extends BaseModel
+class BaseModelUsersTokens extends BaseModel
 {
     //this static method can be 'overrided' as late binding
     public static $TOKEN_EXPIRES_THRESHOLD = 2; //days

@@ -9,7 +9,7 @@ namespace CrazyCake\Models;
 //other imports
 use CrazyCake\Utils\DateHelper;
 
-abstract class BaseUsersTicketsModel extends BaseModel
+class BaseModelUsersTickets extends BaseModel
 {
     //this static methods can be 'overrided' as late binding
     public static $TOKEN_EXPIRES_THRESHOLD = 2; //days
