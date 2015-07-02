@@ -1,6 +1,6 @@
 <?php
 /**
- * Base Users Tokens Model
+ * Base Model Users Tokens
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 

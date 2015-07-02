@@ -1,6 +1,6 @@
 <?php
 /**
- * Base Users Tickets Model
+ * Base Model Users Tickets
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 

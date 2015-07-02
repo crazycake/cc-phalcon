@@ -1,6 +1,6 @@
 <?php
 /**
- * Base Dictionary Model
+ * Base Model Dictionary
  * This simple model is used for key => array structs
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
