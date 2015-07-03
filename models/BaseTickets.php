@@ -13,9 +13,6 @@ use CrazyCake\Utils\DateHelper;
 
 class BaseTickets extends Base
 {
-    //this static method can be 'overrided' as late binding
-    public static $CHECKOUT_MAX_NUMBER = 10;
-
     /* properties */
 
     /**
@@ -98,6 +95,55 @@ class BaseTickets extends Base
             return false;
     }
     /** ------------------------------------------- § ------------------------------------------------ **/
+
+    /**
+     * Gets object quantity and validates stock
+     * @static
+     * @param int $ticket_id The ticket id
+     * @param int $q The amount needed
+     * @param string $checkout_class If set, includes in validation UsersCheckouts items
+     * @return boolean
+     */
+    public static function validateTicketStock($ticket_id = 0, $q = 0, $checkout_class = null)
+    {
+        $object = self::getObjectById($ticket_id);
+
+        if(!$object)
+            return 0;
+
+        if(is_null($checkout_class))
+            return ($object->quantity >= $q) ? true : false;
+
+        if(!class_exists($checkout_class))
+            throw new Exception("BaseTickets -> Checkout class not found ($checkout_class)");
+
+        //get self class
+        $object_class = static::who();
+        //get checkout quantity
+        $checkout_objects = $checkout_class::getObjectsByPhql(
+           //phql
+           "SELECT SUM(quantity) AS q
+            FROM $checkout_class
+            WHERE object_id = :object_id:
+                AND object_class = :object_class:
+            ",
+           //binds
+           array('object_id' => $ticket_id, "object_class" => $object_class)
+       );
+       //get sum quantity
+       $checkout_q = $checkout_objects->getFirst()->q;
+
+        if(is_null($checkout_q))
+            $checkout_q = 0;
+
+        //substract total
+        $total = $object->quantity - $checkout_q;
+
+        if($total <= 0)
+            return false;
+
+       return ($total > $q) ? true : false;
+    }
 
     /**
      * Formats price

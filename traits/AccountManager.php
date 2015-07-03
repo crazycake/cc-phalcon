@@ -36,14 +36,7 @@ trait AccountManager
         parent::initialize();
 
         //check if user is logged in, if not dispatch to auth/logout
-        if ($this->_checkUserIsLoggedIn() === false) {
-            if ($this->request->isAjax())
-                $this->_sendJsonResponse(403);
-            else
-                $this->dispatcher->forward(array("controller" => "auth", "action" => "logout"));
-            
-            return;
-        }
+        $this->_checkUserIsLoggedIn(true);
 
         //set session var
         $this->user_session = $this->_getUserSessionData();
@@ -92,7 +85,7 @@ trait AccountManager
         //check if profile changed and save new data
         $updating_data = array();
         try {
-            //check for password 
+            //check for password
             if(!empty($data['pass']) && empty($data['current_pass']))
                 throw new \Exception($this->accountConfig['text_current_pass_empty']);
 

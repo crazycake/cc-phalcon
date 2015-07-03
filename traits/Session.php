@@ -36,24 +36,44 @@ trait Session
 
     /**
      * Check that user is logged in
+     * @param boolean $dispatch_logout, Handles the response for loggedOut status
      * @return boolean
      */
-    protected function _checkUserIsLoggedIn()
+    protected function _checkUserIsLoggedIn($dispatch_logout = false)
     {
-        if (!$this->session->has("user"))
-            return false;
+        //anonymous function
+        $loggedIn = function() {
+            if (!$this->session->has("user"))
+                return false;
 
-        //get user session
-        $user_session = $this->session->get("user");
+            //get user session
+            $user_session = $this->session->get("user");
 
-        if (!is_array($user_session) || !isset($user_session['id']) || !isset($user_session['auth']))
-            return false;
+            if (!is_array($user_session) || !isset($user_session['id']) || !isset($user_session['auth']))
+                return false;
 
-        $users_class = $this->getModuleClassName('users');
-        if ($users_class::getObjectById($user_session['id']) == false)
-            return false;
+            $users_class = $this->getModuleClassName('users');
+            if ($users_class::getObjectById($user_session['id']) == false)
+                return false;
 
-        return $user_session['auth'] ? true : false;
+            return $user_session['auth'] ? true : false;
+        };
+
+        if(!$dispatch_logout) {
+            return $loggedIn();
+        }
+
+        //check if user is logged in, if not dispatch to auth/logout
+        if (!$loggedIn()) {
+            if ($this->request->isAjax())
+                $this->_sendJsonResponse(403);
+            else
+                $this->dispatcher->forward(array("controller" => "auth", "action" => "logout"));
+
+            return ;
+        }
+
+        return true;
     }
 
     /**
@@ -232,7 +252,6 @@ trait Session
      */
     protected function _redirectToAccount($check_logged_in = false)
     {
-
         if ($check_logged_in) {
 
             if($this->_checkUserIsLoggedIn())

@@ -13,9 +13,10 @@ return array (
     1 => 'BaseDictionary.php',
     2 => 'BaseTickets.php',
     3 => 'BaseUsers.php',
-    4 => 'BaseUsersFacebook.php',
-    5 => 'BaseUsersTickets.php',
-    6 => 'BaseUsersTokens.php',
+    4 => 'BaseUsersCheckouts.php',
+    5 => 'BaseUsersFacebook.php',
+    6 => 'BaseUsersTickets.php',
+    7 => 'BaseUsersTokens.php',
   ),
   'phalcon' => 
   array (

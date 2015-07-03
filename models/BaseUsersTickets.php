@@ -12,8 +12,7 @@ use CrazyCake\Utils\DateHelper;
 class BaseUsersTickets extends Base
 {
     //this static methods can be 'overrided' as late binding
-    public static $TOKEN_EXPIRES_THRESHOLD = 2; //days
-    public static $TICKET_ALPHA_CODE_LEGTH = 10;
+    public static $TICKET_CODE_LEGTH = 10;
 
     /* properties */
 
@@ -69,7 +68,7 @@ class BaseUsersTickets extends Base
 
         //set alphanumeric code
         if(is_null($this->code))
-            $this->code = $this->generateRandomCode(self::$TICKET_ALPHA_CODE_LEGTH);
+            $this->code = $this->generateRandomCode(static::$TICKET_CODE_LEGTH);
     }
 
     /** ------------------------------------------- § ------------------------------------------------ **/

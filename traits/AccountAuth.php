@@ -154,7 +154,7 @@ trait AccountAuth
                     $namespace = 'ACCOUNT_PENDING';
                 }
 
-                //show error message
+                //show error message with custom handler
                 $this->_sendJsonResponse(200, $msg, true, $namespace);
             }
 
