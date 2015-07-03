@@ -387,13 +387,22 @@ abstract class WebCore extends Controller
     }
 
     /**
+     * Redirect to given uri
+     * @param string $uri The URI to redirect
+     */
+    protected function _redirectTo($uri = "")
+    {
+        $this->response->redirect($this->_baseUrl($uri), true);
+        $this->response->send();
+        die();
+    }
+
+    /**
      * Redirect to notFound error page
-     * @access protected
      */
     protected function _redirectToNotFound()
     {
-        $this->response->redirect($this->_baseUrl("not_found"), true);
-        $this->response->send();
+        $this->_redirectTo("errors/notFound");
     }
 
     /**
