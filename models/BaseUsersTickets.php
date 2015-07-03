@@ -101,7 +101,6 @@ class BaseUsersTickets extends Base
      * Generates a random Code for a ticket
      * @access protected
      * @param  string $phrase
-     * @param  int $length
      * @return string
      */
     protected function generateRandomCode($length = 8)

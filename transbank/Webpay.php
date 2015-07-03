@@ -13,8 +13,7 @@ class Webpay
 	public $client;
 
 	private static $MODULES = array(
-		"oneclick" => __NAMESPACE__."\\OneClickClient",
-		"kcc" 	   => __NAMESPACE__."\\KccClient"
+		"oneclick" => __NAMESPACE__."\\OneClickClient"
 	);
 
 	/**
