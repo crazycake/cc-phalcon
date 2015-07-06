@@ -168,6 +168,9 @@ trait AccountAuth
         if (!$payload)
             $this->_sendJsonResponse(200, $this->accountConfig['text_auth_failed'], 'alert');
 
+        //redirection (from session trait)
+        $payload = array("redirect" => $this->_getSessionRedirectionAfterAuth());
+
         //send JSON response
         $this->_sendJsonResponse(200, $payload);
         return;

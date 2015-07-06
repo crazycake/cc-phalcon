@@ -247,6 +247,37 @@ trait Session
     }
 
     /**
+     * Returns redirection URL after user has authenticated
+     * @param string $key The session dictionary key
+     * @return string
+     */
+    protected function _getSessionRedirectionAfterAuth($key = "auth_redirect")
+    {
+        if (!$this->session->has($key))
+            return $this->_baseUrl("account");
+
+        //remove session data after fetch
+        $url = $this->session->get($key);
+        $this->session->remove($key);
+
+        return $url;
+    }
+
+    /**
+     * Set redirection URL for after loggedIn event
+     * @param string $url The URL to be redirected
+     * @param string $key The session dictionary key
+     */
+    protected function _setSessionRedirectionAfterAuth($url = null, $key = "auth_redirect")
+    {
+        if(is_null($url))
+            return false;
+
+        $this->session->set($key, $url);
+        return true;
+    }
+
+    /**
      * Redirect to account controller, cames from a loggedIn
      * @param boolean $check_logged_in Checks if user is logged in, if not skips redirect
      */
