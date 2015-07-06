@@ -104,7 +104,7 @@ trait AccountPassRecovery
             $this->_sendJsonResponse(200, $this->accountConfig['text_account_not_found'], 'alert');
 
         //send email message with password recovery steps
-        $this->_sendAsyncMailMessage($this->accountConfig['method_mailer_pass_recovery'], $user->id);
+        $this->_sendAsyncMailMessage($this->accountConfig['mailer_pass_recovery_method'], $user->id);
 
         //set a flash message to show on account controller
         $this->flash->success(str_replace("{email}", $data['email'], $this->accountConfig['text_pass_mail_sent']));

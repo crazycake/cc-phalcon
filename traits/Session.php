@@ -104,6 +104,56 @@ trait Session
     }
 
     /**
+     * Handles response on logged in event, check for pending redirection
+     */
+    protected function _handleResponseOnLoggedIn()
+    {
+        $uri = $this->_getSessionRedirectionAfterAuth();
+        //check for ajax request
+        if($this->request->isAjax()) {
+            //redirection
+            $payload = array("redirect" => $this->_baseUrl($uri));
+            //send JSON response
+            $this->_sendJsonResponse(200, $payload);
+        }
+        else {
+            //for non ajax request
+            $this->_redirectTo($uri);
+        }
+    }
+
+    /**
+     * Returns redirection URL after user has authenticated
+     * @param string $key The session dictionary key
+     * @return string
+     */
+    protected function _getSessionRedirectionAfterAuth($key = "auth_redirect")
+    {
+        if (!$this->session->has($key))
+            return "account"; //default redirection
+
+        //remove session data after fetch
+        $uri = $this->session->get($key);
+        $this->session->remove($key);
+
+        return $uri;
+    }
+
+    /**
+     * Set redirection URL for after loggedIn event
+     * @param string $uri The URL to be redirected
+     * @param string $key The session dictionary key
+     */
+    protected function _setSessionRedirectionAfterAuth($uri = null, $key = "auth_redirect")
+    {
+        if(is_null($uri))
+            $uri  = ".".$this->request->getUri();
+
+        $this->session->set($key, $uri);
+        return true;
+    }
+
+    /**
      * Get logged in user session data
      * @param array $filter Filters sensitive data
      * @return array The session array
@@ -243,37 +293,6 @@ trait Session
             return false;
 
         $this->session->remove($key);
-        return true;
-    }
-
-    /**
-     * Returns redirection URL after user has authenticated
-     * @param string $key The session dictionary key
-     * @return string
-     */
-    protected function _getSessionRedirectionAfterAuth($key = "auth_redirect")
-    {
-        if (!$this->session->has($key))
-            return $this->_baseUrl("account");
-
-        //remove session data after fetch
-        $url = $this->session->get($key);
-        $this->session->remove($key);
-
-        return $url;
-    }
-
-    /**
-     * Set redirection URL for after loggedIn event
-     * @param string $url The URL to be redirected
-     * @param string $key The session dictionary key
-     */
-    protected function _setSessionRedirectionAfterAuth($url = null, $key = "auth_redirect")
-    {
-        if(is_null($url))
-            return false;
-
-        $this->session->set($key, $url);
         return true;
     }
 

@@ -29,6 +29,7 @@ trait Facebook
      * abstract required methods
      */
     abstract public function setConfigurations();
+    abstract public function onLoginRedirectionForSettings();
 
     /**
      * Config var
@@ -77,8 +78,8 @@ trait Facebook
         if($response['fb_error'])
             $this->_sendJsonResponse(200, $response["fb_error"], true);
 
-        //send JSON response
-        $this->_sendJsonResponse(200);
+        //handle response
+        $this->_handleResponseOnLoggedIn();
     }
 
     /**
@@ -87,7 +88,7 @@ trait Facebook
      */
     public function loginByRedirectAction()
     {
-        $login_uri = $this->facebookConfig['facebook_controller_name']."/loginByRedirect/";
+        $login_uri = $this->facebookConfig['controller_name']."/loginByRedirect/";
         //get helper object
         $helper  = new FacebookRedirectLoginHelper($this->_baseUrl($login_uri));
         $session = $helper->getSessionFromRedirect();
@@ -103,21 +104,16 @@ trait Facebook
             return;
         }
 
-        //OK, user is loggedIn, if is publish action setting updated, just redirect to respective controller
-        if($this->session->has("client")) {
-            $client = $this->session->get("client");
-            //socials action
-            if($client->last_uri == "socials") {
-                $user_session = $this->_getUserSessionData();
-                $this->setUserFacebookPublishPerm($user_session["id"]);
+        //handle facebook settings authentications
+        $client = $this->session->get("client");
+        $settings_uri = explode("/", $this->facebookConfig['settings_uri']);
+        $last_uri = empty($settings_uri) ? $this->facebookConfig['settings_uri'] : end($settings_uri);
+        //socials action
+        if($client->last_uri == $last_uri)
+            $this->onLoginRedirectionForSettings();
 
-                //redirect
-                $this->_redirectTo($this->facebookConfig['facebook_socials_uri']);
-            }
-        }
-
-        //redirect
-        $this->_redirectToAccount();
+        //handle response
+        $this->_handleResponseOnLoggedIn();
     }
 
     /**
@@ -221,7 +217,7 @@ trait Facebook
      */
     public function loadFacebookLoginURL($redirect_url = false)
     {
-        $login_uri = $this->facebookConfig['facebook_controller_name']."/loginByRedirect/";
+        $login_uri = $this->facebookConfig['controller_name']."/loginByRedirect/";
 
         if(!$redirect_url)
             $redirect_url = $this->_baseUrl($login_uri);
@@ -323,7 +319,7 @@ trait Facebook
             //Guzzle Async operation to extend access token (append fb userID and short live access token)
             $encrypted_data = $this->cryptify->encryptForGetRequest($fb_id."#".$fac);
             //request async with promises
-            $extend_token_uri = $this->facebookConfig['facebook_controller_name']."/extendAccessToken/";
+            $extend_token_uri = $this->facebookConfig['controller_name']."/extendAccessToken/";
             $response = (new GuzzleClient())->get($this->_baseUrl($extend_token_uri.$encrypted_data), ['future' => true]);
             //save response only for non production-environment
             $this->logGuzzleResponse($response, $extend_token_uri);

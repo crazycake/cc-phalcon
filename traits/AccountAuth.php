@@ -135,15 +135,13 @@ trait AccountAuth
 
         //get model classes
         $users_class = $this->getModuleClassName('users');
-
         //find this user
         $user = $users_class::getUserByEmail($data['email']);
 
-        $payload = false;
         //check user &  given hash with the one stored
         if ($user && $this->security->checkHash($data['pass'], $user->pass)) {
             //check user account flag
-            if ($user->account_flag != $users_class::$ACCOUNT_FLAGS['enabled'] ) {
+            if ($user->account_flag != $users_class::$ACCOUNT_FLAGS['enabled']) {
                 //set message
                 $msg = $this->accountConfig['text_account_disabled'];
                 $namespace = null;
@@ -159,21 +157,12 @@ trait AccountAuth
             }
 
             //success login
-            $payload = true;
-            //session controller
             $this->_setUserSessionAsLoggedIn($user->id);
+            $this->_handleResponseOnLoggedIn();
         }
 
         //wrong combination?
-        if (!$payload)
-            $this->_sendJsonResponse(200, $this->accountConfig['text_auth_failed'], 'alert');
-
-        //redirection (from session trait)
-        $payload = array("redirect" => $this->_getSessionRedirectionAfterAuth());
-
-        //send JSON response
-        $this->_sendJsonResponse(200, $payload);
-        return;
+        $this->_sendJsonResponse(200, $this->accountConfig['text_auth_failed'], 'alert');
     }
 
     /**
@@ -210,9 +199,8 @@ trait AccountAuth
         //set a flash message to show on account controller
         $this->flash->success(str_replace("{email}", $user->email, $this->accountConfig['text_activation_pending']));
 
-        //send JSON response
-        $this->_sendJsonResponse(200);
-        return;
+        //handle response
+        $this->_handleResponseOnLoggedIn();
     }
 
     /**
