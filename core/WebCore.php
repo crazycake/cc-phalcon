@@ -192,14 +192,17 @@ abstract class WebCore extends Controller
     }
 
     /**
-     * Get the requested URI as array
+     * Get the requested URI
      * @access protected
      */
-    protected function _getRequestedUrlAsArray()
+    protected function _getRequestedUri()
     {
-        $uris = explode("/", $this->request->getURI());
+        $uri = $this->request->getUri();
+        //replaces '*/public/' or first '/'
+        $regex = "/^.*\/public\/(?=[^.]*$)|^\//";
+        $uri = preg_replace($regex, "", $uri);
 
-        return empty($uris) ? false : $uris;
+        return $uri;
     }
 
     /**
@@ -638,9 +641,8 @@ abstract class WebCore extends Controller
     {
         //get session previously created and set extended properties
         $this->client = $this->session->get("client");
-        //last visited url
-        $last_uri = $this->_getRequestedUrlAsArray();
-        $this->client->last_uri = end($last_uri);
+        //get last request uri
+        $this->client->requested_uri = $this->_getRequestedUri();
         //save in session
         $this->session->set("client", $this->client);
     }

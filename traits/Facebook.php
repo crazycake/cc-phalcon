@@ -106,10 +106,8 @@ trait Facebook
 
         //handle facebook settings authentications
         $client = $this->session->get("client");
-        $settings_uri = explode("/", $this->facebookConfig['settings_uri']);
-        $last_uri = empty($settings_uri) ? $this->facebookConfig['settings_uri'] : end($settings_uri);
-        //socials action
-        if($client->last_uri == $last_uri)
+        //authenticated in settings controller
+        if($client->requested_uri == $this->facebookConfig['settings_uri'])
             $this->onLoginRedirectionForSettings();
 
         //handle response

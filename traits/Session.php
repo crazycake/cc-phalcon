@@ -108,7 +108,15 @@ trait Session
      */
     protected function _handleResponseOnLoggedIn()
     {
-        $uri = $this->_getSessionRedirectionAfterAuth();
+        $key = "auth_redirect";
+        $uri = "account"; //default redirection
+
+        //check if redirection is set in session
+        if($this->session->has($key)) {
+            $uri = $this->session->get($key);
+            $this->session->remove($key);
+        }
+
         //check for ajax request
         if($this->request->isAjax()) {
             //redirection
@@ -123,34 +131,16 @@ trait Session
     }
 
     /**
-     * Returns redirection URL after user has authenticated
-     * @param string $key The session dictionary key
-     * @return string
-     */
-    protected function _getSessionRedirectionAfterAuth($key = "auth_redirect")
-    {
-        if (!$this->session->has($key))
-            return "account"; //default redirection
-
-        //remove session data after fetch
-        $uri = $this->session->get($key);
-        $this->session->remove($key);
-
-        return $uri;
-    }
-
-    /**
      * Set redirection URL for after loggedIn event
      * @param string $uri The URL to be redirected
      * @param string $key The session dictionary key
      */
-    protected function _setSessionRedirectionAfterAuth($uri = null, $key = "auth_redirect")
+    protected function _setSessionRedirectionOnLoggedIn($uri = null)
     {
         if(is_null($uri))
-            $uri  = ".".$this->request->getUri();
+            $uri = $this->_getRequestedUri();
 
-        $this->session->set($key, $uri);
-        return true;
+        $this->session->set("auth_redirect", $uri);
     }
 
     /**
@@ -230,7 +220,7 @@ trait Session
      * @param string $index The index of the array (optional)
      * @return boolean
      */
-    protected function _addSessionObject($key = 'session_objects', $obj = null, $index = null)
+    protected function _addSessionObject($key = "session_objects", $obj = null, $index = null)
     {
         if(is_null($obj))
             return false;
@@ -255,7 +245,7 @@ trait Session
      * @param string $key The key name of the session
      * @return mixed[boolean|array]
      */
-    protected function _getSessionObjects($key = 'session_objects')
+    protected function _getSessionObjects($key = "session_objects")
     {
         if (!$this->session->has($key))
             return false;
@@ -269,7 +259,7 @@ trait Session
      * @param string $index The index in array to be removed
      * @return boolean
      */
-    protected function _removeSessionObject($key = 'session_objects', $index = null)
+    protected function _removeSessionObject($key = "session_objects", $index = null)
     {
         if (!$this->session->has($key) || is_null($index))
             return false;
@@ -286,7 +276,7 @@ trait Session
      * Destroy session custom objects stored in session
      * @param string $key The key name of the session
      */
-    protected function _destroySessionObjects($key = 'session_objects')
+    protected function _destroySessionObjects($key = "session_objects")
     {
         //check if data exists
         if (!$this->session->has($key))
