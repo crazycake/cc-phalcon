@@ -205,9 +205,10 @@ trait Session
      */
     protected function _destroyUserSessionAndRedirect($uri = "signIn")
     {
-        //unset user data
-        if ($this->session->has("user"))
-            $this->session->remove("user");
+        //unset all user session data
+        $this->session->remove("user");
+        $this->session->remove("auth_redirect");
+        $this->session->remove("session_objects");
 
         //redirect to given url, login as default
         $this->_redirectTo($uri);

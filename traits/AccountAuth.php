@@ -105,12 +105,10 @@ trait AccountAuth
             //save session data
             $this->_setUserSessionAsLoggedIn($user_id);
             $this->_redirectToAccount();
-            return;
         }
         catch (\Exception $e) {
             $this->logger->error('AccountAuth::activationAction -> Error in account activation, encrypted data ('.$encrypted_data."). Trace: ".$e->getMessage());
             $this->dispatcher->forward(array("controller" => "errors", "action" => "expired"));
-            return;
         }
     }
 
@@ -138,31 +136,29 @@ trait AccountAuth
         //find this user
         $user = $users_class::getUserByEmail($data['email']);
 
-        //check user &  given hash with the one stored
-        if ($user && $this->security->checkHash($data['pass'], $user->pass)) {
-            //check user account flag
-            if ($user->account_flag != $users_class::$ACCOUNT_FLAGS['enabled']) {
-                //set message
-                $msg = $this->accountConfig['text_account_disabled'];
-                $namespace = null;
-                //check account is pending
-                if ($user->account_flag == $users_class::$ACCOUNT_FLAGS['pending']) {
-                    $msg = $this->accountConfig['text_account_pending'];
-                    //set name for javascript view
-                    $namespace = 'ACCOUNT_PENDING';
-                }
+        //check user & given hash with the one stored (wrong combination)
+        if (!$user || !$this->security->checkHash($data['pass'], $user->pass))
+            $this->_sendJsonResponse(200, $this->accountConfig['text_auth_failed'], 'alert');
 
-                //show error message with custom handler
-                $this->_sendJsonResponse(200, $msg, true, $namespace);
+        //check user account flag
+        if ($user->account_flag != $users_class::$ACCOUNT_FLAGS['enabled']) {
+            //set message
+            $msg = $this->accountConfig['text_account_disabled'];
+            $namespace = null;
+            //check account is pending
+            if ($user->account_flag == $users_class::$ACCOUNT_FLAGS['pending']) {
+                $msg = $this->accountConfig['text_account_pending'];
+                //set name for javascript view
+                $namespace = 'ACCOUNT_PENDING';
             }
 
-            //success login
-            $this->_setUserSessionAsLoggedIn($user->id);
-            $this->_handleResponseOnLoggedIn();
+            //show error message with custom handler
+            $this->_sendJsonResponse(200, $msg, true, $namespace);
         }
 
-        //wrong combination?
-        $this->_sendJsonResponse(200, $this->accountConfig['text_auth_failed'], 'alert');
+        //success login
+        $this->_setUserSessionAsLoggedIn($user->id);
+        $this->_handleResponseOnLoggedIn();
     }
 
     /**

@@ -29,7 +29,7 @@ trait Facebook
      * abstract required methods
      */
     abstract public function setConfigurations();
-    abstract public function onLoginRedirectionForSettings();
+    abstract public function onSettingsLoginRedirection();
 
     /**
      * Config var
@@ -86,9 +86,9 @@ trait Facebook
      * Handler View - Login by redirect action via facebook login URL
      * @return json response
      */
-    public function loginByRedirectAction()
+    public function loginByRedirectAction($requested_uri = "")
     {
-        $login_uri = $this->facebookConfig['controller_name']."/loginByRedirect/";
+        $login_uri = $this->facebookConfig['controller_name']."/loginByRedirect/".$requested_uri;
         //get helper object
         $helper  = new FacebookRedirectLoginHelper($this->_baseUrl($login_uri));
         $session = $helper->getSessionFromRedirect();
@@ -104,11 +104,9 @@ trait Facebook
             return;
         }
 
-        //handle facebook settings authentications
-        $client = $this->session->get("client");
         //authenticated in settings controller
-        if($client->requested_uri == $this->facebookConfig['settings_uri'])
-            $this->onLoginRedirectionForSettings();
+        if($requested_uri == md5($this->facebookConfig['settings_uri']))
+            $this->onSettingsLoginRedirection();
 
         //handle response
         $this->_handleResponseOnLoggedIn();
@@ -210,15 +208,14 @@ trait Facebook
 
     /**
      * GetFacebookLogin URL
-     * @param string $redirect_url The Redirect URL
      * @return string
      */
-    public function loadFacebookLoginURL($redirect_url = false)
+    public function loadFacebookLoginURL()
     {
-        $login_uri = $this->facebookConfig['controller_name']."/loginByRedirect/";
-
-        if(!$redirect_url)
-            $redirect_url = $this->_baseUrl($login_uri);
+        //append request uri as hashed string
+        $requested_uri = md5($this->_getRequestedUri());
+        $login_uri     = $this->facebookConfig['controller_name']."/loginByRedirect/".$requested_uri;
+        $redirect_url  = $this->_baseUrl($login_uri);
 
         //get vars
         $app_id     = $this->config->app->facebookAppID;
