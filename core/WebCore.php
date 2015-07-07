@@ -41,7 +41,7 @@ abstract class WebCore extends Controller
      * @var array
      * @access protected
      */
-    protected $MSG_KEYS;
+    protected $MSGS;
 
     /** ---------------------------------------------------------------------------------------------------------------
      * Constructor function
@@ -51,7 +51,7 @@ abstract class WebCore extends Controller
         //set client object with its properties (User-Agent)
         $this->_setClientObject();
         //set message keys
-        $this->MSG_KEYS = array();
+        $this->MSGS = array();
     }
     /** ---------------------------------------------------------------------------------------------------------------
      * Init function,'$this' is the dependency injector reference

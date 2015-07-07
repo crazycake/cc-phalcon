@@ -27,7 +27,7 @@ abstract class WsCore extends Controller
      * @var array
      * @access protected
      */
-    protected $codes_array;
+    protected $CODES;
 
     /**
      * Constructor function
@@ -36,7 +36,7 @@ abstract class WsCore extends Controller
     protected function onConstruct()
     {
         /** -- API codes -- **/
-        $this->codes_array = array(
+        $this->CODES = array(
             //success
             "200" => "ok",
             //client errors
@@ -81,7 +81,7 @@ abstract class WsCore extends Controller
     protected function _sendJsonResponse($code = 200, $data = null)
     {
         //if code is not identified, send an unknown error
-        if (!isset($this->codes_array[$code]))
+        if (!isset($this->CODES[$code]))
             $code = 501;
 
         //is an app error?
@@ -104,7 +104,7 @@ abstract class WsCore extends Controller
             if (is_array($data))
                 $response["error"] = implode(". ", $data);
             else
-                $response["error"] = $this->codes_array[$code];
+                $response["error"] = $this->CODES[$code];
         }
         //success data
         else {
