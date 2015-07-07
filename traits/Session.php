@@ -64,16 +64,13 @@ trait Session
         }
 
         //check if user is logged in, if not dispatch to auth/logout
-        if (!$loggedIn()) {
-            if ($this->request->isAjax())
-                $this->_sendJsonResponse(403);
-            else
-                $this->dispatcher->forward(array("controller" => "auth", "action" => "logout"));
+        if ($loggedIn())
+            return true;
 
-            return ;
-        }
-
-        return true;
+        if ($this->request->isAjax())
+            $this->_sendJsonResponse(403);
+        else
+            $this->dispatcher->forward(array("controller" => "auth", "action" => "logout"));
     }
 
     /**
@@ -207,8 +204,6 @@ trait Session
     {
         //unset all user session data
         $this->session->remove("user");
-        $this->session->remove("auth_redirect");
-        $this->session->remove("session_objects");
 
         //redirect to given url, login as default
         $this->_redirectTo($uri);
