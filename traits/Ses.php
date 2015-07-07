@@ -177,7 +177,7 @@ trait Ses
         $css  = file_get_contents($this->sesConfig['cssFile']);
 
         $emogrifier = new Emogrifier($html, $css);
-        $html       = $emogrifier->emogrify();
+        $html = $emogrifier->emogrify();
 
         return $html;
     }

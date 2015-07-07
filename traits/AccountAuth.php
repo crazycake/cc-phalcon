@@ -13,9 +13,6 @@ namespace CrazyCake\Traits;
 use CrazyCake\Utils\ReCaptcha;
 use CrazyCake\Utils\DateHelper;
 
-/**
- * Account Authentication Trait
- */
 trait AccountAuth
 {
 	/**

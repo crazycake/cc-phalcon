@@ -2,7 +2,7 @@
 /**
  * Facebook Trait
  * This class has common actions for account facebook controllers
- * Requires a Frontend or Backend Module with CoreController and SessionTrait
+ * Requires a Frontend or Backend Module with CoreController and Session Trait
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
@@ -15,14 +15,9 @@ use Facebook\GraphUser;
 use Facebook\FacebookRequestException;
 use Facebook\FacebookRedirectLoginHelper;
 use Facebook\FacebookJavaScriptLoginHelper;
-//Guzzle for async requests
-use GuzzleHttp\Client as GuzzleClient;
 //CrazyCake Utils
 use CrazyCake\Utils\DateHelper;
 
-/**
- * Account Password Trait
- */
 trait Facebook
 {
     /**
@@ -311,13 +306,12 @@ trait Facebook
             if (!$user_fb)
                 $this->__saveNewUserFacebook($user->id, $fb_id, $fac, $properties['token_expiration']);
 
-            //Guzzle Async operation to extend access token (append fb userID and short live access token)
+            //extend access token (append fb userID and short live access token)
             $encrypted_data = $this->cryptify->encryptForGetRequest($fb_id."#".$fac);
-            //request async with promises
-            $extend_token_uri = $this->facebookConfig['controller_name']."/extendAccessToken/";
-            $response = (new GuzzleClient())->get($this->_baseUrl($extend_token_uri.$encrypted_data), ['future' => true]);
-            //save response only for non production-environment
-            $this->logGuzzleResponse($response, $extend_token_uri);
+            //set request url
+            $url = $this->_baseUrl($this->facebookConfig['controller_name']."/extendAccessToken/".$encrypted_data);
+            //send async request
+            $this->sendAsyncRequest($url);
         }
         catch (\Exception $e) {
             //an error ocurred
@@ -394,7 +388,8 @@ trait Facebook
         }
 
         //create a fac object
-        $fac_obj             = new \stdClass();
+        $fac_obj = new \stdClass();
+        //set properties
         $fac_obj->save       = false;
         $fac_obj->token      = $short_live_fac;
         $fac_obj->expires_at = 0;

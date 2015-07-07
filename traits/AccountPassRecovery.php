@@ -11,9 +11,6 @@ namespace CrazyCake\Traits;
 //imports
 use CrazyCake\Utils\ReCaptcha;
 
-/**
- * Account Password Trait
- */
 trait AccountPassRecovery
 {
     /**
