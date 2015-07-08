@@ -22,26 +22,15 @@ trait AccountManager
      */
     public $accountConfig;
 
-    /**
-     * Stores user sessiona array for direct access
-     * @var array
-     */
-    protected $user_session;
-
     /** ---------------------------------------------------------------------------------------------------------------
-     * Init Function, '$this' is the dependency injector reference
+     * Init Function, is executed before any action on a controller
      * ------------------------------------------------------------------------------------------------------------- **/
     protected function initialize()
     {
         parent::initialize();
-
         //check if user is logged in, if not dispatch to auth/logout
         $this->_checkUserIsLoggedIn(true);
-
-        //set session var
-        $this->user_session = $this->_getUserSessionData();
     }
-
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
@@ -68,19 +57,20 @@ trait AccountManager
             '@pass'          => 'string'
         );
 
-        $setting_params = isset($this->accountConfig['register_request_params']) ? $this->accountConfig['register_request_params'] : array();
-
-        //validate and filter request params data, second params are the required fields
-        $data = $this->_handleRequestParams(array_merge($default_params, $setting_params));
-
+        //get user data
+        $user_session = $this->_getUserSessionData();
         //get model class name
         $users_class = $this->getModuleClassName('users');
-
         //get user
-        $user = $users_class::getObjectById($this->user_session['id']);
+        $user = $users_class::getObjectById($user_session['id']);
         //validate user
         if(!$user)
             $this->_sendJsonResponse(404);
+
+        //get settings params
+        $setting_params = isset($this->accountConfig['register_request_params']) ? $this->accountConfig['register_request_params'] : array();
+        //validate and filter request params data, second params are the required fields
+        $data = $this->_handleRequestParams(array_merge($default_params, $setting_params));
 
         //check if profile changed and save new data
         $updating_data = array();

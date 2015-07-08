@@ -24,17 +24,16 @@ trait AccountPassRecovery
      */
     public $accountConfig;
 
-    /* --------------------------------------------------- § -------------------------------------------------------- */
-
-     /**
-      * Init Phalcon Controller
-      */
+    /** ---------------------------------------------------------------------------------------------------------------
+     * Init Function, is executed before any action on a controller
+     * ------------------------------------------------------------------------------------------------------------- **/
     protected function initialize()
     {
         parent::initialize();
         //if loggedIn redirect to account
         $this->_redirectToAccount(true);
     }
+    /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
      * View - Password recovery Action (send instructions view)
