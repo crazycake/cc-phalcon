@@ -673,7 +673,7 @@ abstract class WebCore extends Controller
         //set javascript global objects
         $app_js = new \stdClass();
         $app_js->name    = $this->config->app->name;
-        $app_js->baseUrl = APP_BASE_URL;
+        $app_js->baseUrl = $this->_baseUrl();
         $app_js->dev     = (APP_ENVIRONMENT == 'production') ? 0 : 1;
 
         //set UI properties?
