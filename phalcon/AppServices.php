@@ -205,8 +205,8 @@ class AppServices
         //Session Adapter
         $di->set('session', function() {
             $session = new \Phalcon\Session\Adapter\Files();
-            session_name($this->config->app->namespace);
-            //\Phalcon\Session\Adapter::setName($this->config->app->namespace)
+            //set session name
+            $session->setName($this->config->app->namespace);
             //start session
             $session->start();
             return $session;
