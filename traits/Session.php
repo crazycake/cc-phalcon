@@ -25,9 +25,8 @@ trait Session
      */
     protected function _setUserDataForView($filter = array())
     {
-        //Load view data only for non-ajax requests
+        //Load view data only for non-ajax requests, set user data var for view
         if (!$this->request->isAjax()) {
-            //set user data var for view
             $this->view->setVar("user_data", $this->_getUserSessionData($filter));
         }
     }
