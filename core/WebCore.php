@@ -166,6 +166,17 @@ abstract class WebCore extends AppCore implements webSecurity
     }
 
     /**
+     * Check for non Ajax request, redirects to notFound error page
+     */
+    protected function _onlyAjax()
+    {
+        if(!$this->request->isAjax())
+            $this->_redirectToNotFound();
+
+        return true;
+    }
+
+    /**
      * Dispatch to Internal Error
      * @param string $message The human error message
      * @param string $go_back_url A go-back link URL
@@ -176,7 +187,7 @@ abstract class WebCore extends AppCore implements webSecurity
     {
         //dispatch to internal
         $this->logger->info("WebCore::_dispatchInternalError -> Something ocurred (message: ".$message."). Error: ".$log_error);
-        
+
         //set message
         if(!is_null($message))
             $this->view->setVar("error_message", str_replace(".", ".<br/>", $message));

@@ -191,8 +191,11 @@ abstract class AppCore extends Controller
             $this->_sendJsonResponse(405);
 
         //validate always CSRF Token (prevents also headless browsers, POST only and API module excluded)
-        if (!$isApiModule && $check_csrf_token && !$this->_checkCsrfToken())
-            $this->_sendJsonResponse(498);
+        if (!$isApiModule && $check_csrf_token) {
+            //check if method exists
+            if(method_exists($this, '_checkCsrfToken') && !$this->_checkCsrfToken())
+                $this->_sendJsonResponse(498);
+        }
 
         //get POST or GET data
         $data = ($method == 'POST' ? $this->request->getPost() : $this->request->get());
