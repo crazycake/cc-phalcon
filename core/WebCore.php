@@ -8,7 +8,6 @@
 namespace CrazyCake\Core;
 
 //imports
-use Phalcon\Mvc\Controller;         //Phalcon Controller
 use Phalcon\Exception;              //Phalcon Exception
 //phalcon imports
 use Phalcon\Assets\Filters\Cssmin;  //CSS resources minification
@@ -16,7 +15,7 @@ use Phalcon\Assets\Filters\Jsmin;   //JS resources minification
 //CrazyCake Utils
 use CrazyCake\Utils\UserAgent;      //User Agent identifier
 
-abstract class WebCore extends Controller
+abstract class WebCore extends AppCore implements webSecurity
 {
     /* consts */
     const ASSETS_MIN_FOLDER_PATH = 'assets/';
@@ -85,248 +84,6 @@ abstract class WebCore extends Controller
         }
     }
     /* --------------------------------------------------- § -------------------------------------------------------- */
-
-    /**
-     * Base URL extended function
-     * @access protected
-     * @param string $uri A given URI
-     * @return string The static URL
-     */
-    protected function _baseUrl($uri = "")
-    {
-        return $this->url->getStaticBaseUri().$uri;
-    }
-
-    /**
-     * Split ORM Resulset object properties
-     * @access protected
-     * @param object $obj
-     * @param boolean $json_encode Returns a json string
-     * @return mixed array|string
-     */
-    protected function _parseOrmMessages($obj, $json_encode = false)
-    {
-        $data = array();
-
-        if (!method_exists($obj, 'getMessages'))
-            return ($data[0] = "Unknown ORM Error");
-
-        foreach ($obj->getMessages() as $msg)
-            array_push($data, $msg->getMessage());
-
-        if($json_encode)
-            $data = json_encode($data);
-
-        return $data;
-    }
-
-    /**
-     * Parse ORM properties and returns a simple array
-     * @access protected
-     * @param object $result Phalcon Resulset
-     * @param boolean $split Split objects flag
-     * @return mixed array
-     */
-    protected function _parseOrmResultset($result, $split = false)
-    {
-        if(!method_exists($result,'count') || empty($result->count()))
-            return array();
-
-        $objects = array();
-        foreach ($result as $object) {
-            $object = (object) array_filter((array) $object);
-            array_push($objects, $object);
-        }
-
-        return $split ? $this->_splitOrmResulset($objects) : $objects;
-    }
-
-    /**
-     * Parse ORM resultset for Json Struct
-     * @access protected
-     * @param array $result
-     */
-    protected function _splitOrmResulset($result)
-    {
-        if(!$result)
-            return array();
-
-        $objects = array();
-        //loop each object
-        foreach ($result as $obj) {
-            //get object properties
-            $props = get_object_vars($obj);
-
-            if(empty($props))
-                continue;
-
-            $new_obj = new \stdClass();
-
-            foreach ($props as $k => $v) {
-                //filter properties than has a class prefix
-                $namespace = explode("_", $k);
-
-                //validate property namespace, check if class exists in models (append plural noun)
-                if(empty($namespace) || !class_exists(ucfirst($namespace[0]."s")))
-                    continue;
-
-                $type = $namespace[0];
-                $prop = str_replace($type."_","",$k);
-
-                //creates the object struct
-                if(!isset($new_obj->{$type}))
-                    $new_obj->{$type} = new \stdClass();
-
-                //set props
-                $new_obj->{$type}->{$prop} = $v;
-            }
-
-            //check for a non-props object
-            if(empty(get_object_vars($new_obj)))
-                continue;
-
-            array_push($objects, $new_obj);
-        }
-
-        return $objects;
-    }
-
-    /**
-     * Get the requested URI
-     * @access protected
-     */
-    protected function _getRequestedUri()
-    {
-        $uri = $this->request->getUri();
-        //replaces '*/public/' or first '/'
-        $regex = "/^.*\/public\/(?=[^.]*$)|^\//";
-        $uri = preg_replace($regex, "", $uri);
-
-        return $uri;
-    }
-
-    /**
-     * Handle the request params data validating required parameters.
-     * Also Check if get/post data is valid, if validation fails send an HTTP code, onSuccess returns a data array.
-     * Required field may have a "_" prefix to establish that is just an optional field to be sanitized.
-     * Types: string,email,int,float,alphanum,striptags,trim,lower,upper.
-     * @access protected
-     * @param array $required_fields
-     * @param string $method
-     * @param string $send_json Sends json response for ajax calls
-     * @param boolean $check_csrf_token Checks a form CSRF token
-     * @example { $data, array( "_name" => "string"), POST }
-     * @link   http://docs.phalconphp.com/en/latest/reference/filter.html#sanitizing-data
-     * @return array
-     */
-    protected function _handleRequestParams($required_fields = array(), $method = 'POST', $send_json = true, $check_csrf_token = true)
-    {
-        //is post request? (method now allowed)
-        if ($method == 'POST' && !$this->request->isPost())
-            $this->_sendJsonResponse(405);
-
-        //is get request? (method now allowed)
-        if ($method == 'GET' && !$this->request->isGet())
-            $this->_sendJsonResponse(405);
-
-        //validate always CSRF Token (prevents also headless browsers, POST only)
-        if ($check_csrf_token && !$this->_checkCsrfToken())
-            $this->_sendJsonResponse(498);
-
-        //get POST or GET data
-        $data = ($method == 'POST' ? $this->request->getPost() : $this->request->get());
-
-        //clean phalcon data for GET method
-        if ($method == 'GET')
-            unset($data['_url']);
-
-        //if no required fields given, return all POST or GET vars as array
-        if (empty($required_fields))
-            return $data;
-
-        //missing data?
-        if (!empty($required_fields) && empty($data))
-            $this->_sendJsonResponse(400);
-
-        //dont filter data just return it
-        if (empty($required_fields))
-            return $data;
-
-        $invalid_data = false;
-        //compare keys
-        foreach ($required_fields as $field => $data_type) {
-            $is_optional_field = false;
-            //check if is a optional field
-            if (substr($field, 0, 1) === "@") {
-                $is_optional_field = true;
-                $field = substr($field, 1);
-            }
-
-            //validate field
-            if (!array_key_exists($field, $data)) {
-                //check if is an optional field
-                if (!$is_optional_field) {
-                    $invalid_data = true;
-                    break;
-                }
-                else {
-                    $data[$field] = null;
-                    continue;
-                }
-            }
-
-            //get value from data array & sanitize it
-            if(empty($data_type) || $data_type == 'array')
-                $value = $data[$field];
-            else
-                $value = $this->filter->sanitize($data[$field], $data_type);
-
-            //check data (empty fn considers zero value )
-            if ($is_optional_field && (is_null($value) || $value == ''))
-                $data[$field] = null;
-            elseif (is_null($value) || $value == '')
-                $invalid_data = true;
-            else
-                $data[$field] = $value;
-        }
-
-        //check for invalid data
-        if ($invalid_data)
-            return $send_json ? $this->_sendJsonResponse(400) : false;
-
-        return $data;
-    }
-
-    /**
-     * Validate search number & offset parameters
-     * @access protected
-     * @param int $input_num Input number
-     * @param int $input_off Input offset
-     * @param int $max_num Maximun number
-     * @return array
-     */
-    protected function _handleNumberAndOffsetParams($input_num = null, $input_off = null, $max_num = null)
-    {
-        if (!is_null($input_num)) {
-            $number = $input_num;
-            $offset = $input_off;
-
-            if ($number < 0 || !is_numeric($number))
-                $number = 0;
-
-            if ($offset < 0 || !is_numeric($offset))
-                $offset = 1;
-
-            if ((empty($number) && $max_num >= 1) || ($number > $max_num))
-                $number = $max_num;
-        }
-        else {
-            $number = empty($max_num) ? 1 : $max_num;
-            $offset = 0;
-        }
-
-        return array("number" => $number, "offset" => $offset);
-    }
 
     /**
      * Send a JSON response
@@ -412,14 +169,14 @@ abstract class WebCore extends Controller
      * Dispatch to Internal Error
      * @param string $message The human error message
      * @param string $go_back_url A go-back link URL
-     * @param string $object_id An option id for logic flux
      * @param string $log_error The debug message to log
      *
      */
-    protected function _dispatchInternalError($message = null, $go_back_url = null, $object_id = 0, $log_error = "n/a")
+    protected function _dispatchInternalError($message = null, $go_back_url = null, $log_error = "n/a")
     {
         //dispatch to internal
-        $this->logger->info("WebCore::_dispatchInternalError -> Something ocurred (object_id: ".$object_id."). Error: ".$log_error);
+        $this->logger->info("WebCore::_dispatchInternalError -> Something ocurred (message: ".$message."). Error: ".$log_error);
+        
         //set message
         if(!is_null($message))
             $this->view->setVar("error_message", str_replace(".", ".<br/>", $message));
@@ -428,6 +185,23 @@ abstract class WebCore extends Controller
             $this->view->setVar("go_back", $go_back_url);
 
         $this->dispatcher->forward(array("controller" => "errors", "action" => "internal"));
+    }
+
+    /**
+     * Validate CSRF token. Basta con generar un tokenKey y token por sesión.
+     * @access private
+     */
+    public function _checkCsrfToken()
+    {
+        if (!$this->request->isPost())
+            return true;
+
+        //get token from saved client session
+        $session_token = isset($this->client->token) ? $this->client->token : null;
+        //get sent token (crsf key is the same always)
+        $sent_token = $this->request->getPost($this->client->tokenKey);
+
+        return ($session_token === $sent_token) ? true : false;
     }
 
     /**
@@ -645,23 +419,6 @@ abstract class WebCore extends Controller
         $this->client->requested_uri = $this->_getRequestedUri();
         //save in session
         $this->session->set("client", $this->client);
-    }
-
-    /**
-     * Validate CSRF token. Basta con generar un tokenKey y token por sesión.
-     * @access private
-     */
-    private function _checkCsrfToken()
-    {
-        if (!$this->request->isPost())
-            return true;
-
-        //get token from saved client session
-        $session_token = isset($this->client->token) ? $this->client->token : null;
-        //get sent token (crsf key is the same always)
-        $sent_token = $this->request->getPost($this->client->tokenKey);
-
-        return ($session_token === $sent_token) ? true : false;
     }
 
     /**

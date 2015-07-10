@@ -89,13 +89,12 @@ abstract class AppLoader
         if(is_null($mod))
             throw new Exception("AppLoader::__construct -> invalid input module.");
 
-        //set directory and create if not exists
-        $this->module = $mod;
         //define APP contants
         define("PROJECT_PATH", $this->app_path);
         define("PACKAGES_PATH", PROJECT_PATH."packages/");
         define("COMPOSER_PATH", PACKAGES_PATH."composer/");
-        define("MODULE_PATH", PROJECT_PATH.$this->module."/");
+        define("MODULE_NAME", $mod);
+        define("MODULE_PATH", PROJECT_PATH.MODULE_NAME."/");
         define("APP_PATH", MODULE_PATH."app/" );
         define("PUBLIC_PATH", MODULE_PATH."public/");
         define("EXEC_START", microtime(true));  //for debugging render time
@@ -116,7 +115,7 @@ abstract class AppLoader
         //set module extended configurations
         $this->_moduleConfigurationSetUp($module_configs);
         //get DI preset services for module
-        $services = new AppServices($this->module, $this->app_config);
+        $services = new AppServices(MODULE_NAME, $this->app_config);
         $this->di = $services->getDI();
     }
 
@@ -127,7 +126,7 @@ abstract class AppLoader
      */
     public function start($routes_fn = null, $argv = null)
     {
-        if($this->module == "cli") {
+        if(MODULE_NAME == "cli") {
             //new cli app
             $application = new \Phalcon\CLI\Console($this->di);
             //loop through args
@@ -162,7 +161,7 @@ abstract class AppLoader
             //handle incoming arguments
             $application->handle($arguments);
         }
-        else if($this->module == "api") {
+        else if(MODULE_NAME == "api") {
             //new micro app
             $application = new \Phalcon\Mvc\Micro($this->di);
             //apply a routes function if param given (must be done before object instance)
@@ -272,8 +271,8 @@ abstract class AppLoader
             $this->app_props = array_merge($this->app_props, $module_configs);
 
         //check for langs supported
-        if(isset($this->modules_langs[$this->module])) {
-            $this->app_props['langs'] = $this->modules_langs[$this->module];
+        if(isset($this->modules_langs[MODULE_NAME])) {
+            $this->app_props['langs'] = $this->modules_langs[MODULE_NAME];
         }
 
         //set local shared resourced path, setting is an array where index 0 => module_name & 1 => the uri
@@ -321,8 +320,8 @@ abstract class AppLoader
         $app_dirs['controllers'] = APP_PATH.'controllers/';
         $app_dirs['logs']        = APP_PATH.'logs/';
 
-        if(isset($this->modules_components[$this->module])) {
-            foreach ($this->modules_components[$this->module] as $dir) {
+        if(isset($this->modules_components[MODULE_NAME])) {
+            foreach ($this->modules_components[MODULE_NAME] as $dir) {
                 $public = false;
                 //check if directory is public
                 if (substr($dir, 0, 1) === "@") {
@@ -349,8 +348,8 @@ abstract class AppLoader
         $loader->registerDirs($this->app_config["directories"]);
 
         //2.- Register any static libs (like cclibs)
-        if(isset($this->modules_cclibs[$this->module]))
-            $this->_loadStaticLibs($loader, $this->modules_cclibs[$this->module]);
+        if(isset($this->modules_cclibs[MODULE_NAME]))
+            $this->_loadStaticLibs($loader, $this->modules_cclibs[MODULE_NAME]);
 
         //3.- Composer libs, use composer auto load for production
         if (APP_ENVIRONMENT !== 'development') {

@@ -33,6 +33,15 @@ trait Errors
     }
 
     /**
+     * View - Bad request page
+     */
+    public function badRequestAction()
+    {
+        if($this->request->isAjax())
+            $this->_sendJsonResponse(400);
+    }
+
+    /**
      * View - Old Browser
      */
     public function oldBrowserAction()
