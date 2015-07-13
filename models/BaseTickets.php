@@ -26,7 +26,7 @@ class BaseTickets extends Base
     public $small_print;
 
     /**
-     * @var float
+     * @var double
      */
     public $price;
 

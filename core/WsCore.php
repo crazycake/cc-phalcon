@@ -126,6 +126,35 @@ abstract class WsCore extends AppCore
         die(); //exit
     }
 
+
+    /**
+     * Handles the request validating data
+     * @param string $prop The object property name
+     * @param boolean $optional Parameter optional flag
+     * @return mixed(object|boolean)
+     */
+    protected function __handleObjectIdRequestParam($prop = "object_id", $optional = false, $method = 'GET')
+    {
+        $props      = explode("_", strtolower($prop), 2);
+        $class_name = ucfirst($props[0])."s"; //plural
+
+        $s = $optional ? "@" : "";
+        //get request param
+        $data = $this->_handleRequestParams(array(
+            "$s$prop"  => "int"
+        ), $method);
+
+        //get model data
+        $object = $class_name::findFirst(array(
+            "id = '".$data[$prop]."'" //conditions
+        ));
+
+        if(!$object)
+            $this->_sendJsonResponse(400);
+        else
+            return $object;
+    }
+
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
