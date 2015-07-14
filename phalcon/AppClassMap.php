@@ -3,9 +3,10 @@
 return array (
   'core' => 
   array (
-    0 => 'TaskCore.php',
-    1 => 'WebCore.php',
-    2 => 'WsCore.php',
+    0 => 'AppCore.php',
+    1 => 'TaskCore.php',
+    2 => 'WebCore.php',
+    3 => 'WsCore.php',
   ),
   'models' => 
   array (

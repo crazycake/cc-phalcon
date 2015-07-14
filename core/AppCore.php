@@ -79,7 +79,7 @@ abstract class AppCore extends Controller
     }
 
     /**
-     * Parse ORM properties and returns a simple array
+     * Parse ORM properties and returns a simple objects array
      * @access protected
      * @param object $result Phalcon Resulset
      * @param boolean $split Split objects flag
