@@ -203,20 +203,24 @@ class AppServices
         });
 
         //Session Adapter
-        $di->set('session', function() {
-            $session = new \Phalcon\Session\Adapter\Files();
+        $di->setShared('session', function() {
+            $session = new \Phalcon\Session\Adapter\Files(array(
+                'uniqueId' => MODULE_NAME
+            ));
             //set session name
             $session->setName($this->config->app->namespace);
             //start session
-            $session->start();
+            if(!$session->isStarted())
+                $session->start();
+
             return $session;
         });
 
         //Setting up the view component
         $di_view_engines = array(
-            '.volt'  => function($view, $di) {
+            '.volt'  => function($view, $di_instance) {
                 //instance a new volt engine
-                $volt = new \Phalcon\Mvc\View\Engine\Volt($view, $di);
+                $volt = new \Phalcon\Mvc\View\Engine\Volt($view, $di_instance);
                 //set volt engine options
                 $volt->setOptions(array(
                     'compiledPath'      => $this->config->directories->cache,

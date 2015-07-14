@@ -27,9 +27,13 @@ class Route404Plugin extends \Phalcon\Mvc\User\Plugin
 	 */
 	public function beforeException(\Phalcon\Events\Event $event, \Phalcon\Mvc\Dispatcher $dispatcher, Exception $exception)
 	{
+		//log error
+		$di = $dispatcher->getDI();
+		//var_dump($di->getShared("session")->getName(), $exception, $exception->getCode());exit;
+
 		//Handle 404 exceptions
 		if ($exception instanceof \Phalcon\Mvc\Dispatcher\Exception) {
-			
+
 			switch ($exception->getCode()) {
 				//dispatch to not found action
 				case \Phalcon\Dispatcher::EXCEPTION_HANDLER_NOT_FOUND:
@@ -42,8 +46,6 @@ class Route404Plugin extends \Phalcon\Mvc\User\Plugin
 			}
 		}
 
-		//log error
-		$di = $dispatcher->getDI();
 		//check logger service exists
 		if(!is_null($di->get('logger')))
 			$di->get('logger')->error("PhalconPHP Error -> Exception: ".$exception->getMessage());
@@ -72,4 +74,3 @@ class minifiedFilter implements \Phalcon\Assets\FilterInterface
         return $contents;
     }
 }
-

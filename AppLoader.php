@@ -189,9 +189,10 @@ abstract class AppLoader
             //new mvc app
             $application = new \Phalcon\Mvc\Application($this->di);
             $output = $application->handle()->getContent();
+
             //Handle the request
             if(APP_ENVIRONMENT !== 'development')
-                ob_start(array($this,"_minifyHTML"));
+                ob_start(array($this,"_minifyHTML")); //call function
 
             echo $output;
         }
