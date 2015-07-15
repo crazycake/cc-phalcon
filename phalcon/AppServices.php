@@ -105,32 +105,32 @@ class AppServices
     private function _setCommonServices(&$di)
     {
         //Set the config
-        $di->set('config', $this->config);
+        $di->setShared('config', $this->config);
 
         //The URL component is used to generate all kind of urls in the application
-        $di->set('url', function() {
+        $di->setShared('url', function() {
             $url = new \Phalcon\Mvc\Url();
             $url->setBaseUri("./");
             $url->setStaticBaseUri(APP_BASE_URL);
             return $url;
-        }, true);
+        });
 
         //Logger adapter
-        $di->set('logger', function() {
+        $di->setShared('logger', function() {
             $logger = new \Phalcon\Logger\Adapter\File($this->config->directories->logs.date("d_m_Y").".log");
             return $logger;
         });
 
         //Basic http security
-        $di->set('security', function() {
+        $di->setShared('security', function() {
             $security = new \Phalcon\Security();
             //Set the password hashing factor to X rounds
             $security->setWorkFactor(12);
             return $security;
-        }, true);
+        });
 
         //Phalcon Crypt service
-        $di->set('crypt', function() {
+        $di->setShared('crypt', function() {
             $crypt = new \Phalcon\Crypt();
             $crypt->setKey($this->config->app->cryptKey);
             return $crypt;
@@ -138,7 +138,7 @@ class AppServices
 
         //Extended encryption, Cryptify adapter (cryptography helper)
         if(class_exists('\CrazyCake\Utils\Cryptify')) {
-            $di->set('cryptify', function() {
+            $di->setShared('cryptify', function() {
                 return new \CrazyCake\Utils\Cryptify($this->config->app->cryptKey);
             });
         }
@@ -155,7 +155,7 @@ class AppServices
             throw new Exception("AppServices::setDatabaseService -> this adapter has not implemented yet :(");
 
         //Database connection is created based in the parameters defined in the configuration file
-        $di->set('db', function() {
+        $di->setShared('db', function() {
             return new \Phalcon\Db\Adapter\Pdo\Mysql(array(
                 "host"     => $this->config->database["host"],
                 "username" => $this->config->database["username"],
@@ -174,7 +174,7 @@ class AppServices
      */
     private function _setTranslationService(&$di)
     {
-        $di->set('translate', function() {
+        $di->setShared('translate', function() {
             return new \CrazyCake\Utils\GetText(array(
                 'domain'    => $this->config->app->name,
                 'supported' => (array)$this->config->app->langs,
@@ -191,7 +191,7 @@ class AppServices
     private function _setMvcServices(&$di)
     {
         //Events Manager
-        $di->set('dispatcher', function() {
+        $di->setShared('dispatcher', function() {
 
             $eventsManager = new \Phalcon\Events\Manager;
             //Handle exceptions and not-found exceptions using Route404Plugin
@@ -235,7 +235,7 @@ class AppServices
             },
             '.phtml' => 'Phalcon\Mvc\View\Engine\Php',
         );
-        $di->set('view', function() use (&$di_view_engines) {
+        $di->setShared('view', function() use (&$di_view_engines) {
 
             $view = new \Phalcon\Mvc\View();
             //set directory views
@@ -244,19 +244,19 @@ class AppServices
             $view->registerEngines($di_view_engines);
 
             return $view;
-        }, true);
+        });
 
         //Setting up the simpleView component, same as view
-        $di->set('simpleView', function() use (&$di_view_engines) {
+        $di->setShared('simpleView', function() use (&$di_view_engines) {
             //simpleView
             $view = new \Phalcon\Mvc\View\Simple();
             $view->setViewsDir($this->config->directories->views);
             $view->registerEngines($di_view_engines);
             return $view;
-        }, true);
+        });
 
         //Flash messages
-        $di->set('flash', function() {
+        $di->setShared('flash', function() {
             $flash = new \Phalcon\Flash\Session(array(
                 'success' => 'success',
                 'error'   => 'alert',

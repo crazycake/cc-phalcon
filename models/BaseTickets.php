@@ -73,7 +73,7 @@ class BaseTickets extends Base
     {
         //hashed ticket id?
         if(isset($this->id_hashed))
-            $this->id_hashed = $this->getDI()->get('cryptify')->encryptHashId($this->id_hashed);
+            $this->id_hashed = $this->getDI()->getShared('cryptify')->encryptHashId($this->id_hashed);
 
         //format ticket price (custom prop)
         if(isset($this->price) && isset($this->coin))

@@ -29,7 +29,7 @@ class Route404Plugin extends \Phalcon\Mvc\User\Plugin
 	{
 		//log error
 		$di = $dispatcher->getDI();
-		//var_dump($di->getShared("session")->getName(), $exception, $exception->getCode());exit;
+		//var_dump($di->getShared("session")->getName(), $exception, $exception->getCode(), $di);exit;
 
 		//Handle 404 exceptions
 		if ($exception instanceof \Phalcon\Mvc\Dispatcher\Exception) {
@@ -47,8 +47,8 @@ class Route404Plugin extends \Phalcon\Mvc\User\Plugin
 		}
 
 		//check logger service exists
-		if(!is_null($di->get('logger')))
-			$di->get('logger')->error("PhalconPHP Error -> Exception: ".$exception->getMessage());
+		if(!is_null($di->getShared('logger')))
+			$di->getShared('logger')->error("PhalconPHP Error -> Exception: ".$exception->getMessage());
 
 		if(APP_ENVIRONMENT !== 'production')
 			die("<h1>Oops Phalcon Error (dev mode)</h1><pre>".$exception->getMessage()."</pre>");

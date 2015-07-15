@@ -84,14 +84,14 @@ abstract class BaseUsers extends Base
     {
         //hashed ticket id?
         if(isset($this->id))
-            $this->id_hashed = $this->getDI()->get('cryptify')->encryptHashId($this->id);
+            $this->id_hashed = $this->getDI()->getShared('cryptify')->encryptHashId($this->id);
     }
     /** ---------------------------------------------------------------------------------------------- **/
     public function beforeValidationOnCreate()
     {
         //set password hash
         if(!is_null($this->pass))
-            $this->pass = $this->getDI()->get('security')->hash( $this->pass );
+            $this->pass = $this->getDI()->getShared('security')->hash( $this->pass );
 
         //set last login
         $this->last_login = date('Y-m-d H:i:s');

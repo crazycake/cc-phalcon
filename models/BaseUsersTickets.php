@@ -104,7 +104,7 @@ class BaseUsersTickets extends Base
      */
     protected function generateRandomCode($length = 8)
     {
-        $code = $this->getDI()->get('cryptify')->generateAlphanumericCode($length);
+        $code = $this->getDI()->getShared('cryptify')->generateAlphanumericCode($length);
         //unique constrait
         $exists = self::findFirst( array("code = '".$code."'") );
 
