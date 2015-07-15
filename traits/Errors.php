@@ -46,7 +46,7 @@ trait Errors
      */
     public function oldBrowserAction()
     {
-        //...
+
     }
 
     /**

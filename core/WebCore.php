@@ -25,7 +25,7 @@ abstract class WebCore extends AppCore implements webSecurity
      */
     abstract protected function getModuleClassName($key);
     abstract protected function setAppJavascriptProperties($app_js);
-    abstract protected function checkBrowserSupport();
+    abstract protected function checkBrowserSupport($browser, $version);
     abstract protected function sendAsyncRequest($url = null, $method = null);
 
     /**
@@ -59,13 +59,11 @@ abstract class WebCore extends AppCore implements webSecurity
     {
         //Load view data only for non-ajax requests
         if (!$this->request->isAjax()) {
-
-            //check browser (child method)
-            $this->checkBrowserSupport();
-
-            //Set App common vars
+            //Set App common vars (this must be set before render any page)
             $this->view->setVar("app", $this->config->app); //app configuration vars
             $this->view->setVar("client", $this->client);   //client object
+            //set javascript vars in view
+            $this->_setAppJavascriptObjectForView();
         }
     }
     /** ---------------------------------------------------------------------------------------------------------------
@@ -75,12 +73,17 @@ abstract class WebCore extends AppCore implements webSecurity
     {
         //for non-ajax only
         if (!$this->request->isAjax()) {
-            //extend session data, last visited uri must be set here in afterExecuteRoute
-            $this->_extendsClientSessionData();
             //load app assets
             $this->_loadAppAssets();
-            //set javascript vars in view
-            $this->_setAppJavascriptObjectForView();
+            //update client object property, request uri afterExecuteRoute event.
+            $this->_updateClientObjectProp('requested_uri', $this->_getRequestedUri());
+
+            //check browser is supported (child method)
+            $supported = $this->checkBrowserSupport($this->client->browser, $this->client->short_version);
+
+            //prevents loops
+            if(!$supported && !$this->dispatcher->getPreviousControllerName())
+                $this->dispatcher->forward(array('controller' => 'errors', 'action' => 'oldBrowser'));
         }
     }
     /* --------------------------------------------------- § -------------------------------------------------------- */
@@ -419,15 +422,16 @@ abstract class WebCore extends AppCore implements webSecurity
     }
 
     /**
-     * Extends client session data
+     * Update client object property and save again in session
      * @access private
      */
-    private function _extendsClientSessionData()
+    private function _updateClientObjectProp($prop = "", $value = "")
     {
-        //get session previously created and set extended properties
-        $this->client = $this->session->get("client");
-        //get last request uri
-        $this->client->requested_uri = $this->_getRequestedUri();
+        if(empty($prop))
+            return false;
+
+        //set value
+        $this->client->{$prop} = $value;
         //save in session
         $this->session->set("client", $this->client);
     }
