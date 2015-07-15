@@ -31,29 +31,42 @@ class Route404Plugin extends \Phalcon\Mvc\User\Plugin
 		$di = $dispatcher->getDI();
 		//var_dump($di->getShared("session")->getName(), $exception, $exception->getCode(), $di);exit;
 
-		//Handle 404 exceptions
+		//Handle Phalcon exceptions
 		if ($exception instanceof \Phalcon\Mvc\Dispatcher\Exception) {
 
+			$logError = false;
 			switch ($exception->getCode()) {
 				//dispatch to not found action
+				case \Phalcon\Dispatcher::EXCEPTION_NO_DI:
+				case \Phalcon\Dispatcher::EXCEPTION_CYCLIC_ROUTING:
+					$logError = true;
+					$forwardTo = array('controller' => 'errors', 'action' => 'internal');
+					break;
+				case \Phalcon\Dispatcher::EXCEPTION_INVALID_PARAMS:
+				case \Phalcon\Dispatcher::EXCEPTION_INVALID_HANDLER:
+					$logError = true;
+					$forwardTo = array('controller' => 'errors', 'action' => 'badRequest');
+					break;
 				case \Phalcon\Dispatcher::EXCEPTION_HANDLER_NOT_FOUND:
 				case \Phalcon\Dispatcher::EXCEPTION_ACTION_NOT_FOUND:
-					$dispatcher->forward( array(
-						'controller' => 'errors',
-						'action' 	 => 'notFound'
-					));
-					return false;
+					$forwardTo = array('controller' => 'errors', 'action' => 'notFound');
+					break;
 			}
+			//log error?
+			if($logError)
+				$di->getShared('logger')->error("PhalconPHP Error -> Exception: ".$exception->getMessage());
+			//forward
+			$dispatcher->forward($forwardTo);
+			return false;
 		}
-
-		//check logger service exists
-		if(!is_null($di->getShared('logger')))
-			$di->getShared('logger')->error("PhalconPHP Error -> Exception: ".$exception->getMessage());
 
 		if(APP_ENVIRONMENT !== 'production')
 			die("<h1>Oops Phalcon Error (dev mode)</h1><pre>".$exception->getMessage()."</pre>");
 
-		//Handle exception and foward to internal error page
+		//log error
+		$di->getShared('logger')->error("PhalconPHP Error -> Exception: ".$exception->getMessage());
+
+		//Handle exception and forward to internal error page
 		$dispatcher->forward( array(
 			'controller' => 'errors',
 			'action'     => 'internal'
