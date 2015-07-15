@@ -194,8 +194,8 @@ class AppServices
         $di->setShared('dispatcher', function() {
 
             $eventsManager = new \Phalcon\Events\Manager;
-            //Handle exceptions and not-found exceptions using Route404Plugin
-            $eventsManager->attach('dispatch:beforeException', new \Route404Plugin);
+            //Handle exceptions and not-found exceptions using ExceptionsPlugin
+            $eventsManager->attach('dispatch:beforeException', new \ExceptionsPlugin);
 
             $dispatcher = new \Phalcon\Mvc\Dispatcher;
             $dispatcher->setEventsManager($eventsManager);

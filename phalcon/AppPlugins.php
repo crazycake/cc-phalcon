@@ -5,9 +5,9 @@
  */
 
 /**
- * Class for MVC module that handles 404 (Not Found) app routes
+ * Class for MVC module that hanldes Phalcon Exceptions
  */
-class Route404Plugin extends \Phalcon\Mvc\User\Plugin
+class ExceptionsPlugin extends \Phalcon\Mvc\User\Plugin
 {
 	/**
 	 * Constructor
@@ -15,7 +15,7 @@ class Route404Plugin extends \Phalcon\Mvc\User\Plugin
 	public function __construct()
     {
 		if(!defined('APP_ENVIRONMENT'))
-            throw new Exception("Route404Plugin::__construct -> APP_ENVIRONMENT is not defined.");
+            throw new Exception("ExceptionsPlugin::__construct -> APP_ENVIRONMENT is not defined.");
     }
 
 	/**
@@ -78,6 +78,7 @@ class Route404Plugin extends \Phalcon\Mvc\User\Plugin
 
 /**
  * Custom Assets filter for already minified files
+ * This filter must be declared for minified files
  */
 class minifiedFilter implements \Phalcon\Assets\FilterInterface
 {
