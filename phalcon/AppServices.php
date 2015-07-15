@@ -78,7 +78,6 @@ class AppServices
         return $di;
     }
 
-
     /**
      * Set DI for MVC app
      * @access private

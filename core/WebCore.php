@@ -77,10 +77,8 @@ abstract class WebCore extends AppCore implements webSecurity
             $this->_loadAppAssets();
             //update client object property, request uri afterExecuteRoute event.
             $this->_updateClientObjectProp('requested_uri', $this->_getRequestedUri());
-
             //check browser is supported (child method)
             $supported = $this->checkBrowserSupport($this->client->browser, $this->client->short_version);
-
             //prevents loops
             if(!$supported && !$this->dispatcher->getPreviousControllerName())
                 $this->dispatcher->forward(array('controller' => 'errors', 'action' => 'oldBrowser'));
