@@ -12,6 +12,7 @@ use CrazyCake\Utils\DateHelper;
 class BaseUsersTickets extends Base
 {
     //this static methods can be 'overrided' as late binding
+    public static $QR_CODE_LEGTH = 40;
     public static $TICKET_CODE_LEGTH = 10;
 
     /* properties */
@@ -80,10 +81,11 @@ class BaseUsersTickets extends Base
      * @param  int $length
      * @return string
      */
-    protected function generateRandomHash($phrase = "", $length = 50)
+    protected function generateRandomHash($phrase = "")
     {
-        $code = "";
-        $p    = 0;
+        $length = static::$QR_CODE_LEGTH;
+        $code   = "";
+        $p      = 0;
 
         for ($k = 1; $k <= $length; $k++) {
             $num  = chr(rand(48, 57));
@@ -93,7 +95,13 @@ class BaseUsersTickets extends Base
         }
 
         //make sure hash is always different
-        return sha1($code.microtime().$phrase);
+        $hash = sha1($code.microtime().$phrase);
+        $hash = substr($hash, 0, $length);
+
+        //unique constrait
+        $exists = self::findFirst( array("qr_hash = '".$hash."'") );
+
+        return $exists ? $this->generateRandomHash($phrase) : $hash;
     }
 
     /**
