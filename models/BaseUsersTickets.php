@@ -95,8 +95,8 @@ class BaseUsersTickets extends Base
         }
 
         //make sure hash is always different
-        $hash = sha1($code.microtime().$phrase);
-        $hash = substr($hash, 0, $length);
+        $hash = sha1(microtime().$phrase);
+        $hash = substr(str_shuffle($code.$hash), 0, $length);
 
         //unique constrait
         $exists = self::findFirst( array("qr_hash = '".$hash."'") );
