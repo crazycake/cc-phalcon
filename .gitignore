@@ -4,23 +4,9 @@
 *.gz
 *.log
 
-# Apache
-!.htaccess
-
-# DB & MySQL Workbench
-!*.sql.gz
-*.mwb.*
-
-# GetText
-*.mo
-*.pot
-
 # OSX
 .DS_Store
 .ds_store
-
-# PHPStorm
-.idea/*
 
 # PHP Phar files
 *.phar
