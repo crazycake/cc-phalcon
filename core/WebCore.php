@@ -63,7 +63,7 @@ abstract class WebCore extends AppCore implements webSecurity
             $this->view->setVar("app", $this->config->app); //app configuration vars
             $this->view->setVar("client", $this->client);   //client object
             //set javascript vars in view
-            $this->_setAppJavascriptObjectForView();
+            $this->_setAppJavascriptObjectsForView();
         }
     }
     /** ---------------------------------------------------------------------------------------------------------------
@@ -281,44 +281,33 @@ abstract class WebCore extends AppCore implements webSecurity
      */
     protected function _loadAppAssets()
     {
-        //CSS Head files, already minified
-        $this->_loadCssFiles($this->config->app->cssHead, 'css_head');
-        //CSS libs files (for js libs)
-        $this->_loadCssFiles($this->config->app->cssLibs, 'css_libs');
+        //CSS Core files, already minified
+        $this->_loadCssFiles($this->config->app->cssCore, 'css_core');
 
         //check specials cases for legacy js files
         if($this->router->getControllerName() == "errors") {
-            $this->_loadJavascriptFiles($this->config->app->jsHead, 'js_head');
-            $this->_loadJavascriptFiles($this->config->app->jsLegacy, 'js_libs');
             return;
         }
 
-        //JS files loaded in head tag (already minified)
-        $this->_loadJavascriptFiles($this->config->app->jsHead, 'js_head');
-        //load JS lib files (already minified, loads at bottom of page)
-        $this->_loadJavascriptFiles($this->config->app->jsLibs, 'js_libs');
-        //load JS core files (webapp core file)
+        //JS Core files, already minified
         $this->_loadJavascriptFiles($this->config->app->jsCore, 'js_core');
+
         //join and minify collections
         $this->_joinAssetsCollections(array(
-            "css_head" => false,
-            "css_libs" => false,
-            "js_head" => false,
-            "js_libs" => false,
-            "js_core" => true,
-            "js_models" => true,
+            "css_core" => false,
+            "js_core" => false,
             "js_dom" => true
         ), self::ASSETS_MIN_FOLDER_PATH, $this->config->app->deploy_version);
     }
 
 
     /**
-     * Load Javascript files in Core Collection
+     * Load Javascript files into a assets Collection
      * @access protected
      * @param array $files CSS Files to be loaded
      * @param string $collection Name of the collection
      */
-    protected function _loadCssFiles($files = array(), $collection = "css_libs")
+    protected function _loadCssFiles($files = array(), $collection = "css_core")
     {
         if (empty($files))
             return;
@@ -331,17 +320,17 @@ abstract class WebCore extends AppCore implements webSecurity
             else
                 $file = str_replace("@", "", $file);
 
-            $this->assets->collection($collection)->addCss("css/$file");
+            $this->assets->collection($collection)->addCss("assets/$file");
         }
     }
 
     /**
-     * Load Javascript files in Core Collection
+     * Load Javascript files into a assets Collection
      * @access protected
      * @param array $files JS Files to be loaded
      * @param string $collection Name of the collection
      */
-    protected function _loadJavascriptFiles($files = array(), $collection = "js_models")
+    protected function _loadJavascriptFiles($files = array(), $collection = "js_core")
     {
         if (empty($files))
             return;
@@ -361,7 +350,7 @@ abstract class WebCore extends AppCore implements webSecurity
                     $file = $regex[1].$this->client->lang.$regex[3];
             }
 
-            $this->assets->collection($collection)->addJs("js/$file");
+            $this->assets->collection($collection)->addJs("assets/$file");
         }
     }
 
@@ -438,7 +427,7 @@ abstract class WebCore extends AppCore implements webSecurity
      * Set javascript vars for rendering view, call child method for customization.
      * @access private
      */
-    private function _setAppJavascriptObjectForView()
+    private function _setAppJavascriptObjectsForView()
     {
         //set javascript global objects
         $app_js = new \stdClass();
@@ -446,12 +435,16 @@ abstract class WebCore extends AppCore implements webSecurity
         $app_js->baseUrl = $this->_baseUrl();
         $app_js->dev     = (APP_ENVIRONMENT == 'production') ? 0 : 1;
 
+        //set custom properties
+        $this->setAppJavascriptProperties($app_js);
+
         //set UI properties?
         if(isset($this->config->app->ui_settings))
             $app_js->UI = (object)$this->config->app->ui_settings;
 
-        //set custom properties
-        $this->setAppJavascriptProperties($app_js);
+        //set translations?
+        if(class_exists("TranslationsController"))
+            $app_js->TRANS = \TranslationsController::getJavascriptTranslations();
 
         //send javascript vars to view as JSON enconded
         $this->view->setVar("app_js", json_encode($app_js, JSON_UNESCAPED_SLASHES));

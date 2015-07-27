@@ -401,7 +401,7 @@ abstract class AppLoader
             return;
 
         //check if library was loaded from dev environment
-        $class_path = is_link(PROJECT_PATH.self::CCLIBS_NAMESPACE) ? PROJECT_PATH.self::CCLIBS_NAMESPACE : false;
+        $class_path = is_link(PACKAGES_PATH.self::CCLIBS_NAMESPACE) ? PACKAGES_PATH.self::CCLIBS_NAMESPACE : false;
 
         //load classes directly form phar
         if(!$class_path) {
