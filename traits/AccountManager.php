@@ -34,17 +34,6 @@ trait AccountManager
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
-     * View - my account profile
-     */
-    public function myAccountAction()
-    {
-        //loads javascript model
-        $this->_loadJavascriptFiles($this->accountConfig['javascript_files']);
-        //set current view
-        $this->view->setVar("current_view", "myAccount");
-    }
-
-    /**
      * Ajax (POST) - update account settings
      */
     public function updateProfileAction()

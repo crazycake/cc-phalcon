@@ -40,12 +40,12 @@ trait AccountPassRecovery
      */
     public function recoveryAction()
     {
-        //load javascript
-        $this->_loadJavascriptFiles($this->accountConfig['javascript_files']);
-
         //view vars
         $this->view->setVar("html_title", $this->accountConfig['text_title_recovery']);
         $this->view->setVar("js_recaptcha", true); //load reCaptcha
+
+        //load javascript
+        $this->_loadJavascriptModules($this->accountConfig['javascript_modules']);
     }
 
     /**
@@ -59,12 +59,12 @@ trait AccountPassRecovery
             $tokens_class = $this->getModuleClassName('users_tokens');
             $tokens_class::handleUserTokenValidation($encrypted_data);
 
-            //load javascript
-            $this->_loadJavascriptFiles($this->accountConfig['javascript_files']);
-
             //view vars
             $this->view->setVar("html_title", $this->accountConfig['text_title_create_pass']);
             $this->view->setVar("edata", $encrypted_data); //pass to view the encrypted data
+
+            //load javascript
+            $this->_loadJavascriptModules($this->accountConfig['javascript_modules']);
         }
         catch (\Exception $e) {
             $this->logger->error('AccountPass::newAction -> Error in account activation, encrypted data (' . $encrypted_data . "). Trace: " . $e->getMessage());

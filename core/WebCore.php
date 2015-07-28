@@ -19,12 +19,13 @@ abstract class WebCore extends AppCore implements webSecurity
 {
     /* consts */
     const ASSETS_MIN_FOLDER_PATH = 'assets/';
+    const JS_LOADER_FUNCTION     = 'core.loadModules';
 
     /**
      * abstract required methods
      */
     abstract protected function getModuleClassName($key);
-    abstract protected function setAppJavascriptProperties($app_js);
+    abstract protected function setAppJavascriptProperties($js_app);
     abstract protected function checkBrowserSupport($browser, $version);
     abstract protected function sendAsyncRequest($url = null, $method = null);
 
@@ -354,6 +355,22 @@ abstract class WebCore extends AppCore implements webSecurity
         }
     }
 
+    /**
+     * Loads javascript modules. This method must be called once.
+     * @param  array $modules An array of modules => args
+     * @param  array $fn The loader function
+     */
+    protected function _loadJavascriptModules($modules = array(), $fn = self::JS_LOADER_FUNCTION)
+    {
+        if(empty($modules))
+            return;
+
+        $param = json_encode($modules, JSON_UNESCAPED_SLASHES);
+        $script = "$fn($param);";
+        //send javascript vars to view as JSON enconded
+        $this->view->setVar("js_loader", $script);
+    }
+
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
@@ -430,25 +447,25 @@ abstract class WebCore extends AppCore implements webSecurity
     private function _setAppJavascriptObjectsForView()
     {
         //set javascript global objects
-        $app_js = new \stdClass();
-        $app_js->name    = $this->config->app->name;
-        $app_js->baseUrl = $this->_baseUrl();
-        $app_js->dev     = (APP_ENVIRONMENT == 'production') ? 0 : 1;
+        $js_app = new \stdClass();
+        $js_app->name    = $this->config->app->name;
+        $js_app->baseUrl = $this->_baseUrl();
+        $js_app->dev     = (APP_ENVIRONMENT == 'production') ? 0 : 1;
 
         //set custom properties
-        $this->setAppJavascriptProperties($app_js);
+        $this->setAppJavascriptProperties($js_app);
 
-        //set UI properties?
+        //set APP.UI properties?
         if(isset($this->config->app->ui_settings))
-            $app_js->UI = (object)$this->config->app->ui_settings;
+            $js_app->UI = (object)$this->config->app->ui_settings;
 
         //set translations?
         if(class_exists("TranslationsController"))
-            $app_js->TRANS = \TranslationsController::getJavascriptTranslations();
+            $js_app->TRANS = \TranslationsController::getJavascriptTranslations();
 
         //send javascript vars to view as JSON enconded
-        $this->view->setVar("app_js", json_encode($app_js, JSON_UNESCAPED_SLASHES));
-        $this->view->setVar("client_js", json_encode($this->client, JSON_UNESCAPED_SLASHES));
+        $this->view->setVar("js_app", json_encode($js_app, JSON_UNESCAPED_SLASHES));
+        $this->view->setVar("js_client", json_encode($this->client, JSON_UNESCAPED_SLASHES));
     }
 
     /**

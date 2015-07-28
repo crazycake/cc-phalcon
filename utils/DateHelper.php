@@ -37,20 +37,23 @@ class DateHelper
 
         //return days property
         return $interval->$f;
-    } 
+    }
 
     /**
      * Get Translated Month Name, abbreviation support
      * @static
      * @param  mixed  $month      Month int or string, example: 01, 08, 11
      * @param  boolean $abbr      Option for month name abbreviated
-     * @param  object $translate  The DI Gettext translation adapter reference
      * @return string             The translated month name
      */
-    public static function getTranslatedMonthName($month = null, $abbr = false, $translate)
+    public static function getTranslatedMonthName($month = null, $abbr = false)
     {
-        if(empty($month) || empty($translate))
-            throw new Exception("DateHelper::getTranslatedMonthName -> 'month' and 'translate' params are required");
+        if(empty($month))
+            throw new Exception("DateHelper::getTranslatedMonthName -> 'month' is required");
+
+        //get DI instance (static)
+        $di = \Phalcon\DI::getDefault();
+        $translate = $di->getShared("translate");
 
         $month = (int)$month;
 
@@ -70,7 +73,7 @@ class DateHelper
             case 12: $month = ($abbr) ? $translate->_("Dic") : $translate->_("Diciembre"); break;
             default: break;
         }
-        
+
         return $month;
     }
 
@@ -86,6 +89,6 @@ class DateHelper
         $hours = floor($seconds / 3600);
         $mins  = floor(($seconds / 60) % 60);
 
-        return $human ? $hours."h ".$mins."m" : $hours.":".$mins;       
+        return $human ? $hours."h ".$mins."m" : $hours.":".$mins;
     }
 }

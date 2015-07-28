@@ -37,8 +37,6 @@ trait AccountAuth
     {
         //if loggedIn redirect to account
         $this->_redirectToAccount(true);
-        //load javascript
-        $this->_loadJavascriptFiles($this->accountConfig['javascript_files']);
 
         //view vars
         $this->view->setVar("html_title", $this->accountConfig['text_title_sign_in']);
@@ -55,8 +53,6 @@ trait AccountAuth
     {
         //if loggedIn redirect to account
         $this->_redirectToAccount(true);
-        //load javascript
-        $this->_loadJavascriptFiles($this->accountConfig['javascript_files']);
 
         //view vars
         $this->view->setVar("html_title", $this->accountConfig['text_title_sign_up']);
@@ -261,7 +257,7 @@ trait AccountAuth
             $prefix = ($i <= 9) ? "_0$i" : "_$i";
             $month = strftime('%m', mktime(0, 0, 0, $i, 1));
             //get abbr month
-            $month = DateHelper::getTranslatedMonthName($month, true, $this->translate);
+            $month = DateHelper::getTranslatedMonthName($month, true);
             //set month array
             $months_array[$prefix] = $month;
         }
