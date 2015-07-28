@@ -286,9 +286,8 @@ abstract class WebCore extends AppCore implements webSecurity
         $this->_loadCssFiles($this->config->app->cssCore, 'css_core');
 
         //check specials cases for legacy js files
-        if($this->router->getControllerName() == "errors") {
+        if($this->client->isLegacy)
             return;
-        }
 
         //JS Core files, already minified
         $this->_loadJavascriptFiles($this->config->app->jsCore, 'js_core');
@@ -362,7 +361,8 @@ abstract class WebCore extends AppCore implements webSecurity
      */
     protected function _loadJavascriptModules($modules = array(), $fn = self::JS_LOADER_FUNCTION)
     {
-        if(empty($modules))
+        //skip for legacy browsers
+        if($this->client->isLegacy || empty($modules))
             return;
 
         $param = json_encode($modules, JSON_UNESCAPED_SLASHES);
