@@ -6,6 +6,9 @@
 
 namespace CrazyCake\Models;
 
+//imports
+use Phalcon\Mvc\Model\Validator\InclusionIn;
+
 class BaseUsersCheckouts extends Base
 {
     /* properties */
@@ -38,7 +41,18 @@ class BaseUsersCheckouts extends Base
     /**
      * @var string
      */
+    public $state;
+
+    /**
+     * @var string
+     */
     public $created_at;
+
+    /**
+     * @static
+     * @var array
+     */
+    static $STATES = array('pending', 'complete');
 
     /** -------------------------------------------- § -------------------------------------------------
         Init
@@ -47,6 +61,21 @@ class BaseUsersCheckouts extends Base
     {
         //Skips fields/columns on both INSERT/UPDATE operations
         $this->skipAttributes(array('created_at'));
+    }
+    /** -------------------------------------------------------------------------------------------------
+        Validations
+    ------------------------------------------------------------------------------------------------- **/
+    public function validation()
+    {
+        $this->validate( new InclusionIn(array(
+            "field"   => "state",
+            "domain"  => self::$STATES,
+            "message" => 'Invalid state. States supported: '.implode(", ", self::$STATES)
+         )));
+
+        //check validations
+        if ($this->validationHasFailed() == true)
+            return false;
     }
     /** ------------------------------------------- § ------------------------------------------------ **/
 
