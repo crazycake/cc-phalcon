@@ -76,6 +76,13 @@ class BaseUsersCheckouts extends Base
         //check validations
         if ($this->validationHasFailed() == true)
             return false;
+    }/** -------------------------------------------------------------------------------------------------
+        Events
+    ------------------------------------------------------------------------------------------------- **/
+    public function beforeValidationOnCreate()
+    {
+        //set last login
+        $this->state = self::$STATES[0];
     }
     /** ------------------------------------------- § ------------------------------------------------ **/
 
