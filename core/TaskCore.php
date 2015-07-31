@@ -9,13 +9,37 @@ namespace CrazyCake\Core;
 //imports
 use Phalcon\CLI\Task;
 
-abstract class TaskCore extends Task
+class TaskCore extends Task
 {
     /**
-     * abstract required methods
+     * Main Action Executer
+     * @return void
      */
-    abstract protected function mainAction();
+    public function mainAction()
+    {
+        $this->_colorize($this->config->app->name." CLI App", "NOTE");
+        $this->_colorize("Usage: \ncli.php main [param]", "OK");
+        $this->_colorize("Valid params:", "WARNING");
+        $this->_colorize("appConfig -> Outputs app configuration in JSON format", "WARNING");
+    }
 
+    /* --------------------------------------------------- § -------------------------------------------------------- */
+
+     /**
+     * Outputs app configuration in JSON format
+     * @param array $params, The args array, the 1st arg is the filter config property
+     * @return string
+     */
+    public function appConfigAction($params = array())
+    {
+        if(empty($params))
+            echo json_encode($this->config, JSON_UNESCAPED_SLASHES);
+        else
+            echo json_encode($this->config->{$params[0]}, JSON_UNESCAPED_SLASHES);
+    }
+
+    /* --------------------------------------------------- § -------------------------------------------------------- */
+    
     /**
      * Print Output with Colors
      * @access protected
@@ -77,20 +101,5 @@ abstract class TaskCore extends Task
         }
 
         return $module;
-    }
-
-    /* --------------------------------------------------- § -------------------------------------------------------- */
-
-     /**
-     * Outputs app configuration in JSON format
-     * @param array $params, The args array, the 1st arg is the filter config property
-     * @return string
-     */
-    public function appConfigAction($params = array())
-    {
-        if(empty($params))
-            echo json_encode($this->config, JSON_UNESCAPED_SLASHES);
-        else
-            echo json_encode($this->config->{$params[0]}, JSON_UNESCAPED_SLASHES);
     }
 }
