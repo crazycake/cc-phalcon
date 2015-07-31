@@ -39,20 +39,20 @@ class TaskCore extends Task
     }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
-    
+
     /**
      * Print Output with Colors
      * @access protected
      * @param  string $text
-     * @param  string $status Can be OK, ERROR, WARNING OR NOTE
+     * @param  string $type Can be OK, ERROR, WARNING OR NOTE
      * @return string
      */
-    protected function _colorize($text = "", $status = "OK", $die = false)
+    protected function _colorize($text = "", $type = "OK", $die = false)
     {
         $open  = "";
         $close = "\033[0m";
 
-        switch ($status) {
+        switch ($type) {
             case "OK":
                 $open = "\033[92m";     //Green color
                 break;
@@ -66,16 +66,16 @@ class TaskCore extends Task
                 $open = "\033[94m";     //Blue color
                 break;
             default:
-                throw new \Exception("CoreTask:_colorize -> invalid status: " . $status);
+                throw new \Exception("CoreTask:_colorize -> invalid message type: ".$type);
         }
-        //return outout, chr(27 ) -> escape key
+        //return output, chr(27) -> escape key
         $output = chr(27) . $open . $text . chr(27) . $close . "\n";
 
+        //echo output
         if($die)
             die($output);
-
-        //echo output
-        echo $output;
+        else
+            echo $output;
     }
 
     /**
@@ -88,7 +88,7 @@ class TaskCore extends Task
     protected function _validatesModuleArg($params = array(), $index = 0, $check_folder = true)
     {
         if(empty($params) || !isset($params[$index])) {
-            $this->_colorize("An argument [module] is missing", "ERROR") . "\n";
+            $this->_colorize("The argument [module] is missing", "ERROR") . "\n";
             exit;
         }
 
