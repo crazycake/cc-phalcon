@@ -21,7 +21,7 @@ class GetText extends Adapter implements AdapterInterface
      * Default UNIX system locale (use locale -a)
      * @var string
      */
-    protected $default_locale; 
+    protected $default_locale;
 
     /**
      * @var string
@@ -54,23 +54,19 @@ class GetText extends Adapter implements AdapterInterface
     public function __construct($options)
     {
         if ( !is_array($options) ) {
-            throw new Exception('GetText Lib -> Invalid options: "directory, file, domain, supported" settings are required.');
-            die();
+            die('GetText Lib -> Invalid options: "directory, file, domain, supported" settings are required.');
         }
 
         if ( !isset($options['directory']) ) {
-            throw new Exception('GetText Lib -> Option "directory" is required.');
-            die();
+            die('GetText Lib -> Option "directory" is required.');
         }
 
         if ( !isset($options['domain']) ) {
-            throw new Exception('GetText Lib -> Option "domain" is required, fo example: web_app. (multiple domains are not supported)');
-            die();
+            die('GetText Lib -> Option "domain" is required, fo example: web_app. (multiple domains are not supported)');
         }
 
         if ( !is_array($options['supported']) ) {
-            throw new Exception('GetText Lib > Option "supported" is required and must be an array,  for example: array("en", "es").');
-            die();
+            die('GetText Lib > Option "supported" is required and must be an array,  for example: array("en", "es").');
         }
 
         //set class properties

@@ -17,7 +17,6 @@ use Predis\Client as RedisClient;
 class Cacher
 {
     const REDIS_DEFAULT_PORT = 6379;
-    const REDIS_DEFAULT_DB   = 15;
 
     /**
      * The Adapter name
@@ -37,7 +36,7 @@ class Cacher
      * Prefix takes app namespace value
      * @var string
      */
-    protected $cache_prefix;
+    protected $cachePrefix;
 
     /**
      * contructor
@@ -54,10 +53,14 @@ class Cacher
         //set adapter
         $this->adapter = ucfirst($adapter);
         //set cache prefix with app namespace
-        $this->cache_prefix = $di->getShared('config')->app->namespace."-";
+        $this->cachePrefix = $di->getShared('config')->app->namespace."-";
 
         //call method by reflection
         $this->{"setup".$this->adapter}($conf);
+
+        //check client was set
+        if(is_null($this->client))
+            throw new Exception("Cacher -> Missing client configuration.");
     }
 
     /**
@@ -68,21 +71,20 @@ class Cacher
      */
     public function set($key = "", $value = null)
     {
-        if(is_null($this->client))
-            throw new Exception("Cacher -> missing client configuration.");
-
-        if(empty($key))
-            throw new Exception("Cacher -> Key parameter is empty");
-
-        if(is_null($value))
-            throw new Exception("Cacher -> Attempting to set null value for key $key.");
-
          try {
+
+             if(empty($key))
+                 throw new Exception("Key parameter is empty");
+
+             if(is_null($value))
+                 throw new Exception("Attempting to set null value for key $key.");
+
              //set cache data
-             $result = $this->{"set".$this->adapter}($this->cache_prefix.$key, $value);
+             $value  = json_encode($value);
+             $result = $this->{"set".$this->adapter}($this->cachePrefix.$key, $value);
 
              if(!$result)
-                throw new Exception("Cacher -> Adapter error: ".print_r($result, true));
+                throw new Exception("Adapter error: ".print_r($result, true));
 
              return true;
          }
@@ -91,7 +93,7 @@ class Cacher
              //get DI instance (static)
              $di = DI::getDefault();
              $logger = $di->getShared("logger");
-             $logger->error("Cacher -> Error saving data to $adapter server, key:$key. Err: ".$e->getMessage());
+             $logger->error("Cacher -> Failed saving data to ".$this->adapter." server, key:".$key." Err:".$e->getMessage());
 
              return false;
          }
@@ -100,31 +102,30 @@ class Cacher
      /**
       * Gets cache data
       * @param string $key The Key for searching
+      * @param boolean $decode Flag if data must be json_decoded
       * @return mixed Object or null
       */
-     public function get($key = "")
+     public function get($key = "", $decode = true)
      {
-         if(is_null($this->client))
-             throw new Exception("Cacher -> missing client configuration.");
-
-         if(empty($key))
-             return null;
-
          try {
+
+             if(empty($key))
+                 throw new Exception("Empty key given");
+
              //get cache data
-             $result = $this->{"get".$this->adapter}($this->cache_prefix.$key);
+             $result = $this->{"get".$this->adapter}($this->cachePrefix.$key);
 
              if(!$result)
-                throw new Exception("Cacher -> Adapter error: ".print_r($result, true));
+                throw new Exception("Adapter error: ".print_r($result, true));
 
-            return $result;
+            return $decode ? json_decode($result) : $result;
          }
          catch(\Exception $e) {
 
              //get DI instance (static)
              $di = DI::getDefault();
              $logger = $di->getShared("logger");
-             $logger->error("Cacher -> Error retrieving data from $adapter server, key:$key. Err: ".$e->getMessage());
+             $logger->error("Cacher -> Failed retrieving data from ".$this->adapter." server, key:".$key);
 
              return null;
          }
@@ -146,15 +147,14 @@ class Cacher
      */
     public function setupRedis($conf = array())
     {
+        $clientConf = array(
+            'scheme'     => "tcp",
+            'host'       => "127.0.0.1",
+            'port'       => self::REDIS_DEFAULT_PORT,
+            'persistent' => false
+        );
         // sets up redis connection
-        $this->client = new RedisClient(array(
-            'scheme'     => isset($conf["scheme"]) ? $conf["scheme"] : "tcp",
-            'host'       => isset($conf["host"]) ? $conf["host"] : "127.0.0.1",
-            'port'       => isset($conf["port"]) ? $conf["port"] : self::REDIS_DEFAULT_PORT,
-            'database'   => isset($conf["database"]) ? $conf["database"] : self::REDIS_DEFAULT_DB,
-            'password'   => isset($conf["password"]) ? $conf["password"] : '',
-            'persistent' => isset($conf["persistent"]) ? $conf["persistent"] : false
-        ));
+        $this->client = new RedisClient(array_merge($clientConf, $conf));
     }
 
     /**
@@ -165,20 +165,16 @@ class Cacher
      */
     public function setRedis($key = "", $value = null)
     {
-        $data = json_encode($value);
-        //saves data
-        return $this->client->set($key, $data);
-     }
+        return $this->client->set($key, $value);
+    }
 
     /**
      * Gets redis data
      * @param string $key The Key for searching
      * @return mixed Object or null
      */
-    public function getRedisData($key = "")
+    public function getRedis($key = "")
     {
-        $data = $this->client->get($key);
-
-        return json_decode($data);
+        return $this->client->get($key);
     }
 }

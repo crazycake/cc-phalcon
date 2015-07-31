@@ -35,13 +35,14 @@ class Slug
         if (!empty($replace)) {
             $clean = str_replace((array) $replace, ' ', $clean);
         }
-        
+
         $clean = preg_replace("/[^a-zA-Z0-9\/_|+ -]/", '', $clean);
         $clean = strtolower($clean);
         $clean = preg_replace("/[\/_|+ -]+/", $delimiter, $clean);
         $clean = trim($clean, $delimiter);
         // Revert back to the old locale
         setlocale(LC_ALL, $oldLocale);
+        
         return $clean;
     }
 }
