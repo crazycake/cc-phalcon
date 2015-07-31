@@ -10,13 +10,13 @@ namespace CrazyCake\Utils;
 
 //imports
 use Phalcon\Exception;
+use Phalcon\DI;
 //other libs
 use Predis\Client as RedisClient;
 
 class Cacher
 {
     const REDIS_DEFAULT_PORT = 6379;
-    const REDIS_DEFAULT_PASS = 'foobared';
     const REDIS_DEFAULT_DB   = 15;
 
     /**
@@ -31,6 +31,14 @@ class Cacher
      */
     protected $client;
 
+
+    /**
+     * Cache prefix for cache Keys
+     * Prefix takes app namespace value
+     * @var string
+     */
+    protected $cache_prefix;
+
     /**
      * contructor
      * @param string $adapter Adapter name, availables: redis.
@@ -40,7 +48,13 @@ class Cacher
         if(is_null($adapter))
             throw new Exception("Cacher -> adapter param is invalid. Options: redis for the moment.");
 
+        //set DI reference (static)
+        $di = DI::getDefault();
+
+        //set adapter
         $this->adapter = ucfirst($adapter);
+        //set cache prefix with app namespace
+        $this->cache_prefix = $di->getShared('config')->app->namespace."-";
 
         //call method by reflection
         $this->{"setup".$this->adapter}($conf);
@@ -65,7 +79,7 @@ class Cacher
 
          try {
              //set cache data
-             $result = $this->{"set".$this->adapter}($key, $value);
+             $result = $this->{"set".$this->adapter}($this->cache_prefix.$key, $value);
 
              if(!$result)
                 throw new Exception("Cacher -> Adapter error: ".print_r($result, true));
@@ -75,7 +89,7 @@ class Cacher
          catch(\Exception $e) {
 
              //get DI instance (static)
-             $di = \Phalcon\DI::getDefault();
+             $di = DI::getDefault();
              $logger = $di->getShared("logger");
              $logger->error("Cacher -> Error saving data to $adapter server, key:$key. Err: ".$e->getMessage());
 
@@ -98,7 +112,7 @@ class Cacher
 
          try {
              //get cache data
-             $result = $this->{"get".$this->adapter}($key);
+             $result = $this->{"get".$this->adapter}($this->cache_prefix.$key);
 
              if(!$result)
                 throw new Exception("Cacher -> Adapter error: ".print_r($result, true));
@@ -108,7 +122,7 @@ class Cacher
          catch(\Exception $e) {
 
              //get DI instance (static)
-             $di = \Phalcon\DI::getDefault();
+             $di = DI::getDefault();
              $logger = $di->getShared("logger");
              $logger->error("Cacher -> Error retrieving data from $adapter server, key:$key. Err: ".$e->getMessage());
 
@@ -138,7 +152,7 @@ class Cacher
             'host'       => isset($conf["host"]) ? $conf["host"] : "127.0.0.1",
             'port'       => isset($conf["port"]) ? $conf["port"] : self::REDIS_DEFAULT_PORT,
             'database'   => isset($conf["database"]) ? $conf["database"] : self::REDIS_DEFAULT_DB,
-            'password'   => isset($conf["password"]) ? $conf["password"] : self::REDIS_DEFAULT_PASS,
+            'password'   => isset($conf["password"]) ? $conf["password"] : '',
             'persistent' => isset($conf["persistent"]) ? $conf["persistent"] : false
         ));
     }
