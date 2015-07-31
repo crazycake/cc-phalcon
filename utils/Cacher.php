@@ -10,18 +10,26 @@ namespace CrazyCake\Utils;
 
 //imports
 use Phalcon\Exception;
+//other libs
+use Predis\Client as RedisClient;
 
 class Cacher
 {
-    const REDIS_DEFAULT_PORT     = 6379;
-    const REDIS_DEFAULT_AUTH     = 'foobared';
-    const REDIS_DEFAULT_LIFETIME = 172800; //2 days
+    const REDIS_DEFAULT_PORT = 6379;
+    const REDIS_DEFAULT_PASS = 'foobared';
+    const REDIS_DEFAULT_DB   = 15;
 
     /**
-     * The Redis libary reference
+     * The Adapter name
+     * @var string
+     */
+    protected $adapter;
+
+    /**
+     * The client reference
      * @var object
      */
-    private $redis;
+    protected $client;
 
     /**
      * contructor
@@ -32,54 +40,36 @@ class Cacher
         if(is_null($adapter))
             throw new Exception("Cacher -> adapter param is invalid. Options: redis for the moment.");
 
-        switch (strtolower($adapter)) {
-            case 'redis':
-                $this->setupRedis($conf);
-                break;
-            default:
-                break;
-        }
+        $this->adapter = ucfirst($adapter);
+
+        //call method by reflection
+        $this->{"setup".$this->adapter}($conf);
     }
 
     /**
-     * Sets up redis connection, conf params:
-     * port : Redis port number.
-     * auth : Auth server key.
-     * lifetime : Cache expiration, in seconds, default 2 days.
-     */
-    public function setupRedis($conf = array())
-    {
-        // Cache data for 2 days (default)
-        $frontCache = new \Phalcon\Cache\Frontend\Data(array(
-            "lifetime" => isset($conf["lifetime"]) ? $conf["lifetime"] : self::REDIS_DEFAULT_LIFETIME
-        ));
-
-        // sets up redis connection
-        $this->redis = new Phalcon\Cache\Backend\Redis($frontCache, array(
-           'host'       => 'localhost',
-           'port'       => isset($conf["port"]) ? $conf["port"] : self::REDIS_DEFAULT_PORT,
-           'auth'       => isset($conf["auth"]) ? $conf["auth"] : self::REDIS_DEFAULT_AUTH,
-           'persistent' => false
-        ));
-    }
-
-    /**
-     * Saves data to Redis server
+     * Saves data to cache server
      * @param string $key The Key
      * @param mixed $value The Value for Key
-     * @return boolean True if data was saved in Redis.
+     * @return boolean True if data was set in cache.
      */
-    public function saveRedisData($key = "", $value = null)
+    public function set($key = "", $value = null)
     {
+        if(is_null($this->client))
+            throw new Exception("Cacher -> missing client configuration.");
+
         if(empty($key))
             throw new Exception("Cacher -> Key parameter is empty");
 
         if(is_null($value))
-            throw new Exception("Cacher -> Attempting to save null value for key $key.");
+            throw new Exception("Cacher -> Attempting to set null value for key $key.");
 
-         //Cache arbitrary data
          try {
-             $this->redis->save($key, $value);
+             //set cache data
+             $result = $this->{"set".$this->adapter}($key, $value);
+
+             if(!$result)
+                throw new Exception("Cacher -> Adapter error: ".print_r($result, true));
+
              return true;
          }
          catch(\Exception $e) {
@@ -87,10 +77,83 @@ class Cacher
              //get DI instance (static)
              $di = \Phalcon\DI::getDefault();
              $logger = $di->getShared("logger");
+             $logger->error("Cacher -> Error saving data to $adapter server, key:$key. Err: ".$e->getMessage());
 
-             $logger->error("Cacher -> Error saving data to redis server, key:$key. Err: ".$e->getMessage());
              return false;
          }
+     }
+
+     /**
+      * Gets cache data
+      * @param string $key The Key for searching
+      * @return mixed Object or null
+      */
+     public function get($key = "")
+     {
+         if(is_null($this->client))
+             throw new Exception("Cacher -> missing client configuration.");
+
+         if(empty($key))
+             return null;
+
+         try {
+             //get cache data
+             $result = $this->{"get".$this->adapter}($key);
+
+             if(!$result)
+                throw new Exception("Cacher -> Adapter error: ".print_r($result, true));
+
+            return $result;
+         }
+         catch(\Exception $e) {
+
+             //get DI instance (static)
+             $di = \Phalcon\DI::getDefault();
+             $logger = $di->getShared("logger");
+             $logger->error("Cacher -> Error retrieving data from $adapter server, key:$key. Err: ".$e->getMessage());
+
+             return null;
+         }
+     }
+
+    /** -------------------------------------------------------------------------------------------------
+        Redis implementations
+    ------------------------------------------------------------------------------------------------- **/
+
+    /**
+     * Sets up redis connection, predis lib is used
+     * @link https://github.com/nrk/predis/wiki/Connection-Parameters
+     * scheme : defaults tcp.
+     * host : defaults to localhost.
+     * port : Redis port number.
+     * database : Accepts a numeric value that is used by Predis to automatically select a logical database.
+     * password : Auth password server key.
+     * persistent : Specifies if the underlying connection resource should be left open when a script ends its lifecycle.
+     */
+    public function setupRedis($conf = array())
+    {
+        // sets up redis connection
+        $this->client = new RedisClient(array(
+            'scheme'     => isset($conf["scheme"]) ? $conf["scheme"] : "tcp",
+            'host'       => isset($conf["host"]) ? $conf["host"] : "127.0.0.1",
+            'port'       => isset($conf["port"]) ? $conf["port"] : self::REDIS_DEFAULT_PORT,
+            'database'   => isset($conf["database"]) ? $conf["database"] : self::REDIS_DEFAULT_DB,
+            'password'   => isset($conf["password"]) ? $conf["password"] : self::REDIS_DEFAULT_PASS,
+            'persistent' => isset($conf["persistent"]) ? $conf["persistent"] : false
+        ));
+    }
+
+    /**
+     * Saves data to Redis server
+     * @param string $key The Key
+     * @param mixed $value The Value for Key
+     * @return mixed
+     */
+    public function setRedis($key = "", $value = null)
+    {
+        $data = json_encode($value);
+        //saves data
+        return $this->client->set($key, $data);
      }
 
     /**
@@ -100,22 +163,8 @@ class Cacher
      */
     public function getRedisData($key = "")
     {
-        if(empty($key))
-            return null;
+        $data = $this->client->get($key);
 
-        //Cache arbitrary data
-        try {
-            $data = $this->redis->get($key);
-            return $data;
-        }
-        catch(\Exception $e) {
-
-            //get DI instance (static)
-            $di = \Phalcon\DI::getDefault();
-            $logger = $di->getShared("logger");
-
-            $logger->error("Cacher -> Error retrieving data from redis server, key:$key. Err: ".$e->getMessage());
-            return null;
-        }
+        return json_decode($data);
     }
 }

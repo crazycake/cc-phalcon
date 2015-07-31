@@ -53,16 +53,17 @@ return array (
   ),
   'utils' => 
   array (
-    0 => 'Cryptify.php',
-    1 => 'DateHelper.php',
-    2 => 'FormHelper.php',
-    3 => 'GPS.php',
-    4 => 'GetText.php',
-    5 => 'PdfHelper.php',
-    6 => 'ReCaptcha.php',
-    7 => 'Slug.php',
-    8 => 'StorageS3.php',
-    9 => 'UserAgent.php',
+    0 => 'Cacher.php',
+    1 => 'Cryptify.php',
+    2 => 'DateHelper.php',
+    3 => 'FormHelper.php',
+    4 => 'GPS.php',
+    5 => 'GetText.php',
+    6 => 'PdfHelper.php',
+    7 => 'ReCaptcha.php',
+    8 => 'Slug.php',
+    9 => 'StorageS3.php',
+    10 => 'UserAgent.php',
   ),
 );
 ?>
