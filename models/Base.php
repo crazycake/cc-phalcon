@@ -23,7 +23,8 @@ class Base extends \Phalcon\Mvc\Model
      * @link http://php.net/manual/en/language.oop5.late-static-bindings.php
      * @return string The current class name
      */
-    public static function who() {
+    public static function who()
+    {    
         return __CLASS__;
     }
 

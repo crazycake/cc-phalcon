@@ -1,6 +1,7 @@
 <?php
 /**
  * Base Model Users Checkouts
+ * Requires Criptify Util library
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
@@ -11,32 +12,21 @@ use Phalcon\Mvc\Model\Validator\InclusionIn;
 
 class BaseUsersCheckouts extends Base
 {
+    /* static vars */
+    public static $DEFAULT_OBJECTS_CLASS = "UsersCheckoutsObjects";
+    public static $BUY_ORDER_CODE_LENGTH = 16;
+
     /* properties */
+
+    /*
+     * @var string
+     */
+    public $buy_order;
 
     /**
      * @var int
      */
     public $user_id;
-
-    /**
-     * @var string
-     */
-    public $object_class;
-
-    /**
-     * @var string
-     */
-    public $object_id;
-
-    /**
-     * @var int
-     */
-    public $quantity;
-
-    /**
-     * @var string
-     */
-    public $buy_order;
 
     /**
      * @var string
@@ -59,6 +49,9 @@ class BaseUsersCheckouts extends Base
     ------------------------------------------------------------------------------------------------- **/
     public function initialize()
     {
+        //model relations
+        $this->hasOne("user_id", "Users", "id");
+
         //Skips fields/columns on both INSERT/UPDATE operations
         $this->skipAttributes(array('created_at'));
     }
@@ -67,6 +60,7 @@ class BaseUsersCheckouts extends Base
     ------------------------------------------------------------------------------------------------- **/
     public function validation()
     {
+        //inclusion
         $this->validate( new InclusionIn(array(
             "field"   => "state",
             "domain"  => self::$STATES,
@@ -76,44 +70,140 @@ class BaseUsersCheckouts extends Base
         //check validations
         if ($this->validationHasFailed() == true)
             return false;
-    }/** -------------------------------------------------------------------------------------------------
+    }
+    /** -------------------------------------------------------------------------------------------------
         Events
     ------------------------------------------------------------------------------------------------- **/
     public function beforeValidationOnCreate()
     {
-        //set last login
+        //set default state
         $this->state = self::$STATES[0];
     }
     /** ------------------------------------------- § ------------------------------------------------ **/
 
     /**
-     * Finds an object
-     * @static
-     * @param int $user_id
-     * @param string $object_class
-     * @param int $object_id
-     * @return object
+     * Generates a random code for a buy order
+     * @param  string $phrase
+     * @return string
      */
-    public static function getObject($user_id, $object_class, $object_id)
+    public static function generateBuyOrder($length)
     {
-        $conditions = "user_id = ?1 AND $object_class = ?2 AND $object_id = ?3";
-        $parameters = array(1 => $user_id, 2 => $object_class, 3 => $object_id);
+        $di = \Phalcon\DI::getDefault();
+        $code = $di->getShared('cryptify')->generateAlphanumericCode($length);
+        //unique constrait
+        $exists = self::findFirst( array("buy_order = '".$code."'") );
 
-        return self::findFirst( array($conditions, "bind" => $parameters) );
+        return $exists ? $this->generateBuyOrder($length) : $code;
     }
 
     /**
-     * Gets object quantity
-     * @static
-     * @param int $user_id
-     * @param string $object_class
-     * @param int $object_id
-     * @return int
+     * Creates a new buy order
+     * @param  int $user_id The user id
+     * @param  array $objects The objects to be saved
+     * @return mixed [boolean|string] If success returns the buyOrder
      */
-    public static function getObjectQuantity($user_id, $object_class, $object_id)
+    public static function newBuyOrder($user_id = 0, $objects = array())
     {
-        $object = self::getObject($user_id, $object_class, $object_id);
+        if(empty($user_id) || empty($objects))
+            return false;
 
-        return $object ? $object->quantity : 0;
+        //get DI reference (static)
+        $di = \Phalcon\DI::getDefault();
+        //get classes
+        $checkoutModel = static::who();
+        //get checkouts objects class
+        $objectsModel = static::$DEFAULT_OBJECTS_CLASS;
+
+        //generates buy order
+        $buy_order = self::generateBuyOrder(static::$BUY_ORDER_CODE_LENGTH);
+
+        //creates object
+        $checkout = new $checkoutModel();
+        $checkout->user_id   = $user_id;
+        $checkout->buy_order = $buy_order;
+
+        try {
+            //begin trx
+            $di->getShared('db')->begin();
+
+            if(!$checkout->save())
+                throw new \Exception("A DB error ocurred saving in checkouts model.");
+
+            //save each item (format: {class_objectId} : {q})
+            foreach ($objects as $key => $q) {
+
+                $props = explode("_", $key);
+                //creates an object
+                $checkoutObj = new $objectsModel();
+                $checkoutObj->buy_order    = $buy_order;
+                $checkoutObj->object_class = $props[0];
+                $checkoutObj->object_id    = $props[1];
+                //set quantity
+                $checkoutObj->quantity = $q;
+
+                if(!$checkoutObj->save())
+                    throw new \Exception("A DB error ocurred saving in checkoutsObjects model.");
+            }
+
+            //commit transaction
+            $di->getShared('db')->commit();
+
+            return $buy_order;
+        }
+        catch(\Exception $e) {
+            $di->getShared('logger')->error("BaseUsersCheckouts::newBuyOrder -> An error ocurred: ".$e->getMessage());
+            $di->getShared('db')->rollback();
+            return false;
+        }
+    }
+
+    /**
+     * Validates that checkout item is already in stock
+     * @param  string $object_class The object class
+     * @param  int $object_id The object id
+     * @param  int $q The quantity to validate
+     * @return boolean
+     */
+    public static function validateItemStock($object_class = "", $object_id = 0, $q = 0)
+    {
+        if(!class_exists($object_class))
+            throw new Exception("BaseUsersCheckouts -> Object class not found ($object_class)");
+
+        $object = $object_class::getObjectById($object_id);
+
+        if(!$object)
+            return false;
+
+        //get classes
+        $checkoutModel = static::who();
+        //get checkouts objects class
+        $objectsModel = static::$DEFAULT_OBJECTS_CLASS;
+
+        //get pending checkouts items quantity
+        $items = $checkoutModel::getObjectsByPhql(
+           //phql
+           "SELECT SUM(quantity) AS q
+            FROM $objectsModel AS objects
+            INNER JOIN $checkoutModel AS checkout ON checkout.buy_order = objects.buy_order
+            WHERE objects.object_id = :object_id:
+                AND objects.object_class = :object_class:
+                AND checkout.state = 'pending'
+            ",
+           //bindings
+           array('object_id' => $object_id, "object_class" => $object_class)
+       );
+       //get sum quantity
+       $checkout_q = $items->getFirst()->q;
+
+        if(is_null($checkout_q))
+            $checkout_q = 0;
+
+        //substract total
+        $total = $object->quantity - $checkout_q;
+
+        if($total <= 0)
+            return false;
+
+       return ($total > $q) ? true : false;
     }
 }
