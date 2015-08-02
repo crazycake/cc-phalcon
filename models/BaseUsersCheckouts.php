@@ -42,7 +42,7 @@ class BaseUsersCheckouts extends Base
      * @static
      * @var array
      */
-    static $STATES = array('pending', 'complete');
+    static $STATES = array('pending', 'failed', 'complete');
 
     /** -------------------------------------------- § -------------------------------------------------
         Init
@@ -74,12 +74,30 @@ class BaseUsersCheckouts extends Base
     /** -------------------------------------------------------------------------------------------------
         Events
     ------------------------------------------------------------------------------------------------- **/
+    public function afterFetch()
+    {
+        $this->id = $this->buy_order;
+    }
+    /** ---------------------------------------------------------------------------------------------- **/
     public function beforeValidationOnCreate()
     {
         //set default state
         $this->state = self::$STATES[0];
     }
     /** ------------------------------------------- § ------------------------------------------------ **/
+
+    /**
+     * Get a checkout object by buyOrder
+     * @param  string $buy_order [description]
+     * @return mixed [string|boolea]
+     */
+    public static function getCheckout($buy_order = "")
+    {
+        $conditions = "buy_order = ?1";
+        $parameters = array(1 => $buy_order);
+
+        return self::findFirst( array($conditions, "bind" => $parameters) );
+    }
 
     /**
      * Generates a random code for a buy order
@@ -155,6 +173,27 @@ class BaseUsersCheckouts extends Base
             $di->getShared('db')->rollback();
             return false;
         }
+    }
+
+    /**
+     * Updates a checkout state
+     * @param  string $buy_order The buy order
+     * @param  string $state     The new state
+     * @return boolean
+     */
+    public static function updateState($buy_order, $state)
+    {
+        $checkout = self::getCheckout($buy_order);
+
+        //check object and default state
+        if(!$checkout || $checkout->state != self::$STATES[0])
+            return false;
+
+        $checkout->update(array(
+            "state" => $state
+        ));
+
+        return true;
     }
 
     /**
