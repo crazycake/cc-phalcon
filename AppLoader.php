@@ -459,10 +459,16 @@ abstract class AppLoader
                 $app_environment = 'production';
             }
         }
-        //$app_environment = 'production'; //DEBUG PRODUCTION
+        //CLI config
+        else {
+            //gets environment defined var
+            //TODO: read a conf file .deploy and set this
+            if(gethostname() == "ip-172-30-1-58")
+                $app_environment = "testing";
+        }
 
         //set environment consts & self vars
-        define("APP_ENVIRONMENT", $app_environment);
+        define("APP_ENVIRONMENT", $app_environment); //@hardcode: production
         define("APP_BASE_URL", $app_base_url);
     }
 
