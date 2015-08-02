@@ -15,9 +15,10 @@ return array (
     2 => 'BaseTickets.php',
     3 => 'BaseUsers.php',
     4 => 'BaseUsersCheckouts.php',
-    5 => 'BaseUsersFacebook.php',
-    6 => 'BaseUsersTickets.php',
-    7 => 'BaseUsersTokens.php',
+    5 => 'BaseUsersCheckoutsObjects.php',
+    6 => 'BaseUsersFacebook.php',
+    7 => 'BaseUsersTickets.php',
+    8 => 'BaseUsersTokens.php',
   ),
   'phalcon' => 
   array (
