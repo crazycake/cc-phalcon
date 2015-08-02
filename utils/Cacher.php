@@ -93,7 +93,7 @@ class Cacher
              //get DI instance (static)
              $di = DI::getDefault();
              $logger = $di->getShared("logger");
-             $logger->error("Cacher -> Failed saving data to ".$this->adapter." server, key:".$key." Err:".$e->getMessage());
+             $logger->error("Cacher -> Failed saving data to ".$this->adapter." server, key:".$key.". Err:".$e->getMessage());
 
              return false;
          }
@@ -125,7 +125,7 @@ class Cacher
              //get DI instance (static)
              $di = DI::getDefault();
              $logger = $di->getShared("logger");
-             $logger->error("Cacher -> Failed retrieving data from ".$this->adapter." server, key:".$key);
+             $logger->error("Cacher -> Failed retrieving data from ".$this->adapter." server, key:".$key.". Err: ".$e->getMessage());
 
              return null;
          }
