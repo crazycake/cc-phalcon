@@ -169,56 +169,76 @@ abstract class AppCore extends Controller
      * Required field may have a "_" prefix to establish that is just an optional field to be sanitized.
      * Types: string,email,int,float,alphanum,striptags,trim,lower,upper.
      * @access protected
-     * @param array $required_fields
+     * @param array $req_fields Required fields
      * @param string $method
-     * @param string $send_json Sends json response for ajax calls
-     * @param boolean $check_csrf_token Checks a form CSRF token
+     * @param boolean $check_csrf Checks a form CSRF token
      * @example { $data, array( "_name" => "string"), POST }
      * @link   http://docs.phalconphp.com/en/latest/reference/filter.html#sanitizing-data
      * @return array
      */
-    protected function _handleRequestParams($required_fields = array(), $method = 'POST', $send_json = true, $check_csrf_token = true)
+    protected function _handleRequestParams($req_fields = array(), $method = 'POST', $check_csrf = true)
     {
-        //check is API module
-        $isApiModule = MODULE_NAME === "api" ?: false;
+        //check API module and set special settings
+        if(MODULE_NAME === "api") {
+            $check_csrf = false;
+            $send_json  = true;
+        }
+        //frontend or backend module
+        else {
+            $send_json = $this->request->isAjax();
+        }
+
+        //set anoymous function for send response
+        if($send_json) {
+            $sendResponse = function($code) {
+                //call send json response
+                $this->_sendJsonResponse($code);
+            };
+        }
+        else {
+            $sendResponse = function($code) {
+                //otherwise redirect to 400 page
+                $this->dispatcher->forward(array("controller" => "errors", "action" => "badRequest"));
+            };
+        }
 
         //is post request? (method now allowed)
         if ($method == 'POST' && !$this->request->isPost())
-            $this->_sendJsonResponse(405);
+            $sendResponse(405);
 
         //is get request? (method now allowed)
         if ($method == 'GET' && !$this->request->isGet())
-            $this->_sendJsonResponse(405);
+            $sendResponse(405);
 
         //validate always CSRF Token (prevents also headless browsers, POST only and API module excluded)
-        if (!$isApiModule && $check_csrf_token) {
+        if ($check_csrf) {
             //check if method exists
             if(method_exists($this, '_checkCsrfToken') && !$this->_checkCsrfToken())
-                $this->_sendJsonResponse(498);
+                $sendResponse(498);
         }
 
         //get POST or GET data
-        $data = ($method == 'POST' ? $this->request->getPost() : $this->request->get());
+        $data = ($method == 'POST') ? $this->request->getPost() : $this->request->get();
 
         //clean phalcon data for GET method
         if ($method == 'GET')
             unset($data['_url']);
 
         //if no required fields given, return all POST or GET vars as array
-        if (empty($required_fields))
+        if (empty($req_fields))
             return $data;
 
         //missing data?
-        if (!empty($required_fields) && empty($data))
-            $this->_sendJsonResponse(400);
+        if (!empty($req_fields) && empty($data))
+            $sendResponse(400);
 
         //dont filter data just return it
-        if (empty($required_fields))
+        if (empty($req_fields))
             return $data;
 
         $invalid_data = false;
         //compare keys
-        foreach ($required_fields as $field => $data_type) {
+        foreach ($req_fields as $field => $data_type) {
             $is_optional_field = false;
             //check if is a optional field
             if (substr($field, 0, 1) === "@") {
@@ -255,14 +275,8 @@ abstract class AppCore extends Controller
         }
 
         //check for invalid data
-        if ($invalid_data) {
-
-            if($isApiModule)
-                return $this->_sendJsonResponse(400);
-
-            //otherwise redirect to 400 page
-            $this->dispatcher->forward(array("controller" => "errors", "action" => "badRequest"));
-        }
+        if ($invalid_data)
+            $sendResponse(400);
 
         return $data;
     }
@@ -312,6 +326,7 @@ abstract class AppCore extends Controller
             print_r($object);
             exit;
         }
+
         return $object;
     }
 }
