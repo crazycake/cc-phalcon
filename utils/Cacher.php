@@ -219,7 +219,7 @@ class Cacher
      * Deleted data to Redis server
      * @param string $key The Key
      */
-    public function setRedis($key = "")
+    public function deleteRedis($key = "")
     {
         $this->client->delete($key);
     }
