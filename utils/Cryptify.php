@@ -9,9 +9,12 @@
 namespace CrazyCake\Utils;
 
 //imports
+use Phalcon\DI;
+use Phalcon\Exception;
+//other imports
 use Hashids\Hashids;
 use Phalcon\Crypt;
-use Phalcon\Exception;
+
 
 class Cryptify
 {
@@ -77,15 +80,26 @@ class Cryptify
      */
     public function decryptForGetResponse($encrypted_text, $explode = false)
     {
-        //decrypt string
-        $decrypted_string = $this->crypt->decrypt(base64_decode(rawurldecode(str_replace('-', '%', $encrypted_text))));
-        //remove null bytes in string
-        $data = str_replace(chr(0), '', $decrypted_string);
+        try {
+            //decrypt string
+            $decrypted_string = $this->crypt->decrypt(base64_decode(rawurldecode(str_replace('-', '%', $encrypted_text))));
+            //remove null bytes in string
+            $data = str_replace(chr(0), '', $decrypted_string);
 
-        if($explode)
-            $data = explode($explode, $data);
+            if($explode)
+                $data = explode($explode, $data);
 
-        return $data;
+            return $data;
+        }
+        catch(Execption $e) {
+
+            //get DI instance (static)
+            $di = DI::getDefault();
+
+            $logger = $di->getShared("logger");
+            $logger->error("Criptify -> Failed decryptForGetResponse: ".$encrypted_text.". Err: ".$e->getMessage());
+            return "";
+        }
     }
 
     /**
