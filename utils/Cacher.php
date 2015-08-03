@@ -90,11 +90,7 @@ class Cacher
          }
          catch(Exception $e) {
 
-             //get DI instance (static)
-             $di = DI::getDefault();
-             $logger = $di->getShared("logger");
-             $logger->error("Cacher -> Failed saving data to ".$this->adapter." server, key:".$key.". Err:".$e->getMessage());
-
+             $this->_logError("Cacher -> Failed saving data to ".$this->adapter." server, key:".$key, $e);
              return false;
          }
      }
@@ -122,13 +118,54 @@ class Cacher
          }
          catch(Exception $e) {
 
-             //get DI instance (static)
-             $di = DI::getDefault();
-             $logger = $di->getShared("logger");
-             $logger->error("Cacher -> Failed retrieving data from ".$this->adapter." server, key:".$key.". Err: ".$e->getMessage());
-
+             $this->_logError("Cacher -> Failed retrieving data from ".$this->adapter." server, key:".$key, $e);
              return null;
          }
+     }
+
+     /**
+      * deletes a cached key
+      * @param string $key The Key for searching
+      * @return boolean Returns true if was an affected key
+      */
+     public function delete($key = "")
+     {
+         try {
+
+             if(empty($key))
+                 throw new Exception("Empty key given");
+
+             //get cache data
+             $result = $this->{"get".$this->adapter}($this->cachePrefix.$key);
+
+             if(!$result)
+                return false;
+
+            //delete key
+            $this->{"delete".$this->adapter}($this->cachePrefix.$key);
+
+            return true;
+         }
+         catch(Exception $e) {
+
+             $this->_logError("Cacher -> Failed deleting data from ".$this->adapter." server, key:".$key, $e);
+             return null;
+         }
+     }
+
+     /* --------------------------------------------------- § -------------------------------------------------------- */
+
+     /**
+      * Logs catched errors
+      * @param  [string] $text The error text
+      * @param  [exception] $e  The exception
+      */
+     private function _logError($text, $e)
+     {
+         //get DI instance (static)
+         $di = DI::getDefault();
+         $logger = $di->getShared("logger");
+         $logger->error($text.". Err: ".$e->getMessage());
      }
 
     /** -------------------------------------------------------------------------------------------------
@@ -176,5 +213,14 @@ class Cacher
     public function getRedis($key = "")
     {
         return $this->client->get($key);
+    }
+
+    /**
+     * Deleted data to Redis server
+     * @param string $key The Key
+     */
+    public function setRedis($key = "")
+    {
+        $this->client->delete($key);
     }
 }
