@@ -10,6 +10,7 @@
 namespace CrazyCake\Traits;
 
 //imports
+use Phalcon\Exception;
 use Pelago\Emogrifier;
 use Mandrill;
 
@@ -190,7 +191,6 @@ trait Ses
      * @param array $tags
      * @param array $attachments Array with sub-array(s) with content, type and name props
      * @param boolean $async
-     * @throws Exception
      * @return string
      */
     public function _sendMessage($html_raw, $subject, $recipients, $tags = array(), $attachments = array(), $async = true)
@@ -199,7 +199,7 @@ trait Ses
 
         //validation
         if (empty($html_raw) || empty($subject) || empty($recipients))
-            throw new \Exception("Ses::_sendMessage -> Invalid params data for sending email");
+            throw new Exception("Ses::_sendMessage -> Invalid params data for sending email");
 
         //parse recipients
         if (is_string($recipients))
@@ -254,9 +254,9 @@ trait Ses
     private function _checkConfigurations()
     {
         if (!isset($this->sesConfig['appName']) || !isset($this->sesConfig['mandrillKey']) || !isset($this->sesConfig['cssFile']))
-            throw new \Exception("Ses::_checkConfigurations -> SES configuration properties are not defined. (appName, mandrillKey, cssFile)");
+            throw new Exception("Ses::_checkConfigurations -> SES configuration properties are not defined. (appName, mandrillKey, cssFile)");
 
         if (!isset($this->sesConfig['senderEmail']) || !isset($this->sesConfig['contactEmail']))
-        	throw new \Exception("Ses::_checkConfigurations -> SES sender & contact emails are not defined.");
+        	throw new Exception("Ses::_checkConfigurations -> SES sender & contact emails are not defined.");
     }
 }

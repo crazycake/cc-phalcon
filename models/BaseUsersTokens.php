@@ -7,6 +7,7 @@
 namespace CrazyCake\Models;
 
 //imports
+use Phalcon\Exception;
 use Phalcon\Mvc\Model\Validator\InclusionIn;
 //other imports
 use CrazyCake\Utils\DateHelper;
@@ -157,20 +158,19 @@ class BaseUsersTokens extends Base
      * UserTokens must be set in models
      * @static
      * @param string $encrypted_data
-     * @throws \Exception
      * @return array
      */
     public static function handleUserTokenValidation($encrypted_data = null)
     {
         if (is_null($encrypted_data))
-            throw new \Exception("sent input null encrypted_data");
+            throw new Exception("sent input null encrypted_data");
 
         $di   = \Phalcon\DI::getDefault();
         $data = $di->getCryptify()->decryptForGetResponse($encrypted_data, "#");
 
         //validate data (user_id, token_type and token)
         if (count($data) != 3)
-            throw new \Exception("decrypted data is not a 2 dimension array.");
+            throw new Exception("decrypted data is not a 2 dimension array.");
 
         //set vars values
         list($user_id, $token_type, $token) = $data;
@@ -179,13 +179,13 @@ class BaseUsersTokens extends Base
         $token = self::getTokenByUserAndValue($user_id, $token, $token_type);
 
         if (!$token)
-            throw new \Exception("temporal token dont exists.");
+            throw new Exception("temporal token dont exists.");
 
         //get days passed
         $days_passed = DateHelper::getTimePassedFromDate($token->created_at);
 
         if ($days_passed > static::$TOKEN_EXPIRES_THRESHOLD)
-            throw new \Exception("temporal token (id: " . $token->id . ") has expired (" . $days_passed . " days passed)");
+            throw new Exception("temporal token (id: " . $token->id . ") has expired (" . $days_passed . " days passed)");
 
         return $data;
     }

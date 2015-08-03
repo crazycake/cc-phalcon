@@ -7,6 +7,9 @@
 
 namespace CrazyCake\Transbank;
 
+//imports
+use Phalcon\Exception;
+
 class OneClickClient
 {
 	/**
@@ -26,11 +29,11 @@ class OneClickClient
     {
 		//check required files
     	if(!isset($setup['OneClickKey']) || !isset($setup['OneClickCert']) || !isset($setup['OneClickTransbankCert']))
-    		throw new \Exception('OneClickClient -> Invalid webpay setup input array.');
+    		throw new Exception('OneClickClient -> Invalid webpay setup input array.');
 
 		//validate files
 		if(!is_file($setup['OneClickKey']) || !is_file($setup['OneClickCert']) || !is_file($setup['OneClickTransbankCert']))
-			throw new \Exception('OneClickClient -> Invalid webpay files, files not found!');
+			throw new Exception('OneClickClient -> Invalid webpay files, files not found!');
 
 		//set gateway cert file
 		$this->transbank_cert = $setup['OneClickTransbankCert'];

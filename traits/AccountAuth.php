@@ -9,9 +9,9 @@
 namespace CrazyCake\Traits;
 
 //imports
-//Google reCaptcha Helper
-use CrazyCake\Utils\ReCaptcha;
+use Phalcon\Exception;
 use CrazyCake\Utils\DateHelper;
+use CrazyCake\Utils\ReCaptcha;
 
 trait AccountAuth
 {
@@ -87,7 +87,7 @@ trait AccountAuth
             $user = $users_class::getObjectById($user_id);
 
             if (!$user || $user->account_flag != $users_class::$ACCOUNT_FLAGS['pending'])
-                throw new \Exception("user (id: ".$user->id.") don't have a pending account flag.");
+                throw new Exception("user (id: ".$user->id.") don't have a pending account flag.");
 
             //save new account flag state
             $user->update( array("account_flag" => $users_class::$ACCOUNT_FLAGS['enabled']) );
@@ -99,7 +99,7 @@ trait AccountAuth
             $this->_setUserSessionAsLoggedIn($user_id);
             $this->_redirectToAccount();
         }
-        catch (\Exception $e) {
+        catch (Exception $e) {
             $this->logger->error('AccountAuth::activationAction -> Error in account activation, encrypted data ('.$encrypted_data."). Trace: ".$e->getMessage());
             $this->dispatcher->forward(array("controller" => "errors", "action" => "expired"));
         }

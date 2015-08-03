@@ -8,6 +8,7 @@
 namespace CrazyCake\Models;
 
 //imports
+use Phalcon\Exception;
 use Phalcon\Mvc\Model\Validator\InclusionIn;
 
 class BaseUsersCheckouts extends Base
@@ -52,7 +53,7 @@ class BaseUsersCheckouts extends Base
      * @static
      * @var array
      */
-    static $STATES = array('pending', 'failed', 'complete');
+    static $STATES = array('pending', 'failed', 'success');
 
     /** -------------------------------------------- § -------------------------------------------------
         Init
@@ -159,7 +160,7 @@ class BaseUsersCheckouts extends Base
             $di->getShared('db')->begin();
 
             if(!$checkout->save())
-                throw new \Exception("A DB error ocurred saving in checkouts model.");
+                throw new Exception("A DB error ocurred saving in checkouts model.");
 
             //save each item (format: {class_objectId} : {q})
             foreach ($objects as $key => $q) {
@@ -174,7 +175,7 @@ class BaseUsersCheckouts extends Base
                 $checkoutObj->quantity = $q;
 
                 if(!$checkoutObj->save())
-                    throw new \Exception("A DB error ocurred saving in checkoutsObjects model.");
+                    throw new Exception("A DB error ocurred saving in checkoutsObjects model.");
             }
 
             //commit transaction
@@ -182,7 +183,7 @@ class BaseUsersCheckouts extends Base
 
             return $buy_order;
         }
-        catch(\Exception $e) {
+        catch(Exception $e) {
             $di->getShared('logger')->error("BaseUsersCheckouts::newBuyOrder -> An error ocurred: ".$e->getMessage());
             $di->getShared('db')->rollback();
             return false;

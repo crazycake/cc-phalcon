@@ -9,7 +9,8 @@
 
 namespace CrazyCake\Traits;
 
-//libs
+//imports
+use Phalcon\Exception;
 use CrazyCake\Utils\StorageS3;  //AWS S3 File Storage helper
 use CrazyCake\Qr\QRMaker;       //CrazyCake QR
 use CrazyCake\Utils\PdfHelper;  //PDF generator
@@ -90,10 +91,10 @@ trait TicketManager
         try {
 
             if(!in_array($file_type, $this->storageConfig['allowed_resources_types']))
-                throw new \Exception("Invalid file type");
+                throw new Exception("Invalid file type");
 
             if(empty($hashed_id))
-                throw new \Exception("Invalid ticket hashed_id");
+                throw new Exception("Invalid ticket hashed_id");
 
             $ticket_id = $this->cryptify->decryptHashId($hashed_id);
 
@@ -102,12 +103,12 @@ trait TicketManager
             $get_user_ticket_fn = $this->storageConfig["get_user_ticket_function"];
 
             if(!is_callable($get_user_ticket_fn))
-                throw new \Exception("Invalid 'get user ticket' function");
+                throw new Exception("Invalid 'get user ticket' function");
 
             $user_ticket = $get_user_ticket_fn($user_id, $ticket_id);
 
             if(!$user_ticket)
-                throw new \Exception("Invalid ticket id for user");
+                throw new Exception("Invalid ticket id for user");
 
             $ticket_filename = $user_ticket->qr_hash.".".$file_type;
             $s3_path         = self::$DEFAULT_S3_URI."/".$user_id."/".$ticket_filename;
@@ -124,7 +125,7 @@ trait TicketManager
                 }
             }
         }
-        catch (\Exception $e) {
+        catch (Exception $e) {
             //fallback for file
             $this->logger->error("TicketStorage::getTicket -> Error loading image: ".$hashed_id." - Exception:".$e->getMessage());
             $binary = file_get_contents($this->_baseUrl($this->storageConfig['image_fallback_uri']));
@@ -169,7 +170,7 @@ trait TicketManager
         catch (\S3Exception $e) {
             $error_occurred = $e->getMessage();
         }
-        catch (\Exception $e) {
+        catch (Exception $e) {
             $error_occurred = $e->getMessage();
         }
 
@@ -207,7 +208,7 @@ trait TicketManager
             $get_user_ticket_ui_fn = $this->storageConfig["get_user_ticket_ui_function"];
 
             if(!is_callable($get_user_ticket_ui_fn))
-                throw new \Exception("Invalid 'get user ticket UI' function");
+                throw new Exception("Invalid 'get user ticket UI' function");
 
             //get user
             $user = $users_class::getObjectById($user_ticket->user_id);
@@ -230,7 +231,7 @@ trait TicketManager
         catch (\S3Exception $e) {
             $error_occurred = $e->getMessage();
         }
-        catch (\Exception $e) {
+        catch (Exception $e) {
             $error_occurred = $e->getMessage();
         }
 

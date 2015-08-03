@@ -9,6 +9,7 @@
 namespace CrazyCake\Traits;
 
 //imports
+use Phalcon\Exception;
 use CrazyCake\Utils\ReCaptcha;
 
 trait AccountPassRecovery
@@ -66,7 +67,7 @@ trait AccountPassRecovery
             //load javascript
             $this->_loadJavascriptModules($this->accountConfig['javascript_modules']);
         }
-        catch (\Exception $e) {
+        catch (Exception $e) {
             $this->logger->error('AccountPass::newAction -> Error in account activation, encrypted data (' . $encrypted_data . "). Trace: " . $e->getMessage());
             $this->dispatcher->forward(array("controller" => "errors", "action" => "expired"));
         }
@@ -135,7 +136,7 @@ trait AccountPassRecovery
             $user = $users_class::getObjectById($user_id);
 
             if (!$user)
-                throw new \Exception("got an invalid user (id:" . $user_id . ") when validating encrypted data.");
+                throw new Exception("got an invalid user (id:" . $user_id . ") when validating encrypted data.");
 
             //get token object
             $token = $tokens_class::getTokenByUserAndValue($user_id, $token, $token_type);
@@ -153,7 +154,7 @@ trait AccountPassRecovery
 
             $payload = true;
         }
-        catch (\Exception $e) {
+        catch (Exception $e) {
             $this->logger->error("AccountPass::saveNewPasswordAction -> Error saving new password. Trace: " . $e->getMessage());
             $this->_sendJsonResponse(400);
             return;

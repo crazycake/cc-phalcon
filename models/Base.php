@@ -24,7 +24,7 @@ class Base extends \Phalcon\Mvc\Model
      * @return string The current class name
      */
     public static function who()
-    {    
+    {
         return __CLASS__;
     }
 

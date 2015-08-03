@@ -486,7 +486,7 @@ abstract class WebCore extends AppCore implements webSecurity
             try {
                 $this->assets->get($cname);
             }
-            catch (\Exception $e) {
+            catch (Exception $e) {
                 $collection_exists = false;
             }
             //check collection exists

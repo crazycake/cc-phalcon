@@ -7,6 +7,7 @@
 namespace CrazyCake\Core;
 
 //imports
+use Phalcon\Exception;
 use Phalcon\CLI\Task;
 
 class TaskCore extends Task
@@ -66,7 +67,7 @@ class TaskCore extends Task
                 $open = "\033[94m";     //Blue color
                 break;
             default:
-                throw new \Exception("CoreTask:_colorize -> invalid message type: ".$type);
+                throw new Exception("CoreTask:_colorize -> invalid message type: ".$type);
         }
         //return output, chr(27) -> escape key
         $output = chr(27) . $open . $text . chr(27) . $close . "\n";

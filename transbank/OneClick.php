@@ -7,11 +7,14 @@
 
 namespace CrazyCake\Transbank;
 
+//imports
+use Phalcon\Exception;
+
 class OneClick
 {
     /* consts */
     const WP_ONE_CLICK_DEV_PAYMENT_URL = 'https://webpay3g.orangepeople.cl/webpayserver/wswebpay/OneClickPaymentService?wsdl';
-    
+
     /**
      * class map aray
      * @static
@@ -47,7 +50,7 @@ class OneClick
      * @var object
      */
     public $soapClient;
-    
+
     /**
      * constructor
      * @param string $key_file_path The Key file path
@@ -72,40 +75,40 @@ class OneClick
             //set security files
             $this->soapClient->setSecurityFiles($key_file_path, $cert_file_path);
         }
-        catch(\Exception $e) {
-            throw new \Exception("OneClick -> Soap Client Lib is required");
+        catch(Exception $e) {
+            throw new Exception("OneClick -> Soap Client Lib is required");
         }
     }
-    
+
     function removeUser($removeUser)
     {
         $removeUserResponse = $this->soapClient->removeUser($removeUser);
         return $removeUserResponse;
-        
+
     }
     function initInscription($initInscription)
-    {        
+    {
         $initInscriptionResponse = $this->soapClient->initInscription($initInscription);
         return $initInscriptionResponse;
-        
+
     }
     function finishInscription($finishInscription)
     {
         $finishInscriptionResponse = $this->soapClient->finishInscription($finishInscription);
         return $finishInscriptionResponse;
-        
+
     }
     function authorize($authorize)
     {
         $authorizeResponse = $this->soapClient->authorize($authorize);
         return $authorizeResponse;
-        
+
     }
     function codeReverseOneClick($codeReverseOneClick)
     {
         $codeReverseOneClickResponse = $this->soapClient->codeReverseOneClick($codeReverseOneClick);
         return $codeReverseOneClickResponse;
-        
+
     }
     function reverse($reverse)
     {

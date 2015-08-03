@@ -91,14 +91,14 @@ class Cryptify
 
             return $data;
         }
-        catch(Execption $e) {
+        catch(Exception $e) {
 
             //get DI instance (static)
             $di = DI::getDefault();
 
             $logger = $di->getShared("logger");
             $logger->error("Criptify -> Failed decryptForGetResponse: ".$encrypted_text.". Err: ".$e->getMessage());
-            return "";
+            return null;
         }
     }
 

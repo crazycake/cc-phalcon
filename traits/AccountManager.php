@@ -8,6 +8,9 @@
 
 namespace CrazyCake\Traits;
 
+//imports
+use Phalcon\Exception;
+
 trait AccountManager
 {
 	/**
@@ -66,21 +69,21 @@ trait AccountManager
         try {
             //check for password
             if(!empty($data['pass']) && empty($data['current_pass']))
-                throw new \Exception($this->accountConfig['text_current_pass_empty']);
+                throw new Exception($this->accountConfig['text_current_pass_empty']);
 
             //changed pass validation
             if(!empty($data['pass']) && !empty($data['current_pass'])) {
 
                 if(strlen($data['pass']) < $data['profile_pass_min_length'])
-                    throw new \Exception($this->accountConfig['text_pass_too_short']);
+                    throw new Exception($this->accountConfig['text_pass_too_short']);
 
                 //check current pass
                 if(!$this->security->checkHash($data['current_pass'], $user->pass))
-                    throw new \Exception($this->accountConfig['text_pass_dont_match']);
+                    throw new Exception($this->accountConfig['text_pass_dont_match']);
 
                 //check pass is diffetent to current
                 if($this->security->checkHash($data['pass'], $user->pass))
-                    throw new \Exception($this->accountConfig['text_new_pass_equals']);
+                    throw new Exception($this->accountConfig['text_new_pass_equals']);
 
                 //ok, update pass
                 $updating_data["pass"] = $this->security->hash($data['pass']);
@@ -111,7 +114,7 @@ trait AccountManager
                     $updating_data["pass"] = true;
             }
         }
-        catch (\Exception $e) {
+        catch (Exception $e) {
             $this->_sendJsonResponse(200, $e->getMessage(), true);
         }
 

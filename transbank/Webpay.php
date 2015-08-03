@@ -7,6 +7,9 @@
 
 namespace CrazyCake\Transbank;
 
+//imports
+use Phalcon\Exception;
+
 class Webpay
 {
 	/* vars */
@@ -24,7 +27,7 @@ class Webpay
     {
    		//validation
     	if(empty($setup))
-    		throw new \Exception('Webpay Lib -> Invalid Webpay files path for constructor. Array is required.');
+    		throw new Exception('Webpay Lib -> Invalid Webpay files path for constructor. Array is required.');
 
 		//set new client instance
 		if($setup['module']) {
@@ -32,12 +35,12 @@ class Webpay
 			try {
 				$this->client = new $module($setup);
 			}
-			catch (\Exception $e) {
-				throw new \Exception("Webpay Lib -> Error instancing Webpay module class. Message:".$e->getMessage());
+			catch (Exception $e) {
+				throw new Exception("Webpay Lib -> Error instancing Webpay module class. Message:".$e->getMessage());
 			}
 		}
 		else {
-			throw new \Exception('Webpay Lib -> Invalid module!');
+			throw new Exception('Webpay Lib -> Invalid module!');
 		}
     }
 }

@@ -9,6 +9,7 @@
 namespace CrazyCake\Traits;
 
 //imports
+use Phalcon\Exception;
 use GuzzleHttp\Client as GuzzleClient;  //Guzzle client for requests
 
 trait Guzzle
@@ -26,7 +27,7 @@ trait Guzzle
     {
         //simple input validation
         if (empty($url))
-            throw new \Exception("Guzzle::sendAsyncRequest -> url method param is required.");
+            throw new Exception("Guzzle::sendAsyncRequest -> url method param is required.");
 
         $response = (new GuzzleClient())->get($url, ['future' => true]);
         $this->logGuzzleResponse($response, $method);

@@ -7,9 +7,6 @@
 
 namespace CrazyCake\Core;
 
-//imports
-use Phalcon\Exception; //Phalcon Exception
-
 abstract class WsCore extends AppCore
 {
     /* consts */
