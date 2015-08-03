@@ -29,6 +29,16 @@ class BaseUsersCheckouts extends Base
     public $user_id;
 
     /**
+     * @var double
+     */
+    public $amount;
+
+    /**
+     * @var string
+     */
+    public $coin;
+
+    /**
      * @var string
      */
     public $state;
@@ -118,9 +128,11 @@ class BaseUsersCheckouts extends Base
      * Creates a new buy order
      * @param  int $user_id The user id
      * @param  array $objects The objects to be saved
+     * @param  double $amount The total checkout amount
+     * @param  string $coin The amount coin
      * @return mixed [boolean|string] If success returns the buyOrder
      */
-    public static function newBuyOrder($user_id = 0, $objects = array())
+    public static function newBuyOrder($user_id = 0, $objects = array(), $amount = 0, $coin = "")
     {
         if(empty($user_id) || empty($objects))
             return false;
@@ -139,6 +151,8 @@ class BaseUsersCheckouts extends Base
         $checkout = new $checkoutModel();
         $checkout->user_id   = $user_id;
         $checkout->buy_order = $buy_order;
+        $checkout->amount    = $amount;
+        $checkout->coin      = $coin;
 
         try {
             //begin trx
