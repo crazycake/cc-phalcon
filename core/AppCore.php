@@ -203,17 +203,17 @@ abstract class AppCore extends Controller
 
         //is post request? (method now allowed)
         if ($method == 'POST' && !$this->request->isPost())
-            $sendResponse(405);
+            return $sendResponse(405);
 
         //is get request? (method now allowed)
         if ($method == 'GET' && !$this->request->isGet())
-            $sendResponse(405);
+            return $sendResponse(405);
 
         //validate always CSRF Token (prevents also headless browsers, POST only and API module excluded)
         if ($check_csrf) {
             //check if method exists
             if(method_exists($this, '_checkCsrfToken') && !$this->_checkCsrfToken())
-                $sendResponse(498);
+                return $sendResponse(498);
         }
 
         //get POST or GET data
@@ -229,7 +229,7 @@ abstract class AppCore extends Controller
 
         //missing data?
         if (!empty($req_fields) && empty($data))
-            $sendResponse(400);
+            return $sendResponse(400);
 
         //dont filter data just return it
         if (empty($req_fields))
@@ -275,7 +275,7 @@ abstract class AppCore extends Controller
 
         //check for invalid data
         if ($invalid_data)
-            $sendResponse(400);
+            return $sendResponse(400);
 
         return $data;
     }
