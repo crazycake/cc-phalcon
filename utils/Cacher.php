@@ -88,7 +88,7 @@ class Cacher
 
              return true;
          }
-         catch(\Exception $e) {
+         catch(Exception $e) {
 
              //get DI instance (static)
              $di = DI::getDefault();
@@ -120,7 +120,7 @@ class Cacher
 
             return $decode ? json_decode($result) : $result;
          }
-         catch(\Exception $e) {
+         catch(Exception $e) {
 
              //get DI instance (static)
              $di = DI::getDefault();
