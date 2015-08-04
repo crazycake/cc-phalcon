@@ -212,13 +212,13 @@ class BaseUsersCheckouts extends Base
     }
 
     /**
-     * Validates that checkout item is already in stock
+     * Validates that checkout object is already in stock
      * @param  string $object_class The object class
      * @param  int $object_id The object id
      * @param  int $q The quantity to validate
      * @return boolean
      */
-    public static function validateItemStock($object_class = "", $object_id = 0, $q = 0)
+    public static function validateObjectStock($object_class = "", $object_id = 0, $q = 0)
     {
         if(!class_exists($object_class))
             throw new Exception("BaseUsersCheckouts -> Object class not found ($object_class)");
@@ -234,7 +234,7 @@ class BaseUsersCheckouts extends Base
         $objectsModel = static::$DEFAULT_OBJECTS_CLASS;
 
         //get pending checkouts items quantity
-        $items = $checkoutModel::getObjectsByPhql(
+        $objects = $checkoutModel::getObjectsByPhql(
            //phql
            "SELECT SUM(quantity) AS q
             FROM $objectsModel AS objects
@@ -247,7 +247,7 @@ class BaseUsersCheckouts extends Base
            array('object_id' => $object_id, "object_class" => $object_class)
        );
        //get sum quantity
-       $checkout_q = $items->getFirst()->q;
+       $checkout_q = $objects->getFirst()->q;
 
         if(is_null($checkout_q))
             $checkout_q = 0;

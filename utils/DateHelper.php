@@ -78,6 +78,62 @@ class DateHelper
     }
 
     /**
+     * Get Translated Date, default translation (spanish)
+     * @static
+     * @param  int  $year         The year (optional)
+     * @param  mixed  $month      Month int or string, example: 01, 11 (required)
+     * @param  mixed  $day        Day int or string. (optional)
+     * @param  string $time       The time, no format is required. (optional)
+     * @return string             The translated Date Time
+     */
+    public static function getTranslatedDateTime($year = "", $month = "", $day = "", $time = "")
+    {
+        if(empty($month))
+            throw new Exception("DateHelper::getTranslatedDateTime -> month is required.");
+
+        //get DI instance (static)
+        $di = \Phalcon\DI::getDefault();
+        $translate = $di->getShared("translate");
+
+        //get translated Month
+        $month = self::getTranslatedMonthName($month, false);
+
+        //format with year & month
+        if(empty($day)) {
+            return $translate->_("%month% del %year%", array(
+                "month" => $month,
+                "year"  => $year
+            ));
+        }
+
+        //format with day & month & time
+        if(empty($year) && !empty($day) && !empty($time)) {
+            return $translate->_("%day% de %month%, a las %time% hrs.", array(
+                "day"   => $day,
+                "month" => $month,
+                "time"  => $time
+            ));
+        }
+
+        //format with year, month & day
+        if(empty($time)) {
+            return $translate->_("%day% de %month% del %year%", array(
+                "day"   => $day,
+                "month" => $month,
+                "year"  => $year
+            ));
+        }
+
+        //format with year, month, day & time
+        return $translate->_("%day% de %month% del %year%, a las %time hrs.", array(
+            "day"   => $day,
+            "month" => $month,
+            "year"  => $year,
+            "time"  => $time
+        ));
+    }
+
+    /**
      * Format seconds to HH:MM style, example 23:45 or 23h 45m
      * @static
      * @param int $seconds

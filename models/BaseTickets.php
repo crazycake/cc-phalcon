@@ -10,6 +10,7 @@ namespace CrazyCake\Models;
 use Phalcon\Mvc\Model\Validator\InclusionIn;
 //other imports
 use CrazyCake\Utils\DateHelper;
+use CrazyCake\Utils\FormHelper;
 
 class BaseTickets extends Base
 {
@@ -80,7 +81,7 @@ class BaseTickets extends Base
 
         //format ticket price (custom prop)
         if(isset($this->price) && isset($this->coin))
-            $this->_price_formatted = self::formatTicketPrice($this->price, $this->coin);
+            $this->_price_formatted = FormHelper::formatPrice($this->price, $this->coin);
     }
     /** -------------------------------------------------------------------------------------------------
         Validations
@@ -98,30 +99,4 @@ class BaseTickets extends Base
             return false;
     }
     /** ------------------------------------------- § ------------------------------------------------ **/
-
-    /**
-     * Formats price
-     * @todo Complete other global coins formats
-     * @static
-     * @param numeric $price
-     * @param string $coin
-     * @return string
-     */
-    public static function formatTicketPrice($price, $coin)
-    {
-        $formatted = $price;
-
-        switch ($coin) {
-            case 'CLP':
-                $formatted = "$".str_replace(".00", "", number_format($formatted));
-                $formatted = str_replace(",", ".", $formatted);
-                break;
-            case 'USD':
-                break;
-            default:
-                break;
-        }
-
-        return $formatted;
-    }
 }

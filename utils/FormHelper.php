@@ -17,7 +17,6 @@ class FormHelper
     /**
      * Validates chilean rut
      * @param string $rut The input form rut (without points)
-     * @throws \Phalcon\Exception for invalid input
      * @return boolean
      */
     public static function validateRut($input_rut = "")
@@ -29,7 +28,33 @@ class FormHelper
 
         //checks if rut is valid
         return strtolower($rut[1]) == self::validateRutVD($rut[0]);
-    } 
+    }
+
+    /**
+     * Formats price
+     * @todo Complete other global coins formats
+     * @static
+     * @param numeric $price
+     * @param string $coin
+     * @return string
+     */
+    public static function formatPrice($price, $coin)
+    {
+        $formatted = $price;
+
+        switch ($coin) {
+            case 'CLP':
+                $formatted = "$".str_replace(".00", "", number_format($formatted));
+                $formatted = str_replace(",", ".", $formatted);
+                break;
+            case 'USD':
+                break;
+            default:
+                break;
+        }
+
+        return $formatted;
+    }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
