@@ -298,7 +298,7 @@ trait Facebook
                 $properties['account_flag'] = $users_class::$ACCOUNT_FLAGS['enabled']; //set account flag as active
                 //insert user
                 if (!$user->save($properties)){
-                    $this->_sendJsonResponse(200, $this->_parseOrmMessages($user), true);
+                    $this->_sendJsonResponse(200, $user->parseOrmMessages(), true);
                 }
             }
 
@@ -455,7 +455,10 @@ trait Facebook
         $user_fb->expires_at = $token_expiration;
 
         if (!$user_fb->save()) {
-            $this->logger->error("Facebook::__saveNewUserFacebook() -> Error Insertion User Facebook data. userId -> ".$user_id.", FBUserId -> ".$fb_id.", trace: ".$this->_parseOrmMessages($user_fb, true));
+
+            $this->logger->error("Facebook::__saveNewUserFacebook() -> Error Insertion User Facebook data. userId -> ".$user_id.",
+                                  FBUserId -> ".$fb_id.", trace: ".$user_fb->parseOrmMessages(true));
+                                  
             $user = $users_class::getObjectById($user_id);
             $user->delete();
             throw new Exception($this->facebookConfig['text_session_error']); //raise an error

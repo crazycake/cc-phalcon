@@ -181,7 +181,7 @@ trait AccountAuth
 
         //if user dont exists, show error message
         if (!$user->save($data))
-            $this->_sendJsonResponse(200, $this->_parseOrmMessages($user), true);
+            $this->_sendJsonResponse(200, $user->parseOrmMessages(),true);
 
         //send activation account email
         $this->_sendAsyncMailMessage($this->accountConfig['method_mailer_activation'], $user->id);
