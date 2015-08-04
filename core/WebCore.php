@@ -59,31 +59,34 @@ abstract class WebCore extends AppCore implements webSecurity
     protected function initialize()
     {
         //Load view data only for non-ajax requests
-        if (!$this->request->isAjax()) {
-            //Set App common vars (this must be set before render any page)
-            $this->view->setVar("app", $this->config->app); //app configuration vars
-            $this->view->setVar("client", $this->client);   //client object
-            //set javascript vars in view
-            $this->_setAppJavascriptObjectsForView();
-        }
+        if ($this->request->isAjax())
+            return;
+
+        //Set App common vars (this must be set before render any page)
+        $this->view->setVar("app", $this->config->app); //app configuration vars
+        $this->view->setVar("client", $this->client);   //client object
+
     }
     /** ---------------------------------------------------------------------------------------------------------------
      * After Execute Route: Triggered after executing the controller/action method
      * --------------------------------------------------------------------------------------------------------------- **/
     protected function afterExecuteRoute()
     {
-        //for non-ajax only
-        if (!$this->request->isAjax()) {
-            //load app assets
-            $this->_loadAppAssets();
-            //update client object property, request uri afterExecuteRoute event.
-            $this->_updateClientObjectProp('requested_uri', $this->_getRequestedUri());
-            //check browser is supported (child method)
-            $supported = $this->checkBrowserSupport($this->client->browser, $this->client->short_version);
-            //prevents loops
-            if(!$supported && !$this->dispatcher->getPreviousControllerName())
-                $this->dispatcher->forward(array('controller' => 'errors', 'action' => 'oldBrowser'));
-        }
+        //Load view data only for non-ajax requests
+        if ($this->request->isAjax())
+            return;
+            
+        //set javascript vars in view
+        $this->_setAppJavascriptObjectsForView();
+        //load app assets
+        $this->_loadAppAssets();
+        //update client object property, request uri afterExecuteRoute event.
+        $this->_updateClientObjectProp('requested_uri', $this->_getRequestedUri());
+        //check browser is supported (child method)
+        $supported = $this->checkBrowserSupport($this->client->browser, $this->client->short_version);
+        //prevents loops
+        if(!$supported && !$this->dispatcher->getPreviousControllerName())
+            $this->dispatcher->forward(array('controller' => 'errors', 'action' => 'oldBrowser'));
     }
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
