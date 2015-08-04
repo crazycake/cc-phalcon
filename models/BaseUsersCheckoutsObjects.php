@@ -6,6 +6,9 @@
 
 namespace CrazyCake\Models;
 
+//imports
+use CrazyCake\Utils\FormHelper;
+
 class BaseUsersCheckoutsObjects extends Base
 {
     /* properties */
@@ -59,18 +62,34 @@ class BaseUsersCheckoutsObjects extends Base
            array('buy_order' => $buy_order)
        );
 
+       $result = array();
+
+       //loop through objects
        foreach ($objects as $obj) {
 
            $object_class = $obj->object_class;
 
+           //create a new object and clone common props
+           $new_object = new \stdClass();
+           //merge common props
+           $new_object->id         = $obj->object_id;
+           $new_object->class_name = $object_class;
+           $new_object->quantity   = $obj->quantity;
+
            //select object props
            $props = $object_class::findFirst(array("id ='".$obj->object_id."'"));
 
-           print_r($props->toArray());exit;
-           //set object properties as array
-           $obj->props = $props;
+           if(!$props) { continue; }
+
+           $new_object->name    = $props->name;
+           $new_object->price   = $props->price;
+           $new_object->coin    = $props->coin;
+           $new_object->fprice  = FormHelper::formatPrice($props->price, $props->coin);
+           $new_object->ftotal  = FormHelper::formatPrice($props->price * $obj->quantity, $props->coin);
+
+           array_push($result, $new_object);
        }
 
-       return $objects;
+       return $result;
     }
 }
