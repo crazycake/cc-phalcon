@@ -155,6 +155,7 @@ trait TicketManager
 
         //handle exceptions
         $error_occurred = false;
+
         try {
             //set extended qr data
             $this->qr_settings["data"]     = $user_ticket->qr_hash;
@@ -201,6 +202,7 @@ trait TicketManager
 
         //handle exceptions
         $error_occurred = false;
+        
         try {
             //get user model class
             $users_class = $this->getModuleClassName('users');
