@@ -254,6 +254,7 @@ class BaseUsersCheckouts extends Base
 
         //substract total
         $total = $object->quantity - $checkout_q;
+        //var_dump($total, $object->quantity, $checkout_q);exit;
 
         if($total <= 0)
             return false;

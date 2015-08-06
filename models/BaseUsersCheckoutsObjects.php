@@ -73,7 +73,7 @@ class BaseUsersCheckoutsObjects extends Base
            $new_object = new \stdClass();
            //merge common props
            $new_object->id         = $obj->object_id;
-           $new_object->class_name = $object_class;
+           $new_object->className = $object_class;
            $new_object->quantity   = $obj->quantity;
 
            //select object props
@@ -81,11 +81,13 @@ class BaseUsersCheckoutsObjects extends Base
 
            if(!$props) { continue; }
 
+           //object props
            $new_object->name    = $props->name;
            $new_object->price   = $props->price;
            $new_object->coin    = $props->coin;
-           $new_object->fprice  = FormHelper::formatPrice($props->price, $props->coin);
-           $new_object->ftotal  = FormHelper::formatPrice($props->price * $obj->quantity, $props->coin);
+           //aditional props
+           $new_object->formattedPrice = FormHelper::formatPrice($props->price, $props->coin);
+           $new_object->formattedTotal = FormHelper::formatPrice($props->price * $obj->quantity, $props->coin);
 
            array_push($result, $new_object);
        }
