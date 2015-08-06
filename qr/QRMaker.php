@@ -5,7 +5,7 @@
  * @link http://phpqrcode.sourceforge.net/
  * @package \CrazyCake\QR\
  */
- 
+
 namespace CrazyCake\Qr;
 
 //imports
@@ -38,7 +38,22 @@ class QRMaker
 		else if (!is_dir($cache_path))
 			throw new Exception("QRMaker Library -> App Cache path (".$cache_path.") not found.");
 
-		//use cache - more disk reads but less CPU power, masks and format templates are stored there
+        $this->init($log_path, $cache_path);
+
+		//load QR library
+		require_once "src/qrconf.php";
+	}
+
+    /**
+     * Init and define consts
+     * @return [type] [description]
+     */
+    protected function init($log_path, $cache_path)
+    {
+        if (defined('QR_ASSETS_PATH'))
+            return;
+
+        //use cache - more disk reads but less CPU power, masks and format templates are stored there
 		define('QR_CACHEABLE', (is_null($cache_path) ? false : true));
 		define('QR_CACHE_DIR', $cache_path."qr/");
 		define('QR_LOG_DIR', $log_path);
@@ -55,31 +70,28 @@ class QRMaker
 		else {
 			define("QR_ASSETS_PATH", self::QR_ASSETS_DIR);
 		}
-		
+
 		//if true, estimates best mask (spec. default, but extremally slow; set to false to significant performance boost but (propably) worst quality code
 		if (self::QR_HIGH_QUALITY) {
 			define('QR_FIND_BEST_MASK', true);
-		} 
+		}
 		else {
 			define('QR_FIND_BEST_MASK', false);
 			define('QR_DEFAULT_MASK', false);
 		}
-		
+
 		//if false, checks all masks available, otherwise value tells count of masks need to be checked, mask id are got randomly
 		define('QR_FIND_FROM_RANDOM', false);
 		//maximum allowed png image width (in pixels), tune to make sure GD and PHP can handle such big images
 		define('QR_PNG_MAXIMUM_SIZE',  self::QR_PNG_MAX_SIZE);
+    }
 
-		//load QR library
-		require_once "src/qrconf.php";
-	}
-	
 	/**
 	 * Generates a QR code
 	 * @access private
 	 * @param  arrays $params
 	 * @return void
-	 */ 
+	 */
 	public function generate($params = array())
 	{
 		//new QrTag object
@@ -87,7 +99,7 @@ class QRMaker
 		$qr->bgColor = isset($params['background_color']) ? $params['background_color'] : "ffffff";
 		$qr->text 	 = isset($params['data']) ? $params['data'] : "CrazyCake QR Code";
 		$qr->file 	 = isset($params['savename']) ? $params['savename'] : die("QR Library -> (generate) must set param 'savename'.");
-	  
+
 		//shape dot object
 		if( isset($params['dot_shape_class']) && $this->_class_exists($params['dot_shape_class']) ) {
 			$class    = self::QR_LIB_NAMESPACE.$params['dot_shape_class'];
@@ -130,7 +142,7 @@ class QRMaker
 		$frameDot->color = isset($params['frame_color']) ? $params['frame_color'] : "000000";
 		$qr->frame = $frame;
 	   //var_dump($qr);//exit;
-		
+
 		//generate!
 		$qr->generate();
 
@@ -140,7 +152,7 @@ class QRMaker
 
 		return;
 	}
-	
+
 	/**
 	 * Embed Logo in QR Image
 	 * @access private
@@ -149,11 +161,11 @@ class QRMaker
 	 * @param  int $embed_img_width (optional)
 	 * @param  int $embed_img_height (optional)
 	 * @return string
-	 */	
+	 */
 	private function _embedLogo($qr_path, $embed_img_path, $embed_img_width = 90, $embed_img_height = 90)
 	{
 		$extension = strtolower(pathinfo($embed_img_path, PATHINFO_EXTENSION));
-		
+
 		//embed image type
 		switch($extension) {
 			case 'png':
@@ -166,10 +178,10 @@ class QRMaker
 				$embed_img = imagecreatefromgif($embed_img_path);
 				break;
 		}
-		
+
 		$real_embed_img_width  = imagesx($embed_img);
 		$real_embed_img_height = imagesy($embed_img);
-		
+
 		//qr image
 		$qr_img    = imagecreatefrompng($qr_path);
 		$qr_width  = imagesx($qr_img);
