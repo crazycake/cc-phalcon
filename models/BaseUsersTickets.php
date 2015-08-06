@@ -40,11 +40,6 @@ class BaseUsersTickets extends Base
     /**
      * @var string
      */
-    public $flag;
-
-    /**
-     * @var string
-     */
     public $created_at;
 
     /** ------------------------------------------- § --------------------------------------------------

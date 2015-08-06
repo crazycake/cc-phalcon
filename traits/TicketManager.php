@@ -84,10 +84,8 @@ trait TicketManager
      * @param string $file_type The file type
      * @return binary
      */
-    public function getTicket($user_id = 0, $hashed_id = "", $file_type = "png")
+    public function getTicketQR($user_id = 0, $hashed_id = "", $file_type = "png")
     {
-        $binary_data = null;
-
         try {
 
             if(!in_array($file_type, $this->storageConfig['allowed_resources_types']))
@@ -115,15 +113,8 @@ trait TicketManager
             //get image in S3
             $binary = $this->s3->getObject($s3_path, true);
 
-            //regenerate image?
-            if(!$binary) {
-                if($file_type == "png") {
-                    $binary = $this->generateQRForTicket($user_ticket, true);
-                }
-                else if($file_type == "pdf") {
-                    $binary = $this->generatePDFForTicket($user_ticket, true);
-                }
-            }
+            if(!$binary)
+                throw new Exception("S3 could't find binary file $file_type");
         }
         catch (Exception $e) {
             //fallback for file
@@ -140,25 +131,26 @@ trait TicketManager
 
     /**
      * Hanlder - Generates QR for ticket
-     * @param object $user The UserTicket orm object
+     * @param int $user_id The user id
+     * @param string $hash The QR hash
      * @param boolean $get_binary Get the output file as binary
      * @return mixed
      */
-    public function generateQRForTicket($user_ticket, $get_binary = false)
+    public function generateQRForTicket($user_id, $hash, $get_binary = false)
     {
         //set qr settings
         $this->qr_settings = $this->storageConfig['qr_settings'];
 
-        $qr_filename = $user_ticket->qr_hash.".png";
+        $qr_filename = $hash.".png";
         $qr_savepath = $this->storageConfig['local_temp_path'].$qr_filename;
-        $s3_path     = self::$DEFAULT_S3_URI."/".$user_ticket->user_id."/".$qr_filename;
+        $s3_path     = self::$DEFAULT_S3_URI."/".$user_id."/".$qr_filename;
 
         //handle exceptions
         $error_occurred = false;
 
         try {
             //set extended qr data
-            $this->qr_settings["data"]     = $user_ticket->qr_hash;
+            $this->qr_settings["data"]     = $hash;
             $this->qr_settings["savename"] = $qr_savepath;
             //instance qr maker with log & cache paths
             $qr_maker = new QRMaker($this->config->directories->logs, $this->config->directories->cache);
@@ -185,24 +177,16 @@ trait TicketManager
 
     /**
      * Hanlder - Generates PDF for ticket
-     * @param object $user_ticket The UserTicket orm object
-     * @param boolean $get_binary Get the output file as binary
+     * @param string $buy_order The checkout buy order
+     * @param array $tickets An array with UserTickets orm object
      * @return mixed
      * @todo implement solution for multiple tickets
      */
-    public function generatePDFForTicket($user_ticket, $get_binary = false)
+    public function generatePDFForTicket($buy_order, $tickets)
     {
-        //set qr settings
-        $this->qr_settings = $this->storageConfig['qr_settings'];
-
-        $pdf_filename = $user_ticket->qr_hash.".pdf";
-        $pdf_savepath = $this->storageConfig['local_temp_path'].$pdf_filename;
-        $qr_savepath  = str_replace(".pdf", ".png", $this->storageConfig['local_temp_path'].$pdf_filename);
-        $s3_path      = self::$DEFAULT_S3_URI."/".$user_ticket->user_id."/".$pdf_filename;
-
         //handle exceptions
         $error_occurred = false;
-        
+
         try {
             //get user model class
             $users_class = $this->getModuleClassName('users');
@@ -214,21 +198,26 @@ trait TicketManager
 
             //get user
             $user = $users_class::getObjectById($user_ticket->user_id);
-            //get ticket object with UI properties
-            $user_ticket_ui = $get_user_ticket_ui_fn($user->id, $user_ticket);
+            //get ticket objects with UI properties
+            $user_tickets_ui = $get_user_ticket_ui_fn($user->id, $user_ticket);
+
+            //set file paths
+            $pdf_filename = $buy_order.".pdf";
+            $pdf_savepath = $this->storageConfig['local_temp_path'].$pdf_filename;
+            $qr_savepath  = str_replace(".pdf", ".png", $this->storageConfig['local_temp_path'].$pdf_filename);
+            $s3_path      = self::$DEFAULT_S3_URI."/".$user_ticket->user_id."/".$pdf_filename;
+
             //set extended pdf data
             $this->pdf_settings["data_user"]    = $user;
-            $this->pdf_settings["data_ticket"]  = $user_ticket_ui;
+            $this->pdf_settings["data_tickets"] = $user_tickets_ui;
             $this->pdf_settings["data_qr_path"] = $qr_savepath;
 
             //get template
             $html_raw = $this->simpleView->render($this->storageConfig['ticket_pdf_template_view'], $this->pdf_settings);
             //PDF generator (this is a heavy task for quick client response)
-            $binary = (new PdfHelper())->generatePdfFileFromHtml($html_raw, $pdf_savepath);
+            (new PdfHelper())->generatePdfFileFromHtml($html_raw, $pdf_savepath);
             //upload pdf file to S3
             $this->s3->putObject($pdf_savepath, $s3_path, true);
-            //get binary file?
-            $binary = $get_binary ? $binary : true;
         }
         catch (\S3Exception $e) {
             $error_occurred = $e->getMessage();
@@ -248,6 +237,6 @@ trait TicketManager
             return false;
         }
 
-        return $binary;
+        return true;
     }
 }
