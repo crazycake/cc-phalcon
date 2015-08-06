@@ -98,12 +98,12 @@ trait TicketManager
 
             //validates that ticket belongs to user
             //get anonymous function from settings
-            $get_user_ticket_fn = $this->storageConfig["get_user_ticket_function"];
+            $getUserTicket = $this->storageConfig["getUserTicketFunction"];
 
-            if(!is_callable($get_user_ticket_fn))
+            if(!is_callable($getUserTicket))
                 throw new Exception("Invalid 'get user ticket' function");
 
-            $user_ticket = $get_user_ticket_fn($user_id, $ticket_id);
+            $user_ticket = $getUserTicket($user_id, $ticket_id);
 
             if(!$user_ticket)
                 throw new Exception("Invalid ticket id for user");
@@ -134,7 +134,7 @@ trait TicketManager
      * @param mixed [object|array] $userTickets A user ticket object or an array of objects
      * @return mixed
      */
-    public function generateQRForUserTicket($userTickets)
+    public function generateQRForUserTickets($userTickets)
     {
         if(!is_array($userTickets))
             $userTickets = array($userTickets);
@@ -192,48 +192,47 @@ trait TicketManager
 
     /**
      * Hanlder - Generates PDF for ticket and invoice attached
-     * @param object $checkout The checkout object
+     * @param object $checkout The checkout object (including transaction props)
+     * @param array $userTickets The userTickets ORM array
      * @return mixed
-     * @todo implement solution for multiple tickets
      */
-    public function generateInvoiceForUserCheckout($checkout)
+    public function generateInvoiceForUserCheckout($checkout, $userTickets)
     {
         //handle exceptions
         $error_occurred = false;
-
-        $user_ticket = "???"; //pasar object?
 
         try {
             //get user model class
             $users_class = $this->getModuleClassName('users');
             //get model class
-            $get_user_ticket_ui_fn = $this->storageConfig["get_user_ticket_ui_function"];
+            $getUserTicketsUI = $this->storageConfig["getUserTicketsUIFunction"];
 
-            if(!is_callable($get_user_ticket_ui_fn))
+            if(!is_callable($getUserTicketsUI))
                 throw new Exception("Invalid 'get user ticket UI' function");
 
-            //get user
-            $user = $users_class::getObjectById($user_ticket->user_id);
+            //get user by session
+            $user = $users_class::getObjectById($this->user_session["id"]);
             //get ticket objects with UI properties
-            $user_tickets_ui = $get_user_ticket_ui_fn($user->id, $user_ticket);
+            $tickets = $getUserTicketsUI($user->id, $userTickets);
 
             //set file paths
             $pdf_filename = $checkout->buyOrder.".pdf";
-            $pdf_savepath = $this->storageConfig['local_temp_path'].$pdf_filename;
-            $qr_savepath  = str_replace(".pdf", ".png", $this->storageConfig['local_temp_path'].$pdf_filename);
-            $s3_path      = self::$DEFAULT_S3_URI."/".$user_ticket->user_id."/".$pdf_filename;
+            $savepath     = $this->storageConfig['local_temp_path'].$pdf_filename;
+            $s3_path      = self::$DEFAULT_S3_URI."/".$user->id."/".$pdf_filename;
 
             //set extended pdf data
-            $this->pdf_settings["data_user"]    = $user;
-            $this->pdf_settings["data_tickets"] = $user_tickets_ui;
-            $this->pdf_settings["data_qr_path"] = $qr_savepath;
+            $this->pdf_settings["data_user"]       = $user;
+            $this->pdf_settings["data_tickets"]    = $tickets;
+            $this->pdf_settings["data_local_path"] = $savepath;
 
             //get template
             $html_raw = $this->simpleView->render($this->storageConfig['ticket_pdf_template_view'], $this->pdf_settings);
+
             //PDF generator (this is a heavy task for quick client response)
-            (new PdfHelper())->generatePdfFileFromHtml($html_raw, $pdf_savepath);
+            (new PdfHelper())->generatePdfFileFromHtml($html_raw, $savepath);
+
             //upload pdf file to S3
-            $this->s3->putObject($pdf_savepath, $s3_path, true);
+            $this->s3->putObject($savepath, $s3_path, true);
         }
         catch (\S3Exception $e) {
             $error_occurred = $e->getMessage();
@@ -244,8 +243,7 @@ trait TicketManager
 
         //delete generated local files
         if(APP_ENVIRONMENT !== "development") {
-            if(is_file($pdf_savepath)) unlink($pdf_savepath);
-            if(is_file($qr_savepath))  unlink($qr_savepath);
+            if(is_dir($savepath)) rmdir($savepath);
         }
 
         if($error_occurred) {
