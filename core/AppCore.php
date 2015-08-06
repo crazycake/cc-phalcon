@@ -69,6 +69,31 @@ abstract class AppCore extends Controller
     }
 
     /**
+     * Sends an async tasks as another request
+     * Current implementation is a Guzzle async Request.
+     * @TODO: better aproach phpRatchet, phpReactPromises ?
+     * @param array $route Struct: "controller" => "method"
+     * @param object $data  The data to be passed as args
+     */
+    protected function _sendAsyncTask($route = array(), $data = null)
+    {
+        //encode data
+        if(is_array($data))
+            $data = json_encode($data);
+
+        $encrypted_data  = $this->cryptify->encryptForGetRequest($data);
+        $controller_name = array_keys($route)[0];
+        //set url
+        $url = $this->_baseUrl($controller_name."/".$route[0]."/".$encrypted_data);
+
+        if(APP_ENVIRONMENT == "development")
+            $this->logger->debug('AppCore::_sendAsyncTask -> Method: '.$method.' & URL: ' . $url);
+
+        //child method
+        $this->sendAsyncRequest($url, $method);
+    }
+
+    /**
      * Handle the request params data validating required parameters.
      * Also Check if get/post data is valid, if validation fails send an HTTP code, onSuccess returns a data array.
      * Required field may have a "_" prefix to establish that is just an optional field to be sanitized.
