@@ -223,6 +223,7 @@ trait TicketManager
             //set extended pdf data
             $this->pdf_settings["data_user"]       = $user;
             $this->pdf_settings["data_tickets"]    = $tickets;
+            $this->pdf_settings["data_checkout"]   = $checkout;
             $this->pdf_settings["data_local_path"] = $savepath;
 
             //get template
