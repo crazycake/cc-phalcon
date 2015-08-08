@@ -86,11 +86,11 @@ trait AccountAuth
             //check user-flag if is really pending
             $user = $users_class::getObjectById($user_id);
 
-            if (!$user || $user->account_flag != $users_class::$ACCOUNT_FLAGS['pending'])
+            if (!$user || $user->account_flag != 'pending')
                 throw new Exception("user (id: ".$user->id.") don't have a pending account flag.");
 
             //save new account flag state
-            $user->update( array("account_flag" => $users_class::$ACCOUNT_FLAGS['enabled']) );
+            $user->update( array("account_flag" => 'enabled') );
 
             //set a flash message to show on account controller
             $this->flash->success($this->accountConfig['text_activation_success']);
@@ -130,16 +130,17 @@ trait AccountAuth
         $user = $users_class::getUserByEmail($data['email']);
 
         //check user & given hash with the one stored (wrong combination)
-        if (!$user || !$this->security->checkHash($data['pass'], $user->pass))
+        if (!$user || !$this->security->checkHash($data['pass'], $user->pass)) {
             $this->_sendJsonResponse(200, $this->accountConfig['text_auth_failed'], 'alert');
+        }
 
         //check user account flag
-        if ($user->account_flag != $users_class::$ACCOUNT_FLAGS['enabled']) {
+        if ($user->account_flag != 'enabled') {
             //set message
             $msg = $this->accountConfig['text_account_disabled'];
             $namespace = null;
             //check account is pending
-            if ($user->account_flag == $users_class::$ACCOUNT_FLAGS['pending']) {
+            if ($user->account_flag == 'pending') {
                 $msg = $this->accountConfig['text_account_pending'];
                 //set name for javascript view
                 $namespace = 'ACCOUNT_PENDING';
@@ -174,14 +175,14 @@ trait AccountAuth
         //get model classes
         $users_class = $this->getModuleClassName('users');
         //set pending email confirmation status
-        $data['account_flag'] = $users_class::$ACCOUNT_FLAGS['pending'];
+        $data['account_flag'] = 'pending';
 
         //Save user, validations are applied in model
         $user = new $users_class();
 
         //if user dont exists, show error message
         if (!$user->save($data))
-            $this->_sendJsonResponse(200, $user->parseOrmMessages(),true);
+            $this->_sendJsonResponse(200, $user->filterMessages(), true);
 
         //send activation account email
         $this->_sendAsyncMailMessage($this->accountConfig['method_mailer_activation'], $user->id);
@@ -214,7 +215,7 @@ trait AccountAuth
         }
 
         //check if user exists is a pending account
-        $user = $users_class::getUserByEmail($data['email'], $users_class::$ACCOUNT_FLAGS['pending']);
+        $user = $users_class::getUserByEmail($data['email'], 'pending');
 
         //if user was not found send error message
         if (!$user)

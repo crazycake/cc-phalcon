@@ -20,12 +20,17 @@ class BaseResultset extends Resultset
      * @param boolean $split Split objects flag
      * @return mixed array
      */
-    public function filter($split = false)
+    public function reduce($split = false)
     {
-        return self::filterResultset($this, $split);
+        return self::reduceResultset($this, $split);
     }
 
-    public static function filterResultset($result, $split = false)
+    /**
+     * reduces a ResultSet
+     * @param array $result A ResultSet object
+     * @param boolean $split The split flag
+     */
+    public static function reduceResultset($result, $split = false)
     {
         if(!method_exists($result,'count') || empty($result->count()))
             return array();
@@ -71,7 +76,7 @@ class BaseResultset extends Resultset
     /**
      * Parse an array of objects for Json Struct (webservices)
      * @static
-     * @param array $result An array of filtered objects
+     * @param array $result An array of reduced objects
      */
     private static function _splitObjects($result = array())
     {
@@ -88,7 +93,7 @@ class BaseResultset extends Resultset
             $new_obj = new \stdClass();
 
             foreach ($props as $k => $v) {
-                //filter properties than has a class prefix
+                //reduce properties than has a class prefix
                 $namespace = explode("_", $k);
 
                 //validate property namespace, check if class exists in models (append plural noun)

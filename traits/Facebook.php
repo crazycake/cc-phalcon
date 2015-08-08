@@ -282,10 +282,10 @@ trait Facebook
                 unset($properties['first_name'], $properties['last_name']);
 
                 //update user flag if account was pending, or if account is disabled show a warning
-                if ($user->account_flag == $users_class::$ACCOUNT_FLAGS['pending']) {
-                    $properties['account_flag'] = $users_class::$ACCOUNT_FLAGS['enabled'];
+                if ($user->account_flag == 'pending') {
+                    $properties['account_flag'] = 'enabled';
                 }
-                else if ($user->account_flag == $users_class::$ACCOUNT_FLAGS['disabled']) {
+                else if ($user->account_flag == 'disabled') {
                     throw new Exception($this->facebookConfig['text_account_disabled']);
                 }
 
@@ -295,10 +295,10 @@ trait Facebook
             else {
                 $user = new $users_class();
                 //extend properties
-                $properties['account_flag'] = $users_class::$ACCOUNT_FLAGS['enabled']; //set account flag as active
+                $properties['account_flag'] = 'enabled'; //set account flag as active
                 //insert user
                 if (!$user->save($properties)){
-                    $this->_sendJsonResponse(200, $user->parseOrmMessages(), true);
+                    $this->_sendJsonResponse(200, $user->filterMessages(), true);
                 }
             }
 
@@ -457,8 +457,8 @@ trait Facebook
         if (!$user_fb->save()) {
 
             $this->logger->error("Facebook::__saveNewUserFacebook() -> Error Insertion User Facebook data. userId -> ".$user_id.",
-                                  FBUserId -> ".$fb_id.", trace: ".$user_fb->parseOrmMessages(true));
-                                  
+                                  FBUserId -> ".$fb_id.", trace: ".$user_fb->filterMessages(true));
+
             $user = $users_class::getObjectById($user_id);
             $user->delete();
             throw new Exception($this->facebookConfig['text_session_error']); //raise an error
@@ -489,9 +489,9 @@ trait Facebook
             //birthday
             $bday = $fb_data->getBirthday();
             $properties['bday'] = is_object($bday) ? $bday->format("Y-m-d") : null;
-            //gender (get 1st char or undefined value)
+            //get gender
             $gender = $fb_data->getProperty('gender');
-            $properties['gender'] = $gender ? $gender[0] : 'u';
+            $properties['gender'] = $gender ? $gender : 'undefined';
         }
 
         if(empty($properties))

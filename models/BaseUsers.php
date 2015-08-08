@@ -63,11 +63,7 @@ abstract class BaseUsers extends Base
      * @static
      * @var array
      */
-    static $ACCOUNT_FLAGS = array(
-                                    'pending'  => 'p',
-                                    'enabled'  => 'e',
-                                    'disabled' => 'd'
-                                );
+    static $ACCOUNT_FLAGS = array('pending', 'enabled', 'disabled');
 
     /** ------------------------------------------- § --------------------------------------------------
         Init
@@ -132,7 +128,7 @@ abstract class BaseUsers extends Base
         //account flag
         $this->validate(new InclusionIn(array(
             "field"   => "account_flag",
-            "domain"  => array_values(self::$ACCOUNT_FLAGS),
+            "domain"  => self::$ACCOUNT_FLAGS,
             "message" => 'Invalid user account flag. Flags supported: '.implode(", ", self::$ACCOUNT_FLAGS)
         )));
 
@@ -154,7 +150,7 @@ abstract class BaseUsers extends Base
         $conditions = array("email = '".$email."'"); //default condition
 
         //filter by account flag?
-        if( !is_null($account_flag) && in_array($account_flag, array_values(self::$ACCOUNT_FLAGS)) )
+        if(!is_null($account_flag) && in_array($account_flag, self::$ACCOUNT_FLAGS))
             array_push($conditions, "account_flag = '".$account_flag."'");
 
         //join conditions (AND)

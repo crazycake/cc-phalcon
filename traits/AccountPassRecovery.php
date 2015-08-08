@@ -94,7 +94,7 @@ trait AccountPassRecovery
 
         //check if user exists is a active account
         $users_class = $this->getModuleClassName('users');
-        $user = $users_class::getUserByEmail($data['email'], $users_class::$ACCOUNT_FLAGS['enabled']);
+        $user = $users_class::getUserByEmail($data['email'], 'enabled');
 
         //if user not exists, send message
         if (!$user)

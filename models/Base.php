@@ -22,7 +22,6 @@ class Base extends \Phalcon\Mvc\Model
 
     /**
      * Late static binding
-     * Useful for save ORM actions
      * @link http://php.net/manual/en/language.oop5.late-static-bindings.php
      * @return string The current class name
      */
@@ -56,10 +55,11 @@ class Base extends \Phalcon\Mvc\Model
      */
     public static function getObjectsByQuery($sql = "SELECT 1", $binds = array(), $className = null)
     {
-        $className = is_null($className) ? self : $className;
-
         if(is_null($binds))
             $binds = array();
+
+        if(is_null($className))
+            $className = static::who();
 
         $objects = new $className();
         $result  = new BaseResultset(null, $objects, $objects->getReadConnection()->query($sql, $binds));
@@ -78,10 +78,11 @@ class Base extends \Phalcon\Mvc\Model
      */
     public static function getObjectPropertyByQuery($sql = "SELECT 1", $prop = "id", $binds = array(), $className = null)
     {
-        $className = is_null($className) ? self : $className;
-
         if(is_null($binds))
             $binds = array();
+
+        if(is_null($className))
+            $className = static::who();
 
         $object = new $className();
         $result = new BaseResultset(null, $object, $object->getReadConnection()->query($sql, $binds));
@@ -95,11 +96,11 @@ class Base extends \Phalcon\Mvc\Model
      * @static
      * @param string $sql The PHQL query string
      * @param array $binds The binding params array
-     * @param boolean $filter Filters the ResultSet (optional)
+     * @param boolean $reduce Reduces the ResultSet (optional)
      * @param boolean $split Splits the ResultSet (optional)
      * @return array
      */
-    public static function getObjectsByPhql($phql = "SELECT 1", $binds = array(), $filter = false, $split = false)
+    public static function getObjectsByPhql($phql = "SELECT 1", $binds = array(), $reduce = false, $split = false)
     {
         if(is_null($binds))
             $binds = array();
@@ -110,7 +111,7 @@ class Base extends \Phalcon\Mvc\Model
         if(empty($result->count()))
             return false;
 
-        return $filter ? BaseResultset::filterResultset($result, $split) : $result;
+        return $reduce ? BaseResultset::reduceResultset($result, $split) : $result;
     }
 
     /**
@@ -137,7 +138,7 @@ class Base extends \Phalcon\Mvc\Model
      * @param boolean $json_encode Returns a json string
      * @return mixed array|string
      */
-    public function parseOrmMessages($json_encode = false)
+    public function filterMessages($json_encode = false)
     {
         $data = array();
 
