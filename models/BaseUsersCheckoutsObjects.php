@@ -45,9 +45,10 @@ class BaseUsersCheckoutsObjects extends Base
     /**
      * Get checkout objects
      * @param  string $buy_order Checkout buyOrder
+     * @param  boolean $ids Flag optional to get an array of object IDs
      * @return array
      */
-    public static function getCheckoutObjects($buy_order)
+    public static function getCheckoutObjects($buy_order, $ids = false)
     {
         $objectsModel = static::who();
 
@@ -69,22 +70,30 @@ class BaseUsersCheckoutsObjects extends Base
 
            $object_class = $obj->object_class;
 
+           //filter only to ids?
+           if($ids) {
+               array_push($result, $obj->object_id);
+               continue;
+           }
+
            //create a new object and clone common props
            $new_object = new \stdClass();
            //merge common props
-           $new_object->id         = $obj->object_id;
+           $new_object->id        = $obj->object_id;
            $new_object->className = $object_class;
-           $new_object->quantity   = $obj->quantity;
+           $new_object->quantity  = $obj->quantity;
 
            //select object props
            $props = $object_class::findFirst(array("id ='".$obj->object_id."'"));
 
-           if(!$props) { continue; }
+            if(!$props) {
+                continue;
+            }
 
            //object props
-           $new_object->name    = $props->name;
-           $new_object->price   = $props->price;
-           $new_object->coin    = $props->coin;
+           $new_object->name  = $props->name;
+           $new_object->price = $props->price;
+           $new_object->coin  = $props->coin;
            //aditional props
            $new_object->formattedPrice = FormHelper::formatPrice($props->price, $props->coin);
            $new_object->formattedTotal = FormHelper::formatPrice($props->price * $obj->quantity, $props->coin);

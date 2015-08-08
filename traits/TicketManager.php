@@ -14,6 +14,7 @@ use Phalcon\Exception;
 use CrazyCake\Utils\StorageS3;  //AWS S3 File Storage helper
 use CrazyCake\Qr\QRMaker;       //CrazyCake QR
 use CrazyCake\Utils\PdfHelper;  //PDF generator
+use CrazyCake\Utils\DateHelper; //Date Helper functions
 
 trait TicketManager
 {
@@ -77,6 +78,7 @@ trait TicketManager
             'app_name' => $this->config->app->name,
         );
     }
+
     /**
      * Binary Image - Outputs QR ticket image as binary with Content-Type png
      * @param int $user_id The user id
@@ -127,6 +129,16 @@ trait TicketManager
         $this->response->setContentType(self::$MIME_TYPES[$file_type]); //must be declare before setContent
         $this->response->setContent($binary);
         $this->response->send();
+    }
+
+    /**
+     * Get Invoice PDFs, if many they are merged
+     * @param int $user_id The user id
+     * @return binary
+     */
+    public function getInvoice($user_id = 0)
+    {
+        //...
     }
 
     /**
@@ -193,13 +205,13 @@ trait TicketManager
     /**
      * Hanlder - Generates PDF for ticket and invoice attached
      * @param object $checkout The checkout object (including transaction props)
-     * @param array $userTickets The userTickets ORM array
+     * @param array $userTicketIds An array of user ticket IDs
      * @return mixed
      */
-    public function generateInvoiceForUserCheckout($checkout, $userTickets)
+    public function generateInvoiceForUserCheckout($checkout, $userTicketIds = array())
     {
         //handle exceptions
-        $error_occurred = false;
+        $result = new \stdClass();
 
         try {
             //get user model class
@@ -213,45 +225,61 @@ trait TicketManager
             //get user by session
             $user = $users_class::getObjectById($this->user_session["id"]);
             //get ticket objects with UI properties
-            $tickets = $getUserTicketsUI($user->id, $userTickets);
+            $tickets = $getUserTicketsUI($user->id, $userTicketIds);
+
+            if(!$tickets)
+                throw new Exception("No tickets found for userID: ".$user->id." & buyOrder: ".$checkout->buyOrder);
 
             //set file paths
             $pdf_filename = $checkout->buyOrder.".pdf";
-            $savepath     = $this->storageConfig['local_temp_path'].$pdf_filename;
+            $output_path  = $this->storageConfig['local_temp_path'].$pdf_filename;
             $s3_path      = self::$DEFAULT_S3_URI."/".$user->id."/".$pdf_filename;
 
             //set extended pdf data
+            $this->pdf_settings["data_date"]       = DateHelper::getTranslatedCurrentDate();
             $this->pdf_settings["data_user"]       = $user;
             $this->pdf_settings["data_tickets"]    = $tickets;
             $this->pdf_settings["data_checkout"]   = $checkout;
-            $this->pdf_settings["data_local_path"] = $savepath;
 
             //get template
             $html_raw = $this->simpleView->render($this->storageConfig['ticket_pdf_template_view'], $this->pdf_settings);
 
             //PDF generator (this is a heavy task for quick client response)
-            (new PdfHelper())->generatePdfFileFromHtml($html_raw, $savepath);
+            $result->output = (new PdfHelper())->generatePdfFileFromHtml($html_raw, $output_path);
 
             //upload pdf file to S3
-            $this->s3->putObject($savepath, $s3_path, true);
+            $this->s3->putObject($output_path, $s3_path, true);
         }
         catch (\S3Exception $e) {
-            $error_occurred = $e->getMessage();
+            $result->error = $e->getMessage();
         }
         catch (Exception $e) {
-            $error_occurred = $e->getMessage();
+            $result->error = $e->getMessage();
         }
 
         //delete generated local files
-        if(APP_ENVIRONMENT !== "development") {
-            if(is_dir($savepath)) rmdir($savepath);
+        if(APP_ENVIRONMENT !== "development")
+            $this->_deleteTempFiles();
+
+        if(isset($result->error)) {
+            $this->logger->error('TicketStorage::generatePDFForTicket -> Error while generating and storing PDF: '.$result->error);
+            return $result;
         }
 
-        if($error_occurred) {
-            $this->logger->error('TicketStorage::generatePDFForTicket -> Error while generating and storing PDF: '.$error_occurred);
-            return false;
-        }
+        return $result;
+    }
 
-        return true;
+    /* --------------------------------------------------- § -------------------------------------------------------- */
+
+    /**
+     * Deletes temporary files in Local directory
+     */
+    private function _deleteTempFiles()
+    {
+        $path = $this->storageConfig['local_temp_path'];
+
+        foreach ($MIME_TYPES as $key => $value) {
+            array_map('unlink', glob( "$path*.$key"));
+        }
     }
 }

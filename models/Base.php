@@ -6,6 +6,9 @@
 
 namespace CrazyCake\Models;
 
+//imports
+use \Phalcon\Mvc\Model\Query as PHQL;
+
 class Base extends \Phalcon\Mvc\Model
 {
     /* properties */
@@ -44,69 +47,93 @@ class Base extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Get an object property value by executing a SQL query
-     * @param  string $sql  The SQL string
-     * @param  string $prop The object property
+     * Get a Resulset by SQL query.
+     * @static
+     * @param string $sql  The SQL string
+     * @param array $binds The query bindings (optional)
+     * @param string $className A different class name than self (optional)
      * @return mixed
      */
-    public static function getObjectPropertyByQuery($sql = "SELECT 1", $prop = "id")
+    public static function getObjectsByQuery($sql = "SELECT 1", $binds = array(), $className = null)
     {
-        $object = new self();
-        $result = new \Phalcon\Mvc\Model\Resultset\Simple(null, $object, $object->getReadConnection()->query($sql));
+        $className = is_null($className) ? self : $className;
+
+        if(is_null($binds))
+            $binds = array();
+
+        $objects = new $className();
+        $result  = new BaseResultset(null, $objects, $objects->getReadConnection()->query($sql, $binds));
+
+        return empty($result->count()) ? false : $result;
+    }
+
+    /**
+     * Get an object property value by executing a SQL query
+     * @static
+     * @param  string $sql  The SQL string
+     * @param  string $prop The object property
+     * @param  array $binds The query bindings (optional)
+     * @param  string $className A different class name than self (optional)
+     * @return mixed
+     */
+    public static function getObjectPropertyByQuery($sql = "SELECT 1", $prop = "id", $binds = array(), $className = null)
+    {
+        $className = is_null($className) ? self : $className;
+
+        if(is_null($binds))
+            $binds = array();
+
+        $object = new $className();
+        $result = new BaseResultset(null, $object, $object->getReadConnection()->query($sql, $binds));
         $result = $result->getFirst();
 
         return $result ? $result->{$prop} : 0;
     }
 
     /**
-     * Get a Resulset by SQL query.
-     * @todo Fix child afterFetch call
-     * @param string $sql  The SQL string
-     * @return mixed
-     */
-    public static function getObjectsByQuery($sql = "SELECT 1")
-    {
-        $objects = new self();
-        $result  = new \Phalcon\Mvc\Model\Resultset\Simple(null, $objects, $objects->getReadConnection()->query($sql));
-
-        return empty($result->count()) ? false : $result;
-    }
-
-    /**
      * Get Objects by PHQL language
+     * @static
      * @param string $sql The PHQL query string
      * @param array $binds The binding params array
+     * @param boolean $filter Filters the ResultSet (optional)
+     * @param boolean $split Splits the ResultSet (optional)
      * @return array
      */
-    public static function getObjectsByPhql($phql = "SELECT 1", $binds = array())
+    public static function getObjectsByPhql($phql = "SELECT 1", $binds = array(), $filter = false, $split = false)
     {
-        $query = new \Phalcon\Mvc\Model\Query($phql, \Phalcon\DI::getDefault());
-        //Executing with bound parameters
-        $objects = $query->execute($binds);
+        if(is_null($binds))
+            $binds = array();
 
-        return empty($objects->count()) ? false : $objects;
+        $query  = new PHQL($phql, \Phalcon\DI::getDefault());
+        $result = $query->execute($binds);
+
+        if(empty($result->count()))
+            return false;
+
+        return $filter ? BaseResultset::filterResultset($result, $split) : $result;
     }
 
     /**
      * Executes a PHQL Query, used for INSERT, UPDATE, DELETE
+     * @static
      * @param string $phql The PHQL query string
      * @param array $binds The binding params array
      * @return boolean
      */
     public static function executePhql($phql = "SELECT 1", $binds = array())
     {
-        $query = new \Phalcon\Mvc\Model\Query($phql, \Phalcon\DI::getDefault());
+        if(is_null($binds))
+            $binds = array();
+
+        $query = new PHQL($phql, \Phalcon\DI::getDefault());
         //Executing with bound parameters
         $status = $query->execute($binds);
 
         return $status ? $status->success() : false;
     }
 
-    /* Resulset Methods
-    --------------------------------------------------- § -------------------------------------------------------- */
-
     /**
-     * Split ORM Resulset object properties (not static)
+     * Get messages from a created or updated object
      * @param boolean $json_encode Returns a json string
      * @return mixed array|string
      */
@@ -124,75 +151,5 @@ class Base extends \Phalcon\Mvc\Model
             $data = json_encode($data);
 
         return $data;
-    }
-
-    /**
-     * Parse ORM properties and returns a simple objects array
-     * @param object $result Phalcon Resulset
-     * @param boolean $split Split objects flag
-     * @return mixed array
-     */
-    public static function parseOrmResultset($result, $split = false)
-    {
-        if(!method_exists($result,'count') || empty($result->count()))
-            return array();
-
-        $objects = array();
-        foreach ($result as $object) {
-            $object = (object) array_filter((array) $object);
-            array_push($objects, $object);
-        }
-
-        return $split ? self::splitOrmResulset($objects) : $objects;
-    }
-
-    /**
-     * Parse ORM resultset for Json Struct (webservices)
-     * @access protected
-     * @param array $result
-     */
-    public static function splitOrmResulset($result)
-    {
-        if(!$result)
-            return array();
-
-        $objects = array();
-        //loop each object
-        foreach ($result as $obj) {
-            //get object properties
-            $props = get_object_vars($obj);
-
-            if(empty($props))
-                continue;
-
-            $new_obj = new \stdClass();
-
-            foreach ($props as $k => $v) {
-                //filter properties than has a class prefix
-                $namespace = explode("_", $k);
-
-                //validate property namespace, check if class exists in models (append plural noun)
-                if(empty($namespace) || !class_exists(ucfirst($namespace[0]."s")))
-                    continue;
-
-                $type = $namespace[0];
-                $prop = str_replace($type."_","",$k);
-
-                //creates the object struct
-                if(!isset($new_obj->{$type}))
-                    $new_obj->{$type} = new \stdClass();
-
-                //set props
-                $new_obj->{$type}->{$prop} = $v;
-            }
-
-            //check for a non-props object
-            if(empty(get_object_vars($new_obj)))
-                continue;
-
-            array_push($objects, $new_obj);
-        }
-
-        return $objects;
     }
 }

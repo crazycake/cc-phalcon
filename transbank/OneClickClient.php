@@ -147,7 +147,7 @@ class OneClickClient
 		$payload->card_type  	   = $oneClickPayOutput->creditCardType;
 		$payload->card_last_digits = $oneClickPayOutput->last4CardDigits;
 		//set webpay transaction_id
-		$payload->gateway_transaction_id = $oneClickPayOutput->transactionId;
+		$payload->gateway_trx_id = $oneClickPayOutput->transactionId;
 		return $payload;
 	}
 

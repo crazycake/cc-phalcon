@@ -134,6 +134,18 @@ class DateHelper
     }
 
     /**
+     * Get translated current day
+     * @return string The translated date
+     */
+    public static function getTranslatedCurrentDate()
+    {
+        $date = date("Y-m-d");
+        $date = explode("-", $date);
+
+        return self::getTranslatedDateTime($date[0], $date[1], $date[2]);
+    }
+
+    /**
      * Format seconds to HH:MM style, example 23:45 or 23h 45m
      * @static
      * @param int $seconds

@@ -15,13 +15,13 @@ class PdfHelper
 {
     /**
      * The wkhtmltopdf binary location
-     * @var string 
+     * @var string
      */
     private $wkhtmltopdf;
 
     /**
      * The snappy lirary
-     * @var string 
+     * @var string
      */
     private $snappy;
 
@@ -33,7 +33,7 @@ class PdfHelper
         //OSX or UbuntuServer
         $this->wkhtmltopdf = (php_uname('s') == "Darwin") ? "/usr/local/bin/wkhtmltopdf" : "/usr/local/bin/wkhtmltopdf.sh";
         //instance with binary path
-        $this->snappy = new Pdf($this->wkhtmltopdf); 
+        $this->snappy = new Pdf($this->wkhtmltopdf);
         //set options
         $this->snappy->setOption('lowquality', false);
         $this->snappy->setOption('page-width', 700);
@@ -53,18 +53,23 @@ class PdfHelper
 
         if(empty($output_path))
             throw new Exception("PdfHelper::generatePdfFileFromHtml -> The output_path input string is required.");
-        
+
         //remove file?
         if(is_file($output_path))
             unlink($output_path);
 
         //generate the PDF file!
-        $output = $this->snappy->generateFromHtml($html, $output_path);
+        try {
+            $this->snappy->generateFromHtml($html, $output_path);
+        }
+        catch(\Exception $e) {
+            throw new Exception("PdfHelper::generatePdfFileFromHtml -> Snappy library error: ".$e->getMessage());
+        }
 
         //get binary file?
         if($binary)
             return file_get_contents($output_path);
         else
-            return $output;
+            return $output_path;
     }
 }
