@@ -51,11 +51,11 @@ class BaseUsersFacebook extends Base
     /**
      * Get facebook data by user_id
      * @static
-     * @param int $user_fb_id
+     * @param int $user_id The user ID
      * @return UsersFacebook
      */
     public static function getFacebookDataByUserId($user_id)
     {
-        return self::findFirst("user_id = ".$user_id);
+        return self::findFirst("user_id = '$user_id'");
     }
 }

@@ -117,10 +117,10 @@ class BaseUsersCheckouts extends Base
      */
     public static function generateBuyOrder($length)
     {
-        $di = \Phalcon\DI::getDefault();
+        $di   = \Phalcon\DI::getDefault();
         $code = $di->getShared('cryptify')->generateAlphanumericCode($length);
         //unique constrait
-        $exists = self::findFirst( array("buy_order = '".$code."'") );
+        $exists = self::findFirst(array("buy_order = '$code'"));
 
         return $exists ? $this->generateBuyOrder($length) : $code;
     }

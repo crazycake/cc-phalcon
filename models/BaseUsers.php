@@ -147,11 +147,11 @@ abstract class BaseUsers extends Base
      */
     public static function getUserByEmail($email, $account_flag = null)
     {
-        $conditions = array("email = '".$email."'"); //default condition
+        $conditions = array("email = '$email'"); //default condition
 
         //filter by account flag?
         if(!is_null($account_flag) && in_array($account_flag, self::$ACCOUNT_FLAGS))
-            array_push($conditions, "account_flag = '".$account_flag."'");
+            array_push($conditions, "account_flag = '$account_flag'");
 
         //join conditions (AND)
         $conditions = implode(" AND ", $conditions);
@@ -167,7 +167,7 @@ abstract class BaseUsers extends Base
      */
     public static function validateNamespaceExists($namespace = "")
     {
-        $user = self::findFirst("namespace = '".$namespace."'");
+        $user = self::findFirst("namespace = '$namespace'");
 
         return $user ? true : false;
     }

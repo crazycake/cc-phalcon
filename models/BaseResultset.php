@@ -32,13 +32,21 @@ class BaseResultset extends Resultset
      */
     public static function reduceResultset($result, $split = false)
     {
-        if(!method_exists($result,'count') || empty($result->count()))
-            return array();
-
         $objects = array();
+
         foreach ($result as $object) {
-            $object = (object) array_filter((array) $object);
-            array_push($objects, $object);
+
+            //get object properties & creates a new clean object
+            $new_obj = new \stdClass();
+            $props   = get_object_vars($object);
+
+            if(empty($props))
+                continue;
+
+            foreach ($props as $key => $value)
+                $new_obj->{$key} = $value;
+
+            array_push($objects, $new_obj);
         }
 
         return $split ? self::_splitObjects($objects) : $objects;
@@ -93,15 +101,19 @@ class BaseResultset extends Resultset
             $new_obj = new \stdClass();
 
             foreach ($props as $k => $v) {
+
                 //reduce properties than has a class prefix
                 $namespace = explode("_", $k);
 
-                //validate property namespace, check if class exists in models (append plural noun)
-                if(empty($namespace) || !class_exists(ucfirst($namespace[0]."s")))
-                    continue;
-
-                $type = $namespace[0];
-                $prop = str_replace($type."_","",$k);
+                //check property namespace, check if class exists in models (append plural noun)
+                if(empty($namespace) || !class_exists(ucfirst($namespace[0]."s"))) {
+                    $type = "global";
+                    $prop = $k;
+                }
+                else {
+                    $type = $namespace[0];
+                    $prop = str_replace($type."_", "", $k);
+                }
 
                 //creates the object struct
                 if(!isset($new_obj->{$type}))

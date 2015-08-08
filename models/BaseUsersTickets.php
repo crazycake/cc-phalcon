@@ -12,7 +12,7 @@ use CrazyCake\Utils\DateHelper;
 class BaseUsersTickets extends Base
 {
     //this static methods can be 'overrided' as late binding
-    public static $QR_CODE_LEGTH = 40;
+    public static $QR_CODE_LEGTH     = 40;
     public static $TICKET_CODE_LEGTH = 10;
 
     /* properties */
@@ -60,14 +60,28 @@ class BaseUsersTickets extends Base
     {
         //set qr hash
         if(is_null($this->qr_hash))
-            $this->qr_hash = $this->generateRandomHash(uniqid());
+            $this->qr_hash = $this->generateRandomHash(uniqid()); //param is like a seed
 
         //set alphanumeric code
         if(is_null($this->code))
-            $this->code = $this->generateRandomCode(static::$TICKET_CODE_LEGTH);
+            $this->code = $this->generateRandomCode();
     }
 
     /** ------------------------------------------- § ------------------------------------------------ **/
+
+    /**
+     * Get user ticket by code
+     * @param  integer $user_id The user id
+     * @param  string  $code    The ticket code
+     * @return object UserTicket
+     */
+    public static function getUserTicketByCode($user_id = 0, $code = "")
+    {
+        $conditions = "user_id = ?1 AND code = ?2";
+        $parameters = array(1 => $user_id, 2 => $code);
+
+        return self::findFirst(array($conditions, "bind" => $parameters));
+    }
 
     /**
      * Generates a random Hash
@@ -94,23 +108,27 @@ class BaseUsersTickets extends Base
         $hash = substr(str_shuffle($code.$hash), 0, $length);
 
         //unique constrait
-        $exists = self::findFirst( array("qr_hash = '".$hash."'") );
+        $exists = self::findFirst(array(
+            "qr_hash = '$hash'"
+        ));
 
         return $exists ? $this->generateRandomHash($phrase) : $hash;
     }
 
     /**
-     * Generates a random Code for a ticket
+     * Generates a random Code for a user-ticket
      * @access protected
      * @param  string $phrase
      * @return string
      */
-    protected function generateRandomCode($length = 8)
+    protected function generateRandomCode()
     {
+        $length = static::$TICKET_CODE_LEGTH;
+
         $code = $this->getDI()->getShared('cryptify')->generateAlphanumericCode($length);
         //unique constrait
-        $exists = self::findFirst( array("code = '".$code."'") );
+        $exists = self::getUserTicketByCode($this->user_id, $this->code);
 
-        return $exists ? $this->generateRandomCode($length) : $code;
+        return $exists ? $this->generateRandomCode() : $code;
     }
 }
