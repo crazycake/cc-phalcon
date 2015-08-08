@@ -82,51 +82,41 @@ trait TicketManager
     /**
      * Binary Image - Outputs QR ticket image as binary with Content-Type png
      * @param int $user_id The user id
-     * @param string $hashed_id The hashed ticket_id received as POST param
-     * @param string $file_type The file type
+     * @param string $code The ticket associated code
      * @return binary
      */
-    public function getTicketQR($user_id = 0, $hashed_id = "", $file_type = "png")
+    public function getTicketQR($user_id = 0, $code = "")
     {
         try {
 
-            if(!in_array($file_type, $this->storageConfig['allowed_resources_types']))
-                throw new Exception("Invalid file type");
-
-            if(empty($hashed_id))
-                throw new Exception("Invalid ticket hashed_id");
-
-            $ticket_id = $this->cryptify->decryptHashId($hashed_id);
-
-            //validates that ticket belongs to user
-            //get anonymous function from settings
+            //validates that ticket belongs to user, get anonymous function from settings
             $getUserTicket = $this->storageConfig["getUserTicketFunction"];
 
             if(!is_callable($getUserTicket))
                 throw new Exception("Invalid 'get user ticket' function");
 
-            $user_ticket = $getUserTicket($user_id, $ticket_id);
+            $user_ticket = $getUserTicket($user_id, $code);
 
             if(!$user_ticket)
-                throw new Exception("Invalid ticket id for user");
+                throw new Exception("Invalid ticket: $code for userId: $user_id.");
 
-            $ticket_filename = $user_ticket->qr_hash.".".$file_type;
+            $ticket_filename = $user_ticket->code.".png";
             $s3_path         = self::$DEFAULT_S3_URI."/".$user_id."/".$ticket_filename;
             //get image in S3
             $binary = $this->s3->getObject($s3_path, true);
 
             if(!$binary)
-                throw new Exception("S3 could't find binary file $file_type");
+                throw new Exception("S3 could't find binary file for ticket code: $code (S3 path: $s3_path)");
         }
         catch (Exception $e) {
             //fallback for file
-            $this->logger->error("TicketStorage::getTicket -> Error loading image: ".$hashed_id." - Exception:".$e->getMessage());
+            $this->logger->error("TicketStorage::getTicket -> Error loading QR code: $code, err:".$e->getMessage());
             $binary = file_get_contents($this->_baseUrl($this->storageConfig['image_fallback_uri']));
         }
 
         //send output as binary image
         $this->view->disable();
-        $this->response->setContentType(self::$MIME_TYPES[$file_type]); //must be declare before setContent
+        $this->response->setContentType(self::$MIME_TYPES['png']); //must be declare before setContent
         $this->response->setContent($binary);
         $this->response->send();
     }
@@ -167,7 +157,7 @@ trait TicketManager
             foreach ($userTickets as $ticket) {
 
                 //set configs
-                $qr_filename = $ticket->qr_hash.".png";
+                $qr_filename = $ticket->code.".png";
                 $qr_savepath = $this->storageConfig['local_temp_path'].$qr_filename;
                 $s3_path     = self::$DEFAULT_S3_URI."/".$ticket->user_id."/".$qr_filename;
 
@@ -236,10 +226,11 @@ trait TicketManager
             $s3_path      = self::$DEFAULT_S3_URI."/".$user->id."/".$pdf_filename;
 
             //set extended pdf data
-            $this->pdf_settings["data_date"]       = DateHelper::getTranslatedCurrentDate();
-            $this->pdf_settings["data_user"]       = $user;
-            $this->pdf_settings["data_tickets"]    = $tickets;
-            $this->pdf_settings["data_checkout"]   = $checkout;
+            $this->pdf_settings["data_date"]     = DateHelper::getTranslatedCurrentDate();
+            $this->pdf_settings["data_user"]     = $user;
+            $this->pdf_settings["data_tickets"]  = $tickets;
+            $this->pdf_settings["data_checkout"] = $checkout;
+            $this->pdf_settings["data_storage"]  = $this->storageConfig['local_temp_path'];
 
             //get template
             $html_raw = $this->simpleView->render($this->storageConfig['ticket_pdf_template_view'], $this->pdf_settings);
