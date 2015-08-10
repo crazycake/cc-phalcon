@@ -111,11 +111,11 @@ trait Session
             $uri = $this->session->get($key);
             $this->session->remove($key);
         }
-        print_r($uri);exit;
+
         //check for ajax request
         if($this->request->isAjax()) {
             //redirection
-            $payload = array("redirectTo" => $uri);
+            $payload = array("redirectUri" => $uri);
             //send JSON response
             $this->_sendJsonResponse(200, $payload);
         }

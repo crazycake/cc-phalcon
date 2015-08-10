@@ -107,7 +107,7 @@ trait AccountPassRecovery
         $this->flash->success(str_replace("{email}", $data['email'], $this->accountConfig['text_pass_mail_sent']));
 
         //send JSON response
-        $this->_sendJsonResponse(200, array("redirectTo" => "signIn"));
+        $this->_sendJsonResponse(200, array("redirectUri" => "signIn"));
         return;
     }
 
@@ -159,7 +159,7 @@ trait AccountPassRecovery
         }
 
         //send JSON response
-        $this->_sendJsonResponse(200,  array("redirectTo" => "signIn"));
+        $this->_sendJsonResponse(200,  array("redirectUri" => "signIn"));
         return;
     }
 }
