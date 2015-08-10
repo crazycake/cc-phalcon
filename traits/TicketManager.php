@@ -107,28 +107,42 @@ trait TicketManager
 
             if(!$binary)
                 throw new Exception("S3 could't find binary file for ticket code: $code (S3 path: $s3_path)");
+
+            //sends file to buffer
+            $this->_sendFileToBuffer($binary, self::$MIME_TYPES['png']);
         }
         catch (Exception $e) {
             //fallback for file
             $this->logger->error("TicketStorage::getTicket -> Error loading QR code: $code, err:".$e->getMessage());
             $binary = file_get_contents($this->_baseUrl($this->storageConfig['image_fallback_uri']));
         }
-
-        //send output as binary image
-        $this->view->disable();
-        $this->response->setContentType(self::$MIME_TYPES['png']); //must be declare before setContent
-        $this->response->setContent($binary);
-        $this->response->send();
     }
 
     /**
      * Get Invoice PDFs, if many they are merged
      * @param int $user_id The user id
+     * @param array $buy_orders An array of buy orders
      * @return binary
      */
-    public function getInvoice($user_id = 0)
+    public function getInvoice($user_id = 0, $buy_orders)
     {
-        //...
+        try {
+            foreach ($buy_orders as $buy_order) {
+
+                $invoice_filename = $buy_order.".pdf";
+                $s3_path          = self::$DEFAULT_S3_URI."/".$user_id."/".$invoice_filename;
+                //...
+            }
+
+            $binary = null;
+            //sends file to buffer
+            $this->_sendFileToBuffer($binary, self::$MIME_TYPES['pdf']);
+        }
+        catch (Exception $e) {
+            //fallback for file
+            $this->logger->error("TicketStorage::getInvoice -> Error loading PDF file: $code, err:".$e->getMessage());
+            $binary = file_get_contents($this->_baseUrl($this->storageConfig['image_fallback_uri']));
+        }
     }
 
     /**
@@ -269,7 +283,7 @@ trait TicketManager
     {
         $path = $this->storageConfig['local_temp_path'];
 
-        foreach ($MIME_TYPES as $key => $value) {
+        foreach (self::$MIME_TYPES as $key => $value) {
             array_map('unlink', glob( "$path*.$key"));
         }
     }

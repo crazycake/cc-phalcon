@@ -12,13 +12,14 @@ return array (
   array (
     0 => 'Base.php',
     1 => 'BaseDictionary.php',
-    2 => 'BaseTickets.php',
-    3 => 'BaseUsers.php',
-    4 => 'BaseUsersCheckouts.php',
-    5 => 'BaseUsersCheckoutsObjects.php',
-    6 => 'BaseUsersFacebook.php',
-    7 => 'BaseUsersTickets.php',
-    8 => 'BaseUsersTokens.php',
+    2 => 'BaseResultset.php',
+    3 => 'BaseTickets.php',
+    4 => 'BaseUsers.php',
+    5 => 'BaseUsersCheckouts.php',
+    6 => 'BaseUsersCheckoutsObjects.php',
+    7 => 'BaseUsersFacebook.php',
+    8 => 'BaseUsersTickets.php',
+    9 => 'BaseUsersTokens.php',
   ),
   'phalcon' => 
   array (
