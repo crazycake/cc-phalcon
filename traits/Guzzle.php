@@ -38,11 +38,14 @@ trait Guzzle
      * @param object $response
      * @param string $method
      */
-    protected function logGuzzleResponse($response, $method = "not specified")
+    protected function logGuzzleResponse($response, $method = null)
     {
         //save response only for non production-environment
         if (APP_ENVIRONMENT === 'production')
             return;
+
+        if(is_null($method))
+            $method = "uknown method";
 
         $response->then(function ($response) use ($method) {
             $body = $response->getBody();

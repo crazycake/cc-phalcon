@@ -212,7 +212,8 @@ class BaseUsersCheckouts extends Base
     }
 
     /**
-     * Validates that checkout object is already in stock
+     * Validates that checkout object is already in stock.
+     * Sums to q the number of checkout object presents in a pending checkout state.
      * @param  string $object_class The object class
      * @param  int $object_id The object id
      * @param  int $q The quantity to validate

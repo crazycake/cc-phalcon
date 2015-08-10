@@ -221,45 +221,6 @@ abstract class WebCore extends AppCore implements webSecurity
     }
 
     /**
-     * Sends a mail message to user asynchronously
-     * @access protected
-     * @param string $method The Mailer method to call
-     * @param object $data  The data to be passed as args
-     * @return object response
-     */
-    protected function _sendAsyncMailMessage($method = null, $data = null)
-    {
-        //simple input validation
-        if (empty($method))
-            throw new Exception("WebCore::_sendAsyncMailMessage -> method param is required.");
-
-        //get the mailer controller name
-        $mailer_class = $this->getModuleClassName("mailer");
-
-        //checks that a MailerController exists
-        if(!class_exists(str_replace('\\', '', $mailer_class)))
-            throw new Exception("WebCore::_sendAsyncMailMessage -> A Mailer Controller is required.");
-
-        $mailer = new $mailer_class();
-
-        //checks that a MailerController exists
-        if(!method_exists($mailer, $method))
-            throw new Exception("WebCore::_sendAsyncMailMessage -> Method $method is not defined in Mailer Controller.");
-
-        //call mailer class method (reflection)
-        $response = $mailer->{$method}($data);
-
-        if(is_array($response))
-            $response = json_encode($response);
-
-        //save response only for non production-environment
-        if(APP_ENVIRONMENT !== "production")
-            $this->logger->debug('WebCore::_sendAsyncMailMessage -> Got response from MailerController:\n' . $response);
-
-        return $response;
-    }
-
-    /**
      * Loads app assets, files are located in each module config file
      * @access protected
      */

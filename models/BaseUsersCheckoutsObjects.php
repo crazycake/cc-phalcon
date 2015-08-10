@@ -103,4 +103,36 @@ class BaseUsersCheckoutsObjects extends Base
 
        return $result;
     }
+
+    /**
+     * Get checkout buyOrders by given objects
+     * @param array $objectIds An array with object IDs (required)
+     * @param string $objectClass The object class name (required)
+     * @return mixed [boolean|array]
+     */
+    public static function getBuyOrders($objectIds = array(), $objectClass = "")
+    {
+        if(empty($objectIds) || empty($objectClass))
+            return false;
+
+        $objectsModel = static::who();
+
+        $conditions = "object_class = '$objectClass'";
+
+        if(!empty($objectIds)) {
+
+            foreach ($objectIds as $key => $id)
+                $objectIds[$key] = "object_id = '$id'";
+
+            $ids_filter = implode(" OR ", $objectIds);
+            $conditions .= " AND (".$ids_filter.") ";
+        }
+
+        $result = self::find( array($conditions) );
+
+        if(!$result)
+            return false;
+
+        return BaseResultset::getIdsArray($result, "buy_order");
+    }
 }

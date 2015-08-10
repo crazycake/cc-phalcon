@@ -114,7 +114,6 @@ trait TicketManager
         catch (Exception $e) {
             //fallback for file
             $this->logger->error("TicketStorage::getTicket -> Error loading QR code: $code, err:".$e->getMessage());
-            $binary = file_get_contents($this->_baseUrl($this->storageConfig['image_fallback_uri']));
         }
     }
 
@@ -127,21 +126,30 @@ trait TicketManager
     public function getInvoice($user_id = 0, $buy_orders)
     {
         try {
+            if(empty($buy_orders))
+                throw new Exception("Empty buy_orders parameter");
+
+            $binary = null;
+
+            //for multiple buy orders, merge pdf files
             foreach ($buy_orders as $buy_order) {
 
                 $invoice_filename = $buy_order.".pdf";
                 $s3_path          = self::$DEFAULT_S3_URI."/".$user_id."/".$invoice_filename;
-                //...
+                //get image in S3
+                $binary = $this->s3->getObject($s3_path, true);
+                break;
             }
 
-            $binary = null;
+            if(is_null($binary))
+                throw new Exception("No pdf files found with buy orders: ". print_r($buy_orders, true));
+
             //sends file to buffer
             $this->_sendFileToBuffer($binary, self::$MIME_TYPES['pdf']);
         }
         catch (Exception $e) {
             //fallback for file
             $this->logger->error("TicketStorage::getInvoice -> Error loading PDF file: $code, err:".$e->getMessage());
-            $binary = file_get_contents($this->_baseUrl($this->storageConfig['image_fallback_uri']));
         }
     }
 

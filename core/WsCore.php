@@ -93,7 +93,7 @@ abstract class WsCore extends AppCore
             if (is_numeric($data))
                 $response["object_id"] = $data;
             else if (is_string($data))
-                $response["error"] = $data;
+                $response["message"] = $data;
 
             //set error for non array
             if (is_array($data))

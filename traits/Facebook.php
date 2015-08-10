@@ -313,7 +313,7 @@ trait Facebook
             //set request url
             $url = $this->_baseUrl($this->facebookConfig['controller_name']."/extendAccessToken/".$encrypted_data);
             //send async request
-            $this->sendAsyncRequest($url);
+            $this->sendAsyncRequest($url, "extendAccessToken");
         }
         catch (Exception $e) {
             //an error ocurred

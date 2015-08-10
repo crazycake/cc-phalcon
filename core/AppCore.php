@@ -87,14 +87,54 @@ abstract class AppCore extends Controller
 
         $encrypted_data  = $this->cryptify->encryptForGetRequest($data);
         $controller_name = array_keys($route)[0];
+        $method_name    = $route[0];
         //set url
-        $url = $this->_baseUrl($controller_name."/".$route[0]."/".$encrypted_data);
+        $url = $this->_baseUrl($controller_name."/".$method_name."/".$encrypted_data);
 
         if(APP_ENVIRONMENT == "development")
-            $this->logger->debug('AppCore::_sendAsyncTask -> Method: '.$method.' & URL: ' . $url);
+            $this->logger->debug('AppCore::_sendAsyncTask -> Method: '.$method_name.' & URL: ' . $url);
 
         //child method
-        $this->sendAsyncRequest($url, $method);
+        $this->sendAsyncRequest($url, $method_name);
+    }
+
+    /**
+     * Sends a mail message to user asynchronously
+     * @access protected
+     * @param string $method The Mailer method to call
+     * @param object $data  The data to be passed as args
+     * @return object response
+     */
+    protected function _sendAsyncMailMessage($method = null, $data = null)
+    {
+        //simple input validation
+        if (empty($method))
+            throw new Exception("AppCore::_sendAsyncMailMessage -> method param is required.");
+
+        //get the mailer controller name
+        $mailer_class = $this->getModuleClassName("mailer");
+
+        //checks that a MailerController exists
+        if(!class_exists(str_replace('\\', '', $mailer_class)))
+            throw new Exception("AppCore::_sendAsyncMailMessage -> A Mailer Controller is required.");
+
+        $mailer = new $mailer_class();
+
+        //checks that a MailerController exists
+        if(!method_exists($mailer, $method))
+            throw new Exception("AppCore::_sendAsyncMailMessage -> Method $method is not defined in Mailer Controller.");
+
+        //call mailer class method (reflection)
+        $response = $mailer->{$method}($data);
+
+        if(is_array($response))
+            $response = json_encode($response);
+
+        //save response only for non production-environment
+        if(APP_ENVIRONMENT !== "production")
+            $this->logger->debug('AppCore::_sendAsyncMailMessage -> Got response from MailerController:\n' . $response);
+
+        return $response;
     }
 
     /**
@@ -173,6 +213,7 @@ abstract class AppCore extends Controller
         $invalid_data = false;
         //compare keys
         foreach ($req_fields as $field => $data_type) {
+            
             $is_optional_field = false;
             //check if is a optional field
             if (substr($field, 0, 1) === "@") {

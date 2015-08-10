@@ -67,16 +67,20 @@ class BaseResultset extends Resultset
      * @static
      * @param array $result The resultSet array or a simple array
      * @param array $field The object field name
+     * @param boolean $unique Flag for non repeated values
      * @return array of Ids
      */
-    public static function getIdsArray($result, $field = "id")
+    public static function getIdsArray($result, $field = "id", $unique = true)
     {
         $ids = array();
 
         foreach ($result as $object)
             array_push($ids, $object->{$field});
 
-        return empty($ids) ? false : $ids;
+        if(empty($ids))
+            return false;
+
+        return $unique ? array_unique($ids) : $ids;
     }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
