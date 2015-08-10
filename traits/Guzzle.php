@@ -48,16 +48,24 @@ trait Guzzle
             $method = "uknown method";
 
         $response->then(function ($response) use ($method) {
+
             $body = $response->getBody();
 
-            if(get_class($body) == "Stream")
+            if(method_exists($body, "getContents")) {
                 $body = $body->getContents();
+            }
 
             //handle response (OK status)
-            if ($response->getStatusCode() == 200)
+            if ($response->getStatusCode() == 200 && strpos($body, "<!DOCTYPE") === false) {
                 $this->logger->log('Guzzle::logGuzzleResponse -> Method: ' . $method . ', response:' . $body);
-            else
-                $this->logger->error('Guzzle::logGuzzleResponse -> Error on request: ' . $method .', response: ' . $body);
+            }
+            else {
+
+                $controllerName = $this->router->getControllerName();
+                $actionName     = $this->router->getActionName();
+
+                $this->logger->error('Guzzle::logGuzzleResponse -> Error on request: ' . $method .', responsed an error page: '.$controllerName." -> ".$actionName);
+            }
         });
     }
 }

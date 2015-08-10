@@ -150,6 +150,7 @@ trait TicketManager
         catch (Exception $e) {
             //fallback for file
             $this->logger->error("TicketStorage::getInvoice -> Error loading PDF file: $code, err:".$e->getMessage());
+            //redirect to fallback
         }
     }
 
@@ -158,11 +159,8 @@ trait TicketManager
      * @param mixed [object|array] $userTickets A user ticket object or an array of objects
      * @return mixed
      */
-    public function generateQRForUserTickets($userTickets)
+    public function generateQRForUserTickets($user_id, $userTickets)
     {
-        if(!is_array($userTickets))
-            $userTickets = array($userTickets);
-
         //set qr settings
         $this->qr_settings = $this->storageConfig['qr_settings'];
 
@@ -178,10 +176,13 @@ trait TicketManager
             //loop through each ticket
             foreach ($userTickets as $ticket) {
 
+                if(!isset($ticket->code))
+                    throw new Exception("Invalid ticket");
+
                 //set configs
                 $qr_filename = $ticket->code.".png";
                 $qr_savepath = $this->storageConfig['local_temp_path'].$qr_filename;
-                $s3_path     = self::$DEFAULT_S3_URI."/".$ticket->user_id."/".$qr_filename;
+                $s3_path     = self::$DEFAULT_S3_URI."/".$user_id."/".$qr_filename;
 
                 //set extended qr data
                 $this->qr_settings["data"]     = $ticket->qr_hash;
@@ -206,21 +207,20 @@ trait TicketManager
         //append Objects
         $result->objects = $objects;
 
-        if(isset($result->error)) {
+        if(isset($result->error))
             $this->logger->error('TicketStorage::generateQRForUserTicket -> Error while generating and storing QR, err:'.$result->error);
-            return $result;
-        }
 
         return $result;
     }
 
     /**
      * Hanlder - Generates PDF for ticket and invoice attached
+     * @param int $user_id The user Id
      * @param object $checkout The checkout object (including transaction props)
      * @param array $userTicketIds An array of user ticket IDs
      * @return mixed
      */
-    public function generateInvoiceForUserCheckout($checkout, $userTicketIds = array())
+    public function generateInvoiceForUserCheckout($user_id, $checkout, $userTicketIds = array())
     {
         //handle exceptions
         $result = new \stdClass();
@@ -235,7 +235,7 @@ trait TicketManager
                 throw new Exception("Invalid 'get user ticket UI' function");
 
             //get user by session
-            $user = $users_class::getObjectById($this->user_session["id"]);
+            $user = $users_class::getObjectById($user_id);
             //get ticket objects with UI properties
             $tickets = $getUserTicketsUI($user->id, $userTicketIds);
 
@@ -258,7 +258,7 @@ trait TicketManager
             $html_raw = $this->simpleView->render($this->storageConfig['ticket_pdf_template_view'], $this->pdf_settings);
 
             //PDF generator (this is a heavy task for quick client response)
-            $result->output = (new PdfHelper())->generatePdfFileFromHtml($html_raw, $output_path);
+            $result->binary = (new PdfHelper())->generatePdfFileFromHtml($html_raw, $output_path, true);
 
             //upload pdf file to S3
             $this->s3->putObject($output_path, $s3_path, true);

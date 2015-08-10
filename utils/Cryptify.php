@@ -75,10 +75,10 @@ class Cryptify
     /**
      * Decrypts data received in a GET request
      * @param string $encrypted_text The encrypted text
-     * @param boolean explode Optional, explode the string to return an aray
+     * @param mixed [boolean|string] parse Optional, parse the string from a token (explode) or parses a json
      * @return mixed string|array The decrypted string
      */
-    public function decryptForGetResponse($encrypted_text, $explode = false)
+    public function decryptForGetResponse($encrypted_text, $parse = false)
     {
         try {
             //decrypt string
@@ -86,12 +86,13 @@ class Cryptify
             //remove null bytes in string
             $data = str_replace(chr(0), '', $decrypted_string);
 
-            if($explode)
-                $data = explode($explode, $data);
+            if($parse) {
+                $data = is_string($parse) ? explode($parse, $data) : json_decode($data);
+            }
 
             return $data;
         }
-        catch(Exception $e) {
+        catch (Exception $e) {
 
             //get DI instance (static)
             $di = DI::getDefault();

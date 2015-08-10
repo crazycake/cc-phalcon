@@ -90,7 +90,7 @@ class Cacher
          }
          catch(Exception $e) {
 
-             $this->_logError("Cacher -> Failed saving data to ".$this->adapter." server, key:".$key, $e);
+             $this->_logError("Cacher -> Failed saving data to ".$this->adapter." server, key: ".$key, $e);
              return false;
          }
      }
@@ -118,7 +118,7 @@ class Cacher
          }
          catch(Exception $e) {
 
-             $this->_logError("Cacher -> Failed retrieving data from ".$this->adapter." server, key:".$key, $e);
+             $this->_logError("Cacher -> Failed retrieving data from ".$this->adapter." server, key: ".$key, $e);
              return null;
          }
      }
@@ -148,7 +148,7 @@ class Cacher
          }
          catch(Exception $e) {
 
-             $this->_logError("Cacher -> Failed deleting data from ".$this->adapter." server, key:".$key, $e);
+             $this->_logError("Cacher -> Failed deleting data from ".$this->adapter." server, key: ".$key, $e);
              return null;
          }
      }

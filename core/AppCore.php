@@ -83,16 +83,20 @@ abstract class AppCore extends Controller
     {
         //encode data
         if(is_array($data))
-            $data = json_encode($data);
+            $data = json_encode($data, JSON_UNESCAPED_SLASHES);
 
-        $encrypted_data  = $this->cryptify->encryptForGetRequest($data);
-        $controller_name = array_keys($route)[0];
-        $method_name    = $route[0];
+        //encrypt param data?
+        $params          = is_null($data) ? "" : $this->cryptify->encryptForGetRequest($data);
+        $keys            = array_keys($route);
+        $controller_name = $keys[0];
+        $method_name     = $route[$controller_name];
+
         //set url
-        $url = $this->_baseUrl($controller_name."/".$method_name."/".$encrypted_data);
+        $uri = $controller_name."/".$method_name."/".$params;
+        $url = $this->_baseUrl($uri);
 
         if(APP_ENVIRONMENT == "development")
-            $this->logger->debug('AppCore::_sendAsyncTask -> Method: '.$method_name.' & URL: ' . $url);
+            $this->logger->debug('AppCore::_sendAsyncTask -> Method: '.$method_name.' & Uri: ' . $uri);
 
         //child method
         $this->sendAsyncRequest($url, $method_name);
@@ -213,7 +217,7 @@ abstract class AppCore extends Controller
         $invalid_data = false;
         //compare keys
         foreach ($req_fields as $field => $data_type) {
-            
+
             $is_optional_field = false;
             //check if is a optional field
             if (substr($field, 0, 1) === "@") {

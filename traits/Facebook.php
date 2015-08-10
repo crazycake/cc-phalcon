@@ -152,6 +152,7 @@ trait Facebook
 
     /**
      * Handler - Deauthorize a facebook user
+     * TODO: disable account for deauthorizations?
      * @param int $user_id
      * @return mixed (boolean|array)
      */
@@ -308,12 +309,12 @@ trait Facebook
             if (!$user_fb)
                 $this->__saveNewUserFacebook($user->id, $fb_id, $fac, $properties['token_expiration']);
 
-            //extend access token (append fb userID and short live access token)
-            $encrypted_data = $this->cryptify->encryptForGetRequest($fb_id."#".$fac);
-            //set request url
-            $url = $this->_baseUrl($this->facebookConfig['controller_name']."/extendAccessToken/".$encrypted_data);
-            //send async request
-            $this->sendAsyncRequest($url, "extendAccessToken");
+            //send async request, extend access token (append fb userID and short live access token)
+            $this->_sendAsyncTask(array(
+                    $this->facebookConfig['controller_name'] => "extendAccessToken"
+                ),
+                $fb_id."#".$fac
+            );
         }
         catch (Exception $e) {
             //an error ocurred
