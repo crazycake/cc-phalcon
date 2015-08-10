@@ -99,6 +99,7 @@ trait Session
 
     /**
      * Handles response on logged in event, check for pending redirection
+     * TODO set default uri as param config
      */
     protected function _handleResponseOnLoggedIn()
     {
@@ -110,11 +111,11 @@ trait Session
             $uri = $this->session->get($key);
             $this->session->remove($key);
         }
-
+        print_r($uri);exit;
         //check for ajax request
         if($this->request->isAjax()) {
             //redirection
-            $payload = array("redirect" => $this->_baseUrl($uri));
+            $payload = array("redirectTo" => $uri);
             //send JSON response
             $this->_sendJsonResponse(200, $payload);
         }

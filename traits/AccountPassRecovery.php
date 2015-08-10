@@ -107,7 +107,7 @@ trait AccountPassRecovery
         $this->flash->success(str_replace("{email}", $data['email'], $this->accountConfig['text_pass_mail_sent']));
 
         //send JSON response
-        $this->_sendJsonResponse(200);
+        $this->_sendJsonResponse(200, array("redirectTo" => "signIn"));
         return;
     }
 
@@ -151,8 +151,6 @@ trait AccountPassRecovery
 
             //abstract parent controller
             $this->_setUserSessionAsLoggedIn($user->id);
-
-            $payload = true;
         }
         catch (Exception $e) {
             $this->logger->error("AccountPass::saveNewPasswordAction -> Error saving new password. Trace: " . $e->getMessage());
@@ -161,7 +159,7 @@ trait AccountPassRecovery
         }
 
         //send JSON response
-        $this->_sendJsonResponse(200, $payload);
+        $this->_sendJsonResponse(200,  array("redirectTo" => "signIn"));
         return;
     }
 }
