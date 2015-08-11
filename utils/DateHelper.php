@@ -53,6 +53,10 @@ class DateHelper
 
         //get DI instance (static)
         $di = \Phalcon\DI::getDefault();
+
+        if(!$di->has("translate"))
+            return null;
+
         $translate = $di->getShared("translate");
 
         $month = (int)$month;
@@ -93,6 +97,10 @@ class DateHelper
 
         //get DI instance (static)
         $di = \Phalcon\DI::getDefault();
+
+        if(!$di->has("translate"))
+            return null;
+
         $translate = $di->getShared("translate");
 
         //get translated Month

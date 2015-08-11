@@ -74,7 +74,7 @@ trait AccountManager
             //changed pass validation
             if(!empty($data['pass']) && !empty($data['current_pass'])) {
 
-                if(strlen($data['pass']) < $data['profile_pass_min_length'])
+                if(strlen($data['pass']) < $this->accountConfig['profile_pass_min_length'])
                     throw new Exception($this->accountConfig['text_pass_too_short']);
 
                 //check current pass
