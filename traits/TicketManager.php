@@ -75,7 +75,7 @@ trait TicketManager
                                   $this->config->app->awsS3Bucket);
         //set PDF settings
         $this->pdf_settings = array(
-            'app_name' => $this->config->app->name,
+            'app' => $this->config->app,
         );
     }
 
