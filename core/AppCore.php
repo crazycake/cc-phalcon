@@ -25,6 +25,7 @@ abstract class AppCore extends Controller
      * abstract required methods
      */
     abstract protected function _sendJsonResponse();
+    abstract protected function _sendAsyncRequest($url = null, $uri = null, $data = array(), $method = "GET");
 
     /**
      * Base URL extended function
@@ -79,27 +80,26 @@ abstract class AppCore extends Controller
      * @param array $route Struct: "controller" => "method"
      * @param object $data  The data to be passed as args
      */
-    protected function _sendAsyncTask($route = array(), $data = null)
+    protected function _asyncRequest($route = array(), $data = null, $method = "GET")
     {
         //encode data
-        if(is_array($data))
-            $data = json_encode($data, JSON_UNESCAPED_SLASHES);
+        if(!is_null($data))
+            $data = $this->cryptify->encryptForGetRequest($data);
 
         //encrypt param data?
-        $params          = is_null($data) ? "" : $this->cryptify->encryptForGetRequest($data);
         $keys            = array_keys($route);
         $controller_name = $keys[0];
         $method_name     = $route[$controller_name];
 
         //set url
-        $uri = $controller_name."/".$method_name."/".$params;
-        $url = $this->_baseUrl($uri);
+        $uri = $controller_name."/".$method_name."/";
+        $url = $this->_baseUrl();
 
         if(APP_ENVIRONMENT == "development")
-            $this->logger->debug('AppCore::_sendAsyncTask -> Method: '.$method_name.' & Uri: ' . $uri);
+            $this->logger->debug('AppCore::_asyncRequest -> Method: $method, Uri: $uri');
 
         //child method
-        $this->sendAsyncRequest($url, $method_name);
+        $this->_sendAsyncRequest($url, $uri, $data, $method);
     }
 
     /**

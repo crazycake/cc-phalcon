@@ -58,13 +58,16 @@ class Cryptify
 
     /**
      * Encrypts data to be passed in a GET request
-     * @param string $text
+     * @param mixed [string|array] $data
      * @return string The encrypted string
      */
-    public function encryptForGetRequest($text)
+    public function encryptForGetRequest($data)
     {
+        //encode arrays as json
+        $data = is_array($data) ? json_encode($data, JSON_UNESCAPED_SLASHES) : (string)$data;
+
         //key must be set in DI service
-        $encrypted = $this->crypt->encrypt((string)$text);
+        $encrypted = $this->crypt->encrypt($data);
 
         //encrypt string
         $encrypted_string = str_replace('%', '-', rawurlencode(base64_encode($encrypted)));

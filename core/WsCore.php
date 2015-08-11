@@ -7,6 +7,9 @@
 
 namespace CrazyCake\Core;
 
+//imports
+use CrazyCake\Traits\Guzzle;
+
 abstract class WsCore extends AppCore
 {
     /* consts */
@@ -16,6 +19,9 @@ abstract class WsCore extends AppCore
      * abstract required methods
      */
     abstract protected function welcome();
+
+    /* traits */
+    use Guzzle;
 
     /**
      * API messages

@@ -12,8 +12,9 @@ use Phalcon\Exception;              //Phalcon Exception
 //phalcon imports
 use Phalcon\Assets\Filters\Cssmin;  //CSS resources minification
 use Phalcon\Assets\Filters\Jsmin;   //JS resources minification
-//CrazyCake Utils
+//CrazyCake Utils & Traits
 use CrazyCake\Utils\UserAgent;      //User Agent identifier
+use CrazyCake\Traits\Guzzle;
 
 abstract class WebCore extends AppCore implements webSecurity
 {
@@ -27,7 +28,9 @@ abstract class WebCore extends AppCore implements webSecurity
     abstract protected function getModuleClassName($key);
     abstract protected function setAppJavascriptProperties($js_app);
     abstract protected function checkBrowserSupport($browser, $version);
-    abstract protected function sendAsyncRequest($url = null, $method = null);
+
+    /* traits */
+    use Guzzle;
 
     /**
      * User agent properties

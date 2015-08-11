@@ -11,6 +11,7 @@ namespace CrazyCake\Traits;
 //imports
 use Phalcon\Exception;
 use GuzzleHttp\Client as GuzzleClient;  //Guzzle client for requests
+use GuzzleHttp\Promise;
 
 trait Guzzle
 {
@@ -19,35 +20,67 @@ trait Guzzle
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
 	/**
-     * Do a asynchronously request
-     * @param string $url The request URL
-     * @param string $method The request name
+     * Do a asynchronously request through Guzzle
+     * @param string $url The request base URL
+     * @param string $uri The request URI
+     * @param array $data The parameters data
+     * @param string $method The HTTP method (GET, POST)
      */
-    protected function sendAsyncRequest($url = null, $method = null)
+    protected function _sendAsyncRequest($url = null, $uri = null, $data = array(), $method = "GET")
     {
         //simple input validation
-        if (empty($url))
-            throw new Exception("Guzzle::sendAsyncRequest -> url method param is required.");
+        if (is_null($url) || is_null($uri))
+            throw new Exception("Guzzle::sendAsyncRequest -> url & uri method params are required.");
 
-        $response = (new GuzzleClient())->get($url, ['future' => true]);
-        $this->logGuzzleResponse($response, $method);
+        $client = new GuzzleClient(['base_uri' => $url, 'timeout' => 30.0]);
+
+        //reflection function
+        $action = "_".strtolower($method)."Request";
+        $this->$action($client, $uri, $data);
+    }
+
+    /* --------------------------------------------------- § -------------------------------------------------------- */
+
+    /**
+     * Do a GET request
+     * @param  object $client The HTTP Guzzle client
+     * @param  string $uri   The URI
+     * @param  object $data   The param data
+     */
+    private function _getRequest($client, $uri, $data)
+    {
+        $promise = $client->getAsync("$uri/$data");
+
+        $this->_sendPromise($promise, $uri);
     }
 
     /**
-     * Logs Guzzle response
-     * @param object $response
+     * Do a POST request
+     * @param  object $client The HTTP Guzzle client
+     * @param  string $uri   The URI
+     * @param  object $data   The param data
+     */
+    private function _postRequest($client, $uri, $data)
+    {
+        $promise = $client->postAsync($uri, [
+            'form_params' => ["payload" => $data]
+        ]);
+
+        //logs response
+        $this->_sendPromise($promise, $uri);
+    }
+
+    /**
+     * Logs Guzzle promise response
+     * @param object $promise
      * @param string $method
      */
-    protected function logGuzzleResponse($response, $method = null)
+    private function _sendPromise($promise, $uri)
     {
-        //save response only for non production-environment
-        if (APP_ENVIRONMENT === 'production')
-            return;
+        if(is_null($uri))
+            $uri = "uknown";
 
-        if(is_null($method))
-            $method = "uknown method";
-
-        $response->then(function ($response) use ($method) {
+        $promise->then(function ($response) use ($uri) {
 
             $body = $response->getBody();
 
@@ -57,15 +90,16 @@ trait Guzzle
 
             //handle response (OK status)
             if ($response->getStatusCode() == 200 && strpos($body, "<!DOCTYPE") === false) {
-                $this->logger->log('Guzzle::logGuzzleResponse -> Method: ' . $method . ', response:' . $body);
+                $this->logger->log("Guzzle::logGuzzleResponse -> Uri: $uri, response: $body");
             }
             else {
 
                 $controllerName = $this->router->getControllerName();
                 $actionName     = $this->router->getActionName();
 
-                $this->logger->error('Guzzle::logGuzzleResponse -> Error on request: ' . $method .', responsed an error page: '.$controllerName." -> ".$actionName);
+                $this->logger->error("Guzzle::logGuzzleResponse -> Error on request: $uri, responsed an error page: $controllerName -> $actionName");
             }
         });
+        $promise->wait();
     }
 }
