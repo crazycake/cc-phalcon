@@ -86,6 +86,12 @@ class Cacher
              if(!$result)
                 throw new Exception("Adapter error: ".print_r($result, true));
 
+            if(APP_ENVIRONMENT == "development") {
+                $di = DI::getDefault();
+                $logger = $di->getShared("logger");
+                $logger->debug("Cacher:set -> set key: $key => ".$value);
+            }
+
              return true;
          }
          catch(Exception $e) {
@@ -221,6 +227,6 @@ class Cacher
      */
     public function deleteRedis($key = "")
     {
-        $this->client->delete($key);
+        $this->client->del($key);
     }
 }
