@@ -9,7 +9,8 @@ namespace CrazyCake\Utils;
 
 //imports
 use Phalcon\Exception;
-use Knp\Snappy\Pdf;
+use Knp\Snappy\Pdf as PDF;           //PDF printer
+use Clegginabox\PDFMerger\PDFMerger; //PDF merger lib
 
 class PdfHelper
 {
@@ -33,7 +34,7 @@ class PdfHelper
         //OSX or UbuntuServer
         $this->wkhtmltopdf = (php_uname('s') == "Darwin") ? "/usr/local/bin/wkhtmltopdf" : "/usr/local/bin/wkhtmltopdf.sh";
         //instance with binary path
-        $this->snappy = new Pdf($this->wkhtmltopdf);
+        $this->snappy = new PDF($this->wkhtmltopdf);
         //set options
         $this->snappy->setOption('lowquality', false);
         $this->snappy->setOption('page-width', 700);
@@ -71,5 +72,26 @@ class PdfHelper
             return file_get_contents($output_path);
         else
             return $output_path;
+    }
+
+    /**
+     * Merge PDF files
+     * @param  array   $files The file paths array
+     * @param  string  $output The file paths array
+     * @param  string  $options Options: 'file', 'browser', 'download', 'string'
+     */
+    public function mergePdfFiles($files = array(), $output = "pdf_merged.pdf", $option = "browser")
+    {
+        if(empty($files))
+            throw new Exception("PdfHelper::mergePdfFiles -> Input files is empty");
+
+        //Merge PDFs
+        $pdf = new PDFMerger();
+
+        foreach ($files as $f)
+            $pdf->addPDF($f);
+
+        //merge files
+        $pdf->merge($option, $output);
     }
 }

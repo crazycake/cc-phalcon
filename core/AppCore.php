@@ -43,7 +43,7 @@ abstract class AppCore extends Controller
      * @param mixed $data The binary data to send
      * @param integer $mime_type The mime type
      */
-    protected function _sendFileToBuffer($data = "", $mime_type = 'application/json')
+    protected function _sendFileToBuffer($data = null, $mime_type = 'application/json')
     {
         //append struct as string if data type is JSON
         if($mime_type == 'application/json')
@@ -54,7 +54,11 @@ abstract class AppCore extends Controller
 
         $this->response->setStatusCode(200, "OK");
         $this->response->setContentType($mime_type);
-        $this->response->setContent($data);
+
+        //content must be set after content type
+        if(!is_null($data))
+            $this->response->setContent($data);
+
         $this->response->send();
         die(); //exit
     }

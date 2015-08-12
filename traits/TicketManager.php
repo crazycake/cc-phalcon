@@ -130,22 +130,56 @@ trait TicketManager
                 throw new Exception("Empty buy_orders parameter");
 
             $binary = null;
+            $count = count($buy_orders);
 
-            //for multiple buy orders, merge pdf files
-            foreach ($buy_orders as $buy_order) {
+            //anonymous fn
+            $getFile = function($buy_order) use ($user_id) {
 
                 $invoice_filename = $buy_order.".pdf";
                 $s3_path          = self::$DEFAULT_S3_URI."/".$user_id."/".$invoice_filename;
-                //get image in S3
+                //get file in S3
                 $binary = $this->s3->getObject($s3_path, true);
-                break;
+
+                if(is_null($binary))
+                    throw new Exception("No pdf file found with buy_order: $buy_order");
+
+                return $binary;
+            };
+
+            //if is one file only
+            if($count == 1) {
+                $binary = $getFile($buy_orders[0]);
+                //sends file to buffer
+                $this->_sendFileToBuffer($binary, self::$MIME_TYPES['pdf']);
+                return;
             }
 
-            if(is_null($binary))
-                throw new Exception("No pdf files found with buy orders: ". print_r($buy_orders, true));
+            //create temporal folder
+            $output_path = $this->storageConfig['local_temp_path'].$user_id."/";
 
-            //sends file to buffer
-            $this->_sendFileToBuffer($binary, self::$MIME_TYPES['pdf']);
+            if(!is_dir($output_path))
+                mkdir($output_path, 0775);
+
+            $output_file = $output_path."invoice_".sha1(implode("_", $buy_orders)).".pdf";
+
+            //for multiple buy orders, merge pdf files
+            $files = array();
+            foreach ($buy_orders as $order) {
+
+                $binary = $getFile($order);
+                $fname  = $output_path.$order.".pdf";
+
+                //save temporary files to disk
+                file_put_contents($fname, $binary);
+                array_push($files, $fname);
+            }
+
+            //merge pdf files
+            (new PdfHelper())->mergePdfFiles($files, $output_file, "browser");
+            //clean folder
+            $this->_deleteTempFiles($output_path, true);
+            //send response
+            $this->_sendFileToBuffer(null, self::$MIME_TYPES['pdf']);
         }
         catch (Exception $e) {
             //fallback for file
@@ -286,13 +320,19 @@ trait TicketManager
 
     /**
      * Deletes temporary files in Local directory
+     * @param string $path The path folder
+     * @param boolean $del_folder Flag for folder deletion
      */
-    private function _deleteTempFiles()
+    private function _deleteTempFiles($path = null, $del_folder = false)
     {
-        $path = $this->storageConfig['local_temp_path'];
+        if(is_null($path))
+            $path = $this->storageConfig['local_temp_path'];
 
         foreach (self::$MIME_TYPES as $key => $value) {
             array_map('unlink', glob( "$path*.$key"));
         }
+
+        if($del_folder)
+            rmdir($path);
     }
 }

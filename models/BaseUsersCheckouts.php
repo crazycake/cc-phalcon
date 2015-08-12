@@ -262,4 +262,51 @@ class BaseUsersCheckouts extends Base
 
        return ($total > $q) ? true : false;
     }
+
+    /**
+     * Get checkout buyOrders by given objects
+     * @param array $objectIds An array with object IDs (required)
+     * @param string $objectClass The object class name (required)
+     * @return array
+     */
+    public static function getBuyOrdersByObjectsIds($object_ids = array(), $object_class = "", $state = "success")
+    {
+        if(!class_exists($object_class))
+            throw new Exception("BaseUsersCheckouts -> Object class not found ($object_class)");
+
+        if(empty($object_ids))
+            return array();
+
+        //get classes
+        $checkoutModel = static::who();
+        //get checkouts objects class
+        $objectsModel = static::$DEFAULT_OBJECTS_CLASS;
+
+        $conditions = "";
+
+        foreach ($object_ids as $key => $id)
+            $object_ids[$key] = "objects.object_id = '$id'";
+
+        $ids_filter = implode(" OR ", $object_ids);
+        $conditions .= " AND (".$ids_filter.") ";
+
+        //result
+        $result = $checkoutModel::getObjectsByPhql(
+           //phql
+           "SELECT objects.buy_order
+            FROM $objectsModel AS objects
+            INNER JOIN $checkoutModel AS checkout ON checkout.buy_order = objects.buy_order
+            WHERE checkout.state = :state:
+                AND objects.object_class = :object_class:
+                $conditions
+            ",
+           //bindings
+           array("state" => $state, "object_class" => $object_class)
+       );
+
+        if(!$result)
+            return false;
+
+        return BaseResultset::getIdsArray($result, "buy_order");
+    }
 }
