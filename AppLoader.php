@@ -11,8 +11,12 @@ require "phalcon/AppServices.php";
 abstract class AppLoader
 {
     /** const **/
-    const CCLIBS_PACKAGE   = "CrazyCake\\";
-    const CCLIBS_NAMESPACE = "cc-phalcon";
+    const CCLIBS_PACKAGE      = "CrazyCake\\";
+    const CCLIBS_NAMESPACE    = "cc-phalcon";
+
+    //for CLI environment setup
+    const EC2_HOSTNAME_PREFIX = "ip-";
+    const DEPLOY_FILENAME     = ".deploy";
 
     /**
      * Child required methods
@@ -435,8 +439,7 @@ abstract class AppLoader
     private function _environmentSetUp()
     {
         //set default environment
-        $app_environment = 'development';
-        $app_base_url    = "./";
+        $app_base_url = "./";
 
         //make sure script execution is not comming from command line (CLI)
         if (php_sapi_name() !== 'cli') {
@@ -447,26 +450,36 @@ abstract class AppLoader
             if (strpos($_SERVER['SERVER_NAME'], 'localhost') !== false || strpos($_SERVER['SERVER_NAME'], '192.168.') !== false) {
                 ini_set('display_errors', 1);
                 error_reporting(E_ALL);
+                $app_environment = "development";
             }
             elseif (strpos($_SERVER['SERVER_NAME'], '.testing.') !== false || strpos($_SERVER['SERVER_NAME'], '.ngrok.io' ) !== false) {
                 ini_set('display_errors', 1);
                 error_reporting(E_ALL);
-                $app_environment = 'testing';
+                $app_environment = "testing";
             }
             else {
                 ini_set('display_errors', 0);
                 error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT & ~E_USER_NOTICE & ~E_USER_DEPRECATED);
-                $app_environment = 'production';
+                $app_environment = "production";
             }
         }
-        //CLI config
+        //CLI config, set ENV, checks that host machine is a AWS EC2 machine
         else {
-            //gets environment defined var
-            //TODO: read a conf file .deploy and set this
-            if(gethostname() == "ip-172-30-1-58")
-                $app_environment = "testing";
-        }
+            $hostname         = gethostname();
+            $testing_hostname = $this->_readFromDeployFile("TEST_HOSTNAME");
 
+            //dev
+            if(strpos($hostname, self::EC2_HOSTNAME_PREFIX) === false) {
+                $app_environment = "development";
+            }
+            else if($hostname == $testing_hostname) {
+                $app_environment = "testing";
+            }
+            else {
+                $app_environment = "production";
+            }
+        }
+        //print_r($app_environment);exit;
         //set environment consts & self vars
         define("APP_ENVIRONMENT", $app_environment); //@hardcode: production
         define("APP_BASE_URL", $app_base_url);
@@ -485,5 +498,36 @@ abstract class AppLoader
             $buffer = preg_replace($search, $replace, $buffer);
 
         return $buffer;
+     }
+
+     /**
+      * Reads the deploy file and extracts an attribute
+      * @param string $attr The attribute Key
+      * @return string
+      */
+     private function _readFromDeployFile($attr)
+     {
+         $file = file(PROJECT_PATH.self::DEPLOY_FILENAME);
+
+         if(!$file)
+            throw new Exception("AppLoader::_readDeployFile -> No deploy file found, filename: $filename!");
+
+        $hostname = null;
+
+        foreach($file as $line) {
+
+            //split file contents
+            list($key, $value) = explode(" = ", $line);
+
+            //check for key
+            if(trim($key) != $attr)
+                continue;
+
+            //check for key
+            $hostname = $value;
+            break;
+        }
+
+        return trim($hostname);
      }
 }
