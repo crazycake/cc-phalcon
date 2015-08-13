@@ -265,11 +265,13 @@ class BaseUsersCheckouts extends Base
 
     /**
      * Get checkout buyOrders by given objects
+     * @param int $userId The User id
+     * @param string $state The checkout state
      * @param array $objectIds An array with object IDs (required)
      * @param string $objectClass The object class name (required)
      * @return array
      */
-    public static function getBuyOrdersByObjectsIds($object_ids = array(), $object_class = "", $state = "success")
+    public static function getBuyOrdersByObjectsIds($user_id, $state = "success", $object_ids = array(), $object_class = "")
     {
         if(!class_exists($object_class))
             throw new Exception("BaseUsersCheckouts -> Object class not found ($object_class)");
@@ -296,12 +298,14 @@ class BaseUsersCheckouts extends Base
            "SELECT objects.buy_order
             FROM $objectsModel AS objects
             INNER JOIN $checkoutModel AS checkout ON checkout.buy_order = objects.buy_order
-            WHERE checkout.state = :state:
+            WHERE checkout.user_id IS NOT NULL
+                AND checkout.user_id = :user_id:
+                AND checkout.state = :state:
                 AND objects.object_class = :object_class:
                 $conditions
             ",
            //bindings
-           array("state" => $state, "object_class" => $object_class)
+           array("user_id" => $user_id, "state" => $state, "object_class" => $object_class)
        );
 
         if(!$result)
