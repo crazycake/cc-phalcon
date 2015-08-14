@@ -30,8 +30,15 @@ class BaseResultset extends Resultset
      * @param array $result A ResultSet object
      * @param boolean $split The split flag
      */
-    public static function reduceResultset($result, $split = false)
+    public static function reduceResultset($result, $split = false, $single = false)
     {
+        if(!$result)
+            return false;
+
+        //check if result is a single object
+        if($single)
+            $result = [$result];
+
         $objects = array();
 
         foreach ($result as $object) {
@@ -49,7 +56,9 @@ class BaseResultset extends Resultset
             array_push($objects, $new_obj);
         }
 
-        return $split ? self::_splitObjects($objects) : $objects;
+        $result = $split ? self::_splitObjects($objects) : $objects;
+
+        return $single ? $result[0] : $result;
     }
 
     /**
