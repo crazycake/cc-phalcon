@@ -148,13 +148,13 @@ abstract class AppCore extends Controller
     /**
      * Handle the request params data validating required parameters.
      * Also Check if get/post data is valid, if validation fails send an HTTP code, onSuccess returns a data array.
-     * Required field may have a "_" prefix to establish that is just an optional field to be sanitized.
+     * Required field may have a "@" prefix to establish that is just an optional field to be sanitized.
      * Types: string,email,int,float,alphanum,striptags,trim,lower,upper.
      * @access protected
      * @param array $req_fields Required fields
-     * @param string $method
+     * @param string $method GET, POST or MIXED
      * @param boolean $check_csrf Checks a form CSRF token
-     * @example { $data, array( "_name" => "string"), POST }
+     * @example { $data, array( "@name" => "string"), POST }
      * @link   http://docs.phalconphp.com/en/latest/reference/filter.html#sanitizing-data
      * @return array
      */
@@ -199,27 +199,24 @@ abstract class AppCore extends Controller
                 return $sendResponse(498);
         }
 
-        //get POST or GET data
-        $data = ($method == 'POST') ? $this->request->getPost() : $this->request->get();
+        //get params data: POST, GET, or mixed
+        if($method == 'POST')
+            $data = $this->request->getPost();
+        else if($method == 'GET')
+            $data = $this->request->get();
+        else
+            $data = array_merge($this->request->get(), $this->request->getPost());
 
-        //clean phalcon data for GET method
-        if ($method == 'GET')
+        //clean phalcon data for GET or MIXED method
+        if ($method != 'POST')
             unset($data['_url']);
 
         //if no required fields given, return all POST or GET vars as array
         if (empty($req_fields))
             return $data;
 
-        //missing data?
-        if (!empty($req_fields) && empty($data))
-            return $sendResponse(400);
-
-        //dont filter data just return it
-        if (empty($req_fields))
-            return $data;
-
         $invalid_data = false;
-        //compare keys
+        //check require fields
         foreach ($req_fields as $field => $data_type) {
 
             $is_optional_field = false;

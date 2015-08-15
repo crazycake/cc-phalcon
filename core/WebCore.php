@@ -155,11 +155,24 @@ abstract class WebCore extends AppCore implements webSecurity
     }
 
     /**
-     * Redirect to given uri
+     * Redirect to given uri as GET method
      * @param string $uri The URI to redirect
+     * @param array $params The GET params (optional)
      */
-    protected function _redirectTo($uri = "")
+    protected function _redirectTo($uri = "", $params = array())
     {
+        //parse get params & append them to the URL
+        if(!empty($params)) {
+
+            //anonymous function
+            $parser = function (&$item, $key) {
+                $item = $key."=".$item;
+            };
+
+            array_walk($params, $parser);
+            $uri .= "?".implode("&", $params);
+        }
+
         $this->response->redirect($this->_baseUrl($uri), true);
         $this->response->send();
         die();
