@@ -257,7 +257,7 @@ abstract class WebCore extends AppCore implements webSecurity
             "css_core" => false,
             "js_core" => false,
             "js_dom" => true
-        ), self::ASSETS_MIN_FOLDER_PATH, $this->config->app->deploy_version);
+        ), self::ASSETS_MIN_FOLDER_PATH, $this->config->app->deployVersion);
     }
 
 
@@ -419,8 +419,8 @@ abstract class WebCore extends AppCore implements webSecurity
         $this->setAppJavascriptProperties($js_app);
 
         //set APP.UI properties?
-        if(isset($this->config->app->ui_settings))
-            $js_app->UI = (object)$this->config->app->ui_settings;
+        if(isset($this->config->app->uiSettings))
+            $js_app->UI = (object)$this->config->app->uiSettings;
 
         //set translations?
         if(class_exists("TranslationsController"))
