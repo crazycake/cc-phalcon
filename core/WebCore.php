@@ -304,11 +304,14 @@ abstract class WebCore extends AppCore implements webSecurity
                 $file = str_replace("@", "", $file);
 
             //has dynamic params? (for example file_name.{property}.js, useful for js lang files)
-            if (preg_match("/^(.{1,})\\{([a-z]{1,})\\}(.{1,})$/", $file, $regex)) {
+            /*if (preg_match("/^(.{1,})\\{([a-z]{1,})\\}(.{1,})$/", $file, $regex)) {
                 //lang case
                 if ($regex[2] === "lang")
                     $file = $regex[1].$this->client->lang.$regex[3];
-            }
+            }*/
+
+            //TODO: append cdn prefix?
+            //$this->assets->collection($collection)->setPrefix('http://cdn.liveon.cl/');
 
             $this->assets->collection($collection)->addJs("assets/$file");
         }
@@ -463,7 +466,7 @@ abstract class WebCore extends AppCore implements webSecurity
 
             //minify assets?
             if($minify)
-                $this->assets->collection($cname)->addFilter(($props[0] == "css" ? new Cssmin() : new Jsmin()));
+                $this->assets->collection($cname)->addFilter(($props[0] == "css") ? new Cssmin() : new Jsmin());
             else
                 $this->assets->collection($cname)->addFilter(new \minifiedFilter());
 
