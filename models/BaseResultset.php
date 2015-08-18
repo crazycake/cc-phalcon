@@ -120,6 +120,9 @@ class BaseResultset extends Resultset
 
                 //check property namespace, check if class exists in models (append plural noun)
                 if(empty($namespace) || !class_exists(ucfirst($namespace[0]."s"))) {
+
+                    if(is_null($v)) continue;
+
                     $type = "global";
                     $prop = $k;
                 }

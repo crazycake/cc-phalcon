@@ -70,9 +70,9 @@ trait TicketManager
     public function initStorage()
     {
         //instance library
-        $this->s3 = new StorageS3($this->config->app->awsAccessKey,
-                                  $this->config->app->awsSecretKey,
-                                  $this->config->app->awsS3Bucket);
+        $this->s3 = new StorageS3($this->config->app->aws->accessKey,
+                                  $this->config->app->aws->secretKey,
+                                  $this->config->app->aws->s3Bucket);
         //set PDF settings
         $this->pdf_settings = array(
             'app' => $this->config->app,

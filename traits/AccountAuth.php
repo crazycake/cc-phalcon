@@ -207,7 +207,7 @@ trait AccountAuth
         $users_class = $this->getModuleClassName('users');
 
         //google reCaptcha helper
-        $recaptcha = new ReCaptcha($this->config->app->googleReCaptchaKey);
+        $recaptcha = new ReCaptcha($this->config->app->google->reCaptchaKey);
 
         if (!$recaptcha->checkResponse($data['g-recaptcha-response'])) {
             //show error message

@@ -28,18 +28,18 @@ class OneClickClient
     public function __construct($setup = array())
     {
 		//check required files
-    	if(!isset($setup['OneClickKey']) || !isset($setup['OneClickCert']) || !isset($setup['OneClickTransbankCert']))
+    	if(!isset($setup['oneClickKey']) || !isset($setup['oneClickCert']) || !isset($setup['oneClickTransbankCert']))
     		throw new Exception('OneClickClient -> Invalid webpay setup input array.');
 
 		//validate files
-		if(!is_file($setup['OneClickKey']) || !is_file($setup['OneClickCert']) || !is_file($setup['OneClickTransbankCert']))
+		if(!is_file($setup['oneClickKey']) || !is_file($setup['oneClickCert']) || !is_file($setup['oneClickTransbankCert']))
 			throw new Exception('OneClickClient -> Invalid webpay files, files not found!');
 
 		//set gateway cert file
-		$this->transbank_cert = $setup['OneClickTransbankCert'];
+		$this->transbank_cert = $setup['oneClickTransbankCert'];
 
 		//module class
-    	$this->oneclick = new OneClick($setup['OneClickKey'], $setup['OneClickCert']);
+    	$this->oneclick = new OneClick($setup['oneClickKey'], $setup['oneClickCert']);
     }
 
 	/**

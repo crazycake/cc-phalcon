@@ -57,7 +57,7 @@ abstract class WsCore extends AppCore
         );
 
         /* API Key Validation */
-        if ($this->config->app->apiKeyEnabled)
+        if ($this->config->app->api->keyEnabled)
             $this->_validateApiKey();
     }
 
@@ -167,7 +167,7 @@ abstract class WsCore extends AppCore
     private function _validateApiKey()
     {
         //get API key from config file & request header Api Key
-        $app_api_key    = $this->config->app->apiKey;
+        $app_api_key    = $this->config->app->api->key;
         $header_api_key = $this->request->getHeader(self::HEADER_API_KEY);
 
         //check if keys are equal

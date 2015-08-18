@@ -49,7 +49,7 @@ trait Facebook
     public function initFacebookSDK()
     {
         //set Facebook Object
-        FacebookSession::setDefaultApplication($this->config->app->facebookAppID, $this->config->app->facebookAppKey);
+        FacebookSession::setDefaultApplication($this->config->app->facebook->appID, $this->config->app->facebook->appKey);
     }
 
     /**
@@ -216,9 +216,9 @@ trait Facebook
         $redirect_url  = $this->_baseUrl($login_uri);
 
         //get vars
-        $app_id     = $this->config->app->facebookAppID;
-        $app_secret = $this->config->app->facebookAppKey;
-        $scope      = $this->config->app->facebookAppScope;
+        $app_id     = $this->config->app->facebook->appID;
+        $app_secret = $this->config->app->facebook->appKey;
+        $scope      = $this->config->app->facebook->appScope;
 
         $helper = new FacebookRedirectLoginHelper($redirect_url, $app_id, $app_secret);
         $params = array("scope" => $scope);
@@ -226,7 +226,7 @@ trait Facebook
         $url = $helper->getLoginUrl($params);
 
         //set property to config
-        $this->config->app->fb_login_url = $url;
+        $this->config->app->facebook->loginUrl = $url;
     }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
@@ -518,7 +518,7 @@ trait Facebook
             return false;
 
         //set facebook app secret
-        $fb_app_key = $this->config->app->facebookAppKey;
+        $fb_app_key = $this->config->app->facebook->appKey;
 
         //set properties with list
         list($encoded_sig, $payload) = explode('.', $signed_request, 2);

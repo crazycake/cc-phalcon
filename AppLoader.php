@@ -287,8 +287,8 @@ abstract class AppLoader
         }
 
         //set environment dynamic props
-        if(isset($this->app_props['awsS3Bucket'])) {
-            $this->app_props['awsS3Bucket'] .= (APP_ENVIRONMENT == 'production') ? '-prod' : '-dev';
+        if(isset($this->app_props['aws']['s3Bucket'])) {
+            $this->app_props['aws']['s3Bucket'] .= (APP_ENVIRONMENT == 'production') ? '-prod' : '-dev';
         }
 
         //finally, set app properties
