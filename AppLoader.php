@@ -286,6 +286,10 @@ abstract class AppLoader
             $this->app_props['sharedResourcesUri'] = $this->getModuleEnviromentURL($uris[0]).$uris[1];
         }
 
+        //set static uri for assets
+        if(APP_ENVIRONMENT == 'development' || !isset($this->app_props['staticUri']) || empty($this->app_props['staticUri']))
+            $this->app_props['staticUri'] = APP_BASE_URL;
+
         //set environment dynamic props
         if(isset($this->app_props['aws']['s3Bucket'])) {
             $this->app_props['aws']['s3Bucket'] .= (APP_ENVIRONMENT == 'production') ? '-prod' : '-dev';

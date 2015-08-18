@@ -108,9 +108,13 @@ class AppServices
 
         //The URL component is used to generate all kind of urls in the application
         $di->setShared('url', function() {
+
+            $base_uri = APP_ENVIRONMENT == "development" ? APP_BASE_URL : "./";
+
             $url = new \Phalcon\Mvc\Url();
-            $url->setBaseUri("./");
-            $url->setStaticBaseUri(APP_BASE_URL);
+            $url->setBaseUri($base_uri);
+            $url->setStaticBaseUri($this->config->app->staticUri);
+
             return $url;
         });
 
@@ -227,8 +231,20 @@ class AppServices
                 ));
                 //get compiler
                 $compiler = $volt->getCompiler();
-                //binds some PHP functions
+
+                //++ Binds some PHP functions to volt
+
+                //++ str replace
                 $compiler->addFunction('replace', 'str_replace');
+
+                //++ get base URL
+                $compiler->addFunction('base_url', function($resolvedArgs, $exprArgs) use ($compiler) {
+
+                    // Resolve the first argument
+                    $firstArgument = isset($exprArgs[0]['expr']) ? $compiler->expression($exprArgs[0]['expr']) : "";
+
+                    return empty($firstArgument) ? "'".APP_BASE_URL."'" :  "'".APP_BASE_URL."'.$firstArgument";
+                });
 
                 return $volt;
             },

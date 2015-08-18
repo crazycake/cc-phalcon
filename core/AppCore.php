@@ -35,6 +35,17 @@ abstract class AppCore extends Controller
      */
     protected function _baseUrl($uri = "")
     {
+        return APP_BASE_URL.$uri;
+    }
+
+    /**
+     * Static URL extended function
+     * @access protected
+     * @param string $uri A given URI
+     * @return string The static URL
+     */
+    protected function _staticUrl($uri = "")
+    {
         return $this->url->getStaticBaseUri().$uri;
     }
 
@@ -100,7 +111,7 @@ abstract class AppCore extends Controller
         $url = $this->_baseUrl();
 
         if(APP_ENVIRONMENT == "development")
-            $this->logger->debug('AppCore::_asyncRequest -> Method: $method, Uri: $uri');
+            $this->logger->debug("AppCore::_asyncRequest -> Method: $method, Uri: $uri");
 
         //child method
         $this->_sendAsyncRequest($url, $uri, $data, $method);

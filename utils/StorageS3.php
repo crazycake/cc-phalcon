@@ -95,4 +95,13 @@ class StorageS3
 
         return $object;
     }
+
+    /**
+     * Deletes an object from storage
+     * TODO: delete object
+     */
+     public function deleteObject($uploadName)
+     {
+
+     }
 }
