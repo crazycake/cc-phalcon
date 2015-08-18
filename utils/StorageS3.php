@@ -2,6 +2,7 @@
 /**
  * StorageController: handles storage file managment (independent)
  * Requires S3 composer library.
+ * @link https://github.com/tpyo/amazon-s3-php-class
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
