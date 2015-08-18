@@ -281,9 +281,9 @@ abstract class AppLoader
         }
 
         //set local shared resourced path, setting is an array where index 0 => module_name & 1 => the uri
-        if(isset($this->app_props['sharedResourcesUri'])) {
-            $uris = explode("/", $this->app_props['sharedResourcesUri'], 2);
-            $this->app_props['sharedResourcesUri'] = $this->getModuleEnviromentURL($uris[0]).$uris[1];
+        if(isset($this->app_props['sharedLocalResources'])) {
+            $uris = explode("/", $this->app_props['sharedLocalResources'], 2);
+            $this->app_props['sharedLocalResources'] = $this->getModuleEnviromentURL($uris[0]).$uris[1];
         }
 
         //set static uri for assets
