@@ -136,7 +136,7 @@ abstract class WsCore extends AppCore
      * @param boolean $optional Parameter optional flag
      * @return mixed(object|boolean)
      */
-    protected function __handleObjectIdRequestParam($prop = "object_id", $optional = false, $method = 'GET')
+    protected function _handleObjectIdRequestParam($prop = "object_id", $optional = false, $method = 'GET')
     {
         $props      = explode("_", strtolower($prop), 2);
         $class_name = ucfirst($props[0])."s"; //plural
