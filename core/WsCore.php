@@ -129,7 +129,6 @@ abstract class WsCore extends AppCore
         die(); //exit
     }
 
-
     /**
      * Handles the request validating data
      * @param string $prop The object property name
