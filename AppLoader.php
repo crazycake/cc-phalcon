@@ -470,16 +470,19 @@ abstract class AppLoader
         }
         //2) CLI config, set ENV, checks that host machine is a AWS EC2 machine
         else {
-            $hostname     = gethostname();
-            $hostname_prx = strtoupper($hostname)."_HOSTNAME";
-            $fhostnames   = $this->_readDeployFile();
+
+            $hostname   = gethostname();
+            $fhostnames = $this->_readDeployFile();
 
             //dev
             if(strpos($hostname, self::EC2_HOSTNAME_PREFIX) === false) {
-                $app_environment = "development"; //development
+                $app_environment = "development";
             }
-            else if(isset($fhostnames[$hostname_prx]) && $hostname == $fhostnames[$hostname_prx]) {
-                $app_environment = $hostname; //testing or staging
+            else if(isset($fhostnames["TESTING_HOSTNAME"]) && $hostname == $fhostnames["TESTING_HOSTNAME"]) {
+                $app_environment = "testing";
+            }
+            else if(isset($fhostnames["STAGING_HOSTNAME"]) && $hostname == $fhostnames["STAGING_HOSTNAME"]) {
+                $app_environment = "staging";
             }
             else {
                 $app_environment = "production"; //otherwise production
