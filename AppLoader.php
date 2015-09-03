@@ -445,7 +445,7 @@ abstract class AppLoader
         //set default environment
         $app_base_url = "./";
 
-        //make sure script execution is not comming from command line (CLI)
+        //1) HTTP Server config, make sure script execution is not comming from command line (CLI)
         if (php_sapi_name() !== 'cli') {
             //set base URL
             $app_base_url = (isset($_SERVER["HTTPS"]) ? "https://" : "http://") . $_SERVER['HTTP_HOST'] . preg_replace('@/+$@', '', dirname($_SERVER['SCRIPT_NAME'])) . '/';
@@ -456,10 +456,11 @@ abstract class AppLoader
                 error_reporting(E_ALL);
                 $app_environment = "development";
             }
-            elseif (strpos($_SERVER['SERVER_NAME'], '.testing.') !== false || strpos($_SERVER['SERVER_NAME'], '.ngrok.io' ) !== false) {
+            //NOTE: testing & staging environment
+            elseif (strpos($_SERVER['SERVER_NAME'], '.testing.') !== false || strpos($_SERVER['SERVER_NAME'], '.stagingx.' ) !== false) {
                 ini_set('display_errors', 1);
                 error_reporting(E_ALL);
-                $app_environment = "testing";
+                $app_environment = strpos($_SERVER['SERVER_NAME'], '.testing.') !== false ? "testing" : "staging";
             }
             else {
                 ini_set('display_errors', 0);
@@ -467,25 +468,26 @@ abstract class AppLoader
                 $app_environment = "production";
             }
         }
-        //CLI config, set ENV, checks that host machine is a AWS EC2 machine
+        //2) CLI config, set ENV, checks that host machine is a AWS EC2 machine
         else {
-            $hostname         = gethostname();
-            $testing_hostname = $this->_readFromDeployFile("TEST_HOSTNAME");
+            $hostname     = gethostname();
+            $hostname_prx = strtoupper($hostname)."_HOSTNAME";
+            $fhostnames   = $this->_readDeployFile();
 
             //dev
             if(strpos($hostname, self::EC2_HOSTNAME_PREFIX) === false) {
-                $app_environment = "development";
+                $app_environment = "development"; //development
             }
-            else if($hostname == $testing_hostname) {
-                $app_environment = "testing";
+            else if(isset($fhostnames[$hostname_prx]) && $hostname == $fhostnames[$hostname_prx]) {
+                $app_environment = $hostname; //testing or staging
             }
             else {
-                $app_environment = "production";
+                $app_environment = "production"; //otherwise production
             }
         }
         //print_r($app_environment);exit;
         //set environment consts & self vars
-        define("APP_ENVIRONMENT", $app_environment); //@hardcode: production
+        define("APP_ENVIRONMENT", $app_environment); //@hardcode option: production
         define("APP_BASE_URL", $app_base_url);
     }
 
@@ -506,32 +508,26 @@ abstract class AppLoader
 
      /**
       * Reads the deploy file and extracts an attribute
-      * @param string $attr The attribute Key
-      * @return string
+      * @return array The file properties (format: KEY = VALUE)
       */
-     private function _readFromDeployFile($attr)
+     private function _readDeployFile()
      {
          $file = file(PROJECT_PATH.self::DEPLOY_FILENAME);
 
          if(!$file)
             throw new Exception("AppLoader::_readDeployFile -> No deploy file found, filename: $filename!");
 
-        $hostname = null;
+        $hostnames = array();
 
         foreach($file as $line) {
 
             //split file contents
             list($key, $value) = explode(" = ", $line);
 
-            //check for key
-            if(trim($key) != $attr)
-                continue;
-
-            //check for key
-            $hostname = $value;
-            break;
+            //set key
+            $hostnames[trim($key)] = $value;
         }
 
-        return trim($hostname);
+        return $hostnames;
      }
 }
