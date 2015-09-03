@@ -123,6 +123,14 @@ class DateHelper
             ));
         }
 
+        //format with month & day
+        if(empty($year)) {
+            return $translate->_("%day% %month%", array(
+                "day"   => $day,
+                "month" => $month
+            ));
+        }
+
         //format with year, month & day
         if(empty($time)) {
             return $translate->_("%day% de %month% del %year%", array(
