@@ -488,7 +488,7 @@ abstract class AppLoader
                 $app_environment = "production"; //otherwise production
             }
         }
-        //print_r($app_environment);exit;
+        //var_dump($fhostnames, $app_environment);exit;
         //set environment consts & self vars
         define("APP_ENVIRONMENT", $app_environment); //@hardcode option: production
         define("APP_BASE_URL", $app_base_url);
@@ -528,7 +528,7 @@ abstract class AppLoader
             list($key, $value) = explode(" = ", $line);
 
             //set key
-            $hostnames[trim($key)] = $value;
+            $hostnames[trim($key)] = trim($value);
         }
 
         return $hostnames;
