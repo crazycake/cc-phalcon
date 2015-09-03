@@ -41,8 +41,10 @@ trait Ses
             'message' => 'string'
         ));
 
+        $data["subject"] = "Contacto ".$this->sesConfig['appName'];
+
         //send contact email
-        $this->_sendAsyncMailMessage('sendMailForContact', $data);
+        $this->_sendAsyncMailMessage('sendSystemMail', $data);
 
         //send JSON response
         $this->_sendJsonResponse(200);
@@ -54,7 +56,7 @@ trait Ses
      * @param array $message_data Must contains keys 'name', 'email' & 'message'
      * @return json response
      */
-    public function sendMailForContact($message_data)
+    public function sendSystemMail($message_data)
     {
     	$this->_checkConfigurations();
 
@@ -62,9 +64,9 @@ trait Ses
     		return false;
 
         //set message properties
-        $subject = "Contacto ".$this->sesConfig['appName'];
-        $to      = $this->sesConfig['contactEmail'];
-        $tags    = array('contact');
+        $subject = isset($message_data["subject"]) ? $message_data["subject"] : $this->sesConfig['appName'];
+        $to      = isset($message_data["to"]) ? $message_data["to"] : $this->sesConfig['contactEmail'];
+        $tags    = array('contact', 'support');
 
         //add prefix "data" to each element in array
         $view_data = array_combine( array_map(function($k) { return 'data_'.$k; }, array_keys($message_data)), $message_data);

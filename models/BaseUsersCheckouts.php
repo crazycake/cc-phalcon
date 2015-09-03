@@ -255,12 +255,12 @@ class BaseUsersCheckouts extends Base
 
         //substract total
         $total = $object->quantity - $checkout_q;
-        //var_dump($total, $object->quantity, $checkout_q);exit;
+        //var_dump($total, $object->quantity, $checkout_q, $total);exit;
 
         if($total <= 0)
             return false;
 
-       return ($total > $q) ? true : false;
+       return ($total >= $q) ? true : false;
     }
 
     /**
@@ -312,5 +312,37 @@ class BaseUsersCheckouts extends Base
             return false;
 
         return BaseResultset::getIdsArray($result, "buy_order");
+    }
+
+    /**
+     * Substract Checkout objects quantity for processed checkouts
+     * @param array $objects The checkout objects array (getCheckoutObjects returned array)
+     */
+    public static function substractCheckoutObjectsQuantity($objects)
+    {
+        foreach ($objects as $obj) {
+
+            if(empty($obj->quantity))
+                continue;
+
+            $object_class = $obj->className;
+
+            $orm_object       = $object_class::findFirst(array("id ='".$obj->id."'"));
+            $current_quantity = $orm_object->quantity;
+            $updated_quantity = $current_quantity - $obj->quantity;
+
+            $new_values = array();
+
+            if($updated_quantity <= 0) {
+                $updated_quantity = 0;
+                //check state and update if stocked output
+                if($orm_object->state == "open")
+                    $new_values["state"] = "soldout";
+            }
+
+            $new_values["quantity"] = $updated_quantity;
+            //update record
+            $orm_object->update($new_values);
+        }
     }
 }
