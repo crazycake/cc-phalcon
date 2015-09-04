@@ -320,6 +320,13 @@ class BaseUsersCheckouts extends Base
      */
     public static function substractCheckoutObjectsQuantity($objects)
     {
+        /* NOTE: Funcion HARDCODED para mantener dos stocks compartidos de dos tickets */
+        $hardcodeFn = function($id, $new_values) {
+
+            $ticket = EventsTickets::getObjectById($id);
+            $ticket->save($new_values);
+        };
+
         foreach ($objects as $obj) {
 
             if(empty($obj->quantity))
@@ -343,6 +350,12 @@ class BaseUsersCheckouts extends Base
             $new_values["quantity"] = $updated_quantity;
             //update record
             $orm_object->update($new_values);
+
+            //NOTE: HARDCODED, borrar esta mierda en un futuro, solo para ComicCon2s event y CosParty
+            if($orm_object->id == 3)
+                $hardcodeFn(8, $new_values);
+            else if($orm_object->id == 8)
+                $hardcodeFn(3, $new_values);
         }
     }
 }
