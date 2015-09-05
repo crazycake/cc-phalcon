@@ -457,7 +457,7 @@ abstract class AppLoader
                 $app_environment = "development";
             }
             //NOTE: testing & staging environment
-            elseif (strpos($_SERVER['SERVER_NAME'], '.testing.') !== false || strpos($_SERVER['SERVER_NAME'], '.stagingx.' ) !== false) {
+            elseif (strpos($_SERVER['SERVER_NAME'], '.testing.') !== false || strpos($_SERVER['SERVER_NAME'], '.staging.' ) !== false) {
                 ini_set('display_errors', 1);
                 error_reporting(E_ALL);
                 $app_environment = strpos($_SERVER['SERVER_NAME'], '.testing.') !== false ? "testing" : "staging";
@@ -466,6 +466,7 @@ abstract class AppLoader
                 ini_set('display_errors', 0);
                 error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT & ~E_USER_NOTICE & ~E_USER_DEPRECATED);
                 $app_environment = "production";
+                $app_base_url    = $this->app_props["productionURL"];
             }
         }
         //2) CLI config, set ENV, checks that host machine is a AWS EC2 machine
