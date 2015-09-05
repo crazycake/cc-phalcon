@@ -263,6 +263,7 @@ trait Facebook
             //validate fb session properties
             if(!$properties)
                 throw new Exception($this->facebookConfig['text_session_error']);
+            //print_r($properties);exit;
 
             //email validation
             if (empty($properties['email']) || !filter_var($properties['email'], FILTER_VALIDATE_EMAIL)) {
