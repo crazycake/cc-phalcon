@@ -59,7 +59,8 @@ trait Facebook
     {
         //validate and filter request params data, second params are the required fields
         $data = $this->_handleRequestParams(array(
-            'signed_request' => 'string'
+            'signed_request' => 'string',
+            '@user_data'     => 'int'
         ));
 
         //check signed request
@@ -76,7 +77,10 @@ trait Facebook
             $this->_sendJsonResponse(200, $response["fb_error"], true);
 
         //handle response
-        $this->_handleResponseOnLoggedIn();
+        if(isset($data["user_data"]))
+            $this->_sendJsonResponse(200, $response["properties"]);
+        else
+            $this->_handleResponseOnLoggedIn();
     }
 
     /**
