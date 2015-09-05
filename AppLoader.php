@@ -466,7 +466,6 @@ abstract class AppLoader
                 ini_set('display_errors', 0);
                 error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT & ~E_USER_NOTICE & ~E_USER_DEPRECATED);
                 $app_environment = "production";
-                $app_base_url    = $this->app_props["productionURL"];
             }
         }
         //2) CLI config, set ENV, checks that host machine is a AWS EC2 machine
