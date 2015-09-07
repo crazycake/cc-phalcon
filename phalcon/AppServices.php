@@ -234,16 +234,7 @@ class AppServices
 
                 //++ str replace
                 $compiler->addFunction('replace', 'str_replace');
-
-                //++ get base URL (same as url method)
-                $compiler->addFunction('base_url', function($resolvedArgs, $exprArgs) use ($compiler) {
-
-                    // Resolve the first argument
-                    $firstArgument = isset($exprArgs[0]['expr']) ? $compiler->expression($exprArgs[0]['expr']) : "";
-
-                    return empty($firstArgument) ? "'".APP_BASE_URL."'" :  "'".APP_BASE_URL."'.$firstArgument";
-                });
-
+                
                 return $volt;
             },
             '.phtml' => 'Phalcon\Mvc\View\Engine\Php',
