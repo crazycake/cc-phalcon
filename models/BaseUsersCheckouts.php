@@ -47,6 +47,16 @@ class BaseUsersCheckouts extends Base
     /**
      * @var string
      */
+    public $session_hash;
+
+    /**
+     * @var string
+     */
+    public $invoice_email;
+
+    /**
+     * @var string
+     */
     public $created_at;
 
     /**
@@ -94,6 +104,11 @@ class BaseUsersCheckouts extends Base
     {
         //set default state
         $this->state = self::$STATES[0];
+
+        if(is_null($this->session_hash)) {
+            //get DI
+            $this->session_hash = sha1($this->getDI()->getShared('session')->getId());
+        }
     }
     /** ------------------------------------------- § ------------------------------------------------ **/
 
@@ -128,14 +143,12 @@ class BaseUsersCheckouts extends Base
     /**
      * Creates a new buy order
      * @param  int $user_id The user id
-     * @param  array $objects The objects to be saved
-     * @param  double $amount The total checkout amount
-     * @param  string $coin The amount coin
+     * @param  object $checkout The checkout object
      * @return mixed [boolean|string] If success returns the buyOrder
      */
-    public static function newBuyOrder($user_id = 0, $objects = array(), $amount = 0, $coin = "")
+    public static function newBuyOrder($user_id = 0, $checkoutObj = null)
     {
-        if(empty($user_id) || empty($objects))
+        if(empty($user_id) || is_null($checkoutObj))
             return false;
 
         //get DI reference (static)
@@ -150,10 +163,11 @@ class BaseUsersCheckouts extends Base
 
         //creates object
         $checkout = new $checkoutModel();
-        $checkout->user_id   = $user_id;
-        $checkout->buy_order = $buy_order;
-        $checkout->amount    = $amount;
-        $checkout->coin      = $coin;
+        $checkout->user_id       = $user_id;
+        $checkout->buy_order     = $buy_order;
+        $checkout->amount        = $checkoutObj->amount;
+        $checkout->coin          = $checkoutObj->coin;
+        $checkout->invoice_email = $checkoutObj->invoiceEmail;
 
         try {
             //begin trx
@@ -163,7 +177,7 @@ class BaseUsersCheckouts extends Base
                 throw new Exception("A DB error ocurred saving in checkouts model.");
 
             //save each item (format: {class_objectId} : {q})
-            foreach ($objects as $key => $q) {
+            foreach ($checkoutObj->objects as $key => $q) {
 
                 $props = explode("_", $key);
                 //creates an object
