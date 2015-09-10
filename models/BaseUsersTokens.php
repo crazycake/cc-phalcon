@@ -51,8 +51,7 @@ class BaseUsersTokens extends Base
     ------------------------------------------------------------------------------------------------- **/
     public function initialize()
     {
-        //Skips fields/columns on both INSERT/UPDATE operations
-        $this->skipAttributes(array('created_at'));
+        //...
     }
     /** -------------------------------------------------------------------------------------------------
         Validations
@@ -115,11 +114,12 @@ class BaseUsersTokens extends Base
         //Save a new temporal token
         $class = static::who();
         $token = new $class();
-        $token->user_id = $user_id;
-        $token->token   = uniqid();  //creates a 13 len token
-        $token->type    = $type;
+        $token->user_id    = $user_id;
+        $token->token      = uniqid();  //creates a 13 len token
+        $token->type       = $type;
+        $token->created_at = date("Y-m-d H:i:s");
 
-        if( $token->save() )
+        if($token->save())
             return $token;
         else
             return false;

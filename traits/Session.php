@@ -139,6 +139,17 @@ trait Session
     }
 
     /**
+     * Clean session redirection
+     */
+    protected function _cleanSessionRedirection()
+    {
+        if (!$this->session->has("auth_redirect"))
+            return false;
+
+        return $this->session->remove("auth_redirect");
+    }
+
+    /**
      * Get logged in user session data
      * @param array $filter Filters sensitive data
      * @return array The session array

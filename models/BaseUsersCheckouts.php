@@ -57,7 +57,7 @@ class BaseUsersCheckouts extends Base
     /**
      * @var string
      */
-    public $created_at;
+    public $local_time;
 
     /**
      * @static
@@ -72,9 +72,6 @@ class BaseUsersCheckouts extends Base
     {
         //model relations
         $this->hasOne("user_id", "Users", "id");
-
-        //Skips fields/columns on both INSERT/UPDATE operations
-        $this->skipAttributes(array('created_at'));
     }
     /** -------------------------------------------------------------------------------------------------
         Validations
@@ -109,6 +106,9 @@ class BaseUsersCheckouts extends Base
             //get DI
             $this->session_hash = sha1($this->getDI()->getShared('session')->getId());
         }
+
+        //set server local time
+        $this->local_time = date("Y-m-d H:i:s");
     }
     /** ------------------------------------------- § ------------------------------------------------ **/
 

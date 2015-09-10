@@ -188,6 +188,8 @@ trait AccountAuth
         $this->_sendAsyncMailMessage($this->accountConfig['method_mailer_activation'], $user->id);
         //set a flash message to show on account controller
         $this->flash->success(str_replace("{email}", $user->email, $this->accountConfig['text_activation_pending']));
+        //NOTE: clean any session redirections
+        $this->_cleanSessionRedirection();
 
         //handle response
         $this->_handleResponseOnLoggedIn();
