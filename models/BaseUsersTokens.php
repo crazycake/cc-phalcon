@@ -185,7 +185,7 @@ class BaseUsersTokens extends Base
         $days_passed = DateHelper::getTimePassedFromDate($token->created_at);
 
         if ($days_passed > static::$TOKEN_EXPIRES_THRESHOLD)
-            throw new Exception("temporal token (id: " . $token->id . ") has expired (" . $days_passed . " days passed)");
+            throw new Exception("temporal token (id: ".$token->id.") has expired (".$days_passed." days passed since ".$token->created_at.")");
 
         return $data;
     }
