@@ -138,11 +138,11 @@ trait AccountPassRecovery
             if (!$user)
                 throw new Exception("got an invalid user (id:" . $user_id . ") when validating encrypted data.");
 
-            //get token object
-            $token = $tokens_class::getTokenByUserAndValue($user_id, $token, $token_type);
-
             //save new account flag state
             $user->update(array("pass" => $this->security->hash($data['pass'])));
+
+            //get token object
+            $token = $tokens_class::getTokenByUserAndValue($user_id, $token_type, $token);
             //delete user token
             $token->delete();
 

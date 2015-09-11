@@ -81,7 +81,8 @@ trait AccountAuth
             $tokens_class = $this->getModuleClassName('users_tokens');
             //handle the encrypted data with parent controller
             $data = $tokens_class::handleUserTokenValidation($encrypted_data);
-            $user_id = $data[0];
+            //assign values
+            list($user_id, $token_type, $token) = $data;
 
             //check user-flag if is really pending
             $user = $users_class::getObjectById($user_id);
@@ -91,6 +92,11 @@ trait AccountAuth
 
             //save new account flag state
             $user->update( array("account_flag" => 'enabled') );
+
+            //get token object and remove it
+            $token = $tokens_class::getTokenByUserAndValue($user_id, $token_type, $token);
+            //delete user token
+            $token->delete();
 
             //set a flash message to show on account controller
             $this->flash->success($this->accountConfig['text_activation_success']);

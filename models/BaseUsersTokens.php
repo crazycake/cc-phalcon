@@ -15,7 +15,7 @@ use CrazyCake\Utils\DateHelper;
 class BaseUsersTokens extends Base
 {
     //this static method can be 'overrided' as late binding
-    public static $TOKEN_EXPIRES_THRESHOLD = 2; //days
+    public static $TOKEN_EXPIRES_THRESHOLD = 3; //days
 
     /* properties */
 
@@ -74,15 +74,15 @@ class BaseUsersTokens extends Base
     /**
      * Find Token By User and Value (make sure record exists)
      * @static
-     * @param int $user_id
-     * @param string $token
-     * @param string $type
+     * @param int $user_id The user ID
+     * @param string $type The token type
+     * @param string $token The token value
      * @return UsersTokens
      */
-    public static function getTokenByUserAndValue($user_id, $token, $type = 'activation')
+    public static function getTokenByUserAndValue($user_id, $type = 'activation', $token)
     {
-        $conditions = "user_id = ?1 AND token = ?2 AND type = ?3";
-        $parameters = array(1 => $user_id, 2 => $token, 3 => $type);
+        $conditions = "user_id = ?1 AND type = ?2 AND token = ?3";
+        $parameters = array(1 => $user_id, 2 => $type, 3 => $token);
 
         return self::findFirst( array($conditions, "bind" => $parameters) );
     }
@@ -135,8 +135,9 @@ class BaseUsersTokens extends Base
     {
         //search if a token already exists and delete it.
         $token = self::getTokenByUserAndType($user_id, $type);
+
         if ($token) {
-            //check token 'days passed'
+            //check token 'days passed' (checks if token is expired)
             $days_passed = DateHelper::getTimePassedFromDate($token->created_at);
 
             if ($days_passed > static::$TOKEN_EXPIRES_THRESHOLD) {
@@ -169,19 +170,27 @@ class BaseUsersTokens extends Base
         $data = $di->getCryptify()->decryptForGetResponse($encrypted_data, "#");
 
         //validate data (user_id, token_type and token)
-        if (count($data) != 3)
-            throw new Exception("decrypted data is not a 2 dimension array.");
+        if (count($data) < 3)
+            throw new Exception("decrypted data is not at least 3 dimension array (user_id, token_type, token).");
 
         //set vars values
-        list($user_id, $token_type, $token) = $data;
+        $user_id    = $data[0];
+        $token_type = $data[1];
+        $token      = $data[2];
 
         //search for user and token combination
-        $token = self::getTokenByUserAndValue($user_id, $token, $token_type);
+        $token = self::getTokenByUserAndValue($user_id, $token_type, $token);
 
         if (!$token)
             throw new Exception("temporal token dont exists.");
 
-        //get days passed
+        //special case for activation (don't expires)
+        if($token_type == "activation") {
+            //success
+            return $data;
+        }
+
+        //for other token type, get days passed
         $days_passed = DateHelper::getTimePassedFromDate($token->created_at);
 
         if ($days_passed > static::$TOKEN_EXPIRES_THRESHOLD)
