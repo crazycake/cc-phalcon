@@ -94,10 +94,14 @@ trait Guzzle
             }
             else {
 
-                $controllerName = $this->router->getControllerName();
-                $actionName     = $this->router->getActionName();
-
-                $this->logger->error("Guzzle::logGuzzleResponse -> Error on request: $uri, responsed an error page: $controllerName -> $actionName");
+                if(isset($this->router)) {
+                    $controllerName = $this->router->getControllerName();
+                    $actionName     = $this->router->getActionName();
+                    $this->logger->error("Guzzle::logGuzzleResponse -> Error on request ($uri): $controllerName -> $actionName");
+                }
+                else {
+                    $this->logger->error("Guzzle::logGuzzleResponse -> An Error occurred on request: $uri");
+                }
             }
         });
         $promise->wait();
