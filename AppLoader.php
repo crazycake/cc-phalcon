@@ -291,9 +291,8 @@ abstract class AppLoader
             $this->app_props['staticUri'] = APP_BASE_URL;
 
         //set environment dynamic props
-        if(isset($this->app_props['aws']['s3Bucket'])) {
-            $this->app_props['aws']['s3Bucket'] .= (APP_ENVIRONMENT == 'production') ? '-prod' : '-dev';
-        }
+        if(isset($this->app_props['aws']['s3Bucket']))
+            $this->app_props['aws']['s3Bucket'] .= (APP_ENVIRONMENT == 'production') ? '-prod' : "-dev";
 
         //finally, set app properties
         $this->app_config["app"] = $this->app_props;
