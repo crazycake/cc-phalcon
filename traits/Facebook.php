@@ -431,10 +431,10 @@ trait Facebook
             $fac_obj->days_left  = $days_left;
         }
         catch (FacebookRequestException $e) {
-            $this->logger->error('Facebook::__requestLongLiveAccessToken -> Error opening session for user_fb_id' . $user_fb->id . ". Trace: " . $e->getMessage());
+            $this->logger->error('Facebook::__requestLongLiveAccessToken -> Error opening session for user_fb_id '.$user_fb->id.". Trace: ".$e->getMessage());
         }
         catch (Exception $e) {
-            $this->logger->error('Facebook::__requestLongLiveAccessToken -> Error opening session for user_fb_id' . $user_fb->id . ". Trace: " . $e->getMessage());
+            $this->logger->error('Facebook::__requestLongLiveAccessToken -> Error opening session for user_fb_id '.$user_fb->id.". Trace: ".$e->getMessage());
         }
 
         return $fac_obj;
