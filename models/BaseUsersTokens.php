@@ -150,6 +150,10 @@ class BaseUsersTokens extends Base
             $token = self::saveNewToken($user_id, $type);
         }
 
+        //append encrypted data
+        $di = \Phalcon\DI::getDefault();
+        $token->encrypted = $di->getShared('cryptify')->encryptForGetRequest($token->user_id."#".$token->type."#".$token->token);
+
         return $token;
     }
 
@@ -167,7 +171,7 @@ class BaseUsersTokens extends Base
             throw new Exception("sent input null encrypted_data");
 
         $di   = \Phalcon\DI::getDefault();
-        $data = $di->getCryptify()->decryptForGetResponse($encrypted_data, "#");
+        $data = $di->getShared('cryptify')->decryptForGetResponse($encrypted_data, "#");
 
         //validate data (user_id, token_type and token)
         if (count($data) < 3)

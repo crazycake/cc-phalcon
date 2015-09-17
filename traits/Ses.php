@@ -100,22 +100,18 @@ trait Ses
             $this->_sendJsonResponse(500);
         }
 
+        //create flux uri
+        $uri = $this->sesConfig['account_auth_controller']."/activation/".$token->encrypted;
+        //set properties
+        $this->sesConfig["data_user"] = $user;
+        $this->sesConfig["data_url"]  = $this->_baseUrl($uri);
+
+        //get HTML
+        $html_raw = $this->_getInlineStyledHtml("activation", $this->sesConfig);
         //set message properties
         $subject = $this->sesConfig['subjectActivationAccount'];
         $to      = $user->email;
         $tags    = array('account', 'activation');
-
-        //set link url
-        $encrypted_data = $this->cryptify->encryptForGetRequest($token->user_id . "#" . $token->type . "#" . $token->token);
-
-        //set rendered view
-        $activation_uri = $this->sesConfig['account_auth_controller']."/activation/";
-        //set properties
-        $this->sesConfig["data_user"] = $user;
-        $this->sesConfig["data_url"]  = $this->_baseUrl($activation_uri.$encrypted_data);
-        //get HTML
-        $html_raw = $this->_getInlineStyledHtml("activation", $this->sesConfig);
-
         //sends async email
         return $this->_sendMessage($html_raw, $subject, $to, $tags);
     }
@@ -143,23 +139,19 @@ trait Ses
             $this->_sendJsonResponse(500);
         }
 
+        //create flux uri
+        $uri = $this->sesConfig['account_pass_controller']."/new/".$token->encrypted;
+        //set rendered view
+        $this->sesConfig["data_user"] = $user;
+        $this->sesConfig["data_url"]  = $this->_baseUrl($uri);
+        $this->sesConfig["data_token_expiration"] = $tokens_class::$TOKEN_EXPIRES_THRESHOLD;
+
+        //get HTML
+        $html_raw = $this->_getInlineStyledHtml("passwordRecovery", $this->sesConfig);
         //set message properties
         $subject = $this->sesConfig['subjectPasswordRecovery'];
         $to      = $user->email;
         $tags    = array('account', 'password', 'recovery');
-
-        //set link url
-        $encrypted_data = $this->cryptify->encryptForGetRequest($token->user_id . "#" . $token->type . "#" . $token->token);
-
-        //set rendered view
-        $new_pass_uri = $this->sesConfig['account_pass_controller']."/new/";
-        //set rendered view
-        $this->sesConfig["data_user"] = $user;
-        $this->sesConfig["data_url"]  = $this->_baseUrl($new_pass_uri.$encrypted_data);
-        $this->sesConfig["data_token_expiration"] = $tokens_class::$TOKEN_EXPIRES_THRESHOLD;
-        //get HTML
-        $html_raw = $this->_getInlineStyledHtml("passwordRecovery", $this->sesConfig);
-
         //sends async email
         return $this->_sendMessage($html_raw, $subject, $to, $tags);
     }
