@@ -250,11 +250,10 @@ trait TicketManager
     /**
      * Hanlder - Generates PDF for ticket and invoice attached
      * @param int $user_id The user Id
-     * @param object $checkout The checkout object (including transaction props)
-     * @param array $userTicketIds An array of user ticket IDs
+     * @param object $checkout The checkout object (including transaction props & An array of user ticket IDs)
      * @return mixed
      */
-    public function generateInvoiceForUserCheckout($user_id, $checkout, $userTicketIds = array())
+    public function generateInvoiceForUserCheckout($user_id, $checkout)
     {
         //handle exceptions
         $result = new \stdClass();
@@ -271,7 +270,7 @@ trait TicketManager
             //get user by session
             $user = $users_class::getObjectById($user_id);
             //get ticket objects with UI properties
-            $tickets = $getUserTicketsUI($user->id, $userTicketIds);
+            $tickets = $getUserTicketsUI($user->id, $checkout->userTicketIds);
 
             if(!$tickets)
                 throw new Exception("No tickets found for userID: ".$user->id." & buyOrder: ".$checkout->buyOrder);
