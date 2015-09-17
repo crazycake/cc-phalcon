@@ -175,9 +175,15 @@ trait Ses
     {
     	$this->_checkConfigurations();
 
+        //css file
+        $cssFile = $this->sesConfig['cssFile'];
+
+        if(APP_ENVIRONMENT !== 'development')
+            $cssFile = str_replace(".css", ".min.css", $cssFile);
+
         //get the style file
         $html = $this->simpleView->render("mails/$mail", $data);
-        $css  = file_get_contents($this->sesConfig['cssFile']);
+        $css  = file_get_contents($cssFile);
 
         $emogrifier = new Emogrifier($html, $css);
         $html = $emogrifier->emogrify();
