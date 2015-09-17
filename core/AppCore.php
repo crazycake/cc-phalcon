@@ -304,6 +304,25 @@ abstract class AppCore extends Controller
     }
 
     /**
+     * Logs database query & statements with phalcon event manager
+     * @param  string $logFile The log file name
+     */
+    protected function logDatabaseStatements($logFile = "db.log")
+    {
+        //Listen all the database events
+        $eventsManager = new \Phalcon\Events\Manager();
+        $logger        = new \Phalcon\Logger\Adapter\File(APP_PATH."logs/".$logFile);
+
+        $eventsManager->attach('db', function ($event, $connection) use ($logger) {
+            //log SQL
+            if ($event->getType() == 'beforeQuery')
+                $logger->debug("AppCore:logDatabaseStatements -> SQL:\n".$connection->getSQLStatement());
+        });
+        // Assign the eventsManager to the db adapter instance
+        $this->db->setEventsManager($eventsManager);
+    }
+
+    /**
      * Dump a phalcon object for debugging
      * @param  object $object Any object
      * @param  boolean $exit Flag for exit script execution
