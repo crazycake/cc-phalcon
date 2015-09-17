@@ -102,6 +102,12 @@ trait Guzzle
                 else {
                     $this->logger->error("Guzzle::logGuzzleResponse -> An Error occurred on request: $uri");
                 }
+
+                //catch response for app errors
+                if (strpos($body, "<!DOCTYPE") === false)
+                    $this->logger->log("Guzzle::logGuzzleResponse -> Catched response: $body");
+                else
+                    $this->logger->log("Guzzle::logGuzzleResponse -> NOTE: Above response is a redirection webpage, check correct route and redirections.");
             }
         });
         $promise->wait();
