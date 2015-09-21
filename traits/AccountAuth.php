@@ -101,9 +101,9 @@ trait AccountAuth
             //set a flash message to show on account controller
             $this->flash->success($this->accountConfig['text_activation_success']);
 
-            //save session data
+            //success login
             $this->_setUserSessionAsLoggedIn($user_id);
-            $this->_redirectToAccount();
+            $this->_handleResponseOnLoggedIn();
         }
         catch (Exception $e) {
 
@@ -194,15 +194,11 @@ trait AccountAuth
         if (!$user->save($data))
             $this->_sendJsonResponse(200, $user->filterMessages(), true);
 
-        //send activation account email
-        $this->_sendAsyncMailMessage($this->accountConfig['method_mailer_activation'], $user->id);
         //set a flash message to show on account controller
         $this->flash->success(str_replace("{email}", $user->email, $this->accountConfig['text_activation_pending']));
-        //NOTE: clean any session redirections
-        $this->_cleanSessionRedirection();
-
-        //handle response
-        $this->_handleResponseOnLoggedIn();
+        //send activation account email
+        $this->_sendAsyncMailMessage($this->accountConfig['method_mailer_activation'], $user->id);
+        $this->_handleResponseOnLoggedIn("signIn", false);
     }
 
     /**

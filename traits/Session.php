@@ -99,15 +99,17 @@ trait Session
 
     /**
      * Handles response on logged in event, check for pending redirection
+     * Defaults uri us Account
+     * @param string $uri The URI to redirect after loggedIn
+     * @param boolean $auth_redirect Flag to check session auth redirection 
      * TODO set default uri as param config
      */
-    protected function _handleResponseOnLoggedIn()
+    protected function _handleResponseOnLoggedIn($uri = "account", $auth_redirect = true)
     {
         $key = "auth_redirect";
-        $uri = "account"; //default redirection
 
         //check if redirection is set in session
-        if($this->session->has($key)) {
+        if($auth_redirect && $this->session->has($key)) {
             $uri = $this->session->get($key);
             $this->session->remove($key);
         }

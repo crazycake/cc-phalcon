@@ -80,7 +80,7 @@ trait Facebook
         if(isset($data["user_data"]))
             $this->_sendJsonResponse(200, $response["properties"]);
         else
-            $this->_handleResponseOnLoggedIn();
+            $this->_handleResponseOnLoggedIn(); //must be implemented
     }
 
     /**
@@ -110,7 +110,7 @@ trait Facebook
             $this->onSettingsLoginRedirection();
 
         //handle response
-        $this->_handleResponseOnLoggedIn();
+        $this->_handleResponseOnLoggedIn(); //must be implemented
     }
 
     /**
