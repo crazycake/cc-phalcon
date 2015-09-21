@@ -57,6 +57,11 @@ trait AccountAuth
         //view vars
         $this->view->setVar("html_title", $this->accountConfig['text_title_sign_up']);
 
+        //check sign_up session data for auto completion field
+        $signup_session = $this->_getSessionObjects("signup_session");
+        $this->_destroySessionObjects("signup_session");
+        $this->view->setVar("signup_session", $signup_session);
+
         //send birthday data for form
         if(isset($this->accountConfig['birthday_form_fields']) && $this->accountConfig['birthday_form_fields'])
             $this->view->setVar("bday_elements", $this->__getBirthdaySelectors());
