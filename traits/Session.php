@@ -64,10 +64,13 @@ trait Session
         if ($loggedIn())
             return true;
 
-        if ($this->request->isAjax())
+        if ($this->request->isAjax()) {
             $this->_sendJsonResponse(403);
-        else
+        }
+        else {
             $this->dispatcher->forward(array("controller" => "auth", "action" => "logout"));
+            $this->dispatcher->dispatch();
+        }
     }
 
     /**
@@ -101,7 +104,7 @@ trait Session
      * Handles response on logged in event, check for pending redirection
      * Defaults uri us Account
      * @param string $uri The URI to redirect after loggedIn
-     * @param boolean $auth_redirect Flag to check session auth redirection 
+     * @param boolean $auth_redirect Flag to check session auth redirection
      * TODO set default uri as param config
      */
     protected function _handleResponseOnLoggedIn($uri = "account", $auth_redirect = true)

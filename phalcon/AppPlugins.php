@@ -57,7 +57,7 @@ class ExceptionsPlugin extends \Phalcon\Mvc\User\Plugin
 				$di->getShared('logger')->error("PhalconPHP Error -> Exception: ".$exception->getMessage());
 			//forward
 			$dispatcher->forward($forwardTo);
-			return false;
+			$this->dispatcher->dispatch();
 		}
 
 		if(APP_ENVIRONMENT !== 'production')
@@ -67,12 +67,8 @@ class ExceptionsPlugin extends \Phalcon\Mvc\User\Plugin
 		$di->getShared('logger')->error("PhalconPHP Error -> Exception: ".$exception->getMessage());
 
 		//Handle exception and forward to internal error page
-		$dispatcher->forward( array(
-			'controller' => 'errors',
-			'action'     => 'internal'
-		));
-
-		return false;
+		$dispatcher->forward(array('controller' => 'errors', 'action' => 'internal'));
+		$this->dispatcher->dispatch();
 	}
 }
 

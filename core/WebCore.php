@@ -88,8 +88,10 @@ abstract class WebCore extends AppCore implements webSecurity
         //check browser is supported (child method)
         $supported = $this->checkBrowserSupport($this->client->browser, $this->client->short_version);
         //prevents loops
-        if(!$supported && !$this->dispatcher->getPreviousControllerName())
+        if(!$supported && !$this->dispatcher->getPreviousControllerName()) {
             $this->dispatcher->forward(array('controller' => 'errors', 'action' => 'oldBrowser'));
+            $this->dispatcher->dispatch();
+        }
     }
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
@@ -217,6 +219,7 @@ abstract class WebCore extends AppCore implements webSecurity
             $this->view->setVar("go_back", $go_back_url);
 
         $this->dispatcher->forward(array("controller" => "errors", "action" => "internal"));
+        $this->dispatcher->dispatch();
     }
 
     /**

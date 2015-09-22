@@ -117,6 +117,7 @@ trait AccountAuth
 
             $this->logger->error('AccountAuth::activationAction -> Error in account activation, encrypted data ('.$encrypted_data.", id: ".$user_id."). Trace: ".$e->getMessage());
             $this->dispatcher->forward(array("controller" => "errors", "action" => "expired"));
+            $this->dispatcher->dispatch();
         }
     }
 

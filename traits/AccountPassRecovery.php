@@ -70,6 +70,7 @@ trait AccountPassRecovery
         catch (Exception $e) {
             $this->logger->error('AccountPass::newAction -> Error in account activation, encrypted data (' . $encrypted_data . "). Trace: " . $e->getMessage());
             $this->dispatcher->forward(array("controller" => "errors", "action" => "expired"));
+            $this->dispatcher->dispatch();
         }
     }
 

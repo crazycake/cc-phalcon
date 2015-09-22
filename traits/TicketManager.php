@@ -106,14 +106,59 @@ trait TicketManager
             $binary = $this->s3->getObject($s3_path, true);
 
             if(!$binary)
-                throw new Exception("S3 could't find binary file for ticket code: $code (S3 path: $s3_path)");
+                throw new Exception("S3 lib could't find binary file for ticket code: $code (S3 path: $s3_path)");
 
             //sends file to buffer
             $this->_sendFileToBuffer($binary, self::$MIME_TYPES['png']);
         }
         catch (Exception $e) {
             //fallback for file
-            $this->logger->error("TicketStorage::getTicket -> Error loading QR code: $code, err:".$e->getMessage());
+            $this->logger->error("TicketStorage::getTicket -> Error loading QR code: $code, err: ".$e->getMessage());
+        }
+    }
+
+    /**
+     * Moves a QR ticket from S3 storage from one folder to other
+     * @param int $src_user_id The source user id
+     * @param string $src_code The source ticket associated code
+     * @param int $dst_user_id The destination user id
+     * @return boolean $moved Return true if object was moved to destination.
+     */
+    public function moveTicketQR($src_user_id = 0, $src_code = "", $dst_user_id)
+    {
+        try {
+            print_r("src: ".$src_user_id);print_r(" code: ".$src_code);exit;
+            //validates that ticket belongs to user, get anonymous function from settings
+            $getUserTicket = $this->storageConfig["getUserTicketFunction"];
+
+            if(!is_callable($getUserTicket))
+                throw new Exception("Invalid 'get user ticket' function");
+
+            $user_ticket = $getUserTicket($src_user_id, $src_code);
+
+            if(!$user_ticket)
+                throw new Exception("Invalid ticket: $src_code for userId: $src_user_id.");
+
+            $ticket_filename = $user_ticket->code.".png";
+            $src_s3_path     = self::$DEFAULT_S3_URI."/".$src_user_id."/".$ticket_filename;
+            $dst_s3_path     = self::$DEFAULT_S3_URI."/".$dst_user_id."/".$ticket_filename;
+            //get image in S3
+            $moved = $this->s3->copyObject($src_s3_path, null, $dst_s3_path);
+
+            if(!$moved)
+                throw new Exception("S3 lib could't copy ticket code: $src_code (S3 path: $src_s3_path)");
+
+            //delete old one
+            $this->s3->deleteObject($src_s3_path);
+
+            return true;
+        }
+        catch (Exception $e) {
+            //fallback for file
+            $this->logger->error("TicketStorage::getTicket -> Error Moving QR code in S3 bucket: $src_code, err: ".$e->getMessage());
+            print_r($e, true);exit;
+
+            return false;
         }
     }
 

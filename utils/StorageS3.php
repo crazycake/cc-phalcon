@@ -99,10 +99,26 @@ class StorageS3
 
     /**
      * Deletes an object from storage
-     * TODO: delete object
+     * @param string $uploadName The uploaded filename
+     * @return boolean
      */
      public function deleteObject($uploadName)
      {
+         return S3::deleteObject($this->bucketName, $uploadName);
+     }
 
+     /**
+      * Copies an object from bucket
+      * @param string $uploadName The uploaded filename
+      * @param string $bucketDest The bucket name destination
+      * @param string $saveName The bucket file save name
+      * @return mixed
+      */
+     public function copyObject($uploadName, $bucketDest = null, $saveName = null)
+     {
+         if(is_null($bucketDest))
+            $bucketDest = $this->bucketName;
+
+         return S3::copyObject($this->bucketName, $uploadName, $bucketDest, $saveName);
      }
 }
