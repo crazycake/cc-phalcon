@@ -52,9 +52,11 @@ class ExceptionsPlugin extends \Phalcon\Mvc\User\Plugin
 					$forwardTo = array('controller' => 'errors', 'action' => 'notFound');
 					break;
 			}
+			
 			//log error?
 			if($logError)
 				$di->getShared('logger')->error("PhalconPHP Error -> Exception: ".$exception->getMessage());
+
 			//forward
 			$dispatcher->forward($forwardTo);
 			$this->dispatcher->dispatch();

@@ -127,7 +127,6 @@ trait TicketManager
     public function moveTicketQR($src_user_id = 0, $src_code = "", $dst_user_id)
     {
         try {
-            print_r("src: ".$src_user_id);print_r(" code: ".$src_code);exit;
             //validates that ticket belongs to user, get anonymous function from settings
             $getUserTicket = $this->storageConfig["getUserTicketFunction"];
 
@@ -156,7 +155,6 @@ trait TicketManager
         catch (Exception $e) {
             //fallback for file
             $this->logger->error("TicketStorage::getTicket -> Error Moving QR code in S3 bucket: $src_code, err: ".$e->getMessage());
-            print_r($e, true);exit;
 
             return false;
         }
@@ -234,7 +232,7 @@ trait TicketManager
     }
 
     /**
-     * Hanlder - Generates QR for multiple tickets
+     * Handler - Generates QR for multiple tickets
      * @param mixed [object|array] $userTickets A user ticket object or an array of objects
      * @return mixed
      */
@@ -293,53 +291,22 @@ trait TicketManager
     }
 
     /**
-     * Hanlder - Generates PDF for ticket and invoice attached
+     * Handler - Generates Checkout invoice with tickets as PDF file output
      * @param int $user_id The user Id
-     * @param object $checkout The checkout object (including transaction props & An array of user ticket IDs)
+     * @param object $data The data object (checkout or review, including transaction props & An array of user ticket IDs)
      * @return mixed
      */
-    public function generateInvoiceForUserCheckout($user_id, $checkout)
+    public function generateInvoiceForUserTickets($user_id, $data, $type = "checkout")
     {
         //handle exceptions
         $result = new \stdClass();
 
         try {
-            //get user model class
-            $users_class = $this->getModuleClassName('users');
-            //get model class
-            $getUserTicketsUI = $this->storageConfig["getUserTicketsUIFunction"];
-
-            if(!is_callable($getUserTicketsUI))
-                throw new Exception("Invalid 'get user ticket UI' function");
-
-            //get user by session
-            $user = $users_class::getObjectById($user_id);
-            //get ticket objects with UI properties
-            $tickets = $getUserTicketsUI($user->id, $checkout->userTicketIds);
-
-            if(!$tickets)
-                throw new Exception("No tickets found for userID: ".$user->id." & buyOrder: ".$checkout->buyOrder);
-
-            //set file paths
-            $pdf_filename = $checkout->buyOrder.".pdf";
-            $output_path  = $this->storageConfig['local_temp_path'].$pdf_filename;
-            $s3_path      = self::$DEFAULT_S3_URI."/".$user->id."/".$pdf_filename;
-
-            //set extended pdf data
-            $this->pdf_settings["data_date"]     = DateHelper::getTranslatedCurrentDate();
-            $this->pdf_settings["data_user"]     = $user;
-            $this->pdf_settings["data_tickets"]  = $tickets;
-            $this->pdf_settings["data_checkout"] = $checkout;
-            $this->pdf_settings["data_storage"]  = $this->storageConfig['local_temp_path'];
-
-            //get template
-            $html_raw = $this->simpleView->render($this->storageConfig['ticket_pdf_template_view'], $this->pdf_settings);
-
-            //PDF generator (this is a heavy task for quick client response)
-            $result->binary = (new PdfHelper())->generatePdfFileFromHtml($html_raw, $output_path, true);
-
-            //upload pdf file to S3
-            $this->s3->putObject($output_path, $s3_path, true);
+            //set settings
+            $settings = ["data_$type" => $data];
+            //generate invoice
+            $invoiceName = ($type == "checkout") ? $data->buyOrder : $data->token;
+            $result->binary = $this->_generateInvoice($user_id, $invoiceName, $data->userTicketIds, $settings);
         }
         catch (\S3Exception $e) {
             $result->error = $e->getMessage();
@@ -348,12 +315,8 @@ trait TicketManager
             $result->error = $e->getMessage();
         }
 
-        //delete generated local files
-        if(APP_ENVIRONMENT !== "development")
-            $this->_deleteTempFiles();
-
         if(isset($result->error)) {
-            $this->logger->error('TicketStorage::generatePDFForTicket -> Error while generating and storing PDF: '.$result->error);
+            $this->logger->error('TicketStorage::generateInvoiceForUserTickets ($type) -> Error while generating and storing PDF: '.$result->error);
             return $result;
         }
 
@@ -362,6 +325,60 @@ trait TicketManager
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
+    /**
+     * Generates an Invoice with user tickets
+     * @param  int $user_id The user ID
+     * @param  string $invoiceName   The invoice file name
+     * @param  array  $userTicketIds The user event tickets IDs
+     * @param  array  $settings PDF settings for view
+     * @return binary generated file
+     */
+    private function _generateInvoice($user_id, $invoiceName = "temp", $userTicketIds = array(), $settings = array())
+    {
+        //get user model class
+        $users_class = $this->getModuleClassName('users');
+        //get model class
+        $getUserTicketsUI = $this->storageConfig["getUserTicketsUIFunction"];
+
+        if(!is_callable($getUserTicketsUI))
+            throw new Exception("Invalid 'get user ticket UI' function");
+
+        //get user by session
+        $user = $users_class::getObjectById($user_id);
+        //get ticket objects with UI properties
+        $tickets = $getUserTicketsUI($user_id, $userTicketIds);
+
+        if(!$tickets)
+            throw new Exception("No tickets found for userID: ".$user_id." & invoice: ".$invoiceName);
+
+        //set file paths
+        $pdf_filename = $invoiceName.".pdf";
+        $output_path  = $this->storageConfig['local_temp_path'].$pdf_filename;
+        $s3_path      = self::$DEFAULT_S3_URI."/".$user_id."/".$pdf_filename;
+
+        //set extended pdf data
+        $this->pdf_settings["data_date"]     = DateHelper::getTranslatedCurrentDate();
+        $this->pdf_settings["data_user"]     = $user;
+        $this->pdf_settings["data_tickets"]  = $tickets;
+        $this->pdf_settings["data_storage"]  = $this->storageConfig['local_temp_path'];
+        //merge configs
+        $this->pdf_settings = array_merge($this->pdf_settings, $settings);
+
+        //get template
+        $html_raw = $this->simpleView->render($this->storageConfig['ticket_pdf_template_view'], $this->pdf_settings);
+
+        //PDF generator (this is a heavy task for quick client response)
+        $binary = (new PdfHelper())->generatePdfFileFromHtml($html_raw, $output_path, true);
+
+        //upload pdf file to S3
+        $this->s3->putObject($output_path, $s3_path, true);
+
+        //delete generated local files
+        if(APP_ENVIRONMENT !== "development")
+            $this->_deleteTempFiles();
+
+        return $binary;
+    }
     /**
      * Deletes temporary files in Local directory
      * @param string $path The path folder
