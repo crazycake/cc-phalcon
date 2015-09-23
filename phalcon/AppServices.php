@@ -118,7 +118,7 @@ class AppServices
 
         //Logger adapter
         $di->setShared('logger', function() {
-            $logger = new \Phalcon\Logger\Adapter\File($this->config->directories->logs.date("d_m_Y").".log");
+            $logger = new \Phalcon\Logger\Adapter\File(APP_PATH."logs/".date("d_m_Y").".log");
             return $logger;
         });
 
@@ -157,13 +157,13 @@ class AppServices
 
         //Database connection is created based in the parameters defined in the configuration file
         $di->setShared('db', function() {
-            return new \Phalcon\Db\Adapter\Pdo\Mysql(array(
+            return new \Phalcon\Db\Adapter\Pdo\Mysql([
                 "host"     => $this->config->database["host"],
                 "username" => $this->config->database["username"],
                 "password" => $this->config->database["password"],
                 "dbname"   => $this->config->database["dbname"],
-                "options"  => array( PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8' ) //force utf8-charset
-            ));
+                "options"  => [PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'] //force utf8-charset
+            ]);
         });
     }
 
@@ -176,11 +176,11 @@ class AppServices
     private function _setTranslationService(&$di)
     {
         $di->setShared('translate', function() {
-            return new \CrazyCake\Utils\GetText(array(
+            return new \CrazyCake\Utils\GetText([
                 'domain'    => $this->config->app->name,
                 'supported' => (array)$this->config->app->langs,
-                'directory' => $this->config->directories->langs
-            ));
+                'directory' => APP_PATH."langs/"
+            ]);
         });
     }
 
@@ -205,9 +205,9 @@ class AppServices
 
         //Session Adapter
         $di->setShared('session', function() {
-            $session = new \Phalcon\Session\Adapter\Files(array(
+            $session = new \Phalcon\Session\Adapter\Files([
                 'uniqueId' => MODULE_NAME
-            ));
+            ]);
             //set session name
             $session->setName($this->config->app->namespace);
             //start session
@@ -218,32 +218,33 @@ class AppServices
         });
 
         //Setting up the view component
-        $di_view_engines = array(
-            '.volt'  => function($view, $di_instance) {
-                //instance a new volt engine
-                $volt = new \Phalcon\Mvc\View\Engine\Volt($view, $di_instance);
-                //set volt engine options
-                $volt->setOptions(array(
-                    'compiledPath'      => $this->config->directories->cache,
-                    'compiledSeparator' => '_',
-                ));
-                //get compiler
-                $compiler = $volt->getCompiler();
+        $di_view_engines = [
+            '.volt' => function($view, $di_instance) {
+                        //instance a new volt engine
+                        $volt = new \Phalcon\Mvc\View\Engine\Volt($view, $di_instance);
+                        //set volt engine options
+                        $volt->setOptions([
+                            'compiledPath'      => APP_PATH."cache/",
+                            'compiledSeparator' => '_',
+                        ]);
+                        //get compiler
+                        $compiler = $volt->getCompiler();
 
-                //++ Binds some PHP functions to volt
+                        //++ Binds some PHP functions to volt
 
-                //++ str replace
-                $compiler->addFunction('replace', 'str_replace');
-                
-                return $volt;
-            },
+                        //++ str replace
+                        $compiler->addFunction('replace', 'str_replace');
+
+                        return $volt;
+                    },
             '.phtml' => 'Phalcon\Mvc\View\Engine\Php',
-        );
+        ];
+
         $di->setShared('view', function() use (&$di_view_engines) {
 
             $view = new \Phalcon\Mvc\View();
             //set directory views
-            $view->setViewsDir($this->config->directories->views);
+            $view->setViewsDir(APP_PATH."views/");
             //register volt view engine
             $view->registerEngines($di_view_engines);
 
@@ -254,19 +255,21 @@ class AppServices
         $di->setShared('simpleView', function() use (&$di_view_engines) {
             //simpleView
             $view = new \Phalcon\Mvc\View\Simple();
-            $view->setViewsDir($this->config->directories->views);
+            //set directory views
+            $view->setViewsDir(APP_PATH."views/");
+            //register volt view engine
             $view->registerEngines($di_view_engines);
             return $view;
         });
 
         //Flash messages
         $di->setShared('flash', function() {
-            $flash = new \Phalcon\Flash\Session(array(
+            $flash = new \Phalcon\Flash\Session([
                 'success' => 'success',
                 'error'   => 'alert',
                 'notice'  => 'notice',
                 'warning' => 'warning'
-            ));
+            ]);
             return $flash;
         });
     }

@@ -334,9 +334,8 @@ trait Facebook
                 $this->__saveNewUserFacebook($user->id, $fb_id, $fac, $properties['token_expiration']);
 
             //queues an async request, extend access token (append fb userID and short live access token)
-            $this->_asyncRequest(array(
-                    $this->facebookConfig['controller_name'] => "extendAccessToken"
-                ),
+            $this->_asyncRequest(
+                [$this->facebookConfig['controller_name'] => "extendAccessToken"],
                 $fb_id."#".$fac
             );
         }

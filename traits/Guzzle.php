@@ -110,6 +110,7 @@ trait Guzzle
                     $this->logger->log("Guzzle::logGuzzleResponse -> NOTE: Above response is a redirection webpage, check correct route and redirections.");
             }
         });
+        //force promise to be completed
         $promise->wait();
     }
 }

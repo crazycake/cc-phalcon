@@ -11,8 +11,9 @@ require "phalcon/AppServices.php";
 abstract class AppLoader
 {
     /** const **/
-    const CCLIBS_PACKAGE      = "CrazyCake\\";
-    const CCLIBS_NAMESPACE    = "cc-phalcon";
+    const CCLIBS_PACKAGE          = "CrazyCake\\";
+    const CCLIBS_NAMESPACE        = "cc-phalcon";
+    const CCLIBS_DEFAULT_PACKAGES = ['traits', 'core', 'utils', 'models'];
 
     //for CLI environment setup
     const EC2_HOSTNAME_PREFIX = "ip-";
@@ -326,23 +327,23 @@ abstract class AppLoader
         $app_dirs = array();
         //default directories
         $app_dirs['controllers'] = APP_PATH.'controllers/';
-        $app_dirs['logs']        = APP_PATH.'logs/';
 
         if(isset($this->modules_components[MODULE_NAME])) {
+
             foreach ($this->modules_components[MODULE_NAME] as $dir) {
-                $public = false;
-                //check if directory is public
-                if (substr($dir, 0, 1) === "@") {
-                    $public = true;
-                    $dir    = substr($dir, 1);
-                }
-                //set directory path
-                $app_dirs[$dir] = $public ? PUBLIC_PATH.$dir."/" : APP_PATH.$dir."/";
+
+                $paths = explode("/", $dir, 2);
+
+                //set directory path (if first index is a module)
+                if(count($paths) > 1 && in_array($paths[0], array_keys($this->modules_components)))
+                    $app_dirs[$dir] = PROJECT_PATH.$paths[0]."/app/".$paths[1]."/";
+                else
+                    $app_dirs[$dir] = APP_PATH.$dir."/";
             }
         }
 
         //set directories
-        $this->app_config["directories"] = $app_dirs;
+        $this->app_config["directories"] = arsort($app_dirs);
     }
 
     /**
@@ -404,8 +405,11 @@ abstract class AppLoader
      */
     private function _loadStaticLibs($loader = null, $packages = array())
     {
-        if(is_null($loader) || empty($packages))
+        if(is_null($loader))
             return;
+
+        //merge packages with defaults
+        $packages = array_merge(self::CCLIBS_DEFAULT_PACKAGES, $packages);
 
         //check if library was loaded from dev environment
         $class_path = is_link(PACKAGES_PATH.self::CCLIBS_NAMESPACE) ? PACKAGES_PATH.self::CCLIBS_NAMESPACE : false;
