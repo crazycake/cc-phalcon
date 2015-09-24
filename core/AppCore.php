@@ -125,24 +125,24 @@ abstract class AppCore extends Controller
      * @param object $data  The data to be passed as args
      * @return object response
      */
-    protected function _sendAsyncMailMessage($method = null, $data = null)
+    protected function _sendMailMessage($method = null, $data = null)
     {
         //simple input validation
         if (empty($method))
-            throw new Exception("AppCore::_sendAsyncMailMessage -> method param is required.");
+            throw new Exception("AppCore::_sendMailMessage -> method param is required.");
 
         //get the mailer controller name
         $mailer_class = $this->getModuleClassName("mailer");
 
         //checks that a MailerController exists
         if(!class_exists(str_replace('\\', '', $mailer_class)))
-            throw new Exception("AppCore::_sendAsyncMailMessage -> A Mailer Controller is required.");
+            throw new Exception("AppCore::_sendMailMessage -> A Mailer Controller is required.");
 
         $mailer = new $mailer_class();
 
         //checks that a MailerController exists
         if(!method_exists($mailer, $method))
-            throw new Exception("AppCore::_sendAsyncMailMessage -> Method $method is not defined in Mailer Controller.");
+            throw new Exception("AppCore::_sendMailMessage -> Method $method is not defined in Mailer Controller.");
 
         //call mailer class method (reflection)
         $response = $mailer->{$method}($data);
@@ -152,7 +152,7 @@ abstract class AppCore extends Controller
 
         //save response only for non production-environment
         if(APP_ENVIRONMENT !== "production")
-            $this->logger->debug('AppCore::_sendAsyncMailMessage -> Got response from MailerController:\n' . $response);
+            $this->logger->debug('AppCore::_sendMailMessage -> Got response from MailerController:\n' . $response);
 
         return $response;
     }

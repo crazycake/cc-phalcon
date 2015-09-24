@@ -44,7 +44,7 @@ trait Ses
         $data["subject"] = "Contacto ".$this->sesConfig['appName'];
 
         //send contact email
-        $this->_sendAsyncMailMessage('sendSystemMail', $data);
+        $this->_sendMailMessage('sendSystemMail', $data);
 
         //send JSON response
         $this->_sendJsonResponse(200);
