@@ -52,7 +52,7 @@ class AppServices
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
-     * Set DI for Micro app
+     * Set DI for Micro app (API)
      * @access private
      */
     private function _getMicroDI()
@@ -65,7 +65,7 @@ class AppServices
     }
 
     /**
-     * Set DI for CLI (Command Line) app
+     * Set DI for CLI app (Command Line)
      * @access private
      */
     private function _getCliDI()
@@ -79,7 +79,7 @@ class AppServices
     }
 
     /**
-     * Set DI for MVC app
+     * Set DI for MVC app (frontend, backend)
      * @access private
      */
     private function _getMvcDI()

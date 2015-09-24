@@ -58,10 +58,10 @@ trait Facebook
     public function loginAction()
     {
         //validate and filter request params data, second params are the required fields
-        $data = $this->_handleRequestParams(array(
+        $data = $this->_handleRequestParams([
             'signed_request' => 'string',
             '@user_data'     => 'int'
-        ));
+        ]);
 
         //check signed request
         if(!$this->__parseSignedRequest($data['signed_request']))
@@ -150,7 +150,7 @@ trait Facebook
             }
 
             //set payload
-            $payload = array("fb_id" => $fb_id);
+            $payload = ["fb_id" => $fb_id];
             //send JSON response
             $this->_sendJsonResponse(200, $payload);
         }
