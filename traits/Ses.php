@@ -101,7 +101,7 @@ trait Ses
         }
 
         //create flux uri
-        $uri = $this->sesConfig['account_auth_controller']."/activation/".$token->encrypted;
+        $uri = "auth/activation/".$token->encrypted;
         //set properties
         $this->sesConfig["data_user"] = $user;
         $this->sesConfig["data_url"]  = $this->_baseUrl($uri);
@@ -109,7 +109,7 @@ trait Ses
         //get HTML
         $html_raw = $this->_getInlineStyledHtml("activation", $this->sesConfig);
         //set message properties
-        $subject = $this->sesConfig['subjectActivationAccount'];
+        $subject = $this->sesConfig['trans']['subject_activation'];
         $to      = $user->email;
         $tags    = array('account', 'activation');
         //sends async email
@@ -140,7 +140,7 @@ trait Ses
         }
 
         //create flux uri
-        $uri = $this->sesConfig['account_pass_controller']."/new/".$token->encrypted;
+        $uri = "password/new/".$token->encrypted;
         //set rendered view
         $this->sesConfig["data_user"] = $user;
         $this->sesConfig["data_url"]  = $this->_baseUrl($uri);
@@ -149,7 +149,7 @@ trait Ses
         //get HTML
         $html_raw = $this->_getInlineStyledHtml("passwordRecovery", $this->sesConfig);
         //set message properties
-        $subject = $this->sesConfig['subjectPasswordRecovery'];
+        $subject = $this->sesConfig['trans']['subject_password'];
         $to      = $user->email;
         $tags    = array('account', 'password', 'recovery');
         //sends async email

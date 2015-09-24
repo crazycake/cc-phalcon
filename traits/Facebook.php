@@ -32,7 +32,7 @@ trait Facebook
      * Config var
      * @var array
      */
-    public $facebookConfig;
+    public $fbConfig;
 
     /**
      * Facebook URI user image
@@ -89,7 +89,7 @@ trait Facebook
      */
     public function loginByRedirectAction($requested_uri = "")
     {
-        $login_uri = $this->facebookConfig['controller_name']."/loginByRedirect/".$requested_uri;
+        $login_uri = $this->fbConfig['controller_name']."/loginByRedirect/".$requested_uri;
         //get helper object
         $helper  = new FacebookRedirectLoginHelper($this->_baseUrl($login_uri));
         $session = $helper->getSessionFromRedirect();
@@ -100,13 +100,13 @@ trait Facebook
         if($response['fb_error']) {
             $this->logger->error("Facebook::loginByRedirectAction -> An error ocurred: ".$response['fb_error']);
             //set message
-            $this->view->setVar("error_message", $this->facebookConfig['text_oauth_redirected']);
+            $this->view->setVar("error_message", $this->fbConfig['trans']['oauth_redirected']);
             $this->dispatcher->forward(array("controller" => "errors", "action" => "internal"));
             $this->dispatcher->dispatch();
         }
 
         //authenticated in settings controller
-        if($requested_uri == md5($this->facebookConfig['settings_uri']))
+        if($requested_uri == md5($this->fbConfig['settings_uri']))
             $this->onSettingsLoginRedirection();
 
         //handle response
@@ -235,7 +235,7 @@ trait Facebook
     {
         //append request uri as hashed string
         $requested_uri = md5($this->_getRequestedUri());
-        $login_uri     = $this->facebookConfig['controller_name']."/loginByRedirect/".$requested_uri;
+        $login_uri     = $this->fbConfig['controller_name']."/loginByRedirect/".$requested_uri;
         $redirect_url  = $this->_baseUrl($login_uri);
 
         //get vars
@@ -270,7 +270,7 @@ trait Facebook
         try {
 
             if(is_null($session))
-                throw new \Exception($this->facebookConfig['text_oauth_redirected']);
+                throw new \Exception($this->fbConfig['trans']['oauth_redirected']);
 
             //get session data
             $fac   = $session->getToken();
@@ -281,13 +281,13 @@ trait Facebook
 
             //validate fb session properties
             if(!$properties)
-                throw new \Exception($this->facebookConfig['text_session_error']);
+                throw new \Exception($this->fbConfig['trans']['session_error']);
             //print_r($properties);exit;
 
             //email validation
             if (empty($properties['email']) || !filter_var($properties['email'], FILTER_VALIDATE_EMAIL)) {
                 $this->logger->error("Facebook::__loginUserFacebook() -> Facebook Session (" . $properties['fb_id'] . ") invalid email: " . $properties['email']);
-                throw new \Exception(str_replace("{email}", $properties['email'], $this->facebookConfig['text_invalid_email']));
+                throw new \Exception(str_replace("{email}", $properties['email'], $this->fbConfig['trans']['invalid_email']));
             }
 
             //OK, check if user exists in Users Facebook table
@@ -296,7 +296,7 @@ trait Facebook
             //check if user is logged in and is attempting to loggin to facebook with another account
             if ($session_data && $session_data["fb_id"] && $session_data["fb_id"] != $fb_id) {
                 $this->logger->error("Facebook::__loginUserFacebook() -> App Session fb_id (" . $session_data["fb_id"]. ") & sdk session (" . $fb_id . ") data doesn't match.");
-                throw new \Exception($this->facebookConfig['text_session_switched']);
+                throw new \Exception($this->fbConfig['trans']['session_switched']);
             }
 
             //check if user has already a account registered by email
@@ -311,7 +311,7 @@ trait Facebook
                     $properties['account_flag'] = 'enabled';
                 }
                 else if ($user->account_flag == 'disabled') {
-                    throw new \Exception($this->facebookConfig['text_account_disabled']);
+                    throw new \Exception($this->fbConfig['trans']['account_disabled']);
                 }
 
                 //update user ignoring arbitrary set keys
@@ -335,7 +335,7 @@ trait Facebook
 
             //queues an async request, extend access token (append fb userID and short live access token)
             $this->_asyncRequest(
-                [$this->facebookConfig['controller_name'] => "extendAccessToken"],
+                [$this->fbConfig['controller_name'] => "extendAccessToken"],
                 $fb_id."#".$fac
             );
         }
@@ -437,7 +437,7 @@ trait Facebook
             $days_left = DateHelper::getTimePassedFromDate($session->getSessionInfo()->getExpiresAt());
 
             //check if access token is about to expire
-            if ($days_left < $this->facebookConfig['access_token_expiration_threshold']) {
+            if ($days_left < $this->fbConfig['access_token_expiration_threshold']) {
                 $this->logger->log('Facebook::__requestLongLiveAccessToken -> Requested a new long live access token for user_fb_id: ' . $user_fb->id);
 
                 $fac_obj->save = true;
@@ -488,7 +488,7 @@ trait Facebook
 
             $user = $users_class::getObjectById($user_id);
             $user->delete();
-            throw new \Exception($this->facebookConfig['text_session_error']); //raise an error
+            throw new \Exception($this->fbConfig['trans']['session_error']); //raise an error
         }
 
         return $user_fb;

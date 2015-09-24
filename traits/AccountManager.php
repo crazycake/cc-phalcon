@@ -69,21 +69,21 @@ trait AccountManager
         try {
             //check for password
             if(!empty($data['pass']) && empty($data['current_pass']))
-                throw new Exception($this->accountConfig['text_current_pass_empty']);
+                throw new Exception($this->accountConfig['trans']['current_pass_empty']);
 
             //changed pass validation
             if(!empty($data['pass']) && !empty($data['current_pass'])) {
 
                 if(strlen($data['pass']) < $this->accountConfig['profile_pass_min_length'])
-                    throw new Exception($this->accountConfig['text_pass_too_short']);
+                    throw new Exception($this->accountConfig['trans']['pass_too_short']);
 
                 //check current pass
                 if(!$this->security->checkHash($data['current_pass'], $user->pass))
-                    throw new Exception($this->accountConfig['text_pass_dont_match']);
+                    throw new Exception($this->accountConfig['trans']['pass_dont_match']);
 
                 //check pass is diffetent to current
                 if($this->security->checkHash($data['pass'], $user->pass))
-                    throw new Exception($this->accountConfig['text_new_pass_equals']);
+                    throw new Exception($this->accountConfig['trans']['new_pass_equals']);
 
                 //ok, update pass
                 $updating_data["pass"] = $this->security->hash($data['pass']);
@@ -121,7 +121,7 @@ trait AccountManager
         //set paylaod
         $payload = array(
             "user" => $updating_data,
-            "msg"  => $this->accountConfig['text_profile_saved']
+            "msg"  => $this->accountConfig['trans']['profile_saved']
         );
         //send response
         $this->_sendJsonResponse(200, $payload);

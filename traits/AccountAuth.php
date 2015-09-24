@@ -39,7 +39,7 @@ trait AccountAuth
         $this->_redirectToAccount(true);
 
         //view vars
-        $this->view->setVar("html_title", $this->accountConfig['text_title_sign_in']);
+        $this->view->setVar("html_title", $this->accountConfig['trans']['title_sign_in']);
         $this->view->setVar("js_recaptcha", true); //load reCaptcha
 
         //call abstract method
@@ -55,7 +55,7 @@ trait AccountAuth
         $this->_redirectToAccount(true);
 
         //view vars
-        $this->view->setVar("html_title", $this->accountConfig['text_title_sign_up']);
+        $this->view->setVar("html_title", $this->accountConfig['trans']['title_sign_up']);
 
         //check sign_up session data for auto completion field
         $signup_session = $this->_getSessionObjects("signup_session");
@@ -104,7 +104,7 @@ trait AccountAuth
             $token->delete();
 
             //set a flash message to show on account controller
-            $this->flash->success($this->accountConfig['text_activation_success']);
+            $this->flash->success($this->accountConfig['trans']['activation_success']);
 
             //success login
             $this->_setUserSessionAsLoggedIn($user_id);
@@ -147,17 +147,17 @@ trait AccountAuth
 
         //check user & given hash with the one stored (wrong combination)
         if (!$user || !$this->security->checkHash($data['pass'], $user->pass)) {
-            $this->_sendJsonResponse(200, $this->accountConfig['text_auth_failed'], 'alert');
+            $this->_sendJsonResponse(200, $this->accountConfig['trans']['auth_failed'], 'alert');
         }
 
         //check user account flag
         if ($user->account_flag != 'enabled') {
             //set message
-            $msg = $this->accountConfig['text_account_disabled'];
+            $msg = $this->accountConfig['trans']['account_disabled'];
             $namespace = null;
             //check account is pending
             if ($user->account_flag == 'pending') {
-                $msg = $this->accountConfig['text_account_pending'];
+                $msg = $this->accountConfig['trans']['account_pending'];
                 //set name for javascript view
                 $namespace = 'ACCOUNT_PENDING';
             }
@@ -201,7 +201,7 @@ trait AccountAuth
             $this->_sendJsonResponse(200, $user->filterMessages(), true);
 
         //set a flash message to show on account controller
-        $this->flash->success(str_replace("{email}", $user->email, $this->accountConfig['text_activation_pending']));
+        $this->flash->success(str_replace("{email}", $user->email, $this->accountConfig['trans']['activation_pending']));
         //send activation account email
         $this->_sendAsyncMailMessage($this->accountConfig['method_mailer_activation'], $user->id);
         $this->_handleResponseOnLoggedIn("signIn", false);
@@ -225,7 +225,7 @@ trait AccountAuth
 
         if (!$recaptcha->checkResponse($data['g-recaptcha-response'])) {
             //show error message
-            $this->_sendJsonResponse(200, $this->accountConfig['text_recaptcha_failed'], true);
+            $this->_sendJsonResponse(200, $this->accountConfig['trans']['recaptcha_failed'], true);
         }
 
         //check if user exists is a pending account
@@ -233,13 +233,13 @@ trait AccountAuth
 
         //if user was not found send error message
         if (!$user)
-            $this->_sendJsonResponse(200, $this->accountConfig['text_account_not_found'], 'alert');
+            $this->_sendJsonResponse(200, $this->accountConfig['trans']['account_not_found'], 'alert');
 
         //send email message with password recovery steps
         $this->_sendAsyncMailMessage($this->accountConfig['method_mailer_activation'], $user->id);
 
         //set payload
-        $payload = str_replace("{email}", $data['email'], $this->accountConfig['text_activation_pending']);
+        $payload = str_replace("{email}", $data['email'], $this->accountConfig['trans']['activation_pending']);
 
         //send JSON response
         $this->_sendJsonResponse(200, $payload);

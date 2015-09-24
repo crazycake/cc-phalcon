@@ -342,8 +342,9 @@ abstract class AppLoader
             }
         }
 
-        //set directories
-        $this->app_config["directories"] = arsort($app_dirs);
+        //inverted sort
+        arsort($app_dirs);
+        $this->app_config["directories"] = $app_dirs;
     }
 
     /**
@@ -391,6 +392,7 @@ abstract class AppLoader
 
         //4.- Register phalcon loader
         $loader->register();
+        //var_dump($loader->getDirs());exit;
         //var_dump(get_included_files());exit;
     }
 
