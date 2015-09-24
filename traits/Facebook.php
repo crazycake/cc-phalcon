@@ -114,7 +114,8 @@ trait Facebook
     }
 
     /**
-     * Async - Extended Facebook Access Token (LongLive Token) -> Fac means Facebook Access Token
+     * Async (GET) - Extended Facebook Access Token (LongLive Token)
+     * FAC => Facebook Access Token
      * @param string $encrypted_data {user_id#fac}
      * @return json response
      */
@@ -336,7 +337,9 @@ trait Facebook
             //queues an async request, extend access token (append fb userID and short live access token)
             $this->_asyncRequest(
                 [$this->fbConfig['controller_name'] => "extendAccessToken"],
-                $fb_id."#".$fac
+                $fb_id."#".$fac,
+                "GET",
+                true
             );
         }
         catch (\Exception $e) {

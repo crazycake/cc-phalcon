@@ -25,7 +25,7 @@ abstract class AppCore extends Controller
      * abstract required methods
      */
     abstract protected function _sendJsonResponse();
-    abstract protected function _sendAsyncRequest($url = null, $uri = null, $data = array(), $method = "GET");
+    abstract protected function _sendAsyncRequest($url = null, $uri = null, $data = null, $method = "GET", $socket = false);
 
     /**
      * Base URL extended function
@@ -91,11 +91,12 @@ abstract class AppCore extends Controller
     /**
      * Sends an async tasks as another request
      * Current implementation is a Guzzle async Request.
-     * @TODO: better aproach phpRatchet, phpReactPromises ?
      * @param array $route Struct: "controller" => "method"
-     * @param object $data  The data to be passed as args
+     * @param object $data The data to be passed as args
+     * @param object $method The HTTP method [GET or POST]
+     * @param object $socket Make the call as async socket connection
      */
-    protected function _asyncRequest($route = array(), $data = null, $method = "GET")
+    protected function _asyncRequest($route = array(), $data = null, $method = "GET", $socket = false)
     {
         //encode data
         if(!is_null($data))
@@ -114,7 +115,7 @@ abstract class AppCore extends Controller
             $this->logger->debug("AppCore::_asyncRequest -> Method: $method, Uri: $uri");
 
         //child method
-        $this->_sendAsyncRequest($url, $uri, $data, $method);
+        $this->_sendAsyncRequest($url, $uri, $data, $method, $socket);
     }
 
     /**
