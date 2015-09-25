@@ -55,7 +55,7 @@ class DateHelper
         $di = \Phalcon\DI::getDefault();
 
         if(!$di->has("translate"))
-            return null;
+            return $month;
 
         $translate = $di->getShared("translate");
 
@@ -99,7 +99,7 @@ class DateHelper
         $di = \Phalcon\DI::getDefault();
 
         if(!$di->has("translate"))
-            return null;
+            return $day."-".$month."-".$year;
 
         $translate = $di->getShared("translate");
 
@@ -151,6 +151,7 @@ class DateHelper
 
     /**
      * Get translated current day
+     * @static
      * @return string The translated date
      */
     public static function getTranslatedCurrentDate()
