@@ -122,7 +122,7 @@ trait Facebook
     public function extendAccessTokenAction($encrypted_data = null)
     {
         if (is_null($encrypted_data))
-            return $this->_sendJsonResponse(405); //method now allowed
+            return $this->_sendJsonResponse(405); //method not allowed
 
         try {
             //get encrypted facebook user id and short live access token
@@ -135,7 +135,7 @@ trait Facebook
             $user_fb = $users_facebook_class::getObjectById($fb_id);
 
             if(!$user_fb)
-                $this->_sendJsonResponse(400);
+                $this->_sendJsonResponse(400); //bad request
 
             //get facebook session with saved access token
             $fb_session = $this->__getUserFacebookSession($user_fb->fac);
@@ -150,10 +150,8 @@ trait Facebook
                 $user_fb->update();
             }
 
-            //set payload
-            $payload = ["fb_id" => $fb_id];
-            //send JSON response
-            $this->_sendJsonResponse(200, $payload);
+            //send JSON response with payload
+            $this->_sendJsonResponse(200, ["fb_id" => $fb_id]);
         }
         catch (\Exception $e) {
             $this->logger->error("Facebook::extendAccessToken -> Somethig ocurred: ".$e->getMessage().". userFB: ".(isset($fb_id) ? $fb_id : "unknown"));
@@ -420,7 +418,7 @@ trait Facebook
     private function __requestLongLiveAccessToken($user_fb = null, $short_live_fac = null, $session = null)
     {
         if(!$user_fb) {
-            $this->logger->log('Facebook::__requestLongLiveAccessToken -> Invalid ORM user facebook prama');
+            $this->logger->log('Facebook::__requestLongLiveAccessToken -> Invalid ORM user facebook param');
             return;
         }
 
