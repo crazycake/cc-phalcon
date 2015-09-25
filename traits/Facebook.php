@@ -291,13 +291,20 @@ trait Facebook
                 throw new \Exception(str_replace("{email}", $properties['email'], $this->fbConfig['trans']['invalid_email']));
             }
 
-            //OK, check if user exists in Users Facebook table
+            //OK, check if user exists in Users Facebook table & get session data
+            $user_fb      = $users_facebook_class::getObjectById($fb_id);
             $session_data = $this->_getUserSessionData();
 
-            //check if user is logged in and is attempting to loggin to facebook with another account
+            //check if user is logged, have a fb user, in and is attempting to loggin to facebook with another account
             if ($session_data && $session_data["fb_id"] && $session_data["fb_id"] != $fb_id) {
                 $this->logger->error("Facebook::__loginUserFacebook() -> App Session fb_id (" . $session_data["fb_id"]. ") & sdk session (" . $fb_id . ") data doesn't match.");
                 throw new \Exception($this->fbConfig['trans']['session_switched']);
+            }
+
+            //check user is logged in, dont a have a fb user and the loggin user has another user id.
+            if($session_data && $user_fb && $user_fb->user_id != $session_data["id"]) {
+                $this->logger->error("Facebook::__loginUserFacebook() -> App Session fb_id (" . $session_data["fb_id"]. ") & sdk session (" . $fb_id . ") data doesn't match.");
+                throw new \Exception($this->fbConfig['trans']['account_switched']);
             }
 
             //check if user has already a account registered by email
@@ -328,8 +335,6 @@ trait Facebook
                 }
             }
 
-            //get user facebook data
-            $user_fb = $users_facebook_class::getObjectById($fb_id);
             //INSERT a new facebook user
             if (!$user_fb)
                 $this->__saveNewUserFacebook($user->id, $fb_id, $fac, $properties['token_expiration']);
