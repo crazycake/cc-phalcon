@@ -124,7 +124,7 @@ trait TicketManager
      * @param int $dst_user_id The destination user id
      * @return boolean $moved Return true if object was moved to destination.
      */
-    public function moveTicketQR($src_user_id = 0, $src_code = "", $dst_user_id)
+    public function moveTicketQR($src_user_id = 0, $src_code = "", $dst_user_id = 0)
     {
         try {
             //validates that ticket belongs to user, get anonymous function from settings
@@ -166,7 +166,7 @@ trait TicketManager
      * @param array $buy_orders An array of buy orders
      * @return binary
      */
-    public function getInvoice($user_id = 0, $buy_orders)
+    public function getInvoice($user_id = 0, $buy_orders = array())
     {
         try {
             if(empty($buy_orders))
@@ -236,7 +236,7 @@ trait TicketManager
      * @param mixed [object|array] $userTickets A user ticket object or an array of objects
      * @return mixed
      */
-    public function generateQRForUserTickets($user_id, $userTickets)
+    public function generateQRForUserTickets($user_id, $userTickets = array())
     {
         //set qr settings
         $this->qr_settings = $this->storageConfig['qr_settings'];
@@ -294,19 +294,21 @@ trait TicketManager
      * Handler - Generates Checkout invoice with tickets as PDF file output
      * @param int $user_id The user Id
      * @param object $data The data object (checkout or review, including transaction props & An array of user ticket IDs)
+     * @param string $type The invoice type, checkout or review.
      * @return mixed
      */
-    public function generateInvoiceForUserTickets($user_id, $data, $type = "checkout")
+    public function generateInvoiceForUserTickets($user_id, $data, $type = "checkout", $save_s3 = true)
     {
         //handle exceptions
         $result = new \stdClass();
 
         try {
             //set settings
-            $settings = ["data_$type" => $data];
+            $this->pdf_settings["data_$type"] = $data;
+            $this->pdf_settings["save_s3"]    = $save_s3;
             //generate invoice
             $invoiceName = ($type == "checkout") ? $data->buyOrder : $data->token;
-            $result->binary = $this->_generateInvoice($user_id, $invoiceName, $data->userTicketIds, $settings);
+            $result->binary = $this->_generateInvoice($user_id, $invoiceName, $data->userTicketIds);
         }
         catch (\S3Exception $e) {
             $result->error = $e->getMessage();
@@ -330,10 +332,9 @@ trait TicketManager
      * @param  int $user_id The user ID
      * @param  string $invoiceName   The invoice file name
      * @param  array  $userTicketIds The user event tickets IDs
-     * @param  array  $settings PDF settings for view
      * @return binary generated file
      */
-    private function _generateInvoice($user_id, $invoiceName = "temp", $userTicketIds = array(), $settings = array())
+    private function _generateInvoice($user_id, $invoiceName = "temp", $userTicketIds = array())
     {
         //get user model class
         $users_class = $this->getModuleClassName('users');
@@ -354,24 +355,25 @@ trait TicketManager
         //set file paths
         $pdf_filename = $invoiceName.".pdf";
         $output_path  = $this->storageConfig['local_temp_path'].$pdf_filename;
-        $s3_path      = self::$DEFAULT_S3_URI."/".$user_id."/".$pdf_filename;
 
         //set extended pdf data
         $this->pdf_settings["data_date"]     = DateHelper::getTranslatedCurrentDate();
         $this->pdf_settings["data_user"]     = $user;
         $this->pdf_settings["data_tickets"]  = $tickets;
         $this->pdf_settings["data_storage"]  = $this->storageConfig['local_temp_path'];
-        //merge configs
-        $this->pdf_settings = array_merge($this->pdf_settings, $settings);
 
         //get template
         $html_raw = $this->simpleView->render($this->storageConfig['ticket_pdf_template_view'], $this->pdf_settings);
-
+        
         //PDF generator (this is a heavy task for quick client response)
         $binary = (new PdfHelper())->generatePdfFileFromHtml($html_raw, $output_path, true);
 
         //upload pdf file to S3
-        $this->s3->putObject($output_path, $s3_path, true);
+        if($this->pdf_settings["save_s3"]) {
+
+            $s3_path = self::$DEFAULT_S3_URI."/".$user_id."/".$pdf_filename;
+            $this->s3->putObject($output_path, $s3_path, true);
+        }
 
         //delete generated local files
         if(APP_ENVIRONMENT !== "development")
