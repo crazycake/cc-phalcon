@@ -114,6 +114,7 @@ trait TicketManager
         catch (Exception $e) {
             //fallback for file
             $this->logger->error("TicketStorage::getTicket -> Error loading QR code: $code, err: ".$e->getMessage());
+            return false;
         }
     }
 
@@ -155,7 +156,6 @@ trait TicketManager
         catch (Exception $e) {
             //fallback for file
             $this->logger->error("TicketStorage::getTicket -> Error Moving QR code in S3 bucket: $src_code, err: ".$e->getMessage());
-
             return false;
         }
     }
@@ -227,7 +227,7 @@ trait TicketManager
         catch (Exception $e) {
             //fallback for file
             $this->logger->error("TicketStorage::getInvoice -> Error loading PDF file: $code, err:".$e->getMessage());
-            //redirect to fallback
+            return false;
         }
     }
 
@@ -295,6 +295,7 @@ trait TicketManager
      * @param int $user_id The user Id
      * @param object $data The data object (checkout or review, including transaction props & An array of user ticket IDs)
      * @param string $type The invoice type, checkout or review.
+     * @param boolean $save_s3 Saves the invoice in S3
      * @return mixed
      */
     public function generateInvoiceForUserTickets($user_id, $data, $type = "checkout", $save_s3 = true)
@@ -364,7 +365,7 @@ trait TicketManager
 
         //get template
         $html_raw = $this->simpleView->render($this->storageConfig['ticket_pdf_template_view'], $this->pdf_settings);
-        
+
         //PDF generator (this is a heavy task for quick client response)
         $binary = (new PdfHelper())->generatePdfFileFromHtml($html_raw, $output_path, true);
 
