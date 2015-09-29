@@ -47,7 +47,7 @@ class BaseUsersCheckouts extends Base
     /**
      * @var string
      */
-    public $session_hash;
+    public $session_key;
 
     /**
      * @var string
@@ -101,12 +101,6 @@ class BaseUsersCheckouts extends Base
     {
         //set default state
         $this->state = self::$STATES[0];
-
-        if(is_null($this->session_hash)) {
-            //get DI
-            $this->session_hash = sha1($this->getDI()->getShared('session')->getId());
-        }
-
         //set server local time
         $this->local_time = date("Y-m-d H:i:s");
     }
@@ -114,15 +108,28 @@ class BaseUsersCheckouts extends Base
 
     /**
      * Get a checkout object by buyOrder
-     * @param  string $buy_order [description]
-     * @return mixed [string|boolea]
+     * @param  string $buy_order The buy order
+     * @return mixed [string|boolean]
      */
-    public static function getCheckout($buy_order = "")
+    public static function getCheckout($buy_order = "", $last = false)
     {
         $conditions = "buy_order = ?1";
-        $parameters = array(1 => $buy_order);
+        $parameters = [1 => $buy_order];
 
-        return self::findFirst( array($conditions, "bind" => $parameters) );
+        return self::findFirst([$conditions, "bind" => $parameters]);
+    }
+
+    /**
+     * Get the last user checkout
+     * @param  int $user_id The User ID
+     * @return mixed [string|object]
+     */
+    public static function getLastUserCheckout($user_id = 0, $state = 'pending')
+    {
+        $conditions = "user_id = ?1 AND state = ?2";
+        $parameters = [1 => $user_id, 2 => $state];
+
+        return self::findFirst([$conditions, "bind" => $parameters, "order" => "local_time DESC"]);
     }
 
     /**
@@ -165,6 +172,7 @@ class BaseUsersCheckouts extends Base
         $checkout = new $checkoutModel();
         $checkout->user_id       = $user_id;
         $checkout->buy_order     = $buy_order;
+        $checkout->session_key   = self::getCheckoutSessionKey($buy_order);
         $checkout->amount        = $checkoutObj->amount;
         $checkout->coin          = $checkoutObj->coin;
         $checkout->invoice_email = $checkoutObj->invoiceEmail;
@@ -195,13 +203,27 @@ class BaseUsersCheckouts extends Base
             //commit transaction
             $di->getShared('db')->commit();
 
-            return $buy_order;
+            return $checkout;
         }
         catch(Exception $e) {
             $di->getShared('logger')->error("BaseUsersCheckouts::newBuyOrder -> An error ocurred: ".$e->getMessage());
             $di->getShared('db')->rollback();
             return false;
         }
+    }
+
+    /**
+     * Get checkout session key for cacher
+     */
+    public static function getCheckoutSessionKey($buy_order = "")
+    {
+        $di = \Phalcon\DI::getDefault();
+        $session_id = $di->getShared("session")->getId();
+
+        if(!$session_id)
+            $session_id = "";
+
+        return sha1($session_id.$buy_order);
     }
 
     /**
