@@ -84,7 +84,7 @@ class Cacher
              $result = $this->{"set".$this->adapter}($this->cachePrefix.$key, $value);
 
              if(!$result)
-                throw new Exception("Adapter error: ".print_r($result, true));
+                throw new Exception("Error setting key");
 
             if(APP_ENVIRONMENT == "development") {
                 $di = DI::getDefault();
@@ -118,7 +118,7 @@ class Cacher
              $result = $this->{"get".$this->adapter}($this->cachePrefix.$key);
 
              if(!$result)
-                throw new Exception("Adapter error: ".print_r($result, true));
+                throw new Exception("Key not found");
 
             return $decode ? json_decode($result) : $result;
          }

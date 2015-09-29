@@ -111,7 +111,7 @@ class BaseUsersCheckouts extends Base
      * @param  string $buy_order The buy order
      * @return mixed [string|boolean]
      */
-    public static function getCheckout($buy_order = "", $last = false)
+    public static function getCheckout($buy_order = "")
     {
         $conditions = "buy_order = ?1";
         $parameters = [1 => $buy_order];
