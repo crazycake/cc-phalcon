@@ -14,6 +14,30 @@ use CrazyCake\Utils\DateHelper;
 trait Session
 {
     /**
+     * abstract required methods
+     */
+    abstract protected function getUserSessionData($session);
+    abstract protected function setUserSessionAsLoggedIn($user);
+
+    /**
+     * Stores user session as array for direct access
+     * @var array
+     */
+    protected $user_session;
+
+    protected function _init()
+    {
+        //exclude api controller includes
+        if(MODULE_NAME == "api")
+            return;
+
+        //set session var
+        $this->user_session = $this->_getUserSessionData();
+        //set user data for view, filter is passed to exclude some properties
+        $this->_setUserDataForView(['id', 'account_flag', 'auth']);
+    }
+
+    /**
      * Set user data object for view
      * @param array $filter A string array of properties to filter
      */

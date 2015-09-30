@@ -252,13 +252,20 @@ abstract class AppCore extends Controller
                 }
             }
 
-            //get value from data array, sanitize data if required
-            if(empty($data_type) || $data_type == 'array')
+            //get value from data array
+            if(empty($data_type) || $data_type == 'array') {
                 $value = $data[$field];
-            else if($data_type == 'json')
+            }
+            else if($data_type == 'json') {
                 $value = json_decode($data[$field]); //NULL if cannot be decoded
-            else
+            }
+            else {
+                //sanitize
                 $value = $this->filter->sanitize($data[$field], $data_type);
+                //lower case for email
+                if($data_type == "email")
+                    $value = strtolower($value);
+            }
 
             //check data (empty fn considers zero value )
             if ($is_optional_field && (is_null($value) || $value == ''))

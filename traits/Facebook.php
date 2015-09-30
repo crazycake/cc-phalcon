@@ -516,7 +516,7 @@ trait Facebook
         //parse from array (Javascript SDK)
         if(is_object($fb_data)) {
             $properties['fb_id']      = $fb_data->getId();
-            $properties['email']      = $fb_data->getEmail();
+            $properties['email']      = strtolower($fb_data->getEmail());
             $properties['first_name'] = $fb_data->getFirstName();
             $properties['last_name']  = $fb_data->getLastName();
             //birthday
