@@ -58,19 +58,19 @@ abstract class AppLoader
      * Module supported langs
      * @var string
      */
-    protected $modules_langs;
+    public $modules_langs;
+
+    /**
+     * The App configuration array
+     * @var array
+     */
+    public $app_config = array();
 
     /**
      * App properties for configuration array, access by config->app->property
      * @var array
      */
     protected $app_props = array();
-
-    /**
-     * The App configuration array
-     * @var array
-     */
-    private $app_config = array();
 
     /**
      * The App Dependency injector
@@ -120,7 +120,7 @@ abstract class AppLoader
         //set module extended configurations
         $this->_moduleConfigurationSetUp($module_configs);
         //get DI preset services for module
-        $services = new AppServices(MODULE_NAME, $this->app_config);
+        $services = new AppServices(MODULE_NAME, $this);
         $this->di = $services->getDI();
     }
 

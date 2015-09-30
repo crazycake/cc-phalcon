@@ -13,12 +13,6 @@ use CrazyCake\Utils\DateHelper;
 
 trait Session
 {
-	/**
-     * abstract required methods
-     */
-    abstract protected function getUserSessionData($session);
-    abstract protected function setUserSessionAsLoggedIn($user);
-
     /**
      * Set user data object for view
      * @param array $filter A string array of properties to filter

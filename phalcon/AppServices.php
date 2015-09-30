@@ -21,18 +21,25 @@ class AppServices
     private $config;
 
     /**
+     * Module langs var
+     * @var string
+     */
+    private $langs;
+
+    /**
      * Constructor
      * @param string $mod The app module
-     * @param array $conf The app config as array
+     * @param array $loader The app loader instance
      */
-    public function __construct($mod = null, $conf = null)
+    public function __construct($mod = null, $loader = null)
     {
-        if(is_null($mod) || is_null($conf))
-            throw new Exception("AppServices::__construct -> 'module' and 'config' parameters are required.");
+        if(is_null($mod) || is_null($loader))
+            throw new Exception("AppServices::__construct -> 'module' and 'loader' parameters are required.");
 
         //set class vars
         $this->module = $mod;
-        $this->config = new \Phalcon\Config($conf);
+        $this->config = new \Phalcon\Config($loader->app_config);
+        $this->langs  = $loader->modules_langs;
     }
 
     /**
@@ -61,6 +68,12 @@ class AppServices
         $di = new \Phalcon\DI\FactoryDefault();
         $this->_setCommonServices($di);
         $this->_setDatabaseService($di);
+
+        //load translations?
+        if(isset($this->langs[$this->module])) {
+            $this->_setTranslationService($di);
+        }
+
         return $di;
     }
 

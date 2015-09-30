@@ -48,7 +48,9 @@ class BaseUsersTickets extends Base
     public function initialize()
     {
         //model relations
-        $this->hasOne("user_id",  "Users", "id");
+        if(isset($user_id)) {
+            $this->hasOne("user_id",  "Users", "id");
+        }
 
         //Skips fields/columns on both INSERT/UPDATE operations
         $this->skipAttributes( array('created_at') );
@@ -71,14 +73,20 @@ class BaseUsersTickets extends Base
 
     /**
      * Get user ticket by code
-     * @param  integer $user_id The user id
+     * @param  int $user_id The user id (optional)
      * @param  string  $code    The ticket code
      * @return object UserTicket
      */
     public static function getUserTicketByCode($user_id = 0, $code = "")
     {
-        $conditions = "user_id = ?1 AND code = ?2";
-        $parameters = array(1 => $user_id, 2 => $code);
+        if(empty($user_id)) {
+            $conditions = "code = ?1";
+            $parameters = array(1 => $code);
+        }
+        else {
+            $conditions = "user_id = ?1 AND code = ?2";
+            $parameters = array(1 => $user_id, 2 => $code);
+        }
 
         return self::findFirst(array($conditions, "bind" => $parameters));
     }
