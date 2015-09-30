@@ -165,7 +165,7 @@ trait Session
         $new_session = $this->getUserSessionData($user_session);
 
         //save again session?
-        if($new_session) {
+        if($new_session != $user_session) {
             $user_session = $new_session;
             $this->session->set("user", $user_session);
         }
