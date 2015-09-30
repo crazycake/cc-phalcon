@@ -68,7 +68,6 @@ class BaseUsersTickets extends Base
         if(is_null($this->code))
             $this->code = $this->generateRandomCode();
     }
-
     /** ------------------------------------------- § ------------------------------------------------ **/
 
     /**
