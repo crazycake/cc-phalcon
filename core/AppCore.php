@@ -252,9 +252,11 @@ abstract class AppCore extends Controller
                 }
             }
 
-            //get value from data array & sanitize it
+            //get value from data array, sanitize data if required
             if(empty($data_type) || $data_type == 'array')
                 $value = $data[$field];
+            else if($data_type == 'json')
+                $value = json_decode($data[$field]); //NULL if cannot be decoded
             else
                 $value = $this->filter->sanitize($data[$field], $data_type);
 

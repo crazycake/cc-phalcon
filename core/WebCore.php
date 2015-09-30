@@ -51,24 +51,25 @@ abstract class WebCore extends AppCore implements webSecurity
      * --------------------------------------------------------------------------------------------------------------- **/
     protected function onConstruct()
     {
-        //set client object with its properties (User-Agent)
-        $this->_setClientObject();
         //set message keys
         $this->MSGS = array();
+
+        //set client object with its properties (User-Agent)
+        $this->_setClientObject();
     }
     /** ---------------------------------------------------------------------------------------------------------------
      * Init function,'$this' is the dependency injector reference
      * --------------------------------------------------------------------------------------------------------------- **/
     protected function initialize()
     {
+        //Skip web core initialize for api module includes
         //Load view data only for non-ajax requests
-        if ($this->request->isAjax())
+        if ($this->request->isAjax() || MODULE_NAME == "api")
             return;
 
         //Set App common vars (this must be set before render any page)
         $this->view->setVar("app", $this->config->app); //app configuration vars
         $this->view->setVar("client", $this->client);   //client object
-
     }
     /** ---------------------------------------------------------------------------------------------------------------
      * After Execute Route: Triggered after executing the controller/action method
@@ -353,6 +354,15 @@ abstract class WebCore extends AppCore implements webSecurity
      */
     private function _setClientObject()
     {
+        //for API make a API simple client object
+        if(MODULE_NAME == "api") {
+            $this->client = (object)[
+                "lang"     => "en",
+                "protocol" => isset($_SERVER["HTTPS"]) ? "https://" : "http://"
+            ];
+            return;
+        }
+
         //set client object from session if was already created (little perfomance)
         if ($this->session->has("client")) {
             //get client from session
