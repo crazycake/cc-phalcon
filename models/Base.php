@@ -34,7 +34,7 @@ class Base extends \Phalcon\Mvc\Model
     --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
-     * Find Object by ID
+     * Find Object by ID (reduce parameter optional)
      * @param int $id the object ID
      * @param boolean $reduce Reduce the object to a stdClass
      * @return Object
@@ -98,7 +98,7 @@ class Base extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Get Objects by PHQL language
+     * Get Objects by PHQL language (reduce parameter optional)
      * @static
      * @param string $sql The PHQL query string
      * @param array $binds The binding params array
