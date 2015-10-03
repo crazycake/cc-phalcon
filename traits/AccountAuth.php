@@ -11,6 +11,7 @@ namespace CrazyCake\Traits;
 //imports
 use Phalcon\Exception;
 use CrazyCake\Utils\DateHelper;
+use CrazyCake\Utils\FormHelper;
 use CrazyCake\Utils\ReCaptcha;
 
 trait AccountAuth
@@ -64,7 +65,7 @@ trait AccountAuth
 
         //send birthday data for form
         if(isset($this->accountConfig['birthday_form_fields']) && $this->accountConfig['birthday_form_fields'])
-            $this->view->setVar("bday_elements", $this->__getBirthdaySelectors());
+            $this->view->setVar("bday_elements", FormHelper::getBirthdaySelectors());
 
         //call abstract method
         $this->beforeRenderSignUpView();
@@ -247,43 +248,4 @@ trait AccountAuth
     }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
-
-    /**
-     * Get birthday options form HTML select element
-     * @access private
-     * @return array
-     */
-    private function __getBirthdaySelectors()
-    {
-        //days
-        $days_array = array();
-        $days_array["0"] = $this->translate->_("Día");
-        //loop
-        for ($i = 1; $i <= 31; $i++) {
-            $prefix = ($i <= 9) ? "_0$i" : "_$i";
-            $days_array[$prefix] = $i;
-        }
-
-        //months
-        $months_array = array();
-        $months_array["0"] = $this->translate->_("Mes");
-        //loop
-        for ($i = 1; $i <= 12; $i++) {
-            $prefix = ($i <= 9) ? "_0$i" : "_$i";
-            $month = strftime('%m', mktime(0, 0, 0, $i, 1));
-            //get abbr month
-            $month = DateHelper::getTranslatedMonthName($month, true);
-            //set month array
-            $months_array[$prefix] = $month;
-        }
-
-        //years
-        $years_array = array();
-        $years_array["0"] = $this->translate->_("Año");
-        //loop
-        for ($i = (int) date('Y'); $i >= 1914; $i--)
-            $years_array["_$i"] = $i;
-
-        return array($years_array, $months_array, $days_array);
-    }
 }

@@ -19,6 +19,10 @@ trait Session
     abstract protected function getUserSessionData($session);
     abstract protected function setUserSessionAsLoggedIn($user);
 
+
+    /** const **/
+    protected static $DEFAULT_USER_PROPS_FILTER = ['id', 'account_flag', 'auth'];
+
     /**
      * Stores user session as array for direct access
      * @var array

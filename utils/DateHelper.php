@@ -59,6 +59,7 @@ class DateHelper
 
         $translate = $di->getShared("translate");
 
+        //set month
         $month = (int)$month;
 
         //get translated month name
