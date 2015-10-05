@@ -11,6 +11,9 @@ use CrazyCake\Utils\DateHelper;
 
 class BaseUsersTickets extends Base
 {
+    /* static vars */
+    public static $DEFAULT_USERS_CLASS = "Users";
+
     //this static methods can be 'overrided' as late binding
     public static $QR_CODE_LEGTH     = 40;
     public static $TICKET_CODE_LEGTH = 10;
@@ -49,7 +52,7 @@ class BaseUsersTickets extends Base
     {
         //model relations
         if(isset($user_id)) {
-            $this->hasOne("user_id",  "Users", "id");
+            $this->hasOne("user_id",  static::$DEFAULT_USERS_CLASS, "id");
         }
 
         //Skips fields/columns on both INSERT/UPDATE operations
@@ -131,8 +134,10 @@ class BaseUsersTickets extends Base
             return false;
 
         //return user object
-        if(isset($ticket->user_id))
-            return $ticket->users;
+        if(isset($ticket->user_id)) {
+            $usersClass = static::$DEFAULT_USERS_CLASS;
+            return $usersClass::getObjectById($ticket->user_id);
+        }
 
         return $ticket;
     }
