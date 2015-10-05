@@ -71,12 +71,40 @@ class BaseUsersTickets extends Base
     /** ------------------------------------------- § ------------------------------------------------ **/
 
     /**
+     * Get tickets by a array of Ids
+     * @static
+     * @param array $ids An array of Ids
+     * @param boolean $as_array flag to reduce resultset to array
+     * @return mixed boolean or GuestUsersEventsTickets array
+     */
+    public static function getTicketsByIds($record_ids = array(), $as_array = false)
+    {
+        if(empty($record_ids))
+            return false;
+
+        //filter by ids
+        $ids_filter = "";
+
+        foreach ($record_ids as $key => $id)
+            $record_ids[$key] = "id = '$id'";
+
+        $ids_filter = implode(" OR ", $record_ids);
+
+        $objects = self::find($ids_filter);
+
+        if(!$objects)
+            return false;
+
+        return $as_array ? $objects->toArray() : $objects;
+    }
+
+    /**
      * Get user ticket by code
-     * @param  int $user_id The user id (optional)
-     * @param  string  $code    The ticket code
+     * @param  string $code The ticket code
+     * @param  int $user_id  The user id (optional)
      * @return object UserTicket
      */
-    public static function getUserTicketByCode($user_id = 0, $code = "")
+    public static function getTicketByCode($code = "", $user_id = 0)
     {
         if(empty($user_id)) {
             $conditions = "code = ?1";
@@ -88,6 +116,25 @@ class BaseUsersTickets extends Base
         }
 
         return self::findFirst(array($conditions, "bind" => $parameters));
+    }
+
+    /**
+     * Get user ticket by qr hash
+     * @param string $qr_hash
+     * @return mixed object ticket or object users
+     */
+    public static function getUserByQrHash($qr_hash = "")
+    {
+        $ticket = self::findFirstByQrHash($qr_hash);
+
+        if(!$ticket)
+            return false;
+
+        //return user object
+        if(isset($ticket->user_id))
+            return $ticket->users;
+
+        return $ticket;
     }
 
     /**
@@ -134,7 +181,8 @@ class BaseUsersTickets extends Base
 
         $code = $this->getDI()->getShared('cryptify')->generateAlphanumericCode($length);
         //unique constrait
-        $exists = self::getUserTicketByCode($this->user_id, $this->code);
+        $user_id = isset($this->user_id) ? $this->user_id : 0;
+        $exists  = self::getTicketByCode($this->code, $user_id);
 
         return $exists ? $this->generateRandomCode() : $code;
     }
