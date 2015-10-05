@@ -86,7 +86,7 @@ class Cacher
              if(!$result)
                 throw new Exception("Error setting key");
 
-            if(APP_ENVIRONMENT == "development") {
+            if(APP_ENVIRONMENT === "development") {
                 $di = DI::getDefault();
                 $logger = $di->getShared("logger");
                 $logger->debug("Cacher:set -> set key: $key => ".$value);
@@ -95,8 +95,6 @@ class Cacher
              return true;
          }
          catch(Exception $e) {
-
-             $this->_logError("Cacher -> Failed saving data to ".$this->adapter." server, key: ".$key, $e);
              return false;
          }
      }
@@ -123,8 +121,6 @@ class Cacher
             return $decode ? json_decode($result) : $result;
          }
          catch(Exception $e) {
-
-             $this->_logError("Cacher -> Failed retrieving data from ".$this->adapter." server, key: ".$key, $e);
              return null;
          }
      }
@@ -153,26 +149,11 @@ class Cacher
             return true;
          }
          catch(Exception $e) {
-
-             $this->_logError("Cacher -> Failed deleting data from ".$this->adapter." server, key: ".$key, $e);
              return null;
          }
      }
 
-     /* --------------------------------------------------- § -------------------------------------------------------- */
-
-     /**
-      * Logs catched errors
-      * @param  [string] $text The error text
-      * @param  [exception] $e  The exception
-      */
-     private function _logError($text, $e)
-     {
-         //get DI instance (static)
-         $di = DI::getDefault();
-         $logger = $di->getShared("logger");
-         $logger->error($text.". Err: ".$e->getMessage());
-     }
+    /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /** -------------------------------------------------------------------------------------------------
         Redis implementations
