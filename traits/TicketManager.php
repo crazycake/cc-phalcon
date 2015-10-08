@@ -161,12 +161,12 @@ trait TicketManager
     }
 
     /**
-     * Get Invoice PDFs, if many they are merged
+     * Get Invoice PDFs by buy orders, if many they are merged.
      * @param int $user_id The user id
      * @param array $buy_orders An array of buy orders
      * @return binary
      */
-    public function getInvoice($user_id = 0, $buy_orders = array())
+    public function getMergedInvoices($user_id = 0, $buy_orders = array())
     {
         try {
             if(empty($buy_orders))
@@ -319,7 +319,7 @@ trait TicketManager
         }
 
         if(isset($result->error)) {
-            $this->logger->error('TicketStorage::generateInvoiceForUserTickets ($type) -> Error while generating and storing PDF: '.$result->error);
+            $this->logger->error("TicketStorage::generateInvoiceForUserTickets ($type) -> Error while generating and storing PDF: $result->error");
             return $result;
         }
 
@@ -351,7 +351,7 @@ trait TicketManager
         $tickets = $getUserTicketsUI($user_id, $userTicketIds);
 
         if(!$tickets)
-            throw new Exception("No tickets found for userID: ".$user_id." & invoice: ".$invoiceName);
+            throw new Exception("No tickets found for userID: ".$user_id." & tickets Ids: ".json_encode($userTicketIds));
 
         //set file paths
         $pdf_filename = $invoiceName.".pdf";
