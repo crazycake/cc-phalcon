@@ -110,6 +110,7 @@ abstract class WebCore extends AppCore implements webSecurity
             "200" => "OK",
             "400" => "Bad Request",
             "403" => "Forbidden",
+            "404" => "Not Found",
             "405" => "Method Not Allowed",
             "498" => "Token expired/invalid",
             "500" => "Server Error"

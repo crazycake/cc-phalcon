@@ -102,7 +102,7 @@ trait Facebook
             //set message
             $this->view->setVar("error_message", $this->fbConfig['trans']['oauth_redirected']);
             $this->dispatcher->forward(array("controller" => "errors", "action" => "internal"));
-            $this->dispatcher->dispatch();
+            return;
         }
 
         //authenticated in settings controller

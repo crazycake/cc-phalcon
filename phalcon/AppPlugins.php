@@ -19,7 +19,7 @@ class ExceptionsPlugin extends \Phalcon\Mvc\User\Plugin
     }
 
 	/**
-	 * This action is executed before execute any action in the application
+	 * This action is executed before a exception ocurrs
 	 * @param Event $event
 	 * @param Dispatcher $dispatcher
 	 * @param Exception $exception
@@ -52,14 +52,14 @@ class ExceptionsPlugin extends \Phalcon\Mvc\User\Plugin
 					$forwardTo = array('controller' => 'errors', 'action' => 'notFound');
 					break;
 			}
-			
+
 			//log error?
 			if($logError)
 				$di->getShared('logger')->error("PhalconPHP Error -> Exception: ".$exception->getMessage());
 
 			//forward
 			$dispatcher->forward($forwardTo);
-			$this->dispatcher->dispatch();
+			return false;
 		}
 
 		if(APP_ENVIRONMENT !== 'production')
@@ -70,7 +70,7 @@ class ExceptionsPlugin extends \Phalcon\Mvc\User\Plugin
 
 		//Handle exception and forward to internal error page
 		$dispatcher->forward(array('controller' => 'errors', 'action' => 'internal'));
-		$this->dispatcher->dispatch();
+		return false;
 	}
 }
 
