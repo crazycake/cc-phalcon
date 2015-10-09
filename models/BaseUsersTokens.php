@@ -114,6 +114,7 @@ class BaseUsersTokens extends Base
         //Save a new temporal token
         $class = static::who();
         $token = new $class();
+        
         $token->user_id    = $user_id;
         $token->token      = uniqid();  //creates a 13 len token
         $token->type       = $type;

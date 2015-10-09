@@ -71,6 +71,16 @@ class BaseUsersTickets extends Base
         if(is_null($this->code))
             $this->code = $this->generateRandomCode();
     }
+    /** ---------------------------------------------------------------------------------------------- **/
+    public function afterFetch()
+    {
+        //get DI
+        $di = $this->getDI();
+        
+        //set ticket hashed id
+        if(isset($this->ticket_id))
+            $this->ticket_id_hashed = $di->get('cryptify')->encryptHashId($this->ticket_id);
+    }
     /** ------------------------------------------- § ------------------------------------------------ **/
 
     /**

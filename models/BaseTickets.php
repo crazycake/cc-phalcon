@@ -75,9 +75,8 @@ class BaseTickets extends Base
         //set class name used in UI
         $this->class_name = static::who();
 
-        //hashed ticket id?
-        if(isset($this->id_hashed))
-            $this->id_hashed = $this->getDI()->getShared('cryptify')->encryptHashId($this->id_hashed);
+        //set hashed id
+        $this->id_hashed = $this->getDI()->getShared('cryptify')->encryptHashId($this->id);
 
         //format ticket price (custom prop)
         if(isset($this->price) && isset($this->coin))
