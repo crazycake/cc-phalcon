@@ -295,10 +295,10 @@ trait TicketManager
      * @param int $user_id The user Id
      * @param object $data The data object (checkout or review, including transaction props & An array of user ticket IDs)
      * @param string $type The invoice type, checkout or review.
-     * @param boolean $save_s3 Saves the invoice in S3
+     * @param boolean $otf On the fly flag, if false saves invoice in S3.
      * @return mixed
      */
-    public function generateInvoiceForUserTickets($user_id, $data, $type = "checkout", $save_s3 = true)
+    public function generateInvoiceForUserTickets($user_id, $data, $type = "checkout", $otf = false)
     {
         //handle exceptions
         $result = new \stdClass();
@@ -306,9 +306,11 @@ trait TicketManager
         try {
             //set settings
             $this->pdf_settings["data_$type"] = $data;
-            $this->pdf_settings["save_s3"]    = $save_s3;
-            //generate invoice
+            $this->pdf_settings["otf"]        = $otf;
+
+            //set invoice name
             $invoiceName = ($type == "checkout") ? $data->buyOrder : $data->token;
+            //generate invoice
             $result->binary = $this->_generateInvoice($user_id, $invoiceName, $data->userTicketIds);
         }
         catch (\S3Exception $e) {
@@ -353,6 +355,10 @@ trait TicketManager
         if(!$tickets)
             throw new Exception("No tickets found for userID: ".$user_id." & tickets Ids: ".json_encode($userTicketIds));
 
+        //download qr tickets if invoice is for OTF actions
+        if($this->pdf_settings["otf"])
+            $this->_downloadTicketQrs($user_id, $tickets);
+
         //set file paths
         $pdf_filename = $invoiceName.".pdf";
         $output_path  = $this->storageConfig['local_temp_path'].$pdf_filename;
@@ -370,7 +376,7 @@ trait TicketManager
         $binary = (new PdfHelper())->generatePdfFileFromHtml($html_raw, $output_path, true);
 
         //upload pdf file to S3
-        if($this->pdf_settings["save_s3"]) {
+        if($this->pdf_settings["otf"]) {
 
             $s3_path = self::$DEFAULT_S3_URI."/".$user_id."/".$pdf_filename;
             $this->s3->putObject($output_path, $s3_path, true);
@@ -382,6 +388,40 @@ trait TicketManager
 
         return $binary;
     }
+
+
+    /**
+     * Download QR images to local folder for preload.
+     * This method is necessary for OTF invoice generator.
+     * @param  array  $userTickets The user tickets array
+     */
+    private function _downloadTicketQrs($user_id, $userTickets = array())
+    {
+        if(empty($userTickets))
+            return;
+
+        //loop through each ticket
+        foreach ($userTickets as $ticket) {
+
+            if(!isset($ticket->code))
+                continue;
+
+            //set configs
+            $qr_filename = $ticket->code.".png";
+            $qr_savepath = $this->storageConfig['local_temp_path'].$qr_filename;
+            $s3_path     = self::$DEFAULT_S3_URI."/".$user_id."/".$qr_filename;
+
+            //get image in S3
+            $binary = $this->s3->getObject($s3_path, true);
+
+            if(!$binary)
+                continue;
+
+            //save to disk
+            file_put_contents($qr_savepath, $binary);
+        }
+    }
+
     /**
      * Deletes temporary files in Local directory
      * @param string $path The path folder
