@@ -324,13 +324,8 @@ trait Session
      */
     protected function _redirectToAccount($check_logged_in = false)
     {
-        if ($check_logged_in) {
-
-            if($this->_checkUserIsLoggedIn())
-                $this->_redirectTo("account");
-
+        if ($check_logged_in && !$this->_checkUserIsLoggedIn())
             return;
-        }
 
         $this->_redirectTo("account");
     }
