@@ -76,7 +76,7 @@ class BaseUsersTickets extends Base
     {
         //get DI
         $di = $this->getDI();
-        
+
         //set ticket hashed id
         if(isset($this->ticket_id))
             $this->ticket_id_hashed = $di->get('cryptify')->encryptHashId($this->ticket_id);
@@ -192,12 +192,11 @@ class BaseUsersTickets extends Base
      */
     protected function generateRandomCode()
     {
-        $length = static::$TICKET_CODE_LEGTH;
-
-        $code = $this->getDI()->getShared('cryptify')->generateAlphanumericCode($length);
+        $code = $this->getDI()->getShared('cryptify')
+                              ->generateAlphanumericCode(static::$TICKET_CODE_LEGTH);
         //unique constrait
         $user_id = isset($this->user_id) ? $this->user_id : 0;
-        $exists  = self::getTicketByCode($this->code, $user_id);
+        $exists  = self::getTicketByCode($code, $user_id);
 
         return $exists ? $this->generateRandomCode() : $code;
     }

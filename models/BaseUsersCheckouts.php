@@ -63,7 +63,7 @@ class BaseUsersCheckouts extends Base
      * @static
      * @var array
      */
-    static $STATES = array('pending', 'failed', 'success');
+    static $STATES = array('pending', 'failed', 'overturn', 'success');
 
     /** -------------------------------------------- § -------------------------------------------------
         Init
