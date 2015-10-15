@@ -47,7 +47,7 @@ class Cacher
         if(is_null($adapter))
             throw new Exception("Cacher -> adapter param is invalid. Options: redis for the moment.");
 
-        //set DI reference (static)
+        //get DI reference (static)
         $di = DI::getDefault();
 
         //set adapter

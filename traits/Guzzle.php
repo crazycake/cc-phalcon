@@ -42,11 +42,18 @@ trait Guzzle
             return;
         }
 
-        $client = new GuzzleClient(['base_uri' => $url, 'timeout' => 30.0]);
+        try {
+            $client = new GuzzleClient(['base_uri' => $url, 'timeout' => 30.0]);
 
-        //reflection function
-        $action = "_".strtolower($method)."Request";
-        $this->$action($client, $uri, $data);
+            //reflection function
+            $action = "_".strtolower($method)."Request";
+            $this->$action($client, $uri, $data);
+        }
+        catch(Exception $e) {
+
+            if($di = DI::getDefault())
+                $di->getShared('logger')->error("Guzzle::sendAsyncRequest -> Something occurred: ".$e->getMessage());
+        }
     }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
@@ -59,8 +66,18 @@ trait Guzzle
      */
     private function _getRequest($client, $uri, $data)
     {
-        $promise = $client->getAsync("$uri/$data");
+        //curl options
+        $verify_host = (APP_ENVIRONMENT != "production") ? false : 2;
+        $verify_peer = (APP_ENVIRONMENT != "production") ? false : true;
 
+        $promise = $client->getAsync("$uri/$data", [
+            'curl' => [
+                CURLOPT_SSL_VERIFYHOST => $verify_host,
+                CURLOPT_SSL_VERIFYPEER => $verify_peer
+            ]
+        ]);
+
+        //send promise
         $this->_sendPromise($promise, $uri);
     }
 
@@ -72,11 +89,19 @@ trait Guzzle
      */
     private function _postRequest($client, $uri, $data)
     {
+        //curl options
+        $verify_host = (APP_ENVIRONMENT != "production") ? false : 2;
+        $verify_peer = (APP_ENVIRONMENT != "production") ? false : true;
+
         $promise = $client->postAsync($uri, [
-            'form_params' => ["payload" => $data]
+            'form_params' => ["payload" => $data],
+            'curl' => [
+                CURLOPT_SSL_VERIFYHOST => $verify_host,
+                CURLOPT_SSL_VERIFYPEER => $verify_peer
+            ]
         ]);
 
-        //logs response
+        //send promise
         $this->_sendPromise($promise, $uri);
     }
 
@@ -136,10 +161,15 @@ trait Guzzle
 
             $parts = parse_url($url);
 
+            $default_port = 80;
+
+            /*if($parts["sheme"] == "https")
+                $default_port = 443; //SSL*/
+
             // set socket to be opened
             $socket = fsockopen(
                 $parts['host'],
-                isset($parts['port']) ? $parts['port'] : 80,
+                isset($parts['port']) ? $parts['port'] : $default_port,
                 $errno,
                 $errstr,
                 30
