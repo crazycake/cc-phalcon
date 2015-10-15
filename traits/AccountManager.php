@@ -31,8 +31,12 @@ trait AccountManager
     protected function initialize()
     {
         parent::initialize();
+
         //check if user is logged in, if not dispatch to auth/logout
         $this->_checkUserIsLoggedIn(true);
+
+        //for auth required pages disable robots
+        $this->view->setVar("html_disallow_robots", true);
     }
     /* --------------------------------------------------- § -------------------------------------------------------- */
 

@@ -10,8 +10,16 @@ namespace CrazyCake\Traits;
 
 trait Errors
 {
-	//....
+    /** ---------------------------------------------------------------------------------------------------------------
+     * Init Function, is executed before any action on a controller
+     * ------------------------------------------------------------------------------------------------------------- **/
+    protected function initialize()
+    {
+        parent::initialize();
 
+        //disable robots
+        $this->view->setVar("html_disallow_robots", true);
+    }
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
 	/**
