@@ -43,9 +43,13 @@ class BaseResultset extends Resultset
 
         foreach ($result as $object) {
 
+            /*if(!$object instanceof Base)
+                continue;*/
+
             //get object properties & creates a new clean object
             $new_obj = new \stdClass();
             $props   = get_object_vars($object);
+            //print_r($props);exit;
 
             if(empty($props))
                 continue;
