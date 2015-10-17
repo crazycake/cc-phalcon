@@ -87,7 +87,7 @@ class Cryptify
     public function decryptForGetResponse($encrypted_text = "", $parse = false)
     {
         try {
-            if(empty($encrypted_text))
+            if(empty($encrypted_text) || !is_string($encrypted_text))
                 return false;
 
             //decrypt string
