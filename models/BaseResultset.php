@@ -30,7 +30,7 @@ class BaseResultset extends Resultset
     /**
      * Parse an array of objects for Json Struct (webservices)
      * @static
-     * @param array $result An array of reduced objects
+     * @param array $result A result array
      */
     private static function splitResult($result = array())
     {
@@ -48,7 +48,7 @@ class BaseResultset extends Resultset
 
             foreach ($props as $k => $v) {
 
-                //reduce properties than has a class prefix
+                //reduce properties that has a class prefix
                 $namespace = explode("_", $k);
 
                 //check property namespace, check if class exists in models (append plural noun)

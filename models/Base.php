@@ -34,7 +34,7 @@ class Base extends \Phalcon\Mvc\Model
     --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
-     * Find Object by ID (reduce parameter optional)
+     * Find Object by ID
      * @param int $id the object ID
      * @return Object
      */
@@ -92,15 +92,13 @@ class Base extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Get Objects by PHQL language (reduce parameter optional)
+     * Get Objects by PHQL language
      * @static
      * @param string $sql The PHQL query string
      * @param array $binds The binding params array
-     * @param boolean $reduce Reduces the ResultSet (optional)
-     * @param boolean $split Splits the ResultSet (optional)
      * @return array
      */
-    public static function getObjectsByPhql($phql = "SELECT 1", $binds = array(), $reduce = false, $split = false)
+    public static function getObjectsByPhql($phql = "SELECT 1", $binds = array())
     {
         if(is_null($binds))
             $binds = array();
@@ -111,7 +109,7 @@ class Base extends \Phalcon\Mvc\Model
         if(empty($result->count()))
             return false;
 
-        return $reduce ? BaseResultset::reduceResultset($result, $split) : $result;
+        return $result;
     }
 
     /**

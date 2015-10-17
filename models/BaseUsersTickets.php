@@ -90,7 +90,7 @@ class BaseUsersTickets extends Base
      * Get tickets by a array of Ids
      * @static
      * @param array $ids An array of Ids
-     * @param boolean $as_array flag to reduce resultset to array
+     * @param boolean $as_array flag to return resultset to array
      * @return mixed boolean or GuestUsersEventsTickets array
      */
     public static function getTicketsByIds($record_ids = array(), $as_array = false)
