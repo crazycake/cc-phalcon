@@ -61,8 +61,11 @@ class Cryptify
      * @param mixed [string|array] $data
      * @return string The encrypted string
      */
-    public function encryptForGetRequest($data)
+    public function encryptForGetRequest($data = null)
     {
+        if(empty($data) && $data != 0)
+            return false;
+
         //encode arrays as json
         $data = is_array($data) ? json_encode($data, JSON_UNESCAPED_SLASHES) : (string)$data;
 
@@ -81,9 +84,12 @@ class Cryptify
      * @param mixed [boolean|string] parse Optional, parse the string from a token (explode) or parses a json
      * @return mixed string|array The decrypted string
      */
-    public function decryptForGetResponse($encrypted_text, $parse = false)
+    public function decryptForGetResponse($encrypted_text = "", $parse = false)
     {
         try {
+            if(empty($encrypted_text))
+                return false;
+
             //decrypt string
             $decrypted_string = $this->crypt->decrypt(base64_decode(rawurldecode(str_replace('-', '%', $encrypted_text))));
             //remove null bytes in string
@@ -100,8 +106,11 @@ class Cryptify
             //get DI instance (static)
             $di = DI::getDefault();
 
-            $logger = $di->getShared("logger");
-            $logger->error("Criptify -> Failed decryptForGetResponse: ".$encrypted_text.". Err: ".$e->getMessage());
+            if($di->getShared("logger")) {
+                $logger = $di->getShared("logger");
+                $logger->error("Criptify -> Failed decryptForGetResponse: ".$encrypted_text.". Err: ".$e->getMessage());
+            }
+
             return null;
         }
     }
@@ -113,6 +122,9 @@ class Cryptify
      */
     public function encryptHashId($input_id)
     {
+        if(empty($inuput_id) && $input_id != 0)
+            return false;
+
         return $this->hashids->encode($input_id);
     }
 
@@ -123,6 +135,9 @@ class Cryptify
      */
     public function decryptHashId($hash)
     {
+        if(empty($hash))
+            return false;
+
         $data = $this->hashids->decode($hash);
 
         if (count($data) > 0)
