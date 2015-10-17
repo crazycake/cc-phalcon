@@ -116,7 +116,9 @@ trait AccountAuth
             if(!isset($user_id))
                 $user_id = "unknown";
 
-            $this->logger->error('AccountAuth::activationAction -> Error in account activation, encrypted data ('.$encrypted_data.", id: ".$user_id."). Trace: ".$e->getMessage());
+            $data = $encrypted_data ? $this->cryptify->decryptForGetResponse($encrypted_data) : "invalid hash";
+
+            $this->logger->error('AccountAuth::activationAction -> Error in account activation, decrypted data ('.$data.", id: ".$user_id."). Trace: ".$e->getMessage());
             $this->dispatcher->forward(array("controller" => "errors", "action" => "expired"));
         }
     }

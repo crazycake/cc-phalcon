@@ -108,7 +108,7 @@ class Cryptify
 
             if($di->getShared("logger")) {
                 $logger = $di->getShared("logger");
-                $logger->error("Criptify -> Failed decryptForGetResponse: ".$encrypted_text.". Err: ".$e->getMessage());
+                $logger->error("Cryptify -> Failed decryptForGetResponse: ".$encrypted_text.". Err: ".$e->getMessage());
             }
 
             return null;
