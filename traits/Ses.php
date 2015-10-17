@@ -35,11 +35,11 @@ trait Ses
      */
     public function sendContactAction()
     {
-        $data = $this->_handleRequestParams(array(
+        $data = $this->_handleRequestParams([
             'email'   => 'email',
             'name'    => 'string',
             'message' => 'string'
-        ));
+        ]);
 
         $data["subject"] = "Contacto ".$this->sesConfig['appName'];
 
