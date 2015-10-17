@@ -44,7 +44,7 @@ class BaseUsersFacebook extends Base
         $this->hasOne("user_id", "Users", "id");
 
         //Skips fields/columns on both INSERT/UPDATE operations
-        $this->skipAttributes( array('created_at') );
+        $this->skipAttributes(['created_at']);
     }
     /** ------------------------------------------- § ------------------------------------------------ **/
 

@@ -9,7 +9,6 @@ namespace CrazyCake\Models;
 //imports
 use Phalcon\Mvc\Model\Validator\InclusionIn;
 //other imports
-use CrazyCake\Utils\DateHelper;
 use CrazyCake\Utils\FormHelper;
 
 class BaseTickets extends Base
@@ -91,11 +90,11 @@ class BaseTickets extends Base
     ------------------------------------------------------------------------------------------------- **/
     public function validation()
     {
-        $this->validate( new InclusionIn(array(
+        $this->validate( new InclusionIn([
             "field"   => "state",
             "domain"  => self::$STATES,
             "message" => 'Invalid state. States supported: '.implode(", ", self::$STATES)
-         )));
+         ]));
 
         //check validations
         if ($this->validationHasFailed() == true)

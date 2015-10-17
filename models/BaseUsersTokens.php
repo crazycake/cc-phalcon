@@ -59,11 +59,11 @@ class BaseUsersTokens extends Base
     public function validation()
     {
         //type
-        $this->validate(new InclusionIn(array(
+        $this->validate(new InclusionIn([
             "field"   => "type",
             "domain"  => self::$TOKEN_TYPES,
             "message" => 'Invalid token type. Types supported: '.implode(", ", self::$TOKEN_TYPES)
-        )));
+        ]));
 
         //check validations
         if ($this->validationHasFailed() == true)
@@ -84,7 +84,7 @@ class BaseUsersTokens extends Base
         $conditions = "user_id = ?1 AND type = ?2 AND token = ?3";
         $parameters = array(1 => $user_id, 2 => $type, 3 => $token);
 
-        return self::findFirst( array($conditions, "bind" => $parameters) );
+        return self::findFirst([$conditions, "bind" => $parameters]);
     }
 
     /**
@@ -99,7 +99,7 @@ class BaseUsersTokens extends Base
         $conditions = "user_id = ?1 AND type = ?2";
         $parameters = array(1 => $user_id, 2 => $type);
 
-        return self::findFirst( array($conditions, "bind" => $parameters) );
+        return self::findFirst([$conditions, "bind" => $parameters]);
     }
 
     /**
@@ -114,7 +114,7 @@ class BaseUsersTokens extends Base
         //Save a new temporal token
         $class = static::who();
         $token = new $class();
-        
+
         $token->user_id    = $user_id;
         $token->token      = uniqid();  //creates a 13 len token
         $token->type       = $type;

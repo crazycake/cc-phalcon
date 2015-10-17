@@ -71,7 +71,7 @@ abstract class BaseUsers extends Base
     public function initialize()
     {
         //Skips fields/columns on both INSERT/UPDATE operations
-        $this->skipAttributes(array('created_at'));
+        $this->skipAttributes(['created_at']);
     }
     /** -------------------------------------------------------------------------------------------------
         Events
@@ -114,23 +114,23 @@ abstract class BaseUsers extends Base
     public function validation()
     {
         //email required
-        $this->validate(new Email(array(
+        $this->validate(new Email([
             'field'    => 'email',
             'required' => true
-        )));
+        ]));
 
         //email unique
-        $this->validate(new Uniqueness(array(
+        $this->validate(new Uniqueness([
             "field"   => "email",
             "message" => $this->getModelMessage("email_uniqueness")
-        )));
+        ]));
 
         //account flag
-        $this->validate(new InclusionIn(array(
+        $this->validate(new InclusionIn([
             "field"   => "account_flag",
             "domain"  => self::$ACCOUNT_FLAGS,
             "message" => 'Invalid user account flag. Flags supported: '.implode(", ", self::$ACCOUNT_FLAGS)
-        )));
+        ]));
 
         //check validations
         if ($this->validationHasFailed() == true)

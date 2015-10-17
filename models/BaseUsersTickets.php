@@ -6,9 +6,6 @@
 
 namespace CrazyCake\Models;
 
-//other imports
-use CrazyCake\Utils\DateHelper;
-
 class BaseUsersTickets extends Base
 {
     /* static vars */
