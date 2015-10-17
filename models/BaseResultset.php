@@ -15,102 +15,31 @@ class BaseResultset extends Resultset
     --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
-     * Parse ORM properties and returns a simple objects array
-     * NOTE: toArray() method ignores afterFetch event
-     * @param boolean $split Split objects flag
-     * @return mixed array
+     * Transform a result or array to JSON
+     * @param mixed $result
+     * @return string
      */
-    public function reduce($split = false)
+    public function toJson($result)
     {
-        return self::reduceResultset($this, $split);
+        if($result instanceof Resultset)
+            $result = $result->toArray();
+
+        return json_encode($result, JSON_UNESCAPED_SLASHES);
     }
-
-    /**
-     * reduces a ResultSet
-     * @param array $result A ResultSet object
-     * @param boolean $split The split flag
-     */
-    public static function reduceResultset($result, $split = false, $single = false)
-    {
-        if(!$result)
-            return false;
-
-        //check if result is a single object
-        if($single)
-            $result = [$result];
-
-        $objects = array();
-
-        foreach ($result as $object) {
-
-            /*if(!$object instanceof Base)
-                continue;*/
-
-            //get object properties & creates a new clean object
-            $new_obj = new \stdClass();
-            $props   = get_object_vars($object);
-            //print_r($props);exit;
-
-            if(empty($props))
-                continue;
-
-            foreach ($props as $key => $value)
-                $new_obj->{$key} = $value;
-
-            array_push($objects, $new_obj);
-        }
-
-        $result = $split ? self::_splitObjects($objects) : $objects;
-
-        return $single ? $result[0] : $result;
-    }
-
-    /**
-     * Returns an array of Ids of current resultSet object
-     * @param array $field The object field name
-     * @return array of Ids
-     */
-    public function toIdsArray($field = "id")
-    {
-        return self::getIdsArray($this, $field);
-    }
-
-    /**
-     * Returns an array of Ids of given objects
-     * @static
-     * @param array $result The resultSet array or a simple array
-     * @param array $field The object field name
-     * @param boolean $unique Flag for non repeated values
-     * @return array of Ids
-     */
-    public static function getIdsArray($result, $field = "id", $unique = true)
-    {
-        $ids = array();
-
-        foreach ($result as $object)
-            array_push($ids, $object->{$field});
-
-        if(empty($ids))
-            return false;
-
-        return $unique ? array_unique($ids) : $ids;
-    }
-
-    /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
      * Parse an array of objects for Json Struct (webservices)
      * @static
      * @param array $result An array of reduced objects
      */
-    private static function _splitObjects($result = array())
+    private static function splitResult($result = array())
     {
         $objects = array();
 
         //loop each object
         foreach ($result as $obj) {
             //get object properties
-            $props = get_object_vars($obj);
+            $props = is_array($obj) ? array_keys($obj) : get_object_vars($obj);
 
             if(empty($props))
                 continue;
@@ -152,4 +81,37 @@ class BaseResultset extends Resultset
 
         return $objects;
     }
+
+    /**
+     * Returns an array of Ids of current resultSet object
+     * @param array $field The object field name
+     * @return array of Ids
+     */
+    public function toIdsArray($field = "id")
+    {
+        return self::getIdsArray($this, $field);
+    }
+
+    /**
+     * Returns an array of Ids of given objects
+     * @static
+     * @param array $result The resultSet array or a simple array
+     * @param array $field The object field name
+     * @param boolean $unique Flag for non repeated values
+     * @return array of Ids
+     */
+    public static function getIdsArray($result, $field = "id", $unique = true)
+    {
+        $ids = array();
+
+        foreach ($result as $object)
+            array_push($ids, $object->{$field});
+
+        if(empty($ids))
+            return false;
+
+        return $unique ? array_unique($ids) : $ids;
+    }
+
+    /* --------------------------------------------------- § -------------------------------------------------------- */
 }

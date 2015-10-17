@@ -51,6 +51,11 @@ class BaseTickets extends Base
      */
     public $created_at;
 
+    /**
+     * Extended properties
+     */
+    public $_ext;
+
     /* inclusion vars */
 
     /**
@@ -65,22 +70,21 @@ class BaseTickets extends Base
     public function initialize()
     {
         //Skips fields/columns on both INSERT/UPDATE operations
-        $this->skipAttributes(array('created_at'));
+        $this->skipAttributes(['created_at, _ext']);
     }
     /** ------------------------------------------- § --------------------------------------------------
        Events
     ------------------------------------------------------------------------------------------------- **/
     public function afterFetch()
     {
-        //set class name used in UI
-        $this->class_name = static::who();
+        //extend properties
+        $id_hashed = $this->getDI()->getShared('cryptify')->encryptHashId($this->id);
 
-        //set hashed id
-        $this->id_hashed = $this->getDI()->getShared('cryptify')->encryptHashId($this->id);
+        $this->_ext = ["id_hashed" => $id_hashed];
 
         //format ticket price (custom prop)
-        if(isset($this->price) && isset($this->coin))
-            $this->_price_formatted = FormHelper::formatPrice($this->price, $this->coin);
+        if(!is_null($this->price) && !is_null($this->coin))
+            $this->_ext["price_formatted"] = FormHelper::formatPrice($this->price, $this->coin);
     }
     /** -------------------------------------------------------------------------------------------------
         Validations

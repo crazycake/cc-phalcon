@@ -45,6 +45,11 @@ class BaseUsersTickets extends Base
      */
     public $created_at;
 
+    /**
+     * Extended properties
+     */
+    public $_ext;
+
     /** ------------------------------------------- § --------------------------------------------------
         Init
     ------------------------------------------------------------------------------------------------- **/
@@ -56,7 +61,7 @@ class BaseUsersTickets extends Base
         }
 
         //Skips fields/columns on both INSERT/UPDATE operations
-        $this->skipAttributes( array('created_at') );
+        $this->skipAttributes(['created_at','_ext']);
     }
     /** -------------------------------------------------------------------------------------------------
         Events (don't forget to call parent::method)
@@ -74,12 +79,10 @@ class BaseUsersTickets extends Base
     /** ---------------------------------------------------------------------------------------------- **/
     public function afterFetch()
     {
-        //get DI
-        $di = $this->getDI();
+        //extend properties
+        $id_hashed = $this->getDI()->getShared('cryptify')->encryptHashId($this->id);
 
-        //set ticket hashed id
-        if(isset($this->ticket_id))
-            $this->ticket_id_hashed = $di->get('cryptify')->encryptHashId($this->ticket_id);
+        $this->_ext = ["id_hashed" => $id_hashed];
     }
     /** ------------------------------------------- § ------------------------------------------------ **/
 
@@ -145,7 +148,9 @@ class BaseUsersTickets extends Base
 
         //return user object
         if(isset($ticket->user_id)) {
+
             $usersClass = static::$DEFAULT_USERS_CLASS;
+
             return $usersClass::getObjectById($ticket->user_id);
         }
 
@@ -166,6 +171,7 @@ class BaseUsersTickets extends Base
         $p      = 0;
 
         for ($k = 1; $k <= $length; $k++) {
+
             $num  = chr(rand(48, 57));
             $char = chr(rand(97, 122));
             //append string
@@ -177,9 +183,7 @@ class BaseUsersTickets extends Base
         $hash = substr(str_shuffle($hash), 0, $length);
 
         //unique constrait
-        $exists = self::findFirst(array(
-            "qr_hash = '$hash'"
-        ));
+        $exists = self::findFirst(["qr_hash = '$hash'"]);
 
         return $exists ? $this->generateRandomHash($phrase) : $hash;
     }

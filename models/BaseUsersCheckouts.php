@@ -94,6 +94,7 @@ class BaseUsersCheckouts extends Base
     ------------------------------------------------------------------------------------------------- **/
     public function afterFetch()
     {
+        //id is not relevant in the model meta data
         $this->id = $this->buy_order;
     }
     /** ---------------------------------------------------------------------------------------------- **/

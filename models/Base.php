@@ -36,19 +36,13 @@ class Base extends \Phalcon\Mvc\Model
     /**
      * Find Object by ID (reduce parameter optional)
      * @param int $id the object ID
-     * @param boolean $reduce Reduce the object to a stdClass
      * @return Object
      */
-    public static function getObjectById($id, $reduce = false)
+    public static function getObjectById($id)
     {
-        $object = self::findFirst(array(
-            "id = '$id'" //conditions
-        ));
+        $object = self::findFirst(["id = '$id'"]); //conditions
 
-        if(!$reduce)
-            return $object;
-
-        return BaseResultset::reduceResultset($object, false, true);
+        return $object;
     }
 
     /**
