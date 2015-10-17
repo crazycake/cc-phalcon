@@ -117,15 +117,15 @@ class Cryptify
 
     /**
      * Encrypts a numeric ID and returns the hash
-     * @param int $input_id
+     * @param int $id
      * @return string
      */
-    public function encryptHashId($input_id)
+    public function encryptHashId($id)
     {
-        if(empty($inuput_id) && $input_id != 0)
+        if(empty($id) && $id != 0)
             return false;
 
-        return $this->hashids->encode($input_id);
+        return $this->hashids->encode($id);
     }
 
     /**
