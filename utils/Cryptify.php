@@ -140,10 +140,7 @@ class Cryptify
 
         $data = $this->hashids->decode($hash);
 
-        if (count($data) > 0)
-            return $data[0];
-        else
-            return false;
+        return count($data) > 0 ? $data[0] : false;
     }
 
     /**
@@ -164,8 +161,8 @@ class Cryptify
             $code .= ($p == 1) ? $num : $char;
         }
         //replace ambiguos chars
-        $placeholders = array("O", "I", "J", "B");
-        $replacers    = array("0", "1", "X", "3");
+        $placeholders = ["O", "I", "J", "B"];
+        $replacers    = ["0", "1", "X", "3"];
 
         return str_replace($placeholders, $replacers, $code);
     }

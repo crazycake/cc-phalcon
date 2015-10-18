@@ -101,7 +101,7 @@ trait Facebook
             $this->logger->error("Facebook::loginByRedirectAction -> An error ocurred: ".$response['fb_error']);
             //set message
             $this->view->setVar("error_message", $this->fbConfig['trans']['oauth_redirected']);
-            $this->dispatcher->forward(array("controller" => "errors", "action" => "internal"));
+            $this->dispatcher->forward(["controller" => "errors", "action" => "internal"]);
             return;
         }
 
@@ -144,8 +144,13 @@ trait Facebook
 
             //save new long-live access token?
             if ($fac_obj && $fac_obj->save) {
-                $user_fb->fac        = $fac_obj->token;
-                $user_fb->expires_at = $fac_obj->expires_at->format('Y-m-d H:i:s');
+
+                //set new access token
+                $user_fb->fac = $fac_obj->token;
+
+                if(method_exists($fac_obj->expires_at, 'format'))
+                    $user_fb->expires_at = $fac_obj->expires_at->format('Y-m-d H:i:s');
+
                 //update in db
                 $user_fb->update();
             }
@@ -153,7 +158,7 @@ trait Facebook
             //send JSON response with payload
             $this->_sendJsonResponse(200, ["fb_id" => $fb_id]);
         }
-        catch (\Exception $e) {
+        catch (Exception $e) {
             $this->logger->error("Facebook::extendAccessToken -> Somethig ocurred: ".$e->getMessage().". userFB: ".(isset($fb_id) ? $fb_id : "unknown"));
             $this->_sendJsonResponse(400);
         }
@@ -183,19 +188,19 @@ trait Facebook
             $fb_session = $this->__getUserFacebookSession($fac, $user_id);
 
             if(is_string($fb_session))
-                throw new \Exception("Invalid facebook session.");
+                throw new Exception("Invalid facebook session.");
 
             // Get the graph-user object for the current user (validation)
             $fb_data = (new FacebookRequest($fb_session, 'GET', '/me'))->execute()->getGraphObject(GraphUser::className());
 
             if(!$fb_data)
-                throw new \Exception("Invalid facebook data from GET service.");
+                throw new Exception("Invalid facebook data from GET service.");
 
             //parse user fb session properties
             $properties = $this->__parseUserPropertiesForDatabase($fb_data, $fb_session);
 
             if(!$properties)
-                throw new \Exception("Invalid facebook parsed properties.");
+                throw new Exception("Invalid facebook parsed properties.");
 
             return $properties;
         }
@@ -203,7 +208,7 @@ trait Facebook
             $this->logger->error("Facebook::getUserFacebookSessionProperties -> Somethig ocurred with facebook request: ".$e->getMessage().". userID: ".(isset($user_id) ? $user_id : "unknown"));
             return false;
         }
-        catch(\Exception $e) {
+        catch(Exception $e) {
             $this->logger->error("Facebook::getUserFacebookSessionProperties -> Somethig ocurred: ".$e->getMessage().". userID: ".(isset($user_id) ? $user_id : "unknown"));
             return false;
         }
@@ -269,7 +274,7 @@ trait Facebook
         try {
 
             if(is_null($session))
-                throw new \Exception($this->fbConfig['trans']['oauth_redirected']);
+                throw new Exception($this->fbConfig['trans']['oauth_redirected']);
 
             //get session data
             $fac   = $session->getToken();
@@ -280,13 +285,13 @@ trait Facebook
 
             //validate fb session properties
             if(!$properties)
-                throw new \Exception($this->fbConfig['trans']['session_error']);
+                throw new Exception($this->fbConfig['trans']['session_error']);
             //print_r($properties);exit;
 
             //email validation
             if (empty($properties['email']) || !filter_var($properties['email'], FILTER_VALIDATE_EMAIL)) {
                 $this->logger->error("Facebook::__loginUserFacebook() -> Facebook Session (" . $properties['fb_id'] . ") invalid email: " . $properties['email']);
-                throw new \Exception(str_replace("{email}", $properties['email'], $this->fbConfig['trans']['invalid_email']));
+                throw new Exception(str_replace("{email}", $properties['email'], $this->fbConfig['trans']['invalid_email']));
             }
 
             //OK, check if user exists in Users Facebook table & get session data
@@ -296,13 +301,13 @@ trait Facebook
             //check if user is logged, have a fb user, in and is attempting to loggin to facebook with another account
             if ($session_data && $session_data["fb_id"] && $session_data["fb_id"] != $fb_id) {
                 $this->logger->error("Facebook::__loginUserFacebook() -> App Session fb_id (" . $session_data["fb_id"]. ") & sdk session (" . $fb_id . ") data doesn't match.");
-                throw new \Exception($this->fbConfig['trans']['session_switched']);
+                throw new Exception($this->fbConfig['trans']['session_switched']);
             }
 
             //check user is logged in, dont a have a fb user and the loggin user has another user id.
             if($session_data && $user_fb && $user_fb->user_id != $session_data["id"]) {
                 $this->logger->error("Facebook::__loginUserFacebook() -> App Session fb_id (" . $session_data["fb_id"]. ") & sdk session (" . $fb_id . ") data doesn't match.");
-                throw new \Exception($this->fbConfig['trans']['account_switched']);
+                throw new Exception($this->fbConfig['trans']['account_switched']);
             }
 
             //check if user has already a account registered by email
@@ -317,7 +322,7 @@ trait Facebook
                     $properties['account_flag'] = 'enabled';
                 }
                 else if ($user->account_flag == 'disabled') {
-                    throw new \Exception($this->fbConfig['trans']['account_disabled']);
+                    throw new Exception($this->fbConfig['trans']['account_disabled']);
                 }
 
                 //update user ignoring arbitrary set keys
@@ -345,7 +350,7 @@ trait Facebook
                 true
             );
         }
-        catch (\Exception $e) {
+        catch (Exception $e) {
             //an error ocurred
             $login_data["fb_error"] = $e->getMessage();
             $login_data["properties"] = false;
@@ -353,6 +358,7 @@ trait Facebook
 
         //SAVES session if none error ocurred
         if (!isset($login_data["fb_error"])) {
+
             $login_data["fb_error"]   = false;
             $login_data["properties"] = $properties;
             //set php session as logged in
@@ -380,7 +386,7 @@ trait Facebook
                 $user_fb = $users_facebook_class::getFacebookDataByUserId($user_id);
                 //validates data
                 if(!$user_fb)
-                    throw new \Exception("invalid user id");
+                    throw new Exception("invalid user id");
 
                 //get access token
                 $fac = $user_fb->fac;
@@ -391,7 +397,7 @@ trait Facebook
 
             //validates session
             if (!$session->validate())
-                throw new \Exception("invalid facebook session");
+                throw new Exception("invalid facebook session");
 
             return $session;
         }
@@ -401,7 +407,7 @@ trait Facebook
             //get the facebook sdk exception
             return $e->getMessage();
         }
-        catch (\Exception $e) {
+        catch (Exception $e) {
             $this->logger->error("Facebook::__getUserFacebookSession() -> An exception raised: ".$e->getMessage());
             //another error ocurred
             return $e->getMessage();
@@ -436,7 +442,7 @@ trait Facebook
                 $session = $this->__getUserFacebookSession($short_live_fac);
 
                 if(is_string($session))
-                    throw new \Exception($session);
+                    throw new Exception($session);
             }
 
             //check expiration of token
@@ -460,7 +466,7 @@ trait Facebook
         catch (FacebookRequestException $e) {
             $this->logger->error('Facebook::__requestLongLiveAccessToken -> Error opening session for user_fb_id '.$user_fb->id.". Trace: ".$e->getMessage());
         }
-        catch (\Exception $e) {
+        catch (Exception $e) {
             $this->logger->error('Facebook::__requestLongLiveAccessToken -> Error opening session for user_fb_id '.$user_fb->id.". Trace: ".$e->getMessage());
         }
 
@@ -494,7 +500,8 @@ trait Facebook
 
             $user = $users_class::getObjectById($user_id);
             $user->delete();
-            throw new \Exception($this->fbConfig['trans']['session_error']); //raise an error
+            //raise an error
+            throw new Exception($this->fbConfig['trans']['session_error']);
         }
 
         return $user_fb;
@@ -515,6 +522,7 @@ trait Facebook
 
         //parse from array (Javascript SDK)
         if(is_object($fb_data)) {
+
             $properties['fb_id']      = $fb_data->getId();
             $properties['email']      = strtolower($fb_data->getEmail());
             $properties['first_name'] = $fb_data->getFirstName();
@@ -559,6 +567,7 @@ trait Facebook
         $base64_decode_url = function($str) {
             return base64_decode(strtr($str, '-_', '+/'));
         };
+
         //decode the data
         $data = json_decode($base64_decode_url($payload), true);
         //check algorithm

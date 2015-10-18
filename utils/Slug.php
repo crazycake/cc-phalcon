@@ -27,6 +27,7 @@ class Slug
         if (!extension_loaded('iconv')) {
             throw new Exception('Slug -> iconv module not loaded');
         }
+        
         // Save the old locale and set the new locale to UTF-8
         $oldLocale = setlocale(LC_ALL, '0');
         setlocale(LC_ALL, 'en_US.UTF-8');

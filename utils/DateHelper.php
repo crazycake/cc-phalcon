@@ -109,45 +109,45 @@ class DateHelper
 
         //format with year & month
         if(empty($day)) {
-            return $translate->_("%month% del %year%", array(
+            return $translate->_("%month% del %year%", [
                 "month" => $month,
                 "year"  => $year
-            ));
+            ]);
         }
 
         //format with day & month & time
         if(empty($year) && !empty($day) && !empty($time)) {
-            return $translate->_("%day% de %month%, a las %time% hrs.", array(
+            return $translate->_("%day% de %month%, a las %time% hrs.", [
                 "day"   => $day,
                 "month" => $month,
                 "time"  => $time
-            ));
+            ]);
         }
 
         //format with month & day
         if(empty($year)) {
-            return $translate->_("%day% %month%", array(
+            return $translate->_("%day% %month%", [
                 "day"   => $day,
                 "month" => $month
-            ));
+            ]);
         }
 
         //format with year, month & day
         if(empty($time)) {
-            return $translate->_("%day% de %month% del %year%", array(
+            return $translate->_("%day% de %month% del %year%", [
                 "day"   => $day,
                 "month" => $month,
                 "year"  => $year
-            ));
+            ]);
         }
 
         //format with year, month, day & time
-        return $translate->_("%day% de %month% del %year%, a las %time hrs.", array(
+        return $translate->_("%day% de %month% del %year%, a las %time hrs.", [
             "day"   => $day,
             "month" => $month,
             "year"  => $year,
             "time"  => $time
-        ));
+        ]);
     }
 
     /**

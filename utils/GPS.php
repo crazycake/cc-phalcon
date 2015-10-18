@@ -78,9 +78,9 @@ class GPS
                 break;
             default:
                 break;
-        }       
+        }
 
-        $coordinate = array((float)number_format($latitude, 6), (float)number_format($longitude, 6));
+        $coordinate = [(float)number_format($latitude, 6), (float)number_format($longitude, 6)];
         //var_dump($coordinate);exit;
 
         return $coordinate;

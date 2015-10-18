@@ -46,10 +46,12 @@ class UserAgent
 
         //get the short version
         $short_version = false;
+
         if ($data['version']) {
             $array         = explode(".", $data['version']);
             $short_version = current($array);
         }
+        
         $data['short_version'] = $short_version;
         //check if user agent is legacy
         $data['is_legacy'] = $this->_isUserAgentLegacy($data);

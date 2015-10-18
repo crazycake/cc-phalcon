@@ -97,7 +97,7 @@ trait AccountAuth
                 throw new Exception("user (id: ".$user->id.") don't have a pending account flag.");
 
             //save new account flag state
-            $user->update( array("account_flag" => 'enabled') );
+            $user->update(["account_flag" => 'enabled']);
 
             //get token object and remove it
             $token = $tokens_class::getTokenByUserAndValue($user_id, $token_type, $token);
@@ -119,7 +119,7 @@ trait AccountAuth
             $data = $encrypted_data ? $this->cryptify->decryptForGetResponse($encrypted_data) : "invalid hash";
 
             $this->logger->error('AccountAuth::activationAction -> Error in account activation, decrypted data ('.$data.", id: ".$user_id."). Trace: ".$e->getMessage());
-            $this->dispatcher->forward(array("controller" => "errors", "action" => "expired"));
+            $this->dispatcher->forward(["controller" => "errors", "action" => "expired"]);
         }
     }
 
@@ -137,10 +137,10 @@ trait AccountAuth
     public function loginAction()
     {
         //validate and filter request params data, second params are the required fields
-        $data = $this->_handleRequestParams(array(
+        $data = $this->_handleRequestParams([
             'email' => 'email',
             'pass'  => 'string'
-        ));
+        ]);
 
         //get model classes
         $users_class = $this->getModuleClassName('users');
@@ -214,10 +214,10 @@ trait AccountAuth
      */
     public function resendActivationMailMessageAction()
     {
-        $data = $this->_handleRequestParams(array(
+        $data = $this->_handleRequestParams([
             'email'                => 'email',
             'g-recaptcha-response' => 'string'
-        ));
+        ]);
 
         //get model classes
         $users_class = $this->getModuleClassName('users');

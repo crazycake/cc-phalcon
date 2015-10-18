@@ -25,7 +25,7 @@ class ReCaptcha
     /**
      * Constructor
      * @param string $secret_key
-     * @throws \Phalcon\Exception
+     * @throws Exception
      */
     public function __construct($secret_key = null)
     {
@@ -47,18 +47,18 @@ class ReCaptcha
     public function checkResponse($response)
     {
         //set URL
-        $url = self::GOOGLE_RECAPTCHA_API_URL . "?secret=" . $this->secret_key . "&response=" . $response; //."&remoteip=".$this->ip_address;
+        $url = self::GOOGLE_RECAPTCHA_API_URL . "?secret=" . $this->secret_key . "&response=" . $response;
 
         //prepare the request
         $curl = curl_init();
         //set options
-        curl_setopt_array($curl, array(
+        curl_setopt_array($curl, [
             CURLOPT_URL            => $url, // Set URL
             CURLOPT_RETURNTRANSFER => true, // Wait for response
             CURLOPT_TIMEOUT        => 10, // TimeOut seconds
             CURLOPT_SSL_VERIFYPEER => false, // Disable SSL verification
             CURLOPT_USERAGENT      => 'Phalcon-Curl', // UserAgent
-        ));
+        ]);
 
         //execute request
         $response   = curl_exec($curl);

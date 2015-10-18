@@ -123,10 +123,10 @@ trait AccountManager
         }
 
         //set paylaod
-        $payload = array(
+        $payload = [
             "user" => $updating_data,
             "msg"  => $this->accountConfig['trans']['profile_saved']
-        );
+        ];
         //send response
         $this->_sendJsonResponse(200, $payload);
     }

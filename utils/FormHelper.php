@@ -73,7 +73,7 @@ class FormHelper
         $translate = $di->getShared("translate");
 
         //days
-        $days_array = array();
+        $days_array = [];
         $days_array["0"] = $translate->_("Día");
         //loop
         for ($i = 1; $i <= 31; $i++) {
@@ -82,7 +82,7 @@ class FormHelper
         }
 
         //months
-        $months_array = array();
+        $months_array = [];
         $months_array["0"] = $translate->_("Mes");
         //loop
         for ($i = 1; $i <= 12; $i++) {
@@ -90,22 +90,21 @@ class FormHelper
             $month = strftime('%m', mktime(0, 0, 0, $i, 1));
 
             //get abbr month
-            if(class_exists("DateHelper")) {
+            if(class_exists("DateHelper"))
                 $month = DateHelper::getTranslatedMonthName($month, true);
-            }
 
             //set month array
             $months_array[$prefix] = $month;
         }
 
         //years
-        $years_array = array();
+        $years_array = [];
         $years_array["0"] = $translate->_("Año");
         //loop
         for ($i = (int) date('Y'); $i >= 1914; $i--)
             $years_array["_$i"] = $i;
 
-        return array($years_array, $months_array, $days_array);
+        return [$years_array, $months_array, $days_array];
     }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */

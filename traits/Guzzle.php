@@ -199,7 +199,7 @@ trait Guzzle
             fwrite($socket, $out);
             fclose($socket);
         }
-        catch(\Exception $e) {
+        catch(Exception $e) {
             $this->logger->error("Guzzle::_socketAsync -> Error on request ($url): $e");
         }
     }

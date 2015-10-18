@@ -44,12 +44,15 @@ class StorageS3
      */
     function __construct($access, $secret, $bucket) {
 
-        if(empty($access))
+        if(empty($access)) {
             throw new Exception("StorageS3::__construct -> param access is required and must be an non-empty value.");
-        else if(empty($secret))
+        }
+        else if(empty($secret)) {
             throw new Exception("StorageS3::__construct -> param secret is required and must be an non-empty value.");
-        else if(empty($bucket))
+        }
+        else if(empty($bucket)) {
             throw new Exception("StorageS3::__construct -> param bucket is required and must be an non-empty value.");
+        }
 
         $this->accessKey  = $access;
         $this->secretKey  = $secret;

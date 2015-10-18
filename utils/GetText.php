@@ -13,7 +13,7 @@ namespace CrazyCake\Utils;
 //imports
 use Phalcon\Translate\Adapter;
 use Phalcon\Translate\AdapterInterface;
-use Phalcon\Translate\Exception;
+use Phalcon\Exception;
 
 class GetText extends Adapter implements AdapterInterface
 {
@@ -46,10 +46,9 @@ class GetText extends Adapter implements AdapterInterface
     /**
      * Class constructor.
      * @param array $options Required options:
-     *                       (string) directory
-     *                       (string) domain
-     *                       (array) supported
-     * @throws \Phalcon\Translate\Exception
+     *     (string) directory
+     *     (string) domain
+     *     (array) supported
      */
     public function __construct($options)
     {
@@ -155,6 +154,7 @@ class GetText extends Adapter implements AdapterInterface
             $translation = dgettext($domain, $index);
 
         if (is_array($placeholders)) {
+
             foreach ($placeholders as $key => $value) {
                 $translation = str_replace('%' . $key . '%', $value, $translation);
             }
@@ -166,12 +166,11 @@ class GetText extends Adapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
-     * @param  string                    $msgid
-     * @param  string                    $msgctxt      Optional. If ommitted or NULL, this method behaves as query().
-     * @param  array                     $placeholders Optional.
-     * @param  string                    $category     Optional. Specify the locale category. Defaults to LC_MESSAGES
+     * @param  string  $msgid
+     * @param  string  $msgctxt      Optional. If ommitted or NULL, this method behaves as query().
+     * @param  array   $placeholders Optional.
+     * @param  string  $category     Optional. Specify the locale category. Defaults to LC_MESSAGES
      * @return string
-     * @throws \InvalidArgumentException
      */
     public function cquery($msgid, $msgctxt = null, $placeholders = null, $category = LC_MESSAGES, $domain = null)
     {
@@ -241,7 +240,7 @@ class GetText extends Adapter implements AdapterInterface
     public function nquery($msgid1, $msgid2, $count, $placeholders = null, $domain = null)
     {
         if (!is_int($count) || $count < 0) {
-            throw new \InvalidArgumentException("Count must be a nonnegative integer. $count given.");
+            throw new Exception("GetText:: Count must be a nonnegative integer. $count given.");
         }
 
         if (is_null($domain))
@@ -261,20 +260,19 @@ class GetText extends Adapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
-     * @param  string                    $msgid1
-     * @param  string                    $msgid2
-     * @param  integer                   $count
-     * @param  string                    $msgctxt      Optional. If ommitted or NULL, this method behaves as nquery().
-     * @param  array                     $placeholders Optional.
-     * @param  string                    $category     Optional. Specify the locale category. Defaults to LC_MESSAGES
+     * @param  string  $msgid1
+     * @param  string  $msgid2
+     * @param  integer $count
+     * @param  string  $msgctxt      Optional. If ommitted or NULL, this method behaves as nquery().
+     * @param  array   $placeholders Optional.
+     * @param  string  $category     Optional. Specify the locale category. Defaults to LC_MESSAGES
      * @return string
-     * @throws \InvalidArgumentException
      */
     public function cnquery($msgid1, $msgid2, $count, $msgctxt = null, $placeholders = null, $category = LC_MESSAGES, $domain = null)
     {
 
         if (!is_int($count) || $count < 0)
-            throw new \InvalidArgumentException("Count must be a nonnegative integer. $count given.");
+            throw new Exception("GetText:: Count must be a nonnegative integer. $count given.");
 
         if (is_null($msgctxt))
             return $this->nquery($msgid1, $msgid2, $count, $placeholders, $domain);
@@ -316,7 +314,7 @@ class GetText extends Adapter implements AdapterInterface
     public function dnquery($domain, $msgid1, $msgid2, $count, $msgctxt = null, $placeholders = null, $category = LC_MESSAGES)
     {
         if (!is_int($count) || $count < 0)
-            throw new \InvalidArgumentException("Count must be a nonnegative integer. $count given.");
+            throw new Exception("GetText:: Count must be a nonnegative integer. $count given.");
 
         return $this->cnquery($msgid1, $msgid2, $count, $msgctxt, $placeholders, $category, $domain);
     }

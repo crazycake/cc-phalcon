@@ -69,7 +69,7 @@ trait AccountPassRecovery
         }
         catch (Exception $e) {
             $this->logger->error('AccountPass::newAction -> Error in account activation, encrypted data (' . $encrypted_data . "). Trace: " . $e->getMessage());
-            $this->dispatcher->forward(array("controller" => "errors", "action" => "expired"));
+            $this->dispatcher->forward(["controller" => "errors", "action" => "expired"]);
         }
     }
 
@@ -79,10 +79,10 @@ trait AccountPassRecovery
     public function sendRecoveryInstructionsAction()
     {
         //validate and filter request params data, second params are the required fields
-        $data = $this->_handleRequestParams(array(
-            'email'                => 'email',
+        $data = $this->_handleRequestParams([
+            'email'                 => 'email',
             '@g-recaptcha-response' => 'string',
-        ));
+        ]);
 
         //google reCaptcha helper
         $recaptcha = new ReCaptcha($this->config->app->google->reCaptchaKey);
@@ -107,7 +107,7 @@ trait AccountPassRecovery
         $this->flash->success(str_replace("{email}", $data['email'], $this->accountConfig['trans']['pass_mail_sent']));
 
         //send JSON response
-        $this->_sendJsonResponse(200, array("redirectUri" => "signIn"));
+        $this->_sendJsonResponse(200, ["redirectUri" => "signIn"]);
         return;
     }
 
@@ -117,10 +117,10 @@ trait AccountPassRecovery
     public function saveNewPasswordAction()
     {
         //validate and filter request params data, second params are the required fields
-        $data = $this->_handleRequestParams(array(
+        $data = $this->_handleRequestParams([
             'edata' => 'string',
-            'pass'  => 'string',
-        ));
+            'pass'  => 'string'
+        ]);
 
         //validate encrypted data
         $payload = false;
@@ -139,7 +139,7 @@ trait AccountPassRecovery
                 throw new Exception("got an invalid user (id:" . $user_id . ") when validating encrypted data.");
 
             //save new account flag state
-            $user->update(array("pass" => $this->security->hash($data['pass'])));
+            $user->update(["pass" => $this->security->hash($data['pass'])]);
 
             //get token object
             $token = $tokens_class::getTokenByUserAndValue($user_id, $token_type, $token);
@@ -159,7 +159,7 @@ trait AccountPassRecovery
         }
 
         //send JSON response
-        $this->_sendJsonResponse(200,  array("redirectUri" => "signIn"));
+        $this->_sendJsonResponse(200, ["redirectUri" => "signIn"]);
         return;
     }
 }
