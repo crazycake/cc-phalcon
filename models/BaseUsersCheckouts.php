@@ -60,6 +60,12 @@ class BaseUsersCheckouts extends Base
     public $local_time;
 
     /**
+     * @var string
+     * The browser client
+     */
+    public $client;
+
+    /**
      * @static
      * @var array
      */
@@ -177,6 +183,7 @@ class BaseUsersCheckouts extends Base
         $checkout->amount        = $checkoutObj->amount;
         $checkout->coin          = $checkoutObj->coin;
         $checkout->invoice_email = $checkoutObj->invoiceEmail;
+        $checkout->client        = $checkoutObj->client;
 
         try {
             //begin trx
