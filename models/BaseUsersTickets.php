@@ -58,7 +58,7 @@ class BaseUsersTickets extends Base
         }
 
         //Skips fields/columns on both INSERT/UPDATE operations
-        $this->skipAttributes(['created_at','_ext']);
+        $this->skipAttributes(['_ext']);
     }
     /** -------------------------------------------------------------------------------------------------
         Events (don't forget to call parent::method)
@@ -72,6 +72,9 @@ class BaseUsersTickets extends Base
         //set alphanumeric code
         if(is_null($this->code))
             $this->code = $this->generateRandomCode();
+
+        //set created at
+        $this->created_at = date("Y-m-d H:i:s");
     }
     /** ---------------------------------------------------------------------------------------------- **/
     public function afterFetch()
