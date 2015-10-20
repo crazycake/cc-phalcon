@@ -77,24 +77,19 @@ class BaseUsersCheckoutsObjects extends Base
            }
 
            //create a new object and clone common props
-           $new_object = new \stdClass();
-           //merge common props
-           $new_object->id        = $obj->object_id;
-           $new_object->className = $object_class;
-           $new_object->quantity  = $obj->quantity;
+           $new_object = self::newCheckoutObject($obj->object_id, $object_class, $obj->quantity);
 
-           //select object props
+           //get object local props
            $props = $object_class::findFirst(array("id ='".$obj->object_id."'"));
 
-            if(!$props) {
+            if(!$props)
                 continue;
-            }
 
-           //object props
+           //extedend common object props
            $new_object->name  = $props->name;
            $new_object->price = $props->price;
            $new_object->coin  = $props->coin;
-           //aditional props
+           //UI props
            $new_object->formattedPrice = FormHelper::formatPrice($props->price, $props->coin);
            $new_object->formattedTotal = FormHelper::formatPrice($props->price * $obj->quantity, $props->coin);
 
@@ -102,5 +97,20 @@ class BaseUsersCheckoutsObjects extends Base
        }
 
        return $result;
+    }
+
+    /**
+     * Returns a new instance of a simple checkout object
+     * @return stdClass object
+     */
+    public static function newCheckoutObject($id = null, $className = "CheckoutObject", $quantity =  1) {
+
+        $new_object = new \stdClass();
+
+        $new_object->id        = $id;
+        $new_object->className = $className;
+        $new_object->quantity  = $quantity;
+
+        return $new_object;
     }
 }
