@@ -79,6 +79,29 @@ trait Ses
     }
 
     /**
+     * Sends a system mail for exception alert
+     * @param  object $exception An exception object
+     * @param  object $data      Informative appended data
+     */
+    public function sendSystemMailForException($exception, $data = null)
+    {
+        //Error on success checkout task
+        if(isset($this->logger))
+            $this->logger->error("Ses::sendExceptionSystemMail -> something ocurred, err: ".$exception->getMessage());
+
+        //Sending a warning to admin users!
+        $this->sendSystemMail([
+            "subject" => "Exception Notification Error",
+            "to"      => $this->config->app->emails->support,
+            "email"   => $this->config->app->emails->sender,
+            "name"    => $this->config->app->name." System",
+            "message" => "A error occurred.".
+                         "\n Data:  ".(is_null($data) ? "empty" : json_encode($data, JSON_UNESCAPED_SLASHES)).
+                         "\n Trace: ".$exception->getMessage()
+        ]);
+    }
+
+    /**
      * Async Handler - Sends mail account-checker
      * Sends an activation message
      * @param int $user_id
