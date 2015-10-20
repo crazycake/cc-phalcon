@@ -60,8 +60,10 @@ abstract class AppCore extends Controller
         if($mime_type == 'application/json')
             $data = str_replace("@payload", $data, self::JSON_RESPONSE_STRUCT);
 
-        if(isset($this->view))
+        if(isset($this->view)) {
             $this->view->disable();
+            return false;
+        }
 
         $this->response->setStatusCode(200, "OK");
         $this->response->setContentType($mime_type);
