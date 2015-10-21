@@ -309,7 +309,7 @@ trait TicketManager
             $this->pdf_settings["otf"]        = $otf;
 
             //set invoice name
-            $invoiceName = ($type == "checkout") ? $data->buyOrder : $data->token;
+            $invoiceName = $data->buyOrder;
             //generate invoice
             $result->binary = $this->_generateInvoice($user_id, $invoiceName, $data->userTicketIds);
         }
