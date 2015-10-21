@@ -30,8 +30,20 @@ class Base extends \Phalcon\Mvc\Model
         return __CLASS__;
     }
 
+    /* Events
+    ---------------------------------------------- § -------------------------------------------------- */
+
+    /**
+     * Set external props to always be null on updates
+     */
+    public function beforeValidationOnUpdate()
+    {
+        if(isset($this->_ext))
+            $this->_ext = null;
+    }
+
     /* Get Methods
-    --------------------------------------------------- § -------------------------------------------------------- */
+    ---------------------------------------------- § -------------------------------------------------- */
 
     /**
      * Find Object by ID

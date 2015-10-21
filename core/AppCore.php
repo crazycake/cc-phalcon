@@ -62,7 +62,7 @@ abstract class AppCore extends Controller
 
         if(isset($this->view)) {
             $this->view->disable();
-            return false;
+            //return false;
         }
 
         $this->response->setStatusCode(200, "OK");

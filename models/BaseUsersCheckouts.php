@@ -364,13 +364,7 @@ class BaseUsersCheckouts extends Base
      */
     public static function substractCheckoutObjectsQuantity($objects)
     {
-        /* NOTE: Funcion HARDCODED para mantener dos stocks compartidos de dos tickets */
-        $hardcodeFn = function($id, $classname, $vals) {
-
-            $ticket = $classname::getObjectById($id);
-            $ticket->update($vals);
-        };
-
+        //loop throught items and substract Q
         foreach ($objects as $obj) {
 
             if(empty($obj->quantity))
@@ -380,26 +374,25 @@ class BaseUsersCheckouts extends Base
 
             $orm_object       = $object_class::findFirst(array("id ='".$obj->id."'"));
             $current_quantity = $orm_object->quantity;
-            $updated_quantity = $current_quantity - $obj->quantity;
+            $updated_quantity = (int)($current_quantity - $obj->quantity);
 
-            $new_values = array();
+            $state = $orm_object->state;
 
             if($updated_quantity <= 0) {
                 $updated_quantity = 0;
                 //check state and update if stocked output
                 if($orm_object->state == "open")
-                    $new_values["state"] = "soldout";
+                    $state = "soldout";
             }
 
-            $new_values["quantity"] = $updated_quantity;
-            //update record
-            $orm_object->update($new_values);
-
-            //NOTE: HARDCODED!!, borrar esta mierda en un futuro, solo para ComicCon2s event y CosParty
-            if($obj->id == 3)
-                $hardcodeFn(8, $object_class, $new_values);
-            else if($obj->id == 8)
-                $hardcodeFn(3, $object_class, $new_values);
+            //update record throught query (safer than ORM)
+            self::executePhql(
+                "UPDATE $object_class
+                    SET quantity = ?1, state = ?2
+                    WHERE id = ?0
+                ",
+                [$orm_object->id, $updated_quantity, $state]
+            );
         }
     }
 }

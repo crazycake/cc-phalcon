@@ -95,6 +95,8 @@ abstract class BaseUsers extends Base
     /** ---------------------------------------------------------------------------------------------- **/
     public function beforeValidationOnUpdate()
     {
+        parent::beforeValidationOnUpdate();
+
         //set last login
         $this->last_login = date('Y-m-d H:i:s');
     }
