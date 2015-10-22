@@ -108,7 +108,6 @@ trait AccountPassRecovery
 
         //send JSON response
         $this->_sendJsonResponse(200, ["redirectUri" => "signIn"]);
-        return;
     }
 
     /**
@@ -154,12 +153,10 @@ trait AccountPassRecovery
         }
         catch (Exception $e) {
             $this->logger->error("AccountPass::saveNewPasswordAction -> Error saving new password. Trace: " . $e->getMessage());
-            $this->_sendJsonResponse(400);
-            return;
+            return $this->_sendJsonResponse(400);
         }
 
         //send JSON response
         $this->_sendJsonResponse(200, ["redirectUri" => "signIn"]);
-        return;
     }
 }

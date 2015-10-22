@@ -42,6 +42,8 @@ trait Guzzle
             return;
         }
 
+        $exception = false;
+
         try {
             $client = new GuzzleClient(['base_uri' => $url, 'timeout' => 30.0]);
 
@@ -49,10 +51,12 @@ trait Guzzle
             $action = "_".strtolower($method)."Request";
             $this->$action($client, $uri, $data);
         }
-        catch(Exception $e) {
+        catch(Exception $e)  { $exception = $e; }
+        catch(\Exception $e) { $exception = $e; }
 
-            if($di = DI::getDefault())
-                $di->getShared('logger')->error("Guzzle::sendAsyncRequest -> Something occurred: ".$e->getMessage());
+        if($exception) {
+            $di = DI::getDefault();
+            $di->getShared('logger')->error("Guzzle::sendAsyncRequest -> Exception: ".$exception->getMessage());
         }
     }
 
@@ -157,6 +161,8 @@ trait Guzzle
      */
     private function _socketAsync($url = "", $data = "", $method = "GET")
     {
+        $exception = false;
+
         try {
 
             $parts = parse_url($url);
@@ -199,8 +205,12 @@ trait Guzzle
             fwrite($socket, $out);
             fclose($socket);
         }
-        catch(Exception $e) {
-            $this->logger->error("Guzzle::_socketAsync -> Error on request ($url): $e");
+        catch(Exception $e)  { $exception = $e; }
+        catch(\Exception $e) { $exception = $e; }
+
+        if($exception) {
+            $di = DI::getDefault();
+            $di->getShared('logger')->error("Guzzle::_socketAsync -> Exception ($url): ".$exception->getMessage());
         }
     }
 }

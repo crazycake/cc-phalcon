@@ -3,6 +3,7 @@
  * Facebook Trait
  * This class has common actions for account facebook controllers
  * Requires a Frontend or Backend Module with CoreController and Session Trait
+ * TODO: update to sdk 5
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
@@ -14,9 +15,10 @@ use Phalcon\Exception;
 use Facebook\FacebookSession;
 use Facebook\FacebookRequest;
 use Facebook\GraphUser;
-use Facebook\FacebookRequestException;
 use Facebook\FacebookRedirectLoginHelper;
 use Facebook\FacebookJavaScriptLoginHelper;
+use Facebook\FacebookRequestException;
+//use Facebook\Exceptions\FacebookSDKException; for SDK 5
 //CrazyCake Utils
 use CrazyCake\Utils\DateHelper;
 
@@ -124,6 +126,8 @@ trait Facebook
         if (is_null($encrypted_data))
             return $this->_sendJsonResponse(405); //method not allowed
 
+        $exception  = false;
+
         try {
             //get encrypted facebook user id and short live access token
             $data = $this->cryptify->decryptForGetResponse($encrypted_data, "#");
@@ -158,12 +162,11 @@ trait Facebook
             //send JSON response with payload
             $this->_sendJsonResponse(200, ["fb_id" => $fb_id]);
         }
-        catch (Exception $e) {
-            $this->logger->error("Facebook::extendAccessToken -> Phalcon exception: ".$e->getMessage().". userFB: ".(isset($fb_id) ? $fb_id : "unknown"));
-            $this->_sendJsonResponse(400);
-        }
-        catch (\Exception $e) {
-            $this->logger->error("Facebook::extendAccessToken -> PHP exception: ".$e->getMessage().". userFB: ".(isset($fb_id) ? $fb_id : "unknown"));
+        catch (Exception $e)  { $exception = $e; }
+        catch (\Exception $e) { $exception = $e; }
+
+        if($exception) {
+            $this->logger->error("Facebook::extendAccessToken -> PHP exception: ".$exception->getMessage().". userFB: ".(isset($fb_id) ? $fb_id : "unknown"));
             $this->_sendJsonResponse(400);
         }
     }
@@ -187,6 +190,8 @@ trait Facebook
      */
     public function getUserFacebookSessionProperties($fac = null, $user_id = 0)
     {
+        $exception  = false;
+
         try {
             //get session using short access token or with saved access token
             $fb_session = $this->__getUserFacebookSession($fac, $user_id);
@@ -208,16 +213,13 @@ trait Facebook
 
             return $properties;
         }
-        catch (FacebookRequestException $e) {
-            $this->logger->error("Facebook::getUserFacebookSessionProperties -> Somethig ocurred with facebook request: ".$e->getMessage().". userID: ".(isset($user_id) ? $user_id : "unknown"));
-            return false;
-        }
-        catch(Exception $e) {
-            $this->logger->error("Facebook::getUserFacebookSessionProperties -> Phalcon exception: ".$e->getMessage().". userID: ".(isset($user_id) ? $user_id : "unknown"));
-            return false;
-        }
-        catch(\Exception $e) {
-            $this->logger->error("Facebook::getUserFacebookSessionProperties -> PHP exception: ".$e->getMessage().". userID: ".(isset($user_id) ? $user_id : "unknown"));
+        catch (FacebookRequestException $e) { $exception = $e; }
+        catch (Exception $e)  { $exception = $e; }
+        catch (\Exception $e) { $exception = $e; }
+
+        //an error ocurred
+        if ($exception) {
+            $this->logger->error("Facebook::getUserFacebookSessionProperties -> Exception: ".$exception->getMessage().". userID: ".(isset($user_id) ? $user_id : "unknown"));
             return false;
         }
     }
@@ -359,12 +361,12 @@ trait Facebook
                 true
             );
         }
-        catch (Exception $e) { $exception = true; }
-        catch (\Exception $e) { $exception = true; }
+        catch (Exception $e)  { $exception = $e; }
+        catch (\Exception $e) { $exception = $e; }
 
         //an error ocurred
         if ($exception) {
-            $login_data["fb_error"] = $e->getMessage();
+            $login_data["fb_error"] = $exception->getMessage();
             $login_data["properties"] = false;
         }
 
@@ -391,6 +393,8 @@ trait Facebook
     {
         $users_facebook_class = $this->getModuleClassName('users_facebook');
 
+        $exception = false;
+
         try {
 
             if(is_null($fac)) {
@@ -413,17 +417,13 @@ trait Facebook
 
             return $session;
         }
-        catch (FacebookRequestException $e) {
-            $this->logger->error("Facebook::__getUserFacebookSession() -> A Facebook exception raised: ".$e->getMessage());
-            return $e->getMessage();
-        }
-        catch (Exception $e) {
-            $this->logger->error("Facebook::__getUserFacebookSession() -> A phalcon exception raised: ".$e->getMessage());
-            return $e->getMessage();
-        }
-        catch (\Exception $e) {
-            $this->logger->error("Facebook::__getUserFacebookSession() -> A PHP exception raised: ".$e->getMessage());
-            return $e->getMessage();
+        catch (FacebookRequestException $e) { $exception = $e; }
+        catch(Exception $e)  { $exception = $e; }
+        catch(\Exception $e) { $exception = $e; }
+
+        if($exception) {
+            $this->logger->error("Facebook::__getUserFacebookSession() -> A Facebook exception raised: ".$exception->getMessage());
+            return $exception->getMessage();
         }
     }
 
@@ -448,6 +448,8 @@ trait Facebook
         $fac_obj->token      = $short_live_fac;
         $fac_obj->expires_at = 0;
         $fac_obj->days_left  = 0;
+
+        $exception = false;
 
         try {
             //if session is null open a facebook session with a fresh short-live access token
@@ -476,14 +478,12 @@ trait Facebook
             $fac_obj->expires_at = $session->getSessionInfo()->getExpiresAt();
             $fac_obj->days_left  = $days_left;
         }
-        catch (FacebookRequestException $e) {
-            $this->logger->error('Facebook::__requestLongLiveAccessToken -> Error opening session for user_fb_id '.$user_fb->id.". Trace: ".$e->getMessage());
-        }
-        catch (Exception $e) {
-            $this->logger->error('Facebook::__requestLongLiveAccessToken -> Error opening session for user_fb_id '.$user_fb->id.". Trace: ".$e->getMessage());
-        }
-        catch (\Exception $e) {
-            $this->logger->error('Facebook::__requestLongLiveAccessToken -> Error opening session for user_fb_id '.$user_fb->id.". Trace: ".$e->getMessage());
+        catch (FacebookRequestException $e) { $exception = $e; }
+        catch(Exception $e)  { $exception = $e; }
+        catch(\Exception $e) { $exception = $e; }
+
+        if($exception) {
+            $this->logger->error('Facebook::__requestLongLiveAccessToken -> Error opening session for user_fb_id '.$user_fb->id.". Trace: ".$exception->getMessage());
         }
 
         return $fac_obj;
