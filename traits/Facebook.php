@@ -462,7 +462,7 @@ trait Facebook
             $days_left = DateHelper::getTimePassedFromDate($session->getSessionInfo()->getExpiresAt());
 
             //check if access token is about to expire
-            if ($days_left < $this->fbConfig['access_token_expiration_threshold']) {
+            if ($days_left <= $this->fbConfig['access_token_expiration_threshold']) {
                 $this->logger->log('Facebook::__requestLongLiveAccessToken -> Requested a new long live access token for user_fb_id: ' . $user_fb->id);
 
                 $fac_obj->save = true;
