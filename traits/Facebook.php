@@ -159,7 +159,11 @@ trait Facebook
             $this->_sendJsonResponse(200, ["fb_id" => $fb_id]);
         }
         catch (Exception $e) {
-            $this->logger->error("Facebook::extendAccessToken -> Somethig ocurred: ".$e->getMessage().". userFB: ".(isset($fb_id) ? $fb_id : "unknown"));
+            $this->logger->error("Facebook::extendAccessToken -> Phalcon exception: ".$e->getMessage().". userFB: ".(isset($fb_id) ? $fb_id : "unknown"));
+            $this->_sendJsonResponse(400);
+        }
+        catch (\Exception $e) {
+            $this->logger->error("Facebook::extendAccessToken -> PHP exception: ".$e->getMessage().". userFB: ".(isset($fb_id) ? $fb_id : "unknown"));
             $this->_sendJsonResponse(400);
         }
     }
@@ -209,7 +213,11 @@ trait Facebook
             return false;
         }
         catch(Exception $e) {
-            $this->logger->error("Facebook::getUserFacebookSessionProperties -> Somethig ocurred: ".$e->getMessage().". userID: ".(isset($user_id) ? $user_id : "unknown"));
+            $this->logger->error("Facebook::getUserFacebookSessionProperties -> Phalcon exception: ".$e->getMessage().". userID: ".(isset($user_id) ? $user_id : "unknown"));
+            return false;
+        }
+        catch(\Exception $e) {
+            $this->logger->error("Facebook::getUserFacebookSessionProperties -> PHP exception: ".$e->getMessage().". userID: ".(isset($user_id) ? $user_id : "unknown"));
             return false;
         }
     }
@@ -270,6 +278,7 @@ trait Facebook
 
         //the data response
         $login_data = array();
+        $exception  = false;
 
         try {
 
@@ -350,8 +359,11 @@ trait Facebook
                 true
             );
         }
-        catch (Exception $e) {
-            //an error ocurred
+        catch (Exception $e) { $exception = true; }
+        catch (\Exception $e) { $exception = true; }
+
+        //an error ocurred
+        if ($exception) {
             $login_data["fb_error"] = $e->getMessage();
             $login_data["properties"] = false;
         }
@@ -402,14 +414,15 @@ trait Facebook
             return $session;
         }
         catch (FacebookRequestException $e) {
-
             $this->logger->error("Facebook::__getUserFacebookSession() -> A Facebook exception raised: ".$e->getMessage());
-            //get the facebook sdk exception
             return $e->getMessage();
         }
         catch (Exception $e) {
-            $this->logger->error("Facebook::__getUserFacebookSession() -> An exception raised: ".$e->getMessage());
-            //another error ocurred
+            $this->logger->error("Facebook::__getUserFacebookSession() -> A phalcon exception raised: ".$e->getMessage());
+            return $e->getMessage();
+        }
+        catch (\Exception $e) {
+            $this->logger->error("Facebook::__getUserFacebookSession() -> A PHP exception raised: ".$e->getMessage());
             return $e->getMessage();
         }
     }
@@ -467,6 +480,9 @@ trait Facebook
             $this->logger->error('Facebook::__requestLongLiveAccessToken -> Error opening session for user_fb_id '.$user_fb->id.". Trace: ".$e->getMessage());
         }
         catch (Exception $e) {
+            $this->logger->error('Facebook::__requestLongLiveAccessToken -> Error opening session for user_fb_id '.$user_fb->id.". Trace: ".$e->getMessage());
+        }
+        catch (\Exception $e) {
             $this->logger->error('Facebook::__requestLongLiveAccessToken -> Error opening session for user_fb_id '.$user_fb->id.". Trace: ".$e->getMessage());
         }
 
