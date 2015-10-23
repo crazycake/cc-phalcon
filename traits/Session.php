@@ -29,11 +29,25 @@ trait Session
      */
     protected $user_session;
 
+    /**
+     * Init constructor
+     */
     protected function _init()
     {
         //exclude api controller includes
         if(MODULE_NAME == "api")
             return;
+
+        //check for non secure connection
+        if(APP_ENVIRONMENT == 'production'
+            && isset($this->config->app->enableProductionSSL)
+            && $this->config->app->enableProductionSSL
+            && !$this->request->isSecureRequest()) {
+
+            $url = "https://".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
+            $this->response->redirect($url);
+            return false;
+        }
 
         //set session var
         $this->user_session = $this->_getUserSessionData();

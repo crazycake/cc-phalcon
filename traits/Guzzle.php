@@ -72,8 +72,8 @@ trait Guzzle
     private function _getRequest($client, $uri, $data)
     {
         //curl options
-        $verify_host = (APP_ENVIRONMENT != "production") ? false : false;
-        $verify_peer = (APP_ENVIRONMENT != "production") ? false : false;
+        $verify_host = (APP_ENVIRONMENT != "production") ? false : 2; //prod_recommended: 2
+        $verify_peer = (APP_ENVIRONMENT != "production") ? false : true; //prod_recommended: true
 
         $promise = $client->getAsync("$uri/$data", [
             'curl' => [
@@ -95,8 +95,8 @@ trait Guzzle
     private function _postRequest($client, $uri, $data)
     {
         //curl options
-        $verify_host = (APP_ENVIRONMENT != "production") ? false : false;
-        $verify_peer = (APP_ENVIRONMENT != "production") ? false : false;
+        $verify_host = (APP_ENVIRONMENT != "production") ? false : 2;
+        $verify_peer = (APP_ENVIRONMENT != "production") ? false : true;
 
         $promise = $client->postAsync($uri, [
             'form_params' => ["payload" => $data],
