@@ -187,6 +187,17 @@ trait AccountAuth
         //validate and filter request params data, second params are the required fields
         $data = $this->_handleRequestParams(array_merge($default_params, $setting_params));
 
+        //validate names
+        $nums = '0123456789';
+        if(strcspn($data['first_name'], $nums) != strlen($data['first_name'])
+           || strcspn($data['last_name'], $nums) != strlen($data['last_name'])) {
+            $this->_sendJsonResponse(200, $this->accountConfig['trans']['invalid_names'], 'alert');
+        }
+
+        //format to capitalized name
+        $data["first_name"] = mb_convert_case($data["first_name"], MB_CASE_TITLE, 'UTF-8');
+        $data["last_name"]  = mb_convert_case($data["last_name"], MB_CASE_TITLE, 'UTF-8');
+
         //get model classes
         $users_class = $this->getModuleClassName('users');
         //set pending email confirmation status
