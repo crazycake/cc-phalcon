@@ -55,7 +55,7 @@ trait Guzzle
         catch(\Exception $e) { $exception = $e; }
 
         if($exception) {
-            $di = DI::getDefault();
+            $di = \Phalcon\DI::getDefault();
             $di->getShared('logger')->error("Guzzle::sendAsyncRequest -> Exception: ".$exception->getMessage());
         }
     }
@@ -209,7 +209,7 @@ trait Guzzle
         catch(\Exception $e) { $exception = $e; }
 
         if($exception) {
-            $di = DI::getDefault();
+            $di = \Phalcon\DI::getDefault();
             $di->getShared('logger')->error("Guzzle::_socketAsync -> Exception ($url): ".$exception->getMessage());
         }
     }

@@ -104,7 +104,7 @@ class Cryptify
         catch (Exception $e) {
 
             //get DI instance (static)
-            $di = DI::getDefault();
+            $di = \Phalcon\DI::getDefault();
 
             if($di->getShared("logger")) {
                 $logger = $di->getShared("logger");

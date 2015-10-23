@@ -48,7 +48,7 @@ class Cacher
             throw new Exception("Cacher -> adapter param is invalid. Options: redis for the moment.");
 
         //get DI reference (static)
-        $di = DI::getDefault();
+        $di = \Phalcon\DI::getDefault();
 
         //set adapter
         $this->adapter = ucfirst($adapter);
@@ -87,7 +87,7 @@ class Cacher
                 throw new Exception("Error setting key");
 
             if(APP_ENVIRONMENT === "development") {
-                $di = DI::getDefault();
+                $di = \Phalcon\DI::getDefault();
                 $logger = $di->getShared("logger");
                 $logger->debug("Cacher:set -> set key: $key => ".$value);
             }
