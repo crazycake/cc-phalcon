@@ -56,7 +56,8 @@ trait Guzzle
 
         if($exception) {
             $di = \Phalcon\DI::getDefault();
-            $di->getShared('logger')->error("Guzzle::sendAsyncRequest -> Exception: ".$exception->getMessage());
+            $di->getShared('logger')->error("Guzzle::sendAsyncRequest -> $url, $uri, Exception: ".$exception->getMessage()."\n".
+            $exception->getLine()." ".$e->getFile()."\n".$e->getTraceAsString());
         }
     }
 
@@ -71,8 +72,8 @@ trait Guzzle
     private function _getRequest($client, $uri, $data)
     {
         //curl options
-        $verify_host = (APP_ENVIRONMENT != "production") ? false : 2;
-        $verify_peer = (APP_ENVIRONMENT != "production") ? false : true;
+        $verify_host = (APP_ENVIRONMENT != "production") ? false : false;
+        $verify_peer = (APP_ENVIRONMENT != "production") ? false : false;
 
         $promise = $client->getAsync("$uri/$data", [
             'curl' => [
@@ -94,8 +95,8 @@ trait Guzzle
     private function _postRequest($client, $uri, $data)
     {
         //curl options
-        $verify_host = (APP_ENVIRONMENT != "production") ? false : 2;
-        $verify_peer = (APP_ENVIRONMENT != "production") ? false : true;
+        $verify_host = (APP_ENVIRONMENT != "production") ? false : false;
+        $verify_peer = (APP_ENVIRONMENT != "production") ? false : false;
 
         $promise = $client->postAsync($uri, [
             'form_params' => ["payload" => $data],
