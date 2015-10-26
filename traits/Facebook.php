@@ -358,7 +358,7 @@ trait Facebook
                 [$this->fbConfig['controller_name'] => "extendAccessToken"],
                 $fb_id."#".$fac,
                 "GET",
-                true
+                false
             );
         }
         catch (Exception $e)  { $exception = $e; }
@@ -461,22 +461,22 @@ trait Facebook
             }
 
             //check expiration of token
-            $days_left = DateHelper::getTimePassedFromDate($session->getSessionInfo()->getExpiresAt());
+            $days_passed = DateHelper::getTimePassedFromDate($session->getSessionInfo()->getExpiresAt());
 
             //check if access token is about to expire
-            if ($days_left <= $this->fbConfig['access_token_expiration_threshold']) {
+            if ($days_passed > $this->fbConfig['access_token_expiration_threshold']) {
                 $this->logger->log('Facebook::__requestLongLiveAccessToken -> Requested a new long live access token for user_fb_id: ' . $user_fb->id);
 
                 $fac_obj->save = true;
                 $session = $session->getLongLivedSession();
                 //update expiration days left
-                $days_left = DateHelper::getTimePassedFromDate($session->getSessionInfo()->getExpiresAt());
+                $days_passed = DateHelper::getTimePassedFromDate($session->getSessionInfo()->getExpiresAt());
             }
 
             //set object properties
             $fac_obj->token      = $session->getToken();
             $fac_obj->expires_at = $session->getSessionInfo()->getExpiresAt();
-            $fac_obj->days_left  = $days_left;
+            $fac_obj->days_left  = $days_passed;
         }
         catch (FacebookRequestException $e) { $exception = $e; }
         catch(Exception $e)  { $exception = $e; }
