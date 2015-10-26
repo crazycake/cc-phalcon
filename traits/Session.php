@@ -40,6 +40,7 @@ trait Session
 
         //check for non secure connection
         if(APP_ENVIRONMENT == 'production'
+            && isset($_SERVER["HTTP_HOST"])
             && isset($this->config->app->enableProductionSSL)
             && $this->config->app->enableProductionSSL
             && !$this->request->isSecureRequest()) {
