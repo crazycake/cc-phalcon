@@ -335,7 +335,7 @@ trait Checkout
      * @param string $objectsClass The checkout objects class name
      * @param object $parentObject The parent object
      */
-    private function _setupCheckoutView($categoryId = 0, $categoryType = "", $user = null, $objects = array(), $objectsClass = "")
+    private function _setupCheckoutView($categoryId = 0, $categoryType = "", $user = null, $objects = array(), $objectsClass = "", $view = "default")
     {
         //default inputs for checkout
         $inputs = [
@@ -388,6 +388,9 @@ trait Checkout
                 "objectsClass"  => $objectsClass
             ]
         ]);
+
+        //pick view
+        $this->view->pick("checkout/$view");
     }
 
     /**
