@@ -175,7 +175,7 @@ class BaseUsersCheckouts extends Base
         //generates buy order
         $buy_order = self::generateBuyOrder(static::$BUY_ORDER_CODE_LENGTH);
 
-        //creates object
+        //creates object with some checkout object props
         $checkout = new $checkoutModel();
         $checkout->user_id       = $user_id;
         $checkout->buy_order     = $buy_order;
