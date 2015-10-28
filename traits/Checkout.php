@@ -318,7 +318,7 @@ trait Checkout
         //log
         $this->logger->debug("CheckoutTrait::skipPaymentAction -> Skipped payment for userId: ".$checkoutOrm->user_id.", BO: ".$checkout->buyOrder);
         //call succes checkout
-        $this->successCheckout($checkout, false);
+        $this->successCheckout($checkout);
 
         //set flash message
         $this->flash->success($this->checkoutConfig["trans"]["success_checkout"]);

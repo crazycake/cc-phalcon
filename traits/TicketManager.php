@@ -293,25 +293,25 @@ trait TicketManager
     /**
      * Handler - Generates Checkout invoice with tickets as PDF file output
      * @param int $user_id The user Id
-     * @param object $data The data object (checkout or review, including transaction props & An array of user ticket IDs)
+     * @param object $checkout The checkout object
      * @param string $type The invoice type, checkout or review.
      * @param boolean $otf On the fly flag, if false saves invoice in S3.
      * @return mixed
      */
-    public function generateInvoice($user_id, $data, $type = "checkout", $otf = false)
+    public function generateInvoice($user_id, $checkout, $otf = false)
     {
         //handle exceptions
         $result = new \stdClass();
 
         try {
-            //set settings
-            $this->pdf_settings["data_$type"] = $data;
-            $this->pdf_settings["otf"]        = $otf;
+
+            $this->pdf_settings["data_checkout"] = $checkout;
+            $this->pdf_settings["otf"]           = $otf;
 
             //set invoice name
-            $invoiceName = isset($data->buyOrder) ? $data->buyOrder : uniqid()."_".date('d-m-Y');
+            $invoiceName = isset($checkout->buyOrder) ? $checkout->buyOrder : uniqid()."_".date('d-m-Y');
             //generate invoice
-            $result->binary = $this->_buildInvoice($user_id, $invoiceName, $data->newObjectIds);
+            $result->binary = $this->_buildInvoice($user_id, $invoiceName, $checkout->newObjectIds);
         }
         catch (\S3Exception $e) {
             $result->error = $e->getMessage();
