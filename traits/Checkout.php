@@ -10,7 +10,9 @@ namespace CrazyCake\Traits;
 
 //imports
 use Phalcon\Exception;
+//other imports
 use CrazyCake\Utils\Cacher;
+use CrazyCake\Utils\FormHelper;
 
 trait Checkout
 {
@@ -92,6 +94,7 @@ trait Checkout
             $users_checkout_class = $this->getModuleClassName('users_checkouts');
             //save checkout detail in DB
             $checkoutOrm = $users_checkout_class::newBuyOrder($this->user_session["id"], $checkout);
+
             //check if an error occurred
             if(!$checkoutOrm)
                 throw new Exception($this->checkoutConfig["trans"]["error_unexpected"]);
@@ -99,7 +102,6 @@ trait Checkout
             //set cache data (checkout struct)
             $cache = (array)$checkout;
             $cache["buyOrder"] = $checkoutOrm->buy_order;
-            //print_r($cache);exit;
 
             if(!$this->cacher->set($checkoutOrm->session_key, $cache))
                 throw new Exception($this->checkoutConfig["trans"]["error_unexpected"]);
@@ -117,7 +119,6 @@ trait Checkout
         }
         catch (Exception $e) { $exception = $e->getMessage(); }
         catch (\Exception $e) { $exception = $e->getMessage(); }
-
         //sends an error message
         $this->_sendJsonResponse(200, $exception, 'alert');
     }
@@ -143,7 +144,7 @@ trait Checkout
             $checkout    = $this->cacher->get($session_key);
 
             if(!$checkout)
-                throw new Exception($this->checkoutConfig["trans"]["error_expired"]);
+                throw new Exception($this->checkoutConfig["trans"]["error_unexpected"]);
 
             //check buy orders
             if($data["buyOrder"] != $checkout->buyOrder)
@@ -220,7 +221,10 @@ trait Checkout
             if(!$user)
                 throw new Exception("Invalid decrypted data, userId: ".$checkoutOrm->user_id.", data: ".print_r($data, true));
 
-            $checkout->objects = $users_checkout_objects_class::getCheckoutObjects($checkout->buyOrder);
+            //extend properties
+            $checkout->type            = "payment";
+            $checkout->amountFormatted = FormHelper::formatPrice($checkout->amount, $checkout->coin);
+            $checkout->objects         = $users_checkout_objects_class::getCheckoutObjects($checkout->buyOrder);
 
             //1) update status of checkout
             $users_checkout_class::updateState($checkout->buyOrder, 'success');
@@ -470,10 +474,11 @@ trait Checkout
             //update total Q
             $totalQ += $q;
         }
+        //print_r($checkout);exit;
 
         //weird error, no checkout objects
         if(empty($checkout->objects))
-            throw new Exception($this->checkoutConfig["trans"]["error_expired"]);
+            throw new Exception($this->checkoutConfig["trans"]["error_unexpected"]);
 
         //check max objects allowed
         if($totalQ > $this->checkoutConfig["user_max_item_per_category"])

@@ -95,7 +95,7 @@ trait TicketManager
             if(!is_callable($getUserTicket))
                 throw new Exception("Invalid 'get user ticket' function");
 
-            $user_ticket = $getUserTicket($user_id, $code);
+            $user_ticket = $getUserTicket($code, $user_id);
 
             if(!$user_ticket)
                 throw new Exception("Invalid ticket: $code for userId: $user_id.");
@@ -134,7 +134,7 @@ trait TicketManager
             if(!is_callable($getUserTicket))
                 throw new Exception("Invalid 'get user ticket' function");
 
-            $user_ticket = $getUserTicket($src_user_id, $src_code);
+            $user_ticket = $getUserTicket($src_code, $src_user_id);
 
             if(!$user_ticket)
                 throw new Exception("Invalid ticket: $src_code for userId: $src_user_id.");
@@ -305,13 +305,12 @@ trait TicketManager
 
         try {
 
-            $this->pdf_settings["data_checkout"] = $checkout;
-            $this->pdf_settings["otf"]           = $otf;
+            $this->pdf_settings["otf"] = $otf;
 
             //set invoice name
             $invoiceName = isset($checkout->buyOrder) ? $checkout->buyOrder : uniqid()."_".date('d-m-Y');
             //generate invoice
-            $result->binary = $this->_buildInvoice($user_id, $invoiceName, $checkout->newObjectIds);
+            $result->binary = $this->_buildInvoice($user_id, $checkout, $invoiceName);
         }
         catch (\S3Exception $e) {
             $result->error = $e->getMessage();
@@ -332,29 +331,30 @@ trait TicketManager
 
     /**
      * Generates an Invoice with user tickets
-     * @param  int $user_id The user ID
-     * @param  string $invoiceName   The invoice file name
-     * @param  array  $newObjectIds  The user event tickets IDs
+     * @param  int $user_id         The user ID
+     * @param  object  $checkout    The checkout object
+     * @param  string $invoiceName  The invoice file name
      * @return binary generated file
      */
-    private function _buildInvoice($user_id, $invoiceName = "temp", $newObjectIds = array())
+    private function _buildInvoice($user_id, $checkout, $invoiceName = "temp")
     {
         //get user model class
         $users_class = $this->getModuleClassName('users');
         //get model class
-        $getUserTicketsUI = $this->storageConfig["getUserTicketsUIFunction"];
+        $getObjectsForInvoice = $this->storageConfig["getObjectsForInvoiceFunction"];
 
-        if(!is_callable($getUserTicketsUI))
-            throw new Exception("Invalid 'get user ticket UI' function");
+        if(!is_callable($getObjectsForInvoice))
+            throw new Exception("Invalid getObjectsForInvoice function");
 
         //get user by session
         $user = $users_class::getObjectById($user_id);
+
         //get ticket objects with UI properties
-        $tickets = $getUserTicketsUI($user_id, $newObjectIds);
+        $objects = $getObjectsForInvoice($user_id, $checkout);
 
         //download qr tickets if invoice is for OTF actions
-        if($tickets && $this->pdf_settings["otf"])
-            $this->_downloadTicketQrs($user_id, $tickets);
+        if($objects && $this->pdf_settings["otf"])
+            $this->_downloadTicketQrs($user_id, $objects);
 
         //set file paths
         $pdf_filename = $invoiceName.".pdf";
@@ -363,7 +363,8 @@ trait TicketManager
         //set extended pdf data
         $this->pdf_settings["data_date"]     = DateHelper::getTranslatedCurrentDate();
         $this->pdf_settings["data_user"]     = $user;
-        $this->pdf_settings["data_tickets"]  = $tickets;
+        $this->pdf_settings["data_checkout"] = $checkout;
+        $this->pdf_settings["data_objects"]  = $objects;
         $this->pdf_settings["data_storage"]  = $this->storageConfig['local_temp_path'];
 
         //get template
