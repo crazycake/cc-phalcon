@@ -367,15 +367,19 @@ trait Checkout
 
         //pass data to view
         $this->view->setVars([
+            "objectsClass"         => $objectsClass,
             "invoiceEmail"         => $lastCheckout ? $lastCheckout->invoice_email : $user->email,
             "checkoutInputs"       => $inputs,
             "checkoutInputsPrefix" => "checkout_"
         ]);
 
         //prepare tickets JS
-        $objectsJs = [];
-        foreach ($objects as $obj)
-            $objectsJs[] = $obj->toArray($this->checkoutConfig["object_properties"]);
+        $objectsJs = is_array($objects) ? $objects : [];
+
+        if(empty($objectsJs)) {
+            foreach ($objects as $obj)
+                $objectsJs[] = $obj->toArray($this->checkoutConfig["object_properties"]);
+        }
 
         //load JS modules
         $module_name = $this->checkoutConfig["js_module_name"];
