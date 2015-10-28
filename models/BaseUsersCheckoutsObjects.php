@@ -68,32 +68,34 @@ class BaseUsersCheckoutsObjects extends Base
        //loop through objects
        foreach ($objects as $obj) {
 
-           $object_class = $obj->object_class;
+            $object_class = $obj->object_class;
 
-           //filter only to ids?
-           if($ids) {
+            //filter only to ids?
+            if($ids) {
                array_push($result, $obj->object_id);
                continue;
-           }
+            }
 
-           //create a new object and clone common props
-           $new_object = self::newCheckoutObject($obj->object_id, $object_class, $obj->quantity);
+            //create a new object and clone common props
+            $new_object = self::newCheckoutObject($obj->object_id, $object_class, $obj->quantity);
 
-           //get object local props
-           $props = $object_class::findFirst(array("id ='".$obj->object_id."'"));
+            //get object local props
+            $props = $object_class::findFirst(array("id ='".$obj->object_id."'"));
 
-            if(!$props)
-                continue;
+            if(!$props) continue;
 
-           //extedend common object props
-           $new_object->name  = $props->name;
-           $new_object->price = $props->price;
-           $new_object->coin  = $props->coin;
-           //UI props
-           $new_object->formattedPrice = FormHelper::formatPrice($props->price, $props->coin);
-           $new_object->formattedTotal = FormHelper::formatPrice($props->price * $obj->quantity, $props->coin);
+            //extend custom flexible properties
+            $new_object->name  = isset($props->name) ? $props->name : $props->_ext["name"];
 
-           array_push($result, $new_object);
+            //extedend common object props
+            $new_object->price = $props->price;
+            $new_object->coin  = $props->coin;
+
+            //UI props
+            $new_object->formattedPrice = FormHelper::formatPrice($props->price, $props->coin);
+            $new_object->formattedTotal = FormHelper::formatPrice($props->price * $obj->quantity, $props->coin);
+
+            array_push($result, $new_object);
        }
 
        return $result;

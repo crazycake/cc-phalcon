@@ -72,11 +72,13 @@ trait Checkout
         $this->_onlyAjax();
         //get form data
         $data = $this->_handleRequestParams([
-            "checkoutUri"        => "string",  //checkout URI
-            "checkoutGateway"    => "string",  //checkout payment gateway
-            "checkoutCategoryId" => "string",  //a parent category refence
-            "@invoiceEmail"      => "string"   //custom validation
+            "checkoutUri"      => "string", //checkout URI
+            "checkoutGateway"  => "string", //checkout payment gateway
+            "checkoutCategory" => "array",  //a parent category refence
+            "@invoiceEmail"    => "string"  //custom validation
         ]);
+
+        $exception = false;
 
         try {
 
@@ -113,10 +115,11 @@ trait Checkout
             // send JSON response
             $this->_sendJsonResponse(200, $payload);
         }
-        catch (Exception $e) {
-            //sends an error message
-            $this->_sendJsonResponse(200, $e->getMessage(), 'alert');
-        }
+        catch (Exception $e) { $exception = $e->getMessage(); }
+        catch (\Exception $e) { $exception = $e->getMessage(); }
+
+        //sends an error message
+        $this->_sendJsonResponse(200, $exception, 'alert');
     }
 
     /**
@@ -315,7 +318,7 @@ trait Checkout
         //log
         $this->logger->debug("CheckoutTrait::skipPaymentAction -> Skipped payment for userId: ".$checkoutOrm->user_id.", BO: ".$checkout->buyOrder);
         //call succes checkout
-        $this->successCheckout($checkout);
+        $this->successCheckout($checkout, false);
 
         //set flash message
         $this->flash->success($this->checkoutConfig["trans"]["success_checkout"]);
@@ -329,19 +332,20 @@ trait Checkout
      * Loads common setup for checkout view.
      * This are used for HTML bindings
      * @TODO support multiple payment gateways with checkout_gateway (hardcoded)
+     * @param array $category A category array
+     * @param string $checkoutType The checkout type, example: paid, free, etc.
      * @param object $user The user object
-     * @param string $categoryType The category type, example: paid, free, etc.
      * @param array $objects The checkout objects array
      * @param string $objectsClass The checkout objects class name
-     * @param object $parentObject The parent object
+     * @param object $view The checkout view class
      */
-    private function _setupCheckoutView($categoryId = 0, $categoryType = "", $user = null, $objects = array(), $objectsClass = "", $view = "default")
+    private function _setupCheckoutView($category = array(), $checkoutType = "", $user = null, $objects = array(), $objectsClass = "", $view = "default")
     {
         //default inputs for checkout
         $inputs = [
-            "checkoutUri"        => "",            //last visited uri (set by JS)
-            "checkoutGateway"    => $categoryType, //checkout gateway name
-            "checkoutCategoryId" => $categoryId    //checkout category id or namespace
+            "checkoutUri"      => "",                    //last visited uri (set by JS)
+            "checkoutGateway"  => $checkoutType,         //checkout gateway name
+            "checkoutCategory" => implode(",", $category) //checkout category id or namespace
         ];
 
         //get module class name
@@ -351,7 +355,7 @@ trait Checkout
         $checkoutMax = 1;
 
         //NOTE: only one gateway supported for now
-        if($categoryType == "paid") {
+        if($checkoutType == "paid") {
 
             $inputs["checkoutGateway"] = $this->checkoutConfig["gateway"];
             //increase max number
@@ -386,7 +390,7 @@ trait Checkout
 
         $this->_loadJavascriptModules([
             "$module_name" => [
-                "categoryType"  => $categoryType,
+                "checkoutType"  => $checkoutType,
                 "checkoutMax"   => $checkoutMax,
                 "objects"       => $objectsJs,
                 "objectsClass"  => $objectsClass
@@ -422,7 +426,7 @@ trait Checkout
         $checkout->invoiceEmail  = $data["invoiceEmail"];
         $checkout->checkoutUri   = $data["checkoutUri"];
         $checkout->gateway       = $data["checkoutGateway"];
-        $checkout->categoryId    = $data["checkoutCategoryId"];
+        $checkout->category      = explode(",", $data["checkoutCategory"]);
         $checkout->coin          = $this->checkoutConfig["default_coin"];
         $checkout->objects       = [];
         $checkout->amount        = 0;

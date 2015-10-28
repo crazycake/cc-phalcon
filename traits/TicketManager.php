@@ -298,7 +298,7 @@ trait TicketManager
      * @param boolean $otf On the fly flag, if false saves invoice in S3.
      * @return mixed
      */
-    public function generateInvoiceForUserTickets($user_id, $data, $type = "checkout", $otf = false)
+    public function generateInvoice($user_id, $data, $type = "checkout", $otf = false)
     {
         //handle exceptions
         $result = new \stdClass();
@@ -311,7 +311,7 @@ trait TicketManager
             //set invoice name
             $invoiceName = isset($data->buyOrder) ? $data->buyOrder : uniqid()."_".date('d-m-Y');
             //generate invoice
-            $result->binary = $this->_generateInvoice($user_id, $invoiceName, $data->userTicketIds);
+            $result->binary = $this->_buildInvoice($user_id, $invoiceName, $data->newObjectIds);
         }
         catch (\S3Exception $e) {
             $result->error = $e->getMessage();
@@ -321,7 +321,7 @@ trait TicketManager
         }
 
         if(isset($result->error)) {
-            $this->logger->error("TicketStorage::generateInvoiceForUserTickets ($type) -> Error while generating and storing PDF: $result->error");
+            $this->logger->error("TicketStorage::generateInvoice ($type) -> Error while generating and storing PDF: $result->error");
             return $result;
         }
 
@@ -334,10 +334,10 @@ trait TicketManager
      * Generates an Invoice with user tickets
      * @param  int $user_id The user ID
      * @param  string $invoiceName   The invoice file name
-     * @param  array  $userTicketIds The user event tickets IDs
+     * @param  array  $newObjectIds  The user event tickets IDs
      * @return binary generated file
      */
-    private function _generateInvoice($user_id, $invoiceName = "temp", $userTicketIds = array())
+    private function _buildInvoice($user_id, $invoiceName = "temp", $newObjectIds = array())
     {
         //get user model class
         $users_class = $this->getModuleClassName('users');
@@ -350,13 +350,10 @@ trait TicketManager
         //get user by session
         $user = $users_class::getObjectById($user_id);
         //get ticket objects with UI properties
-        $tickets = $getUserTicketsUI($user_id, $userTicketIds);
-
-        if(!$tickets)
-            throw new Exception("No tickets found for userID: ".$user_id." & tickets Ids: ".json_encode($userTicketIds));
+        $tickets = $getUserTicketsUI($user_id, $newObjectIds);
 
         //download qr tickets if invoice is for OTF actions
-        if($this->pdf_settings["otf"])
+        if($tickets && $this->pdf_settings["otf"])
             $this->_downloadTicketQrs($user_id, $tickets);
 
         //set file paths
