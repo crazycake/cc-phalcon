@@ -317,7 +317,7 @@ trait Checkout
             die("No pending checkout found for user_id ".$session_key);
 
         //append custom comment
-        $this->onSkippedPayment($checkout, !$this->checkoutConfig["debug"]);
+        $this->onSkippedPayment($checkout, $this->checkoutConfig["debug"]);
 
         //log
         $this->logger->debug("CheckoutTrait::skipPaymentAction -> Skipped payment for userId: ".$checkoutOrm->user_id.", BO: ".$checkout->buyOrder);
@@ -328,10 +328,10 @@ trait Checkout
         $this->flash->success($this->checkoutConfig["trans"]["success_checkout"]);
 
         //redirect
-        if($this->checkoutConfig["debug"])
+        if(!$this->checkoutConfig["debug"])
             $this->_redirectTo("account");
         else
-            echo "DEBUGGING...";
+            echo "CheckoutConfig Debug Mode On...";
     }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
