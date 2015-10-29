@@ -376,11 +376,12 @@ trait Checkout
             "order" => "local_time DESC",
             "bind"  => [$user->id]
         ]);
+        $lastInvoiceEmail = $lastCheckout ? $lastCheckout->invoice_email : "";
 
         //pass data to view
         $this->view->setVars([
             "objectsClass"         => $objectsClass,
-            "invoiceEmail"         => $lastCheckout ? $lastCheckout->invoice_email : $user->email,
+            "invoiceEmail"         => !empty($lastInvoiceEmail) ? $lastInvoiceEmail : $user->email,
             "checkoutInputs"       => $inputs,
             "checkoutInputsPrefix" => "checkout_"
         ]);
