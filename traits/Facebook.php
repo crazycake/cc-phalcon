@@ -561,7 +561,12 @@ trait Facebook
 
         //extend properties, image url & token_expiration
         $properties['image_url'] = str_replace("<size>", "square", str_replace("<fb_id>", $properties['fb_id'], self::$FB_USER_IMAGE_URI));
-        $properties['token_expiration'] = $fb_session->getSessionInfo()->getExpiresAt()->format('Y-m-d H:i:s');
+
+        //set token expiration
+        if(is_object($fb_session->getSessionInfo()->getExpiresAt()))
+            $properties['token_expiration'] = $fb_session->getSessionInfo()->getExpiresAt()->format('Y-m-d H:i:s');
+        else
+            $properties['token_expiration'] = null;
 
         return $properties;
     }

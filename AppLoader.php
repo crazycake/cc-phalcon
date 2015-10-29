@@ -60,6 +60,13 @@ abstract class AppLoader
      */
     public $modules_langs;
 
+
+    /**
+     * Module production URIS
+     * @var array
+     */
+    public static $modules_production_urls;
+
     /**
      * The App configuration array
      * @var array
@@ -205,16 +212,24 @@ abstract class AppLoader
 
     /**
      * Get a module URL from current environment
+     * For production use defined URIS, for dev local folders path
+     * and for staging or testing URI replacement
      * @static
      * @param  string $module The module name
      * @return string
      */
-    public static function getModuleEnviromentURL($module = "")
+    public static function getModuleURL($module = "", $uri = "")
     {
-        if(APP_ENVIRONMENT === 'development')
-            return str_replace(array('/api/','/frontend/','/backend/'), "/$module/", APP_BASE_URL);
+        $url = "";
+
+        if(APP_ENVIRONMENT === "production")
+            $url = static::$modules_production_urls[$module];
+        else if(APP_ENVIRONMENT === "development")
+            $url = str_replace(['/api/', '/frontend/', '/backend/'], "/$module/", APP_BASE_URL);
         else
-            return str_replace(array('.api.','.frontend.','.backend.'), ".$module.", APP_BASE_URL);
+            $url = str_replace(['.api.', '.frontend.', '.backend.'], ".$module.", APP_BASE_URL);
+
+        return $url.$uri;
     }
 
     /**
@@ -279,12 +294,6 @@ abstract class AppLoader
         //check for langs supported
         if(isset($this->modules_langs[MODULE_NAME])) {
             $this->app_props['langs'] = $this->modules_langs[MODULE_NAME];
-        }
-
-        //set local shared resourced path, setting is an array where index 0 => module_name & 1 => the uri
-        if(isset($this->app_props['sharedLocalResources'])) {
-            $uris = explode("/", $this->app_props['sharedLocalResources'], 2);
-            $this->app_props['sharedLocalResources'] = $this->getModuleEnviromentURL($uris[0]).$uris[1];
         }
 
         //set static uri for assets
