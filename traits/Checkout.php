@@ -156,7 +156,7 @@ trait Checkout
             $this->successCheckout($checkout);
 
             //send OK response (TODO: redirect to success page first)
-            $this->_sendJsonResponse(200, ["redirectUri" => "account/"]);
+            //$this->_sendJsonResponse(200, ["redirectUri" => "account/"]);
         }
         catch (Exception $e) {
             //sends an error message
@@ -230,7 +230,7 @@ trait Checkout
             $users_checkout_class::updateState($checkout->buyOrder, 'success');
 
             //2) CALL OBJECT CLASS LOGIC
-            foreach ($checkout->objectsClasses as $className) {
+            foreach ($checkout->objectsClass as $className) {
 
                 $objectClass = $className."Controller";
 
@@ -317,7 +317,7 @@ trait Checkout
             die("No pending checkout found for user_id ".$session_key);
 
         //append custom comment
-        $this->onSkippedPayment($checkout);
+        $this->onSkippedPayment($checkout, !$this->checkoutConfig["debug"]);
 
         //log
         $this->logger->debug("CheckoutTrait::skipPaymentAction -> Skipped payment for userId: ".$checkoutOrm->user_id.", BO: ".$checkout->buyOrder);
@@ -326,8 +326,12 @@ trait Checkout
 
         //set flash message
         $this->flash->success($this->checkoutConfig["trans"]["success_checkout"]);
+
         //redirect
-        $this->_redirectTo("account");
+        if($this->checkoutConfig["debug"])
+            $this->_redirectTo("account");
+        else
+            echo "DEBUGGING...";
     }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
@@ -436,8 +440,8 @@ trait Checkout
         $checkout->amount        = 0;
 
         //temp vars
-        $totalQ        = 0;
-        $objectClasses = [];
+        $totalQ  = 0;
+        $classes = [];
 
         //loop throught items
         foreach ($data as $key => $q) {
@@ -450,27 +454,27 @@ trait Checkout
                 continue;
 
             //get object props
-            $object_class = $props[1];
-            $object_id    = $this->cryptify->decryptHashId($props[2]);
+            $class_name = $props[1];
+            $object_id  = $this->cryptify->decryptHashId($props[2]);
 
-            $preffixed_object_class = "\\$object_class";
+            $preffixed_object_class = "\\$class_name";
             $object = $preffixed_object_class::getObjectById($object_id);
-            //var_dump($object_class, $object_id, $object->toArray());exit;
+            //var_dump($class_name, $object_id, $object->toArray());exit;
 
             //check that object is in stock (also validates object exists)
-            if(!$users_checkout_class::validateObjectStock($object_class, $object_id, $q)) {
-                $this->logger->error("CheckoutTrait::_parseCheckoutObjects -> No stock for object '$object_class' ID: $object_id, q: $q.");
+            if(!$users_checkout_class::validateObjectStock($class_name, $object_id, $q)) {
+                $this->logger->error("CheckoutTrait::_parseCheckoutObjects -> No stock for object '$class_name' ID: $object_id, q: $q.");
                 throw new Exception(str_replace("{name}", $object->name, $this->checkoutConfig["trans"]["error_no_stock"]));
             }
 
             //append object class
-            if(!in_array($object_class, $objectClasses))
-                array_push($objectClasses, $object_class);
+            if(!in_array($class_name, $classes))
+                array_push($classes, $class_name);
 
             //update amount
             $checkout->amount += $q * $object->price;
             //set item in array
-            $checkout->objects[$object_class."_".$object_id] = $q;
+            $checkout->objects[$class_name."_".$object_id] = $q;
             //update total Q
             $totalQ += $q;
         }
@@ -485,7 +489,7 @@ trait Checkout
             throw new Exception($this->checkoutConfig["trans"]["error_max_total"]);
 
         //set objectsClassName
-        $checkout->objectsClasses = $objectClasses;
+        $checkout->objectsClass = $classes;
         //update total Q
         $checkout->totalQ = $totalQ;
 

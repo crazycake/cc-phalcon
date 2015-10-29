@@ -361,11 +361,11 @@ trait TicketManager
         $output_path  = $this->storageConfig['local_temp_path'].$pdf_filename;
 
         //set extended pdf data
-        $this->pdf_settings["data_date"]     = DateHelper::getTranslatedCurrentDate();
-        $this->pdf_settings["data_user"]     = $user;
-        $this->pdf_settings["data_checkout"] = $checkout;
-        $this->pdf_settings["data_objects"]  = $objects;
-        $this->pdf_settings["data_storage"]  = $this->storageConfig['local_temp_path'];
+        $this->pdf_settings["data_date"]          = DateHelper::getTranslatedCurrentDate();
+        $this->pdf_settings["data_user"]          = $user;
+        $this->pdf_settings["data_checkout"]      = $checkout;
+        $this->pdf_settings["data_objects"]       = $objects;
+        $this->pdf_settings["data_storage"]       = $this->storageConfig['local_temp_path'];
 
         //get template
         $html_raw = $this->simpleView->render($this->storageConfig['ticket_pdf_template_view'], $this->pdf_settings);
