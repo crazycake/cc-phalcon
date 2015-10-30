@@ -80,7 +80,7 @@ class Cacher
                  throw new Exception("Attempting to set null value for key $key.");
 
              //set cache data
-             $value  = json_encode($value);
+             $value  = json_encode($value, JSON_UNESCAPED_SLASHES);
              $result = $this->{"set".$this->adapter}($this->cachePrefix.$key, $value);
 
              if(!$result)
