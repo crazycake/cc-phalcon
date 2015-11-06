@@ -434,6 +434,7 @@ abstract class WebCore extends AppCore implements webSecurity
         //set javascript global objects
         $js_app = new \stdClass();
         $js_app->name    = $this->config->app->name;
+        $js_app->version = $this->config->app->deployVersion;
         $js_app->baseUrl = $this->_baseUrl();
         $js_app->dev     = (APP_ENVIRONMENT == 'production') ? 0 : 1;
 
