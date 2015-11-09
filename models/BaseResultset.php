@@ -15,16 +15,19 @@ class BaseResultset extends Resultset
     --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
-     * Transform a result or array to JSON
-     * @param mixed $result
+     * Split resultset
      * @return string
      */
-    public function toJson($result)
+    public function split()
     {
-        if($result instanceof Resultset)
-            $result = $result->toArray();
+        $result = [];
 
-        return json_encode($result, JSON_UNESCAPED_SLASHES);
+        if($this instanceof Resultset)
+            $result = $this->toArray();
+
+        $result = self::splitResult($result);
+
+        return $result;
     }
 
     /**
@@ -32,14 +35,14 @@ class BaseResultset extends Resultset
      * @static
      * @param array $result A result array
      */
-    private static function splitResult($result = array())
+    public static function splitResult($result = array())
     {
         $objects = array();
 
         //loop each object
         foreach ($result as $obj) {
             //get object properties
-            $props = is_array($obj) ? array_keys($obj) : get_object_vars($obj);
+            $props = is_array($obj) ? get_object_vars((object)$obj) : get_object_vars($obj);
 
             if(empty($props))
                 continue;
