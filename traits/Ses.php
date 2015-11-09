@@ -126,14 +126,15 @@ trait Ses
         //create flux uri
         $uri = "auth/activation/".$token->encrypted;
         //set properties
-        $this->sesConfig["data_user"] = $user;
-        $this->sesConfig["data_url"]  = $this->_baseUrl($uri);
+        $this->sesConfig["data_user"]  = $user;
+        $this->sesConfig["data_email"] = $user->email;
+        $this->sesConfig["data_url"]   = $this->_baseUrl($uri);
 
         //get HTML
         $html_raw = $this->_getInlineStyledHtml("activation", $this->sesConfig);
         //set message properties
         $subject = $this->sesConfig['trans']['subject_activation'];
-        $to      = $user->email;
+        $to      = $this->sesConfig["data_email"];
         $tags    = array('account', 'activation');
         //sends async email
         return $this->_sendMessage($html_raw, $subject, $to, $tags);
@@ -165,15 +166,16 @@ trait Ses
         //create flux uri
         $uri = "password/new/".$token->encrypted;
         //set rendered view
-        $this->sesConfig["data_user"] = $user;
-        $this->sesConfig["data_url"]  = $this->_baseUrl($uri);
+        $this->sesConfig["data_user"]  = $user;
+        $this->sesConfig["data_email"] = $user->email;
+        $this->sesConfig["data_url"]   = $this->_baseUrl($uri);
         $this->sesConfig["data_token_expiration"] = $tokens_class::$TOKEN_EXPIRES_THRESHOLD;
 
         //get HTML
         $html_raw = $this->_getInlineStyledHtml("passwordRecovery", $this->sesConfig);
         //set message properties
         $subject = $this->sesConfig['trans']['subject_password'];
-        $to      = $user->email;
+        $to      = $this->sesConfig["data_email"];
         $tags    = array('account', 'password', 'recovery');
         //sends async email
         return $this->_sendMessage($html_raw, $subject, $to, $tags);
@@ -238,7 +240,7 @@ trait Ses
             $subject = $this->sesConfig['appName'];
 
         //Send message email!
-        $message = array(
+        $message = [
             'html'       => $html_raw,
             'subject'    => $subject,
             'from_email' => $this->sesConfig['senderEmail'],
@@ -246,7 +248,7 @@ trait Ses
             'to'         => $to,
             'tags'       => $tags
             //'inline_css' => true //same as __getInlineStyledHtml method. (generates more delay time)
-        );
+        ];
 
         //append attachments
         if(!empty($attachments))
