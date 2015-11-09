@@ -461,6 +461,10 @@ abstract class AppLoader
 
         //1) HTTP Server config, make sure script execution is not comming from command line (CLI)
         if (php_sapi_name() !== 'cli') {
+
+            if(!isset($_SERVER['HTTP_HOST']) || !isset($_REQUEST))
+                throw new Exception("AppLoader::undefined SERVER or REQUEST data: ".json_encode($_SERVER)." ".json_encode($_REQUEST));
+
             //set base URL
             $app_base_url = (isset($_SERVER["HTTPS"]) ? "https://" : "http://") . $_SERVER['HTTP_HOST'] . preg_replace('@/+$@', '', dirname($_SERVER['SCRIPT_NAME'])) . '/';
 

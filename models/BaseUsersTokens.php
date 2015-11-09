@@ -44,7 +44,7 @@ class BaseUsersTokens extends Base
     /**
      * @var array
      */
-    static $TOKEN_TYPES = array('activation', 'pass');
+    static $TOKEN_TYPES = ['activation', 'pass'];
 
     /** -------------------------------------------- § -------------------------------------------------
         Init

@@ -74,7 +74,7 @@ class BaseTicketsAssets extends Base
     public function initialize()
     {
         //Skips fields/columns on both INSERT/UPDATE operations
-        $this->skipAttributes(['created_at, _ext']);
+        $this->skipAttributes(['created_at', '_ext']);
     }
     /** ------------------------------------------- § --------------------------------------------------
        Events
