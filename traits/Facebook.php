@@ -465,8 +465,8 @@ trait Facebook
 
             //check expiration of token
             $days_left = DateHelper::getTimePassedFromDate($session->getSessionInfo()->getExpiresAt());
-            //check if access token is about to expire
-            if (!is_null($expires_at) && $days_left < $this->fbConfig['long_access_token_threshold']) {
+            //always saves a new long FAC
+            if (!is_null($expires_at) && $days_left <= 60) {
 
                 $this->logger->log('Facebook::_longLiveFac -> Requested a new long live access token for user_fb_id: ' . $user_fb->id);
 
