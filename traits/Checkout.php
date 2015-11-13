@@ -283,7 +283,7 @@ trait Checkout
     }
 
     /**
-     * Skips payment, simulates success checkout (Only for development)
+     * Skips payment, simulates success checkout
      * Metodo parche para crear entradas a partir de un checkout generado (se salta el pago)
      * La transaccion es opcional
      * @param string $code The security code
@@ -305,7 +305,7 @@ trait Checkout
         $checkout = $this->cacher->get($session_key);
 
         //basic security
-        if(APP_ENVIRONMENT !== 'development' && $code !== sha1($checkout->buyOrder))
+        if(APP_ENVIRONMENT !== 'local' && $code !== sha1($checkout->buyOrder))
             $this->_redirectToNotFound();
 
         if(empty($checkout))

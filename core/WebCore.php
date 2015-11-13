@@ -286,7 +286,7 @@ abstract class WebCore extends AppCore implements webSecurity
                 $file = str_replace("@", "", $file);
 
             //append min suffix for non dev environment
-            if(APP_ENVIRONMENT !== "development" && $file === "app.css")
+            if(APP_ENVIRONMENT !== "local" && $file === "app.css")
                 $file = str_replace(".css", ".min.css", $file);
 
             $this->assets->collection($collection)->addCss("assets/$file");
@@ -313,7 +313,7 @@ abstract class WebCore extends AppCore implements webSecurity
                 $file = str_replace("@", "", $file);
 
             //append min suffix for non dev environment
-            if(APP_ENVIRONMENT !== "development" && $file === "app.js")
+            if(APP_ENVIRONMENT !== "local" && $file === "app.js")
                 $file = str_replace(".js", ".min.js", $file);
 
             //has dynamic params? (for example file_name.{property}.js, useful for js lang files)

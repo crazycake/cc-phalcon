@@ -195,7 +195,7 @@ trait Ses
         //css file
         $cssFile = $this->sesConfig['cssFile'];
 
-        if(APP_ENVIRONMENT !== 'development')
+        if(APP_ENVIRONMENT !== 'local')
             $cssFile = str_replace(".css", ".min.css", $cssFile);
 
         //get the style file

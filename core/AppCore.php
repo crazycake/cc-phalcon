@@ -113,7 +113,7 @@ abstract class AppCore extends Controller
         $uri = $controller_name."/".$method_name."/";
         $url = $this->_baseUrl();
 
-        if(APP_ENVIRONMENT == "development")
+        if(APP_ENVIRONMENT == "local")
             $this->logger->debug("AppCore::_asyncRequest -> Method: $method, Uri: $uri");
 
         //child method

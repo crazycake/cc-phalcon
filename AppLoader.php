@@ -15,10 +15,6 @@ abstract class AppLoader
     const CCLIBS_NAMESPACE        = "cc-phalcon";
     const CCLIBS_DEFAULT_PACKAGES = ['traits', 'core', 'utils', 'models'];
 
-    //for CLI environment setup
-    const EC2_HOSTNAME_PREFIX = "ip-";
-    const DEPLOY_FILENAME     = ".deploy";
-
     /**
      * Child required methods
      */
@@ -29,12 +25,6 @@ abstract class AppLoader
      * @var string
      */
     protected $app_path;
-
-    /**
-     * The database app configuration
-     * @var string
-     */
-    protected $app_db;
 
     /**
      * The module name, values: frontend, backend, api.
@@ -111,10 +101,11 @@ abstract class AppLoader
         define("PUBLIC_PATH", MODULE_PATH."public/");
         define("EXEC_START", microtime(true));  //for debugging render time
         //start webapp loader flux
-        $this->_environmentSetUp(); //set APP_ENVIRONMENT & APP_BASE_URL
-        $this->_databaseSetup();
         $this->_directoriesSetup();
         $this->_autoloadClasses();
+        //set env
+        $this->_environmentSetUp(); //set APP_ENVIRONMENT & APP_BASE_URL
+        $this->_databaseSetup();
     }
 
     /**
@@ -151,8 +142,8 @@ abstract class AppLoader
             foreach ($argv as $k => $arg) {
                 switch ($k) {
                     case 0: break;
-                    case 1: $arguments['task']   = $arg; break;
-                    case 2: $arguments['action'] = $arg; break;
+                    case 1: $arguments['task']        = $arg; break;
+                    case 2: $arguments['action']      = $arg; break;
                     default: $arguments['params'][$k] = $arg; break;
                 }
             }
@@ -168,7 +159,7 @@ abstract class AppLoader
             }
 
             //define global constants for the current task and action
-            define('CLI_TASK', isset($argv[1]) ? $argv[1] : null);
+            define('CLI_TASK',   isset($argv[1]) ? $argv[1] : null);
             define('CLI_ACTION', isset($argv[2]) ? $argv[2] : null);
             //handle incoming arguments
             $application->handle($arguments);
@@ -203,7 +194,7 @@ abstract class AppLoader
             $output = $application->handle()->getContent();
 
             //Handle the request
-            if(APP_ENVIRONMENT !== 'development')
+            if(APP_ENVIRONMENT !== 'local')
                 ob_start(array($this,"_minifyHTML")); //call function
 
             echo $output;
@@ -224,7 +215,7 @@ abstract class AppLoader
 
         if(APP_ENVIRONMENT === "production")
             $url = static::$modules_production_urls[$module];
-        else if(APP_ENVIRONMENT === "development")
+        else if(APP_ENVIRONMENT === "local")
             $url = str_replace(['/api/', '/frontend/', '/backend/'], "/$module/", APP_BASE_URL);
         else
             $url = str_replace(['.api.', '.frontend.', '.backend.'], ".$module.", APP_BASE_URL);
@@ -297,7 +288,7 @@ abstract class AppLoader
         }
 
         //set static uri for assets
-        if(APP_ENVIRONMENT == 'development' || !isset($this->app_props['staticUri']) || empty($this->app_props['staticUri']))
+        if(APP_ENVIRONMENT == 'local' || !isset($this->app_props['staticUri']) || empty($this->app_props['staticUri']))
             $this->app_props['staticUri'] = APP_BASE_URL;
 
         //set environment dynamic props
@@ -314,17 +305,16 @@ abstract class AppLoader
      */
     private function _databaseSetup()
     {
-        if(is_null($this->app_db))
-            throw new Exception("AppLoader::_databaseSetup -> var 'app_db' is not set.");
+        if(is_null(getenv('DB_HOST')))
+            throw new Exception("AppLoader::_databaseSetup -> DB settings are not set.");
 
-        $app_database = $this->app_db[APP_ENVIRONMENT];
         //set database config
-        $this->app_config["database"] = array(
-            'host'      => $app_database[0],
-            'username'  => $app_database[1],
-            'password'  => $app_database[2],
-            'dbname'    => $app_database[3]
-        );
+        $this->app_config["database"] = [
+            'host'      => getenv('DB_HOST'),
+            'username'  => getenv('DB_USERNAME'),
+            'password'  => getenv('DB_PASSWORD'),
+            'dbname'    => getenv('DB_DATABASE')
+        ];
     }
 
     /**
@@ -370,38 +360,15 @@ abstract class AppLoader
         if(isset($this->modules_cclibs[MODULE_NAME]))
             $this->_loadStaticLibs($loader, $this->modules_cclibs[MODULE_NAME]);
 
-        //3.- Composer libs, use composer auto load for production
-        if (APP_ENVIRONMENT !== 'development') {
+        //3.- Composer libs auto loader
+        if (!is_file(COMPOSER_PATH.'vendor/autoload.php'))
+            throw new Exception("AppLoader::_autoloadClasses -> Composer libraries are missing, please run environment script file.");
 
-            //autoload classes (se debe pre-generar autoload_classmap)
-            $classmap = COMPOSER_PATH.'vendor/composer/autoload_classmap.php';
-
-            if(!is_file($classmap))
-                throw new Exception("AppLoader::_autoloadClasses -> Composer libraries are missing, please run environment bash file (-composer option).");
-
-            $loader->registerClasses(require $classmap);
-            //check if autoload files must be loaded
-            if (file_exists(COMPOSER_PATH.'vendor/composer/autoload_files.php')) {
-
-                $autoload_files = require COMPOSER_PATH.'vendor/composer/autoload_files.php';
-                //include classes?
-                foreach ($autoload_files as $file)
-                    include_once $file;
-            }
-        }
-        else {
-
-            //autoload composer file
-            if (!is_file(COMPOSER_PATH.'vendor/autoload.php'))
-                throw new Exception("AppLoader::_autoloadClasses -> Composer libraries are missing, please run environment bash file (-composer option).");
-
-            //autoload composer file
-            require COMPOSER_PATH.'vendor/autoload.php';
-        }
+        //autoload composer file
+        require COMPOSER_PATH.'vendor/autoload.php';
 
         //4.- Register phalcon loader
         $loader->register();
-        //var_dump($loader->getDirs());exit;
         //var_dump(get_included_files());exit;
     }
 
@@ -456,8 +423,23 @@ abstract class AppLoader
      */
     private function _environmentSetUp()
     {
+        //load .env file configuration with Dotenv
+        $dotenv = new \Dotenv\Dotenv(PROJECT_PATH);
+        $dotenv->load();
+
+        //SET APP_ENVIRONMENT
+        if(getenv('APP_DEBUG')) {
+            ini_set('display_errors', 1);
+            error_reporting(E_ALL);
+        }
+        else {
+            ini_set('display_errors', 0);
+            error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
+        }
+
         //set default environment
-        $app_base_url = "./";
+        $app_base_url    = __DIR__;
+        $app_environment = getenv('APP_ENV');
 
         //1) HTTP Server config, make sure script execution is not comming from command line (CLI)
         if (php_sapi_name() !== 'cli') {
@@ -467,49 +449,12 @@ abstract class AppLoader
 
             //set base URL
             $app_base_url = (isset($_SERVER["HTTPS"]) ? "https://" : "http://") . $_SERVER['HTTP_HOST'] . preg_replace('@/+$@', '', dirname($_SERVER['SCRIPT_NAME'])) . '/';
-
-            //SET APP_ENVIRONMENT
-            if (strpos($_SERVER['SERVER_NAME'], 'localhost') !== false || strpos($_SERVER['SERVER_NAME'], '192.168.') !== false) {
-                ini_set('display_errors', 1);
-                error_reporting(E_ALL);
-                $app_environment = "development";
-            }
-            //NOTE: testing & staging environment
-            elseif (strpos($_SERVER['SERVER_NAME'], '.testing.') !== false || strpos($_SERVER['SERVER_NAME'], '.staging.' ) !== false) {
-                ini_set('display_errors', 1);
-                error_reporting(E_ALL);
-                $app_environment = strpos($_SERVER['SERVER_NAME'], '.testing.') !== false ? "testing" : "staging";
-            }
-            else {
-                ini_set('display_errors', 0);
-                error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT & ~E_USER_NOTICE & ~E_USER_DEPRECATED);
-                $app_environment = "production";
-            }
         }
-        //2) CLI config, set ENV, checks that host machine is a AWS EC2 machine
-        else {
 
-            $hostname   = gethostname();
-            $fhostnames = $this->_readDeployFile();
-
-            //dev
-            if(strpos($hostname, self::EC2_HOSTNAME_PREFIX) === false) {
-                $app_environment = "development";
-            }
-            else if(isset($fhostnames["TESTING_HOSTNAME"]) && $hostname == $fhostnames["TESTING_HOSTNAME"]) {
-                $app_environment = "testing";
-            }
-            else if(isset($fhostnames["STAGING_HOSTNAME"]) && $hostname == $fhostnames["STAGING_HOSTNAME"]) {
-                $app_environment = "staging";
-            }
-            else {
-                $app_environment = "production"; //otherwise production
-            }
-        }
-        //var_dump($fhostnames, $app_environment);exit;
         //set environment consts & self vars
         define("APP_ENVIRONMENT", $app_environment); //@hardcode option: production
         define("APP_BASE_URL", $app_base_url);
+        //var_dump(APP_ENVIRONMENT, APP_BASE_URL);exit;
     }
 
     /**
@@ -525,30 +470,5 @@ abstract class AppLoader
             $buffer = preg_replace($search, $replace, $buffer);
 
         return $buffer;
-     }
-
-     /**
-      * Reads the deploy file and extracts an attribute
-      * @return array The file properties (format: KEY = VALUE)
-      */
-     private function _readDeployFile()
-     {
-         $file = file(PROJECT_PATH.self::DEPLOY_FILENAME);
-
-         if(!$file)
-            throw new Exception("AppLoader::_readDeployFile -> No deploy file found, filename: $filename!");
-
-        $hostnames = array();
-
-        foreach($file as $line) {
-
-            //split file contents
-            list($key, $value) = explode(" = ", $line);
-
-            //set key
-            $hostnames[trim($key)] = trim($value);
-        }
-
-        return $hostnames;
      }
 }

@@ -86,7 +86,7 @@ class Cacher
              if(!$result)
                 throw new Exception("Error setting key");
 
-            if(APP_ENVIRONMENT === "development") {
+            if(APP_ENVIRONMENT === "local") {
                 $di = \Phalcon\DI::getDefault();
                 $logger = $di->getShared("logger");
                 $logger->debug("Cacher:set -> set key: $key => ".$value);

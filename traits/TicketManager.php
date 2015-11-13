@@ -381,7 +381,7 @@ trait TicketManager
         }
 
         //delete generated local files
-        if(APP_ENVIRONMENT !== "development")
+        if(APP_ENVIRONMENT !== "local")
             $this->_deleteTempFiles();
 
         return $binary;
