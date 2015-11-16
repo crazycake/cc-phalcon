@@ -305,15 +305,15 @@ abstract class AppLoader
      */
     private function _databaseSetup()
     {
-        if(is_null(getenv('DB_HOST')))
-            throw new Exception("AppLoader::_databaseSetup -> DB settings are not set.");
+        if(empty(getenv('DB_HOST')))
+            throw new Exception("AppLoader::_databaseSetup -> DB environment is not set.");
 
         //set database config
         $this->app_config["database"] = [
             'host'      => getenv('DB_HOST'),
-            'username'  => getenv('DB_USERNAME'),
-            'password'  => getenv('DB_PASSWORD'),
-            'dbname'    => getenv('DB_DATABASE')
+            'username'  => getenv('DB_USER'),
+            'password'  => getenv('DB_PASS'),
+            'dbname'    => getenv('DB_NAME')
         ];
     }
 
@@ -424,8 +424,11 @@ abstract class AppLoader
     private function _environmentSetUp()
     {
         //load .env file configuration with Dotenv
-        $dotenv = new \Dotenv\Dotenv(PROJECT_PATH);
-        $dotenv->load();
+        $envfile = PROJECT_PATH.".env";
+        $dotenv  = new \Dotenv\Dotenv(PROJECT_PATH);
+
+        if(is_file($envfile))
+            $dotenv->load();
 
         //SET APP_ENVIRONMENT
         if(getenv('APP_DEBUG')) {
@@ -441,7 +444,7 @@ abstract class AppLoader
         $app_base_url    = __DIR__;
         $app_environment = getenv('APP_ENV');
 
-        //1) HTTP Server config, make sure script execution is not comming from command line (CLI)
+        //Check for CLI execution
         if (php_sapi_name() !== 'cli') {
 
             if(!isset($_SERVER['HTTP_HOST']) || !isset($_REQUEST))
