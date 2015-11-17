@@ -201,7 +201,7 @@ trait Facebook
     public function getUserData($fac = null, $user_id = 0)
     {
         //get session using short access token or with saved access token
-        $this->__setUserAccessToken($fac->getValue(), $user_id);
+        $this->__setUserAccessToken($fac, $user_id);
 
         // Get the graph-user object for the current user (validation)
         $response = $this->fb->get('/me?fields=email,name,first_name,last_name,birthday,gender');
@@ -237,15 +237,14 @@ trait Facebook
      * @param int $perm
      * @return boolean
      */
-    public function setUserFacebookPublishPerm($user_id, $perm = 1)
+    public function setUserPublishPerm($user_id, $perm = 1)
     {
         $users_facebook_class = $this->getModuleClassName('users_facebook');
 
         //get user & update properties
         $user_fb = $users_facebook_class::getFacebookDataByUserId($user_id);
-        $user_fb->publish_perm = $perm;
 
-        return $user_fb->update();
+        return $user_fb->update(['publish_perm' => $perm]);
     }
 
     /**
