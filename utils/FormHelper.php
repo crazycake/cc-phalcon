@@ -1,7 +1,7 @@
 <?php
 /**
  * Form Helper
- * Requires DateHelper for bday selector
+ * Requires DateHelper for birthday selector
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 

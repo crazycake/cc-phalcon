@@ -65,7 +65,7 @@ trait AccountAuth
 
         //send birthday data for form
         if(isset($this->accountConfig['birthday_form_fields']) && $this->accountConfig['birthday_form_fields'])
-            $this->view->setVar("bday_elements", FormHelper::getBirthdaySelectors());
+            $this->view->setVar("birthday_elements", FormHelper::getBirthdaySelectors());
 
         //call abstract method
         $this->beforeRenderSignUpView();

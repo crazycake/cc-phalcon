@@ -3,7 +3,7 @@
  * Facebook Trait
  * This class has common actions for account facebook controllers
  * Requires a Frontend or Backend Module with CoreController and Session Trait
- * TODO: update to sdk 5
+ * Open Graph version 2.4
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
@@ -14,11 +14,8 @@ use Phalcon\Exception;
 //Facebook PHP SDK
 use Facebook\FacebookSession;
 use Facebook\FacebookRequest;
-use Facebook\GraphUser;
-use Facebook\FacebookRedirectLoginHelper;
-use Facebook\FacebookJavaScriptLoginHelper;
-use Facebook\FacebookRequestException;
-//use Facebook\Exceptions\FacebookSDKException; for SDK 5
+use Facebook\Helpers\FacebookJavaScriptHelper;
+use Facebook\Exceptions\FacebookSDKException;
 //CrazyCake Utils
 use CrazyCake\Utils\DateHelper;
 
@@ -37,6 +34,12 @@ trait Facebook
     public $fbConfig;
 
     /**
+     * Lib var
+     * @var object
+     */
+    public $fb;
+
+    /**
      * Facebook URI user image
      * @static
      * @var string
@@ -51,9 +54,13 @@ trait Facebook
     public function initFacebookSDK()
     {
         //set Facebook Object
-        FacebookSession::setDefaultApplication($this->config->app->facebook->appID, $this->config->app->facebook->appKey);
+        $this->fb = new \Facebook\Facebook([
+            'app_id'     => $this->config->app->facebook->appID,
+            'app_secret' => $this->config->app->facebook->appKey,
+            //api version
+            'default_graph_version' => 'v2.4'
+        ]);
     }
-
     /**
      * Ajax - Login user by JS SDK.
      */
@@ -65,24 +72,26 @@ trait Facebook
             '@user_data'     => 'int'
         ]);
 
-        //check signed request
-        if(!$this->__parseSignedRequest($data['signed_request']))
-            $this->_sendJsonResponse(405);
+        try {
 
-        $helper  = new FacebookJavaScriptLoginHelper();
-        $session = $helper->getSession();
-        //check login
-        $response = $this->__loginUserFacebook($session);
+            //check signed request
+            if(!$this->__parseSignedRequest($data['signed_request']))
+                $this->_sendJsonResponse(405);
 
-        //error response?
-        if($response['fb_error'])
-            $this->_sendJsonResponse(200, $response["fb_error"], true);
+            //call js helper
+            $helper = $this->fb->getJavaScriptHelper();
+            //handle login
+            $response = $this->__loginUserFacebook($helper->getAccessToken());
 
-        //handle response
-        if(isset($data["user_data"]))
-            $this->_sendJsonResponse(200, $response["properties"]);
-        else
-            $this->_handleResponseOnLoggedIn(); //must be implemented
+            //handle response
+            if(isset($data["user_data"]))
+                $this->_sendJsonResponse(200, $response["properties"]);
+            else
+                $this->_handleResponseOnLoggedIn(); //must be implemented
+        }
+        catch(Exception $e) {
+            $this->_sendJsonResponse(200, $e->getMessage(), true);
+        }
     }
 
     /**
@@ -91,28 +100,29 @@ trait Facebook
      */
     public function loginByRedirectAction($requested_uri = "")
     {
-        $login_uri = $this->fbConfig['controller_name']."/loginByRedirect/".$requested_uri;
-        //get helper object
-        $helper  = new FacebookRedirectLoginHelper($this->_baseUrl($login_uri));
-        $session = $helper->getSessionFromRedirect();
-        //check login
-        $response = $this->__loginUserFacebook($session);
+        try {
+            //get helper object
+            $helper = $this->fb->getRedirectLoginHelper();
 
-        //send and error if session is NULL
-        if($response['fb_error']) {
-            $this->logger->error("Facebook::loginByRedirectAction -> An error ocurred: ".$response['fb_error']);
+            //handle login
+            $response = $this->__loginUserFacebook($helper->getAccessToken());
+
+            //authenticated in settings controller
+            if($requested_uri == md5($this->fbConfig['settings_uri']))
+                $this->onSettingsLoginRedirection();
+
+            //handle response, must be implemented
+            $this->_handleResponseOnLoggedIn();
+        }
+        catch(Exception $e) {
+
+            $this->logger->error("Facebook::loginByRedirectAction -> An error ocurred: ".$e->getMessage());
             //set message
             $this->view->setVar("error_message", $this->fbConfig['trans']['oauth_redirected']);
             $this->dispatcher->forward(["controller" => "errors", "action" => "internal"]);
-            return;
+
+            $this->_sendJsonResponse(200, $e->getMessage(), true);
         }
-
-        //authenticated in settings controller
-        if($requested_uri == md5($this->fbConfig['settings_uri']))
-            $this->onSettingsLoginRedirection();
-
-        //handle response
-        $this->_handleResponseOnLoggedIn(); //must be implemented
     }
 
     /**
@@ -121,12 +131,10 @@ trait Facebook
      * @param string $encrypted_data {user_id#fac}
      * @return json response
      */
-    public function extendAccessTokenAction($encrypted_data = null)
+    public function extendAccessTokenAction($encrypted_data = "")
     {
-        if (is_null($encrypted_data))
+        if (empty($encrypted_data))
             return $this->_sendJsonResponse(405); //method not allowed
-
-        $exception  = false;
 
         try {
             //get encrypted facebook user id and short live access token
@@ -138,37 +146,39 @@ trait Facebook
             $users_facebook_class = $this->getModuleClassName('users_facebook');
             $user_fb = $users_facebook_class::getObjectById($fb_id);
 
-            if(!$user_fb)
+            if(!$user_fb || empty($short_live_fac))
                 $this->_sendJsonResponse(400); //bad request
 
-            //get facebook session with saved access token
-            $fb_session = $this->__getUserFacebookSession($user_fb->fac);
             //if a session error ocurred, get a new long live access token
-            $fac_obj = $this->__requestLongLiveAccessToken($user_fb, $short_live_fac, is_string($fb_session) ? null : $fb_session);
+            $this->logger->log("Facebook::extendAccessTokenAction -> Requesting a new long live access token for fb_id: $user_fb->id");
+
+            //get new long live fac
+            $client = $this->fb->getOAuth2Client();
+            $fac    = $client->getLongLivedAccessToken($short_live_fac);
 
             //save new long-live access token?
-            if ($fac_obj && $fac_obj->saveIt) {
-
+            if ($fac) {
                 //set new access token
-                $user_fb->fac = $fac_obj->token;
+                $data = [];
+                $data['fac'] = $fac->getValue();
 
-                if(method_exists($fac_obj->expires_at, 'format'))
-                    $user_fb->expires_at = $fac_obj->expires_at->format('Y-m-d H:i:s');
+                if(is_object($fac->getExpiresAt()))
+                    $data['expires_at'] = $fac->getExpiresAt()->format('Y-m-d H:i:s');
 
                 //update in db
-                $user_fb->update();
+                $user_fb->update($data);
             }
 
             //send JSON response with payload
-            $this->_sendJsonResponse(200, ["fb_id" => $fb_id]);
+            return $this->_sendJsonResponse(200, ["fb_id" => $user_fb->id]);
         }
+        catch (FacebookSDKException $e) { $exception = $e; }
         catch (Exception $e)  { $exception = $e; }
         catch (\Exception $e) { $exception = $e; }
 
-        if($exception) {
-            $this->logger->error("Facebook::extendAccessToken -> PHP exception: ".$exception->getMessage().". userFB: ".(isset($fb_id) ? $fb_id : "unknown"));
-            $this->_sendJsonResponse(400);
-        }
+        //exception
+        $this->logger->error("Facebook::extendAccessToken -> Exception: ".$exception->getMessage().". fb_id: ".(isset($user_fb->id) ? $user_fb->id : "unknown"));
+        $this->_sendJsonResponse(400);
     }
 
     /**
@@ -183,45 +193,42 @@ trait Facebook
     }
 
     /**
-     * Handler - Get user facebook properties from a already created session
-     * @param string $fac Facebook AccesToken
-     * @param int $user_id
-     * @return mixed (boolean|array)
+     * Handler - Get user facebook properties
+     * @param object $fac The facebook access token
+     * @param int $user_id The user id
+     * @return array
      */
-    public function getUserFacebookSessionProperties($fac = null, $user_id = 0)
+    public function getUserData($fac = null, $user_id = 0)
     {
-        $exception  = false;
+        //get session using short access token or with saved access token
+        $this->__setUserAccessToken($fac->getValue(), $user_id);
 
-        try {
-            //get session using short access token or with saved access token
-            $fb_session = $this->__getUserFacebookSession($fac, $user_id);
+        // Get the graph-user object for the current user (validation)
+        $response = $this->fb->get('/me?fields=email,name,first_name,last_name,birthday,gender');
 
-            if(is_string($fb_session))
-                throw new Exception("Invalid facebook session.");
+        if(!$response)
+            throw new Exception("Invalid facebook data from /me?fields= request.");
 
-            // Get the graph-user object for the current user (validation)
-            $fb_data = (new FacebookRequest($fb_session, 'GET', '/me'))->execute()->getGraphObject(GraphUser::className());
+        //parse user fb session properties
+        $fb_data    = $response->getGraphNode();
+        $properties = array();
 
-            if(!$fb_data)
-                throw new Exception("Invalid facebook data from GET service.");
+        //parse from array (Javascript SDK)
+        $properties['fb_id']      = $fb_data->getField('id');
+        $properties['email']      = strtolower($fb_data->getField('email'));
+        $properties['first_name'] = $fb_data->getField('first_name');
+        $properties['last_name']  = $fb_data->getField('last_name');
+        //birthday
+        $birthday = $fb_data->getField('birthday');
+        $properties['birthday'] = is_object($birthday) ? $birthday->format("Y-m-d") : null;
+        //get gender
+        $gender = $fb_data->getField('gender');
+        $properties['gender'] = $gender ? $gender : 'undefined';
 
-            //parse user fb session properties
-            $properties = $this->__parseUserPropertiesForDatabase($fb_data, $fb_session);
+        if(empty($properties))
+            throw new Exception("Invalid facebook parsed properties.");
 
-            if(!$properties)
-                throw new Exception("Invalid facebook parsed properties.");
-
-            return $properties;
-        }
-        catch (FacebookRequestException $e) { $exception = $e; }
-        catch (Exception $e)  { $exception = $e; }
-        catch (\Exception $e) { $exception = $e; }
-
-        //an error ocurred
-        if ($exception) {
-            $this->logger->error("Facebook::getUserFacebookSessionProperties -> Exception: ".$exception->getMessage().". userID: ".(isset($user_id) ? $user_id : "unknown"));
-            return false;
-        }
+        return $properties;
     }
 
     /**
@@ -249,18 +256,13 @@ trait Facebook
     {
         //append request uri as hashed string
         $requested_uri = md5($this->_getRequestedUri());
-        $login_uri     = $this->fbConfig['controller_name']."/loginByRedirect/".$requested_uri;
-        $redirect_url  = $this->_baseUrl($login_uri);
+        $callback      = $this->_baseUrl($this->fbConfig['controller_name']."/loginByRedirect/".$requested_uri);
+        $scope         = explode(",", $this->config->app->facebook->appScope);
 
-        //get vars
-        $app_id     = $this->config->app->facebook->appID;
-        $app_secret = $this->config->app->facebook->appKey;
-        $scope      = $this->config->app->facebook->appScope;
-
-        $helper = new FacebookRedirectLoginHelper($redirect_url, $app_id, $app_secret);
-        $params = array("scope" => $scope);
+        //set helper
+        $helper = $this->fb->getRedirectLoginHelper();
         //get the url
-        $url = $helper->getLoginUrl($params);
+        $url = $helper->getLoginUrl($callback, $scope);
 
         //set property to config
         $this->config->app->facebook->loginUrl = $url;
@@ -269,10 +271,11 @@ trait Facebook
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
-     * Logins a User with facebook session data, if data has the signed_request property it will be checked
-     * @param array $session The session object
+     * Logins a User with facebook access token,
+     * If data has the signed_request property it will be checked automatically
+     * @param object $fac The access token object
      */
-    private function __loginUserFacebook($session = null)
+    private function __loginUserFacebook($fac = null)
     {
         //get model classmap names
         $users_class          = $this->getModuleClassName('users');
@@ -283,16 +286,8 @@ trait Facebook
         $exception  = false;
 
         try {
-
-            if(is_null($session))
-                throw new Exception($this->fbConfig['trans']['oauth_redirected']);
-
-            //get session data
-            $fac   = $session->getToken();
-            $fb_id = $session->getSessionInfo()->getId();
-
             //get properties
-            $properties = $this->getUserFacebookSessionProperties($fac);
+            $properties = $this->getUserData($fac);
 
             //validate fb session properties
             if(!$properties)
@@ -301,23 +296,23 @@ trait Facebook
 
             //email validation
             if (empty($properties['email']) || !filter_var($properties['email'], FILTER_VALIDATE_EMAIL)) {
-                $this->logger->error("Facebook::__loginUserFacebook() -> Facebook Session (" . $properties['fb_id'] . ") invalid email: " . $properties['email']);
+                $this->logger->error("Facebook::__loginUserFacebook() -> Facebook Session (".$properties["fb_id"].") invalid email: ".$properties['email']);
                 throw new Exception(str_replace("{email}", $properties['email'], $this->fbConfig['trans']['invalid_email']));
             }
 
             //OK, check if user exists in Users Facebook table & get session data
-            $user_fb      = $users_facebook_class::getObjectById($fb_id);
-            $session_data = $this->_getUserSessionData();
+            $user_fb      = $users_facebook_class::getObjectById($properties["fb_id"]);
+            $user_session = $this->_getUserSessionData(); //get app session
 
-            //check if user is logged, have a fb user, in and is attempting to loggin to facebook with another account
-            if ($session_data && $session_data["fb_id"] && $session_data["fb_id"] != $fb_id) {
-                $this->logger->error("Facebook::__loginUserFacebook() -> App Session fb_id (" . $session_data["fb_id"]. ") & sdk session (" . $fb_id . ") data doesn't match.");
+            //check if user is logged, have a FB user, and he is attempting to login facebook with another account
+            if ($user_session && $user_session["fb_id"] && $user_session["fb_id"] != $properties["fb_id"]) {
+                $this->logger->error("Facebook::__loginUserFacebook() -> App Session fb_id (".$user_session["fb_id"].") & sdk session (".$properties["fb_id"].") data doesn't match.");
                 throw new Exception($this->fbConfig['trans']['session_switched']);
             }
 
-            //check user is logged in, dont a have a fb user and the loggin user has another user id.
-            if($session_data && $user_fb && $user_fb->user_id != $session_data["id"]) {
-                $this->logger->error("Facebook::__loginUserFacebook() -> App Session fb_id (" . $session_data["fb_id"]. ") & sdk session (" . $fb_id . ") data doesn't match.");
+            //check user is logged in, don't a have a FB user and the logged in user has another user id.
+            if ($user_session && $user_fb && $user_fb->user_id != $user_session["id"]) {
+                $this->logger->error("Facebook::__loginUserFacebook() -> App Session fb_id (".$user_session["fb_id"].") & sdk session (".$properties["fb_id"].") data doesn't match.");
                 throw new Exception($this->fbConfig['trans']['account_switched']);
             }
 
@@ -325,17 +320,17 @@ trait Facebook
             $user = $users_class::getUserByEmail($properties['email']);
             //skip user insertion?
             if ($user) {
-                //unset fields we won't wish to update (update ignores arbitrary keys)
-                unset($properties['first_name'], $properties['last_name']);
+
+                //disabled account
+                if ($user->account_flag == 'disabled')
+                    throw new Exception($this->fbConfig['trans']['account_disabled']);
 
                 //update user flag if account was pending, or if account is disabled show a warning
-                if ($user->account_flag == 'pending') {
+                if ($user->account_flag == 'pending')
                     $properties['account_flag'] = 'enabled';
-                }
-                else if ($user->account_flag == 'disabled') {
-                    throw new Exception($this->fbConfig['trans']['account_disabled']);
-                }
 
+                //unset fields we won't wish to update
+                unset($properties['first_name'], $properties['last_name']);
                 //update user ignoring arbitrary set keys
                 $user->update($properties);
             }
@@ -344,165 +339,78 @@ trait Facebook
                 //extend properties
                 $properties['account_flag'] = 'enabled'; //set account flag as active
                 //insert user
-                if (!$user->save($properties)){
+                if (!$user->save($properties))
                     $this->_sendJsonResponse(200, $user->filterMessages(), true);
-                }
             }
 
             //INSERT a new facebook user
             if (!$user_fb)
-                $this->__saveNewUserFacebook($user->id, $fb_id, $fac, $properties['token_expiration']);
+                $this->__saveNewUserFacebook($user->id, $properties["fb_id"], $fac);
 
             //queues an async request, extend access token (append fb userID and short live access token)
             $this->_asyncRequest(
                 [$this->fbConfig['controller_name'] => "extendAccessToken"],
-                $fb_id."#".$fac,
+                $properties["fb_id"]."#".$fac->getValue(),
                 "GET",
                 true
             );
         }
-        catch (Exception $e)  { $exception = $e; }
-        catch (\Exception $e) { $exception = $e; }
-
-        //an error ocurred
-        if ($exception) {
-            $login_data["fb_error"] = $exception->getMessage();
-            $login_data["properties"] = false;
+        catch (FacebookSDKException $e) { $exception = $e; }
+        catch (Exception $e)            { $exception = $e; }
+        catch (\Exception $e)           { $exception = $e; }
+        //throw one exception type
+        if ($exception){
+            $this->logger->error("Facebook::__loginUserFacebook -> Exception: ".$exception->getMessage().". fb_id: ".(isset($user_fb) ? $user_fb->id : "unknown"));
+            throw new Exception($e->getMessage());
         }
 
         //SAVES session if none error ocurred
-        if (!isset($login_data["fb_error"])) {
-
-            $login_data["fb_error"]   = false;
-            $login_data["properties"] = $properties;
-            //set php session as logged in
-            $this->_setUserSessionAsLoggedIn($user->id);
-        }
+        $login_data["properties"] = $properties;
+        //set php session as logged in
+        $this->_setUserSessionAsLoggedIn($user->id);
 
         return $login_data;
     }
 
     /**
-     * Get user fb session by Facebook PHP SDK
+     * Set the facebook Access Token
      * @param string $fac (optional) Access token
      * @param int $user_id
      * @throws Exception
      * @return mixed (boolean|string|object)
      */
-    private function __getUserFacebookSession($fac = null, $user_id = 0)
+    private function __setUserAccessToken($fac = null, $user_id = 0)
     {
         $users_facebook_class = $this->getModuleClassName('users_facebook');
 
-        $exception = false;
+        //get stored fac if its null
+        if(is_null($fac)) {
+            //get user
+            $user_fb = $users_facebook_class::getFacebookDataByUserId($user_id);
+            //validates data
+            if(!$user_fb)
+                throw new Exception("invalid user id");
 
-        try {
-
-            if(is_null($fac)) {
-                //get user
-                $user_fb = $users_facebook_class::getFacebookDataByUserId($user_id);
-                //validates data
-                if(!$user_fb)
-                    throw new Exception("invalid user id");
-
-                //get access token
-                $fac = $user_fb->fac;
-            }
-
-            //open a facebook PHP SDK Session with saved access token
-            $session = new FacebookSession($fac);
-
-            //validates session
-            if (!$session->validate())
-                throw new Exception("invalid facebook session");
-
-            return $session;
+            //get access token
+            $fac = $user_fb->fac;
         }
-        catch (FacebookRequestException $e) { $exception = $e; }
-        catch(Exception $e)  { $exception = $e; }
-        catch(\Exception $e) { $exception = $e; }
-
-        if($exception) {
-            $this->logger->error("Facebook::__getUserFacebookSession() -> A Facebook exception raised: ".$exception->getMessage());
-            return $exception->getMessage();
-        }
-    }
-
-    /**
-     * Facebook SDK call, get a Long Live Access Token, return a fac object
-     * @param object $user_fb
-     * @param string $short_live_fac
-     * @param FacebookSession $session
-     * @return json response
-     */
-    private function __requestLongLiveAccessToken($user_fb = null, $short_live_fac = null, $session = null)
-    {
-        if(!$user_fb) {
-            $this->logger->log('Facebook::_longLiveFac -> Invalid ORM user facebook param');
-            return;
+        //check for a fac object
+        else if(is_object($fac)) {
+            $fac = $fac->getValue();
         }
 
-        //create a fac object
-        $fac_obj = new \stdClass();
-        //set properties
-        $fac_obj->saveIt     = false;
-        $fac_obj->token      = $short_live_fac;
-        $fac_obj->expires_at = 0;
-        $fac_obj->days_left  = 0;
-
-        $exception = false;
-
-        try {
-            //if session is null open a facebook session with a fresh short-live access token
-            if (is_null($session)) {
-                $session = $this->__getUserFacebookSession($short_live_fac);
-
-                if(is_string($session))
-                    throw new Exception($session);
-            }
-
-            //get saved expires at
-            $expires_at = $user_fb->expires_at;
-
-            //check expiration of token
-            $days_left = DateHelper::getTimePassedFromDate($session->getSessionInfo()->getExpiresAt());
-            //always saves a new long FAC
-            if (!is_null($expires_at) && $days_left <= 60) {
-
-                $this->logger->log('Facebook::_longLiveFac -> Requested a new long live access token for user_fb_id: ' . $user_fb->id);
-
-                //OK flag for save
-                $fac_obj->saveIt = true;
-                $session = $session->getLongLivedSession();
-                //print_r($session->getSessionInfo());exit;
-                //update expiration days left
-                $days_left = DateHelper::getTimePassedFromDate($session->getSessionInfo()->getExpiresAt());
-            }
-
-            //set object properties
-            $fac_obj->token      = $session->getToken();
-            $fac_obj->expires_at = $session->getSessionInfo()->getExpiresAt();
-            $fac_obj->days_left  = $days_left;
-        }
-        catch (FacebookRequestException $e) { $exception = $e; }
-        catch(Exception $e)  { $exception = $e; }
-        catch(\Exception $e) { $exception = $e; }
-
-        if($exception) {
-            $this->logger->error('Facebook::_longLiveFac -> Error opening session for user_fb_id '.$user_fb->id.". Trace: ".$exception->getMessage());
-        }
-
-        return $fac_obj;
+        //open a facebook PHP SDK Session with saved access token
+        $this->fb->setDefaultAccessToken($fac);
     }
 
     /**
      * Parse given user facebook session data to save in Database
      * @param int $user_id
      * @param int $fb_id
-     * @param string $fac
-     * @param string $token_expiration
+     * @param object $fac The access token object
      * @return array
      */
-    private function __saveNewUserFacebook($user_id, $fb_id, $fac, $token_expiration)
+    private function __saveNewUserFacebook($user_id = null, $fb_id = null, $fac = null)
     {
         $users_class          = $this->getModuleClassName('users');
         $users_facebook_class = $this->getModuleClassName('users_facebook');
@@ -511,8 +419,8 @@ trait Facebook
         $user_fb             = new $users_facebook_class();
         $user_fb->user_id    = $user_id;
         $user_fb->id         = $fb_id;
-        $user_fb->fac        = $fac;
-        $user_fb->expires_at = $token_expiration;
+        $user_fb->fac        = $fac->getValue();
+        $user_fb->expires_at = is_object($fac->getExpiresAt()) ? $fac->getExpiresAt()->format("Y-m-d H:i:s") : null;
 
         if (!$user_fb->save()) {
 
@@ -526,49 +434,6 @@ trait Facebook
         }
 
         return $user_fb;
-    }
-
-    /**
-     * Parse given user facebook session data to save in Database
-     * @param mixed $fb_data (object)
-     * @param object $fb_session The session object
-     * @return array
-     */
-    private function __parseUserPropertiesForDatabase($fb_data = null, $fb_session = null)
-    {
-        if(is_null($fb_data) || is_null($fb_session))
-            return false;
-
-        $properties = array();
-
-        //parse from array (Javascript SDK)
-        if(is_object($fb_data)) {
-
-            $properties['fb_id']      = $fb_data->getId();
-            $properties['email']      = strtolower($fb_data->getEmail());
-            $properties['first_name'] = $fb_data->getFirstName();
-            $properties['last_name']  = $fb_data->getLastName();
-            //birthday
-            $bday = $fb_data->getBirthday();
-            $properties['bday'] = is_object($bday) ? $bday->format("Y-m-d") : null;
-            //get gender
-            $gender = $fb_data->getProperty('gender');
-            $properties['gender'] = $gender ? $gender : 'undefined';
-        }
-
-        if(empty($properties))
-            return false;
-
-        //extend properties, image url & token_expiration
-        $properties['image_url'] = str_replace("<size>", "square", str_replace("<fb_id>", $properties['fb_id'], self::$FB_USER_IMAGE_URI));
-
-        //set token expiration
-        if(is_object($fb_session->getSessionInfo()->getExpiresAt()))
-            $properties['token_expiration'] = $fb_session->getSessionInfo()->getExpiresAt()->format('Y-m-d H:i:s');
-        else
-            $properties['token_expiration'] = null;
-
-        return $properties;
     }
 
     /**
