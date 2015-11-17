@@ -1,9 +1,9 @@
 <?php
 /**
- * Facebook Trait
+ * Facebook Trait - Facebook php sdk v5.0
  * This class has common actions for account facebook controllers
  * Requires a Frontend or Backend Module with CoreController and Session Trait
- * Open Graph version 2.4
+ * Open Graph v2.4
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
