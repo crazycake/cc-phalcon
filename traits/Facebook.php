@@ -58,7 +58,7 @@ trait Facebook
             'app_id'     => $this->config->app->facebook->appID,
             'app_secret' => $this->config->app->facebook->appKey,
             //api version
-            'default_graph_version' => 'v2.4'
+            'default_graph_version' => 'v2.5'
         ]);
     }
     /**
