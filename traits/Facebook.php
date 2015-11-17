@@ -61,6 +61,7 @@ trait Facebook
             'default_graph_version' => 'v2.5'
         ]);
     }
+    
     /**
      * Ajax - Login user by JS SDK.
      */

@@ -25,7 +25,6 @@ abstract class WebCore extends AppCore implements webSecurity
     /**
      * abstract required methods
      */
-    abstract protected function getModuleClassName($key);
     abstract protected function setAppJavascriptProperties($js_app);
     abstract protected function checkBrowserSupport($browser, $version);
 
