@@ -6,12 +6,12 @@
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
-namespace CrazyCake\Traits;
+namespace CrazyCake\Account;
 
 //CrazyCake Utils
 use CrazyCake\Utils\DateHelper;
 
-trait Session
+trait AccountSession
 {
     /**
      * abstract required methods
@@ -105,7 +105,7 @@ trait Session
             $this->_sendJsonResponse(403);
         }
         else {
-            $this->dispatcher->forward(array("controller" => "auth", "action" => "logout"));
+            $this->dispatcher->forward(["controller" => "auth", "action" => "logout"]);
             $this->dispatcher->dispatch();
         }
     }
@@ -157,7 +157,7 @@ trait Session
         //check for ajax request
         if($this->request->isAjax()) {
             //redirection
-            $payload = array("redirectUri" => $uri);
+            $payload = ["redirectUri" => $uri];
             //send JSON response
             $this->_sendJsonResponse(200, $payload);
         }

@@ -14,7 +14,7 @@ use Phalcon\Assets\Filters\Cssmin;  //CSS resources minification
 use Phalcon\Assets\Filters\Jsmin;   //JS resources minification
 //CrazyCake Utils & Traits
 use CrazyCake\Utils\UserAgent;      //User Agent identifier
-use CrazyCake\Traits\Guzzle;
+use CrazyCake\Services\Guzzle;
 
 abstract class WebCore extends AppCore implements WebSecurity
 {

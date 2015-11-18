@@ -4,7 +4,7 @@
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
-namespace CrazyCake\Models;
+namespace CrazyCake\Account;
 
 //imports
 use Phalcon\Exception;
@@ -12,7 +12,7 @@ use Phalcon\Mvc\Model\Validator\InclusionIn;
 //other imports
 use CrazyCake\Utils\DateHelper;
 
-class BaseUsersTokens extends Base
+class BaseUsersTokens extends \CrazyCake\Models\Base
 {
     //this static method can be 'overrided' as late binding
     public static $TOKEN_EXPIRES_THRESHOLD = 3; //days

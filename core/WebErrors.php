@@ -1,14 +1,14 @@
 <?php
 /**
- * Errors Trait
+ * Web Errors Trait
  * This class has the common public actions for error pages
  * Requires a Frontend or Backend Module with CoreController
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
-namespace CrazyCake\Traits;
+namespace CrazyCake\Core;
 
-trait Errors
+trait WebErrors
 {
     /** ---------------------------------------------------------------------------------------------------------------
      * Init Function, is executed before any action on a controller

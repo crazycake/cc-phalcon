@@ -13,7 +13,7 @@ abstract class AppLoader
     /** const **/
     const CCLIBS_PACKAGE          = "CrazyCake\\";
     const CCLIBS_NAMESPACE        = "cc-phalcon";
-    const CCLIBS_DEFAULT_PACKAGES = ['traits', 'core', 'utils', 'models'];
+    const CCLIBS_DEFAULT_PACKAGES = ['services', 'core', 'utils', 'models'];
 
     /**
      * Child required methods

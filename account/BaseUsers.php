@@ -4,14 +4,14 @@
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
-namespace CrazyCake\Models;
+namespace CrazyCake\Account;
 
 //imports
 use Phalcon\Mvc\Model\Validator\Email;
 use Phalcon\Mvc\Model\Validator\InclusionIn;
 use Phalcon\Mvc\Model\Validator\Uniqueness;
 
-abstract class BaseUsers extends Base
+abstract class BaseUsers extends \CrazyCake\Models\Base
 {
     /**
      * child required methods
