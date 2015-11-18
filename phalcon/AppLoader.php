@@ -6,7 +6,7 @@
  */
 
 //imports
-require "phalcon/AppServices.php";
+require_once "AppServices.php";
 
 abstract class AppLoader
 {
@@ -245,7 +245,7 @@ abstract class AppLoader
             return false;
 
         //set phar assets path
-        $phar_assets = __DIR__."/".$assets_uri;
+        $phar_assets = dirname(__DIR__)."/".$assets_uri; //parent dir
         $output_path = $cache_path.$assets_uri;
 
         //check if files are already extracted
@@ -395,7 +395,7 @@ abstract class AppLoader
         //load classes directly form phar
         if(!$class_path) {
             //get class map array
-            $class_map = include "phalcon/AppClassMap.php";
+            $class_map = include "AppClassMap.php";
 
             foreach ($packages as $lib) {
                 //loop through package files
@@ -441,7 +441,7 @@ abstract class AppLoader
         }
 
         //set default environment
-        $app_base_url    = __DIR__;
+        $app_base_url    = PROJECT_PATH;
         $app_environment = getenv('APP_ENV');
 
         //Check for CLI execution

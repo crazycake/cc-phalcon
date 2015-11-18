@@ -39,8 +39,9 @@ return array (
   'phalcon' => 
   array (
     0 => 'AppClassMap.php',
-    1 => 'AppPlugins.php',
-    2 => 'AppServices.php',
+    1 => 'AppLoader.php',
+    2 => 'AppPlugins.php',
+    3 => 'AppServices.php',
   ),
   'qr' => 
   array (

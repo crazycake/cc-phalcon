@@ -98,7 +98,7 @@ class AppServices
     private function _getMvcDI()
     {
         //import plugins
-        require "AppPlugins.php";
+        require_once "AppPlugins.php";
 
         //Get a new Micro DI
         $di = new \Phalcon\DI\FactoryDefault();

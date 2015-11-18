@@ -15,7 +15,7 @@
 		"transbank"
 	],
     "bootstrap" : "Bootstrap.php",
-    "main": "AppLoader.php",
+    "main": "autoload.php",
     "output": "cc-phalcon.phar",
     "shebang": false,
     "stub": true
