@@ -174,8 +174,8 @@ trait Facebook
             return $this->_sendJsonResponse(200, ["fb_id" => $user_fb->id]);
         }
         catch (FacebookSDKException $e) { $exception = $e; }
-        catch (Exception $e)  { $exception = $e; }
-        catch (\Exception $e) { $exception = $e; }
+        catch (Exception $e)            { $exception = $e; }
+        catch (\Exception $e)           { $exception = $e; }
 
         //exception
         $this->logger->error("Facebook::extendAccessToken -> Exception: ".$exception->getMessage().". fb_id: ".(isset($user_fb->id) ? $user_fb->id : "unknown"));

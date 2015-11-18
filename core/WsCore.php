@@ -39,7 +39,7 @@ abstract class WsCore extends AppCore
     protected function onConstruct()
     {
         /** -- API codes -- **/
-        $this->CODES = array(
+        $this->CODES = [
             //success
             "200" => "ok",
             //client errors
@@ -56,7 +56,7 @@ abstract class WsCore extends AppCore
             "900" => "resource not found",
             "901" => "no files attached",
             "902" => "invalid format of file attached"
-        );
+        ];
 
         /* API Key Validation */
         if ($this->config->app->api->keyEnabled)
@@ -121,7 +121,7 @@ abstract class WsCore extends AppCore
         }
 
         //encode JSON
-        $content = json_encode(array('response' => $response), JSON_UNESCAPED_SLASHES);
+        $content = json_encode(['response' => $response], JSON_UNESCAPED_SLASHES);
 
         //output the response
         $this->response->setStatusCode(200, "OK");
@@ -144,21 +144,20 @@ abstract class WsCore extends AppCore
 
         $s = $optional ? "@" : "";
         //get request param
-        $data = $this->_handleRequestParams(array(
+        $data = $this->_handleRequestParams([
             "$s$prop"  => "int"
-        ), $method);
+        ], $method);
 
         //get model data
-        $object = $class_name::findFirst(array(
+        $object = $class_name::findFirst([
             "id = '".$data[$prop]."'" //conditions
-        ));
+        ]);
 
         if(!$object)
             $this->_sendJsonResponse(400);
         else
             return $object;
     }
-
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**

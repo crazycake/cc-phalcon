@@ -8,8 +8,8 @@
 namespace CrazyCake\Core;
 
 //imports
-use Phalcon\Mvc\Controller;  //Phalcon Controller
-use Phalcon\Exception;       //Phalcon Exception
+use Phalcon\Mvc\Controller;
+use Phalcon\Exception;
 
 //security interface
 interface WebSecurity

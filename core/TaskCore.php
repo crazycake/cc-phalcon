@@ -45,7 +45,7 @@ class TaskCore extends Task
      * Print Output with Colors
      * @access protected
      * @param  string $text
-     * @param  string $type Can be OK, ERROR, WARNING OR NOTE
+     * @param  string $type Options: ["OK", "ERROR", "WARNING", "NOTE"]
      * @return string
      */
     protected function _colorize($text = "", $type = "OK", $die = false)
@@ -55,16 +55,16 @@ class TaskCore extends Task
 
         switch ($type) {
             case "OK":
-                $open = "\033[92m";     //Green color
+                $open = "\033[92m";  //Green color
                 break;
             case "ERROR":
-                $open = "\033[91m";     //Red color
+                $open = "\033[91m";  //Red color
                 break;
             case "WARNING":
-                $open = "\033[93m";     //Yellow color
+                $open = "\033[93m";  //Yellow color
                 break;
             case "NOTE":
-                $open = "\033[94m";     //Blue color
+                $open = "\033[94m";  //Blue color
                 break;
             default:
                 throw new Exception("CoreTask:_colorize -> invalid message type: ".$type);

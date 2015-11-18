@@ -11,9 +11,9 @@
 namespace CrazyCake\Utils;
 
 //imports
+use Phalcon\Exception;
 use Phalcon\Translate\Adapter;
 use Phalcon\Translate\AdapterInterface;
-use Phalcon\Exception;
 
 class GetText extends Adapter implements AdapterInterface
 {

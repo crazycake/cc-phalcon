@@ -8,7 +8,7 @@
 namespace CrazyCake\Core;
 
 //imports
-use Phalcon\Exception;              //Phalcon Exception
+use Phalcon\Exception;
 //phalcon imports
 use Phalcon\Assets\Filters\Cssmin;  //CSS resources minification
 use Phalcon\Assets\Filters\Jsmin;   //JS resources minification
@@ -89,7 +89,7 @@ abstract class WebCore extends AppCore implements WebSecurity
         $supported = $this->checkBrowserSupport($this->client->browser, $this->client->short_version);
         //prevents loops
         if(!$supported && !$this->dispatcher->getPreviousControllerName()) {
-            $this->dispatcher->forward(array('controller' => 'errors', 'action' => 'oldBrowser'));
+            $this->dispatcher->forward(['controller' => 'errors', 'action' => 'oldBrowser']);
             $this->dispatcher->dispatch();
         }
     }
@@ -219,7 +219,7 @@ abstract class WebCore extends AppCore implements WebSecurity
         if(!is_null($go_back_url))
             $this->view->setVar("go_back", $go_back_url);
 
-        $this->dispatcher->forward(array("controller" => "errors", "action" => "internal"));
+        $this->dispatcher->forward(["controller" => "errors", "action" => "internal"]);
         $this->dispatcher->dispatch();
     }
 
