@@ -1,12 +1,12 @@
 <?php
 /**
- * StorageController: handles storage file managment (independent)
+ * StorageS3: handles storage file managment (independent)
  * Requires S3 composer library.
  * @link https://github.com/tpyo/amazon-s3-php-class
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
-namespace CrazyCake\Utils;
+namespace CrazyCake\Services;
 
 //imports
 use Phalcon\Exception;
@@ -42,8 +42,8 @@ class StorageS3
      * @param string $secret AWS secret key
      * @param string $bucket The AWS S3 bucket name
      */
-    function __construct($access, $secret, $bucket) {
-
+    function __construct($access, $secret, $bucket)
+    {
         if(empty($access)) {
             throw new Exception("StorageS3::__construct -> param access is required and must be an non-empty value.");
         }

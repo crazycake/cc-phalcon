@@ -22,8 +22,8 @@ use Facebook\FacebookRequest;
 use Facebook\Helpers\FacebookJavaScriptHelper;
 use Facebook\Exceptions\FacebookSDKException;
 //CrazyCake Utils
+use CrazyCake\Services\Cacher;
 use CrazyCake\Utils\DateHelper;
-use CrazyCake\Utils\Cacher;
 
 trait FacebookActions
 {

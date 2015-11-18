@@ -33,13 +33,6 @@ class BaseUsersCheckoutsObjects extends \CrazyCake\Models\Base
      */
     public $quantity;
 
-    /** -------------------------------------------- § -------------------------------------------------
-        Init
-    ------------------------------------------------------------------------------------------------- **/
-    public function initialize()
-    {
-
-    }
     /** ------------------------------------------- § ------------------------------------------------ **/
 
     /**
@@ -60,7 +53,7 @@ class BaseUsersCheckoutsObjects extends \CrazyCake\Models\Base
             WHERE buy_order = :buy_order:
             ",
            //bindings
-           array('buy_order' => $buy_order)
+           ['buy_order' => $buy_order]
        );
 
        $result = array();
@@ -80,7 +73,7 @@ class BaseUsersCheckoutsObjects extends \CrazyCake\Models\Base
             $new_object = self::newCheckoutObject($obj->object_id, $object_class, $obj->quantity);
 
             //get object local props
-            $props = $object_class::findFirst(array("id ='".$obj->object_id."'"));
+            $props = $object_class::findFirst(["id ='".$obj->object_id."'"]);
 
             if(!$props) continue;
 
@@ -105,8 +98,8 @@ class BaseUsersCheckoutsObjects extends \CrazyCake\Models\Base
      * Returns a new instance of a simple checkout object
      * @return stdClass object
      */
-    public static function newCheckoutObject($id = null, $className = "CheckoutObject", $quantity =  1) {
-
+    public static function newCheckoutObject($id = null, $className = "CheckoutObject", $quantity = 1)
+    {
         $new_object = new \stdClass();
 
         $new_object->id        = $id;

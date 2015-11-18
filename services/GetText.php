@@ -8,7 +8,7 @@
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
-namespace CrazyCake\Utils;
+namespace CrazyCake\Services;
 
 //imports
 use Phalcon\Exception;

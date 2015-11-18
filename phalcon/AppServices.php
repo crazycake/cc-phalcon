@@ -189,7 +189,7 @@ class AppServices
     private function _setTranslationService(&$di)
     {
         $di->setShared('translate', function() {
-            return new \CrazyCake\Utils\GetText([
+            return new \CrazyCake\Services\GetText([
                 'domain'    => $this->config->app->name,
                 'supported' => (array)$this->config->app->langs,
                 'directory' => APP_PATH."langs/"

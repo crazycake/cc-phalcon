@@ -11,7 +11,7 @@ namespace CrazyCake\Checkout;
 //imports
 use Phalcon\Exception;
 //other imports
-use CrazyCake\Utils\Cacher;
+use CrazyCake\Services\Cacher;
 use CrazyCake\Utils\FormHelper;
 
 trait CheckoutManager

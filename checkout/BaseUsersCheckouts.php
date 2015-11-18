@@ -69,7 +69,7 @@ class BaseUsersCheckouts extends \CrazyCake\Models\Base
      * @static
      * @var array
      */
-    static $STATES = array('pending', 'failed', 'overturn', 'success');
+    static $STATES = ['pending', 'failed', 'overturn', 'success'];
 
     /** -------------------------------------------- § -------------------------------------------------
         Init
@@ -149,7 +149,7 @@ class BaseUsersCheckouts extends \CrazyCake\Models\Base
         $di   = \Phalcon\DI::getDefault();
         $code = $di->getShared('cryptify')->generateAlphanumericCode($length);
         //unique constrait
-        $exists = self::findFirst(array("buy_order = '$code'"));
+        $exists = self::findFirst(["buy_order = '$code'"]);
 
         return $exists ? $this->generateBuyOrder($length) : $code;
     }
@@ -248,9 +248,7 @@ class BaseUsersCheckouts extends \CrazyCake\Models\Base
         if(!$checkout || $checkout->state != self::$STATES[0])
             return false;
 
-        $checkout->update(array(
-            "state" => $state
-        ));
+        $checkout->update(["state" => $state]);
 
         return true;
     }
@@ -289,7 +287,7 @@ class BaseUsersCheckouts extends \CrazyCake\Models\Base
                 AND checkout.state = 'pending'
             ",
            //bindings
-           array('object_id' => $object_id, "object_class" => $object_class)
+           ['object_id' => $object_id, "object_class" => $object_class]
        );
        //get sum quantity
        $checkout_q = $objects->getFirst()->q;
@@ -349,7 +347,7 @@ class BaseUsersCheckouts extends \CrazyCake\Models\Base
                 $conditions
             ",
            //bindings
-           array("user_id" => $user_id, "state" => $state, "object_class" => $object_class)
+           ["user_id" => $user_id, "state" => $state, "object_class" => $object_class]
        );
 
         if(!$result)
@@ -372,7 +370,7 @@ class BaseUsersCheckouts extends \CrazyCake\Models\Base
 
             $object_class = $obj->className;
 
-            $orm_object       = $object_class::findFirst(array("id ='".$obj->id."'"));
+            $orm_object       = $object_class::findFirst(["id ='".$obj->id."'"]);
             $current_quantity = $orm_object->quantity;
             $updated_quantity = (int)($current_quantity - $obj->quantity);
 
