@@ -31,6 +31,7 @@ trait FacebookActions
      * abstract required methods
      */
     abstract public function setConfigurations();
+    abstract public function setStoryData($object);
 
     /**
      * Config var
@@ -61,6 +62,9 @@ trait FacebookActions
         if(!is_dir($this->fbConfig["upload_path"]))
             mkdir($this->fbConfig["upload_path"], 0755);
 
+        //set catcher
+        $this->cacher = new Cacher('redis');
+
         //set Facebook SDK Object
         $this->fb = new \Facebook\Facebook([
             'app_id'     => $this->config->app->facebook->appID,
@@ -68,20 +72,17 @@ trait FacebookActions
             //api version
             'default_graph_version' => isset($this->fbConfig["graph_version"]) ? $this->fbConfig["graph_version"] : "v2.5"
         ]);
-
-        //set catcher
-        $this->cacher = new Cacher('redis');
     }
 
     /**
      * Publish Facebook feed action
      * @param  object $user The ORM user object
-     * @param  object $event The ORM event object
-     * @param  string $payload The input payload
+     * @param  string $object The input payload
+     * @param array $payload The input payload
      * @param  int $attempt Fallback exception, retry
      * @return string The object id
      */
-    public function publishAction($user_fb, $event, $payload = array(), $attempt = 0)
+    public function publish($user_fb, $object, $payload = array(), $attempt = 0)
     {
         //get user facebook data
         $user_fb_class = $this->fbConfig["pages_class"];
@@ -122,7 +123,7 @@ trait FacebookActions
             //actions
             $method = "_".$payload["action"]."Action";
             //reflection
-            $object_id = $this->$method($user_fb, $event, $fallbackAction, $count+1);
+            $object_id = $this->$method($user_fb, $object, $fallbackAction, $count+1);
             //log response
             $this->logger->debug("FacebookActions::publishAction -> FB Object created, facebook UserId: $user_fb->id. Payload: ".$payload["action"].". Data: ".json_encode($object_id));
             //var_dump($response, $fallbackAction, $object_id);exit;
@@ -138,36 +139,40 @@ trait FacebookActions
         //an error occurred
         $this->logger->error("FacebookActions::publishAction -> Failed action facebook UserId: ".(is_null($user_fb) ? "null" : $user_fb->id).". Exception: ".$exception->getMessage());
 
+        //only photo has fallback
+        if($action != "photo")
+            throw $exception;
+
         //if failed more than once, throw exception
-        return empty($attempt) ? $this->publishAction(null, $event, $payload, 1) : false;
+        return empty($attempt) ? $this->publish(null, $object, $payload, 1) : false;
     }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
      * Checkin action
-     * @param object $event The event object
+     * @param object $user_fb
+     * @param object $object The orm object
      * @param boolean $fallbackAction The action is a fallback
      * @param int $count The number of times this action was triggered
      */
-    private function _checkinAction($user_fb, $event, $fallbackAction = false, $count = 0)
+    private function _checkinAction($user_fb, $object, $fallbackAction = false, $count = 0)
     {
         if($fallbackAction) // || $count > 1 NOTE: HARDCODED
-            return;
+            throw new Exception("User reached checkin max post times for today");
 
         //get event facebook object
-        $eventFacebook = $event->eventsFacebook;
-        $msg  = !is_null($eventFacebook->checkin_text) ? $eventFacebook->checkin_text : $this->fbConfig["og_default_message"];
-        $link = !is_null($eventFacebook->checkin_url) ? $eventFacebook->checkin_url : $event->official_url;
-
+        $fb_object = $object->{$this->fbConfig["object_fb_relation"]};
+        //get message
+        $msg = !is_null($fb_object->checkin_text) ? $fb_object->checkin_text : $this->fbConfig["og_default_message"];
         //get place facebook id
-        $place_id = !is_null($eventFacebook->place_id) ? $eventFacebook->place_id : $this->fbConfig["og_default_place_id"];
+        $place_id = !is_null($fb_object->place_id) ? $fb_object->place_id : $this->fbConfig["og_default_place_id"];
 
         //set params
         $data = [
             "message"      => $msg,
-            "link"         => $link,
             "place"        => $place_id,
+            "link"         => $fb_object->checkin_url,
             "tags"         => $user_fb->id,
             "created_time" => gmdate("Y-m-d\TH:i:s")
         ];
@@ -175,7 +180,6 @@ trait FacebookActions
 
         //set response
         $response = $this->fb->post('me/feed', $data, $user_fb->fac)->getGraphNode();
-        //print_r($response);exit;
 
         return is_object($response) ? $response->getField('id') : null;
     }
@@ -183,27 +187,30 @@ trait FacebookActions
     /**
      * Story action
      * TODO: fix start & end date
-     * TODO: events_facebook must have $count value for action
-     * @param object $event The event object
+     * @param object $user_fb
+     * @param object $object The orm object
      * @param boolean $fallbackAction The action is a fallback
      * @param int $count The number of times this action was triggered
      */
-    private function _storyAction($user_fb, $event, $fallbackAction = false, $count = 0)
+    private function _storyAction($user_fb, $object, $fallbackAction = false, $count = 0)
     {
         if($fallbackAction) // || $count != 2 //NOTE: HARDCODED
-            return;
+            throw new Exception("User reached story max post times for today");
 
         //get event facebook object
-        $eventFacebook = $event->eventsFacebook;
-        $msg = !is_null($eventFacebook->story_text) ? $eventFacebook->story_text: $this->fbConfig["og_default_message"];
-
+        $fb_object = $object->{$this->fbConfig["object_fb_relation"]};
+        //set message
+        $msg = !is_null($fb_object->story_text) ? $fb_object->story_text : $this->fbConfig["og_default_message"];
         //get place facebook id
-        $place_id = !is_null($eventFacebook->place_id) ? $eventFacebook->place_id : $this->fbConfig["og_default_place_id"];
+        $place_id = !is_null($fb_object->place_id) ? $fb_object->place_id : $this->fbConfig["og_default_place_id"];
 
         //new facebook story object
-        $object = $this->_getNewFacebookStoryObject($event);
+        $object = $this->_getNewFacebookStoryObject($object);
+
+        $story_object = $this->fbConfig["og_namespace"].":".$this->fbConfig["og_story_object"];
         //push open graph object
-        $response = $this->fb->post('me/objects/'.$this->fbConfig["og_story_object"], ["object" => $object], $user_fb->fac)
+        $response = $this->fb->post('me/objects/'.$story_object,
+                             ["object" => $object], $user_fb->fac)
                              ->getGraphNode();
         //get OG object id
         $object_id = is_object($response) ? $response->getField('id') : false;
@@ -213,21 +220,22 @@ trait FacebookActions
 
         //now post this story (SOME Params hardcoded)
         $data = [
+            //object
+            $this->fbConfig["og_story_object"] => $object_id,
             //common props
-            "event"                => $object_id,
             "message"              => $msg,
             "place"                => $place_id,
             "fb:explicitly_shared" => true,
             //aditional props
-            "ref"           => $event->id,
+            "ref"           => $object->id,
             "no_feed_story" => false,
             //set time to control action verb
             "start_time" => gmdate("Y-m-d\TH:i:s"),    //example "2015-06-18T18:30:30-00:00"
             "end_time"   => (new \DateTime())->modify('+2 day')->format("Y-m-d\TH:i:s") //end time, HARDCODED
         ];
         //print_r($params);exit;
-
-        $response = $this->fb->post('/me/'.$this->fbConfig["og_story_action"], $data, $user_fb->fac)->getGraphNode();
+        $action   = $this->fbConfig["og_namespace"].":".$this->fbConfig["og_story_action"];
+        $response = $this->fb->post('/me/'.$action, $data, $user_fb->fac)->getGraphNode();
         //print_r($response);exit;
 
         return is_object($response) ? $response->getField('id') : null;
@@ -235,31 +243,30 @@ trait FacebookActions
 
     /**
      * Upload a photo
-     * @param object $event The event object
+     * @param object $user_fb
+     * @param object $object The orm object
      * @param boolean $fallbackAction The action is a fallback
      * @param int $count The number of times this action was triggered
      */
-    private function _photoAction($user_fb, $event, $fallbackAction = false, $count = 0)
+    private function _photoAction($user_fb, $object, $fallbackAction = false, $count = 0)
     {
         if (!$this->request->hasFiles())
            throw new Exception("No files attached to request");
 
         //get event facebook object
-        $eventFacebook = $event->eventsFacebook;
-        $msg = !is_null($eventFacebook->photo_text) ? $eventFacebook->photo_text : $this->fbConfig["og_default_message"];
+        $fb_object = $object->{$this->fbConfig["object_fb_relation"]};
+        $msg = !is_null($fb_object->photo_text) ? $fb_object->photo_text : $this->fbConfig["og_default_message"];
 
         //get uploaded files
         $uploaded_files = $this->request->getUploadedFiles();
         //get uploaded file
         $file      = current($uploaded_files);
-        $file_path = $this->upload_path.$file->getName();
+        $file_path = $this->fbConfig["upload_path"].$file->getName();
         $file->moveTo($file_path);
-
-        //var_dump($eventFacebook->album_id, $event->id);exit;
 
         //set action URI
         if($fallbackAction)
-            $action_uri = !is_null($eventFacebook->album_id) ? $eventFacebook->album_id."/photos" : $user_fb->id."/photos";
+            $action_uri = !is_null($fb_object->album_id) ? $fb_object->album_id."/photos" : $user_fb->id."/photos";
         else
             $action_uri = $user_fb->id."/photos";
 
@@ -315,29 +322,30 @@ trait FacebookActions
      * @param object $app the app object from config
      * @return string
      */
-    private function _getNewFacebookStoryObject($event)
+    private function _getNewFacebookStoryObject($object)
     {
+        $data = $this->setStoryData($object);
+
+        $story_object = $this->fbConfig["og_namespace"].":".$this->fbConfig["og_story_object"];
+
         //new object for JSON encoding
         $obj = new \stdClass();
+        $obj->og__type        = $story_object;
         $obj->fb__app_id      = $this->config->app->facebook->appID;
         $obj->og__site_name   = $this->config->app->name;
-        $obj->og__title       = $event->name;
-        $obj->og__description = $event->caption;
-        $obj->og__url         = $event->_ext["landing_url"];
-        $obj->og__image       = $event->_ext["image_url_square"];
-        $obj->og__type        = $this->fbConfig["og_story_object"];
-        $obj->og__determiner  = "an";
-        /*
-        $obj->og__video = array(
-            "url" => "https://vimeo.com/channels/staffpicks/130401504",
-            "width" => "200",
-            "height" => "200"
-        );
-        */
+        $obj->og__title       = $data["title"];
+        $obj->og__description = $data["description"];
+        $obj->og__url         = $data["url"];
+        $obj->og__image       = $data["image"];
+        $obj->og__determiner  = isset($data["determiner"]) ? $data["determiner"] : "an";
 
         //set custom props
-        if($obj->og__type == $this->fbConfig["og_story_object"])
-            $obj->liveon_app__place_caption = $event->eventsPlaces->eplaces->name;
+        if($obj->og__type == $story_object) {
+
+            //set place caption
+            $namespace = $this->fbConfig["og_namespace"]."__place_caption";
+            $obj->{$namespace} = $object->eventsPlaces->eplaces->name;
+        }
 
         //encode JSON & replace prefix:data format strings
         $obj = json_encode($obj);
