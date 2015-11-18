@@ -61,7 +61,7 @@ trait Facebook
             'default_graph_version' => 'v2.5'
         ]);
     }
-    
+
     /**
      * Ajax - Login user by JS SDK.
      */
@@ -144,7 +144,7 @@ trait Facebook
             list($fb_id, $short_live_fac) = $data;
 
             //find user on db
-            $users_facebook_class = $this->getModuleClassName('users_facebook');
+            $users_facebook_class = $this->_getModuleClass('users_facebook');
             $user_fb = $users_facebook_class::getObjectById($fb_id);
 
             if(!$user_fb || empty($short_live_fac))
@@ -240,7 +240,7 @@ trait Facebook
      */
     public function setUserPublishPerm($user_id, $perm = 1)
     {
-        $users_facebook_class = $this->getModuleClassName('users_facebook');
+        $users_facebook_class = $this->_getModuleClass('users_facebook');
 
         //get user & update properties
         $user_fb = $users_facebook_class::getFacebookDataByUserId($user_id);
@@ -256,7 +256,7 @@ trait Facebook
     {
         //append request uri as hashed string
         $requested_uri = md5($this->_getRequestedUri());
-        $callback      = $this->_baseUrl($this->fbConfig['controller_name']."/loginByRedirect/".$requested_uri);
+        $callback      = $this->_baseUrl("facebook/loginByRedirect/".$requested_uri);
         $scope         = explode(",", $this->config->app->facebook->appScope);
 
         //set helper
@@ -278,8 +278,8 @@ trait Facebook
     private function __loginUserFacebook($fac = null)
     {
         //get model classmap names
-        $users_class          = $this->getModuleClassName('users');
-        $users_facebook_class = $this->getModuleClassName('users_facebook');
+        $users_class          = $this->_getModuleClass('users');
+        $users_facebook_class = $this->_getModuleClass('users_facebook');
 
         //the data response
         $login_data = array();
@@ -349,7 +349,7 @@ trait Facebook
 
             //queues an async request, extend access token (append fb userID and short live access token)
             $this->_asyncRequest(
-                [$this->fbConfig['controller_name'] => "extendAccessToken"],
+                ["facebook" => "extendAccessToken"],
                 $properties["fb_id"]."#".$fac->getValue(),
                 "GET",
                 true
@@ -381,7 +381,7 @@ trait Facebook
      */
     private function __setUserAccessToken($fac = null, $user_id = 0)
     {
-        $users_facebook_class = $this->getModuleClassName('users_facebook');
+        $users_facebook_class = $this->_getModuleClass('users_facebook');
 
         //get stored fac if its null
         if(is_null($fac)) {
@@ -412,8 +412,8 @@ trait Facebook
      */
     private function __saveNewUserFacebook($user_id = null, $fb_id = null, $fac = null)
     {
-        $users_class          = $this->getModuleClassName('users');
-        $users_facebook_class = $this->getModuleClassName('users_facebook');
+        $users_class          = $this->_getModuleClass('users');
+        $users_facebook_class = $this->_getModuleClass('users_facebook');
 
         //Creates a Facebook User
         $user_fb             = new $users_facebook_class();

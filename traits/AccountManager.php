@@ -56,7 +56,7 @@ trait AccountManager
         //get user data
         $user_session = $this->_getUserSessionData();
         //get model class name
-        $users_class = $this->getModuleClassName('users');
+        $users_class = $this->_getModuleClass('users');
         //get user
         $user = $users_class::getObjectById($user_session['id']);
         //validate user

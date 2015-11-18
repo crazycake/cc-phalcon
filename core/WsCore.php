@@ -8,6 +8,8 @@
 namespace CrazyCake\Core;
 
 //imports
+use Phalcon\Exception;
+//other imports
 use CrazyCake\Traits\Guzzle;
 
 abstract class WsCore extends AppCore

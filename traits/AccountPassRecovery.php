@@ -57,7 +57,7 @@ trait AccountPassRecovery
         //get decrypted data
         try {
             //handle the encrypted data with parent controller
-            $tokens_class = $this->getModuleClassName('users_tokens');
+            $tokens_class = $this->_getModuleClass('users_tokens');
             $tokens_class::handleUserTokenValidation($encrypted_data);
 
             //view vars
@@ -93,7 +93,7 @@ trait AccountPassRecovery
         }
 
         //check if user exists is a active account
-        $users_class = $this->getModuleClassName('users');
+        $users_class = $this->_getModuleClass('users');
         $user = $users_class::getUserByEmail($data['email'], 'enabled');
 
         //if user not exists, send message
@@ -125,8 +125,8 @@ trait AccountPassRecovery
         $payload = false;
         try {
             //get model classes
-            $users_class  = $this->getModuleClassName('users');
-            $tokens_class = $this->getModuleClassName('users_tokens');
+            $users_class  = $this->_getModuleClass('users');
+            $tokens_class = $this->_getModuleClass('users_tokens');
 
             $edata = $tokens_class::handleUserTokenValidation($data['edata']);
             list($user_id, $token_type, $token) = $edata;

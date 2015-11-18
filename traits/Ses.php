@@ -111,13 +111,13 @@ trait Ses
     {
         $this->_checkConfigurations();
 
-        $users_class = $this->getModuleClassName('users');
+        $users_class = $this->_getModuleClass('users');
         $user = $users_class::getObjectById($user_id);
         if (!$user)
             $this->_sendJsonResponse(403);
 
         //get user token
-        $tokens_class = $this->getModuleClassName('users_tokens');
+        $tokens_class = $this->_getModuleClass('users_tokens');
         $token = $tokens_class::generateNewTokenIfExpired($user_id, 'activation');
         if (!$token) {
             $this->_sendJsonResponse(500);
@@ -150,14 +150,14 @@ trait Ses
     {
         $this->_checkConfigurations();
 
-        $users_class = $this->getModuleClassName('users');
+        $users_class = $this->_getModuleClass('users');
         $user = $users_class::getObjectById($user_id);
         //if invalid user, send permission denied response
         if (!$user)
             $this->_sendJsonResponse(403);
 
         //get user token
-        $tokens_class = $this->getModuleClassName('users_tokens');
+        $tokens_class = $this->_getModuleClass('users_tokens');
         $token = $tokens_class::generateNewTokenIfExpired($user_id, 'pass');
         if (!$token) {
             $this->_sendJsonResponse(500);

@@ -339,7 +339,7 @@ trait TicketManager
     private function _buildInvoice($user_id, $checkout, $invoiceName = "temp")
     {
         //get user model class
-        $users_class = $this->getModuleClassName('users');
+        $users_class = $this->_getModuleClass('users');
         //get model class
         $getObjectsForInvoice = $this->storageConfig["getObjectsForInvoiceFunction"];
 

@@ -9,13 +9,15 @@ namespace CrazyCake\Core;
 
 //imports
 use Phalcon\Mvc\Controller;  //Phalcon Controller
+use Phalcon\Exception;       //Phalcon Exception
 
 //security interface
-interface webSecurity
+interface WebSecurity
 {
     public function _checkCsrfToken();
 }
 
+//abstract class
 abstract class AppCore extends Controller
 {
     /* consts */
@@ -47,6 +49,24 @@ abstract class AppCore extends Controller
     protected function _staticUrl($uri = "")
     {
         return $this->url->getStaticBaseUri().$uri;
+    }
+
+    /**
+     * Get Module Model Class Name
+     * A prefix can be set in module options
+     * @param string $key The class module name uncamelize, example 'some_class'
+     */
+    protected function _getModuleClass($key)
+    {
+        //get module class prefix
+        $class_prefix = isset($this->config->app->classPrefix) ? $this->config->app->classPrefix : [];
+        //get key prefix
+        $parts = explode("_", $key);
+
+        //check for prefix in module settings
+        $class_name = isset($class_prefix[$parts[0]]) ? $class_prefix[$parts[0]]."_".$key : $key;
+        $camelized_class_name = \Phalcon\Text::camelize($class_name);
+        return "\\$camelized_class_name";
     }
 
     /**
@@ -134,10 +154,10 @@ abstract class AppCore extends Controller
             throw new Exception("AppCore::_sendMailMessage -> method param is required.");
 
         //get the mailer controller name
-        $mailer_class = $this->getModuleClassName("mailer");
+        $mailer_class = $this->_getModuleClass('mailer_controller');
 
         //checks that a MailerController exists
-        if(!class_exists(str_replace('\\', '', $mailer_class)))
+        if(!class_exists($mailer_class))
             throw new Exception("AppCore::_sendMailMessage -> A Mailer Controller is required.");
 
         $mailer = new $mailer_class();
@@ -320,7 +340,7 @@ abstract class AppCore extends Controller
      * Logs database query & statements with phalcon event manager
      * @param  string $logFile The log file name
      */
-    protected function logDatabaseStatements($logFile = "db.log")
+    protected function _logDatabaseStatements($logFile = "db.log")
     {
         //Listen all the database events
         $eventsManager = new \Phalcon\Events\Manager();
@@ -329,7 +349,7 @@ abstract class AppCore extends Controller
         $eventsManager->attach('db', function ($event, $connection) use ($logger) {
             //log SQL
             if ($event->getType() == 'beforeQuery')
-                $logger->debug("AppCore:logDatabaseStatements -> SQL:\n".$connection->getSQLStatement());
+                $logger->debug("AppCore:_logDatabaseStatements -> SQL:\n".$connection->getSQLStatement());
         });
         // Assign the eventsManager to the db adapter instance
         $this->db->setEventsManager($eventsManager);

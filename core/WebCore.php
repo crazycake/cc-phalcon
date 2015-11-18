@@ -16,7 +16,7 @@ use Phalcon\Assets\Filters\Jsmin;   //JS resources minification
 use CrazyCake\Utils\UserAgent;      //User Agent identifier
 use CrazyCake\Traits\Guzzle;
 
-abstract class WebCore extends AppCore implements webSecurity
+abstract class WebCore extends AppCore implements WebSecurity
 {
     /* consts */
     const ASSETS_MIN_FOLDER_PATH = 'assets/';
@@ -257,13 +257,13 @@ abstract class WebCore extends AppCore implements webSecurity
         $this->_loadJavascriptFiles($this->config->app->jsCore, 'js_core');
 
         //join and minify collections
-        $this->_joinAssetsCollections(array(
+        $this->_joinAssetsCollections([
             "css_core" => false,
             "js_core" => false,
             "js_dom" => true
-        ), self::ASSETS_MIN_FOLDER_PATH, $this->config->app->deployVersion);
+        ],
+        self::ASSETS_MIN_FOLDER_PATH, $this->config->app->deployVersion);
     }
-
 
     /**
      * Load Javascript files into a assets Collection

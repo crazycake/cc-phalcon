@@ -7,8 +7,8 @@
 namespace CrazyCake\Core;
 
 //imports
-use Phalcon\Exception;
 use Phalcon\CLI\Task;
+use Phalcon\Exception;
 
 class TaskCore extends Task
 {

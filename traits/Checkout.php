@@ -91,7 +91,7 @@ trait Checkout
             $this->onBeforeBuyOrderCreation($checkout);
 
             //get class
-            $users_checkout_class = $this->getModuleClassName('users_checkouts');
+            $users_checkout_class = $this->_getModuleClass('users_checkouts');
             //save checkout detail in DB
             $checkoutOrm = $users_checkout_class::newBuyOrder($this->user_session["id"], $checkout);
 
@@ -137,7 +137,7 @@ trait Checkout
 
         try {
             //get class
-            $users_checkout_class = $this->getModuleClassName('users_checkouts');
+            $users_checkout_class = $this->_getModuleClass('users_checkouts');
 
             //instance cache lib and get data
             $session_key = $users_checkout_class::getCheckoutSessionKey($buy_order);
@@ -207,8 +207,8 @@ trait Checkout
                 throw new Exception("Invalid decrypted data: ".print_r($data, true));
 
             //set classes
-            $users_class          = $this->getModuleClassName('users');
-            $users_checkout_class = $this->getModuleClassName('users_checkouts');
+            $users_class          = $this->_getModuleClass('users');
+            $users_checkout_class = $this->_getModuleClass('users_checkouts');
             //set event & checkout objects
             $users_checkout_objects_class = $users_checkout_class."Objects";
 
@@ -242,9 +242,8 @@ trait Checkout
             $this->onSuccessCheckoutTaskComplete($user, $checkout);
         }
         catch(Exception $e) {
-
-            $mailer = $this->getModuleClassName('mailer');
-
+            //get mailer controller
+            $mailer = $this->_getModuleClass('mailer_controller');
             //send alert system mail message
             (new $mailer())->sendSystemMailForException($e, [
                 "action"  => "successCheckoutTask",
@@ -265,7 +264,7 @@ trait Checkout
     public function failedCheckout($checkout = false)
     {
         //get module class name
-        $users_checkout_class = $this->getModuleClassName('users_checkouts');
+        $users_checkout_class = $this->_getModuleClass('users_checkouts');
 
         if(!$checkout || !isset($checkout->buyOrder))
             return false;
@@ -292,7 +291,7 @@ trait Checkout
     public function skipPaymentAction($code = "")
     {
         //get module class name
-        $users_checkout_class = $this->getModuleClassName('users_checkouts');
+        $users_checkout_class = $this->_getModuleClass('users_checkouts');
 
         //instance cache lib and get data
         $last_checkout = $users_checkout_class::getLastUserCheckout($this->user_session["id"]);
@@ -357,7 +356,7 @@ trait Checkout
         ];
 
         //get module class name
-        $users_checkout_class = $this->getModuleClassName('users_checkouts');
+        $users_checkout_class = $this->_getModuleClass('users_checkouts');
 
         //set default max checkout number
         $checkoutMax = 1;
@@ -418,7 +417,7 @@ trait Checkout
     private function _parseCheckoutData($data = array())
     {
         //get module class name
-        $users_checkout_class = $this->getModuleClassName('users_checkouts');
+        $users_checkout_class = $this->_getModuleClass('users_checkouts');
 
         //check invoice email if set
         if(!isset($data["invoiceEmail"]) || !filter_var($data['invoiceEmail'], FILTER_VALIDATE_EMAIL))

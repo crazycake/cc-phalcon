@@ -83,8 +83,8 @@ trait AccountAuth
         //get decrypted data
         try {
             //get model classes
-            $users_class  = $this->getModuleClassName('users');
-            $tokens_class = $this->getModuleClassName('users_tokens');
+            $users_class  = $this->_getModuleClass('users');
+            $tokens_class = $this->_getModuleClass('users_tokens');
             //handle the encrypted data with parent controller
             $data = $tokens_class::handleUserTokenValidation($encrypted_data);
             //assign values
@@ -140,7 +140,7 @@ trait AccountAuth
         ]);
 
         //get model classes
-        $users_class = $this->getModuleClassName('users');
+        $users_class = $this->_getModuleClass('users');
         //find this user
         $user = $users_class::getUserByEmail($data['email']);
 
@@ -199,7 +199,7 @@ trait AccountAuth
         $data["last_name"]  = mb_convert_case($data["last_name"], MB_CASE_TITLE, 'UTF-8');
 
         //get model classes
-        $users_class = $this->getModuleClassName('users');
+        $users_class = $this->_getModuleClass('users');
         //set pending email confirmation status
         $data['account_flag'] = 'pending';
 
@@ -228,7 +228,7 @@ trait AccountAuth
         ]);
 
         //get model classes
-        $users_class = $this->getModuleClassName('users');
+        $users_class = $this->_getModuleClass('users');
 
         //google reCaptcha helper
         $recaptcha = new ReCaptcha($this->config->app->google->reCaptchaKey);

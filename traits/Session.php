@@ -86,7 +86,7 @@ trait Session
             if (!is_array($user_session) || !isset($user_session['id']) || !isset($user_session['auth']))
                 return false;
 
-            $users_class = $this->getModuleClassName('users');
+            $users_class = $this->_getModuleClass('users');
             if ($users_class::getObjectById($user_session['id']) == false)
                 return false;
 
@@ -117,7 +117,7 @@ trait Session
     protected function _setUserSessionAsLoggedIn($user_id)
     {
         //get user data from DB
-        $users_class = $this->getModuleClassName('users');
+        $users_class = $this->_getModuleClass('users');
         $user = $users_class::getObjectById($user_id);
 
         if (!$user)
@@ -232,7 +232,7 @@ trait Session
     {
         //get user session
         $user_session = $this->session->get("user");
-        $users_class  = $this->getModuleClassName('users');
+        $users_class  = $this->_getModuleClass('users');
         //get user
         $user = $users_class::getObjectById($user_session['id']);
 
