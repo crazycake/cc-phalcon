@@ -29,8 +29,8 @@ class PdfHelper
     /**
      * contructor
      */
-    function __construct() {
-
+    function __construct()
+    {
         //OSX or UbuntuServer
         $this->wkhtmltopdf = (php_uname('s') == "Darwin") ? "/usr/local/bin/wkhtmltopdf" : "/usr/local/bin/wkhtmltopdf.sh";
         //instance with binary path
