@@ -6,7 +6,7 @@
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
-namespace CrazyCake\Traits;
+namespace CrazyCake\Checkout;
 
 //imports
 use Phalcon\Exception;
@@ -14,7 +14,7 @@ use Phalcon\Exception;
 use CrazyCake\Utils\Cacher;
 use CrazyCake\Utils\FormHelper;
 
-trait Checkout
+trait CheckoutManager
 {
     /**
      * abstract required methods
@@ -204,7 +204,7 @@ trait Checkout
             $data = $this->cryptify->decryptForGetResponse($data["payload"], true);
 
             if(is_null($data) || !isset($data->checkout))
-                throw new Exception("Invalid decrypted data: ".print_r($data, true));
+                throw new Exception("Invalid decrypted data: ".json_encode($data));
 
             //set classes
             $users_class          = $this->_getModuleClass('users');
@@ -219,7 +219,7 @@ trait Checkout
 
             //check if data is OK
             if(!$user)
-                throw new Exception("Invalid decrypted data, userId: ".$checkoutOrm->user_id.", data: ".print_r($data, true));
+                throw new Exception("Invalid decrypted data, userId: ".$checkoutOrm->user_id.", data: ".json_encode($data));
 
             //extend properties
             $checkout->type            = "payment";

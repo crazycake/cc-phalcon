@@ -12,7 +12,7 @@
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
-namespace CrazyCake\Traits;
+namespace CrazyCake\Facebook;
 
 //imports
 use Phalcon\Exception;

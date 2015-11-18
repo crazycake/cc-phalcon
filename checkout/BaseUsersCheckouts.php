@@ -5,13 +5,13 @@
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
-namespace CrazyCake\Models;
+namespace CrazyCake\Checkout;
 
 //imports
 use Phalcon\Exception;
 use Phalcon\Mvc\Model\Validator\InclusionIn;
 
-class BaseUsersCheckouts extends Base
+class BaseUsersCheckouts extends \CrazyCake\Models\Base
 {
     /* static vars */
     public static $DEFAULT_OBJECTS_CLASS = "UsersCheckoutsObjects";

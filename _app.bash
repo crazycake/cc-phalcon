@@ -38,8 +38,8 @@ if [ $1 = "-env" ]; then
 	# set default perms for folders & files (use 'xargs -I {} -0 sudo chmod xxxx {}' if args is to long)
 	echo -e "\033[95mApplying user-perms for all folders and files (sudo is required)... \033[0m"
 	# current path
-	find $CURRENT_PATH -type d -print0 | xargs -0 sudo chmod 0755
-	find $CURRENT_PATH -type f -print0 | xargs -0 sudo chmod 0644
+	find $CURRENT_PATH -type d -print0 | sudo xargs -0 chmod 0755
+	find $CURRENT_PATH -type f -print0 | sudo xargs -0 chmod 0644
 
 	#task done!
 	echo -e "\033[92mScript successfully executed! \033[0m"

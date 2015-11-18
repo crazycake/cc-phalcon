@@ -7,7 +7,7 @@
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
-namespace CrazyCake\Traits;
+namespace CrazyCake\Facebook;
 
 //imports
 use Phalcon\Exception;
@@ -19,7 +19,7 @@ use Facebook\Exceptions\FacebookSDKException;
 //CrazyCake Utils
 use CrazyCake\Utils\DateHelper;
 
-trait Facebook
+trait FacebookAuth
 {
     /**
      * abstract required methods

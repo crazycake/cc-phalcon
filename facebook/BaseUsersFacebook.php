@@ -4,12 +4,9 @@
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
-namespace CrazyCake\Models;
+namespace CrazyCake\Facebook;
 
-//imports
-//...
-
-class BaseUsersFacebook extends Base
+class BaseUsersFacebook extends \CrazyCake\Models\Base
 {
     /* properties */
 

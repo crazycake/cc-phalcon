@@ -66,6 +66,7 @@ abstract class AppCore extends Controller
         //check for prefix in module settings
         $class_name = isset($class_prefix[$parts[0]]) ? $class_prefix[$parts[0]]."_".$key : $key;
         $camelized_class_name = \Phalcon\Text::camelize($class_name);
+
         return "\\$camelized_class_name";
     }
 

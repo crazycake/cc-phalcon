@@ -1,6 +1,7 @@
 <?php
 /**
  * This file generates a class map file to be loaded in phalcon (AppLoader.php)
+ * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
 //get modules
@@ -12,6 +13,7 @@ ob_start();
 
 //loop through modules
 foreach ($modules as $dir) {
+
 	$dir_path = __DIR__."/".$dir;
 	//check for a directory
 	if(!is_dir($dir_path) || strpos($dir, '.') !== false)
@@ -21,6 +23,7 @@ foreach ($modules as $dir) {
 	$classes = array();
 	//loop though files
 	foreach ($files as $file) {
+
 		$file_path = $dir_path."/".$file;
 
 		//check for a file
@@ -31,9 +34,8 @@ foreach ($modules as $dir) {
 		array_push($classes, $file);
 	}
 
-	if(!empty($classes)) {
+	if(!empty($classes))
 		$class_map[$dir] = $classes;
-	}
 }
 
 //export data as php syntax

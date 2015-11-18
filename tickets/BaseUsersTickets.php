@@ -4,9 +4,9 @@
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
-namespace CrazyCake\Models;
+namespace CrazyCake\Tickets;
 
-class BaseUsersTickets extends Base
+class BaseUsersTickets extends \CrazyCake\Models\Base
 {
     /* static vars */
     public static $DEFAULT_USERS_CLASS = "Users";

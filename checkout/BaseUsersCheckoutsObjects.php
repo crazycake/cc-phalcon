@@ -4,12 +4,12 @@
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
-namespace CrazyCake\Models;
+namespace CrazyCake\Checkout;
 
 //imports
 use CrazyCake\Utils\FormHelper;
 
-class BaseUsersCheckoutsObjects extends Base
+class BaseUsersCheckoutsObjects extends \CrazyCake\Models\Base
 {
     /* properties */
 

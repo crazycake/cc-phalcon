@@ -8,6 +8,12 @@ return array (
     2 => 'WebCore.php',
     3 => 'WsCore.php',
   ),
+  'facebook' => 
+  array (
+    0 => 'BaseUsersFacebook.php',
+    1 => 'FacebookActions.php',
+    2 => 'FacebookAuth.php',
+  ),
   'models' => 
   array (
     0 => 'Base.php',
@@ -17,9 +23,8 @@ return array (
     4 => 'BaseUsers.php',
     5 => 'BaseUsersCheckouts.php',
     6 => 'BaseUsersCheckoutsObjects.php',
-    7 => 'BaseUsersFacebook.php',
-    8 => 'BaseUsersTickets.php',
-    9 => 'BaseUsersTokens.php',
+    7 => 'BaseUsersTickets.php',
+    8 => 'BaseUsersTokens.php',
   ),
   'phalcon' => 
   array (
@@ -42,11 +47,10 @@ return array (
     2 => 'AccountPassRecovery.php',
     3 => 'Checkout.php',
     4 => 'Errors.php',
-    5 => 'Facebook.php',
-    6 => 'Guzzle.php',
-    7 => 'Ses.php',
-    8 => 'Session.php',
-    9 => 'TicketManager.php',
+    5 => 'Guzzle.php',
+    6 => 'Ses.php',
+    7 => 'Session.php',
+    8 => 'TicketManager.php',
   ),
   'transbank' => 
   array (

@@ -4,55 +4,60 @@
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
-namespace CrazyCake\Models;
+namespace CrazyCake\Tickets;
 
 //imports
 use Phalcon\Mvc\Model\Validator\InclusionIn;
 //other imports
 use CrazyCake\Utils\FormHelper;
 
-class BaseTickets extends Base
+class BaseTicketsAssets extends \CrazyCake\Models\Base
 {
     /* properties */
 
     /**
-     * @var string
-     */
-    public $name;
+    * @var int
+    */
+    public $ticket_id;
 
     /**
-     * @var string
-     */
-    public $small_print;
+    * @var int
+    */
+    public $default_quantity;
 
     /**
-     * @var double
-     */
-    public $price;
+    * @var int
+    */
+    public $user_max_quantity;
 
     /**
-     * @var string
-     */
-    public $coin;
-
-    /**
-     * @var int
-     */
+    * @var int
+    */
     public $quantity;
 
     /**
-     * @var string
-     */
+    * @var double
+    */
+    public $price;
+
+    /**
+    * @var string
+    */
+    public $coin;
+
+    /**
+    * @var string
+    */
     public $state;
 
     /**
-     * @var string
-     */
+    * @var string
+    */
     public $created_at;
 
     /**
-     * Extended properties
-     */
+    * @var array
+    */
     public $_ext;
 
     /* inclusion vars */
@@ -69,7 +74,7 @@ class BaseTickets extends Base
     public function initialize()
     {
         //Skips fields/columns on both INSERT/UPDATE operations
-        $this->skipAttributes(['created_at, _ext']);
+        $this->skipAttributes(['created_at', '_ext']);
     }
     /** ------------------------------------------- § --------------------------------------------------
        Events
