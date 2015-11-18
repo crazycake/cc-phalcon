@@ -14,8 +14,8 @@ APP_NAMESPACE="$(echo "$APP_NAME" | tr '[:upper:]' '[:lower:]')"
 scriptHelp() {
 	echo -e "\033[93m"$APP_NAME" WebApp Environment Script\nValid commands:\033[0m"
 	echo -e "\033[95m -env: App environment set up, set correct permissions on directories and files.\033[0m"
-	echo -e "\033[95m -phar-build: Builds phar file with default box.json file.\033[0m"
-	echo -e "\033[95m -phar-tree: Returns the file tree of phar file.\033[0m"
+	echo -e "\033[95m -build: Builds phar file with default box.json file.\033[0m"
+	echo -e "\033[95m -tree: Returns the file tree of phar file.\033[0m"
 	exit
 }
 
@@ -44,14 +44,14 @@ if [ $1 = "-env" ]; then
 	#task done!
 	echo -e "\033[92mScript successfully executed! \033[0m"
 
-elif [ $1 = "-phar-build" ]; then
+elif [ $1 = "-build" ]; then
 
 	cd $CURRENT_PATH
 	php box.phar build -v
 	# task done!
 	echo -e "\033[92mScript successfully executed! \033[0m"
 
-elif [ $1 = "-phar-tree" ]; then
+elif [ $1 = "-tree" ]; then
 
 	cd $CURRENT_PATH
 	php box.phar info -l $APP_NAMESPACE".phar"
