@@ -20,12 +20,25 @@ use CrazyCake\Utils\FormHelper;
 trait CheckoutManager
 {
     /**
-     * abstract required methods
+     * Set Trait configurations
      */
     abstract public function setConfigurations();
+
+    /**
+     * Listener - Before Inster a new Buy Order record
+     */
     abstract public function onBeforeBuyOrderCreation(&$checkout);
+
+    /**
+     * Listener - Success checkout Task completed
+     */
     abstract public function onSuccessCheckoutTaskComplete($user, &$checkout);
+
+    /**
+     * Listener - On skipped payment [testing]
+     */
     abstract public function onSkippedPayment(&$checkout);
+
 
     /**
      * Config var
@@ -39,9 +52,9 @@ trait CheckoutManager
      */
     protected $cacher;
 
-    /** ---------------------------------------------------------------------------------------------------------------
-     * Init Function, is executed before any action on a controller
-     * ------------------------------------------------------------------------------------------------------------- **/
+    /**
+     * Initializer
+     */
     protected function initialize()
     {
         parent::initialize();
@@ -65,6 +78,7 @@ trait CheckoutManager
         //handle response, dispatch to auth/logout
         $this->_checkUserIsLoggedIn(true);
     }
+
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**

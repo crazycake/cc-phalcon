@@ -20,8 +20,6 @@ class QRMaker
 {
 	/* consts */
 	const QR_LIB_NAMESPACE = '\\CrazyCake\\Qr\\'; //lib root path
-	const QR_ASSETS_DIR    = __DIR__."/assets/";
-	const QR_ASSETS_URI	   = 'qr/assets/';
 	const QR_HIGH_QUALITY  = true;
 	const QR_PNG_MAX_SIZE  = 1024;
 
@@ -66,10 +64,10 @@ class QRMaker
 		//Check if library is running from a Phar file, if does, assets must be copied to cache folder.
 		//For reading assets from a phar directly, see: http://php.net/manual/en/phar.webphar.php
 		if(\Phar::running()) {
-			define("QR_ASSETS_PATH", AppLoader::extractAssetsFromPhar(self::QR_ASSETS_URI, $cache_path));
+			define("QR_ASSETS_PATH", AppLoader::extractAssetsFromPhar('qr/assets/', $cache_path));
 		}
 		else {
-			define("QR_ASSETS_PATH", self::QR_ASSETS_DIR);
+			define("QR_ASSETS_PATH", __DIR__."/assets/");
 		}
 
 		//if true, estimates best mask (spec. default, but extremally slow; set to false to significant performance boost but (propably) worst quality code

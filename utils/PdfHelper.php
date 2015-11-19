@@ -30,7 +30,7 @@ class PdfHelper
     private $snappy;
 
     /**
-     * contructor
+     * Contructor
      */
     function __construct()
     {

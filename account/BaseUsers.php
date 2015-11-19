@@ -17,7 +17,7 @@ use Phalcon\Mvc\Model\Validator\Uniqueness;
 abstract class BaseUsers extends \CrazyCake\Models\Base
 {
     /**
-     * child required methods
+     * Gets Model Message
      */
     abstract protected function getModelMessage($key);
 
@@ -68,24 +68,28 @@ abstract class BaseUsers extends \CrazyCake\Models\Base
      */
     static $ACCOUNT_FLAGS = ['pending', 'enabled', 'disabled'];
 
-    /** ------------------------------------------- § --------------------------------------------------
-        Init
-    ------------------------------------------------------------------------------------------------- **/
+    /**
+     * Initializer
+     */
     public function initialize()
     {
         //Skips fields/columns on both INSERT/UPDATE operations
         $this->skipAttributes(['created_at']);
     }
-    /** -------------------------------------------------------------------------------------------------
-        Events
-    ------------------------------------------------------------------------------------------------- **/
+
+    /**
+     * After Fetch Event
+     */
     public function afterFetch()
     {
         //hashed ticket id?
         if(isset($this->id))
             $this->id_hashed = $this->getDI()->getShared('cryptify')->encryptHashId($this->id);
     }
-    /** ---------------------------------------------------------------------------------------------- **/
+
+    /**
+     * Before Validation Event [onCreate]
+     */
     public function beforeValidationOnCreate()
     {
         //set password hash
@@ -95,7 +99,10 @@ abstract class BaseUsers extends \CrazyCake\Models\Base
         //set last login
         $this->last_login = date('Y-m-d H:i:s');
     }
-    /** ---------------------------------------------------------------------------------------------- **/
+
+    /**
+     * Before Validation Event [onUpdate]
+     */
     public function beforeValidationOnUpdate()
     {
         parent::beforeValidationOnUpdate();
@@ -103,19 +110,10 @@ abstract class BaseUsers extends \CrazyCake\Models\Base
         //set last login
         $this->last_login = date('Y-m-d H:i:s');
     }
-    /** ---------------------------------------------------------------------------------------------- **/
-    public function onValidationFails()
-    {
-        //...
-    }
-    /** ---------------------------------------------------------------------------------------------- **/
-    public function notSave()
-    {
-        //...
-    }
-    /** -------------------------------------------------------------------------------------------------
-        Validations
-    ------------------------------------------------------------------------------------------------- **/
+
+    /**
+     * Validations
+     */
     public function validation()
     {
         //email required
@@ -141,6 +139,7 @@ abstract class BaseUsers extends \CrazyCake\Models\Base
         if ($this->validationHasFailed() == true)
             return false;
     }
+
     /** ------------------------------------------- § --------------------------------------------------  **/
 
     /**
@@ -161,7 +160,7 @@ abstract class BaseUsers extends \CrazyCake\Models\Base
         //join conditions (AND)
         $conditions = implode(" AND ", $conditions);
 
-        return self::findFirst( array("conditions" => $conditions) );
+        return self::findFirst(["conditions" => $conditions]);
     }
 
     /**

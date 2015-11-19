@@ -16,9 +16,13 @@ use CrazyCake\Utils\DateHelper;
 trait AccountSession
 {
     /**
-     * abstract required methods
+     * Set user session data
      */
     abstract protected function getUserSessionData($session);
+
+    /**
+     * Listener - Append properties to user session
+     */
     abstract protected function setUserSessionAsLoggedIn($user);
 
 

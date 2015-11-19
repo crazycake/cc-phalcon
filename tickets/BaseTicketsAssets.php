@@ -71,17 +71,18 @@ class BaseTicketsAssets extends \CrazyCake\Models\Base
      */
     static $STATES = array('open', 'closed', 'soldout');
 
-    /** ------------------------------------------- § --------------------------------------------------
-        Init
-    ------------------------------------------------------------------------------------------------- **/
+    /**
+     * Initializer
+     */
     public function initialize()
     {
         //Skips fields/columns on both INSERT/UPDATE operations
         $this->skipAttributes(['created_at', '_ext']);
     }
-    /** ------------------------------------------- § --------------------------------------------------
-       Events
-    ------------------------------------------------------------------------------------------------- **/
+
+    /**
+     * After Fetch Event
+     */
     public function afterFetch()
     {
         //extend properties
@@ -93,9 +94,10 @@ class BaseTicketsAssets extends \CrazyCake\Models\Base
         if(!is_null($this->price) && !is_null($this->coin))
             $this->_ext["price_formatted"] = FormHelper::formatPrice($this->price, $this->coin);
     }
-    /** -------------------------------------------------------------------------------------------------
-        Validations
-    ------------------------------------------------------------------------------------------------- **/
+
+    /**
+     * Validation Event
+     */
     public function validation()
     {
         $this->validate( new InclusionIn([
@@ -108,6 +110,4 @@ class BaseTicketsAssets extends \CrazyCake\Models\Base
         if ($this->validationHasFailed() == true)
             return false;
     }
-    /** ------------------------------------------- § ------------------------------------------------ **/
-
 }

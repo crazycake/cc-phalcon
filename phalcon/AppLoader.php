@@ -21,7 +21,7 @@ abstract class AppLoader
     const CCLIBS_NAMESPACE = "cc-phalcon";
 
     /**
-     * Child required methods
+     * Set App environment
      */
     abstract protected function setAppEnvironment();
 

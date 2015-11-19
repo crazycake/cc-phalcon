@@ -18,7 +18,7 @@ use CrazyCake\Utils\ReCaptcha;
 trait AccountPassRecovery
 {
     /**
-     * abstract required methods
+     * Set trait configurations
      */
     abstract public function setConfigurations();
 

@@ -17,9 +17,13 @@ use Phalcon\Exception;
 trait AccountManager
 {
 	/**
-     * abstract required methods
+     * Set trait configurations
      */
     abstract public function setConfigurations();
+
+    /**
+     * Before update user profile Listener
+     */
     abstract public function beforeUpdateProfile($user, $data); //returns an array
 
     /**
@@ -28,9 +32,9 @@ trait AccountManager
      */
     public $accountConfig;
 
-    /** ---------------------------------------------------------------------------------------------------------------
-     * Init Function, is executed before any action on a controller
-     * ------------------------------------------------------------------------------------------------------------- **/
+    /**
+     * Initializer
+     */
     protected function initialize()
     {
         parent::initialize();
@@ -41,6 +45,7 @@ trait AccountManager
         //for auth required pages disable robots
         $this->view->setVar("html_disallow_robots", true);
     }
+    
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**

@@ -74,17 +74,38 @@ class BaseUsersCheckouts extends \CrazyCake\Models\Base
      */
     static $STATES = ['pending', 'failed', 'overturn', 'success'];
 
-    /** -------------------------------------------- § -------------------------------------------------
-        Init
-    ------------------------------------------------------------------------------------------------- **/
+    /**
+     * Initializer
+     */
     public function initialize()
     {
         //model relations
         $this->hasOne("user_id", "Users", "id");
     }
-    /** -------------------------------------------------------------------------------------------------
-        Validations
-    ------------------------------------------------------------------------------------------------- **/
+
+    /**
+     * After Fetch Event
+     */
+    public function afterFetch()
+    {
+        //id is not relevant in the model meta data
+        $this->id = $this->buy_order;
+    }
+
+    /**
+     * Before Validation Event [onCreate]
+     */
+    public function beforeValidationOnCreate()
+    {
+        //set default state
+        $this->state = self::$STATES[0];
+        //set server local time
+        $this->local_time = date("Y-m-d H:i:s");
+    }
+
+    /**
+     * Validation
+     */
     public function validation()
     {
         //inclusion
@@ -97,22 +118,6 @@ class BaseUsersCheckouts extends \CrazyCake\Models\Base
         //check validations
         if ($this->validationHasFailed() == true)
             return false;
-    }
-    /** -------------------------------------------------------------------------------------------------
-        Events
-    ------------------------------------------------------------------------------------------------- **/
-    public function afterFetch()
-    {
-        //id is not relevant in the model meta data
-        $this->id = $this->buy_order;
-    }
-    /** ---------------------------------------------------------------------------------------------- **/
-    public function beforeValidationOnCreate()
-    {
-        //set default state
-        $this->state = self::$STATES[0];
-        //set server local time
-        $this->local_time = date("Y-m-d H:i:s");
     }
     /** ------------------------------------------- § ------------------------------------------------ **/
 

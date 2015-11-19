@@ -20,10 +20,18 @@ use CrazyCake\Utils\ReCaptcha;
 trait AccountAuth
 {
 	/**
-     * abstract required methods
+     * Set Trait Configurations
      */
     abstract public function setConfigurations();
+
+    /**
+     * Before Render SignIn View Listener
+     */
     abstract public function beforeRenderSignInView();
+
+    /**
+     * Before Render SignUp View Listener
+     */
     abstract public function beforeRenderSignUpView();
 
     /**

@@ -56,9 +56,9 @@ class BaseActions extends \CrazyCake\Models\Base
      */
     public $_ext;
 
-    /** ------------------------------------------- § --------------------------------------------------
-        Init
-    ------------------------------------------------------------------------------------------------- **/
+    /**
+     * Initializer
+     */
     public function initialize()
     {
         //Skips fields/columns on both INSERT/UPDATE operations

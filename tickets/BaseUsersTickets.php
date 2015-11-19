@@ -50,9 +50,9 @@ class BaseUsersTickets extends \CrazyCake\Models\Base
      */
     public $_ext;
 
-    /** ------------------------------------------- § --------------------------------------------------
-        Init
-    ------------------------------------------------------------------------------------------------- **/
+    /**
+     * Initializer
+     */
     public function initialize()
     {
         //model relations
@@ -63,9 +63,10 @@ class BaseUsersTickets extends \CrazyCake\Models\Base
         //Skips fields/columns on both INSERT/UPDATE operations
         $this->skipAttributes(['_ext']);
     }
-    /** -------------------------------------------------------------------------------------------------
-        Events (don't forget to call parent::method)
-    ------------------------------------------------------------------------------------------------- **/
+
+    /**
+     * Before Validation Event [onCreate]
+     */
     public function beforeValidationOnCreate()
     {
         //set qr hash
@@ -79,7 +80,10 @@ class BaseUsersTickets extends \CrazyCake\Models\Base
         //set created at
         $this->created_at = date("Y-m-d H:i:s");
     }
-    /** ---------------------------------------------------------------------------------------------- **/
+
+    /**
+     * After Fetch Event
+     */
     public function afterFetch()
     {
         //extend properties
@@ -87,6 +91,7 @@ class BaseUsersTickets extends \CrazyCake\Models\Base
 
         $this->_ext = ["id_hashed" => $id_hashed];
     }
+
     /** ------------------------------------------- § ------------------------------------------------ **/
 
     /**

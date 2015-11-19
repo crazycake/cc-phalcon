@@ -83,9 +83,7 @@ class GetText extends Adapter implements AdapterInterface
 
     /**
      * Sets the current language & GetTex lang files domain
-     *
-     * @access public
-     * @return void.
+     * @return void
      */
     public function setLanguage($new_lang = null)
     {
@@ -120,8 +118,6 @@ class GetText extends Adapter implements AdapterInterface
 
     /**
      * Gets the current language
-     *
-     * @access public
      * @return the current language simplified (example: en, es).
      */
     public function getLanguage()

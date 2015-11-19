@@ -10,12 +10,18 @@ MACHINE_USER_NAME="$(whoami)"
 APP_NAME="cc-phalcon"
 APP_NAMESPACE="$(echo "$APP_NAME" | tr '[:upper:]' '[:lower:]')"
 
+# Local documentation path
+# TODO: implement input file .doc
+DOC_INPUTS="account,checkout,core,facebook,models,phalcon,services,tickets,utils,qr/QRMaker.php,transbank/Webpay.php,transbank/OneClickClient.php,soap/SoapClientHelper.php"
+DOC_OUTPUT_PATH=$CURRENT_PATH"/../cc-docs/cc-phalcon/"
+
 #script help function
 scriptHelp() {
 	echo -e "\033[93m"$APP_NAME" WebApp Environment Script\nValid commands:\033[0m"
 	echo -e "\033[95m -env: App environment set up, set correct permissions on directories and files.\033[0m"
 	echo -e "\033[95m -build: Builds phar file with default box.json file.\033[0m"
 	echo -e "\033[95m -tree: Returns the file tree of phar file.\033[0m"
+	echo -e "\033[95m -doc: Generates PHP API Docs.\033[0m"
 	exit
 }
 
@@ -57,6 +63,10 @@ elif [ $1 = "-tree" ]; then
 	php box.phar info -l $APP_NAMESPACE".phar"
 	# task done!
 	echo -e "\033[92mScript successfully executed! \033[0m"
+
+elif [ $1 = "-doc" ]; then
+
+	apigen generate --source $DOC_INPUTS --destination $DOC_OUTPUT_PATH --template-theme "bootstrap"
 
 else
 	echo -e "\033[31mInvalid command\033[0m"

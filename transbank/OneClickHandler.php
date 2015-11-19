@@ -13,7 +13,7 @@ use Phalcon\Exception;
 /**
  * Transbank OneClick Handler
  */
-class OneClick
+class OneClickHandler
 {
     /* consts */
     const WP_ONE_CLICK_DEV_PAYMENT_URL = 'https://webpay3g.orangepeople.cl/webpayserver/wswebpay/OneClickPaymentService?wsdl';

@@ -35,9 +35,9 @@ class BaseUsersFacebook extends \CrazyCake\Models\Base
      */
     public $created_at;
 
-    /** -------------------------------------------- § -------------------------------------------------
-        Init
-    ------------------------------------------------------------------------------------------------- **/
+    /**
+     * Initializer
+     */
     public function initialize()
     {
         //model relations
@@ -46,6 +46,7 @@ class BaseUsersFacebook extends \CrazyCake\Models\Base
         //Skips fields/columns on both INSERT/UPDATE operations
         $this->skipAttributes(['created_at']);
     }
+    
     /** ------------------------------------------- § ------------------------------------------------ **/
 
     /**

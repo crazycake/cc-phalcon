@@ -18,7 +18,7 @@ class OneClickClient
 	/**
 	 * @var object
 	 */
-	protected $oneclick;
+	protected $handler;
 
 	/**
 	 * @var string
@@ -42,7 +42,7 @@ class OneClickClient
 		$this->transbank_cert = $setup['oneClickTransbankCert'];
 
 		//module class
-    	$this->oneclick = new OneClick($setup['oneClickKey'], $setup['oneClickCert']);
+    	$this->handler = new OneClickHandler($setup['oneClickKey'], $setup['oneClickCert']);
     }
 
 	/**
@@ -55,15 +55,17 @@ class OneClickClient
 	public function initCardInscription($username, $email, $response_url)
 	{
 		$oneClickInscriptionInput = new oneClickInscriptionInput();
-		$oneClickInscriptionInput->username = $username;
-		$oneClickInscriptionInput->email = $email;
+		$oneClickInscriptionInput->username    = $username;
+		$oneClickInscriptionInput->email 	   = $email;
 		$oneClickInscriptionInput->responseURL = $response_url;
 
-		$oneClickInscriptionResponse = $this->oneclick->initInscription(array("arg0" => $oneClickInscriptionInput));
+		$oneClickInscriptionResponse = $this->handler->initInscription(array("arg0" => $oneClickInscriptionInput));
 
-		$xmlResponse = $this->oneclick->soapClient->__getLastResponse();
+		$xmlResponse = $this->handler->soapClient->__getLastResponse();
+
 		$soapValidation = new \SoapValidation($xmlResponse, $this->transbank_cert);
 		$soapValidation->getValidationResult(); //Esto valida si el mensaje está firmado por Transbank
+		
 		$oneClickInscriptionOutput = $oneClickInscriptionResponse->return; //Esto obtiene el resultado de la operación
 
 		$payload = new \stdClass();
@@ -82,9 +84,10 @@ class OneClickClient
 		$oneClickFinishInscriptionInput = new oneClickFinishInscriptionInput();
 		$oneClickFinishInscriptionInput->token = $received_token; // es el token de resultado obtenido en el metodo initInscription.
 
-		$oneClickFinishInscriptionResponse = $this->oneclick->finishInscription(array( "arg0" => $oneClickFinishInscriptionInput));
+		$oneClickFinishInscriptionResponse = $this->handler->finishInscription(array( "arg0" => $oneClickFinishInscriptionInput));
 
-		$xmlResponse = $this->oneclick->soapClient->__getLastResponse();
+		$xmlResponse = $this->handler->soapClient->__getLastResponse();
+
 		$soapValidation = new \SoapValidation($xmlResponse, $this->transbank_cert);
 
 		$oneClickFinishInscriptionOutput = $oneClickFinishInscriptionResponse->return;//Si la firma es válida
@@ -109,12 +112,13 @@ class OneClickClient
 	{
 		$oneClickRemoveUserInput = new oneClickRemoveUserInput();
 
-		$oneClickRemoveUserInput->tbkUser = $tbkUser; // identificador de usuario entregado en el servicio finishInscription
+		$oneClickRemoveUserInput->tbkUser  = $tbkUser; // identificador de usuario entregado en el servicio finishInscription
 		$oneClickRemoveUserInput->username = $commerceUser; // identificador de usuario del comercio
 
-		$removeUserResponse = $this->oneclick->removeUser(array("arg0" => $oneClickRemoveUserInput));
+		$removeUserResponse = $this->handler->removeUser(array("arg0" => $oneClickRemoveUserInput));
 
-		$xmlResponse = $this->oneclick->soapClient->__getLastResponse();
+		$xmlResponse = $this->handler->soapClient->__getLastResponse();
+
 		$soapValidation = new \SoapValidation($xmlResponse, $this->transbank_cert); //Si la firma es válida
 
 		return $removeUserResponse->return; // Valor booleano que indica si el usuario fue removido.
@@ -133,12 +137,13 @@ class OneClickClient
 		$oneClickPayInput = new oneClickPayInput();
 		$oneClickPayInput->amount = $amount; // monto de pago
 		$oneClickPayInput->buyOrder = $buyOrder; // orden de compra
-		$oneClickPayInput->tbkUser = $tbkUser; // identificador de usuario entregado en el servicio finishInscription
+		$oneClickPayInput->tbkUser 	= $tbkUser; // identificador de usuario entregado en el servicio finishInscription
 		$oneClickPayInput->username = $username; // identificador de usuario del comercio
 
-		$oneClickauthorizeResponse = $this->oneclick->authorize(array ("arg0" => $oneClickPayInput));
+		$oneClickauthorizeResponse = $this->handler->authorize(array ("arg0" => $oneClickPayInput));
 
-		$xmlResponse = $this->oneclick->soapClient->__getLastResponse();
+		$xmlResponse = $this->handler->soapClient->__getLastResponse();
+
 		$soapValidation = new \SoapValidation($xmlResponse, $this->transbank_cert);
 
 		$oneClickPayOutput = $oneClickauthorizeResponse->return;
@@ -164,9 +169,10 @@ class OneClickClient
 		$oneClickReverseInput = new oneClickReverseInput();
 		$oneClickReverseInput->buyorder= $buyOrder;
 
-		$revertTransaction = $this->oneclick->codeReverseOneClick(array("arg0" => $oneClickReverseInput));
+		$revertTransaction = $this->handler->codeReverseOneClick(array("arg0" => $oneClickReverseInput));
 
-		$xmlResponse = $this->oneclick->soapClient->__getLastResponse();
+		$xmlResponse = $this->handler->soapClient->__getLastResponse();
+
 		$soapValidation = new \SoapValidation($xmlResponse, $this->transbank_cert); //Si la firma es válida
 
 		$response = $revertTransaction->return;
