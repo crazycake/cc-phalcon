@@ -12,7 +12,7 @@ use Phalcon\Exception;
 require "AppServices.php";
 
 /**
- * Phalcon APP Loader
+ * Phalcon APP Loader [main file]
  */
 abstract class AppLoader
 {

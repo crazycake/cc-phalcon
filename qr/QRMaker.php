@@ -14,8 +14,7 @@ use Phalcon\Exception;
 use CrazyCake\Phalcon\AppLoader;
 
 /**
- * QRMaker Class
- * @author Nicolas Pulido
+ * QR Maker Manager
  */
 class QRMaker
 {

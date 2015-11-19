@@ -12,9 +12,9 @@ namespace CrazyCake\Core;
  */
 trait WebErrors
 {
-    /** ---------------------------------------------------------------------------------------------------------------
-     * Init Function, is executed before any action on a controller
-     * ------------------------------------------------------------------------------------------------------------- **/
+    /**
+     * Called if the event ‘beforeExecuteRoute’ is executed with success
+     */
     protected function initialize()
     {
         parent::initialize();
@@ -22,6 +22,7 @@ trait WebErrors
         //disable robots
         $this->view->setVar("html_disallow_robots", true);
     }
+    
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
 	/**

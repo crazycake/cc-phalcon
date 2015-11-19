@@ -13,6 +13,9 @@ use Phalcon\Exception;
 use GuzzleHttp\Client as GuzzleClient;  //Guzzle client for requests
 use GuzzleHttp\Promise;
 
+/**
+ * Guzzle HTTP Request Handler
+ */
 trait Guzzle
 {
 	//....

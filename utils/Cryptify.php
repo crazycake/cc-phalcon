@@ -15,7 +15,9 @@ use Phalcon\Exception;
 use Hashids\Hashids;
 use Phalcon\Crypt;
 
-
+/**
+ * Cryptify - Crypt Helper
+ */
 class Cryptify
 {
     /* consts */

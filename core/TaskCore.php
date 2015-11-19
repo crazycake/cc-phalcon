@@ -46,7 +46,6 @@ class TaskCore extends Task
 
     /**
      * Print Output with Colors
-     * @access protected
      * @param  string $text
      * @param  string $type Options: ["OK", "ERROR", "WARNING", "NOTE"]
      * @return string

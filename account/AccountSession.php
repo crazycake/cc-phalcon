@@ -10,6 +10,9 @@ namespace CrazyCake\Account;
 //CrazyCake Utils
 use CrazyCake\Utils\DateHelper;
 
+/**
+ * Account Session Handler
+ */
 trait AccountSession
 {
     /**

@@ -19,6 +19,9 @@ use Facebook\Exceptions\FacebookSDKException;
 //CrazyCake Utils
 use CrazyCake\Utils\DateHelper;
 
+/**
+ * Facebook Authentication
+ */
 trait FacebookAuth
 {
     /**

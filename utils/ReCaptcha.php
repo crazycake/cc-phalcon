@@ -11,6 +11,9 @@ namespace CrazyCake\Utils;
 //imports
 use Phalcon\Exception;
 
+/**
+ * ReCaptcha Helper
+ */
 class ReCaptcha
 {
     /* consts */

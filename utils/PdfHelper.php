@@ -12,6 +12,9 @@ use Phalcon\Exception;
 use Knp\Snappy\Pdf as PDF;           //PDF printer
 use Clegginabox\PDFMerger\PDFMerger; //PDF merger lib
 
+/**
+ * PDF Helper
+ */
 class PdfHelper
 {
     /**

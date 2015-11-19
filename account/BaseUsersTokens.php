@@ -12,6 +12,9 @@ use Phalcon\Mvc\Model\Validator\InclusionIn;
 //other imports
 use CrazyCake\Utils\DateHelper;
 
+/**
+ * Base User Tokens Model
+ */
 class BaseUsersTokens extends \CrazyCake\Models\Base
 {
     //this static method can be 'overrided' as late binding

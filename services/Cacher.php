@@ -14,6 +14,9 @@ use Phalcon\DI;
 //other libs
 use Predis\Client as RedisClient;
 
+/**
+ * Cache data service [Redis]
+ */
 class Cacher
 {
     const REDIS_DEFAULT_PORT = 6379;

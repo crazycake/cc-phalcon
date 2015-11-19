@@ -9,6 +9,9 @@ namespace CrazyCake\Facebook;
 //other imports
 use CrazyCake\Utils\DateHelper;
 
+/**
+ * Base Facebook Actions
+ */
 class BaseActions extends \CrazyCake\Models\Base
 {
     /* properties */

@@ -21,7 +21,7 @@ abstract class WsCore extends AppCore
     const HEADER_API_KEY = 'X_API_KEY'; //HTTP header keys uses '_' for '-' in Phalcon
 
     /**
-     * abstract required methods
+     * Welcome message for API server status
      */
     abstract protected function welcome();
 
@@ -31,13 +31,11 @@ abstract class WsCore extends AppCore
     /**
      * API messages
      * @var array
-     * @access protected
      */
     protected $CODES;
 
     /**
-     * Constructor function
-     * @access protected
+     * on Construct event
      */
     protected function onConstruct()
     {
@@ -68,7 +66,6 @@ abstract class WsCore extends AppCore
 
     /**
      * Not found service catcher
-     * @access public
      */
     public function serviceNotFound()
     {
@@ -79,7 +76,6 @@ abstract class WsCore extends AppCore
 
     /**
      * Sends a JSON response
-     * @access protected
      * @param string $code The app message code, the HTTP statusCode is always 200.
      * @param null $data Payload to send
      * @return string The response

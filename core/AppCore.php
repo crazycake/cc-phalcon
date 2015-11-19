@@ -19,21 +19,32 @@ interface WebSecurity
     public function _checkCsrfToken();
 }
 
-//abstract class
+/**
+ * App Core for Web and Ws Cores
+ */
 abstract class AppCore extends Controller
 {
     /* consts */
     const JSON_RESPONSE_STRUCT = '{"response":{"code":"200","status":"ok","payload":@payload}}';
 
     /**
-     * abstract required methods
+     * Sends a JSON response
      */
     abstract protected function _sendJsonResponse();
+
+    /**
+     * Sends an async request
+     * @param  string $url
+     * @param  string $uri
+     * @param  array $data
+     * @param  string $method
+     * @param  boolean $socket
+     * @return json response
+     */
     abstract protected function _sendAsyncRequest($url = null, $uri = null, $data = null, $method = "GET", $socket = false);
 
     /**
      * Base URL extended function
-     * @access protected
      * @param string $uri A given URI
      * @return string The static URL
      */
@@ -44,7 +55,6 @@ abstract class AppCore extends Controller
 
     /**
      * Static URL extended function
-     * @access protected
      * @param string $uri A given URI
      * @return string The static URL
      */
@@ -101,7 +111,6 @@ abstract class AppCore extends Controller
 
     /**
      * Get the requested URI
-     * @access protected
      */
     protected function _getRequestedUri()
     {
@@ -145,7 +154,6 @@ abstract class AppCore extends Controller
 
     /**
      * Sends a mail message to user asynchronously
-     * @access protected
      * @param string $method The Mailer method to call
      * @param object $data  The data to be passed as args
      * @return object response
@@ -187,7 +195,6 @@ abstract class AppCore extends Controller
      * Also Check if get/post data is valid, if validation fails send an HTTP code, onSuccess returns a data array.
      * Required field may have a "@" prefix to establish that is just an optional field to be sanitized.
      * Types: string,email,int,float,alphanum,striptags,trim,lower,upper.
-     * @access protected
      * @param array $req_fields Required fields
      * @param string $method GET, POST or MIXED
      * @param boolean $check_csrf Checks a form CSRF token
@@ -310,7 +317,6 @@ abstract class AppCore extends Controller
 
     /**
      * Validate search number & offset parameters
-     * @access protected
      * @param int $input_num Input number
      * @param int $input_off Input offset
      * @param int $max_num Maximun number

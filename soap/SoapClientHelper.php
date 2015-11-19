@@ -11,6 +11,9 @@ require_once 'lib/xmlseclibs.php';
 require_once 'lib/soap-wsse.php';
 require_once 'lib/soap-validation.php';
 
+/**
+ * SOAP client helper
+ */
 class SoapClientHelper extends \SoapClient
 {
     /**
@@ -52,7 +55,7 @@ class SoapClientHelper extends \SoapClient
         $objWSSE->addIssuerSerial($this->cert_file);
         $objKey = new \XMLSecurityKey(\XMLSecurityKey::AES256_CBC);
         $objKey->generateSessionKey();
-        
+
         $retVal = parent::__doRequest($objWSSE->saveXML(), $location, $saction, $version);
         $doc = new \DOMDocument();
         $doc->loadXML($retVal);

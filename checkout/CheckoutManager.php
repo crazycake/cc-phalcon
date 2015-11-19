@@ -14,6 +14,9 @@ use Phalcon\Exception;
 use CrazyCake\Services\Cacher;
 use CrazyCake\Utils\FormHelper;
 
+/**
+ * Checkout Manager
+ */
 trait CheckoutManager
 {
     /**

@@ -14,6 +14,9 @@ use CrazyCake\Utils\DateHelper;
 use CrazyCake\Utils\FormHelper;
 use CrazyCake\Utils\ReCaptcha;
 
+/**
+ * Account Authentication
+ */
 trait AccountAuth
 {
 	/**

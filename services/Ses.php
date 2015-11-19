@@ -14,6 +14,9 @@ use Phalcon\Exception;
 use Pelago\Emogrifier;
 use Mandrill;
 
+/**
+ * Simple Email Service Trait
+ */
 trait Ses
 {
 	/**

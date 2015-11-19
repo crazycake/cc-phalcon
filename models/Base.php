@@ -10,7 +10,7 @@ namespace CrazyCake\Models;
 use \Phalcon\Mvc\Model\Query as PHQL;
 
 /**
- * Base - Extended Functions for models
+ * Base extended functions for models
  */
 class Base extends \Phalcon\Mvc\Model
 {

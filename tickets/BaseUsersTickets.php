@@ -6,6 +6,9 @@
 
 namespace CrazyCake\Tickets;
 
+/**
+ * Base User Tickets Model
+ */
 class BaseUsersTickets extends \CrazyCake\Models\Base
 {
     /* static vars */

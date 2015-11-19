@@ -16,6 +16,9 @@ use CrazyCake\Qr\QRMaker;         //CrazyCake QR
 use CrazyCake\Utils\PdfHelper;    //PDF generator
 use CrazyCake\Utils\DateHelper;   //Date Helper functions
 
+/**
+ * Ticket Manager Trait
+ */
 trait TicketManager
 {
 	/**

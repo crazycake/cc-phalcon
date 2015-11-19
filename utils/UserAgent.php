@@ -13,6 +13,9 @@ namespace CrazyCake\Utils;
 use Phalcon\Exception;
 use Mobile_Detect;
 
+/**
+ * User Agent Helper
+ */
 class UserAgent
 {
     /**
@@ -51,7 +54,7 @@ class UserAgent
             $array         = explode(".", $data['version']);
             $short_version = current($array);
         }
-        
+
         $data['short_version'] = $short_version;
         //check if user agent is legacy
         $data['is_legacy'] = $this->_isUserAgentLegacy($data);

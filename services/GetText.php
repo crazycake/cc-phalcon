@@ -15,6 +15,9 @@ use Phalcon\Exception;
 use Phalcon\Translate\Adapter;
 use Phalcon\Translate\AdapterInterface;
 
+/**
+ * GetText Adapter Handler
+ */
 class GetText extends Adapter implements AdapterInterface
 {
     /**

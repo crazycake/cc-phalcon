@@ -9,6 +9,9 @@ namespace CrazyCake\Checkout;
 //imports
 use CrazyCake\Utils\FormHelper;
 
+/**
+ * Base User Checkouts objects
+ */
 class BaseUsersCheckoutsObjects extends \CrazyCake\Models\Base
 {
     /* properties */

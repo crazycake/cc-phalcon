@@ -12,6 +12,9 @@ namespace CrazyCake\Account;
 use Phalcon\Exception;
 use CrazyCake\Utils\ReCaptcha;
 
+/**
+ * Account Password Recovery
+ */
 trait AccountPassRecovery
 {
     /**

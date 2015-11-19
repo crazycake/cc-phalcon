@@ -11,6 +11,9 @@ namespace CrazyCake\Account;
 //imports
 use Phalcon\Exception;
 
+/**
+ * Account Manager for already loggedIn users
+ */
 trait AccountManager
 {
 	/**

@@ -12,6 +12,9 @@ namespace CrazyCake\Services;
 use Phalcon\Exception;
 use S3;
 
+/**
+ * Storage Handler for Amazon S3
+ */
 class StorageS3
 {
     /**

@@ -10,6 +10,9 @@ namespace CrazyCake\Utils;
 //imports
 use Phalcon\Exception;
 
+/**
+ * Form Helper
+ */
 class FormHelper
 {
     /* consts */

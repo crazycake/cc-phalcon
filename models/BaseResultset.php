@@ -10,7 +10,7 @@ namespace CrazyCake\Models;
 use \Phalcon\Mvc\Model\Resultset\Simple as Resultset;
 
 /**
- * Base Resultset - Extended Functions for resultsets
+ * Base rxtended functions for resultsets
  */
 class BaseResultset extends Resultset
 {

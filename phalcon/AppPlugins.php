@@ -10,7 +10,7 @@ namespace CrazyCake\Phalcon;
 use Phalcon\Exception;
 
 /**
- * Class for MVC module that hanldes Phalcon Exceptions
+ * Class for MVC module that hanldes Phalcon Exceptions.
  */
 class ExceptionsPlugin extends \Phalcon\Mvc\User\Plugin
 {
@@ -24,7 +24,7 @@ class ExceptionsPlugin extends \Phalcon\Mvc\User\Plugin
     }
 
 	/**
-	 * This action is executed before a exception ocurrs
+	 * This action is executed before a exception ocurrs.
 	 * @param Event $event
 	 * @param Dispatcher $dispatcher
 	 * @param Exception $exception
@@ -80,11 +80,15 @@ class ExceptionsPlugin extends \Phalcon\Mvc\User\Plugin
 }
 
 /**
- * Custom Assets filter for already minified files
- * This filter must be declared for minified files
+ * Custom Assets filter for already minified files.
  */
 class MinifiedFilter implements \Phalcon\Assets\FilterInterface
 {
+	/**
+	 * Filter for minified files
+	 * @param  string $contents
+	 * @return string
+	 */
     public function filter($contents)
     {
         //$contents = str_replace(array("\n", "\r", " "), '', $contents);

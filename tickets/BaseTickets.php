@@ -11,6 +11,9 @@ use Phalcon\Mvc\Model\Validator\InclusionIn;
 //other imports
 use CrazyCake\Utils\FormHelper;
 
+/**
+ * Base Tickets Model
+ */
 class BaseTickets extends \CrazyCake\Models\Base
 {
     /* properties */

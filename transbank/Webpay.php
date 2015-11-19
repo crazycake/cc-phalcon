@@ -10,6 +10,9 @@ namespace CrazyCake\Transbank;
 //imports
 use Phalcon\Exception;
 
+/**
+ * Transbank Webpay Manager
+ */
 class Webpay
 {
 	/* vars */

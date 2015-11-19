@@ -9,6 +9,9 @@ namespace CrazyCake\Utils;
 //imports
 use Phalcon\Exception;
 
+/**
+ * Date Helper
+ */
 class DateHelper
 {
     /**

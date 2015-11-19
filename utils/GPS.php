@@ -9,6 +9,9 @@ namespace CrazyCake\Utils;
 //imports
 use Phalcon\Exception;
 
+/**
+ * GPS Helper
+ */
 class GPS
 {
     /* conts */

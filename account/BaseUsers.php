@@ -11,6 +11,9 @@ use Phalcon\Mvc\Model\Validator\Email;
 use Phalcon\Mvc\Model\Validator\InclusionIn;
 use Phalcon\Mvc\Model\Validator\Uniqueness;
 
+/**
+ * Base User Model
+ */
 abstract class BaseUsers extends \CrazyCake\Models\Base
 {
     /**

@@ -6,6 +6,9 @@
 
 namespace CrazyCake\Facebook;
 
+/**
+ * Base Model Users Facebook
+ */
 class BaseUsersFacebook extends \CrazyCake\Models\Base
 {
     /* properties */

@@ -11,6 +11,9 @@ namespace CrazyCake\Checkout;
 use Phalcon\Exception;
 use Phalcon\Mvc\Model\Validator\InclusionIn;
 
+/**
+ * Base User Checkouts
+ */
 class BaseUsersCheckouts extends \CrazyCake\Models\Base
 {
     /* static vars */

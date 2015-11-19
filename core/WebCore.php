@@ -26,9 +26,17 @@ abstract class WebCore extends AppCore implements WebSecurity
     const JS_LOADER_FUNCTION     = 'core.loadModules';
 
     /**
-     * abstract required methods
+     * Set App Javascript Properties for global scope
+     * @param object $js_app
      */
     abstract protected function setAppJavascriptProperties($js_app);
+
+    /**
+     * Checks Browser Support
+     * @param string $browser The browser family [MSIE, Chrome, Firefox, Opera, Safari]
+     * @param boolean $version
+     *
+     */
     abstract protected function checkBrowserSupport($browser, $version);
 
     /* traits */
@@ -48,9 +56,9 @@ abstract class WebCore extends AppCore implements WebSecurity
      */
     protected $MSGS;
 
-    /** ---------------------------------------------------------------------------------------------------------------
-     * Constructor function
-     * --------------------------------------------------------------------------------------------------------------- **/
+    /**
+     * on Construct event
+     */
     protected function onConstruct()
     {
         //set message keys
@@ -59,9 +67,10 @@ abstract class WebCore extends AppCore implements WebSecurity
         //set client object with its properties (User-Agent)
         $this->_setClientObject();
     }
-    /** ---------------------------------------------------------------------------------------------------------------
-     * Init function,'$this' is the dependency injector reference
-     * --------------------------------------------------------------------------------------------------------------- **/
+
+    /**
+     * Called if the event ‘beforeExecuteRoute’ is executed with success
+     */
     protected function initialize()
     {
         //Skip web core initialize for api module includes
@@ -73,9 +82,10 @@ abstract class WebCore extends AppCore implements WebSecurity
         $this->view->setVar("app", $this->config->app); //app configuration vars
         $this->view->setVar("client", $this->client);   //client object
     }
-    /** ---------------------------------------------------------------------------------------------------------------
+
+    /**
      * After Execute Route: Triggered after executing the controller/action method
-     * --------------------------------------------------------------------------------------------------------------- **/
+     */
     protected function afterExecuteRoute()
     {
         //Load view data only for non-ajax requests

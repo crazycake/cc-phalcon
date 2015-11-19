@@ -25,6 +25,9 @@ use Facebook\Exceptions\FacebookSDKException;
 use CrazyCake\Services\Cacher;
 use CrazyCake\Utils\DateHelper;
 
+/**
+ * Facebook Actions
+ */
 trait FacebookActions
 {
     /**
