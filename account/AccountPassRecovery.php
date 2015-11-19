@@ -28,15 +28,16 @@ trait AccountPassRecovery
      */
     public $accountConfig;
 
-    /** ---------------------------------------------------------------------------------------------------------------
-     * Init Function, is executed before any action on a controller
-     * ------------------------------------------------------------------------------------------------------------- **/
+    /**
+     * Initializer
+     */
     protected function initialize()
     {
         parent::initialize();
         //if loggedIn redirect to account
         $this->_redirectToAccount(true);
     }
+    
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**

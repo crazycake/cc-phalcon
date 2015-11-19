@@ -31,9 +31,14 @@ use CrazyCake\Utils\DateHelper;
 trait FacebookActions
 {
     /**
-     * abstract required methods
+     * Set Trait configurations
      */
     abstract public function setConfigurations();
+
+    /**
+     * Set Facebook Story Data
+     * @param object $object
+     */
     abstract public function setStoryData($object);
 
     /**

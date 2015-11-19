@@ -68,8 +68,8 @@ return array (
   ),
   'transbank' => 
   array (
-    0 => 'OneClick.php',
-    1 => 'OneClickClient.php',
+    0 => 'OneClickClient.php',
+    1 => 'OneClickHandler.php',
     2 => 'Webpay.php',
   ),
   'utils' => 

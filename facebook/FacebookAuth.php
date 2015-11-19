@@ -25,9 +25,13 @@ use CrazyCake\Utils\DateHelper;
 trait FacebookAuth
 {
     /**
-     * abstract required methods
+     * Set Trait configurations
      */
     abstract public function setConfigurations();
+
+    /**
+     * Listener - On settings Login Redirection
+     */
     abstract public function onSettingsLoginRedirection();
 
     /**
