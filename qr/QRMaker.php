@@ -10,6 +10,8 @@ namespace CrazyCake\Qr;
 
 //imports
 use Phalcon\Exception;
+//other imports
+use CrazyCake\Phalcon\AppLoader;
 
 /**
  * QRMaker Class
@@ -65,7 +67,7 @@ class QRMaker
 		//Check if library is running from a Phar file, if does, assets must be copied to cache folder.
 		//For reading assets from a phar directly, see: http://php.net/manual/en/phar.webphar.php
 		if(\Phar::running()) {
-			define("QR_ASSETS_PATH", \AppLoader::extractAssetsFromPhar(self::QR_ASSETS_URI, $cache_path));
+			define("QR_ASSETS_PATH", AppLoader::extractAssetsFromPhar(self::QR_ASSETS_URI, $cache_path));
 		}
 		else {
 			define("QR_ASSETS_PATH", self::QR_ASSETS_DIR);

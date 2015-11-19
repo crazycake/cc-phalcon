@@ -1,8 +1,7 @@
 <?php
 /**
  * Session Trait
- * Requires a Frontend or Backend Module with CoreController
- * Requires USERS_CLASS var
+ * Requires a Frontend or Backend Module
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 

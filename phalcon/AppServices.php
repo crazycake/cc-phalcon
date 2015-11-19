@@ -6,6 +6,16 @@
  * @link http://docs.phalconphp.com/en/latest/reference/di.html
  */
 
+namespace CrazyCake\Phalcon;
+
+use Phalcon\Exception;
+
+//import plugins
+require "AppPlugins.php";
+
+/**
+ * Phalcon Services Loader
+ */
 class AppServices
 {
     /**
@@ -97,9 +107,6 @@ class AppServices
      */
     private function _getMvcDI()
     {
-        //import plugins
-        require_once "AppPlugins.php";
-
         //Get a new Micro DI
         $di = new \Phalcon\DI\FactoryDefault();
         $this->_setCommonServices($di);
@@ -175,7 +182,7 @@ class AppServices
                 "username" => $this->config->database["username"],
                 "password" => $this->config->database["password"],
                 "dbname"   => $this->config->database["dbname"],
-                "options"  => [PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'] //force utf8-charset
+                "options"  => [\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'] //force utf8-charset
             ]);
         });
     }
@@ -209,7 +216,7 @@ class AppServices
 
             $eventsManager = new \Phalcon\Events\Manager;
             //Handle exceptions and not-found exceptions using ExceptionsPlugin
-            $eventsManager->attach('dispatch:beforeException', new \ExceptionsPlugin);
+            $eventsManager->attach('dispatch:beforeException', new ExceptionsPlugin);
 
             $dispatcher = new \Phalcon\Mvc\Dispatcher;
             $dispatcher->setEventsManager($eventsManager);
@@ -233,23 +240,23 @@ class AppServices
         //Setting up the view component
         $di_view_engines = [
             '.volt' => function($view, $di_instance) {
-                        //instance a new volt engine
-                        $volt = new \Phalcon\Mvc\View\Engine\Volt($view, $di_instance);
-                        //set volt engine options
-                        $volt->setOptions([
-                            'compiledPath'      => APP_PATH."cache/",
-                            'compiledSeparator' => '_',
-                        ]);
-                        //get compiler
-                        $compiler = $volt->getCompiler();
+                //instance a new volt engine
+                $volt = new \Phalcon\Mvc\View\Engine\Volt($view, $di_instance);
+                //set volt engine options
+                $volt->setOptions([
+                    'compiledPath'      => APP_PATH."cache/",
+                    'compiledSeparator' => '_',
+                ]);
+                //get compiler
+                $compiler = $volt->getCompiler();
 
-                        //++ Binds some PHP functions to volt
+                //++ Binds some PHP functions to volt
 
-                        //++ str replace
-                        $compiler->addFunction('replace', 'str_replace');
+                //++ str replace
+                $compiler->addFunction('replace', 'str_replace');
 
-                        return $volt;
-                    },
+                return $volt;
+            },
             '.phtml' => 'Phalcon\Mvc\View\Engine\Php',
         ];
 

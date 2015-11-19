@@ -82,7 +82,7 @@ class BaseUsersTokens extends \CrazyCake\Models\Base
     public static function getTokenByUserAndValue($user_id, $type = 'activation', $token)
     {
         $conditions = "user_id = ?1 AND type = ?2 AND token = ?3";
-        $parameters = array(1 => $user_id, 2 => $type, 3 => $token);
+        $parameters = [1 => $user_id, 2 => $type, 3 => $token];
 
         return self::findFirst([$conditions, "bind" => $parameters]);
     }
@@ -97,7 +97,7 @@ class BaseUsersTokens extends \CrazyCake\Models\Base
     public static function getTokenByUserAndType($user_id, $type = 'activation')
     {
         $conditions = "user_id = ?1 AND type = ?2";
-        $parameters = array(1 => $user_id, 2 => $type);
+        $parameters = [1 => $user_id, 2 => $type];
 
         return self::findFirst([$conditions, "bind" => $parameters]);
     }

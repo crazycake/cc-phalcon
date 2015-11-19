@@ -2,7 +2,7 @@
 /**
  * Account Manager Trait
  * This class has common actions for account manager controllers
- * Requires a Frontend or Backend Module with CoreController and SessionTrait
+ * Requires a Frontend or Backend Module
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 

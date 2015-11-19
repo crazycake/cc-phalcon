@@ -63,7 +63,7 @@ abstract class BaseUsers extends \CrazyCake\Models\Base
      * @static
      * @var array
      */
-    static $ACCOUNT_FLAGS = array('pending', 'enabled', 'disabled');
+    static $ACCOUNT_FLAGS = ['pending', 'enabled', 'disabled'];
 
     /** ------------------------------------------- § --------------------------------------------------
         Init

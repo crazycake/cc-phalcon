@@ -10,6 +10,9 @@ namespace CrazyCake\Core;
 use Phalcon\CLI\Task;
 use Phalcon\Exception;
 
+/**
+ * Common functions for CLI tasks
+ */
 class TaskCore extends Task
 {
     /**

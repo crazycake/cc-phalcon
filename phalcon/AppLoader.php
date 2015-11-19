@@ -1,24 +1,32 @@
 <?php
 /**
- * Phalcon Project Environment configuration file.
- * Requires PhalconPHP installed
+ * Phalcon APP loader
+ * Requires PhalconPHP extension
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
-//imports
+namespace CrazyCake\Phalcon;
+
+use Phalcon\Exception;
+//required Files
 require "AppServices.php";
 
+/**
+ * Phalcon APP Loader
+ */
 abstract class AppLoader
 {
     /** const **/
-    const CCLIBS_PACKAGE          = "CrazyCake\\";
-    const CCLIBS_NAMESPACE        = "cc-phalcon";
-    const CCLIBS_DEFAULT_PACKAGES = ['services', 'core', 'utils', 'models'];
+    const CCLIBS_PACKAGE   = "CrazyCake\\";
+    const CCLIBS_NAMESPACE = "cc-phalcon";
 
     /**
      * Child required methods
      */
     abstract protected function setAppEnvironment();
+
+
+    protected static $CCLIBS_DEFAULT_PACKAGES = ['services', 'core', 'utils', 'models'];
 
     /**
      * The root app path
@@ -49,7 +57,6 @@ abstract class AppLoader
      * @var string
      */
     public $modules_langs;
-
 
     /**
      * Module production URIS
@@ -241,7 +248,7 @@ abstract class AppLoader
             throw new Exception("AppLoader::extractAssetsFromPhar -> cache path directory not found.");
 
         //check phar is running
-        if(!Phar::running())
+        if(!\Phar::running())
             return false;
 
         //set phar assets path
@@ -262,7 +269,7 @@ abstract class AppLoader
             array_push($assets, $assets_uri.$file);
 
         //instance a phar file object
-        $phar = new Phar(Phar::running());
+        $phar = new \Phar(\Phar::running());
         //extract all files in a given directory
         $phar->extractTo($cache_path, $assets, true);
 
@@ -387,7 +394,7 @@ abstract class AppLoader
             return;
 
         //merge packages with defaults
-        $packages = array_merge(self::CCLIBS_DEFAULT_PACKAGES, $packages);
+        $packages = array_merge(self::$CCLIBS_DEFAULT_PACKAGES, $packages);
 
         //check if library was loaded from dev environment
         $class_path = is_link(PACKAGES_PATH.self::CCLIBS_NAMESPACE) ? PACKAGES_PATH.self::CCLIBS_NAMESPACE : false;
@@ -400,7 +407,7 @@ abstract class AppLoader
             foreach ($packages as $lib) {
                 //loop through package files
                 foreach ($class_map[$lib] as $class)
-                    require Phar::running()."/$lib/".$class;
+                    require \Phar::running()."/$lib/".$class;
             }
             return;
         }

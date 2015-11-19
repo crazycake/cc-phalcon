@@ -16,6 +16,9 @@ use Phalcon\Assets\Filters\Jsmin;   //JS resources minification
 use CrazyCake\Utils\UserAgent;      //User Agent identifier
 use CrazyCake\Services\Guzzle;
 
+/**
+ * WebCore for backend or frontend modules
+ */
 abstract class WebCore extends AppCore implements WebSecurity
 {
     /* consts */
@@ -490,7 +493,7 @@ abstract class WebCore extends AppCore implements WebSecurity
             if($minify)
                 $this->assets->collection($cname)->addFilter(($props[0] == "css") ? new Cssmin() : new Jsmin());
             else
-                $this->assets->collection($cname)->addFilter(new \minifiedFilter());
+                $this->assets->collection($cname)->addFilter(new \CrazyCake\Phalcon\MinifiedFilter());
 
             //for js_dom, generate file & supress output (echo calls)
             if ($cname == "js_dom") {

@@ -1,13 +1,15 @@
 <?php
 /**
  * Web Errors Trait
- * This class has the common public actions for error pages
- * Requires a Frontend or Backend Module with CoreController
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
 namespace CrazyCake\Core;
 
+/**
+ * Handles public actions for error pages
+ * Requires a Frontend or Backend Module
+ */
 trait WebErrors
 {
     /** ---------------------------------------------------------------------------------------------------------------

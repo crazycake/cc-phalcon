@@ -30,17 +30,17 @@ class Webpay
     		throw new Exception('Webpay Lib -> Invalid Webpay files path for constructor. Array is required.');
 
 		//set new client instance
-		if($setup['module']) {
-			$module = self::$MODULES[$setup['module']];
-			try {
-				$this->client = new $module($setup);
-			}
-			catch (Exception $e) {
-				throw new Exception("Webpay Lib -> Error instancing Webpay module class. Message:".$e->getMessage());
-			}
-		}
-		else {
+		if(!isset($setup['module']))
 			throw new Exception('Webpay Lib -> Invalid module!');
+
+		try {
+
+			$module = self::$MODULES[$setup['module']];
+
+			$this->client = new $module($setup);
+		}
+		catch (Exception $e) {
+			throw new Exception("Webpay Lib -> Error instancing Webpay module class. Message:".$e->getMessage());
 		}
     }
 }

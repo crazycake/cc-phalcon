@@ -1,8 +1,13 @@
 <?php
 /**
  * Phalcon App plugins
+ * Handles Phalcon Exceptions & Custom Filters
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
+
+namespace CrazyCake\Phalcon;
+
+use Phalcon\Exception;
 
 /**
  * Class for MVC module that hanldes Phalcon Exceptions
@@ -78,7 +83,7 @@ class ExceptionsPlugin extends \Phalcon\Mvc\User\Plugin
  * Custom Assets filter for already minified files
  * This filter must be declared for minified files
  */
-class minifiedFilter implements \Phalcon\Assets\FilterInterface
+class MinifiedFilter implements \Phalcon\Assets\FilterInterface
 {
     public function filter($contents)
     {

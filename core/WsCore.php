@@ -12,6 +12,9 @@ use Phalcon\Exception;
 //other imports
 use CrazyCake\Services\Guzzle;
 
+/**
+ * Common functions for API WS
+ */
 abstract class WsCore extends AppCore
 {
     /* consts */

@@ -20,7 +20,7 @@ class OneClick
      * @static
      * @var array
      */
-    private static $classmap = array(
+    private static $classmap = [
         'removeUser'                      => __NAMESPACE__.'\\removeUser',
         'oneClickRemoveUserInput'         => __NAMESPACE__.'\\oneClickRemoveUserInput',
         'baseBean'                        => __NAMESPACE__.'\\baseBean',
@@ -43,7 +43,7 @@ class OneClick
         'oneClickPayOutput'               => __NAMESPACE__.'\\oneClickPayOutput',
         'reverse'                         => __NAMESPACE__.'\\reverse',
         'reverseResponse'                 => __NAMESPACE__.'\\reverseResponse'
-    );
+    ];
 
     /**
      * soap client

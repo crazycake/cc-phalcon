@@ -11,7 +11,9 @@ namespace CrazyCake\Core;
 use Phalcon\Mvc\Controller;
 use Phalcon\Exception;
 
-//security interface
+/**
+ * Web Security Interface
+ */
 interface WebSecurity
 {
     public function _checkCsrfToken();

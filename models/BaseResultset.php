@@ -1,6 +1,6 @@
 <?php
 /**
- * Base Model
+ * Base Model Resultset
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
@@ -9,13 +9,17 @@ namespace CrazyCake\Models;
 //imports
 use \Phalcon\Mvc\Model\Resultset\Simple as Resultset;
 
+/**
+ * Base Resultset - Extended Functions for resultsets
+ */
 class BaseResultset extends Resultset
 {
     /* Resultset Methods
     --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
-     * Split resultset
+     * Splits a resultset for object properties
+     * Example ticket_id, ticket_name, brand_id, brand_name
      * @return string
      */
     public function split()
