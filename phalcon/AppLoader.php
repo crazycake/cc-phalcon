@@ -6,7 +6,7 @@
  */
 
 //imports
-require_once "AppServices.php";
+require "AppServices.php";
 
 abstract class AppLoader
 {
@@ -400,7 +400,7 @@ abstract class AppLoader
             foreach ($packages as $lib) {
                 //loop through package files
                 foreach ($class_map[$lib] as $class)
-                    require_once Phar::running()."/$lib/".$class;
+                    require Phar::running()."/$lib/".$class;
             }
             return;
         }
