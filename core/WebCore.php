@@ -34,7 +34,7 @@ abstract class WebCore extends AppCore implements WebSecurity
     /**
      * Checks Browser Support
      * @param string $browser The browser family [MSIE, Chrome, Firefox, Opera, Safari]
-     * @param boolean $version
+     * @param string $version
      *
      */
     abstract protected function checkBrowserSupport($browser, $version);
