@@ -366,6 +366,7 @@ abstract class AppCore extends Controller
 
     /**
      * Dump a phalcon object for debugging
+     * Uses Kint if available for printing
      * @param  object $object Any object
      * @param  boolean $exit Flag for exit script execution
      * @return mixed
@@ -374,10 +375,10 @@ abstract class AppCore extends Controller
     {
         $object = (new \Phalcon\Debug\Dump())->toJson($object);
 
-        if($exit) {
-            print_r($object);
-            exit;
-        }
+        //print output
+        class_exists("\\Kint") ? s($object) : print_r($object);
+
+        if($exit) exit;
 
         return $object;
     }
