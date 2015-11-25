@@ -235,7 +235,6 @@ trait FacebookActions
             "place"                => $place_id,
             "fb:explicitly_shared" => true,
             //aditional props
-            "ref"           => $object->id,
             "no_feed_story" => false,
             //set time to control action verb
             "start_time" => gmdate("Y-m-d\TH:i:s"),    //example "2015-06-18T18:30:30-00:00"
