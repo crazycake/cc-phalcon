@@ -22,6 +22,8 @@ scriptHelp() {
 	echo -e "\033[95m -build: Builds phar file with default box.json file.\033[0m"
 	echo -e "\033[95m -tree: Returns the file tree of phar file.\033[0m"
 	echo -e "\033[95m -doc: Generates PHP API Docs.\033[0m"
+	echo -e "\033[95m -release: Creates a new tag release. Required version and message.\033[0m"
+	echo -e "\033[95m -delete-tags: Removes local and remote tags in the bower package.\033[0m"
 	exit
 }
 
@@ -67,6 +69,27 @@ elif [ $1 = "-tree" ]; then
 elif [ $1 = "-doc" ]; then
 
 	apigen generate --source $DOC_INPUTS --destination $DOC_OUTPUT_PATH --template-theme "bootstrap"
+
+elif [ $1 = "-release" ]; then
+
+	if [ "$2" = "" ] || [ "$3" = "" ] ; then
+		echo -e "\033[95mRelease and message params are required.\033[0m"
+		exit
+	fi
+
+	echo -e "\033[95mReleasing version $2 \033[0m"
+
+	git tag -a "$2" -m "$3"
+	git push origin master --tags
+
+elif [ $1 = "-delete-tags" ]; then
+
+	#loop through tags
+	for t in `git tag`
+	do
+	    git push origin :$t
+	    git tag -d $t
+	done
 
 else
 	echo -e "\033[31mInvalid command\033[0m"
