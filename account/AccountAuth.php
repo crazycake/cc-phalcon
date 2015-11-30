@@ -229,13 +229,13 @@ trait AccountAuth
     }
 
     /**
-     * Ajax - Resend activation mail message (fallback in case mail sending failed)
+     * Ajax [POST] - Resend activation mail message (fallback in case mail sending failed)
      */
     public function resendActivationMailMessageAction()
     {
         $data = $this->_handleRequestParams([
             'email'                => 'email',
-            'g-recaptcha-response' => 'string'
+            '@g-recaptcha-response' => 'string'
         ]);
 
         //get model classes
@@ -244,7 +244,7 @@ trait AccountAuth
         //google reCaptcha helper
         $recaptcha = new ReCaptcha($this->config->app->google->reCaptchaKey);
 
-        if (!$recaptcha->checkResponse($data['g-recaptcha-response'])) {
+        if (empty($data['g-recaptcha-response']) || !$recaptcha->isValid($data['g-recaptcha-response'])) {
             //show error message
             $this->_sendJsonResponse(200, $this->accountConfig['trans']['recaptcha_failed'], true);
         }

@@ -91,7 +91,7 @@ trait AccountPassRecovery
         //google reCaptcha helper
         $recaptcha = new ReCaptcha($this->config->app->google->reCaptchaKey);
 
-        if (!$recaptcha->checkResponse($data['g-recaptcha-response'])) {
+        if (!$recaptcha->isValid($data['g-recaptcha-response'])) {
             //show error message
             $this->_sendJsonResponse(200, $this->accountConfig['trans']['recaptcha_failed'], true);
         }

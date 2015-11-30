@@ -1,9 +1,8 @@
 <?php
 /**
  * ReCaptcha Helper
- * Requires: Curl Extension with SSL protocol handler
- * @author Jesse G. Donat <donatj@gmail.com>
- * @contributor Nicolas Pulido <nicolas.pulido@crazycake.cl>
+ * @link https://github.com/google/recaptcha
+ * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
 namespace CrazyCake\Utils;
@@ -16,14 +15,11 @@ use Phalcon\Exception;
  */
 class ReCaptcha
 {
-    /* consts */
-    const GOOGLE_RECAPTCHA_API_URL = "https://www.google.com/recaptcha/api/siteverify";
-
     /**
-     * Google recaptcha secret key
-     * @var string
+     * Google recaptcha client
+     * @var object
      */
-    private $secret_key;
+    protected $recaptcha;
 
     /**
      * Constructor
@@ -36,48 +32,39 @@ class ReCaptcha
             throw new Exception("ReCaptcha Helper -> Google reCaptcha key is required.");
 
         //set secret key
-        $this->secret_key = $secret_key;
-        //set ip adress
-        //$this->ip_address = $_SERVER['REMOTE_ADDR'];
+        $this->recaptcha = new \ReCaptcha\ReCaptcha($secret_key);
     }
 
     /**
      * Verifies that recaptcha value is valid with Google reCaptcha API
-     * @param string $response
-     * @throws Exception
+     * @param string $gRecaptchaResponse The reCaptcha response
      * @return bool
      */
-    public function checkResponse($response)
+    public function isValid($gRecaptchaResponse = null)
     {
-        //set URL
-        $url = self::GOOGLE_RECAPTCHA_API_URL . "?secret=" . $this->secret_key . "&response=" . $response;
+        //get DI instance (static)
+        $di = \Phalcon\DI::getDefault();
 
-        //prepare the request
-        $curl = curl_init();
-        //set options
-        curl_setopt_array($curl, [
-            CURLOPT_URL            => $url, // Set URL
-            CURLOPT_RETURNTRANSFER => true, // Wait for response
-            CURLOPT_TIMEOUT        => 10, // TimeOut seconds
-            CURLOPT_SSL_VERIFYPEER => false, // Disable SSL verification
-            CURLOPT_USERAGENT      => 'Phalcon-Curl', // UserAgent
-        ]);
-
-        //execute request
-        $response   = curl_exec($curl);
-        $curl_error = curl_error($curl);
-        //close curl connection
-        curl_close($curl);
-
-        if (!empty($curl_error))
-            throw new Exception("ReCaptcha Helper -> An error ocurred in curl connection: $curl_error.");
-
-        $response = json_decode($response, true);
-
-        //check response
-        if (isset($response["success"]))
-            return $response["success"];
-        else
+        if(empty($gRecaptchaResponse))
             return false;
+
+        //get remote address
+        $remoteIp = $di->getShared("request")->getServerAddress();
+        //verify response
+        $response = $this->recaptcha->verify($gRecaptchaResponse, $remoteIp);
+
+        if($response->isSuccess())
+            return true;
+
+        print_r($response->getErrorCodes());exit;
+
+        $errors = $response->getErrorCodes();
+
+        if($di->getShared("logger")) {
+            $logger = $di->getShared("logger");
+            $logger->error("ReCaptcha Helper -> Invalid reCaptcha response: ".json_encode($errors));
+        }
+
+        return false;
     }
 }
