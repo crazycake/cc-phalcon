@@ -56,8 +56,6 @@ class ReCaptcha
         if($response->isSuccess())
             return true;
 
-        print_r($response->getErrorCodes());exit;
-
         $errors = $response->getErrorCodes();
 
         if($di->getShared("logger")) {

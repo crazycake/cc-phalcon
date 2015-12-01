@@ -246,7 +246,7 @@ trait AccountAuth
 
         if (empty($data['g-recaptcha-response']) || !$recaptcha->isValid($data['g-recaptcha-response'])) {
             //show error message
-            $this->_sendJsonResponse(200, $this->accountConfig['trans']['recaptcha_failed'], true);
+            return $this->_sendJsonResponse(200, $this->accountConfig['trans']['recaptcha_failed'], true);
         }
 
         //check if user exists is a pending account
