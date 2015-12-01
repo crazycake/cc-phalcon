@@ -37,7 +37,7 @@ trait AccountPassRecovery
         //if loggedIn redirect to account
         $this->_redirectToAccount(true);
     }
-    
+
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
@@ -91,9 +91,10 @@ trait AccountPassRecovery
         //google reCaptcha helper
         $recaptcha = new ReCaptcha($this->config->app->google->reCaptchaKey);
 
-        if (!$recaptcha->isValid($data['g-recaptcha-response'])) {
+        //check valid reCaptcha
+        if (empty($data['g-recaptcha-response']) || !$recaptcha->isValid($data['g-recaptcha-response'])) {
             //show error message
-            $this->_sendJsonResponse(200, $this->accountConfig['trans']['recaptcha_failed'], true);
+            return $this->_sendJsonResponse(200, $this->accountConfig['trans']['recaptcha_failed'], true);
         }
 
         //check if user exists is a active account

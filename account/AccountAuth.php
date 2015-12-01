@@ -238,21 +238,20 @@ trait AccountAuth
             '@g-recaptcha-response' => 'string'
         ]);
 
-        //get model classes
-        $users_class = $this->_getModuleClass('users');
-
         //google reCaptcha helper
         $recaptcha = new ReCaptcha($this->config->app->google->reCaptchaKey);
 
+        //check valid reCaptcha
         if (empty($data['g-recaptcha-response']) || !$recaptcha->isValid($data['g-recaptcha-response'])) {
             //show error message
             return $this->_sendJsonResponse(200, $this->accountConfig['trans']['recaptcha_failed'], true);
         }
 
-        //check if user exists is a pending account
+        //get model classes
+        $users_class = $this->_getModuleClass('users');
         $user = $users_class::getUserByEmail($data['email'], 'pending');
 
-        //if user was not found send error message
+        //check if user exists is a pending account
         if (!$user)
             $this->_sendJsonResponse(200, $this->accountConfig['trans']['account_not_found'], 'alert');
 
