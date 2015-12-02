@@ -118,8 +118,9 @@ abstract class BaseUsers extends \CrazyCake\Models\Base
     {
         //email required
         $this->validate(new Email([
-            'field'    => 'email',
-            'required' => true
+            "field"    => 'email',
+            "required" => true,
+            "message"  => $this->getModelMessage("email_required")
         ]));
 
         //email unique
