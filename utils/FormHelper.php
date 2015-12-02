@@ -77,7 +77,7 @@ class FormHelper
 
         //days
         $days_array = [];
-        $days_array["0"] = $translate->_("Día");
+        $days_array[""] = $translate->_("Día");
         //loop
         for ($i = 1; $i <= 31; $i++) {
             $prefix = ($i <= 9) ? "_0$i" : "_$i";
@@ -86,7 +86,7 @@ class FormHelper
 
         //months
         $months_array = [];
-        $months_array["0"] = $translate->_("Mes");
+        $months_array[""] = $translate->_("Mes");
         //loop
         for ($i = 1; $i <= 12; $i++) {
             $prefix = ($i <= 9) ? "_0$i" : "_$i";
@@ -102,7 +102,7 @@ class FormHelper
 
         //years
         $years_array = [];
-        $years_array["0"] = $translate->_("Año");
+        $years_array[""] = $translate->_("Año");
         //loop
         for ($i = (int) date('Y'); $i >= 1914; $i--)
             $years_array["_$i"] = $i;
