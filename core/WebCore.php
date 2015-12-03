@@ -113,8 +113,8 @@ abstract class WebCore extends AppCore implements WebSecurity
      * @access protected
      * @param string $status_code HTTP Response code like 200, 404, 500, etc.
      * @param mixed $payload Payload to send, array or string.
-     * @param bool $error_type Can be 'success', 'warning', 'info', 'alert', 'secondary'.
-     * @param mixed $error_namespace for Javascript event manipulations, string or null value.
+     * @param bool $error_type Can be ```success, warning, info, alert, secondary```.
+     * @param mixed $error_namespace For Javascript event manipulations, string or null value.
      */
     protected function _sendJsonResponse($status_code = 200, $payload = null, $error_type = false, $error_namespace = null)
     {

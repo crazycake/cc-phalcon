@@ -75,8 +75,10 @@ abstract class WsCore extends AppCore
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
-     * Sends a JSON response
-     * @param string $code The app message code, the HTTP statusCode is always 200.
+     * Sends a JSON response for APIs.
+     * The HTTP statusCode is always 200.
+     * Codes: ```200, 400, 404, 405, 498, 500, 501, 800, 900, 901, 902```
+     * @param string $code The app message code.
      * @param null $data Payload to send
      * @return string The response
      */

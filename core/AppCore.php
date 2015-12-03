@@ -34,12 +34,12 @@ abstract class AppCore extends Controller
 
     /**
      * Sends an async request
-     * @param  string $url
-     * @param  string $uri
-     * @param  array $data
-     * @param  string $method
-     * @param  boolean $socket
-     * @return json response
+     * @param  string $url The URL
+     * @param  string $uri The URI
+     * @param  array $data The data array
+     * @param  string $method **GET** or **POST** HTTP method
+     * @param  boolean $socket Use ```socket``` stategy
+     * @return json
      */
     abstract protected function _sendAsyncRequest($url = null, $uri = null, $data = null, $method = "GET", $socket = false);
 
@@ -66,7 +66,7 @@ abstract class AppCore extends Controller
     /**
      * Get Module Model Class Name
      * A prefix can be set in module options
-     * @param string $key The class module name uncamelize, example 'some_class'
+     * @param string $key The class module name uncamelize, example: 'some_class'
      */
     protected function _getModuleClass($key)
     {
@@ -193,12 +193,12 @@ abstract class AppCore extends Controller
     /**
      * Handle the request params data validating required parameters.
      * Also Check if get/post data is valid, if validation fails send an HTTP code, onSuccess returns a data array.
-     * Required field may have a "@" prefix to establish that is just an optional field to be sanitized.
-     * Types: string,email,int,float,alphanum,striptags,trim,lower,upper.
+     * Required field may have a ```@``` prefix to establish that is just an optional field to be sanitized.
+     * Types: ```string, email, int, float, alphanum, striptags, trim, lower, upper.```
      * @param array $req_fields Required fields
      * @param string $method GET, POST or MIXED
      * @param boolean $check_csrf Checks a form CSRF token
-     * @example { $data, array( "@name" => "string"), POST }
+     * @example ```{ $data, array( "@name" => "string"), POST }```
      * @link   http://docs.phalconphp.com/en/latest/reference/filter.html#sanitizing-data
      * @return array
      */
