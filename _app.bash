@@ -1,5 +1,6 @@
 #! /bin/bash
-## Script para configurar entorno
+# cc-phalcon task runner
+# dependencies: php apigen & node apidoc (for PHP APIs)
 
 # se interrumpe el script si ocurre un error
 set -e

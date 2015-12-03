@@ -1,21 +1,21 @@
 CrazyCake Phalcon Libraries
 ===========================
 
-##PhalconPHP
+## PhalconPHP
 
 Current Version: `2.0.x`
 
-##Documentation
+## Documentation
 
 [CrazyCake Docs](http://docs.crazycake.cl/)
 
-##Box Project
+## Box Project
 
 - Used for building phar files.
 - Files are autoloaded with `phalcon/AppLoader.php` class:
 - Documentation [ref](http://box-project.org/)
 
-###Commands
+### Commands
 Get phar box library
 ```
 curl -LSs https://box-project.github.io/box2/installer.php | php
