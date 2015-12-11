@@ -45,7 +45,7 @@ trait AccountManager
         //for auth required pages disable robots
         $this->view->setVar("html_disallow_robots", true);
     }
-    
+
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
@@ -72,7 +72,7 @@ trait AccountManager
             $this->_sendJsonResponse(404);
 
         //get settings params
-        $setting_params = isset($this->accountConfig['register_request_params']) ? $this->accountConfig['register_request_params'] : array();
+        $setting_params = isset($this->accountConfig['profile_request_params']) ? $this->accountConfig['profile_request_params'] : array();
         //validate and filter request params data, second params are the required fields
         $data = $this->_handleRequestParams(array_merge($default_params, $setting_params));
 

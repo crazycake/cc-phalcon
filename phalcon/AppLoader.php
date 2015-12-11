@@ -462,7 +462,7 @@ abstract class AppLoader
         }
 
         //set environment consts & self vars
-        define("APP_ENVIRONMENT", $app_environment); //@hardcode option: production
+        define("APP_ENVIRONMENT", $app_environment);
         define("APP_BASE_URL", $app_base_url);
         //var_dump(APP_ENVIRONMENT, APP_BASE_URL);exit;
     }
