@@ -52,7 +52,8 @@ trait AccountAuth
 
         //view vars
         $this->view->setVar("html_title", $this->accountConfig['trans']['title_sign_in']);
-        $this->view->setVar("js_recaptcha", true); //load reCaptcha
+        //load js reCaptcha?
+        $this->view->setVar("js_recaptcha", $this->accountConfig['js_recaptcha']);
 
         //call abstract method
         $this->beforeRenderSignInView();
