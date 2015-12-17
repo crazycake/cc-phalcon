@@ -206,6 +206,8 @@ trait Ses
         $css  = file_get_contents($cssFile);
 
         $emogrifier = new Emogrifier($html, $css);
+        $emogrifier->addExcludedSelector("head");
+        $emogrifier->addExcludedSelector("meta");
         $html = $emogrifier->emogrify();
 
         return $html;
