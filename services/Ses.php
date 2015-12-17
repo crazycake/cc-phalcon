@@ -198,9 +198,6 @@ trait Ses
         //css file
         $cssFile = $this->sesConfig['cssFile'];
 
-        if(APP_ENVIRONMENT !== 'local')
-            $cssFile = str_replace(".css", ".min.css", $cssFile);
-
         //get the style file
         $html = $this->simpleView->render("mails/$mail", $data);
         $css  = file_get_contents($cssFile);
