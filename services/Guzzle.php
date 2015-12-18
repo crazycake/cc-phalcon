@@ -58,9 +58,10 @@ trait Guzzle
         catch(\Exception $e) { $exception = $e; }
 
         if($exception) {
+
             $di = \Phalcon\DI::getDefault();
-            $di->getShared('logger')->error("Guzzle::sendAsyncRequest -> $url, $uri, Exception: ".$exception->getMessage()."\n".
-            $exception->getLine()." ".$e->getFile()."\n".$e->getTraceAsString());
+            $di->getShared('logger')->error("Guzzle::sendAsyncRequest -> $url, $uri, Exception: ".$exception->getMessage().
+                               "\n".$exception->getLine()." ".$e->getFile());
         }
     }
 
@@ -125,32 +126,35 @@ trait Guzzle
 
         $promise->then(function ($response) use ($uri) {
 
+            //set logger
+            $di = \Phalcon\DI::getDefault();
+            $logger = $di->getShared('logger');
+
             $body = $response->getBody();
 
-            if(method_exists($body, "getContents")) {
+            if(method_exists($body, "getContents"))
                 $body = $body->getContents();
-            }
 
             //handle response (OK status)
             if ($response->getStatusCode() == 200 && strpos($body, "<!DOCTYPE") === false) {
-                $this->logger->log("Guzzle::logGuzzleResponse -> Uri: $uri, response: $body");
+                $logger->debug("Guzzle::_sendPromise -> Uri: $uri, response: $body");
             }
             else {
 
                 if(isset($this->router)) {
                     $controllerName = $this->router->getControllerName();
                     $actionName     = $this->router->getActionName();
-                    $this->logger->error("Guzzle::logGuzzleResponse -> Error on request ($uri): $controllerName -> $actionName");
+                    $logger->error("Guzzle::_sendPromise -> Error on request ($uri): $controllerName -> $actionName");
                 }
                 else {
-                    $this->logger->error("Guzzle::logGuzzleResponse -> An Error occurred on request: $uri");
+                    $logger->error("Guzzle::_sendPromise -> An Error occurred on request: $uri");
                 }
 
                 //catch response for app errors
                 if (strpos($body, "<!DOCTYPE") === false)
-                    $this->logger->log("Guzzle::logGuzzleResponse -> Catched response: $body");
+                    $logger->debug("Guzzle::_sendPromise -> Catched response: $body");
                 else
-                    $this->logger->log("Guzzle::logGuzzleResponse -> NOTE: Above response is a redirection webpage, check correct route and redirections.");
+                    $logger->debug("Guzzle::_sendPromise -> NOTE: Above response is a redirection webpage, check correct route and redirections.");
             }
         });
         //force promise to be completed
