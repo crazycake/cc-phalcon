@@ -84,7 +84,7 @@ class BaseUsersCheckoutsTrx extends \CrazyCake\Models\Base
         //set properties
         $this->_ext = [
             //amount formatted (default coin)
-            "date_formatted"   => (new DateTime($this->local_time))->format('d-m-Y H:i:s'),
+            "date_formatted"   => (new \DateTime($this->local_time))->format('d-m-Y H:i:s'),
             "amount_formatted" => FormHelper::formatPrice($this->amount, $this->coin)
         ];
     }
