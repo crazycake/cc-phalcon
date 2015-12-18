@@ -59,6 +59,7 @@ trait KccManager
      */
     protected $cacher;
 
+
     /**
      * Initializer
      */

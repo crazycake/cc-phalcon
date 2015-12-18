@@ -107,6 +107,7 @@ abstract class AppLoader
         define("APP_PATH", MODULE_PATH."app/" );
         define("PUBLIC_PATH", MODULE_PATH."public/");
         define("EXEC_START", microtime(true));  //for debugging render time
+        
         //start webapp loader flux
         $this->_directoriesSetup();
         $this->_autoloadClasses();
@@ -198,7 +199,7 @@ abstract class AppLoader
 
             //new mvc app
             $application = new \Phalcon\Mvc\Application($this->di);
-            $output = $application->handle()->getContent();
+            $output      = $application->handle()->getContent();
 
             //return output if argv is true
             if($argv)
