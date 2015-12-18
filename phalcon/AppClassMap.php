@@ -14,7 +14,8 @@ return array (
   array (
     0 => 'BaseUsersCheckouts.php',
     1 => 'BaseUsersCheckoutsObjects.php',
-    2 => 'CheckoutManager.php',
+    2 => 'BaseUsersCheckoutsTrx.php',
+    3 => 'CheckoutManager.php',
   ),
   'core' => 
   array (
@@ -68,9 +69,10 @@ return array (
   ),
   'transbank' => 
   array (
-    0 => 'OneClickClient.php',
-    1 => 'OneClickHandler.php',
-    2 => 'Webpay.php',
+    0 => 'KccEndPoint.php',
+    1 => 'KccManager.php',
+    2 => 'OneClickClient.php',
+    3 => 'OneClickHandler.php',
   ),
   'utils' => 
   array (

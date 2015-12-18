@@ -451,14 +451,17 @@ abstract class AppLoader
         $app_base_url    = PROJECT_PATH;
         $app_environment = getenv('APP_ENV');
 
-        //Check for CLI execution
+        //Check for CLI execution & CGI execution
         if (php_sapi_name() !== 'cli') {
 
-            if(!isset($_SERVER['HTTP_HOST']) || !isset($_REQUEST))
-                throw new Exception("AppLoader::undefined SERVER or REQUEST data: ".json_encode($_SERVER)." ".json_encode($_REQUEST));
+            if(!isset($_REQUEST))
+                throw new Exception("AppLoader -> Missing REQUEST data: ".json_encode($_SERVER)." && ".json_encode($_REQUEST));
 
-            //set base URL
-            $app_base_url = (isset($_SERVER["HTTPS"]) ? "https://" : "http://") . $_SERVER['HTTP_HOST'] . preg_replace('@/+$@', '', dirname($_SERVER['SCRIPT_NAME'])) . '/';
+            //set localhost if host is not set
+            if(!isset($_SERVER['HTTP_HOST']))
+                $_SERVER['HTTP_HOST'] = "127.0.0.1";
+
+            $app_base_url = (isset($_SERVER["HTTPS"]) ? "https://" : "http://").$_SERVER['HTTP_HOST'].preg_replace('@/+$@', '', dirname($_SERVER['SCRIPT_NAME'])).'/';
         }
 
         //set environment consts & self vars

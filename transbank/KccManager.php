@@ -228,7 +228,7 @@ trait KccManager
                 throw new Exception("Invalid checkout params. Input data ".json_encode($data));
 
             //get extend props
-            $checkout->trx = $trx_model::getTransactionByBuyOrder($checkout->buyOrder);
+            $checkout->trx = $trx_model::findFirstByBuyOrder($checkout->buyOrder);
 
             if(!$checkout->trx)
                 throw new Exception("No processed TRX found for ID:".$checkoutOrm->session_key.", BO: ".$checkout->buyOrder);

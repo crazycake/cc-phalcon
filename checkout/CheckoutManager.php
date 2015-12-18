@@ -83,7 +83,6 @@ trait CheckoutManager
 
     /**
      * Ajax - Before user goes to payment gateway (or not), buy order must be generated.
-     * @TODO: move this action to checkoutTrait
      */
     public function buyOrderAction()
     {
@@ -122,7 +121,7 @@ trait CheckoutManager
             unset($payload["objects"]);
 
             if(APP_ENVIRONMENT !== "production")
-                $this->logger->debug("CheckoutTrait:buyOrder -> got new order, session key: ".$checkoutOrm->session_key.". Obj: ".json_encode($cache));
+                $this->logger->debug("CheckoutManager:buyOrder -> got new order, session key: ".$checkoutOrm->session_key.". Obj: ".json_encode($cache));
 
             // send JSON response
             $this->_sendJsonResponse(200, $payload);
@@ -326,7 +325,7 @@ trait CheckoutManager
         $this->onSkippedPayment($checkout, $this->checkoutConfig["debug"]);
 
         //log
-        $this->logger->debug("CheckoutTrait::skipPaymentAction -> Skipped payment for userId: ".$checkoutOrm->user_id.", BO: ".$checkout->buyOrder);
+        $this->logger->debug("CheckoutManager::skipPaymentAction -> Skipped payment for userId: ".$checkoutOrm->user_id.", BO: ".$checkout->buyOrder);
         //call succes checkout
         $this->successCheckout($checkout);
 
@@ -476,7 +475,7 @@ trait CheckoutManager
 
             //check that object is in stock (also validates object exists)
             if(!$users_checkout_class::validateObjectStock($class_name, $object_id, $q)) {
-                $this->logger->error("CheckoutTrait::_parseCheckoutObjects -> No stock for object '$class_name' ID: $object_id, q: $q.");
+                $this->logger->error("CheckoutManager::_parseCheckoutObjects -> No stock for object '$class_name' ID: $object_id, q: $q.");
                 throw new Exception(str_replace("{name}", $object->name, $this->checkoutConfig["trans"]["error_no_stock"]));
             }
 
