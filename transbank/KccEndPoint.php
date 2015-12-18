@@ -10,7 +10,6 @@
 namespace CrazyCake\Transbank;
 
 use CrazyCake\Services\Guzzle;
-use CrazyCake\Services\Cacher;
 
 /**
  * KccEndPoint Class
@@ -30,17 +29,6 @@ class KccEndPoint
     const CMD_EXEC_CGI = PUBLIC_PATH."cgi-bin/tbk_check_mac.cgi";
 
     /**
-     * default user checkout class
-     */
-    //public static $DEFAULT_USERS_CHECKOUTS_CLASS = 'UsersCheckouts';
-
-    /**
-     * The cacher service (redis)
-     * @var object
-     */
-    private $cacher;
-
-    /**
      * Set custom logger
      */
     private $log;
@@ -50,8 +38,6 @@ class KccEndPoint
      */
     public function __construct()
     {
-        //set cacher service
-        $this->cacher = new Cacher('redis');
         //set logger service
         $this->log = new \Phalcon\Logger\Adapter\File(APP_PATH."logs/webpayKcc_".date("d-m-Y").".log");
     }
@@ -126,7 +112,7 @@ class KccEndPoint
             $this->setOutput(false, "CGI MAC entegó un output distinto a 'CORRECTO' -> ".$output_cgi[0]);
 
         //5) OK, all validations passed process succesful Checkout
-        $this->onSuccessTrx($checkout);
+        $this->onSuccessTrx($TBK_ID_SESION, $checkout);
 
         //OK, redirect...
         $this->setOutput(true, "EXITO, redirecting...");
@@ -180,7 +166,7 @@ class KccEndPoint
      * on success TRX event, sends Async Call
      * @param object $checkout The checkout stored object
      */
-    protected function onSuccessTrx($checkout)
+    protected function onSuccessTrx($session_key, $checkout)
     {
         //get DI reference (static)
         $di = \Phalcon\DI::getDefault();

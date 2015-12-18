@@ -122,6 +122,7 @@ class TaskCore extends Task
             exit;
         }
 
+        //set module
         $module = PROJECT_PATH.$params[$index];
 
         //check for folder
