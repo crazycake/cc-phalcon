@@ -11,7 +11,7 @@ namespace CrazyCake\Transbank;
 use Phalcon\Exception;
 
 /**
- * Transbank OneClick Client
+ * Webpay OneClick Client
  */
 class OneClickClient
 {
@@ -65,7 +65,7 @@ class OneClickClient
 
 		$soapValidation = new \SoapValidation($xmlResponse, $this->transbank_cert);
 		$soapValidation->getValidationResult(); //Esto valida si el mensaje está firmado por Transbank
-		
+
 		$oneClickInscriptionOutput = $oneClickInscriptionResponse->return; //Esto obtiene el resultado de la operación
 
 		$payload = new \stdClass();

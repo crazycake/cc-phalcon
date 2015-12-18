@@ -11,7 +11,7 @@ namespace CrazyCake\Transbank;
 use Phalcon\Exception;
 
 /**
- * Transbank OneClick Handler
+ * Webpay OneClick Handler
  */
 class OneClickHandler
 {

@@ -16,7 +16,7 @@ use CrazyCake\Utils\DateHelper;
 use CrazyCake\Utils\FormHelper;
 
 /**
- * Checkout Manager
+ * Webpay Kcc Manager
  */
 trait KccManager
 {
