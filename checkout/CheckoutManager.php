@@ -89,20 +89,13 @@ trait CheckoutManager
     {
         //make sure is ajax request
         $this->_onlyAjax();
-        //get form data
-        $data = $this->_handleRequestParams([
-            "checkoutUri"      => "string", //checkout URI
-            "checkoutGateway"  => "string", //checkout payment gateway
-            "checkoutCategory" => "array",  //a parent category refence
-            "@invoiceEmail"    => "string"  //custom validation
-        ]);
 
         $exception = false;
 
         try {
 
             //get checkout object and set category property name
-            $checkout = $this->_parseCheckoutData($data);
+            $checkout = $this->_parseCheckoutData();
 
             //call listeners
             $this->onBeforeBuyOrderCreation($checkout);
@@ -124,7 +117,7 @@ trait CheckoutManager
                 throw new Exception($this->checkoutConfig["trans"]["error_unexpected"]);
 
             //set payload data
-            $payload = array_merge($cache, $data);
+            $payload = $cache;
             $payload["sessionKey"] = $checkoutOrm->session_key;
             unset($payload["objects"]);
 
@@ -171,9 +164,6 @@ trait CheckoutManager
             $this->flash->success($this->checkoutConfig["trans"]["success_checkout"]);
             //call succes checkout
             $this->successCheckout($checkout);
-
-            //send OK response (TODO: redirect to success page first)
-            //$this->_sendJsonResponse(200, ["redirectUri" => "account/"]);
         }
         catch (Exception $e) {
             //sends an error message
@@ -367,9 +357,10 @@ trait CheckoutManager
     {
         //default inputs for checkout
         $inputs = [
-            "checkoutUri"      => "",                    //last visited uri (set by JS)
-            "checkoutGateway"  => $checkoutType,         //checkout gateway name
-            "checkoutCategory" => implode(",", $category) //checkout category id or namespace
+            "checkoutUri" => "",                     //last visited uri (set by JS modules)
+            "handlerUri"  => "",                     //checkout handler for post payment
+            "gateway"     => "",                     //checkout gateway name
+            "category"    => implode(",", $category) //checkout category id or namespace
         ];
 
         //get module class name
@@ -378,11 +369,8 @@ trait CheckoutManager
         //set default max checkout number
         $checkoutMax = 1;
 
-        //NOTE: only one gateway supported for now
+        //increase max item allowed
         if($checkoutType == "paid") {
-
-            $inputs["checkoutGateway"] = $this->checkoutConfig["gateway"];
-            //increase max number
             $checkoutMax = $this->checkoutConfig["max_per_item_allowed"];
         }
 
@@ -428,11 +416,19 @@ trait CheckoutManager
 
     /**
      * Parses the checkout POST params
-     * @param  array $data The POST form data [checkoutUri, checkoutGateway, invoiceEmail]
      * @return stdObject with amount & objects_array
      */
-    private function _parseCheckoutData($data = array())
+    private function _parseCheckoutData()
     {
+        //get form data
+        $data = $this->_handleRequestParams([
+            "handlerUri"    => "string",  //post payment handler URI
+            "checkoutUri"   => "string",  //checkout URI
+            "gateway"       => "string",  //checkout payment gateway
+            "category"      => "array",   //the category parent refence
+            "@invoiceEmail" => "string"   //optional, custom validation
+        ]);
+
         //get module class name
         $users_checkout_class = $this->_getModuleClass('users_checkouts');
 
@@ -446,21 +442,21 @@ trait CheckoutManager
         //set object properties
         $checkout = new \stdClass();
 
-        $checkout->client        = isset($this->client) ? json_encode($this->client, JSON_UNESCAPED_SLASHES) : null;
-        $checkout->successTrxUrl = [$this->_baseUrl(), $this->checkoutConfig["success_trx_uri"]];
-        $checkout->invoiceEmail  = $data["invoiceEmail"];
-        $checkout->checkoutUri   = $data["checkoutUri"];
-        $checkout->gateway       = $data["checkoutGateway"];
-        $checkout->category      = explode(",", $data["checkoutCategory"]);
-        $checkout->coin          = $this->checkoutConfig["default_coin"];
-        $checkout->objects       = [];
-        $checkout->amount        = 0;
+        $checkout->client       = isset($this->client) ? json_encode($this->client, JSON_UNESCAPED_SLASHES) : null;
+        $checkout->handlerUrl   = [$this->_baseUrl(), $data["handlerUri"]];
+        $checkout->checkoutUri  = $data["checkoutUri"];
+        $checkout->gateway      = $data["gateway"];
+        $checkout->category     = explode(",", $data["category"]);
+        $checkout->invoiceEmail = $data["invoiceEmail"];
+        $checkout->coin         = $this->checkoutConfig["default_coin"];
+        $checkout->objects      = [];
+        $checkout->amount       = 0;
 
         //temp vars
         $totalQ  = 0;
         $classes = [];
 
-        //loop throught items
+        //loop throught checkout items
         foreach ($data as $key => $q) {
 
             //parse properties
