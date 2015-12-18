@@ -60,7 +60,7 @@ class BaseUsersCheckoutsTrx extends \CrazyCake\Models\Base
     /**
      * @var string
      */
-    public $created_at;
+    public $local_time;
 
     /**
      * Extended properties
@@ -73,7 +73,7 @@ class BaseUsersCheckoutsTrx extends \CrazyCake\Models\Base
     public function initialize()
     {
         //Skips fields/columns on both INSERT/UPDATE operations
-        $this->skipAttributes(['created_at', '_ext']);
+        $this->skipAttributes(['_ext']);
     }
 
     /**
@@ -84,9 +84,20 @@ class BaseUsersCheckoutsTrx extends \CrazyCake\Models\Base
         //set properties
         $this->_ext = [
             //amount formatted (default coin)
+            "date_formatted"   => (new DateTime($this->local_time))->format('d-m-Y H:i:s'),
             "amount_formatted" => FormHelper::formatPrice($this->amount, $this->coin)
         ];
     }
+
+    /**
+     * Before Validation Event [onCreate]
+     */
+    public function beforeValidationOnCreate()
+    {
+        //set server local time
+        $this->local_time = date("Y-m-d H:i:s");
+    }
+
     /** ------------------------------------------- § ------------------------------------------------ **/
 
 }

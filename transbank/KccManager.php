@@ -72,12 +72,12 @@ trait KccManager
 
         //set payment types
         $this->paymentTypes = [
-            "VN" => ['credit', $this->translate->_("Sin Cuotas"), "0"],
-            "VC" => ['credit', $this->translate->_("Cuotas normales"), "4-48"],
-            "SI" => ['credit', $this->translate->_("Sin interés"), "3"],
-            "S2" => ['credit', $this->translate->_("Sin interés"), "2"],
-            "CI" => ['credit', $this->translate->_("Cuotas Comercio"), $this->translate->_("Número no definido")],
-            "VD" => ['debit', $this->translate->_("Débito"), "0"]
+            "VN" => ['credit', $this->translate->_("Crédito"), $this->translate->_("Sin Cuotas"), "0"],
+            "VC" => ['credit', $this->translate->_("Crédito"), $this->translate->_("Cuotas normales"), "4-48"],
+            "SI" => ['credit', $this->translate->_("Crédito"), $this->translate->_("Sin interés"), "3"],
+            "S2" => ['credit', $this->translate->_("Crédito"),  $this->translate->_("Sin interés"), "2"],
+            "CI" => ['credit', $this->translate->_("Crédito"), $this->translate->_("Cuotas Comercio"), $this->translate->_("Número no definido")],
+            "VD" => ['debit', $this->translate->_("Redcompra"), $this->translate->_("Débito"), "0"]
         ];
     }
 
@@ -433,7 +433,7 @@ trait KccManager
                 $params["TBK_TIPO_PAGO"] = $this->paymentTypes[$type];
                 //caso especial para cuotas VC
                 if($type == "VC")
-                    $params["TBK_TIPO_PAGO"][2] = $params["TBK_NUMERO_CUOTAS"];
+                    $params["TBK_TIPO_PAGO"][3] = $params["TBK_NUMERO_CUOTAS"];
             }
 
             return $params;

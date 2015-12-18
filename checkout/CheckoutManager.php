@@ -422,9 +422,9 @@ trait CheckoutManager
         //get form data
         $data = $this->_handleRequestParams([
             "handlerUri"    => "string",  //post payment handler URI
-            "checkoutUri"   => "string",  //checkout URI
             "gateway"       => "string",  //checkout payment gateway
             "category"      => "array",   //the category parent refence
+            "@checkoutUri"  => "string",  //checkout URI
             "@invoiceEmail" => "string"   //optional, custom validation
         ]);
 

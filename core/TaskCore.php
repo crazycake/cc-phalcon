@@ -57,11 +57,11 @@ class TaskCore extends Task
 
             //catcher adapter
             $cacher = new \CrazyCake\Services\Cacher('redis');
-            //get data from cache
-            $data = $cacher->get($params[0]);
+            //get data from cache json-undecoded
+            $data = $cacher->get($params[0], false);
 
             //outputs value
-            echo json_encode($data);
+            echo $data;
         }
         catch (Exception $e) {
             //outputs error
