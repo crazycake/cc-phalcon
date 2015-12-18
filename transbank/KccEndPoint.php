@@ -110,7 +110,7 @@ class KccEndPoint
         if(empty($output_cli))
             $this->setOutput(false, "Cache key no encontrada: ".print_r($output_cli, true));
 
-        // process CLI output data
+        // parse CLI output data
         $checkout = json_decode($output_cli[0]);
 
         //2) buyOrder validation
@@ -121,15 +121,11 @@ class KccEndPoint
         if($TBK_MONTO != $checkout->amountFormatted)
             $this->setOutput(false, "El monto es distinto de TBK_MONTO.");
 
-        //4) checks for buy orders duplicity, validates checkout state.
-        if($checkout->state != "pending")
-            $this->setOutput(false, "El estado de la orden es distinto de 'pending'.");
-
-        //5) checks MAC CGI response
+        //4) checks MAC CGI response
         if(empty($output_cgi) || $output_cgi[0] != "CORRECTO")
             $this->setOutput(false, "CGI MAC entegó un output distinto a 'CORRECTO' -> ".$output_cgi[0]);
 
-        //6) OK, all validations passed process succesful Checkout
+        //5) OK, all validations passed process succesful Checkout
         $this->onSuccessTrx($checkout);
 
         //OK, redirect...
@@ -193,7 +189,7 @@ class KccEndPoint
         $url = $checkout->handlerUrl;
 
         //log call (debug)
-        $this->logOutput("async-request: ".$url[0]." -> ".$url[1]." \n");
+        $this->logOutput("OnSuccessTrx async-request: ".$url[0]." -> ".$url[1]);
 
         //set sending data
         $sending_data = $di->getShared('cryptify')->encryptForGetRequest($session_key);

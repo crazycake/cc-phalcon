@@ -200,6 +200,10 @@ abstract class AppLoader
             $application = new \Phalcon\Mvc\Application($this->di);
             $output = $application->handle()->getContent();
 
+            //return output if argv is true
+            if($argv)
+                return $output;
+
             //Handle the request
             if(APP_ENVIRONMENT !== 'local')
                 ob_start(array($this,"_minifyHTML")); //call function

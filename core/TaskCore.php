@@ -25,6 +25,7 @@ class TaskCore extends Task
         $this->_colorize("Usage: \ncli.php main [param]", "OK");
         $this->_colorize("Valid params:", "WARNING");
         $this->_colorize("appConfig -> Outputs app configuration in JSON format", "WARNING");
+        $this->_colorize("getCache [key] -> gets stored data in Cache (Redis default)", "WARNING");
     }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
@@ -40,6 +41,32 @@ class TaskCore extends Task
             echo json_encode($this->config, JSON_UNESCAPED_SLASHES);
         else
             echo json_encode($this->config->{$params[0]}, JSON_UNESCAPED_SLASHES);
+    }
+
+    /**
+     * Gets cached data set by Cacher library.
+     * @param array $params The input params
+     * @return string
+     */
+    public function getCacheAction($params = array())
+    {
+        if(empty($params))
+            $this->_colorize("Empty key parameter", "ERROR", true);
+
+        try {
+
+            //catcher adapter
+            $cacher = new \CrazyCake\Services\Cacher('redis');
+            //get data from cache
+            $data = $cacher->get($params[0]);
+
+            //outputs value
+            echo json_encode($data);
+        }
+        catch (Exception $e) {
+            //outputs error
+            die("CLI TaskCore -> Error retrieving cached data for: ".$params[0].", err: ".$e->getMessage());
+        }
     }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */

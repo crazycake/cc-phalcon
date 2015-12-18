@@ -114,7 +114,6 @@ trait KccManager
     }
 
     /**
-     * Called from the CLI (xt_compra.php)
      * This action is called before the success page and process the succeful checkout
      * Este metodo es invocado antes de la redirección de Transbank [ACEPTADO ó RECHAZADO]
      * @param string $encrypted_data The encrypted data
@@ -137,7 +136,7 @@ trait KccManager
 
             //checks session id
             if(!$checkout)
-                throw new Exception("Invalid cache for TBK_ID_SESION: ".$session_key);
+                throw new Exception("Invalid cache for TBK_ID_SESION: ".$session_key." ($encrypted_data)");
 
             //parse transbank MAC file
             $params = $this->_parseMacFile($session_key);
@@ -207,6 +206,8 @@ trait KccManager
             //model classes
             $users_checkouts_class        = $this->_getModuleClass('users_checkouts');
             $users_checkout_objects_class = $this->_getModuleClass('users_checkouts_objects');
+            //trx model class
+            $trx_model = $this->_getModuleClass('users_checkouts_trx');
 
             //instance cache lib and get data
             $session_key = $users_checkouts_class::getCheckoutSessionKey($data["TBK_ORDEN_COMPRA"]);
@@ -231,7 +232,7 @@ trait KccManager
             $checkout->trx = $trx_model::findFirstByBuyOrder($checkout->buyOrder);
 
             if(!$checkout->trx)
-                throw new Exception("No processed TRX found for ID:".$checkoutOrm->session_key.", BO: ".$checkout->buyOrder);
+                throw new Exception("No processed TRX found for ID: ".$checkoutOrm->session_key.", BO: ".$checkout->buyOrder);
 
             //get checkout objects
             $checkout->objects = $users_checkout_objects_class::getCheckoutObjects($checkout->buyOrder);
