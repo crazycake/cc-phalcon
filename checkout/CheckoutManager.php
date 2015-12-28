@@ -398,16 +398,18 @@ trait CheckoutManager
         }
 
         //load JS modules
-        $module_name = $this->checkoutConfig["js_module_name"];
+        $js_modules = $this->checkoutConfig["js_modules"];
 
-        $this->_loadJavascriptModules([
-            "$module_name" => [
+        $this->_loadJavascriptModules(array_merge([
+            "$js_modules[0]" => [
                 "checkoutType"  => $checkoutType,
                 "checkoutMax"   => $checkoutMax,
                 "objects"       => $objectsJs,
                 "objectsClass"  => $objectsClass
             ]
-        ]);
+        ],
+            count($js_modules) > 1 ? array_slice($js_modules, 1) : []
+        ));
 
         //pick view
         $this->view->pick("checkout/$view");
