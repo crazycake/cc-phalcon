@@ -152,7 +152,10 @@ trait FacebookActions
             throw $exception;
 
         //if failed more than once, throw exception
-        return empty($attempt) ? $this->publish(null, $object, $payload, 1) : false;
+        if(empty($attempt))
+            $this->publish(null, $object, $payload, 1);
+        else
+            throw $exception;
     }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */

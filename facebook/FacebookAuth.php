@@ -16,6 +16,7 @@ use Facebook\FacebookSession;
 use Facebook\FacebookRequest;
 use Facebook\Helpers\FacebookJavaScriptHelper;
 use Facebook\Exceptions\FacebookSDKException;
+use Facebook\Exceptions\FacebookResponseException;
 //CrazyCake Utils
 use CrazyCake\Utils\DateHelper;
 
@@ -32,7 +33,7 @@ trait FacebookAuth
     /**
      * Listener - On settings Login Redirection
      */
-    abstract public function onSettingsLoginRedirection();
+    abstract public function onProfileLoginRedirection();
 
     /**
      * Config var
@@ -77,33 +78,49 @@ trait FacebookAuth
         //validate and filter request params data, second params are the required fields
         $data = $this->_handleRequestParams([
             'signed_request' => 'string',
-            '@user_data'     => 'int'
+            '@user_data'     => 'int',
+            '@check_perms'   => 'string'
         ]);
 
         try {
 
             //check signed request
             if(!$this->__parseSignedRequest($data['signed_request']))
-                $this->_sendJsonResponse(405);
+                return $this->_sendJsonResponse(405);
 
             //call js helper
             $helper = $this->fb->getJavaScriptHelper();
+            $fac    = $helper->getAccessToken();
             //handle login
-            $response = $this->__loginUserFacebook($helper->getAccessToken());
+            $response = $this->__loginUserFacebook($fac);
+
+            //check perms
+            if(isset($data["check_perms"]) && $data["check_perms"])
+                $response["properties"]["perms"] = $this->getAccesTokenPermissions($fac, 0, $data["check_perms"]);
 
             //handle response
-            if(isset($data["user_data"]))
-                $this->_sendJsonResponse(200, $response["properties"]);
+            if(isset($data["user_data"]) && $data["user_data"])
+                return $this->_sendJsonResponse(200, $response["properties"]);
             else
-                $this->_handleResponseOnLoggedIn(); //must be implemented
+                return $this->_handleResponseOnLoggedIn(); //must be implemented
         }
-        catch(Exception $e) {
-            $this->_sendJsonResponse(200, $e->getMessage(), true);
-        }
+        catch (FacebookResponseException $e) { $exception = $e; }
+        catch (FacebookSDKException $e)      { $exception = $e; }
+        catch (Exception $e)                 { $exception = $e; }
+        catch (\Exception $e)                { $exception = $e; }
+
+        //an exception ocurred
+        $msg = isset($exception) ? $exception->getMessage() : $this->fbConfig['trans']['oauth_redirected'];
+
+        if ($exception instanceof FacebookResponseException)
+            $msg = $this->fbConfig['trans']['oauth_perms'];
+
+        return $this->_sendJsonResponse(200, $msg, true);
     }
 
     /**
      * Handler View - Login by redirect action via facebook login URL
+     * @param string $requested_uri - Act as key
      * @return json response
      */
     public function loginByRedirectAction($requested_uri = "")
@@ -116,8 +133,8 @@ trait FacebookAuth
             $response = $this->__loginUserFacebook($helper->getAccessToken());
 
             //authenticated in settings controller
-            if($requested_uri == md5($this->fbConfig['settings_uri']))
-                $this->onSettingsLoginRedirection();
+            if($requested_uri == md5($this->fbConfig['profile_uri']))
+                $this->onProfileLoginRedirection();
 
             //handle response, must be implemented
             $this->_handleResponseOnLoggedIn();
@@ -180,9 +197,10 @@ trait FacebookAuth
             //send JSON response with payload
             return $this->_sendJsonResponse(200, ["fb_id" => $user_fb->id]);
         }
-        catch (FacebookSDKException $e) { $exception = $e; }
-        catch (Exception $e)            { $exception = $e; }
-        catch (\Exception $e)           { $exception = $e; }
+        catch (FacebookResponseException $e) { $exception = $e; }
+        catch (FacebookSDKException $e)      { $exception = $e; }
+        catch (Exception $e)                 { $exception = $e; }
+        catch (\Exception $e)                { $exception = $e; }
 
         //exception
         $this->logger->error("Facebook::extendAccessToken -> Exception: ".$exception->getMessage().". fb_id: ".(isset($user_fb->id) ? $user_fb->id : "unknown"));
@@ -212,31 +230,95 @@ trait FacebookAuth
         $this->__setUserAccessToken($fac, $user_id);
 
         // Get the graph-user object for the current user (validation)
-        $response = $this->fb->get('/me?fields=email,name,first_name,last_name,birthday,gender');
+        try {
+            $response = $this->fb->get('/me?fields=email,name,first_name,last_name,birthday,gender');
 
-        if(!$response)
-            throw new Exception("Invalid facebook data from /me?fields= request.");
+            if(!$response)
+                throw new Exception("Invalid facebook data from /me?fields= request.");
 
-        //parse user fb session properties
-        $fb_data    = $response->getGraphNode();
-        $properties = array();
+            //parse user fb session properties
+            $fb_data    = $response->getGraphNode();
+            $properties = array();
 
-        //parse from array (Javascript SDK)
-        $properties['fb_id']      = $fb_data->getField('id');
-        $properties['email']      = strtolower($fb_data->getField('email'));
-        $properties['first_name'] = $fb_data->getField('first_name');
-        $properties['last_name']  = $fb_data->getField('last_name');
-        //birthday
-        $birthday = $fb_data->getField('birthday');
-        $properties['birthday'] = is_object($birthday) ? $birthday->format("Y-m-d") : null;
-        //get gender
-        $gender = $fb_data->getField('gender');
-        $properties['gender'] = $gender ? $gender : 'undefined';
+            //parse from array (Javascript SDK)
+            $properties['fb_id']      = $fb_data->getField('id');
+            $properties['email']      = strtolower($fb_data->getField('email'));
+            $properties['first_name'] = $fb_data->getField('first_name');
+            $properties['last_name']  = $fb_data->getField('last_name');
+            //birthday
+            $birthday = $fb_data->getField('birthday');
+            $properties['birthday'] = is_object($birthday) ? $birthday->format("Y-m-d") : null;
+            //get gender
+            $gender = $fb_data->getField('gender');
+            $properties['gender'] = $gender ? $gender : 'undefined';
 
-        if(empty($properties))
-            throw new Exception("Invalid facebook parsed properties.");
+            if(empty($properties))
+                throw new Exception("Invalid facebook parsed properties.");
 
-        return $properties;
+            return $properties;
+        }
+        catch (FacebookResponseException $e) { $exception = $e; }
+        catch (FacebookSDKException $e)      { $exception = $e; }
+        catch (Exception $e)                 { $exception = $e; }
+        catch (\Exception $e)                { $exception = $e; }
+
+        //log exception
+        $this->logger->error("Facebook::getUserData -> Exception: ".$exception->getMessage().", userID: $user_id ");
+        return null;
+    }
+
+    /**
+     * Get Access Token permissions
+     * @param object $fac The facebook access token
+     * @param int $user_id The user id
+     * @param mixed[boolean, string, array] $scope If set validates also the granted perms
+     * @return array
+     */
+    public function getAccesTokenPermissions($fac = null, $user_id = 0, $scope = false)
+    {
+        //get session using short access token or with saved access token
+        $this->__setUserAccessToken($fac, $user_id);
+
+        try {
+            $this->logger->debug("Facebook::getAccesTokenPermissions -> checking fac perms for userID: $user_id,  scope: ".json_encode($scope));
+
+            $response = $this->fb->get('/me/permissions');
+
+            if(!$response)
+                throw new Exception("Invalid facebook data from /me/permissions request.");
+
+            //parse user fb session properties
+            $fb_data = $response->getDecodedBody();
+
+            if(!isset($fb_data["data"]) || empty($fb_data["data"]))
+                throw new Exception("Invalid facebook data from /me/permissions request.");
+
+            //get perms array
+            $perms = $fb_data["data"];
+
+            //validate scope permissions
+            if($scope) {
+
+                $scope = is_array($scope) ? $scope : explode(',', $scope);
+
+                foreach ($perms as $p) {
+
+                    //validates permission
+                    if(in_array($p["permission"], $scope) && (!isset($p["status"]) || $p["status"] != "granted"))
+                        throw new Exception("Facebook perm ".$p["permission"]." is not granted");
+                }
+            }
+
+            return $perms;
+        }
+        catch (FacebookResponseException $e) { $exception = $e; }
+        catch (FacebookSDKException $e)      { $exception = $e; }
+        catch (Exception $e)                 { $exception = $e; }
+        catch (\Exception $e)                { $exception = $e; }
+
+        //log exception
+        $this->logger->debug("Facebook::getAccesTokenPermissions -> Exception: ".$exception->getMessage().", userID: $user_id ");
+        return null;
     }
 
     /**
@@ -257,6 +339,7 @@ trait FacebookAuth
 
     /**
      * GetFacebookLogin URL
+     * Requested uri is a simple hash param
      * @return string
      */
     public function loadFacebookLoginURL()
@@ -362,9 +445,10 @@ trait FacebookAuth
                 true
             );
         }
-        catch (FacebookSDKException $e) { $exception = $e; }
-        catch (Exception $e)            { $exception = $e; }
-        catch (\Exception $e)           { $exception = $e; }
+        catch (FacebookResponseException $e) { $exception = $e; }
+        catch (FacebookSDKException $e)      { $exception = $e; }
+        catch (Exception $e)                 { $exception = $e; }
+        catch (\Exception $e)                { $exception = $e; }
         //throw one exception type
         if ($exception){
             $this->logger->error("Facebook::__loginUserFacebook -> Exception: ".$exception->getMessage().". fb_id: ".(isset($user_fb) ? $user_fb->id : "unknown"));
