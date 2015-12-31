@@ -334,7 +334,10 @@ trait FacebookAuth
         //get user & update properties
         $user_fb = $users_facebook_class::getFacebookDataByUserId($user_id);
 
-        return $user_fb->update(['publish_perm' => $perm]);
+        if(isset($user_fb->publish_perm))
+            $user_fb->update(['publish_perm' => (int)$perm]);
+
+        return $perm;
     }
 
     /**
