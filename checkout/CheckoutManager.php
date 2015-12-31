@@ -126,7 +126,7 @@ trait CheckoutManager
             // send JSON response
             $this->_sendJsonResponse(200, $payload);
         }
-        catch (Exception $e) { $exception = $e->getMessage(); }
+        catch (Exception $e)  { $exception = $e->getMessage(); }
         catch (\Exception $e) { $exception = $e->getMessage(); }
         //sends an error message
         $this->_sendJsonResponse(200, $exception, 'alert');
@@ -452,6 +452,7 @@ trait CheckoutManager
         $checkout->coin         = $this->checkoutConfig["default_coin"];
         $checkout->objects      = [];
         $checkout->amount       = 0;
+        $checkout->timestamp    = date('Y-m-d H:i:s');
 
         //temp vars
         $totalQ  = 0;
