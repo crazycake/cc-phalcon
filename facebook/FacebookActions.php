@@ -148,7 +148,7 @@ trait FacebookActions
         $this->logger->error("FacebookActions::publishAction -> Failed action facebook UserId: ".(is_null($user_fb) ? "null" : $user_fb->id).". Exception: ".$exception->getMessage());
 
         //only photo has fallback
-        if($action != "photo")
+        if($payload["action"] != "photo")
             throw $exception;
 
         //if failed more than once, throw exception
