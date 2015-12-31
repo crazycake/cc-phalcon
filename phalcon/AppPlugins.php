@@ -7,8 +7,6 @@
 
 namespace CrazyCake\Phalcon;
 
-use Phalcon\Exception;
-
 /**
  * Class for MVC module that hanldes Phalcon Exceptions.
  */
@@ -30,7 +28,7 @@ class ExceptionsPlugin extends \Phalcon\Mvc\User\Plugin
 	 * @param Exception $exception
 	 * @return boolean
 	 */
-	public function beforeException(\Phalcon\Events\Event $event, \Phalcon\Mvc\Dispatcher $dispatcher, Exception $exception)
+	public function beforeException(\Phalcon\Events\Event $event, \Phalcon\Mvc\Dispatcher $dispatcher, \Exception $exception)
 	{
 		//log error
 		$di = $dispatcher->getDI();
@@ -60,7 +58,7 @@ class ExceptionsPlugin extends \Phalcon\Mvc\User\Plugin
 
 			//log error?
 			if($logError)
-				$di->getShared('logger')->error("PhalconPHP Error -> Exception: ".$exception->getMessage());
+				$di->getShared('logger')->error("PhalconPHP Error:".$exception->getMessage().". File: ".$exception->getFile().". Line: ".$exception->getLine()."</h1>");
 
 			//forward
 			$dispatcher->forward($forwardTo);
@@ -68,7 +66,7 @@ class ExceptionsPlugin extends \Phalcon\Mvc\User\Plugin
 		}
 
 		if(APP_ENVIRONMENT !== 'production')
-			die("<h1>Oops Phalcon Error (dev mode)</h1><pre>".$exception->getMessage()."</pre>");
+			die("Hey! PhalconPHP Error:".$exception->getMessage().". File: ".$exception->getFile().". Line: ".$exception->getLine());
 
 		//log error
 		$di->getShared('logger')->error("PhalconPHP Error -> Exception: ".$exception->getMessage());
