@@ -33,7 +33,7 @@ trait FacebookAuth
     /**
      * Listener - On settings Login Redirection
      */
-    abstract public function onProfileLoginRedirection();
+    abstract public function onSuccessAuthRedirection($handler_uri = '');
 
     /**
      * Config var
@@ -120,34 +120,39 @@ trait FacebookAuth
 
     /**
      * Handler View - Login by redirect action via facebook login URL
-     * @param string $requested_uri - Act as key
+     * @param string $key - Act as key
      * @return json response
      */
-    public function loginByRedirectAction($requested_uri = "")
+    public function loginByRedirectAction($encrypted_data = "")
     {
         try {
             //get helper object
             $helper = $this->fb->getRedirectLoginHelper();
-
             //handle login
             $response = $this->__loginUserFacebook($helper->getAccessToken());
+            //get decrypted params
+            $params = $this->cryptify->decryptForGetResponse($encrypted_data, true);
 
-            //authenticated in settings controller
-            if($requested_uri == md5($this->fbConfig['profile_uri']))
-                $this->onProfileLoginRedirection();
+            //get data
+            if(!empty($params->handler_uri))
+                return $this->onSuccessAuthRedirection($params->handler_uri);
 
             //handle response, must be implemented
-            $this->_handleResponseOnLoggedIn();
+            return $this->_handleResponseOnLoggedIn();
         }
-        catch(Exception $e) {
+        catch (FacebookResponseException $e) { $exception = $e; }
+        catch (FacebookSDKException $e)      { $exception = $e; }
+        catch (Exception $e)                 { $exception = $e; }
+        catch (\Exception $e)                { $exception = $e; }
 
-            $this->logger->error("Facebook::loginByRedirectAction -> An error ocurred: ".$e->getMessage());
-            //set message
-            $this->view->setVar("error_message", $this->fbConfig['trans']['oauth_redirected']);
-            $this->dispatcher->forward(["controller" => "errors", "action" => "internal"]);
+        $this->logger->error("Facebook::loginByRedirectAction -> An error ocurred: ".$exception->getMessage());
 
-            $this->_sendJsonResponse(200, $e->getMessage(), true);
-        }
+        if($this->request->isAjax())
+            return $this->_sendJsonResponse(200, $exception->getMessage(), true);
+
+        //set message
+        $this->view->setVar("error_message", $this->fbConfig['trans']['oauth_redirected']);
+        $this->dispatcher->forward(["controller" => "errors", "action" => "internal"]);
     }
 
     /**
@@ -343,14 +348,26 @@ trait FacebookAuth
     /**
      * GetFacebookLogin URL
      * Requested uri is a simple hash param
+     * @param mixed [boolean,string] $handler_uri - Custom handler uri
      * @return string
      */
-    public function loadFacebookLoginURL()
+    public function loadFacebookLoginURL($handler_uri = false)
     {
+        if(!$handler_uri)
+            $handler_uri = "0";
+        else
+            $handler_uri = is_string($handler_uri) ? $handler_uri : $this->_getRequestedUri();
+
         //append request uri as hashed string
-        $requested_uri = md5($this->_getRequestedUri());
-        $callback      = $this->_baseUrl("facebook/loginByRedirect/".$requested_uri);
-        $scope         = explode(",", $this->config->app->facebook->appScope);
+        $params = [
+            "handler_uri" => $handler_uri
+        ];
+
+        //encrypt data
+        $params = $this->cryptify->encryptForGetRequest($params);
+
+        $callback = $this->_baseUrl("facebook/loginByRedirect/".$params);
+        $scope    = explode(",", $this->config->app->facebook->appScope);
 
         //set helper
         $helper = $this->fb->getRedirectLoginHelper();
