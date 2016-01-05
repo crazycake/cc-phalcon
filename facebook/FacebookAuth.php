@@ -257,7 +257,7 @@ trait FacebookAuth
                 throw new Exception("App permissions not granted");
 
             $users_facebook_class = $this->_getModuleClass('users_facebook');
-
+            //get orm
             $user_fb = $users_facebook_class::getObjectById($fb_data['fb_id']);
 
             //check publish perms

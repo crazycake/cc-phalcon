@@ -61,12 +61,10 @@ trait AccountManager
             '@pass'          => 'string'
         );
 
-        //get user data
-        $user_session = $this->_getUserSessionData();
         //get model class name
         $users_class = $this->_getModuleClass('users');
         //get user
-        $user = $users_class::getObjectById($user_session['id']);
+        $user = $users_class::getObjectById($this->user_session['id']);
         //validate user
         if(!$user)
             $this->_sendJsonResponse(404);
