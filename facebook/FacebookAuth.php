@@ -33,7 +33,7 @@ trait FacebookAuth
     /**
      * Listener - On settings Login Redirection
      */
-    abstract public function onSuccessAuthRedirection($route = null, $response = null);
+    abstract public function onSuccessAuth(&$route, $response = null);
     abstract public function onAppDeauthorized($fb_user = null);
 
     /**
@@ -98,6 +98,16 @@ trait FacebookAuth
             if(isset($data["check_perms"]) && $data["check_perms"])
                 $response["perms"] = $this->__getAccesTokenPermissions($fac, 0, $data["check_perms"]);
 
+            //route object
+            $route = (object)[
+                "controller" => $this->router->getControllerName(),
+                "action"     => $this->router->getActionName(),
+                "strategy"   => "js"
+            ];
+
+            //call listener
+            $this->onSuccessAuth($route, $response);
+
             //handle response, session controller
             if(isset($data["user_data"]) && $data["user_data"])
                 return $this->_handleResponseOnLoggedIn(null, $response, false);
@@ -139,12 +149,13 @@ trait FacebookAuth
             if(isset($route->check_perms) && !empty($route->check_perms))
                 $response["perms"] = $this->__getAccesTokenPermissions($fac, 0, $route->check_perms);
 
+            //call listener
+            $this->onSuccessAuth($route, $response);
+
             //handle response automatically
             if(empty($route->controller))
                 return $this->_handleResponseOnLoggedIn();
 
-            //call listener for manually handlers
-            $this->onSuccessAuthRedirection($route, $response);
             //Redirect
             $uri = $route->controller."/".$route->action."/".(empty($route->params) ? "" : implode("/", $route->params));
             return $this->_redirectTo($uri);
@@ -179,6 +190,7 @@ trait FacebookAuth
             "controller"  => isset($route["controller"]) ? $route["controller"] : null,
             "action"      => isset($route["action"]) ? $route["action"] : null,
             "params"      => isset($route["params"]) ? $route["params"] : null,
+            "strategy"    => "redirection",
             "check_perms" => $check_perms ? $scope : false
         ];
 
@@ -536,7 +548,7 @@ trait FacebookAuth
 
         //log exception
         $this->logger->debug("Facebook::__getAccesTokenPermissions -> Exception: ".$exception->getMessage().", userID: $user_id ");
-        return null;
+        return [];
     }
 
     /**
