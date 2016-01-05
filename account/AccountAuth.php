@@ -187,12 +187,12 @@ trait AccountAuth
      */
     public function registerAction()
     {
-        $default_params = array(
+        $default_params = [
             'email'      => 'email',
             'pass'       => 'string',
             'first_name' => 'string',
             'last_name'  => 'string'
-        );
+        ];
 
         $setting_params = isset($this->accountConfig['profile_request_params']) ? $this->accountConfig['profile_request_params'] : array();
 
@@ -226,7 +226,8 @@ trait AccountAuth
         $this->flash->success(str_replace("{email}", $user->email, $this->accountConfig['trans']['activation_pending']));
         //send activation account email
         $this->_sendMailMessage($this->accountConfig['method_mailer_activation'], $user->id);
-        $this->_handleResponseOnLoggedIn("signIn", false);
+        //force redirection
+        $this->_handleResponseOnLoggedIn("signIn", null, false);
     }
 
     /**

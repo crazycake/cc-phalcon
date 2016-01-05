@@ -145,27 +145,26 @@ trait AccountSession
 
     /**
      * Handles response on logged in event, check for pending redirection
-     * Defaults uri us Account
+     * Defaults uri => account
      * @param string $uri The URI to redirect after loggedIn
-     * @param boolean $auth_redirect Flag to check session auth redirection
+     * @param array $payload Sends a payload response instead of redirection (optional)
+     * @param boolean $auth_redirect Flag to check session auth redirection (optional)
      * TODO set default uri as param config
      */
-    protected function _handleResponseOnLoggedIn($uri = "account", $auth_redirect = true)
+    protected function _handleResponseOnLoggedIn($uri = "account", $payload = null, $auth_redirect = true)
     {
-        $key = "auth_redirect";
-
         //check if redirection is set in session
-        if($auth_redirect && $this->session->has($key)) {
-            $uri = $this->session->get($key);
-            $this->session->remove($key);
+        if($auth_redirect && $this->session->has("auth_redirect")) {
+            //get redirection uri from session
+            $uri = $this->session->get("auth_redirect");
+            //remove from session
+            $this->session->remove("auth_redirect");
         }
 
         //check for ajax request
         if($this->request->isAjax()) {
-            //redirection
-            $payload = ["redirectUri" => $uri];
             //send JSON response
-            $this->_sendJsonResponse(200, $payload);
+            $this->_sendJsonResponse(200, empty($payload) ? ["redirectUri" => $uri] : $payload);
         }
         else {
             //for non ajax request
