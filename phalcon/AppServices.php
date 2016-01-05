@@ -282,6 +282,16 @@ class AppServices
             return $view;
         });
 
+        //Cookies
+        $di->setShared('cookies', function() {
+
+            $cookies = new \Phalcon\Http\Response\Cookies();
+            //no encryption
+            $cookies->useEncryption(false);
+
+            return $cookies;
+        });
+
         //Flash messages
         $di->setShared('flash', function() {
             $flash = new \Phalcon\Flash\Session([
