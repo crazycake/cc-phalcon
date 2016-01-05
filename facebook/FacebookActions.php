@@ -101,9 +101,6 @@ trait FacebookActions
         //if user dont have a linked FB account.
         if(is_null($user_fb) || is_null($user_fb->fac))
             $fallbackAction = true;
-        //check publish perms in our app
-        else if(!is_null($user_fb) && empty($user_fb->publish_perm))
-            $fallbackAction = true;
         //agent type
         else if(!is_null($payload["type"]) && $payload["type"] != "parent")
             $fallbackAction = true;

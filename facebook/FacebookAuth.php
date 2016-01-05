@@ -33,7 +33,7 @@ trait FacebookAuth
     /**
      * Listener - On settings Login Redirection
      */
-    abstract public function onSuccessAuthRedirection($handler_uri = '', $response = null);
+    abstract public function onSuccessAuthRedirection($route = null, $response = null);
     abstract public function onAppDeauthorized($fb_user = null);
 
     /**
@@ -84,7 +84,6 @@ trait FacebookAuth
         ]);
 
         try {
-
             //check signed request
             if(!$this->__parseSignedRequest($data['signed_request']))
                 return $this->_sendJsonResponse(405);
@@ -120,8 +119,8 @@ trait FacebookAuth
     }
 
     /**
-     * Handler View - Login by redirect action via facebook login URL
-     * @param string $key - Act as key
+     * Handler - Login by redirect action via facebook login URL
+     * @param string $encrypted_data - Encrypted data
      * @return json response
      */
     public function loginByRedirectAction($encrypted_data = "")
@@ -134,18 +133,21 @@ trait FacebookAuth
             $response = $this->__loginUserFacebook($fac);
 
             //get decrypted params
-            $params = $this->cryptify->decryptForGetResponse($encrypted_data, true);
+            $route = $this->cryptify->decryptForGetResponse($encrypted_data, true);
 
             //check perms
-            if(isset($params->check_perms) && $params->check_perms)
-                $response["perms"] = $this->__getAccesTokenPermissions($fac, 0, $params->check_perms);
+            if(isset($route->check_perms) && !empty($route->check_perms))
+                $response["perms"] = $this->__getAccesTokenPermissions($fac, 0, $route->check_perms);
 
-            //handle response manually
-            if(!empty($params->handler_uri))
-                return $this->onSuccessAuthRedirection($params->handler_uri, $response);
+            //handle response automatically
+            if(empty($route->controller))
+                return $this->_handleResponseOnLoggedIn();
 
-            //handle response, session controller
-            return $this->_handleResponseOnLoggedIn();
+            //call listener for manually handlers
+            $this->onSuccessAuthRedirection($route, $response);
+            //Redirect
+            $uri = $route->controller."/".$route->action."/".(empty($route->params) ? "" : implode("/", $route->params));
+            return $this->_redirectTo($uri);
         }
         catch (FacebookResponseException $e) { $exception = $e; }
         catch (FacebookSDKException $e)      { $exception = $e; }
@@ -160,6 +162,36 @@ trait FacebookAuth
         //set message
         $this->view->setVar("error_message", $this->fbConfig['trans']['oauth_redirected']);
         $this->dispatcher->forward(["controller" => "errors", "action" => "internal"]);
+    }
+
+    /**
+     * GetFacebookLogin URL
+     * Requested uri is a simple hash param
+     * @param array $route - Custom Route (optional)
+     * @param boolean $check_perms - Validates access token app scope permissions
+     * @return string
+     */
+    public function loadFacebookLoginURL($route = array(), $check_perms = false)
+    {
+        //append request uri as hashed string
+        $scope  = $this->config->app->facebook->appScope;
+        $params = [
+            "controller"  => isset($route["controller"]) ? $route["controller"] : null,
+            "action"      => isset($route["action"]) ? $route["action"] : null,
+            "params"      => isset($route["params"]) ? $route["params"] : null,
+            "check_perms" => $check_perms ? $scope : false
+        ];
+
+        //encrypt data
+        $params = $this->cryptify->encryptForGetRequest($params);
+        //set callback
+        $callback = $this->_baseUrl("facebook/loginByRedirect/".$params);
+        //set helper
+        $helper = $this->fb->getRedirectLoginHelper();
+        //get the url
+        $url = $helper->getLoginUrl($callback, explode(",", $scope));
+        //set property to config
+        $this->config->app->facebook->loginUrl = $url;
     }
 
     /**
@@ -220,7 +252,7 @@ trait FacebookAuth
     }
 
     /**
-     * Handler - Deauthorize a facebook user
+     * WebHook - Deauthorize a facebook user
      * @return mixed (boolean|array)
      */
     public function deauthorizeAction($signed_request = '')
@@ -237,7 +269,6 @@ trait FacebookAuth
     {
         //make sure is ajax request
         $this->_onlyAjax();
-
         //handle response, dispatch to auth/logout
         $this->_checkUserIsLoggedIn(true);
 
@@ -249,20 +280,11 @@ trait FacebookAuth
                 throw new Exception("Invalid Facebook Access Token");
 
             //validate permissions
-            $perms = $this->__getAccesTokenPermissions(null,
-                                                    $this->user_session['id'],
-                                                    $this->config->app->facebook->appScope);
+            $scope = $this->config->app->facebook->appScope;
+            $perms = $this->__getAccesTokenPermissions(null, $this->user_session['id'], $scope);
 
             if(!$perms)
                 throw new Exception("App permissions not granted");
-
-            $users_facebook_class = $this->_getModuleClass('users_facebook');
-            //get orm
-            $user_fb = $users_facebook_class::getObjectById($fb_data['fb_id']);
-
-            //check publish perms
-            if(empty($user_fb) || empty($user_fb->publish_perm))
-                throw new Exception("UsersFacebook publish permission disabled");
 
             //set payload
             $payload = ["status" => true, "fb_id" => $fb_data['fb_id']];
@@ -276,33 +298,24 @@ trait FacebookAuth
     }
 
     /**
-     * Ajax (POST) - set faceboook publish permission
+     * Ajax (POST) - unlinks a facebook user
      * Requires be logged In
      */
-    public function setUserPublishPermAction()
+    public function unlinkUserAction()
     {
         //make sure is ajax request
         $this->_onlyAjax();
-
         //handle response, dispatch to auth/logout
         $this->_checkUserIsLoggedIn(true);
-
-        //get post params
-        $data = $this->_handleRequestParams([
-            'perm' => 'int'
-        ]);
 
         //validate facebook user
         if(!$this->user_session['fb_id'])
             $this->_sendJsonResponse(404);
 
-        //update prop
-        $this->_setUserPublishPerm($this->user_session['id'], $data['perm']);
-
-        //set payload
-        $payload = ["status" => (boolean)$data['perm']];
+        //remove user
+        $this->_removeFacebookUser($this->user_session['id']);
         //send JSON response
-        $this->_sendJsonResponse(200, $payload);
+        $this->_sendJsonResponse(200);
     }
 
     /**
@@ -354,61 +367,7 @@ trait FacebookAuth
         return null;
     }
 
-    /**
-     * GetFacebookLogin URL
-     * Requested uri is a simple hash param
-     * @param mixed [boolean,string] $handler_uri - Custom handler uri
-     * @param boolean [boolean] $check_perms - Validates access token app scope permissions
-     * @return string
-     */
-    public function loadFacebookLoginURL($handler_uri = false, $check_perms = false)
-    {
-        if(!$handler_uri)
-            $handler_uri = "0";
-        else
-            $handler_uri = is_string($handler_uri) ? $handler_uri : $this->_getRequestedUri();
-
-        //append request uri as hashed string
-        $scope  = $this->config->app->facebook->appScope;
-        $params = [
-            "handler_uri" => $handler_uri,
-            "check_perms" => $check_perms ? $scope : false
-        ];
-
-        //encrypt data
-        $params = $this->cryptify->encryptForGetRequest($params);
-
-        $callback = $this->_baseUrl("facebook/loginByRedirect/".$params);
-
-        //set helper
-        $helper = $this->fb->getRedirectLoginHelper();
-        //get the url
-        $url = $helper->getLoginUrl($callback, explode(",", $scope));
-
-        //set property to config
-        $this->config->app->facebook->loginUrl = $url;
-    }
-
     /* --------------------------------------------------- § -------------------------------------------------------- */
-
-    /**
-     * Handler - Set user facebook publish perm
-     * @param int $user_id
-     * @param int $perm
-     * @return boolean
-     */
-    protected function _setUserPublishPerm($user_id, $perm = 1)
-    {
-        $users_facebook_class = $this->_getModuleClass('users_facebook');
-
-        //get user & update properties
-        $user_fb = $users_facebook_class::getFacebookDataByUserId($user_id);
-
-        if(isset($user_fb->publish_perm))
-            $user_fb->update(['publish_perm' => (int)$perm]);
-
-        return $perm;
-    }
 
     /**
      * Logins a User with facebook access token,
@@ -511,6 +470,19 @@ trait FacebookAuth
         $this->_setUserSessionAsLoggedIn($user->id);
 
         return $login_data;
+    }
+
+    /**
+     * Removes a facebook user
+     * @param int $user_id
+     */
+    protected function _removeFacebookUser($user_id = 0)
+    {
+        $users_facebook_class = $this->_getModuleClass('users_facebook');
+
+        //get user & update properties
+        $user_fb = $users_facebook_class::getFacebookDataByUserId($user_id);
+        $user_fb->delete();
     }
 
     /**

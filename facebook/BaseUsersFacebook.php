@@ -46,7 +46,7 @@ class BaseUsersFacebook extends \CrazyCake\Models\Base
         //Skips fields/columns on both INSERT/UPDATE operations
         $this->skipAttributes(['created_at']);
     }
-    
+
     /** ------------------------------------------- § ------------------------------------------------ **/
 
     /**

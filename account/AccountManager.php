@@ -128,6 +128,7 @@ trait AccountManager
 
             //update data?
             if(!empty($updating_data)) {
+                
                $user->update($updating_data);
                //update session data
                $this->_updateUserSessionData($updating_data);
