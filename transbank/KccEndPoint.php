@@ -98,9 +98,10 @@ class KccEndPoint extends AppCore
         if(!$checkout || $TBK_ORDEN_COMPRA != $checkout->buy_order)
             $this->setOutput(false, "Orden de compra es nulo o distinto de TBK_ORDEN_COMPRA ($TBK_ORDEN_COMPRA).");
 
+        $formattedAmount = ((int)$checkout->amount)."00";
         //3) amount validation (kcc format is appended)
-        if($TBK_MONTO != $checkout->amount."00")
-            $this->setOutput(false, "El monto es distinto de TBK_MONTO.");
+        if($TBK_MONTO != $formattedAmount)
+            $this->setOutput(false, "El monto es distinto de TBK_MONTO ($TBK_MONTO != $formattedAmount).");
 
         //4) checks MAC CGI response
         if(empty($output_cgi) || $output_cgi[0] != "CORRECTO")
@@ -159,7 +160,7 @@ class KccEndPoint extends AppCore
 
     /**
      * on success TRX event, sends Async Call
-     * @param string $buy_order The buy order
+     * @param object $checkout - The Checkout object
      */
     protected function onSuccessTrx($checkout)
     {
@@ -174,8 +175,8 @@ class KccEndPoint extends AppCore
         $this->logOutput("OnSuccessTrx async-request: ".$baseUrl." -> ".self::SUCCESS_URI_HANDLER);
 
         //set sending data
-        $sending_data = $di->getShared('cryptify')->encryptForGetRequest($buy_order);
+        $payload = $di->getShared('cryptify')->encryptForGetRequest($checkout->buy_order);
         //send async request
-        $this->_sendAsyncRequest($baseUrl, self::SUCCESS_URI_HANDLER, $sending_data);
+        $this->_sendAsyncRequest($baseUrl, self::SUCCESS_URI_HANDLER, $payload);
     }
 }
