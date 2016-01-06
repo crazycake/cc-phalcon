@@ -11,7 +11,6 @@ namespace CrazyCake\Transbank;
 //imports
 use Phalcon\Exception;
 //other imports
-use CrazyCake\Services\Cacher;
 use CrazyCake\Utils\DateHelper;
 use CrazyCake\Utils\FormHelper;
 
@@ -36,7 +35,6 @@ trait KccManager
 
     public static $MAC_FILE_PREFIX_NAME = "MAC01Normal_";
     public static $OUTPUTS_PATH         = "webpay/outputs/";
-    public static $SUCCES_TRX_URI       = "webpay/successTrx";
     public static $HANDLER_DEBUG_URI    = "checkout/skipPayment";
 
     /* properties */
@@ -54,21 +52,11 @@ trait KccManager
     public $paymentTypes;
 
     /**
-     * The cacher library
-     * @var object
-     */
-    protected $cacher;
-
-
-    /**
      * Initializer
      */
     protected function initialize()
     {
         parent::initialize();
-
-        //set catcher, adapter is required
-        $this->cacher = new Cacher('redis');
 
         //set payment types
         $this->paymentTypes = [
@@ -97,7 +85,7 @@ trait KccManager
             "TBK_URL_FRACASO"      => $this->_baseUrl($this->kccConfig['failedUri']),     //Failure page
             "TBK_TIPO_TRANSACCION" => "TR_NORMAL",
             //dynamic inputs
-            "TBK_ID_SESION"        => "",
+            "TBK_ID_SESION"        => sha1(uniqid().microtime()),
             "TBK_ORDEN_COMPRA"     => "",
             "TBK_MONTO"            => ""
         ];
@@ -125,39 +113,36 @@ trait KccManager
             $this->_redirectToNotFound();
 
         try {
-
+            //get users checkouts class
+            $users_checkouts_class = $this->_getModuleClass('users_checkouts');
             //trx model class
-            $trx_model = $this->_getModuleClass('users_checkouts_trx');
+            $checkout_trx_class = $this->_getModuleClass('users_checkouts_trx');
 
             //decrypt data
-            $session_key = $this->cryptify->decryptForGetResponse($encrypted_data);
-
-            //instance cache lib and get data
-            $checkout = $this->cacher->get($session_key);
+            $buy_order = $this->cryptify->decryptForGetResponse($encrypted_data);
+            //get checkout obejct
+            $checkout = $users_checkouts_class::getCheckout($buy_order);
 
             //checks session id
             if(!$checkout)
-                throw new Exception("Invalid cache for TBK_ID_SESION: ".$session_key." ($encrypted_data)");
+                throw new Exception("Checkout not found with Buy Order: $buy_order");
 
             //parse transbank MAC file
-            $params = $this->_parseMacFile($session_key);
+            $params = $this->_parseMacFile($buy_order);
 
             //check MAC file exists
-            if(!$params || $checkout->buyOrder != $params["TBK_ORDEN_COMPRA"])
-                throw new Exception("Invalid MAC file or buyOrders inconsistency. Session Key: ".$session_key);
+            if(!$params || $checkout->buy_order != $params["TBK_ORDEN_COMPRA"])
+                throw new Exception("Invalid MAC file or buyOrders inconsistency. Buy Order: $buy_order");
 
             //check if trx was already processed
-            if($trx_model::findFirstByBuyOrder($checkout->buyOrder))
-                throw new Exception("Transaction already processed for buy order: ".$checkout->buyOrder);
+            if($checkout_trx_class::findFirstByBuyOrder($checkout->buy_order))
+                throw new Exception("Transaction already processed for buy order: ".$checkout->buy_order);
 
             //create & save a new transaction
-            $trx = new $trx_model();
+            $trx = new $checkout_trx_class();
 
             if(!$trx->save($this->_parseKccTrx($params, $checkout)))
                 throw new Exception("Error saving transaction: ".$trx->filterMessages(true));
-
-            //force ORM data to be serializable
-            $checkout->trx = $trx_model::getObjectById($trx->id)->toArray();
 
             //call succes checkout and get checkout objects
             $checkout_controller = $this->_getModuleClass('checkout_controller');
@@ -170,7 +155,7 @@ trait KccManager
 
             $this->logger->error("KccManager::successTrxAction -> something occurred on Webpay Success Trx: ".$e->getMessage());
 
-            $buyOrder = isset($checkout) ? $checkout->buyOrder : "unknown";
+            $buyOrder = isset($checkout) ? $checkout->buy_order : "unknown";
 
             //NOTE: sending a warning to admin users!
             $mailerController = $this->_getModuleClass('mailer_controller');
@@ -206,37 +191,32 @@ trait KccManager
         try {
             //model classes
             $users_checkouts_class        = $this->_getModuleClass('users_checkouts');
-            $users_checkout_objects_class = $this->_getModuleClass('users_checkouts_objects');
-            //trx model class
-            $trx_model = $this->_getModuleClass('users_checkouts_trx');
+            $users_checkouts_objects_class = $this->_getModuleClass('users_checkouts_objects');
+            $checkout_trx_class           = $this->_getModuleClass('users_checkouts_trx');
 
-            //instance cache lib and get data
-            $session_key = $users_checkouts_class::getCheckoutSessionKey($data["TBK_ORDEN_COMPRA"]);
-            //instance cache lib and get data
-            $checkout    = $this->cacher->get($session_key);
-            $checkoutOrm = $users_checkouts_class::getCheckout($checkout->buyOrder);
+            //get checkout
+            $checkout = $users_checkouts_class::getCheckout($data["TBK_ORDEN_COMPRA"]);
 
-            //checks session id
             if(!$checkout)
                 throw new Exception("Checkout not found. TBK_ORDEN_COMPRA: ".$data["TBK_ORDEN_COMPRA"]);
 
-            if($checkoutOrm->session_key != $data['TBK_ID_SESION'])
-                throw new Exception("Invalid checkout session key (".$checkoutOrm->session_key ."). Input data ".json_encode($data));
+            //reduce checkout object
+            $checkout = $checkout->reduce();
 
             //parse transbank MAC file
-            $params = $this->_parseMacFile($checkoutOrm->session_key);
+            $params = $this->_parseMacFile($checkout->buy_order);
 
             if(!$params)
                 throw new Exception("Invalid checkout params. Input data ".json_encode($data));
 
             //get extend props
-            $checkout->trx = $trx_model::findFirstByBuyOrder($checkout->buyOrder);
+            $checkout->trx = $checkout_trx_class::findFirstByBuyOrder($checkout->buy_order);
 
             if(!$checkout->trx)
-                throw new Exception("No processed TRX found for ID: ".$checkoutOrm->session_key.", BO: ".$checkout->buyOrder);
+                throw new Exception("No processed TRX found for Buy Order: ".$checkout->buy_order);
 
             //get checkout objects
-            $checkout->objects = $users_checkout_objects_class::getCheckoutObjects($checkout->buyOrder);
+            $checkout->objects = $users_checkouts_objects_class::getCheckoutObjects($checkout->buy_order);
 
             //before render success page listener
             $this->onBeforeRenderSuccessPage($checkout);
@@ -271,17 +251,17 @@ trait KccManager
         $users_checkouts_class = $this->_getModuleClass('users_checkouts');
         $checkout_controller   = $this->_getModuleClass('checkout_controller');
 
-        //instance cache lib and get data
-        $session_key = $users_checkouts_class::getCheckoutSessionKey($data["TBK_ORDEN_COMPRA"]);
-        //instance cache lib and get data
-        $checkout = $this->cacher->get($session_key);
+        //get checkout
+        $checkout = $users_checkouts_class::getCheckout($data["TBK_ORDEN_COMPRA"]);
 
         //set checkout uri
         if($checkout) {
             //call failed checkout
             (new $checkout_controller())->failedCheckout($checkout);
+            //get last requested URI
+            $client = json_decode($checkout->client);
             //set view vars
-            $this->view->setVar("checkoutUri", $checkout->checkoutUri);
+            $this->view->setVar("checkoutUri", $client->requestedUri);
         }
 
         //pass data to view
@@ -297,24 +277,27 @@ trait KccManager
         if(APP_ENVIRONMENT !== 'local')
             $this->_redirectToNotFound();
 
+        //handle response, dispatch to auth/logout
+        $this->_checkUserIsLoggedIn(true);
+
         //get classes name
-        $users_checkouts_class        = $this->_getModuleClass('users_checkouts');
-        $users_checkout_objects_class = $this->_getModuleClass('users_checkouts_objects');
+        $users_checkouts_class         = $this->_getModuleClass('users_checkouts');
+        $users_checkouts_objects_class = $this->_getModuleClass('users_checkouts_objects');
 
-        //get session id
-        $last_checkout = $users_checkouts_class::getLastUserCheckout($this->user_session["id"], 'success');
-        $session_key   = $users_checkouts_class::getCheckoutSessionKey($last_checkout->buy_order);
-        //instance cache lib and get data
-        $checkout = $this->cacher->get($session_key);
+        //get last checkout
+        $checkout = $users_checkouts_class::getLastUserCheckout($this->user_session["id"], 'success');
 
-        if(empty($checkout) || !isset($this->user_session["id"]))
-            die("Render: No buy order to process for session: $session_key.");
+        if(!$checkout)
+            die("Render: No buy order to process for userID:".$this->user_session["id"]);
+
+        //reduce checkout object
+        $checkout = $checkout->reduce();
 
         //parse transbank MAC file
-        $params = $this->_parseMacFile($session_key);
+        $params = $this->_parseMacFile($checkout->buy_order);
 
         //set checkout objects
-        $checkout->objects = $users_checkout_objects_class::getCheckoutObjects($checkout->buyOrder);
+        $checkout->objects = $users_checkouts_objects_class::getCheckoutObjects($checkout->buy_order);
 
         //call listener
         $this->onBeforeRenderSuccessPage($checkout);
@@ -354,7 +337,6 @@ trait KccManager
         $result_date = date('Y')."-".$date[0]."-".$date[1]." ".implode(":", $time);
 
         return [
-            "gateway"          => "webpaykcc",
             "buy_order"        => $params["TBK_ORDEN_COMPRA"],
             "trx_id"           => $params["TBK_ID_TRANSACCION"],
             "type"             => $params["TBK_TIPO_PAGO"][0],
@@ -367,10 +349,10 @@ trait KccManager
 
     /**
      * Parses MAC file generated by GCI
-     * @param  string $session_key The session id
+     * @param  string $buy_order - The checkout buy order
      * @return array with format TBK_ORDEN_COMPRA => array(TBK_ORDEN_COMPRA => VALUE), ...
      */
-    private function _parseMacFile($session_key = "", $outputs_uri = null, $file_prefix = null)
+    private function _parseMacFile($buy_order = "", $outputs_uri = null, $file_prefix = null)
     {
         if(is_null($file_prefix))
             $file_prefix = self::$MAC_FILE_PREFIX_NAME;
@@ -378,7 +360,7 @@ trait KccManager
         if(is_null($outputs_uri))
             $outputs_uri = self::$OUTPUTS_PATH;
 
-        $file = PROJECT_PATH.$outputs_uri.$file_prefix.$session_key.".log";
+        $file = PROJECT_PATH.$outputs_uri.$file_prefix.$buy_order.".log";
 
         try {
             //check if file exists

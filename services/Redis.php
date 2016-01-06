@@ -1,7 +1,6 @@
 <?php
 /**
- * Cacher: Includes data cache operations with Redis.
- * Used to store user data like sessions in all modules.
+ * Redis: Includes data cache operations with Redis.
  * Requires Redis server installed
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
@@ -15,17 +14,11 @@ use Phalcon\DI;
 use Predis\Client as RedisClient;
 
 /**
- * Cache data service [Redis]
+ * Redis service
  */
-class Cacher
+class Redis
 {
     const REDIS_DEFAULT_PORT = 6379;
-
-    /**
-     * The Adapter name
-     * @var string
-     */
-    protected $adapter;
 
     /**
      * The client reference
@@ -33,37 +26,25 @@ class Cacher
      */
     protected $client;
 
-
     /**
-     * Cache prefix for cache Keys
-     * Prefix takes app namespace value
-     * @var string
+     * Constructor
+     * @param array $conf - Redis configs
      */
-    protected $cachePrefix;
-
-    /**
-     * contructor
-     * @param string $adapter Adapter name, availables: redis.
-     */
-    function __construct($adapter = null, $conf = array())
+    function __construct($conf = array())
     {
-        if(is_null($adapter))
-            throw new Exception("Cacher -> adapter param is invalid. Options: redis for the moment.");
-
         //get DI reference (static)
         $di = \Phalcon\DI::getDefault();
 
-        //set adapter
-        $this->adapter = ucfirst($adapter);
         //set cache prefix with app namespace
-        $this->cachePrefix = $di->getShared('config')->app->namespace."-";
+        if(!isset($conf["prefix"]))
+            $conf["prefix"] = $di->getShared('config')->app->namespace.":";
 
-        //call method by reflection
-        $this->{"setup".$this->adapter}($conf);
+        //setup Redis
+        $this->_setupRedis($conf);
 
         //check client was set
         if(is_null($this->client))
-            throw new Exception("Cacher -> Missing client configuration.");
+            throw new Exception("Redis -> Missing client configuration.");
     }
 
     /**
@@ -82,9 +63,9 @@ class Cacher
              if(is_null($value))
                  throw new Exception("Attempting to set null value for key $key.");
 
-             //set cache data
+             //set data
              $value  = json_encode($value, JSON_UNESCAPED_SLASHES);
-             $result = $this->{"set".$this->adapter}($this->cachePrefix.$key, $value);
+             $result = $this->client->set($key, $value);
 
              if(!$result)
                 throw new Exception("Error setting key");
@@ -92,7 +73,7 @@ class Cacher
             if(APP_ENVIRONMENT === "local") {
                 $di = \Phalcon\DI::getDefault();
                 $logger = $di->getShared("logger");
-                $logger->debug("Cacher:set -> set key: $key => ".$value);
+                $logger->debug("Redis:set -> set key: $key => ".$value);
             }
 
              return true;
@@ -103,7 +84,7 @@ class Cacher
      }
 
      /**
-      * Gets cache data
+      * Gets cached data
       * @param string $key The Key for searching
       * @param boolean $decode Flag if data must be json_decoded
       * @return mixed Object or null
@@ -115,8 +96,8 @@ class Cacher
              if(empty($key))
                  throw new Exception("Empty key given");
 
-             //get cache data
-             $result = $this->{"get".$this->adapter}($this->cachePrefix.$key);
+             //get cached data
+             $result = $this->client->get($key);
 
              if(!$result)
                 throw new Exception("Key not found");
@@ -129,7 +110,7 @@ class Cacher
      }
 
      /**
-      * deletes a cached key
+      * Deletes a cached key
       * @param string $key The Key for searching
       * @return boolean Returns true if was an affected key
       */
@@ -140,14 +121,14 @@ class Cacher
              if(empty($key))
                  throw new Exception("Empty key given");
 
-             //get cache data
-             $result = $this->{"get".$this->adapter}($this->cachePrefix.$key);
+             //get cached data
+             $result = $this->client->get($key);
 
              if(!$result)
                 return false;
 
             //delete key
-            $this->{"delete".$this->adapter}($this->cachePrefix.$key);
+            $this->client->del($key);
 
             return true;
          }
@@ -158,12 +139,8 @@ class Cacher
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
-    /** -------------------------------------------------------------------------------------------------
-        Redis implementations
-    ------------------------------------------------------------------------------------------------- **/
-
     /**
-     * Sets up redis connection, predis lib is used
+     * Sets up redis connection with predis lib.
      * @link https://github.com/nrk/predis/wiki/Connection-Parameters
      * scheme : defaults tcp.
      * host : defaults to localhost.
@@ -172,45 +149,15 @@ class Cacher
      * password : Auth password server key.
      * persistent : Specifies if the underlying connection resource should be left open when a script ends its lifecycle.
      */
-    public function setupRedis($conf = array())
+    private function _setupRedis($conf = array())
     {
-        $clientConf = array(
+        $clientConf = [
             'scheme'     => "tcp",
             'host'       => "127.0.0.1",
             'port'       => self::REDIS_DEFAULT_PORT,
             'persistent' => false
-        );
+        ];
         // sets up redis connection
         $this->client = new RedisClient(array_merge($clientConf, $conf));
-    }
-
-    /**
-     * Saves data to Redis server
-     * @param string $key The Key
-     * @param mixed $value The Value for Key
-     * @return mixed
-     */
-    public function setRedis($key = "", $value = null)
-    {
-        return $this->client->set($key, $value);
-    }
-
-    /**
-     * Gets redis data
-     * @param string $key The Key for searching
-     * @return mixed Object or null
-     */
-    public function getRedis($key = "")
-    {
-        return $this->client->get($key);
-    }
-
-    /**
-     * Deleted data to Redis server
-     * @param string $key The Key
-     */
-    public function deleteRedis($key = "")
-    {
-        $this->client->del($key);
     }
 }

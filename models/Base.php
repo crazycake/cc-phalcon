@@ -147,6 +147,15 @@ class Base extends \Phalcon\Mvc\Model
     }
 
     /**
+     * Reduces a model object losing ORM properties
+     * @return object
+     */
+    public function reduce() {
+
+        return (object)$this->toArray();
+    }
+
+    /**
      * Get messages from a created or updated object
      * @param boolean $json_encode Returns a json string
      * @return mixed array|string

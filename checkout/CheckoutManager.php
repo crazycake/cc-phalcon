@@ -11,7 +11,6 @@ namespace CrazyCake\Checkout;
 //imports
 use Phalcon\Exception;
 //other imports
-use CrazyCake\Services\Cacher;
 use CrazyCake\Utils\FormHelper;
 
 /**
@@ -47,12 +46,6 @@ trait CheckoutManager
     public $checkoutConfig;
 
     /**
-     * The cacher library
-     * @var object
-     */
-    protected $cacher;
-
-    /**
      * Initializer
      */
     protected function initialize()
@@ -72,9 +65,6 @@ trait CheckoutManager
             $this->_setSessionRedirectionOnLoggedIn();
         }
 
-        //set catcher
-        $this->cacher = new Cacher('redis');
-
         //handle response, dispatch to auth/logout
         $this->_checkUserIsLoggedIn(true);
     }
@@ -89,42 +79,28 @@ trait CheckoutManager
         //make sure is ajax request
         $this->_onlyAjax();
 
-        $exception = false;
-
         try {
 
-            //get checkout object and set category property name
+            //get checkout object with parsed data
             $checkout = $this->_parseCheckoutData();
 
             //call listeners
             $this->onBeforeBuyOrderCreation($checkout);
 
             //get class
-            $users_checkout_class = $this->_getModuleClass('users_checkouts');
+            $users_checkouts_class = $this->_getModuleClass('users_checkouts');
             //save checkout detail in DB
-            $checkoutOrm = $users_checkout_class::newBuyOrder($this->user_session["id"], $checkout);
+            $checkoutOrm = $users_checkouts_class::newBuyOrder($this->user_session["id"], $checkout);
 
             //check if an error occurred
             if(!$checkoutOrm)
                 throw new Exception($this->checkoutConfig["trans"]["error_unexpected"]);
 
-            //set cache data (checkout struct)
-            $cache = (array)$checkout;
-            $cache["buyOrder"] = $checkoutOrm->buy_order;
+            //set buy order
+            $checkout->buy_order = $checkoutOrm->buy_order;
 
-            if(!$this->cacher->set($checkoutOrm->session_key, $cache))
-                throw new Exception($this->checkoutConfig["trans"]["error_unexpected"]);
-
-            //set payload data
-            $payload = $cache;
-            $payload["sessionKey"] = $checkoutOrm->session_key;
-            unset($payload["objects"]);
-
-            if(APP_ENVIRONMENT !== "production")
-                $this->logger->debug("CheckoutManager:buyOrder -> got new order, session key: ".$checkoutOrm->session_key.". Obj: ".json_encode($cache));
-
-            // send JSON response
-            $this->_sendJsonResponse(200, $payload);
+            //send JSON response
+            return $this->_sendJsonResponse(200, $checkout);
         }
         catch (Exception $e)  { $exception = $e->getMessage(); }
         catch (\Exception $e) { $exception = $e->getMessage(); }
@@ -141,22 +117,21 @@ trait CheckoutManager
         $this->_onlyAjax();
         //get form data
         $data = $this->_handleRequestParams([
-            "buyOrder" => "string"
+            "buy_order" => "string"
         ]);
 
         try {
             //get class
-            $users_checkout_class = $this->_getModuleClass('users_checkouts');
+            $users_checkouts_class = $this->_getModuleClass('users_checkouts');
 
             //instance cache lib and get data
-            $session_key = $users_checkout_class::getCheckoutSessionKey($buy_order);
-            $checkout    = $this->cacher->get($session_key);
+            $checkout = $users_checkouts_class::getCheckout($buy_order);
 
             if(!$checkout)
                 throw new Exception($this->checkoutConfig["trans"]["error_unexpected"]);
 
             //check buy orders
-            if($data["buyOrder"] != $checkout->buyOrder)
+            if($data["buy_order"] != $checkout->buy_order)
                 throw new Exception($this->checkoutConfig["trans"]["error_unexpected"]);
 
             //set flash message
@@ -172,7 +147,6 @@ trait CheckoutManager
 
     /**
      * Succesful checkout, Called when checkout was made succesfuly (eg: after payment)
-     * Checkout object cames from cacher session
      * @param object $checkout The checkout sesssion object
      * @param boolean $async If false wait for response
      * @return object Checkout
@@ -183,7 +157,7 @@ trait CheckoutManager
         $this->_asyncRequest(
             ["checkout" => "successCheckoutTask"],
             //encrypted data
-            ["checkout" => $checkout],
+            ["buy_order" => $checkout->buy_order],
             //method
             "POST",
             //socket async
@@ -209,40 +183,57 @@ trait CheckoutManager
             //decrypt data
             $data = $this->cryptify->decryptForGetResponse($data["payload"], true);
 
-            if(is_null($data) || !isset($data->checkout))
+            if(is_null($data) || !isset($data->buy_order))
                 throw new Exception("Invalid decrypted data: ".json_encode($data));
 
             //set classes
-            $users_class          = $this->_getModuleClass('users');
-            $users_checkout_class = $this->_getModuleClass('users_checkouts');
-            //set event & checkout objects
-            $users_checkout_objects_class = $users_checkout_class."Objects";
+            $users_class                   = $this->_getModuleClass('users');
+            $users_checkouts_class         = $this->_getModuleClass('users_checkouts');
+            $users_checkouts_objects_class = $this->_getModuleClass('users_checkouts_objects');
+            $checkout_trx_class            = $this->_getModuleClass('users_checkouts_trx');
 
             //get checkout, user and event
-            $checkout    = $data->checkout;
-            $checkoutOrm = $users_checkout_class::getCheckout($checkout->buyOrder);
-            $user        = $users_class::getObjectById($checkoutOrm->user_id);
+            $checkout = $users_checkouts_class::getCheckout($data->buy_order);
+            $user     = $users_class::getObjectById($checkout->user_id);
 
             //check if data is OK
-            if(!$user)
-                throw new Exception("Invalid decrypted data, userId: ".$checkoutOrm->user_id.", data: ".json_encode($data));
+            if(!$checkout || !$user)
+                throw new Exception("Invalid decrypted data, user or checkout not found: ".json_encode($data));
 
-            //extend properties
+            //reduce object
+            $checkout = $checkout->reduce();
+
+            //extended properties
             $checkout->type            = "payment";
             $checkout->amountFormatted = FormHelper::formatPrice($checkout->amount, $checkout->coin);
-            $checkout->objects         = $users_checkout_objects_class::getCheckoutObjects($checkout->buyOrder);
+            $checkout->objects         = $users_checkouts_objects_class::getCheckoutObjects($checkout->buy_order);
+            $checkout->categories      = explode(",", $checkout->categories); //set categories as array
 
             //1) update status of checkout
-            $users_checkout_class::updateState($checkout->buyOrder, 'success');
+            $users_checkouts_class::updateState($checkout->buy_order, 'success');
 
-            //2) CALL OBJECT CLASS LOGIC
-            foreach ($checkout->objectsClass as $className) {
+            //2) set checkout object classes
+            $checkout->objectsClasses = [];
+            foreach ($checkout->objects as $obj) {
 
-                $objectClass = $className."Controller";
+                if(in_array($obj->className, $checkout->objectsClasses))
+                    continue;
 
-                if(method_exists($objectClass, "onCheckoutSuccess"))
-                    (new $objectClass())->onCheckoutSuccess($user->id, $checkout);
+                //save object class
+                array_push($checkout->objectsClasses, $obj->className);
+
+                //call object class listener
+                if(method_exists($obj->className."Controller", "onCheckoutSuccess")) {
+                    $className = $obj->className."Controller";
+                    (new $className())->onCheckoutSuccess($user->id, $checkout);
+                }
             }
+
+            //3) set checkout trx object
+            $trx = $checkout_trx_class::findFirstByBuyOrder($checkout->buy_order);
+            $checkout->trx = $trx ? $trx->reduce() : null;
+
+            //$this->logger->debug("Checkout task complete: ".print_r($checkout, true));
 
             //3) Call listener
             $this->onSuccessCheckoutTaskComplete($user, $checkout);
@@ -270,19 +261,19 @@ trait CheckoutManager
     public function failedCheckout($checkout = false)
     {
         //get module class name
-        $users_checkout_class = $this->_getModuleClass('users_checkouts');
+        $users_checkouts_class = $this->_getModuleClass('users_checkouts');
 
-        if(!$checkout || !isset($checkout->buyOrder))
+        if(!$checkout || !isset($checkout->buy_order))
             return false;
 
         //get ORM object and update status of checkout
-        $checkoutOrm = $users_checkout_class::getCheckout($checkout->buyOrder);
+        $checkoutOrm = $users_checkouts_class::getCheckout($checkout->buy_order);
 
         if(!$checkoutOrm)
             return false;
 
         if($checkoutOrm->state == "pending")
-            $users_checkout_class::updateState($checkout->buyOrder, 'failed');
+            $users_checkouts_class::updateState($checkout->buy_order, 'failed');
 
         return true;
     }
@@ -297,35 +288,23 @@ trait CheckoutManager
     public function skipPaymentAction($code = "")
     {
         //get module class name
-        $users_checkout_class = $this->_getModuleClass('users_checkouts');
+        $users_checkouts_class = $this->_getModuleClass('users_checkouts');
 
         //instance cache lib and get data
-        $last_checkout = $users_checkout_class::getLastUserCheckout($this->user_session["id"]);
+        $checkout = $users_checkouts_class::getLastUserCheckout($this->user_session["id"]);
 
-        if(!$last_checkout)
+        if(!$checkout || $checkout->state != "pending")
             die("No pending checkout found for user id:".$this->user_session["id"]);
 
-        $session_key = $users_checkout_class::getCheckoutSessionKey($last_checkout->buy_order);
-        //validates an active checkout session
-        $checkout = $this->cacher->get($session_key);
-
         //basic security
-        if(APP_ENVIRONMENT !== 'local' && $code !== sha1($checkout->buyOrder))
+        if(APP_ENVIRONMENT !== 'local' && $code !== sha1($checkout->buy_order))
             $this->_redirectToNotFound();
-
-        if(empty($checkout))
-            die("Invalid cached checkout for user_id ".$session_key);
-
-        $checkoutOrm = $users_checkout_class::getCheckout($checkout->buyOrder);
-
-        if(!$checkoutOrm || $checkoutOrm->state != "pending")
-            die("No pending checkout found for user_id ".$session_key);
 
         //append custom comment
         $this->onSkippedPayment($checkout, $this->checkoutConfig["debug"]);
 
         //log
-        $this->logger->debug("CheckoutManager::skipPaymentAction -> Skipped payment for userId: ".$checkoutOrm->user_id.", BO: ".$checkout->buyOrder);
+        $this->logger->debug("CheckoutManager::skipPaymentAction -> Skipped payment for userId: ".$checkout->user_id.", BO: ".$checkout->buy_order);
         //call succes checkout
         $this->successCheckout($checkout);
 
@@ -344,26 +323,23 @@ trait CheckoutManager
     /**
      * Loads common setup for checkout view.
      * This are used for HTML bindings
-     * @TODO support multiple payment gateways with checkout_gateway (hardcoded)
-     * @param array $category A category array
-     * @param string $checkoutType The checkout type, example: paid, free, etc.
-     * @param object $user The user object
-     * @param array $objects The checkout objects array
-     * @param string $objectsClass The checkout objects class name
-     * @param object $view The checkout view class
+     * @param array $categories - The categories array
+     * @param string $checkoutType - The checkout type, example: paid, free, etc.
+     * @param object $user - The user object
+     * @param array $objects - The checkout objects array
+     * @param array $objectsClasses - The checkout objects classes name
+     * @param object $view - The checkout view class
      */
-    private function _setupCheckoutView($category = array(), $checkoutType = "", $user = null, $objects = array(), $objectsClass = "", $view = "default")
+    private function _setupCheckoutView($categories = array(), $checkoutType = "", $user = null, $objects = array(), $objectsClasses = array(), $view = "default")
     {
         //default inputs for checkout
         $inputs = [
-            "checkoutUri" => "",                     //last visited uri (set by JS modules)
-            "handlerUri"  => "",                     //checkout handler for post payment
-            "gateway"     => "",                     //checkout gateway name
-            "category"    => implode(",", $category) //checkout category id or namespace
+            "gateway"    => "",                       //checkout gateway name
+            "categories" => implode(",", $categories) //checkout categories as string
         ];
 
         //get module class name
-        $users_checkout_class = $this->_getModuleClass('users_checkouts');
+        $users_checkouts_class = $this->_getModuleClass('users_checkouts');
 
         //set default max checkout number
         $checkoutMax = 1;
@@ -374,7 +350,7 @@ trait CheckoutManager
         }
 
         //check for last used invoice email
-        $lastCheckout = $users_checkout_class::findFirst([
+        $lastCheckout = $users_checkouts_class::findFirst([
             "user_id = ?0",
             "order" => "local_time DESC",
             "bind"  => [$user->id]
@@ -383,7 +359,7 @@ trait CheckoutManager
 
         //pass data to view
         $this->view->setVars([
-            "objectsClass"         => $objectsClass,
+            "objectsClasses"       => $objectsClasses,
             "invoiceEmail"         => !empty($lastInvoiceEmail) ? $lastInvoiceEmail : $user->email,
             "checkoutInputs"       => $inputs,
             "checkoutInputsPrefix" => "checkout_"
@@ -402,10 +378,10 @@ trait CheckoutManager
 
         $this->_loadJavascriptModules(array_merge([
             "$js_modules[0]" => [
-                "checkoutType"  => $checkoutType,
-                "checkoutMax"   => $checkoutMax,
-                "objects"       => $objectsJs,
-                "objectsClass"  => $objectsClass
+                "checkoutType"   => $checkoutType,
+                "checkoutMax"    => $checkoutMax,
+                "objects"        => $objectsJs,
+                "objectsClasses" => $objectsClasses
             ]
         ],
             count($js_modules) > 1 ? array_slice($js_modules, 1) : []
@@ -423,15 +399,13 @@ trait CheckoutManager
     {
         //get form data
         $data = $this->_handleRequestParams([
-            "handlerUri"    => "string",  //post payment handler URI
             "gateway"       => "string",  //checkout payment gateway
-            "category"      => "array",   //the category parent refence
-            "@checkoutUri"  => "string",  //checkout URI
+            "categories"    => "array",   //the categories references
             "@invoiceEmail" => "string"   //optional, custom validation
         ]);
 
         //get module class name
-        $users_checkout_class = $this->_getModuleClass('users_checkouts');
+        $users_checkouts_class = $this->_getModuleClass('users_checkouts');
 
         //check invoice email if set
         if(!isset($data["invoiceEmail"]) || !filter_var($data['invoiceEmail'], FILTER_VALIDATE_EMAIL))
@@ -439,20 +413,19 @@ trait CheckoutManager
 
         //lower case email
         $data["invoiceEmail"] = strtolower($data["invoiceEmail"]);
+        //set client object extended properties
+        $this->client->baseUrl = $this->_baseUrl();
 
         //set object properties
         $checkout = new \stdClass();
 
-        $checkout->client       = isset($this->client) ? json_encode($this->client, JSON_UNESCAPED_SLASHES) : null;
-        $checkout->handlerUrl   = [$this->_baseUrl(), $data["handlerUri"]];
-        $checkout->checkoutUri  = $data["checkoutUri"];
-        $checkout->gateway      = $data["gateway"];
-        $checkout->category     = explode(",", $data["category"]);
-        $checkout->invoiceEmail = $data["invoiceEmail"];
-        $checkout->coin         = $this->checkoutConfig["default_coin"];
-        $checkout->objects      = [];
-        $checkout->amount       = 0;
-        $checkout->timestamp    = date('Y-m-d H:i:s');
+        $checkout->client        = json_encode($this->client, JSON_UNESCAPED_SLASHES);
+        $checkout->categories    = explode(",", $data["categories"]);
+        $checkout->gateway       = $data["gateway"];
+        $checkout->invoice_email = $data["invoiceEmail"];
+        $checkout->coin          = $this->checkoutConfig["default_coin"];
+        $checkout->objects       = [];
+        $checkout->amount        = 0;
 
         //temp vars
         $totalQ  = 0;
@@ -477,7 +450,7 @@ trait CheckoutManager
             //var_dump($class_name, $object_id, $object->toArray());exit;
 
             //check that object is in stock (also validates object exists)
-            if(!$users_checkout_class::validateObjectStock($class_name, $object_id, $q)) {
+            if(!$users_checkouts_class::validateObjectStock($class_name, $object_id, $q)) {
                 $this->logger->error("CheckoutManager::_parseCheckoutObjects -> No stock for object '$class_name' ID: $object_id, q: $q.");
                 throw new Exception(str_replace("{name}", $object->name, $this->checkoutConfig["trans"]["error_no_stock"]));
             }
@@ -500,11 +473,11 @@ trait CheckoutManager
             throw new Exception($this->checkoutConfig["trans"]["error_unexpected"]);
 
         //check max objects allowed
-        if($totalQ > $this->checkoutConfig["user_max_item_per_category"])
+        if($totalQ > $this->checkoutConfig["max_user_acquisition"])
             throw new Exception($this->checkoutConfig["trans"]["error_max_total"]);
 
         //set objectsClassName
-        $checkout->objectsClass = $classes;
+        $checkout->objectsClasses = $classes;
         //update total Q
         $checkout->totalQ = $totalQ;
 

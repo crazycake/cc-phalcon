@@ -23,11 +23,6 @@ class BaseUsersCheckoutsTrx extends \CrazyCake\Models\Base
     public $buy_order;
 
     /**
-     * @var string
-     */
-    public $gateway;
-
-    /**
      * @var int
      */
     public $trx_id;

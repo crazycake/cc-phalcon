@@ -25,7 +25,7 @@ class TaskCore extends Task
         $this->_colorize("Usage: \ncli.php main [param]", "OK");
         $this->_colorize("Valid params:", "WARNING");
         $this->_colorize("appConfig -> Outputs app configuration in JSON format", "WARNING");
-        $this->_colorize("getCache [key] -> gets stored data in Cache (Redis default)", "WARNING");
+        $this->_colorize("getCache [key] -> gets stored data in Cache (Redis)", "WARNING");
     }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
@@ -56,9 +56,9 @@ class TaskCore extends Task
         try {
 
             //catcher adapter
-            $cacher = new \CrazyCake\Services\Cacher('redis');
+            $redis = new \CrazyCake\Services\Redis();
             //get data from cache json-undecoded
-            $data = $cacher->get($params[0], false);
+            $data = $redis->get($params[0], false);
 
             //outputs value
             echo $data;

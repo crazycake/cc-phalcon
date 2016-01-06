@@ -136,7 +136,7 @@ class OneClickClient
 	{
 		$oneClickPayInput = new oneClickPayInput();
 		$oneClickPayInput->amount = $amount; // monto de pago
-		$oneClickPayInput->buyOrder = $buyOrder; // orden de compra
+		$oneClickPayInput->buy_order = $buyOrder; // orden de compra
 		$oneClickPayInput->tbkUser 	= $tbkUser; // identificador de usuario entregado en el servicio finishInscription
 		$oneClickPayInput->username = $username; // identificador de usuario del comercio
 
@@ -167,7 +167,7 @@ class OneClickClient
 	public function reverseCardTransaction($buyOrder)
 	{
 		$oneClickReverseInput = new oneClickReverseInput();
-		$oneClickReverseInput->buyorder= $buyOrder;
+		$oneClickReverseInput->buy_order= $buyOrder;
 
 		$revertTransaction = $this->handler->codeReverseOneClick(array("arg0" => $oneClickReverseInput));
 

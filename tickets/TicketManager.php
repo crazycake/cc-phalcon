@@ -307,13 +307,13 @@ trait TicketManager
         $result = new \stdClass();
 
         try {
-
+            //set on the fly property
             $this->pdf_settings["otf"] = $otf;
-
             //set invoice name
-            $invoiceName = isset($checkout->buyOrder) ? $checkout->buyOrder : uniqid()."_".date('d-m-Y');
+            $this->pdf_settings["invoice_name"] = isset($checkout->buy_order) ? $checkout->buy_order : uniqid()."_".date('d-m-Y');
+            
             //generate invoice
-            $result->binary = $this->_buildInvoice($user_id, $checkout, $invoiceName);
+            $result->binary = $this->_buildInvoice($user_id, $checkout);
         }
         catch (\S3Exception $e) {
             $result->error = $e->getMessage();
@@ -336,10 +336,9 @@ trait TicketManager
      * Generates an Invoice with user tickets
      * @param  int $user_id         The user ID
      * @param  object  $checkout    The checkout object
-     * @param  string $invoiceName  The invoice file name
      * @return binary generated file
      */
-    private function _buildInvoice($user_id, $checkout, $invoiceName = "temp")
+    private function _buildInvoice($user_id, $checkout)
     {
         //get user model class
         $users_class = $this->_getModuleClass('users');
@@ -360,7 +359,7 @@ trait TicketManager
             $this->_downloadTicketQrs($user_id, $objects);
 
         //set file paths
-        $pdf_filename = $invoiceName.".pdf";
+        $pdf_filename = $this->pdf_settings["invoice_name"].".pdf";
         $output_path  = $this->storageConfig['local_temp_path'].$pdf_filename;
 
         //set extended pdf data

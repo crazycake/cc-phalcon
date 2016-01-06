@@ -47,10 +47,15 @@ class BaseUsersCheckouts extends \CrazyCake\Models\Base
      */
     public $state;
 
-    /**
+    /*
      * @var string
      */
-    public $session_key;
+    public $gateway;
+
+    /*
+     * @var string
+     */
+    public $categories;
 
     /**
      * @var string
@@ -122,7 +127,7 @@ class BaseUsersCheckouts extends \CrazyCake\Models\Base
     /** ------------------------------------------- § ------------------------------------------------ **/
 
     /**
-     * Get a checkout object by buyOrder
+     * Get a checkout object by buy Order
      * @param  string $buy_order The buy order
      * @return mixed [string|boolean]
      */
@@ -187,10 +192,11 @@ class BaseUsersCheckouts extends \CrazyCake\Models\Base
         $checkout = new $checkoutModel();
         $checkout->user_id       = $user_id;
         $checkout->buy_order     = $buy_order;
-        $checkout->session_key   = self::getCheckoutSessionKey($buy_order);
         $checkout->amount        = $checkoutObj->amount;
         $checkout->coin          = $checkoutObj->coin;
-        $checkout->invoice_email = $checkoutObj->invoiceEmail;
+        $checkout->gateway       = $checkoutObj->gateway;
+        $checkout->categories    = implode(",", $checkoutObj->categories);
+        $checkout->invoice_email = $checkoutObj->invoice_email;
         $checkout->client        = $checkoutObj->client;
 
         try {
@@ -226,20 +232,6 @@ class BaseUsersCheckouts extends \CrazyCake\Models\Base
             $di->getShared('db')->rollback();
             return false;
         }
-    }
-
-    /**
-     * Get checkout session key for cacher
-     */
-    public static function getCheckoutSessionKey($buy_order = "")
-    {
-        $di = \Phalcon\DI::getDefault();
-        $session_id = $di->getShared("session")->getId();
-
-        if(!$session_id)
-            $session_id = "";
-
-        return sha1($session_id.$buy_order);
     }
 
     /**

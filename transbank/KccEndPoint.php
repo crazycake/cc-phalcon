@@ -19,12 +19,12 @@ class KccEndPoint
     /* traits */
     use Guzzle;
 
+    // URI SUCCES TRX Handler
+    const SUCCESS_URI_HANDLER = "webpay/successTrx";
     // MAC file prefix name
     const MAC_FILE_PREFIX_NAME = "MAC01Normal_";
-    // set MAC file path
+    // MAC file path
     const MAC_PATH = PROJECT_PATH."webpay/outputs/";
-    // CLI Cache exec
-    const CMD_EXEC_CLI = "php ".PROJECT_PATH."cli/cli.php main getCache";
     // CGI MAC exec
     const CMD_EXEC_CGI = PUBLIC_PATH."cgi-bin/tbk_check_mac.cgi";
 
@@ -47,20 +47,19 @@ class KccEndPoint
      */
     public function handleResponse()
     {
-        // make sure post params are const
+        //make sure post params are const
         if(!isset($_POST["TBK_RESPUESTA"]) || !isset($_POST["TBK_ID_SESION"]) || !isset($_POST["TBK_ORDEN_COMPRA"]))
             $this->setOutput(false, "post data invalida: ".isset($_POST) ? json_encode($_POST) : "null");
 
-        // get TBK post data
+        //get TBK post data
         $TBK_RESPUESTA    = $_POST["TBK_RESPUESTA"];
-        $TBK_ID_SESION    = $_POST["TBK_ID_SESION"];
+        $TBK_ID_SESION    = $_POST["TBK_ID_SESION"]; //not used
         $TBK_ORDEN_COMPRA = $_POST["TBK_ORDEN_COMPRA"];
         $TBK_MONTO        = $_POST["TBK_MONTO"];
 
-        // set MAC file name
-        $mac_file = self::MAC_PATH.self::MAC_FILE_PREFIX_NAME."$TBK_ID_SESION.log";
-        // cli & cgi command args
-        $cmd_cli = self::CMD_EXEC_CLI." ".$TBK_ID_SESION;
+        //set MAC file name
+        $mac_file = self::MAC_PATH.self::MAC_FILE_PREFIX_NAME."$TBK_ORDEN_COMPRA.log";
+        //cgi command args
         $cmd_cgi = self::CMD_EXEC_CGI." $mac_file";
 
         //save mac file
@@ -70,41 +69,37 @@ class KccEndPoint
 
         $this->logOutput("TBK POST params:".json_encode($_POST, JSON_UNESCAPED_SLASHES), true);
 
-        //1) Validates Transbank response, 0 means accepted. -8 to -1 means bank-card error.
-        //NOTE: TBK_RESPUESTA -8 a -1 se procesa como ACEPTADO pero termina en fracaso.
-        //@link: https://bitbucket.org/ctala/woocommerce-webpay/
+        /**
+         * 1) Validates Transbank response, 0 means accepted. -8 to -1 means bank-card error.
+         * NOTE: TBK_RESPUESTA -8 a -1 se procesa como ACEPTADO pero termina en fracaso.
+         * @link: https://bitbucket.org/ctala/woocommerce-webpay/
+         */
         if ($TBK_RESPUESTA >= -8 && $TBK_RESPUESTA <= -1)
             $this->setOutput(true);
 
         if($TBK_RESPUESTA != 0)
             $this->setOutput(false, "TBK_RESPUESTA es distinto de 0");
 
-        // execs CLI module for cache task
-        exec($cmd_cli, $output_cli, $code_cli);
-        // execs MAC cgi
+        //execs MAC cgi
         exec($cmd_cgi, $output_cgi, $code_cgi);
 
-        // logs exec CGI taks output
+        //logs exec CGI taks output
         $this->logOutput(
-            "exec command: $cmd_cli \n".
-            "CLI CACHE return_value (0 = Ok): ".$code_cli."\n".json_encode($output_cli, JSON_UNESCAPED_SLASHES)."\n".
             "exec command: $cmd_cgi \n".
             "CGI return_value (0 = Ok): ".$code_cgi."\n".json_encode($output_cgi, JSON_UNESCAPED_SLASHES)
         );
 
-        //get checkout
-        if(empty($output_cli))
-            $this->setOutput(false, "Cache key no encontrada: ".print_r($output_cli, true));
-
-        // parse CLI output data
-        $checkout = json_decode($output_cli[0]);
+        //get users checkouts class
+        $users_checkouts_class = $this->_getModuleClass('users_checkouts');
+        //get checkout obejct
+        $checkout = $users_checkouts_class::getCheckout($TBK_ORDEN_COMPRA);
 
         //2) buyOrder validation
-        if(!isset($checkout->buyOrder) || $TBK_ORDEN_COMPRA != $checkout->buyOrder)
+        if(!$checkout || $TBK_ORDEN_COMPRA != $checkout->buy_order)
             $this->setOutput(false, "Orden de compra es nulo o distinto de TBK_ORDEN_COMPRA ($TBK_ORDEN_COMPRA).");
 
-        //3) amount validation
-        if($TBK_MONTO != $checkout->amountFormatted)
+        //3) amount validation (kcc format is appended)
+        if($TBK_MONTO != $checkout->amount."00")
             $this->setOutput(false, "El monto es distinto de TBK_MONTO.");
 
         //4) checks MAC CGI response
@@ -112,7 +107,7 @@ class KccEndPoint
             $this->setOutput(false, "CGI MAC entegó un output distinto a 'CORRECTO' -> ".$output_cgi[0]);
 
         //5) OK, all validations passed process succesful Checkout
-        $this->onSuccessTrx($TBK_ID_SESION, $checkout);
+        $this->onSuccessTrx($checkout);
 
         //OK, redirect...
         $this->setOutput(true, "EXITO, redirecting...");
@@ -164,22 +159,23 @@ class KccEndPoint
 
     /**
      * on success TRX event, sends Async Call
-     * @param object $checkout The checkout stored object
+     * @param string $buy_order The buy order
      */
-    protected function onSuccessTrx($session_key, $checkout)
+    protected function onSuccessTrx($checkout)
     {
         //get DI reference (static)
         $di = \Phalcon\DI::getDefault();
 
-        //pass hashed session id
-        $url = $checkout->handlerUrl;
+        //Base URL is kept in client data for CGI call.
+        $client  = json_decode($checkout->client);
+        $baseUrl = $client->baseUrl;
 
         //log call (debug)
-        $this->logOutput("OnSuccessTrx async-request: ".$url[0]." -> ".$url[1]);
+        $this->logOutput("OnSuccessTrx async-request: ".$baseUrl." -> ".self::SUCCESS_URI_HANDLER);
 
         //set sending data
-        $sending_data = $di->getShared('cryptify')->encryptForGetRequest($session_key);
+        $sending_data = $di->getShared('cryptify')->encryptForGetRequest($buy_order);
         //send async request
-        $this->_sendAsyncRequest($url[0], $url[1], $sending_data);
+        $this->_sendAsyncRequest($baseUrl, self::SUCCESS_URI_HANDLER, $sending_data);
     }
 }

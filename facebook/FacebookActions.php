@@ -22,7 +22,7 @@ use Facebook\FacebookRequest;
 use Facebook\Helpers\FacebookJavaScriptHelper;
 use Facebook\Exceptions\FacebookSDKException;
 //CrazyCake Utils
-use CrazyCake\Services\Cacher;
+use CrazyCake\Services\Redis;
 use CrazyCake\Utils\DateHelper;
 
 /**
@@ -54,10 +54,10 @@ trait FacebookActions
     public $fb;
 
     /**
-     * Cacher Object
+     * Redis client
      * @var object
      */
-    public $cacher;
+    public $redis;
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
@@ -71,7 +71,7 @@ trait FacebookActions
             mkdir($this->fbConfig["upload_path"], 0755);
 
         //set catcher
-        $this->cacher = new Cacher('redis');
+        $this->redis = new Redis();
 
         //set Facebook SDK Object
         $this->fb = new \Facebook\Facebook([
@@ -119,10 +119,10 @@ trait FacebookActions
 
                 //create a unique day key for user, qr_hash & time
                 $key   = sha1($payload["action"].$payload["qr_hash"].date('Y-m-d'));
-                $count = $this->cacher->get($key);
+                $count = $this->redis->get($key);
 
                 //increment action
-                $this->cacher->set($key, is_null($count) ? 1 : $count+1);
+                $this->redis->set($key, is_null($count) ? 1 : $count+1);
             }
 
             //actions
