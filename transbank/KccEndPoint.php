@@ -9,12 +9,13 @@
 
 namespace CrazyCake\Transbank;
 
+use CrazyCake\Core\AppCore;
 use CrazyCake\Services\Guzzle;
 
 /**
  * KccEndPoint Class
  */
-class KccEndPoint
+class KccEndPoint extends AppCore
 {
     /* traits */
     use Guzzle;
@@ -36,10 +37,10 @@ class KccEndPoint
     /**
      * constructor
      */
-    public function __construct()
+    protected function onConstruct()
     {
         //set logger service
-        $this->log = new \Phalcon\Logger\Adapter\File(APP_PATH."logs/webpayKcc_".date("d-m-Y").".log");
+        $this->log = new \Phalcon\Logger\Adapter\File(APP_PATH."logs/webpaykcc_".date("d-m-Y").".log");
     }
 
     /**
@@ -53,7 +54,6 @@ class KccEndPoint
 
         //get TBK post data
         $TBK_RESPUESTA    = $_POST["TBK_RESPUESTA"];
-        $TBK_ID_SESION    = $_POST["TBK_ID_SESION"]; //not used
         $TBK_ORDEN_COMPRA = $_POST["TBK_ORDEN_COMPRA"];
         $TBK_MONTO        = $_POST["TBK_MONTO"];
 

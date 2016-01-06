@@ -50,9 +50,9 @@ return array (
   ),
   'services' => 
   array (
-    0 => 'Cacher.php',
-    1 => 'GetText.php',
-    2 => 'Guzzle.php',
+    0 => 'GetText.php',
+    1 => 'Guzzle.php',
+    2 => 'Redis.php',
     3 => 'Ses.php',
     4 => 'StorageS3.php',
   ),

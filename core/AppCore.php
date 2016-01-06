@@ -28,11 +28,6 @@ abstract class AppCore extends Controller
     const JSON_RESPONSE_STRUCT = '{"response":{"code":"200","status":"ok","payload":@payload}}';
 
     /**
-     * Sends a JSON response
-     */
-    abstract protected function _sendJsonResponse();
-
-    /**
      * Sends an async request
      * @param  string $url The URL
      * @param  string $uri The URI
@@ -217,8 +212,13 @@ abstract class AppCore extends Controller
         //set anoymous function for send response
         if($send_json) {
             $sendResponse = function($code) {
+
                 //call send json response
-                $this->_sendJsonResponse($code);
+                if(method_exists($this, '_sendJsonResponse'))
+                    $this->_sendJsonResponse($code);
+                else
+                    throw new Exception("AppCore::_handleRequestParams -> _sendJsonResponse() must be implemented.");
+
             };
         }
         else {
