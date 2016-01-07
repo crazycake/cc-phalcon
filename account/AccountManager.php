@@ -23,6 +23,8 @@ trait AccountManager
 
     /**
      * Before update user profile Listener
+     * @param object $user - The user object
+     * @param array $data - The data to be updated
      */
     abstract public function beforeUpdateProfile($user, $data); //returns an array
 
@@ -128,7 +130,7 @@ trait AccountManager
 
             //update data?
             if(!empty($updating_data)) {
-                
+
                $user->update($updating_data);
                //update session data
                $this->_updateUserSessionData($updating_data);

@@ -28,6 +28,7 @@ trait KccManager
 
     /**
      * Listener - Before render the success page
+     * @param object $checkout - The checkout object reference
      */
     abstract public function onBeforeRenderSuccessPage(&$checkout);
 

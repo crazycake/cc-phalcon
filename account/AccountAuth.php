@@ -85,7 +85,7 @@ trait AccountAuth
 
     /**
      * Handler - Activation link handler, can dispatch to a view
-     * @param string $encrypted_data
+     * @param string $encrypted_data - The encrypted data
      */
     public function activationAction($encrypted_data = null)
     {

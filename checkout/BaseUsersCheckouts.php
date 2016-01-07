@@ -128,7 +128,7 @@ class BaseUsersCheckouts extends \CrazyCake\Models\Base
 
     /**
      * Get a checkout object by buy Order
-     * @param  string $buy_order The buy order
+     * @param  string $buy_order - The buy order
      * @return mixed [string|boolean]
      */
     public static function getCheckout($buy_order = "")
@@ -141,7 +141,7 @@ class BaseUsersCheckouts extends \CrazyCake\Models\Base
 
     /**
      * Get the last user checkout
-     * @param  int $user_id The User ID
+     * @param  int $user_id - The User ID
      * @return mixed [string|object]
      */
     public static function getLastUserCheckout($user_id = 0, $state = 'pending')
@@ -154,7 +154,7 @@ class BaseUsersCheckouts extends \CrazyCake\Models\Base
 
     /**
      * Generates a random code for a buy order
-     * @param  string $phrase
+     * @param int $length - The buy order string length
      * @return string
      */
     public static function generateBuyOrder($length)
@@ -169,9 +169,9 @@ class BaseUsersCheckouts extends \CrazyCake\Models\Base
 
     /**
      * Creates a new buy order
-     * @param  int $user_id The user id
-     * @param  object $checkout The checkout object
-     * @return mixed [boolean|string] If success returns the buyOrder
+     * @param int $user_id - The user ID
+     * @param object $checkoutObj - The checkout object
+     * @return mixed [boolean|string] - If success returns the buy order
      */
     public static function newBuyOrder($user_id = 0, $checkoutObj = null)
     {
@@ -236,8 +236,8 @@ class BaseUsersCheckouts extends \CrazyCake\Models\Base
 
     /**
      * Updates a checkout state
-     * @param  string $buy_order The buy order
-     * @param  string $state     The new state
+     * @param string $buy_order - The buy order
+     * @param string $state - The new state
      * @return boolean
      */
     public static function updateState($buy_order, $state)
@@ -256,9 +256,9 @@ class BaseUsersCheckouts extends \CrazyCake\Models\Base
     /**
      * Validates that checkout object is already in stock.
      * Sums to q the number of checkout object presents in a pending checkout state.
-     * @param  string $object_class The object class
-     * @param  int $object_id The object id
-     * @param  int $q The quantity to validate
+     * @param string $object_class - The object class
+     * @param int $object_id - The object id
+     * @param int $q - The quantity to validate
      * @return boolean
      */
     public static function validateObjectStock($object_class = "", $object_id = 0, $q = 0)
@@ -307,10 +307,10 @@ class BaseUsersCheckouts extends \CrazyCake\Models\Base
 
     /**
      * Get checkout buyOrders by given objects
-     * @param int $userId The User id
-     * @param string $state The checkout state
-     * @param array $objectIds An array with object IDs (required)
-     * @param string $objectClass The object class name (required)
+     * @param int $user_id - The user ID
+     * @param string $state - The checkout state, default is 'success'
+     * @param array $object_ids - An array with object IDs (required)
+     * @param string $object_class - The object class name (required)
      * @return array
      */
     public static function getBuyOrdersByObjectsIds($user_id, $state = "success", $object_ids = array(), $object_class = "")
@@ -358,7 +358,7 @@ class BaseUsersCheckouts extends \CrazyCake\Models\Base
 
     /**
      * Substract Checkout objects quantity for processed checkouts
-     * @param array $objects The checkout objects array (getCheckoutObjects returned array)
+     * @param array $objects - The checkout objects array (getCheckoutObjects returned array)
      */
     public static function substractCheckoutObjectsQuantity($objects)
     {

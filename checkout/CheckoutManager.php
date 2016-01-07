@@ -25,16 +25,20 @@ trait CheckoutManager
 
     /**
      * Listener - Before Inster a new Buy Order record
+     * @param object $checkout - The checkout object
      */
     abstract public function onBeforeBuyOrderCreation(&$checkout);
 
     /**
      * Listener - Success checkout Task completed
+     * @param object $user - The ORM user object
+     * @param object $checkout - The checkout object
      */
     abstract public function onSuccessCheckoutTaskComplete($user, &$checkout);
 
     /**
      * Listener - On skipped payment [testing]
+     * @param object $checkout - The checkout object
      */
     abstract public function onSkippedPayment(&$checkout);
 
@@ -147,8 +151,8 @@ trait CheckoutManager
 
     /**
      * Succesful checkout, Called when checkout was made succesfuly (eg: after payment)
-     * @param object $checkout The checkout sesssion object
-     * @param boolean $async If false wait for response
+     * @param object $checkout - The checkout sesssion object
+     * @param boolean $async - If false wait for response
      * @return object Checkout
      */
     public function successCheckout($checkout, $async = true)
@@ -256,6 +260,7 @@ trait CheckoutManager
     /**
      * Failed checkout, marks checkout as failed and deletes saved cache
      * @static
+     * @param object $checkout - The checkout object
      * @return boolean
      */
     public function failedCheckout($checkout = false)
@@ -282,7 +287,7 @@ trait CheckoutManager
      * Skips payment, simulates success checkout
      * Metodo parche para crear entradas a partir de un checkout generado (se salta el pago)
      * La transaccion es opcional
-     * @param string $code The security code
+     * @param string $code - The security code
      * @return SQL statements
      */
     public function skipPaymentAction($code = "")
@@ -393,7 +398,7 @@ trait CheckoutManager
 
     /**
      * Parses the checkout POST params
-     * @return stdObject with amount & objects_array
+     * @return object
      */
     private function _parseCheckoutData()
     {

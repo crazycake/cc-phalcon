@@ -146,8 +146,8 @@ abstract class BaseUsers extends \CrazyCake\Models\Base
     /**
      * Find User by email
      * @static
-     * @param string $email The user email
-     * @param string $account_flag The account flag value in self defined array
+     * @param string $email - The user email
+     * @param string $account_flag - The account flag value in self defined array
      * @return Users
      */
     public static function getUserByEmail($email, $account_flag = null)
@@ -162,18 +162,5 @@ abstract class BaseUsers extends \CrazyCake\Models\Base
         $conditions = implode(" AND ", $conditions);
 
         return self::findFirst(["conditions" => $conditions]);
-    }
-
-    /**
-     * Validates if a namespace exists
-     * @static
-     * @param string $namespace
-     * @return boolean
-     */
-    public static function validateNamespaceExists($namespace = "")
-    {
-        $user = self::findFirst("namespace = '$namespace'");
-
-        return $user ? true : false;
     }
 }

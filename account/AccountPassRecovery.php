@@ -55,6 +55,7 @@ trait AccountPassRecovery
 
     /**
      * View - Set New password action (vista donde se crea una nueva contraseña)
+     * @param string $encrypted_data - The encrypted data
      */
     public function newAction($encrypted_data = null)
     {

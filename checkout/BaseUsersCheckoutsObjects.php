@@ -40,8 +40,8 @@ class BaseUsersCheckoutsObjects extends \CrazyCake\Models\Base
 
     /**
      * Get checkout objects
-     * @param  string $buy_order Checkout buyOrder
-     * @param  boolean $ids Flag optional to get an array of object IDs
+     * @param  string $buy_order - Checkout buyOrder
+     * @param  boolean $ids - Flag optional to get an array of object IDs
      * @return array
      */
     public static function getCheckoutObjects($buy_order, $ids = false)
@@ -99,9 +99,12 @@ class BaseUsersCheckoutsObjects extends \CrazyCake\Models\Base
 
     /**
      * Returns a new instance of a simple checkout object
-     * @return stdClass object
+     * @param int $id - The object ID
+     * @param string $className - The object class name
+     * @param int $quantity - The object quantity
+     * @return object
      */
-    public static function newCheckoutObject($id = null, $className = "CheckoutObject", $quantity = 1)
+    public static function newCheckoutObject($id = 0, $className = "CheckoutObject", $quantity = 1)
     {
         $new_object = new \stdClass();
 

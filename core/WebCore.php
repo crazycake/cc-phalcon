@@ -27,14 +27,14 @@ abstract class WebCore extends AppCore implements WebSecurity
 
     /**
      * Set App Javascript Properties for global scope
-     * @param object $js_app
+     * @param object $js_app - The javascript app object reference
      */
     abstract protected function setAppJavascriptProperties($js_app);
 
     /**
      * Checks Browser Support
-     * @param string $browser The browser family [MSIE, Chrome, Firefox, Opera, Safari]
-     * @param int $version
+     * @param string $browser - The browser family [MSIE, Chrome, Firefox, Opera, Safari]
+     * @param int $version - The browser short version
      *
      */
     abstract protected function checkBrowserSupport($browser, $version);

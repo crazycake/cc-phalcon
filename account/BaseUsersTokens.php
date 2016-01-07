@@ -65,16 +65,16 @@ class BaseUsersTokens extends \CrazyCake\Models\Base
         if ($this->validationHasFailed() == true)
             return false;
     }
-    
+
     /** ------------------------------------------- § ------------------------------------------------ **/
 
     /**
      * Find Token By User and Value (make sure record exists)
      * @static
-     * @param int $user_id The user ID
-     * @param string $type The token type
-     * @param string $token The token value
-     * @return UsersTokens
+     * @param int $user_id - The user ID
+     * @param string $type - The token type
+     * @param string $token - The token value
+     * @return object
      */
     public static function getTokenByUserAndValue($user_id, $type = 'activation', $token)
     {
@@ -87,9 +87,9 @@ class BaseUsersTokens extends \CrazyCake\Models\Base
     /**
      * Find Token By User and Token Type
      * @static
-     * @param int $user_id
-     * @param string $type
-     * @return UsersTokens
+     * @param int $user_id - The user ID
+     * @param string $type - The token type
+     * @return object
      */
     public static function getTokenByUserAndType($user_id, $type = 'activation')
     {
@@ -102,9 +102,9 @@ class BaseUsersTokens extends \CrazyCake\Models\Base
     /**
      * Saves a new ORM object
      * @static
-     * @param int $user_id
-     * @param string $type
-     * @return mixed
+     * @param int $user_id - The user ID
+     * @param string $type - The token type, default is 'activation'
+     * @return mixed [string|boolean]
      */
     public static function saveNewToken($user_id, $type = 'activation')
     {
@@ -125,8 +125,8 @@ class BaseUsersTokens extends \CrazyCake\Models\Base
 
     /**
      * Check token date and generate a new user token if expired, returns a token object
-     * @param int $user_id
-     * @param string $type
+     * @param int $user_id - The user ID
+     * @param string $type - The token type
      * @return string
      */
     public static function generateNewTokenIfExpired($user_id, $type)
@@ -160,7 +160,7 @@ class BaseUsersTokens extends \CrazyCake\Models\Base
      * DI dependency injector must have cryptify service
      * UserTokens must be set in models
      * @static
-     * @param string $encrypted_data
+     * @param string $encrypted_data - The encrypted data
      * @return array
      */
     public static function handleUserTokenValidation($encrypted_data = null)

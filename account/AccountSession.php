@@ -17,11 +17,13 @@ trait AccountSession
 {
     /**
      * Set user session data
+     * @param object $session - The session object reference
      */
     abstract protected function getUserSessionData($session);
 
     /**
      * Listener - Append properties to user session
+     * @param object $user - The user object reference
      */
     abstract protected function setUserSessionAsLoggedIn($user);
 
@@ -64,7 +66,7 @@ trait AccountSession
 
     /**
      * Set user data object for view
-     * @param array $filter A string array of properties to filter
+     * @param array $filter - A string array of properties to filter
      */
     protected function _setUserDataForView($filter = array())
     {
@@ -76,7 +78,7 @@ trait AccountSession
 
     /**
      * Check that user is logged in
-     * @param boolean $dispatch_logout, Handles the response for loggedOut status
+     * @param boolean $dispatch_logout - Handles the response for loggedOut status
      * @return boolean
      */
     protected function _checkUserIsLoggedIn($dispatch_logout = false)
@@ -118,7 +120,7 @@ trait AccountSession
 
     /**
      * Set user Session as logged in
-     * @param int $user_id The user id
+     * @param int $user_id - The user ID
      */
     protected function _setUserSessionAsLoggedIn($user_id)
     {
@@ -146,10 +148,9 @@ trait AccountSession
     /**
      * Handles response on logged in event, check for pending redirection
      * Defaults uri => account
-     * @param string $uri The URI to redirect after loggedIn
-     * @param array $payload Sends a payload response instead of redirection (optional)
-     * @param boolean $auth_redirect Flag to check session auth redirection (optional)
-     * TODO set default uri as param config
+     * @param string $uri - The URI to redirect after loggedIn
+     * @param array $payload - Sends a payload response instead of redirection (optional)
+     * @param boolean $auth_redirect - Flag to check session auth redirection (optional)
      */
     protected function _handleResponseOnLoggedIn($uri = "account", $payload = null, $auth_redirect = true)
     {
@@ -163,19 +164,16 @@ trait AccountSession
 
         //check for ajax request
         if($this->request->isAjax()) {
-            //send JSON response
             $this->_sendJsonResponse(200, empty($payload) ? ["redirectUri" => $uri] : $payload);
         }
         else {
-            //for non ajax request
             $this->_redirectTo($uri);
         }
     }
 
     /**
      * Set redirection URL for after loggedIn event
-     * @param string $uri The URL to be redirected
-     * @param string $key The session dictionary key
+     * @param string $uri - The URL to be redirected
      */
     protected function _setSessionRedirectionOnLoggedIn($uri = null)
     {
@@ -198,8 +196,8 @@ trait AccountSession
 
     /**
      * Get logged in user session data
-     * @param array $filter Filters sensitive data
-     * @return array The session array
+     * @param array $filter - Filters sensitive data
+     * @return array - The session array
      */
     protected function _getUserSessionData($filter = array())
     {
@@ -230,10 +228,10 @@ trait AccountSession
 
     /**
      * Update user session data
-     * @param array $data
+     * @param array $data - Input user data array
      * @return boolean
      */
-    protected function _updateUserSessionData($data)
+    protected function _updateUserSessionData($data = array())
     {
         //get user session
         $user_session = $this->session->get("user");
@@ -254,7 +252,7 @@ trait AccountSession
 
     /**
      * Destroy user session data and redirect to home
-     * @param string $uri The URI to redirect
+     * @param string $uri - The URI to redirect
      */
     protected function _destroyUserSessionAndRedirect($uri = "signIn")
     {
@@ -267,9 +265,9 @@ trait AccountSession
 
     /**
      * Add a new custom object to user session
-     * @param string $key The key name of the session (required)
-     * @param string $obj The object (required)
-     * @param string $index The index of the array (optional)
+     * @param string $key - The key name of the session (required)
+     * @param string $obj - The object (required)
+     * @param string $index - The index of the array (optional)
      * @return boolean
      */
     protected function _addSessionObject($key = "session_objects", $obj = null, $index = null)
@@ -294,8 +292,8 @@ trait AccountSession
 
     /**
      * Get custom objects stored in session
-     * @param string $key The key name of the session
-     * @return mixed[boolean|array]
+     * @param string $key - The key name of the session
+     * @return mixed [boolean|array]
      */
     protected function _getSessionObjects($key = "session_objects")
     {
@@ -307,8 +305,8 @@ trait AccountSession
 
     /**
      * Removes custom session object
-     * @param string $key The key name of the session
-     * @param string $index The index in array to be removed
+     * @param string $key - The key name of the session
+     * @param string $index - The index in array to be removed
      * @return boolean
      */
     protected function _removeSessionObject($key = "session_objects", $index = null)
@@ -326,7 +324,7 @@ trait AccountSession
 
     /**
      * Destroy session custom objects stored in session
-     * @param string $key The key name of the session
+     * @param string $key - The key name of the session
      */
     protected function _destroySessionObjects($key = "session_objects")
     {
@@ -340,7 +338,7 @@ trait AccountSession
 
     /**
      * Redirect to account controller, cames from a loggedIn
-     * @param boolean $check_logged_in Checks if user is logged in, if not skips redirect
+     * @param boolean $check_logged_in - Checks if user is logged in, if not skips redirect
      */
     protected function _redirectToAccount($check_logged_in = false)
     {
