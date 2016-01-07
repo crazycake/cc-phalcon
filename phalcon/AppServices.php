@@ -38,8 +38,8 @@ class AppServices
 
     /**
      * Constructor
-     * @param string $mod The app module
-     * @param array $loader The app loader instance
+     * @param string $mod - The app module
+     * @param array $loader - The app loader instance
      */
     public function __construct($mod = null, $loader = null)
     {
@@ -54,7 +54,7 @@ class AppServices
 
     /**
      * Get the DI
-     * @return object The Dependency Injector
+     * @return object - The Dependency Injector
      */
     public function getDI()
     {
@@ -119,7 +119,7 @@ class AppServices
     /**
      * Set Common Services
      * @access private
-     * @param object $di
+     * @param object $di - The DI object
      */
     private function _setCommonServices(&$di)
     {
@@ -168,7 +168,8 @@ class AppServices
     /**
      * Set Database Service
      * @access private
-     * @param object $di
+     * @param object $di - The DI object
+     * @param string $adapter - The DB adapter
      */
     private function _setDatabaseService(&$di, $adapter = 'mysql')
     {
@@ -191,7 +192,7 @@ class AppServices
      * Set Translation Service
      * GetText adapter (multi-lang support)
      * @access private
-     * @param object $di
+     * @param object $di - The DI object
      */
     private function _setTranslationService(&$di)
     {
@@ -207,7 +208,7 @@ class AppServices
     /**
      * Set MvC Services
      * @access private
-     * @param object $di
+     * @param object $di - The DI object
      */
     private function _setMvcServices(&$di)
     {

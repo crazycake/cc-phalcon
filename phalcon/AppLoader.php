@@ -85,7 +85,7 @@ abstract class AppLoader
     /**
      * Constructor
      * @access public
-     * @param string $dir The upload directory
+     * @param string $mod - The input module
      */
     public function __construct($mod = null)
     {
@@ -107,7 +107,7 @@ abstract class AppLoader
         define("APP_PATH", MODULE_PATH."app/" );
         define("PUBLIC_PATH", MODULE_PATH."public/");
         define("EXEC_START", microtime(true));  //for debugging render time
-        
+
         //start webapp loader flux
         $this->_directoriesSetup();
         $this->_autoloadClasses();
@@ -119,7 +119,7 @@ abstract class AppLoader
     /**
      * Set App Dependency Injector
      * @access public
-     * @param array $module_configs extended module configs
+     * @param array $module_configs - Extended module configs
      */
     public function setAppDependencyInjector($module_configs = array())
     {
@@ -133,7 +133,8 @@ abstract class AppLoader
     /**
      * Start app module execution
      * @access public
-     * @param mixed
+     * @param function $routes_fn - A function that defined app routes
+     * @param array $argv - Input arguments for CLI
      */
     public function start($routes_fn = null, $argv = null)
     {
@@ -218,7 +219,8 @@ abstract class AppLoader
      * For production use defined URIS, for dev local folders path
      * and for staging or testing URI replacement
      * @static
-     * @param  string $module The module name
+     * @param  string $module - The module name
+     * @param  string $uri - A uri to be appended
      * @return string
      */
     public static function getModuleURL($module = "", $uri = "")
@@ -238,10 +240,10 @@ abstract class AppLoader
     /**
      * Extract assets inside the phar file
      * @static
-     * @param  string $assets_uri The phar assets phar as URI, not absolute & must end with a slash
-     * @param  string $cache_path The app cache path, must end with a slash
-     * @param  string $force_extract Forces extraction not validating contents in given cache path
-     * @return mixed[boolean|string] The absolute include cache path
+     * @param string $assets_uri - The phar assets phar as URI, not absolute & must end with a slash
+     * @param string $cache_path - The app cache path, must end with a slash
+     * @param string $force_extract - Forces extraction not validating contents in given cache path
+     * @return mixed [boolean|string] - The absolute include cache path
      */
     public static function extractAssetsFromPhar($assets_uri = null, $cache_path = null, $force_extract = false)
     {
@@ -287,6 +289,7 @@ abstract class AppLoader
     /**
      * Set Module configurations
      * @access private
+     * @param array $module_configs - The module config options
      */
     private function _moduleConfigurationSetUp($module_configs = array())
     {
@@ -389,9 +392,8 @@ abstract class AppLoader
      * Use Phar::running() to get path of current phar running
      * Use get_included_files() to see all files that has loaded
      * it seems that phalcon's loader->registerNamespaces don't consider phar inside paths
-     * @param  object $loader   Phalcon loader object
-     * @param  array  $packages Modules array
-     * @return void
+     * @param object $loader - Phalcon loader object
+     * @param array $packages - Modules packages list
      */
     private function _loadStaticLibs($loader = null, $packages = array())
     {
@@ -477,7 +479,7 @@ abstract class AppLoader
 
     /**
      * Minifies HTML output
-     * @param string $buffer The buffer
+     * @param string $buffer - The input buffer
      */
      private function _minifyHTML($buffer)
      {

@@ -23,9 +23,9 @@ class ExceptionsPlugin extends \Phalcon\Mvc\User\Plugin
 
 	/**
 	 * This action is executed before a exception ocurrs.
-	 * @param Event $event
-	 * @param Dispatcher $dispatcher
-	 * @param Exception $exception
+	 * @param Event $event - The Phalcon event
+	 * @param Dispatcher $dispatcher - The Phalcon dispatcher
+	 * @param Exception $exception - Any exception
 	 * @return boolean
 	 */
 	public function beforeException(\Phalcon\Events\Event $event, \Phalcon\Mvc\Dispatcher $dispatcher, \Exception $exception)
@@ -84,7 +84,7 @@ class MinifiedFilter implements \Phalcon\Assets\FilterInterface
 {
 	/**
 	 * Filter for minified files
-	 * @param  string $contents
+	 * @param string $contents - A input string to filter
 	 * @return string
 	 */
     public function filter($contents)
