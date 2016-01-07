@@ -25,8 +25,8 @@ class QRMaker
 
 	/**
 	 * constructor
-	 * @param string $log_path   Log directory path, required
-	 * @param string $cache_path Cache directory path, required
+	 * @param string $log_path - Log directory path, required
+	 * @param string $cache_path - Cache directory path, required
 	 */
 	function __construct($log_path, $cache_path = null)
 	{
@@ -45,7 +45,8 @@ class QRMaker
 
     /**
      * Init and define consts
-     * @return [type] [description]
+	 * @param string $log_path - The app log path
+     * @param string $cache_path - The app cache path
      */
     protected function init($log_path, $cache_path)
     {
@@ -152,13 +153,15 @@ class QRMaker
 		return;
 	}
 
+	/* --------------------------------------------------- § -------------------------------------------------------- */
+	
 	/**
 	 * Embed Logo in QR Image
 	 * @access private
-	 * @param  string $qr_path
-	 * @param  string $embed_img_path
-	 * @param  int $embed_img_width (optional)
-	 * @param  int $embed_img_height (optional)
+	 * @param string $qr_path - The QR image path
+	 * @param string $embed_img_path - An image to be embedded in the input QR image
+	 * @param int $embed_img_width - The embed image width (optional)
+	 * @param int $embed_img_height - The embed image height (optional)
 	 * @return string
 	 */
 	private function _embedLogo($qr_path, $embed_img_path, $embed_img_width = 90, $embed_img_height = 90)
@@ -197,7 +200,7 @@ class QRMaker
 	/**
 	 * Class Exists in Namespace
 	 * @access private
-	 * @param  string $class_name
+	 * @param  string $class_name - A class name
 	 * @return string
 	 */
 	private function _class_exists($class_name)
