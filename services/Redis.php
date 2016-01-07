@@ -49,9 +49,9 @@ class Redis
 
     /**
      * Saves data to cache server
-     * @param string $key The Key
-     * @param mixed $value The Value for Key
-     * @return boolean True if data was set in cache.
+     * @param string $key - The Key
+     * @param mixed $value - The Value for Key
+     * @return boolean - Value is true if data was set in cache.
      */
     public function set($key = "", $value = null)
     {
@@ -85,9 +85,9 @@ class Redis
 
      /**
       * Gets cached data
-      * @param string $key The Key for searching
-      * @param boolean $decode Flag if data must be json_decoded
-      * @return mixed Object or null
+      * @param string $key - The Key for searching
+      * @param boolean $decode - Flag if data must be json_decoded
+      * @return object - Returns null if object was not found
       */
      public function get($key = "", $decode = true)
      {
@@ -111,8 +111,8 @@ class Redis
 
      /**
       * Deletes a cached key
-      * @param string $key The Key for searching
-      * @return boolean Returns true if was an affected key
+      * @param string $key - The Key for searching
+      * @return boolean - Returns true if was an affected key
       */
      public function delete($key = "")
      {
@@ -142,6 +142,7 @@ class Redis
     /**
      * Sets up redis connection with predis lib.
      * @link https://github.com/nrk/predis/wiki/Connection-Parameters
+     * @param array $conf - The input config data
      * scheme : defaults tcp.
      * host : defaults to localhost.
      * port : Redis port number.

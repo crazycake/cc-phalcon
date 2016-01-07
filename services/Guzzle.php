@@ -24,11 +24,11 @@ trait Guzzle
 
 	/**
      * Do a asynchronously request through Guzzle
-     * @param string $url The request base URL
-     * @param string $uri The request URI
-     * @param array $data The encrypted string params data
-     * @param string $method The HTTP method (GET, POST)
-     * @param string $sockets Makes async call as socket connection
+     * @param string $url - The request base URL
+     * @param string $uri - The request URI
+     * @param array $data - The encrypted string params data
+     * @param string $method - The HTTP method (GET, POST)
+     * @param string $socket - Makes async call as socket connection
      */
     protected function _sendAsyncRequest($url = null, $uri = null, $data = null, $method = "GET", $socket = false)
     {
@@ -69,9 +69,9 @@ trait Guzzle
 
     /**
      * Do a GET request
-     * @param  object $client The HTTP Guzzle client
-     * @param  string $uri   The URI
-     * @param  object $data  The encrypted string params data
+     * @param object $client - The HTTP Guzzle client
+     * @param string $uri - The URI
+     * @param object $data - The encrypted string params data
      */
     private function _getRequest($client, $uri, $data)
     {
@@ -92,9 +92,9 @@ trait Guzzle
 
     /**
      * Do a POST request
-     * @param  object $client The HTTP Guzzle client
-     * @param  string $uri   The URI
-     * @param  object $data  The encrypted string params data
+     * @param object $client - The HTTP Guzzle client
+     * @param string $uri - The URI
+     * @param object $data - The encrypted string params data
      */
     private function _postRequest($client, $uri, $data)
     {
@@ -116,8 +116,8 @@ trait Guzzle
 
     /**
      * Logs Guzzle promise response
-     * @param object $promise
-     * @param string $method
+     * @param object $promise - The promise object
+     * @param string $uri - A given URI
      */
     private function _sendPromise($promise, $uri)
     {
@@ -163,9 +163,9 @@ trait Guzzle
 
     /**
      * Simulates a socket async request without waiting for response
-     * @param  string $url The URL
-     * @param  array $data The encrypted string params data
-     * @param  string $method The HTTP Method [GET or POST]
+     * @param string $url - The URL
+     * @param array $data - The encrypted string params data
+     * @param string $method - The HTTP Method [GET or POST]
      */
     private function _socketAsync($url = "", $data = "", $method = "GET")
     {

@@ -28,8 +28,8 @@ class SoapClientHelper extends \SoapClient
 
     /**
      * Set Soap Security files
-     * @param string $key  The key file path
-     * @param string $cert The cert file path
+     * @param string $key - The key file path
+     * @param string $cert - The cert file path
      */
     function setSecurityFiles($key = null, $cert = null)
     {
@@ -38,8 +38,13 @@ class SoapClientHelper extends \SoapClient
     }
 
 	/**
-     * implements Soap Client::_doRequest Method
+     * Implements Soap Client::_doRequest Method
      * @link http://php.net/manual/en/soapclient.dorequest.php
+     * @param string $request
+     * @param string $location
+     * @param string $action
+     * @param int $version
+     * @param int $one_way
      */
     function __doRequest($request, $location, $saction, $version, $one_way = null)
     {

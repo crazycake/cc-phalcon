@@ -48,7 +48,7 @@ class GetText extends Adapter implements AdapterInterface
 
     /**
      * Class constructor.
-     * @param array $options Required options:
+     * @param array $options - Required options:
      *     (string) directory
      *     (string) domain
      *     (array) supported
@@ -83,6 +83,7 @@ class GetText extends Adapter implements AdapterInterface
 
     /**
      * Sets the current language & GetTex lang files domain
+     * @param string $new_lang - The new language
      * @return void
      */
     public function setLanguage($new_lang = null)
@@ -129,7 +130,7 @@ class GetText extends Adapter implements AdapterInterface
     /**
      * {@inheritdoc}
      *
-     * @param  string  $index
+     * @param string $index
      * @return boolean
      */
     public function exists($index)

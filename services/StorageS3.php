@@ -40,10 +40,10 @@ class StorageS3
     private $s3;
 
     /**
-     * contructor
-     * @param string $access AWS access Key
-     * @param string $secret AWS secret key
-     * @param string $bucket The AWS S3 bucket name
+     * Contructor
+     * @param string $access - AWS access Key
+     * @param string $secret - AWS secret key
+     * @param string $bucket - The AWS S3 bucket name
      */
     function __construct($access, $secret, $bucket)
     {
@@ -71,9 +71,9 @@ class StorageS3
 
     /**
      * Push a object to AWS S3
-     * @param string $file The file path
-     * @param string $uploadName The upload name (route)
-     * @param boolean $private Flag for private file
+     * @param string $file - The file path
+     * @param string $uploadName - The upload name (route)
+     * @param boolean $private - Flag for private file
      */
     public function putObject($file, $uploadName, $private = false)
     {
@@ -89,9 +89,9 @@ class StorageS3
 
     /**
      * Get an object
-     * @param string $uploadName The upload name (route)
-     * @param boolean $parseBody Return only the binary content
-     * @throws Exception $e
+     * @param string $uploadName - The upload name (route)
+     * @param boolean $parseBody - Return only the binary content
+     * @return object
      */
     public function getObject($uploadName, $parseBody = false)
     {
@@ -105,7 +105,7 @@ class StorageS3
 
     /**
      * Deletes an object from storage
-     * @param string $uploadName The uploaded filename
+     * @param string $uploadName - The uploaded filename
      * @return boolean
      */
      public function deleteObject($uploadName)
@@ -115,10 +115,10 @@ class StorageS3
 
      /**
       * Copies an object from bucket
-      * @param string $uploadName The uploaded filename
-      * @param string $bucketDest The bucket name destination
-      * @param string $saveName The bucket file save name
-      * @return mixed
+      * @param string $uploadName - The uploaded filename
+      * @param string $bucketDest - The bucket name destination
+      * @param string $saveName - The bucket file save name
+      * @return boolean
       */
      public function copyObject($uploadName, $bucketDest = null, $saveName = null)
      {

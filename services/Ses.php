@@ -56,7 +56,7 @@ trait Ses
 
 	/**
      * Async Handler - Sends contact email (always used)
-     * @param array $message_data Must contains keys 'name', 'email' & 'message'
+     * @param array $message_data - Must contains keys 'name', 'email' & 'message'
      * @return json response
      */
     public function sendSystemMail($message_data)
@@ -83,8 +83,8 @@ trait Ses
 
     /**
      * Sends a system mail for exception alert
-     * @param  object $exception An exception object
-     * @param  object $data      Informative appended data
+     * @param object $exception - An exception object
+     * @param object $data - Informative appended data
      */
     public function sendSystemMailForException($exception, $data = null)
     {
@@ -105,9 +105,8 @@ trait Ses
     }
 
     /**
-     * Async Handler - Sends mail account-checker
-     * Sends an activation message
-     * @param int $user_id
+     * Async Handler - Sends mail for account activation (email validation)
+     * @param int $user_id - The user ID
      * @return json response
      */
     public function sendMailForAccountActivation($user_id)
@@ -116,15 +115,16 @@ trait Ses
 
         $users_class = $this->_getModuleClass('users');
         $user = $users_class::getObjectById($user_id);
+
         if (!$user)
             $this->_sendJsonResponse(403);
 
         //get user token
         $tokens_class = $this->_getModuleClass('users_tokens');
         $token = $tokens_class::generateNewTokenIfExpired($user_id, 'activation');
-        if (!$token) {
+
+        if (!$token)
             $this->_sendJsonResponse(500);
-        }
 
         //create flux uri
         $uri = "auth/activation/".$token->encrypted;
@@ -144,9 +144,9 @@ trait Ses
     }
 
     /**
-     * Async Handler - Sends mail pass-word recovery
-     * Contiene la logica de generar y enviar un token
-     * @param int $user_id
+     * Async Handler - Sends mail for password recovery
+     * Generates & sends a validation token
+     * @param int $user_id - The user ID
      * @return json response
      */
     public function sendMailForPasswordRecovery($user_id)
@@ -155,6 +155,7 @@ trait Ses
 
         $users_class = $this->_getModuleClass('users');
         $user = $users_class::getObjectById($user_id);
+
         //if invalid user, send permission denied response
         if (!$user)
             $this->_sendJsonResponse(403);
@@ -162,9 +163,9 @@ trait Ses
         //get user token
         $tokens_class = $this->_getModuleClass('users_tokens');
         $token = $tokens_class::generateNewTokenIfExpired($user_id, 'pass');
-        if (!$token) {
+
+        if (!$token)
             $this->_sendJsonResponse(500);
-        }
 
         //create flux uri
         $uri = "password/new/".$token->encrypted;
@@ -187,8 +188,8 @@ trait Ses
 	/**
      * Generates a new HTML styled with inline CSS as style attribute
      * DI dependency injector must have simpleView service
-     * @param string $mail The mail template
-     * @param array $data The view data
+     * @param string $mail - The mail template
+     * @param array $data - The view data
      * @return string
      */
     public function _getInlineStyledHtml($mail, $data)
@@ -212,12 +213,12 @@ trait Ses
 
     /**
      *  Sends a message through mandrill API
-     * @param string $html_raw
-     * @param string $subject
-     * @param mixed(string|array) $recipients
-     * @param array $tags
-     * @param array $attachments Array with sub-array(s) with content, type and name props
-     * @param boolean $async
+     * @param string $html_raw - The HTML raw string
+     * @param string $subject - The mail subject
+     * @param mixed(string|array) $recipients - The receiver emails
+     * @param array $tags - Monitor tags
+     * @param array $attachments - Array with sub-array(s) with content, type and name props
+     * @param boolean $async - Async flag, defaults to true
      * @return string
      */
     public function _sendMessage($html_raw, $subject, $recipients, $tags = array(), $attachments = array(), $async = true)
