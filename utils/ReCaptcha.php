@@ -23,7 +23,7 @@ class ReCaptcha
 
     /**
      * Constructor
-     * @param string $secret_key
+     * @param string $secret_key - The reCaptcha secret key
      * @throws Exception
      */
     public function __construct($secret_key = null)
@@ -37,7 +37,7 @@ class ReCaptcha
 
     /**
      * Verifies that recaptcha value is valid with Google reCaptcha API
-     * @param string $gRecaptchaResponse The reCaptcha response
+     * @param string $gRecaptchaResponse - The reCaptcha response
      * @return bool
      */
     public function isValid($gRecaptchaResponse = null)

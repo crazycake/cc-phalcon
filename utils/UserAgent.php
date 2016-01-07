@@ -26,7 +26,7 @@ class UserAgent
 
     /**
      * Constructor
-     * @param string $u_agent The client user agent
+     * @param string $u_agent - The client user agent
      */
     public function __construct($u_agent = null)
     {
@@ -67,6 +67,7 @@ class UserAgent
 
     /**
      * Check if user agent is legacy
+     * @param array $data - The UA data
      * @return boolean
      */
     private function _isUserAgentLegacy($data = array())

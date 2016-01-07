@@ -24,7 +24,7 @@ class PdfHelper
     private $wkhtmltopdf;
 
     /**
-     * The snappy lirary
+     * The snappy library
      * @var string
      */
     private $snappy;
@@ -45,10 +45,10 @@ class PdfHelper
 
     /**
      * Generates a PDF file from HTML
-     * @param string $html The html input
-     * @param string $output_path The output file path
-     * @param boolean $binary Return output as binary
-     * @return mixed
+     * @param string $html - The html input
+     * @param string $output_path - The output file path
+     * @param boolean $binary - Binary output flag
+     * @return mixed [string|binary]
      */
     public function generatePdfFileFromHtml($html, $output_path, $binary = true)
     {
@@ -79,9 +79,9 @@ class PdfHelper
 
     /**
      * Merge PDF files
-     * @param  array   $files The file paths array
-     * @param  string  $output The file paths array
-     * @param  string  $options Options: 'file', 'browser', 'download', 'string'
+     * @param array $files - The file paths array
+     * @param string $output - The file paths array
+     * @param string $options - Options: 'file', 'browser', 'download', 'string'
      */
     public function mergePdfFiles($files = array(), $output = "pdf_merged.pdf", $option = "browser")
     {

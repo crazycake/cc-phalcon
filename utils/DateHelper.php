@@ -17,7 +17,8 @@ class DateHelper
     /**
      * Returns daytime passed from Now and given date
      * @static
-     * @param date $date with Format Y-m-d H:i:s or a DateTime object
+     * @param date $date - Format Y-m-d H:i:s or a DateTime object
+     * @param string $f - The interval unit datetime, default is days.
      * @return int
      */
     public static function getTimePassedFromDate($date = null, $f = "days")
@@ -45,9 +46,9 @@ class DateHelper
     /**
      * Get Translated Month Name, abbreviation support
      * @static
-     * @param  mixed  $month      Month int or string, example: 01, 08, 11
-     * @param  boolean $abbr      Option for month name abbreviated
-     * @return string             The translated month name
+     * @param mixed [int|string] $month - Month value, example: 01, 08, 11
+     * @param boolean $abbr - Option for month name abbreviated
+     * @return string - The translated month name
      */
     public static function getTranslatedMonthName($month = null, $abbr = false)
     {
@@ -88,11 +89,11 @@ class DateHelper
     /**
      * Get Translated Date, default translation (spanish)
      * @static
-     * @param  int  $year         The year (optional)
-     * @param  mixed  $month      Month int or string, example: 01, 11 (required)
-     * @param  mixed  $day        Day int or string. (optional)
-     * @param  string $time       The time, no format is required. (optional)
-     * @return string             The translated Date Time
+     * @param int $year - The year (optional)
+     * @param mixed $month - Month int or string, example: 01, 11 (required)
+     * @param mixed $day - Day int or string. (optional)
+     * @param string $time - The time, no format is required. (optional)
+     * @return string - The translated Date Time
      */
     public static function getTranslatedDateTime($year = "", $month = "", $day = "", $time = "")
     {
@@ -156,7 +157,7 @@ class DateHelper
     /**
      * Get translated current day
      * @static
-     * @return string The translated date
+     * @return string - The translated date
      */
     public static function getTranslatedCurrentDate()
     {
@@ -170,7 +171,7 @@ class DateHelper
      * Format seconds to HH:MM style, example 23:45 or 23h 45m
      * @static
      * @param int $seconds
-     * @param boolean $human For human style format
+     * @param boolean $human - For human style format
      * @return string
      */
     public static function formatSecondsToHHMM($seconds, $human = true)

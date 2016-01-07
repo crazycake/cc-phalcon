@@ -20,7 +20,7 @@ class FormHelper
 
     /**
      * Validates chilean rut
-     * @param string $rut The input form rut (without points)
+     * @param string $rut - The input form rut (without points)
      * @return boolean
      */
     public static function validateRut($input_rut = "")
@@ -38,8 +38,8 @@ class FormHelper
      * Formats price
      * @todo Complete other global coins formats
      * @static
-     * @param numeric $price
-     * @param string $coin
+     * @param numeric $price - The price numeric value
+     * @param string $coin - The price coin
      * @return string
      */
     public static function formatPrice($price, $coin)
@@ -114,16 +114,16 @@ class FormHelper
 
     /**
      * Validates Rut Verification Digit
-     * @param  string $T [description]
-     * @return mixed (int or string)
+     * @param  string $R - The input rut without VD
+     * @return mixed [int|string]
      */
-    private static function validateRutVD($T)
+    private static function validateRutVD($R)
     {
         $M = 0;
         $S = 1;
 
-        for(; $T; $T = floor($T/10))
-            $S = ($S + ($T % 10) * (9 - ($M++ % 6))) % 11;
+        for(; $R; $R = floor($R/10))
+            $S = ($S + ($R % 10) * (9 - ($M++ % 6))) % 11;
 
         return $S ? $S - 1 : 'k';
     }

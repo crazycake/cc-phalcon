@@ -22,11 +22,11 @@ class GPS
      * Calculates the great-circle distance between two points, with the Vincenty formula.
      * @access public
      * @static
-     * @param float $latitudeFrom Latitude of start point in [deg decimal]
-     * @param float $longitudeFrom Longitude of start point in [deg decimal]
-     * @param float $latitudeTo Latitude of target point in [deg decimal]
-     * @param float $longitudeTo Longitude of target point in [deg decimal]
-     * @param float $earthRadius Mean earth radius in [m]
+     * @param float $latitudeFrom - Latitude of start point in [deg decimal]
+     * @param float $longitudeFrom - Longitude of start point in [deg decimal]
+     * @param float $latitudeTo - Latitude of target point in [deg decimal]
+     * @param float $longitudeTo - Longitude of target point in [deg decimal]
+     * @param float $earthRadius - Mean earth radius in [m]
      * @return float Distance between points in [m] (same as earthRadius)
      */
     public static function vincentyGreatCircleDistance($latitudeFrom, $longitudeFrom, $latitudeTo, $longitudeTo, $earthRadius = self::EARTH_RADIUS)

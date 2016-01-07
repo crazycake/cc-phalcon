@@ -40,7 +40,7 @@ class Cryptify
 
     /**
      * constructor
-     * @param string $key The salt key
+     * @param string $key - The salt key
      */
     public function __construct($key = null)
     {
@@ -60,8 +60,8 @@ class Cryptify
 
     /**
      * Encrypts data to be passed in a GET request
-     * @param mixed [string|array] $data
-     * @return string The encrypted string
+     * @param mixed [string|array] $data - The input data to encrypt
+     * @return string - The encrypted string
      */
     public function encryptForGetRequest($data = null)
     {
@@ -82,9 +82,9 @@ class Cryptify
 
     /**
      * Decrypts data received in a GET request
-     * @param string $encrypted_text The encrypted text
-     * @param mixed [boolean|string] parse Optional, parse the string from a token (explode) or parses a json
-     * @return mixed string|array The decrypted string
+     * @param string $encrypted_text - The encrypted text
+     * @param mixed [boolean|string] $parse - Parses the string from a token (explode) or parses a json (optional)
+     * @return mixed string|array - The decrypted string
      */
     public function decryptForGetResponse($encrypted_text = "", $parse = false)
     {
@@ -119,7 +119,7 @@ class Cryptify
 
     /**
      * Encrypts a numeric ID and returns the hash
-     * @param int $id
+     * @param int $id - A numeric ID
      * @return string
      */
     public function encryptHashId($id)
@@ -132,8 +132,8 @@ class Cryptify
 
     /**
      * Decrypt a numeric ID and returns the hash
-     * @param string $hash
-     * @return mixed
+     * @param string $hash - An encrypted ID
+     * @return mixed [string|boolean]
      */
     public function decryptHashId($hash)
     {
@@ -147,7 +147,7 @@ class Cryptify
 
     /**
      * Generates a random alphanumeric code
-     * @param  int $length The code length
+     * @param int $length - The code length
      * @return string
      */
     public function generateAlphanumericCode($length = 8)

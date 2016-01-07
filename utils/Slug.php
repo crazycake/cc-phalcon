@@ -20,15 +20,15 @@ class Slug
      * Creates a slug to be used for pretty URLs
      * @static
      * @link http://cubiq.org/the-perfect-php-clean-url-generator
-     * @param string $string
-     * @param array $replace placeholders to be replaced
-     * @param string $delimiter
+     * @param string $string - The input string
+     * @param array $replace - Placeholders to be replaced
+     * @param string $delimiter - A delimiter
      * @return mixed
      */
-    public static function generate($string, $replace = array(), $delimiter = '-')
+    public static function generate($string = "", $replace = array(), $delimiter = "-")
     {
         if (!extension_loaded('iconv')) {
-            throw new Exception('Slug -> iconv module not loaded');
+            throw new Exception('Slug -> iconv php module not loaded');
         }
 
         // Save the old locale and set the new locale to UTF-8
