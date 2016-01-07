@@ -37,7 +37,7 @@ class BaseResultset extends Resultset
     /**
      * Parse an array of objects for Json Struct (webservices)
      * @static
-     * @param array $result A result array
+     * @param array $result - A result array
      */
     public static function splitResult($result = array())
     {
@@ -91,7 +91,7 @@ class BaseResultset extends Resultset
 
     /**
      * Returns an array of Ids of current resultSet object
-     * @param array $field The object field name
+     * @param array $field - The object field name
      * @return array of Ids
      */
     public function toIdsArray($field = "id")
@@ -102,9 +102,9 @@ class BaseResultset extends Resultset
     /**
      * Returns an array of Ids of given objects
      * @static
-     * @param array $result The resultSet array or a simple array
-     * @param array $field The object field name
-     * @param boolean $unique Flag for non repeated values
+     * @param array $result - The resultSet array or a simple array
+     * @param array $field - The object field name
+     * @param boolean $unique - Flag for non repeated values
      * @return array of Ids
      */
     public static function getIdsArray($result, $field = "id", $unique = true)

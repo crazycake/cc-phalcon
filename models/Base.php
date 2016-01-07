@@ -50,7 +50,7 @@ class Base extends \Phalcon\Mvc\Model
 
     /**
      * Find Object by ID
-     * @param int $id the object ID
+     * @param int $id - The object ID
      * @return Object
      */
     public static function getObjectById($id)
@@ -63,15 +63,15 @@ class Base extends \Phalcon\Mvc\Model
     /**
      * Get a Resulset by SQL query.
      * @static
-     * @param string $sql  The SQL string
-     * @param array $binds The query bindings (optional)
-     * @param string $className A different class name than self (optional)
+     * @param string $sql - The SQL string
+     * @param array $binds - The query bindings (optional)
+     * @param string $className - A different class name than self (optional)
      * @return mixed
      */
     public static function getObjectsByQuery($sql = "SELECT 1", $binds = array(), $className = null)
     {
         if(is_null($binds))
-            $binds = array();
+            $binds = [];
 
         if(is_null($className))
             $className = static::who();
@@ -85,16 +85,16 @@ class Base extends \Phalcon\Mvc\Model
     /**
      * Get an object property value by executing a SQL query
      * @static
-     * @param  string $sql  The SQL string
-     * @param  string $prop The object property
-     * @param  array $binds The query bindings (optional)
-     * @param  string $className A different class name than self (optional)
-     * @return mixed
+     * @param string $sql - The SQL string
+     * @param string $prop - The object property
+     * @param array $binds - The query bindings (optional)
+     * @param string $className - A different class name than self (optional)
+     * @return object
      */
     public static function getObjectPropertyByQuery($sql = "SELECT 1", $prop = "id", $binds = array(), $className = null)
     {
         if(is_null($binds))
-            $binds = array();
+            $binds = [];
 
         if(is_null($className))
             $className = static::who();
@@ -103,20 +103,20 @@ class Base extends \Phalcon\Mvc\Model
         $result = new BaseResultset(null, $object, $object->getReadConnection()->query($sql, $binds));
         $result = $result->getFirst();
 
-        return $result ? $result->{$prop} : 0;
+        return $result ? $result->{$prop} : null;
     }
 
     /**
      * Get Objects by PHQL language
      * @static
-     * @param string $sql The PHQL query string
-     * @param array $binds The binding params array
+     * @param string $sql - The PHQL query string
+     * @param array $binds - The binding params array
      * @return array
      */
     public static function getObjectsByPhql($phql = "SELECT 1", $binds = array())
     {
         if(is_null($binds))
-            $binds = array();
+            $binds = [];
 
         $query  = new PHQL($phql, \Phalcon\DI::getDefault());
         $result = $query->execute($binds);
@@ -130,14 +130,14 @@ class Base extends \Phalcon\Mvc\Model
     /**
      * Executes a PHQL Query, used for INSERT, UPDATE, DELETE
      * @static
-     * @param string $phql The PHQL query string
-     * @param array $binds The binding params array
+     * @param string $phql - The PHQL query string
+     * @param array $binds - The binding params array
      * @return boolean
      */
     public static function executePhql($phql = "SELECT 1", $binds = array())
     {
         if(is_null($binds))
-            $binds = array();
+            $binds = [];
 
         $query = new PHQL($phql, \Phalcon\DI::getDefault());
         //Executing with bound parameters
@@ -157,12 +157,12 @@ class Base extends \Phalcon\Mvc\Model
 
     /**
      * Get messages from a created or updated object
-     * @param boolean $json_encode Returns a json string
-     * @return mixed array|string
+     * @param boolean $json_encode - Returns a json string
+     * @return mixed [array|string]
      */
     public function filterMessages($json_encode = false)
     {
-        $data = array();
+        $data = [];
 
         if (!method_exists($this, 'getMessages'))
             return ($data[0] = "Unknown ORM Error");
