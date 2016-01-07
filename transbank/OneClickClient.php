@@ -47,9 +47,9 @@ class OneClickClient
 
 	/**
 	 * The init process to credit card inscription
-	 * @param  string $username     The username as namespace
-	 * @param  string $email        The user email
-	 * @param  string $response_url [description]
+	 * @param  string $username     - The username as namespace
+	 * @param  string $email        - The user email
+	 * @param  string $response_url - The response URL
 	 * @return object with token & inscription URL
 	 */
 	public function initCardInscription($username, $email, $response_url)

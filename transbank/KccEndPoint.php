@@ -24,10 +24,11 @@ class KccEndPoint extends AppCore
     const SUCCESS_URI_HANDLER = "webpay/successTrx";
     // MAC file prefix name
     const MAC_FILE_PREFIX_NAME = "MAC01Normal_";
+
     // MAC file path
-    const MAC_PATH = PROJECT_PATH."webpay/outputs/";
+    private static $MAC_PATH = PROJECT_PATH."webpay/outputs/";
     // CGI MAC exec
-    const CMD_EXEC_CGI = PUBLIC_PATH."cgi-bin/tbk_check_mac.cgi";
+    private static $CMD_EXEC_CGI = PUBLIC_PATH."cgi-bin/tbk_check_mac.cgi";
 
     /**
      * Set custom logger
@@ -58,9 +59,9 @@ class KccEndPoint extends AppCore
         $TBK_MONTO        = $_POST["TBK_MONTO"];
 
         //set MAC file name
-        $mac_file = self::MAC_PATH.self::MAC_FILE_PREFIX_NAME."$TBK_ORDEN_COMPRA.log";
+        $mac_file = self::$MAC_PATH.self::MAC_FILE_PREFIX_NAME."$TBK_ORDEN_COMPRA.log";
         //cgi command args
-        $cmd_cgi = self::CMD_EXEC_CGI." $mac_file";
+        $cmd_cgi = self::$CMD_EXEC_CGI." $mac_file";
 
         //save mac file
         $this->saveMacFile($mac_file);
@@ -118,8 +119,8 @@ class KccEndPoint extends AppCore
 
     /**
      * Log text to file
-     * @var string $text The text to log
-     * @var boolean $first Markup flag for first log line
+     * @param string $text - The text to log
+     * @param boolean $first - Markup flag for first log line
      */
     protected function logOutput($text, $first = false)
     {
@@ -131,8 +132,8 @@ class KccEndPoint extends AppCore
 
     /**
      * Sets output response
-     * @var boolean $success True means ACEPTADO
-     * @var string $log Logs something
+     * @param boolean $success - True value means ACEPTADO
+     * @param string $log - Logs something
      */
     protected function setOutput($success = true, $log = "")
     {
@@ -146,7 +147,7 @@ class KccEndPoint extends AppCore
 
     /**
      * Save Mac file with POST params
-     * @param  string $file The MAC file path
+     * @param string $file - The MAC file path
      */
     protected function saveMacFile($file)
     {
