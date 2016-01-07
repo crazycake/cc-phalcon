@@ -111,14 +111,14 @@ abstract class WebCore extends AppCore implements WebSecurity
     /**
      * Send a JSON response
      * @access protected
-     * @param string $status_code HTTP Response code like 200, 404, 500, etc.
-     * @param mixed $payload Payload to send, array or string.
-     * @param bool $error_type Can be ```success, warning, info, alert, secondary```.
-     * @param mixed $error_namespace For Javascript event manipulations, string or null value.
+     * @param string $status_code - HTTP Response code like 200, 404, 500, etc.
+     * @param mixed $payload - Payload to send, array or string.
+     * @param bool $error_type - Can be ```success, warning, info, alert, secondary```.
+     * @param mixed [string|null] $error_namespace - For Javascript event handlers.
      */
     protected function _sendJsonResponse($status_code = 200, $payload = null, $error_type = false, $error_namespace = null)
     {
-        $msg_code = array(
+        $msg_code = [
             "200" => "OK",
             "400" => "Bad Request",
             "403" => "Forbidden",
@@ -126,7 +126,7 @@ abstract class WebCore extends AppCore implements WebSecurity
             "405" => "Method Not Allowed",
             "498" => "Token expired/invalid",
             "500" => "Server Error"
-        );
+        ];
 
         //is payload an app error?
         if ($error_type) {
@@ -140,11 +140,11 @@ abstract class WebCore extends AppCore implements WebSecurity
                 $error_type = "warning";
 
             //set payload
-            $payload = array(
+            $payload = [
                 "error"     => $payload,
                 "type"      => $error_type,
                 "namespace" => $error_namespace
-            );
+            ];
         }
         else {
             //convert object to associative array
@@ -172,8 +172,8 @@ abstract class WebCore extends AppCore implements WebSecurity
 
     /**
      * Redirect to given uri as GET method
-     * @param string $uri The URI to redirect
-     * @param array $params The GET params (optional)
+     * @param string $uri - The URI to redirect
+     * @param array $params - The GET params (optional)
      */
     protected function _redirectTo($uri = "", $params = array())
     {
@@ -215,9 +215,9 @@ abstract class WebCore extends AppCore implements WebSecurity
 
     /**
      * Dispatch to Internal Error
-     * @param string $message The human error message
-     * @param string $go_back_url A go-back link URL
-     * @param string $log_error The debug message to log
+     * @param string $message-  The human error message
+     * @param string $go_back_url - A go-back link URL
+     * @param string $log_error - The debug message to log
      *
      */
     protected function _dispatchInternalError($message = null, $go_back_url = null, $log_error = "n/a")
@@ -237,7 +237,7 @@ abstract class WebCore extends AppCore implements WebSecurity
     }
 
     /**
-     * Validate CSRF token. Basta con generar un tokenKey y token por sesión.
+     * Validate CSRF token. One client token per session.
      * @access private
      */
     public function _checkCsrfToken()
@@ -281,8 +281,8 @@ abstract class WebCore extends AppCore implements WebSecurity
     /**
      * Load Javascript files into a assets Collection
      * @access protected
-     * @param array $files CSS Files to be loaded
-     * @param string $collection Name of the collection
+     * @param array $files - CSS Files to be loaded
+     * @param string $collection - Name of the collection
      */
     protected function _loadCssFiles($files = array(), $collection = "css_core")
     {
@@ -308,8 +308,8 @@ abstract class WebCore extends AppCore implements WebSecurity
     /**
      * Load Javascript files into a assets Collection
      * @access protected
-     * @param array $files JS Files to be loaded
-     * @param string $collection Name of the collection
+     * @param array $files - JS Files to be loaded
+     * @param string $collection - Name of the collection
      */
     protected function _loadJavascriptFiles($files = array(), $collection = "js_core")
     {
@@ -344,8 +344,8 @@ abstract class WebCore extends AppCore implements WebSecurity
 
     /**
      * Loads javascript modules. This method must be called once.
-     * @param  array $modules An array of modules => args
-     * @param  array $fn The loader function
+     * @param array $modules - An array of modules => args
+     * @param string $fn - The loader function name
      */
     protected function _loadJavascriptModules($modules = array(), $fn = self::JS_LOADER_FUNCTION)
     {
@@ -425,6 +425,8 @@ abstract class WebCore extends AppCore implements WebSecurity
     /**
      * Update client object property and save again in session
      * @access private
+     * @param string $prop - The property name
+     * @param string $value - The property value
      */
     private function _updateClientObjectProp($prop = "", $value = "")
     {
@@ -469,8 +471,9 @@ abstract class WebCore extends AppCore implements WebSecurity
     /**
      * Join and Minify Assets collections for view output
      * @access private
-     * @param array $collections Phalcon Assets collections, the key is a boolean minimize flag.
-     * @param string $cache_path The cache path
+     * @param array $collections - Phalcon Assets collections, the key is a boolean minimize flag.
+     * @param string $cache_path - The cache path
+     * @param string $deploy_version - A deploy version to refresh cached file (optional)
      */
     private function _joinAssetsCollections($collections = array(), $cache_path = null, $deploy_version = "0.1")
     {

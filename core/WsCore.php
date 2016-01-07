@@ -78,9 +78,9 @@ abstract class WsCore extends AppCore
      * Sends a JSON response for APIs.
      * The HTTP statusCode is always 200.
      * Codes: ```200, 400, 404, 405, 498, 500, 501, 800, 900, 901, 902```
-     * @param string $code The app message code.
-     * @param null $data Payload to send
-     * @return string The response
+     * @param string $code - The app message code.
+     * @param object $data - Payload to send
+     * @return string - The response
      */
     protected function _sendJsonResponse($code = 200, $data = null)
     {
@@ -92,9 +92,10 @@ abstract class WsCore extends AppCore
         $app_error = ($code != 200) ? true : false;
 
         //set response
-        $response = array();
-        $response["code"]   = (string)$code;
-        $response["status"] = $app_error ? "error" : "ok";
+        $response = [
+            "code"   => (string)$code,
+            "status" => $app_error ? "error" : "ok"
+        ];
 
         //error data
         if ($app_error) {
@@ -133,10 +134,11 @@ abstract class WsCore extends AppCore
     }
 
     /**
-     * Handles the request validating data
-     * @param string $prop The object property name
-     * @param boolean $optional Parameter optional flag
-     * @return mixed(object|boolean)
+     * Handles validation from a given object
+     * @param string $prop - The object property name
+     * @param boolean $optional - Parameter optional flag
+     * @param boolean $method - HTTP method, default is GET
+     * @return mixed [object|boolean]
      */
     protected function _handleObjectIdRequestParam($prop = "object_id", $optional = false, $method = 'GET')
     {
@@ -163,7 +165,6 @@ abstract class WsCore extends AppCore
 
     /**
      * API key Validation
-     * @return void
      */
     private function _validateApiKey()
     {

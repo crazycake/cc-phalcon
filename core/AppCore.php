@@ -29,19 +29,19 @@ abstract class AppCore extends Controller
 
     /**
      * Sends an async request
-     * @param  string $url The URL
-     * @param  string $uri The URI
-     * @param  array $data The data array
-     * @param  string $method **GET** or **POST** HTTP method
-     * @param  boolean $socket Use ```socket``` stategy
+     * @param  string $url - The input base URL
+     * @param  string $uri - The input URI
+     * @param  array $data - The input data
+     * @param  string $method - HTTP method: **GET** or **POST**
+     * @param  boolean $socket - Use ```socket``` stategy
      * @return json
      */
     abstract protected function _sendAsyncRequest($url = null, $uri = null, $data = null, $method = "GET", $socket = false);
 
     /**
      * Base URL extended function
-     * @param string $uri A given URI
-     * @return string The static URL
+     * @param string $uri - A given URI
+     * @return string - The static URL
      */
     protected function _baseUrl($uri = "")
     {
@@ -50,8 +50,8 @@ abstract class AppCore extends Controller
 
     /**
      * Static URL extended function
-     * @param string $uri A given URI
-     * @return string The static URL
+     * @param string $uri - A given URI
+     * @return string - The static URL
      */
     protected function _staticUrl($uri = "")
     {
@@ -61,7 +61,7 @@ abstract class AppCore extends Controller
     /**
      * Get Module Model Class Name
      * A prefix can be set in module options
-     * @param string $key The class module name uncamelize, example: 'some_class'
+     * @param string $key - The class module name uncamelize, example: 'some_class'
      */
     protected function _getModuleClass($key)
     {
@@ -79,8 +79,8 @@ abstract class AppCore extends Controller
 
     /**
      * Sends a file to buffer output response
-     * @param mixed $data The binary data to send
-     * @param integer $mime_type The mime type
+     * @param binary $data - The binary data to send
+     * @param string $mime_type - The mime type
      */
     protected function _sendFileToBuffer($data = null, $mime_type = 'application/json')
     {
@@ -120,10 +120,10 @@ abstract class AppCore extends Controller
     /**
      * Sends an async tasks as another request
      * Current implementation is a Guzzle async Request.
-     * @param array $route Struct: "controller" => "method"
-     * @param object $data The data to be passed as args
-     * @param object $method The HTTP method [GET or POST]
-     * @param object $socket Make the call as async socket connection
+     * @param array $route - Array with struct: "controller" => "method"
+     * @param object $data - The data to be passed as args
+     * @param string $method - The HTTP method [GET or POST]
+     * @param boolean $socket - Make the call as an async socket connection
      */
     protected function _asyncRequest($route = array(), $data = null, $method = "GET", $socket = false)
     {
@@ -149,8 +149,8 @@ abstract class AppCore extends Controller
 
     /**
      * Sends a mail message to user asynchronously
-     * @param string $method The Mailer method to call
-     * @param object $data  The data to be passed as args
+     * @param string $method - The Mailer method to call
+     * @param object $data - The data to be passed as args
      * @return object response
      */
     protected function _sendMailMessage($method = null, $data = null)
@@ -190,11 +190,11 @@ abstract class AppCore extends Controller
      * Also Check if get/post data is valid, if validation fails send an HTTP code, onSuccess returns a data array.
      * Required field may have a ```@``` prefix to establish that is just an optional field to be sanitized.
      * Types: ```string, email, int, float, alphanum, striptags, trim, lower, upper.```
-     * @param array $req_fields Required fields
-     * @param string $method GET, POST or MIXED
-     * @param boolean $check_csrf Checks a form CSRF token
-     * @example ```{ $data, array( "@name" => "string"), POST }```
+     * Example: ```{ $data, array( "@name" => "string"), POST }```
      * @link   http://docs.phalconphp.com/en/latest/reference/filter.html#sanitizing-data
+     * @param array $req_fields - Required fields
+     * @param string $method - HTTP method: [GET, POST, MIXED]
+     * @param boolean $check_csrf - Checks the form CSRF token
      * @return array
      */
     protected function _handleRequestParams($req_fields = array(), $method = 'POST', $check_csrf = true)
@@ -317,9 +317,9 @@ abstract class AppCore extends Controller
 
     /**
      * Validate search number & offset parameters
-     * @param int $input_num Input number
-     * @param int $input_off Input offset
-     * @param int $max_num Maximun number
+     * @param int $input_num - Input number
+     * @param int $input_off - Input offset
+     * @param int $max_num - Maximum number
      * @return array
      */
     protected function _handleNumberAndOffsetParams($input_num = null, $input_off = null, $max_num = null)
@@ -347,7 +347,7 @@ abstract class AppCore extends Controller
 
     /**
      * Logs database query & statements with phalcon event manager
-     * @param  string $logFile The log file name
+     * @param string $logFile - The log file name
      */
     protected function _logDatabaseStatements($logFile = "db.log")
     {
@@ -366,9 +366,9 @@ abstract class AppCore extends Controller
 
     /**
      * Dump a phalcon object for debugging
-     * Uses Kint if available for printing
-     * @param  object $object Any object
-     * @param  boolean $exit Flag for exit script execution
+     * For printing uses Kint library if available
+     * @param object $object - Any object
+     * @param boolean $exit - Flag for exit script execution
      * @return mixed
      */
     protected static function _varDump($object, $exit = true)

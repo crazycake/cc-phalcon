@@ -32,8 +32,7 @@ class TaskCore extends Task
 
      /**
      * Outputs app configuration in JSON format
-     * @param array $params, The args array, the 1st arg is the filter config property
-     * @return string
+     * @param array $params - The args array, the 1st arg is the filter config property
      */
     public function appConfigAction($params = array())
     {
@@ -45,8 +44,7 @@ class TaskCore extends Task
 
     /**
      * Gets cached data set by Cacher library.
-     * @param array $params The input params
-     * @return string
+     * @param array $params - The input params
      */
     public function getCacheAction($params = array())
     {
@@ -73,9 +71,9 @@ class TaskCore extends Task
 
     /**
      * Print Output with Colors
-     * @param  string $text
-     * @param  string $type Options: ["OK", "ERROR", "WARNING", "NOTE"]
-     * @return string
+     * @param string $text - The text message
+     * @param string $type - Options: ["OK", "ERROR", "WARNING", "NOTE"]
+     * @param boolean $die - Flag to stop script execution
      */
     protected function _colorize($text = "", $type = "OK", $die = false)
     {
@@ -110,10 +108,9 @@ class TaskCore extends Task
 
     /**
      * Validates module folder argument
-     * @param array $params, The args array
-     * @param int $index, The arg index to validate
-     * @param boolean $check_folder, Checks if module folder exists
-     * @return mixed
+     * @param array $params - The args array
+     * @param int $index - The arg index to validate
+     * @param boolean $check_folder - Checks if module folder exists
      */
     protected function _validatesModuleArg($params = array(), $index = 0, $check_folder = true)
     {
