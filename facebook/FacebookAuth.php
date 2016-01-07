@@ -39,9 +39,9 @@ trait FacebookAuth
 
     /**
      * Listener - On app deauthorized
-     * @param object $fb_user - The facebook user
+     * @param object $data - The response data
      */
-    abstract public function onAppDeauthorized($fb_user = null);
+    abstract public function onAppDeauthorized($data = array());
 
     /**
      * Config var
@@ -92,7 +92,7 @@ trait FacebookAuth
 
         try {
             //check signed request
-            if(!$this->__parseSignedRequest($data['signed_request']))
+            if(!$this->_parseSignedRequest($data['signed_request']))
                 return $this->_sendJsonResponse(405);
 
             //call js helper
@@ -271,13 +271,82 @@ trait FacebookAuth
 
     /**
      * WebHook - Deauthorize a facebook user
-     * @param string $signed_request - The signed request
+     * If a valid signed request is given fb user will be removed
+     * @param string $params - Params
      * @return mixed [boolean|array]
      */
-    public function deauthorizeAction($signed_request = '')
+    public function deauthorizeAction()
     {
-        //must be implemented
-        $this->onAppDeauthorized($signed_request);
+        //get or post params
+        $data = $this->_handleRequestParams([
+            '@signed_request'   => 'string',
+            '@hub_mode'         => 'string',
+            '@hub_challenge'    => 'string',
+            '@hub_verify_token' => 'string'
+        ], "MIXED", false);
+        $this->logger->debug("facebook deauthorize:\n".print_r($data,true)." Body: ".print_r($this->request->getJsonRawBody(), true));
+
+        try {
+            //validates signed request
+            if(!empty($data['signed_request'])) {
+
+                $fb_data = $this->_parseSignedRequest($data['signed_request']);
+
+                if(!$fb_data)
+                    throw new Exception("invalid Facebook Signed Request: ".print_r($fb_data, true));
+
+                //find user on db
+                $users_facebook_class = $this->_getModuleClass('users_facebook');
+                $user_fb = $users_facebook_class::getObjectById($fb_data["user_id"]);
+
+                if($user_fb) {
+                    $this->logger->debug("FacebookAuth:: Signed Request:".print_r($fb_data, true));
+                    //remove user from facebook table
+                    $user_fb->delete();
+                }
+
+                $data = $user_fb->toArray();
+                //listener, must be implemented
+                $this->onAppDeauthorized($data);
+                //set data Response
+                $data = $fb_data["user_id"];
+            }
+            //validates webhook [Handling Verification Requests]
+            else if(!empty($data["hub_challenge"]) && !empty($data["hub_verify_token"])) {
+
+                //throw Exception for a invalid token
+                if($data["hub_verify_token"] != $this->config->app->facebook->webhookToken)
+                    throw new Exception("Invalid Facebook Hub Token");
+
+                $hub_challenge = $data["hub_challenge"];
+                //get json raw body if set
+                $body = $this->request->getJsonRawBody();
+                //set request body
+                if(isset($body) && !is_null($body->entry[0])) {
+                    //parse body
+                    $data["fb_id"]          = $body->entry[0]->id;
+                    $data["time"]           = $body->entry[0]->time;
+                    $data["changed_fields"] = $body->entry[0]->changed_fields;
+                }
+
+                //listener, must be implemented
+                $this->onAppDeauthorized($data);
+                //set data
+                $data = $hub_challenge;
+            }
+            else {
+                throw new Exception("Empty parameters request");
+            }
+        }
+        catch (Exception $e) {
+
+            $this->logger->error("FacebookAuth::facebook deauthorize webhook exception:\n".$e->getMessage());
+            $data = $e->getMessage();
+        }
+        finally {
+            //send data as text
+            $this->_sendTextResponse($data);
+        }
     }
 
     /**
@@ -627,7 +696,7 @@ trait FacebookAuth
      * @param string $signed_request - Signed request received from Facebook API
      * @return mixed
      */
-    private function __parseSignedRequest($signed_request = null)
+    protected function _parseSignedRequest($signed_request = null)
     {
         if(is_null($signed_request))
             return false;
@@ -647,7 +716,7 @@ trait FacebookAuth
         $data = json_decode($base64_decode_url($payload), true);
         //check algorithm
         if (strtoupper($data['algorithm']) !== 'HMAC-SHA256') {
-            $this->logger->error('Facebook::__parseSignedRequest -> Unknown algorithm. Expected HMAC-SHA256');
+            $this->logger->error('Facebook::_parseSignedRequest -> Unknown algorithm. Expected HMAC-SHA256');
             return false;
         }
         //adding the verification of the signed_request below
@@ -655,7 +724,7 @@ trait FacebookAuth
         $signature    = $base64_decode_url($encoded_sig);
 
         if ($signature !== $expected_sig) {
-            $this->logger->error('Facebook::__parseSignedRequest -> Invalid JSON Signature!');
+            $this->logger->error('Facebook::_parseSignedRequest -> Invalid JSON Signature!');
             return false;
         }
 
