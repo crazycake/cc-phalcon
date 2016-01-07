@@ -50,9 +50,9 @@ class BaseUsersFacebook extends \CrazyCake\Models\Base
     /** ------------------------------------------- § ------------------------------------------------ **/
 
     /**
-     * Get facebook data by user_id
+     * Gets facebook data by user_id
      * @static
-     * @param int $user_id The user ID
+     * @param int $user_id - The user ID
      * @return UsersFacebook
      */
     public static function getFacebookDataByUserId($user_id)

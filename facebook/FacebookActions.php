@@ -37,7 +37,7 @@ trait FacebookActions
 
     /**
      * Set Facebook Story Data
-     * @param object $object
+     * @param object $object - The OG object
      */
     abstract public function setStoryData($object);
 
@@ -84,11 +84,11 @@ trait FacebookActions
 
     /**
      * Publish Facebook feed action
-     * @param  object $user The ORM user object
-     * @param  string $object The input payload
-     * @param array $payload The input payload
-     * @param  int $attempt Fallback exception, retry
-     * @return string The object id
+     * @param object $user_fb - The ORM facebook user
+     * @param object $object - The open graph object
+     * @param array $payload - The input payload
+     * @param int $attempt - Fallback exception, retry
+     * @return string - The object ID
      */
     public function publish($user_fb, $object, $payload = array(), $attempt = 0)
     {
@@ -159,10 +159,10 @@ trait FacebookActions
 
     /**
      * Checkin action
-     * @param object $user_fb
-     * @param object $object The orm object
-     * @param boolean $fallbackAction The action is a fallback
-     * @param int $count The number of times this action was triggered
+     * @param object $user_fb - The ORM facebook user
+     * @param object $object - The open graph object
+     * @param boolean $fallbackAction - The action is a fallback
+     * @param int $count - The number of times this action was triggered
      */
     private function _checkinAction($user_fb, $object, $fallbackAction = false, $count = 0)
     {
@@ -195,10 +195,10 @@ trait FacebookActions
     /**
      * Story action
      * TODO: fix start & end date
-     * @param object $user_fb
-     * @param object $object The orm object
-     * @param boolean $fallbackAction The action is a fallback
-     * @param int $count The number of times this action was triggered
+     * @param object $user_fb - The ORM facebook user
+     * @param object $object - The open graph object
+     * @param boolean $fallbackAction - The action is a fallback
+     * @param int $count - The number of times this action was triggered
      */
     private function _storyAction($user_fb, $object, $fallbackAction = false, $count = 0)
     {
@@ -250,10 +250,10 @@ trait FacebookActions
 
     /**
      * Upload a photo
-     * @param object $user_fb
-     * @param object $object The orm object
-     * @param boolean $fallbackAction The action is a fallback
-     * @param int $count The number of times this action was triggered
+     * @param object $user_fb - The ORM facebook user
+     * @param object $object - The open graph object
+     * @param boolean $fallbackAction - The action is a fallback
+     * @param int $count - The number of times this action was triggered
      */
     private function _photoAction($user_fb, $object, $fallbackAction = false, $count = 0)
     {
@@ -324,9 +324,9 @@ trait FacebookActions
     }
 
     /**
-     * get a facebook openGraph story object
+     * Gets a facebook openGraph story object
      * @access private
-     * @param object $app the app object from config
+     * @param object $object - The open graph object
      * @return string
      */
     private function _getNewFacebookStoryObject($object)
@@ -351,7 +351,7 @@ trait FacebookActions
 
             //set place caption
             $namespace = $this->fbConfig["og_namespace"]."__place_caption";
-            $obj->{$namespace} = $object->eventsPlaces->eplaces->name;
+            $obj->{$namespace} = $data["place"];
         }
 
         //encode JSON & replace prefix:data format strings

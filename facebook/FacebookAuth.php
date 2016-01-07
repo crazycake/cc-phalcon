@@ -31,9 +31,16 @@ trait FacebookAuth
     abstract public function setConfigurations();
 
     /**
-     * Listener - On settings Login Redirection
+     * Listener - On success auth
+     * @param object $route - The app route object
+     * @param object $response - The received response
      */
     abstract public function onSuccessAuth(&$route, $response = null);
+
+    /**
+     * Listener - On app deauthorized
+     * @param object $fb_user - The facebook user
+     */
     abstract public function onAppDeauthorized($fb_user = null);
 
     /**
@@ -130,7 +137,7 @@ trait FacebookAuth
 
     /**
      * Handler - Login by redirect action via facebook login URL
-     * @param string $encrypted_data - Encrypted data
+     * @param string $encrypted_data - The encrypted route data
      * @return json response
      */
     public function loginByRedirectAction($encrypted_data = "")
@@ -177,7 +184,6 @@ trait FacebookAuth
 
     /**
      * GetFacebookLogin URL
-     * Requested uri is a simple hash param
      * @param array $route - Custom Route (optional)
      * @param boolean $check_perms - Validates access token app scope permissions
      * @return string
@@ -208,8 +214,8 @@ trait FacebookAuth
 
     /**
      * Async (GET) - Extended Facebook Access Token (LongLive Token)
-     * FAC => Facebook Access Token
-     * @param string $encrypted_data {user_id#fac}
+     * FAC means Facebook Access Token
+     * @param string $encrypted_data - The encrypted data, struct: {user_id#fac}
      * @return json response
      */
     public function extendAccessTokenAction($encrypted_data = "")
@@ -265,7 +271,8 @@ trait FacebookAuth
 
     /**
      * WebHook - Deauthorize a facebook user
-     * @return mixed (boolean|array)
+     * @param string $signed_request - The signed request
+     * @return mixed [boolean|array]
      */
     public function deauthorizeAction($signed_request = '')
     {
@@ -332,8 +339,8 @@ trait FacebookAuth
 
     /**
      * Handler - Get user facebook properties
-     * @param object $fac The facebook access token
-     * @param int $user_id The user id
+     * @param object $fac - The facebook access token
+     * @param int $user_id - The user ID
      * @return array
      */
     public function getUserData($fac = null, $user_id = 0)
@@ -384,7 +391,7 @@ trait FacebookAuth
     /**
      * Logins a User with facebook access token,
      * If data has the signed_request property it will be checked automatically
-     * @param object $fac The access token object
+     * @param object $fac - The access token object
      */
     private function __loginUserFacebook($fac = null)
     {
@@ -486,7 +493,7 @@ trait FacebookAuth
 
     /**
      * Removes a facebook user
-     * @param int $user_id
+     * @param int $user_id - The user ID
      */
     protected function _removeFacebookUser($user_id = 0)
     {
@@ -499,9 +506,9 @@ trait FacebookAuth
 
     /**
      * Get Access Token permissions
-     * @param object $fac The facebook access token
-     * @param int $user_id The user id
-     * @param mixed[boolean, string, array] $scope If set validates also the granted perms
+     * @param object $fac - The facebook access token
+     * @param int $user_id - The user ID
+     * @param mixed [boolean, string, array] $scope - If value is set then validates also the granted perms
      * @return array
      */
     private function __getAccesTokenPermissions($fac = null, $user_id = 0, $scope = false)
@@ -553,10 +560,9 @@ trait FacebookAuth
 
     /**
      * Set the facebook Access Token
-     * @param string $fac (optional) Access token
-     * @param int $user_id
-     * @throws Exception
-     * @return mixed (boolean|string|object)
+     * @param object $fac - The facebook access token object (optional)
+     * @param int $user_id - The user ID
+     * @return mixed [boolean|string|object]
      */
     private function __setUserAccessToken($fac = null, $user_id = 0)
     {
@@ -584,9 +590,9 @@ trait FacebookAuth
 
     /**
      * Parse given user facebook session data to save in Database
-     * @param int $user_id
-     * @param int $fb_id
-     * @param object $fac The access token object
+     * @param int $user_id - The user ID
+     * @param int $fb_id - The facebook user ID
+     * @param object $fac - The access token object
      * @return array
      */
     private function __saveNewUserFacebook($user_id = null, $fb_id = null, $fac = null)
@@ -617,9 +623,8 @@ trait FacebookAuth
 
     /**
      * Parse facebook signed request got from Javascript SDK
-     * This should be used
      * @link https://developers.facebook.com/docs/games/canvas/login
-     * @param string $signed_request
+     * @param string $signed_request - Signed request received from Facebook API
      * @return mixed
      */
     private function __parseSignedRequest($signed_request = null)
