@@ -284,10 +284,15 @@ trait FacebookAuth
             '@hub_challenge'    => 'string',
             '@hub_verify_token' => 'string'
         ], "MIXED", false);
-        $this->logger->debug("facebook deauthorize:\n".print_r($data,true)." Body: ".print_r($this->request->getJsonRawBody(), true));
+
+        //get headers & json raw body if set
+        $headers = $this->request->getHeaders();
+        $body    = $this->request->getJsonRawBody();
+
+        $this->logger->debug("facebook deauthorize:\n".print_r($data,true)." Headers: ".print_r($headers, true)." Body: ".print_r($body, true));
 
         try {
-            //validates signed request
+            /** 1.- User deleted tha app from his facebook account settings */
             if(!empty($data['signed_request'])) {
 
                 $fb_data = $this->_parseSignedRequest($data['signed_request']);
@@ -305,34 +310,35 @@ trait FacebookAuth
                     $user_fb->delete();
                 }
 
-                $data = $user_fb->toArray();
                 //listener, must be implemented
-                $this->onAppDeauthorized($data);
+                $this->onAppDeauthorized($user_fb->toArray());
                 //set data Response
                 $data = $fb_data["user_id"];
             }
-            //validates webhook [Handling Verification Requests]
+            /** 2.- An app permission field changed in user facebook account app settings */
+            else if(isset($body) && is_array($body->entry) && !is_null($body->entry[0])) {
+
+                //validate signature
+                if(!isset($headers["X-Hub-Signature"]))
+                    throw new Exception("Invalid Facebook Hub Signature");
+
+                //parse body
+                $data["fb_id"]          = $body->entry[0]->id;
+                $data["time"]           = $body->entry[0]->time;
+                $data["changed_fields"] = $body->entry[0]->changed_fields;
+
+                //listener, must be implemented
+                $this->onAppDeauthorized($data);
+            }
+            /** 3.- Validates a FB webhook [Handling Verification Requests] **/
             else if(!empty($data["hub_challenge"]) && !empty($data["hub_verify_token"])) {
 
                 //throw Exception for a invalid token
                 if($data["hub_verify_token"] != $this->config->app->facebook->webhookToken)
                     throw new Exception("Invalid Facebook Hub Token");
 
-                $hub_challenge = $data["hub_challenge"];
-                //get json raw body if set
-                $body = $this->request->getJsonRawBody();
-                //set request body
-                if(isset($body) && !is_null($body->entry[0])) {
-                    //parse body
-                    $data["fb_id"]          = $body->entry[0]->id;
-                    $data["time"]           = $body->entry[0]->time;
-                    $data["changed_fields"] = $body->entry[0]->changed_fields;
-                }
-
-                //listener, must be implemented
-                $this->onAppDeauthorized($data);
-                //set data
-                $data = $hub_challenge;
+                //send hub_challenge value
+                $data = $data["hub_challenge"];
             }
             else {
                 throw new Exception("Empty parameters request");
