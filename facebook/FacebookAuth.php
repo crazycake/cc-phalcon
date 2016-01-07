@@ -288,8 +288,7 @@ trait FacebookAuth
         //get headers & json raw body if set
         $headers = $this->request->getHeaders();
         $body    = $this->request->getJsonRawBody();
-
-        $this->logger->debug("facebook deauthorize:\n".print_r($data,true)." Headers: ".print_r($headers, true)." Body: ".print_r($body, true));
+        //$this->logger->debug("FacebookAuth::deauthorize:\n".print_r($data,true)." Headers: ".print_r($headers, true)." Body: ".print_r($body, true));
 
         try {
             /** 1.- User deleted tha app from his facebook account settings */
@@ -305,7 +304,6 @@ trait FacebookAuth
                 $user_fb = $users_facebook_class::getObjectById($fb_data["user_id"]);
 
                 if($user_fb) {
-                    $this->logger->debug("FacebookAuth:: Signed Request:".print_r($fb_data, true));
                     //remove user from facebook table
                     $user_fb->delete();
                 }
