@@ -84,8 +84,8 @@ trait TicketManager
 
     /**
      * Binary Image - Outputs QR ticket image as binary with Content-Type png
-     * @param int $user_id The user id
-     * @param string $code The ticket associated code
+     * @param int $user_id - The user ID
+     * @param string $code - The ticket associated code
      * @return binary
      */
     public function getTicketQR($user_id = 0, $code = "")
@@ -123,10 +123,10 @@ trait TicketManager
 
     /**
      * Moves a QR ticket from S3 storage from one folder to other
-     * @param int $src_user_id The source user id
-     * @param string $src_code The source ticket associated code
-     * @param int $dst_user_id The destination user id
-     * @return boolean $moved Return true if object was moved to destination.
+     * @param int $src_user_id - The source user ID
+     * @param string $src_code - The source ticket associated code
+     * @param int $dst_user_id - The destination user ID
+     * @return boolean $moved - Return true if object was moved to destination.
      */
     public function moveTicketQR($src_user_id = 0, $src_code = "", $dst_user_id = 0)
     {
@@ -165,8 +165,8 @@ trait TicketManager
 
     /**
      * Get Invoice PDFs by buy orders, if many they are merged.
-     * @param int $user_id The user id
-     * @param array $buy_orders An array of buy orders
+     * @param int $user_id - The user ID
+     * @param array $buy_orders - An array of buy orders
      * @return binary
      */
     public function getMergedInvoices($user_id = 0, $buy_orders = array())
@@ -236,10 +236,11 @@ trait TicketManager
 
     /**
      * Handler - Generates QR for multiple tickets
-     * @param mixed [object|array] $userTickets A user ticket object or an array of objects
-     * @return mixed
+     * @param int $user_id - The user ID
+     * @param mixed [object|array] $userTickets - A user ticket object or an array of objects
+     * @return object - The result object
      */
-    public function generateQRForUserTickets($user_id, $userTickets = array())
+    public function generateQRForUserTickets($user_id = 0, $userTickets = array())
     {
         //set qr settings
         $this->qr_settings = $this->storageConfig['qr_settings'];
@@ -295,11 +296,10 @@ trait TicketManager
 
     /**
      * Handler - Generates Checkout invoice with tickets as PDF file output
-     * @param int $user_id The user Id
-     * @param object $checkout The checkout object
-     * @param string $type The invoice type, checkout or review.
-     * @param boolean $otf On the fly flag, if false saves invoice in S3.
-     * @return mixed
+     * @param int $user_id - The user ID
+     * @param object $checkout - The checkout object
+     * @param boolean $otf - On the fly flag, if false saves invoice in S3.
+     * @return object - The result object
      */
     public function generateInvoice($user_id, $checkout, $otf = false)
     {
@@ -311,7 +311,7 @@ trait TicketManager
             $this->pdf_settings["otf"] = $otf;
             //set invoice name
             $this->pdf_settings["invoice_name"] = isset($checkout->buy_order) ? $checkout->buy_order : uniqid()."_".date('d-m-Y');
-            
+
             //generate invoice
             $result->binary = $this->_buildInvoice($user_id, $checkout);
         }
@@ -334,9 +334,9 @@ trait TicketManager
 
     /**
      * Generates an Invoice with user tickets
-     * @param  int $user_id         The user ID
-     * @param  object  $checkout    The checkout object
-     * @return binary generated file
+     * @param int $user_id - The user ID
+     * @param object $checkout - The checkout object
+     * @return binary - The generated file
      */
     private function _buildInvoice($user_id, $checkout)
     {
@@ -393,9 +393,10 @@ trait TicketManager
     /**
      * Download QR images to local folder for preload.
      * This method is necessary for OTF invoice generator.
-     * @param  array  $userTickets The user tickets array
+     * @param int $user_id - The user ID
+     * @param array $userTickets - The user tickets array
      */
-    private function _downloadTicketQrs($user_id, $userTickets = array())
+    private function _downloadTicketQrs($user_id = 0, $userTickets = array())
     {
         if(empty($userTickets))
             return;
@@ -424,8 +425,8 @@ trait TicketManager
 
     /**
      * Deletes temporary files in Local directory
-     * @param string $path The path folder
-     * @param boolean $del_folder Flag for folder deletion
+     * @param string $path - The path folder
+     * @param boolean $del_folder - Flag for folder deletion
      */
     private function _deleteTempFiles($path = null, $del_folder = false)
     {

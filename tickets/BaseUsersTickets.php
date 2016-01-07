@@ -95,11 +95,11 @@ class BaseUsersTickets extends \CrazyCake\Models\Base
     /** ------------------------------------------- § ------------------------------------------------ **/
 
     /**
-     * Get tickets by a array of Ids
+     * Get tickets by a array of IDs
      * @static
-     * @param array $ids An array of Ids
-     * @param boolean $as_array flag to return resultset to array
-     * @return mixed boolean or GuestUsersEventsTickets array
+     * @param array $record_ids - An array of IDs
+     * @param boolean $as_array - Flag to return resultset as array
+     * @return mixed [boolean|array]
      */
     public static function getTicketsByIds($record_ids = array(), $as_array = false)
     {
@@ -124,8 +124,8 @@ class BaseUsersTickets extends \CrazyCake\Models\Base
 
     /**
      * Get user ticket by code
-     * @param  string $code The ticket code
-     * @param  int $user_id  The user id (optional)
+     * @param string $code - The ticket code
+     * @param int $user_id - The user ID (optional)
      * @return object UserTicket
      */
     public static function getTicketByCode($code = "", $user_id = 0)
@@ -144,32 +144,26 @@ class BaseUsersTickets extends \CrazyCake\Models\Base
 
     /**
      * Get user ticket by qr hash
-     * @param string $qr_hash
-     * @return mixed object ticket or object users
+     * @param string $qr_hash - The QR hash code
+     * @return mixed [boolean|object]
      */
     public static function getUserByQrHash($qr_hash = "")
     {
         $ticket = self::findFirstByQrHash($qr_hash);
 
-        if(!$ticket)
+        if(!$ticket || !isset($ticket->user_id))
             return false;
 
         //return user object
-        if(isset($ticket->user_id)) {
+        $usersClass = static::$DEFAULT_USERS_CLASS;
 
-            $usersClass = static::$DEFAULT_USERS_CLASS;
-
-            return $usersClass::getObjectById($ticket->user_id);
-        }
-
-        return $ticket;
+        return $usersClass::getObjectById($ticket->user_id);
     }
 
     /**
      * Generates a random Hash
      * @access protected
-     * @param  string $phrase
-     * @param  int $length
+     * @param  string $phrase - A text phrase
      * @return string
      */
     protected function generateRandomHash($phrase = "")
@@ -199,7 +193,6 @@ class BaseUsersTickets extends \CrazyCake\Models\Base
     /**
      * Generates a random Code for a user-ticket
      * @access protected
-     * @param  string $phrase
      * @return string
      */
     protected function generateRandomCode()
