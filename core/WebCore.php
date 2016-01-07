@@ -171,6 +171,21 @@ abstract class WebCore extends AppCore implements WebSecurity
     }
 
     /**
+     * Sends a simple text response
+     * @param  string $text - Any text string
+     */
+    protected function _sendTextResponse($text = "OK"){
+
+        //output the response
+        $this->view->disable(); //disable view output
+        $this->response->setStatusCode(200, "OK");
+        $this->response->setContentType('text/html');
+        $this->response->setContent($text);
+        $this->response->send();
+        die(); //exit
+    }
+
+    /**
      * Redirect to given uri as GET method
      * @param string $uri - The URI to redirect
      * @param array $params - The GET params (optional)
