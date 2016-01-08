@@ -93,7 +93,7 @@ trait FacebookActions
     public function publish($user_fb, $object, $payload = array(), $attempt = 0)
     {
         //get user facebook data
-        $user_fb_class = $this->fbConfig["pages_class"];
+        $user_fb_class = $this->_getModuleClass('users_facebook_pages');
 
         $fallbackAction = false;
         $exception      = false;
@@ -310,12 +310,12 @@ trait FacebookActions
     private function _getFacebookPageUser()
     {
         //get a facebook admin
-        if(!class_exists($this->fbConfig["pages_class"]))
-            throw new Exception("Users Facebook class not found [FB_PAGES_CLASS]");
+        if(!class_exists($this->_getModuleClass('users_facebook_pages')))
+            throw new Exception("Users Facebook class not found [users_facebook_pages]");
 
-        $objectClass = $this->fbConfig["pages_class"];
+        $fb_pages = $this->_getModuleClass('users_facebook_pages');
 
-        $page = $objectClass::findFirst("app_id = '".$this->config->app->facebook->appID."'");
+        $page = $fb_pages::findFirst("app_id = '".$this->config->app->facebook->appID."'");
 
         if(!$page)
             throw new Exception("no page found for fb app id: ".$this->config->app->facebook->appID);
