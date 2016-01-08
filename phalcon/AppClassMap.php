@@ -27,10 +27,17 @@ return array (
   ),
   'facebook' => 
   array (
-    0 => 'BaseActions.php',
+    0 => 'BaseGraphActions.php',
     1 => 'BaseUsersFacebook.php',
     2 => 'FacebookActions.php',
     3 => 'FacebookAuth.php',
+  ),
+  'mobile' => 
+  array (
+    0 => 'Apn.php',
+    1 => 'BasePushNotifications.php',
+    2 => 'Gcm.php',
+    3 => 'PushManager.php',
   ),
   'models' => 
   array (

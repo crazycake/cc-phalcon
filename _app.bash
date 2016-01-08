@@ -13,7 +13,9 @@ APP_NAMESPACE="$(echo "$APP_NAME" | tr '[:upper:]' '[:lower:]')"
 
 # Local documentation path
 # TODO: implement input file .doc
-DOC_INPUTS="account,checkout,core,facebook,models,phalcon,services,tickets,utils,transbank/OneClickClient.php,transbank/KccEndPoint.php,transbank/KccManager.php,qr/QRMaker.php,soap/SoapClientHelper.php"
+DOC_INPUTS="account,checkout,core,facebook,models,phalcon,services,tickets,utils,mobile"
+DOC_INPUTS="$DOC_INPUTS,transbank/OneClickClient.php,transbank/KccEndPoint.php,transbank/KccManager.php"
+DOC_INPUTS="$DOC_INPUTS,qr/QRMaker.php,soap/SoapClientHelper.php"
 DOC_OUTPUT_PATH=$CURRENT_PATH"/../cc-docs/cc-phalcon/"
 
 #script help function
