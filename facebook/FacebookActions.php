@@ -70,7 +70,7 @@ trait FacebookActions
         if(!is_dir($this->fbConfig["upload_path"]))
             mkdir($this->fbConfig["upload_path"], 0755);
 
-        //set catcher
+        //set redis service
         $this->redis = new Redis();
 
         //set Facebook SDK Object
@@ -120,7 +120,6 @@ trait FacebookActions
                 //create a unique day key for user, qr_hash & time
                 $key   = sha1($payload["action"].$payload["qr_hash"].date('Y-m-d'));
                 $count = $this->redis->get($key);
-
                 //increment action
                 $this->redis->set($key, is_null($count) ? 1 : $count+1);
             }
@@ -166,7 +165,7 @@ trait FacebookActions
      */
     private function _checkinAction($user_fb, $object, $fallbackAction = false, $count = 0)
     {
-        if($fallbackAction) // || $count > 1 NOTE: HARDCODED
+        if($fallbackAction || (APP_ENVIRONMENT == "production" && $count > 1))
             throw new Exception("User reached checkin max post times for today");
 
         //get event facebook object
@@ -202,7 +201,7 @@ trait FacebookActions
      */
     private function _storyAction($user_fb, $object, $fallbackAction = false, $count = 0)
     {
-        if($fallbackAction) // || $count != 2 //NOTE: HARDCODED
+        if($fallbackAction || (APP_ENVIRONMENT == "production" && $count > 2))
             throw new Exception("User reached story max post times for today");
 
         //get event facebook object
@@ -226,7 +225,7 @@ trait FacebookActions
         if(!$object_id)
             throw new Exception("Invalid facebook open graph: ".(int)$object_id);
 
-        //now post this story (SOME Params hardcoded)
+        //now post this story
         $data = [
             //object
             $this->fbConfig["og_story_object"] => $object_id,
