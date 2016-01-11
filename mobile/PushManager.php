@@ -122,13 +122,13 @@ trait PushManager
     {
         //set clients
         switch ($service) {
-            case 'apn':
+            case "apn":
                 //set sandbox mode
-                $this->config->app->apn->sandbox = APP_ENVIRONMENT != 'production' ? true : false;
+                $this->config->app->apn->sandbox = APP_ENVIRONMENT != "production" ? true : false;
                 //set apn client
                 $this->apn = new APN((array)$this->config->app->apn);
                 break;
-            case 'gcm':
+            case "gcm":
                 //set gcm client
                 $this->gcm = new GCM((array)$this->config->app->gcm);
                 break;
@@ -144,26 +144,26 @@ trait PushManager
     private function _sendNotificationAPN($data = array())
     {
         //set client
-        $this->_setClient('apn');
+        $this->_setClient("apn");
 
         //get model class
-        $push_class = $this->_getModuleClass('push_notifications');
+        $push_class = $this->_getModuleClass("push_notifications");
         //set response data
         $successful_delivers = 0;
 		$failed_delivers 	 = 0;
 
         //APN library config
-    	$this->apn->payloadMethod = 'enhance';
+    	$this->apn->payloadMethod = "enhance";
     	//open connection
     	$this->apn->connectToPush();
 
         foreach ($data["uuids"] as $uuid) {
 
             //get subscriber
-            $subscriber = $push_class::getSubscriber('ios', $uuid);
+            $subscriber = $push_class::getSubscriber("apn", $uuid);
 
             if(!$subscriber)
-                throw new Exception("APN subscriber ".$uuid." not found");
+                throw new Exception("APN subscriber '$uuid' not found");
 
             //badge & payload logic
             $subscriber->updatePayload($data["payload"]);
@@ -173,7 +173,7 @@ trait PushManager
 			$response = $this->apn->sendMessage($subscriber->token,
 												$data["message"],
 												$subscriber->badge_counter,  //icon badge number
-												'default'				     //default sound
+												"default"				     //default sound
 												);
 
             //handle response
@@ -202,10 +202,10 @@ trait PushManager
     private function _sendNotificationGCM($data = array())
     {
         //set client
-        $this->_setClient('gcm');
+        $this->_setClient("gcm");
 
         //get model class
-        $push_class = $this->_getModuleClass('push_notifications');
+        $push_class = $this->_getModuleClass("push_notifications");
         //set response data
         $successful_delivers = 0;
 		$failed_delivers 	 = 0;
@@ -222,10 +222,10 @@ trait PushManager
         foreach ($data["uuids"] as $uuid) {
 
             //get subscriber
-            $subscriber = $push_class::getSubscriber('android', $uuid);
+            $subscriber = $push_class::getSubscriber("gcm", $uuid);
 
             if(!$subscriber)
-                throw new Exception("GCM subscriber ".$uuid." not found");
+                throw new Exception("GCM subscriber '$uuid' not found");
 
             //badge & payload logic
             $subscriber->updatePayload($data["payload"]);
