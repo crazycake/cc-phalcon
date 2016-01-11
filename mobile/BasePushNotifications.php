@@ -117,8 +117,7 @@ class BasePushNotifications extends \CrazyCake\Models\Base
 
     /**
      * Updated payload in case a notification fails
-     * @param string $key - The payload key
-     * @param string $item - A string value
+     * @param mixed [string|array] $payload - The input payload
      * @return string
      */
 	public function updatePayload($payload = array())
@@ -127,12 +126,10 @@ class BasePushNotifications extends \CrazyCake\Models\Base
         if(empty($payload))
 			throw new Exception("Payload input is required");
 
-        //1st time
-        if(empty($this->payload))
-            $this->payload = [];
-
+        //set payload as array
+        $payload = is_string($payload) ? json_decode($payload) : (array)$payload;
         //current payload
-        $currentPayload = is_string($this->payload) ? json_decode($this->payload) : $this->payload;
+        $currentPayload = is_string($this->payload) ? json_decode($this->payload) : [];
 
         foreach ($payload as $key => $value) {
 
@@ -160,7 +157,7 @@ class BasePushNotifications extends \CrazyCake\Models\Base
 
         $payload = json_encode($currentPayload, JSON_UNESCAPED_SLASHES);
         //badge counter for new notification payload
-        $bagde_counter = ($this->payload == $payload) ? $this->badge_counter : $this->badge_counter+1;
+        $bagde_counter = ($this->payload == $payload) ? (int)$this->badge_counter : $this->badge_counter+1;
         //save it
         $this->save([
             "payload"       => $payload,
