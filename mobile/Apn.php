@@ -40,15 +40,15 @@ class APN
 	protected $additionalData = array();
 
 	protected $apnResonses = [
-		0 => 'No errors encountered',
-		1 => 'Processing error',
-		2 => 'Missing device token',
-		3 => 'Missing topic',
-		4 => 'Missing payload',
-		5 => 'Invalid token size',
-		6 => 'Invalid topic size',
-		7 => 'Invalid payload size',
-		8 => 'Invalid token',
+		0   => 'No errors encountered',
+		1   => 'Processing error',
+		2   => 'Missing device token',
+		3   => 'Missing topic',
+		4   => 'Missing payload',
+		5   => 'Invalid token size',
+		6   => 'Invalid topic size',
+		7   => 'Invalid payload size',
+		8   => 'Invalid token',
 		255 => 'None (unknown)',
 	];
 
@@ -180,10 +180,10 @@ class APN
 		$this->_log("APN: sendPayloadSimple to '$deviceToken'");
 
 		$msg = chr(0) 									// command
-			. pack('n',32)									// token length
-			. pack('H*', $deviceToken)						// device token
-			. pack('n',strlen($payload))					// payload length
-			. $payload;										// payload
+			 . pack('n',32)									// token length
+			 . pack('H*', $deviceToken)						// device token
+			 . pack('n',strlen($payload))					// payload length
+			 . $payload;										// payload
 
 		$this->_log("APN: payload: '$msg'");
 		$this->_log("APN: payload length: '".strlen($msg)."'");
@@ -210,12 +210,12 @@ class APN
 		$payload_length = strlen($payload);
 
 		$request = chr(1) 										// command
-						. pack("N", time())		 				// identifier
-						. pack("N", time() + $expiry) // expiry
-						. pack('n', 32)								// token length
-						. pack('H*', $deviceToken) 		// device token
-						. pack('n', $payload_length) 	// payload length
-						. $payload;
+					. pack("N", time())		 				// identifier
+					. pack("N", time() + $expiry) // expiry
+					. pack('n', 32)								// token length
+					. pack('H*', $deviceToken) 		// device token
+					. pack('n', $payload_length) 	// payload length
+					. $payload;
 
 		$request_unpacked = @unpack('Ccommand/Nidentifier/Nexpiry/ntoken_length/H64device_token/npayload_length/A*payload', $request); // payload
 
@@ -224,12 +224,7 @@ class APN
 		$this->_log("APN: payload length: '" . $payload_length . "'");
 		$result = fwrite($this->pushStream, $request, strlen($request));
 
-		if ($result)
-		{
-			return $this->getPayloadStatuses();
-		}
-
-		return false;
+		return $result ? $this->getPayloadStatuses() : false;
 	}
 
 	/**
@@ -247,15 +242,15 @@ class APN
 	 */
 	public function connectToPush()
 	{
-		if (!$this->pushStream or !is_resource($this->pushStream))
-		{
+		if (!$this->pushStream or !is_resource($this->pushStream)) {
+
 			$this->_log("APN: connectToPush");
 			$this->//_lo" "APNLib -> connectToPush successfully!");
 
 			$this->pushStream = $this->connect($this->pushServer);
 
-			if ($this->pushStream)
-			{
+			if ($this->pushStream) {
+
 				$this->connection_start = microtime(true);
 				//stream_set_blocking($this->pushStream,0);
 			}

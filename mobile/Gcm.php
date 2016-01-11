@@ -20,26 +20,26 @@ class GCM {
 	//consts
 	const API_SEND_ADDRESS = 'https://android.googleapis.com/gcm/send';
 
-	protected $apiKey = '';
-	protected $payload = array();
-	protected $additionalData = array();
-	protected $recepients = array();
-	protected $message = '';
+    protected $apiKey         = '';
+    protected $payload        = array();
+    protected $additionalData = array();
+    protected $recepients     = array();
+    protected $message        = '';
 
-	public $status = array();
-	public $messagesStatuses = array();
-	public $responseData = null;
-	public $responseInfo = null;
+    public $status           = array();
+    public $messagesStatuses = array();
+    public $responseData     = null;
+    public $responseInfo     = null;
 
 
-	protected $errorStatuses = array(
-		'Unavailable' => 'Maybe missed API key',
-		'MismatchSenderId' => 'Make sure you\'re using one of those when trying to send messages to the device. If you switch to a different sender, the existing registration IDs won\'t work.',
+	protected $errorStatuses = [
+		'Unavailable' 		  => 'Maybe missed API key',
+		'MismatchSenderId' 	  => 'Make sure you\'re using one of those when trying to send messages to the device. If you switch to a different sender, the existing registration IDs won\'t work.',
 		'MissingRegistration' => 'Check that the request contains a registration ID',
 		'InvalidRegistration' => 'Check the formatting of the registration ID that you pass to the server. Make sure it matches the registration ID the phone receives in the google',
-		'NotRegistered' => 'Not registered',
-		'MessageTooBig' => 'The total size of the payload data that is included in a message can\'t exceed 4096 bytes'
-	);
+		'NotRegistered' 	  => 'Not registered',
+		'MessageTooBig' 	  => 'The total size of the payload data that is included in a message can\'t exceed 4096 bytes'
+	];
 
 	/**
 	 * Constructor
@@ -74,20 +74,19 @@ class GCM {
 	/**
 	 * Setting GCM message
 	 *
-	 * @param <string> $message
+	 * @param string $message
 	 */
 	public function setMessage($message = '') {
 
 		$this->message = $message;
 		$this->payload['data']['message'] = $message;
-
 	}
 
 
 	/**
 	 * Setting data to message
 	 *
-	 * @param <string> $data
+	 * @param string $data
 	 */
 	public function setData($data = array()) {
 
@@ -95,17 +94,16 @@ class GCM {
 
 		if ($this->message)
 			$this->payload['data']['message'] = $this->message;
-
 	}
 
 
 	/**
 	 * Setting group of messages
 	 *
-	 * @param <string> $group
+	 * @param string $group
 	 */
-	public function setGroup($group = '') {
-
+	public function setGroup($group = '')
+	{
 		if (!$group)
 			unset($this->payload['collapse_key']);
 		else
@@ -116,38 +114,35 @@ class GCM {
 	/**
 	 * Adding one recepient
 	 *
-	 * @param <string> $group
+	 * @param string $group
 	 */
-	public function addRecepient($registrationId) {
-
+	public function addRecepient($registrationId)
+	{
 		$this->payload['registration_ids'][] = $registrationId;
 	}
-
 
 	/**
 	 * Setting all recepients
 	 *
-	 * @param <string> $group
+	 * @param string $group
 	 */
-	public function setRecepients($registrationIds) {
-
+	public function setRecepients($registrationIds)
+	{
 		$this->payload['registration_ids'] = $registrationIds;
 	}
-
 
 	/**
 	 * Clearing group of messages
 	 */
-	public function clearRecepients() {
-
+	public function clearRecepients()
+	{
 		$this->payload['registration_ids'] = array();
 	}
-
 
 	/**
 	 * Senging messages to Google Cloud Messaging
 	 *
-	 * @param <string> $group
+	 * @param string $group
 	 */
 	public function send()
 	{
@@ -160,11 +155,11 @@ class GCM {
 		return $this->request($data);
 	}
 
-
-
+	/**
+	 * Request
+	 */
 	protected function request($data)
 	{
-
 		$headers[] = 'Content-Type:application/json';
 		$headers[] = 'Authorization:key='.$this->apiKey;
 
@@ -189,98 +184,100 @@ class GCM {
 		return $this->parseResponse();
 	}
 
-
+	/**
+	 * Parse response
+	 */
 	protected function parseResponse()
 	{
-		if ($this->responseInfo['http_code'] == 200)
-		{
+		if ($this->responseInfo['http_code'] == 200) {
+
 			$response = explode("\n",$this->responseData);
 			$responseBody = json_decode($response[count($response)-1]);
 
-			if ($responseBody->success && !$responseBody->failure)
-			{
+			if ($responseBody->success && !$responseBody->failure) {
+
 				$message = 'All messages were sent successfully';
-				$error = 0;
+				$error 	 = 0;
 			}
-			elseif ($responseBody->success && $responseBody->failure)
-			{
+			elseif ($responseBody->success && $responseBody->failure) {
+
 				$message = $responseBody->success.' of '.($responseBody->success+$responseBody->failure).' messages were sent successfully';
-				$error = 1;
+				$error 	 = 1;
 			}
-			elseif (!$responseBody->success && $responseBody->failure)
-			{
+			elseif (!$responseBody->success && $responseBody->failure) {
+
 				$message = 'No messages cannot be sent. '.$responseBody->results[0]->error;
-				$error = 1;
+				$error 	 = 1;
 			}
 
-			$this->status = array(
-				'error' => $error,
+			$this->status = [
+				'error'   => $error,
 				'message' => $message
-			);
+			];
 
 			$this->messagesStatuses = array();
-			foreach($responseBody->results as $key => $result)
-			{
-				if (isset($result->error) && $result->error)
-				{
-					$this->messagesStatuses[$key] = array(
+			foreach($responseBody->results as $key => $result) {
+
+				if (isset($result->error) && $result->error) {
+
+					$this->messagesStatuses[$key] = [
 						'error' => 1,
 						'regid' => $this->payload['registration_ids'][$key],
 						'message' => $this->errorStatuses[$result->error],
 						'message_id' => ''
-					);
+					];
 				}
-				else
-				{
-					$this->messagesStatuses[$key] = array(
+				else {
+
+					$this->messagesStatuses[$key] = [
 						'error' => 0,
 						'regid' => $this->payload['registration_ids'][$key],
 						'message' => 'Message was sent successfully',
 						'message_id' => $result->message_id
-					);
+					];
 				}
 			}
 
 			return !$error;
 		}
-		elseif ($this->responseInfo['http_code'] == 400)
-		{
-			$this->status = array(
-				'error' => 1,
+		elseif ($this->responseInfo['http_code'] == 400) {
+
+			$this->status = [
+				'error'   => 1,
 				'message' => 'Request could not be parsed as JSON'
-			);
+			];
 			return false;
 		}
-		elseif ($this->responseInfo['http_code'] == 401)
-		{
-			$this->status = array(
-				'error' => 1,
+		elseif ($this->responseInfo['http_code'] == 401) {
+
+			$this->status = [
+				'error'   => 1,
 				'message' => 'There was an error authenticating the sender account'
-			);
+			];
 			return false;
 		}
-		elseif ($this->responseInfo['http_code'] == 500)
-		{
-			$this->status = array(
-				'error' => 1,
+		elseif ($this->responseInfo['http_code'] == 500) {
+
+			$this->status = [
+				'error'   => 1,
 				'message' => 'There was an internal error in the GCM server while trying to process the request'
-			);
+			];
 			return false;
 		}
-		elseif ($this->responseInfo['http_code'] == 503)
-		{
-			$this->status = array(
-				'error' => 1,
+		elseif ($this->responseInfo['http_code'] == 503) {
+
+			$this->status = [
+				'error'   => 1,
 				'message' => 'Server is temporarily unavailable'
-			);
+			];
 			return false;
 		}
-		else
-		{
-			$this->status = array(
-				'error' => 1,
+		else {
+			
+			$this->status = [
+				'error'   => 1,
 				'message' => 'Status undefined'
-			);
+			];
 			return false;
 		}
 	}
