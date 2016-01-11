@@ -121,7 +121,7 @@ class BasePushNotifications extends \CrazyCake\Models\Base
      * @param string $item - A string value
      * @return string
      */
-	public static function updatePayload($payload = array())
+	public function updatePayload($payload = array())
 	{
         //validate inputs
         if(empty($payload))

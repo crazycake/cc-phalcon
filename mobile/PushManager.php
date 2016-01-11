@@ -167,6 +167,7 @@ trait PushManager
 
             //badge & payload logic
             $subscriber->updatePayload($data["payload"]);
+            
             //set payload for notification
             $this->apn->setData(["payload" => $subscriber->payload]);
 			//send message
