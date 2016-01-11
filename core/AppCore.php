@@ -371,7 +371,7 @@ abstract class AppCore extends Controller
      * @param boolean $exit - Flag for exit script execution
      * @return mixed
      */
-    protected static function _varDump($object, $exit = true)
+    protected function _dump($object, $exit = true)
     {
         $object = (new \Phalcon\Debug\Dump())->toJson($object);
 

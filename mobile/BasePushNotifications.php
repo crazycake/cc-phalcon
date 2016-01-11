@@ -120,34 +120,38 @@ class BasePushNotifications extends \CrazyCake\Models\Base
      * @param mixed [string|array] $payload - The input payload
      * @return string
      */
-	public function updatePayload($payload = array())
+	public function updatePayload($payload)
 	{
+        //set payload as array
+        $payload = is_string($payload) ? json_decode($payload, true) : (array)$payload;
+        //current payload
+        $currentPayload = is_string($this->payload) ? json_decode($this->payload, true) : [];
+
         //validate inputs
         if(empty($payload))
 			throw new Exception("Payload input is required");
 
-        //set payload as array
-        $payload = is_string($payload) ? json_decode($payload) : (array)$payload;
-        //current payload
-        $currentPayload = is_string($this->payload) ? json_decode($this->payload) : [];
-
         foreach ($payload as $key => $value) {
 
-            if(empty($value))
-                return;
+            if(is_null($value) || $value === "")
+                $value = false;
 
             //check keys
             if(array_key_exists($key, $currentPayload)) {
 
-                //set new value
-                if(is_bool($value))
-                    $currentPayload[$key] = $payload[$key];
-                else if(is_numeric($value))
-                    $currentPayload[$key] += $payload[$key];
-                else if(is_string($value))
-                    $currentPayload[$key] .= ",".$payload[$key];
-                else if(is_array($value))
+                //set new value for different object types
+                if(is_bool($value)) {
+                    $currentPayload[$key] = $value;
+                }
+                else if(is_numeric($value)) {
+                    $currentPayload[$key] += $value;
+                }
+                else if(is_string($value) && $currentPayload[$key] != $value) {
+                    $currentPayload[$key] = empty($currentPayload[$key]) ? $value : $currentPayload[$key].",".$value;
+                }
+                else if(is_array($value)) {
                     $currentPayload[$key] = array_merge($currentPayload[$key], $value);
+                }
             }
             //check keys exists and non-empty current value
             else {
