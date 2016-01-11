@@ -143,10 +143,11 @@ class BasePushNotifications extends \CrazyCake\Models\Base
                 if(is_bool($value)) {
                     $currentPayload[$key] = $value;
                 }
-                else if(is_numeric($value)) {
-                    $currentPayload[$key] += $value;
+                else if(is_string($value) && $value[0] == "+") {
+                    $currentPayload[$key] += (int)(substr($value, 1));
                 }
-                else if(is_string($value) && $currentPayload[$key] != $value) {
+                //numeric or string value, ommits same value
+                else if((is_numeric($value) || is_string($value))) {
                     $currentPayload[$key] = empty($currentPayload[$key]) ? $value : $currentPayload[$key].",".$value;
                 }
                 else if(is_array($value)) {
