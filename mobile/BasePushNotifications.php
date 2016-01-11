@@ -26,7 +26,7 @@ class BasePushNotifications extends \CrazyCake\Models\Base
     /**
      * @var string
      */
-    public $platform;
+    public $service;
 
     /**
      * @var string
@@ -52,9 +52,10 @@ class BasePushNotifications extends \CrazyCake\Models\Base
     /* inclusion vars */
 
     /**
+     * Push Services
      * @var array
      */
-    static $PLATFORMS = ['ios', 'android'];
+    static $SERVICES = ['gcm', 'apn'];
 
     /**
      * Validation Event
@@ -62,9 +63,9 @@ class BasePushNotifications extends \CrazyCake\Models\Base
     public function validation()
     {
         $this->validate(new InclusionIn([
-            "field"   => "platform",
-            "domain"  => self::$PLATFORMS,
-            "message" => 'Invalid platform. Platforms supported: '.implode(", ", self::$PLATFORMS)
+            "field"   => "service",
+            "domain"  => self::$SERVICES,
+            "message" => 'Invalid service. Services supported: '.implode(", ", self::$SERVICES)
         ]));
 
         //check validations
@@ -88,14 +89,14 @@ class BasePushNotifications extends \CrazyCake\Models\Base
     /**
      * Gets a subscribed user
      * @static
-     * @param string $platform - The platform [ios, android]
+     * @param string $service - The service.
      * @param string $uuid - The device UUID
      * @return object
      */
-    public static function getSubscriber($platform, $uuid)
+    public static function getSubscriber($service, $uuid)
     {
-        $conditions = "platform = ?1 AND uuid = ?2";
-        $parameters = [1 => $platform, 2 => $uuid];
+        $conditions = "service = ?1 AND uuid = ?2";
+        $parameters = [1 => $service, 2 => $uuid];
 
         return self::findFirst([$conditions, "bind" => $parameters]);
     }
@@ -103,39 +104,69 @@ class BasePushNotifications extends \CrazyCake\Models\Base
     /**
      * Gets all subscribed users
      * @static
-     * @param string $platform - The platform [ios, android]
+     * @param string $service - The service.
      * @return resultset
      */
-    public static function getSubscribers($platform)
+    public static function getSubscribers($service)
     {
-        $conditions = "platform = ?1";
-        $parameters = [1 => $platform];
+        $conditions = "service = ?1";
+        $parameters = [1 => $service];
 
         return self::find([$conditions, "bind" => $parameters]);
     }
 
     /**
-     * Concatenate payload
-     * @param string $payload - The object current payload
-     * @param string $item - A string item
-     * @param string $delimeter - The explode delimeter (optional)
+     * Updated payload in case a notification fails
+     * @param string $key - The payload key
+     * @param string $item - A string value
      * @return string
      */
-	public static function concatPayload($payload = "", $item = "", $delimeter = ",")
+	public static function updatePayload($payload = array())
 	{
-	    //parse payload
-		$payload_items = explode($delimeter, $payload);
+        //validate inputs
+        if(empty($payload))
+			throw new Exception("Payload input is required");
 
-        //validate items
-        if(empty($payload_items) || in_array($item, $payload_items))
-			return $payload;
+        //1st time
+        if(empty($this->payload))
+            $this->payload = [];
 
-        //append item
-		array_push($payload_items, $item);
-		$payload_items = array_unique($payload_items);        //remove duplicated entries
-		$payload 	   = implode($delimeter, $payload_items); //string concatenated by delimiter
-		//s($payload);exit;
+        //current payload
+        $currentPayload = is_string($this->payload) ? json_decode($this->payload) : $this->payload;
 
-		return $payload;
+        foreach ($payload as $key => $value) {
+
+            if(empty($value))
+                return;
+
+            //check keys
+            if(array_key_exists($key, $currentPayload)) {
+
+                //set new value
+                if(is_bool($value))
+                    $currentPayload[$key] = $payload[$key];
+                else if(is_numeric($value))
+                    $currentPayload[$key] += $payload[$key];
+                else if(is_string($value))
+                    $currentPayload[$key] .= ",".$payload[$key];
+                else if(is_array($value))
+                    $currentPayload[$key] = array_merge($currentPayload[$key], $value);
+            }
+            //check keys exists and non-empty current value
+            else {
+                $currentPayload[$key] = $value;
+            }
+        }
+
+        $payload = json_encode($currentPayload, JSON_UNESCAPED_SLASHES);
+        //badge counter for new notification payload
+        $bagde_counter = ($this->payload == $payload) ? $this->badge_counter : $this->badge_counter+1;
+        //save it
+        $this->save([
+            "payload"       => $payload,
+            "bagde_counter" => $bagde_counter
+        ]);
+        //return payload as array
+        return $currentPayload;
 	}
 }
