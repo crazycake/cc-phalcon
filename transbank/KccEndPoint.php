@@ -169,15 +169,19 @@ class KccEndPoint extends AppCore
         $di = \Phalcon\DI::getDefault();
 
         //Base URL is kept in client data for CGI call.
-        $client  = json_decode($checkout->client);
-        $baseUrl = $client->baseUrl;
+        $client = json_decode($checkout->client);
 
         //log call (debug)
-        $this->logOutput("OnSuccessTrx async-request: ".$baseUrl." -> ".self::SUCCESS_URI_HANDLER);
+        $this->logOutput("OnSuccessTrx async-request: ".$client->baseUrl." -> ".self::SUCCESS_URI_HANDLER);
 
         //set sending data
         $payload = $di->getShared('cryptify')->encryptForGetRequest($checkout->buy_order);
         //send async request
-        $this->_sendAsyncRequest($baseUrl, self::SUCCESS_URI_HANDLER, $payload);
+        $this->_sendAsyncRequest([
+            "base_url" => $client->baseUrl,
+            "uri"      => self::SUCCESS_URI_HANDLER,
+            "payload"  => $payload,
+            "socket"   => true
+        ]);
     }
 }
