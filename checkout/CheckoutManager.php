@@ -158,15 +158,13 @@ trait CheckoutManager
     public function successCheckout($checkout, $async = true)
     {
         //executes another async self request, this time as socket (connection is closed before waiting for response)
-        $this->_asyncRequest(
-            ["checkout" => "successCheckoutTask"],
-            //encrypted data
-            ["buy_order" => $checkout->buy_order],
-            //method
-            "POST",
-            //socket async
-            $async
-        );
+        $this->_asyncRequest([
+            "controller" => "checkout",
+            "action"     => "successCheckoutTask",
+            "method"     => "POST",
+            "socket"     => $async,
+            "payload"    => ["buy_order" => $checkout->buy_order]
+        ]);
     }
 
     /**

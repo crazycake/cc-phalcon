@@ -552,12 +552,12 @@ trait FacebookAuth
                 $this->__saveNewUserFacebook($user->id, $properties["fb_id"], $fac);
 
             //queues an async request, extend access token (append fb userID and short live access token)
-            $this->_asyncRequest(
-                ["facebook" => "extendAccessToken"],
-                $properties["fb_id"]."#".$fac->getValue(),
-                "GET",
-                true
-            );
+            $this->_asyncRequest([
+                "controller" => "facebook",
+                "action"     => "extendAccessToken",
+                "socket"     => true,
+                "payload"    => $properties["fb_id"]."#".$fac->getValue()
+            ]);
         }
         catch (FacebookResponseException $e) { $exception = $e; }
         catch (FacebookSDKException $e)      { $exception = $e; }
