@@ -29,14 +29,9 @@ abstract class AppCore extends Controller
 
     /**
      * Sends an async request
-     * @param  string $url - The input base URL
-     * @param  string $uri - The input URI
-     * @param  array $data - The input data
-     * @param  string $method - HTTP method: **GET** or **POST**
-     * @param  boolean $socket - Use ```socket``` stategy
-     * @return json
+     * @param array $options - Options: controller, action, method, payload, socket, headers
      */
-    abstract protected function _sendAsyncRequest($url = null, $uri = null, $data = null, $method = "GET", $socket = false);
+    abstract protected function _sendAsyncRequest($options = array());
 
     /**
      * Base URL extended function
@@ -120,31 +115,30 @@ abstract class AppCore extends Controller
     /**
      * Sends an async tasks as another request
      * Current implementation is a Guzzle async Request.
-     * @param array $route - Array with struct: "controller" => "method"
-     * @param object $data - The data to be passed as args
-     * @param string $method - The HTTP method [GET or POST]
-     * @param boolean $socket - Make the call as an async socket connection
+     * @param array $options - Options: module, controller, action, method, payload, socket, headers
      */
-    protected function _asyncRequest($route = array(), $data = null, $method = "GET", $socket = false)
+    protected function _asyncRequest($options = array())
     {
         //encode data
-        if(!is_null($data))
-            $data = $this->cryptify->encryptForGetRequest($data);
+        if(!empty($options["payload"]))
+            $options["payload"] = $this->cryptify->encryptForGetRequest($options["payload"]);
 
-        //encrypt param data?
-        $keys            = array_keys($route);
-        $controller_name = $keys[0];
-        $method_name     = $route[$controller_name];
+        if(empty($options["controller"]) || empty($options["action"]))
+            throw new Exception("AppCore::_asyncRequest -> controller & action params are required");
 
-        //set url
-        $uri = $controller_name."/".$method_name."/";
-        $url = $this->_baseUrl();
+        //set base url & uri
+        $options["base_url"] = empty($options["module"]) ? $this->_baseUrl() : \AppLoader::getModuleURL($options["module"]);
+        $options["uri"]      = $options["controller"]."/".$options["action"]."/";
+
+        //special case for module cross requests
+        if(!empty($options["module"]) && $options["module"] == "api")
+            $options["headers"] = [\WsCore::HEADER_API_KEY => $this->config->app->api->key];
 
         if(APP_ENVIRONMENT == "local")
-            $this->logger->debug("AppCore::_asyncRequest -> Method: $method, Uri: $uri");
+            $this->logger->debug("AppCore::_asyncRequest -> Options: ".json_encode($options, JSON_UNESCAPED_SLASHES));
 
         //child method
-        $this->_sendAsyncRequest($url, $uri, $data, $method, $socket);
+        $this->_sendAsyncRequest($options);
     }
 
     /**

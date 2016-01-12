@@ -18,51 +18,59 @@ use GuzzleHttp\Promise;
  */
 trait Guzzle
 {
-	//....
+    /** static vars */
+    protected static $REQUEST_TIMEOUT = 30.0;
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
 	/**
      * Do a asynchronously request through Guzzle
-     * @param string $url - The request base URL
-     * @param string $uri - The request URI
-     * @param array $data - The encrypted string params data
-     * @param string $method - The HTTP method (GET, POST)
-     * @param string $socket - Makes async call as socket connection
+     * @param array $options - Options:
+     *              +base_url: The request base URL
+     *              +uri: The request URI
+     *              +payload: The encrypted string params data
+     *              +method: The HTTP method (GET, POST)
+     *              +socket: Makes async call as socket connection
      */
-    protected function _sendAsyncRequest($url = null, $uri = null, $data = null, $method = "GET", $socket = false)
+    protected function _sendAsyncRequest($options = array())
     {
         //simple input validation
-        if (is_null($url) || is_null($uri))
-            throw new Exception("Guzzle::sendAsyncRequest -> url & uri method params are required.");
+        if (empty($options["base_url"]) || empty($options["uri"]))
+            throw new Exception("Guzzle::sendAsyncRequest -> base_url & uri method params are required.");
 
-        if(is_null($data))
-            $data = "";
+        if(empty($options["payload"]))
+            $options["payload"] = "";
 
-        //socket async call?
-        if($socket) {
-            $this->_socketAsync($url.$uri, $data, $method);
-            return;
-        }
-
-        $exception = false;
+        if(empty($options["method"]))
+            $options["method"] = "GET"; //default value
 
         try {
-            $client = new GuzzleClient(['base_uri' => $url, 'timeout' => 30.0]);
+            //socket async call?
+            if(!empty($options["socket"]) && $options["socket"] === true)
+                return $this->_socketAsync($options);
+
+            $guzzle_options = [
+                'base_uri' => $options["base_url"],
+                'timeout'  => self::$REQUEST_TIMEOUT
+            ];
+
+            //set headers?
+            if(!empty($options["headers"]))
+                $guzzle_options["headers"] = $options["headers"];
+
+            $client = new GuzzleClient($guzzle_options);
 
             //reflection function
-            $action = "_".strtolower($method)."Request";
-            $this->$action($client, $uri, $data);
+            $action = "_".strtolower($options["method"])."Request";
+            return $this->$action($client, $options);
         }
         catch(Exception $e)  { $exception = $e; }
         catch(\Exception $e) { $exception = $e; }
 
-        if($exception) {
-
-            $di = \Phalcon\DI::getDefault();
-            $di->getShared('logger')->error("Guzzle::sendAsyncRequest -> $url, $uri, Exception: ".$exception->getMessage().
-                               "\n".$exception->getLine()." ".$e->getFile());
-        }
+        //log error
+        $di = \Phalcon\DI::getDefault();
+        $di->getShared('logger')->error("Guzzle::sendAsyncRequest -> Options: ".json_encode($options, JSON_UNESCAPED_SLASHES).", Exception: ".$exception->getMessage().
+                                        "\n".$exception->getLine()." ".$e->getFile());
     }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
@@ -70,16 +78,15 @@ trait Guzzle
     /**
      * Do a GET request
      * @param object $client - The HTTP Guzzle client
-     * @param string $uri - The URI
-     * @param object $data - The encrypted string params data
+     * @param array $options - The input options
      */
-    private function _getRequest($client, $uri, $data)
+    private function _getRequest($client, $options = array())
     {
         //curl options
         $verify_host = (APP_ENVIRONMENT != "production") ? false : 2; //prod_recommended: 2
         $verify_peer = (APP_ENVIRONMENT != "production") ? false : true; //prod_recommended: true
 
-        $promise = $client->getAsync("$uri/$data", [
+        $promise = $client->getAsync($options["uri"]."/".$options["payload"], [
             'curl' => [
                 CURLOPT_SSL_VERIFYHOST => $verify_host,
                 CURLOPT_SSL_VERIFYPEER => $verify_peer
@@ -87,23 +94,22 @@ trait Guzzle
         ]);
 
         //send promise
-        $this->_sendPromise($promise, $uri);
+        $this->_sendPromise($promise, $options["uri"]);
     }
 
     /**
      * Do a POST request
      * @param object $client - The HTTP Guzzle client
-     * @param string $uri - The URI
-     * @param object $data - The encrypted string params data
+     * @param array $options - The input options
      */
-    private function _postRequest($client, $uri, $data)
+    private function _postRequest($client, $options = array())
     {
         //curl options
         $verify_host = (APP_ENVIRONMENT != "production") ? false : 2;
         $verify_peer = (APP_ENVIRONMENT != "production") ? false : true;
 
-        $promise = $client->postAsync($uri, [
-            'form_params' => ["payload" => $data],
+        $promise = $client->postAsync($options["uri"], [
+            'form_params' => ["payload" => $options["payload"]],
             'curl' => [
                 CURLOPT_SSL_VERIFYHOST => $verify_host,
                 CURLOPT_SSL_VERIFYPEER => $verify_peer
@@ -111,7 +117,7 @@ trait Guzzle
         ]);
 
         //send promise
-        $this->_sendPromise($promise, $uri);
+        $this->_sendPromise($promise, $options["uri"]);
     }
 
     /**
@@ -119,11 +125,9 @@ trait Guzzle
      * @param object $promise - The promise object
      * @param string $uri - A given URI
      */
-    private function _sendPromise($promise, $uri)
+    private function _sendPromise($promise = null, $uri = "uknown")
     {
-        if(is_null($uri))
-            $uri = "uknown";
-
+        //handle promise
         $promise->then(function ($response) use ($uri) {
 
             //set logger
@@ -163,62 +167,50 @@ trait Guzzle
 
     /**
      * Simulates a socket async request without waiting for response
-     * @param string $url - The URL
-     * @param array $data - The encrypted string params data
-     * @param string $method - The HTTP Method [GET or POST]
+     * @param array $options - The input options
      */
-    private function _socketAsync($url = "", $data = "", $method = "GET")
+    private function _socketAsync($options = array())
     {
-        $exception = false;
+        //full URL
+        $parts = parse_url($options["base_url"].$options["uri"]);
 
-        try {
+        $default_port = 80;
 
-            $parts = parse_url($url);
+        /*if($parts["sheme"] == "https")
+            $default_port = 443; //SSL*/
 
-            $default_port = 80;
+        // set socket to be opened
+        $socket = fsockopen(
+            $parts['host'],
+            isset($parts['port']) ? $parts['port'] : $default_port,
+            $errno,
+            $errstr,
+            self::$REQUEST_TIMEOUT
+        );
 
-            /*if($parts["sheme"] == "https")
-                $default_port = 443; //SSL*/
-
-            // set socket to be opened
-            $socket = fsockopen(
-                $parts['host'],
-                isset($parts['port']) ? $parts['port'] : $default_port,
-                $errno,
-                $errstr,
-                30
-            );
-
-            // Data goes in the path for a GET request
-            if($method == 'GET') {
-                $parts['path'] .= $data; //normal would be a ? symbol with & delimeter
-                $length = 0;
-            }
-            else {
-                $data = "payload=".$data;
-                $length = strlen($data);
-            }
-
-            $out = "$method ".$parts['path']." HTTP/1.1\r\n";
-            $out .= "Host: ".$parts['host']."\r\n";
-            $out .= "User-Agent: AppLocalServer\r\n";
-            $out .= "Content-Type: application/x-www-form-urlencoded\r\n";
-            $out .= "Content-Length: ".$length."\r\n";
-            $out .= "Connection: Close\r\n\r\n";
-
-            // Data goes in the request body for a POST request
-            if ($method == 'POST' && isset($data))
-                $out .= $data;
-
-            fwrite($socket, $out);
-            fclose($socket);
+        // Data goes in the path for a GET request
+        if($options["method"] == 'GET') {
+            $parts['path'] .= $options["payload"]; //normal would be a ? symbol with & delimeter
+            $length = 0;
         }
-        catch(Exception $e)  { $exception = $e; }
-        catch(\Exception $e) { $exception = $e; }
-
-        if($exception) {
-            $di = \Phalcon\DI::getDefault();
-            $di->getShared('logger')->error("Guzzle::_socketAsync -> Exception ($url): ".$exception->getMessage());
+        else {
+            $options["payload"] = "payload=".$options["payload"];
+            $length = strlen($options["payload"]);
         }
+
+        //set output
+        $out = $options["method"]." ".$parts['path']." HTTP/1.1\r\n";
+        $out .= "Host: ".$parts['host']."\r\n";
+        $out .= "User-Agent: AppLocalServer\r\n";
+        $out .= "Content-Type: application/x-www-form-urlencoded\r\n";
+        $out .= "Content-Length: ".$length."\r\n";
+        $out .= "Connection: Close\r\n\r\n";
+
+        // Data goes in the request body for a POST request
+        if ($options["method"] == 'POST' && !empty($options["payload"]))
+            $out .= $options["payload"];
+
+        fwrite($socket, $out);
+        fclose($socket);
     }
 }
