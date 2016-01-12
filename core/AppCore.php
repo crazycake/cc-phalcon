@@ -58,15 +58,14 @@ abstract class AppCore extends Controller
      * A prefix can be set in module options
      * @param string $key - The class module name uncamelize, example: 'some_class'
      */
-    protected function _getModuleClass($key)
+    protected function _getModuleClass($key = "")
     {
         //get module class prefix
-        $class_prefix = isset($this->config->app->classPrefix) ? $this->config->app->classPrefix : [];
-        //get key prefix
-        $parts = explode("_", $key);
+        $class_map = isset($this->config->app->classMap) ? $this->config->app->classMap : [];
 
         //check for prefix in module settings
-        $class_name = isset($class_prefix[$parts[0]]) ? $class_prefix[$parts[0]]."_".$key : $key;
+        $class_name = isset($class_map[$key]) ? $class_map[$key] : $key;
+
         $camelized_class_name = \Phalcon\Text::camelize($class_name);
 
         return "\\$camelized_class_name";
@@ -127,12 +126,12 @@ abstract class AppCore extends Controller
             throw new Exception("AppCore::_asyncRequest -> controller & action params are required");
 
         //set base url & uri
-        $options["base_url"] = empty($options["module"]) ? $this->_baseUrl() : \AppLoader::getModuleURL($options["module"]);
+        $options["base_url"] = empty($options["module"]) ? $this->_baseUrl() : \CrazyCake\Phalcon\AppLoader::getModuleURL($options["module"]);
         $options["uri"]      = $options["controller"]."/".$options["action"]."/";
 
         //special case for module cross requests
         if(!empty($options["module"]) && $options["module"] == "api")
-            $options["headers"] = [\WsCore::HEADER_API_KEY => $this->config->app->api->key];
+            $options["headers"] = [\CrazyCake\Core\WsCore::HEADER_API_KEY => $this->config->app->api->key];
 
         if(APP_ENVIRONMENT == "local")
             $this->logger->debug("AppCore::_asyncRequest -> Options: ".json_encode($options, JSON_UNESCAPED_SLASHES));

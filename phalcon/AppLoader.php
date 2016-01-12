@@ -119,10 +119,11 @@ abstract class AppLoader
     /**
      * Set App Dependency Injector
      * @access public
-     * @param array $module_configs - Extended module configs
      */
-    public function setAppDependencyInjector($module_configs = array())
+    public function setAppDependencyInjector()
     {
+        $module_configs = is_file(APP_PATH."config/config.php") ? include APP_PATH."config/config.php" : null;
+
         //set module extended configurations
         $this->_moduleConfigurationSetUp($module_configs);
         //get DI preset services for module
@@ -133,11 +134,13 @@ abstract class AppLoader
     /**
      * Start app module execution
      * @access public
-     * @param function $routes_fn - A function that defined app routes
      * @param array $argv - Input arguments for CLI
      */
-    public function start($routes_fn = null, $argv = null)
+    public function start($argv = null)
     {
+        //set routes function
+        $routes_fn = is_file(APP_PATH."config/routes.php") ? include APP_PATH."config/routes.php" : null;
+
         if(MODULE_NAME == "cli") {
             //new cli app
             $application = new \Phalcon\CLI\Console($this->di);
