@@ -69,7 +69,7 @@ class Cryptify
             return false;
 
         //encode arrays as json
-        $data = is_array($data) ? json_encode($data, JSON_UNESCAPED_SLASHES) : (string)$data;
+        $data = (is_array($data) || is_object($data)) ? json_encode($data, JSON_UNESCAPED_SLASHES) : (string)$data;
 
         //key must be set in DI service
         $encrypted = $this->crypt->encrypt($data);
