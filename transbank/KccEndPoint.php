@@ -174,7 +174,7 @@ class KccEndPoint extends AppCore
         //log call (debug)
         $this->logOutput("OnSuccessTrx async-request: ".$client->baseUrl." -> ".self::SUCCESS_URI_HANDLER);
 
-        //set sending data
+        //set encrypted sending data
         $payload = $di->getShared('cryptify')->encryptForGetRequest($checkout->buy_order);
         //send async request
         $this->_sendAsyncRequest([
