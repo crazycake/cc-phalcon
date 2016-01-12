@@ -113,7 +113,7 @@ trait CheckoutManager
     }
 
     /**
-     * Ajax - process a free or invitation type event
+     * Ajax - process a free type checkout
      */
     public function processAction()
     {
