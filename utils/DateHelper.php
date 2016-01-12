@@ -28,16 +28,37 @@ class DateHelper
             throw new Exception("DateHelper::getTimePassedFromDate -> invalid date parameter, must be string or DateTime object.");
 
         //check if is a DateTime object
-        $target_date = null;
-        if ($date instanceof \DateTime)
-            $target_date = $date;
-        else
-            $target_date = new \DateTime($date);
+        $target_date = $date instanceof \DateTime ? $date : new \DateTime($date);
 
         //check days passed
         $today = new \DateTime("now");
         //calculate diff dates
         $interval = $today->diff($target_date);
+
+        //return days property
+        return $interval->$f;
+    }
+
+    /**
+     * Returns time difference from two input dates
+     * @static
+     * @param date $date1 - Format Y-m-d H:i:s or a DateTime object
+     * @param date $date2 - Format Y-m-d H:i:s or a DateTime object
+     * @param string $f - The interval unit datetime, default is hours.
+     * @return int
+     */
+    public static function getTimeDiff($date1 = null, $date2 = null, $f = "h")
+    {
+        //validation
+        if (is_null($date1) || is_null($date2) )
+            throw new Exception("DateHelper::getTimeDiff -> both input dates must be string or DateTime objects.");
+
+        //check if is a DateTime object
+        $date1 = $date1 instanceof \DateTime ? $date1 : new \DateTime($date1);
+        $date2 = $date2 instanceof \DateTime ? $date2 : new \DateTime($date2);
+
+        //calculate diff dates
+        $interval = $date1->diff($date2);
 
         //return days property
         return $interval->$f;
