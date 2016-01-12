@@ -35,7 +35,7 @@ trait FacebookAuth
      * @param object $route - The app route object
      * @param object $response - The received response
      */
-    abstract public function onSuccessAuth(&$route, $response = null);
+    abstract public function onSuccessAuth(&$route, $response);
 
     /**
      * Listener - On app deauthorized
@@ -104,6 +104,8 @@ trait FacebookAuth
             //check perms
             if(isset($data["check_perms"]) && $data["check_perms"])
                 $response["perms"] = $this->__getAccesTokenPermissions($fac, 0, $data["check_perms"]);
+            else
+                $response["perms"] = null;
 
             //route object
             $route = (object)[
@@ -155,6 +157,8 @@ trait FacebookAuth
             //check perms
             if(isset($route->check_perms) && !empty($route->check_perms))
                 $response["perms"] = $this->__getAccesTokenPermissions($fac, 0, $route->check_perms);
+            else
+                $response["perms"] = null;
 
             //call listener
             $this->onSuccessAuth($route, $response);
@@ -509,6 +513,7 @@ trait FacebookAuth
 
             //check if user has already a account registered by email
             $user = $users_class::getUserByEmail($properties['email']);
+
             //skip user insertion?
             if ($user) {
 
@@ -520,15 +525,23 @@ trait FacebookAuth
                 if ($user->account_flag == 'pending')
                     $properties['account_flag'] = 'enabled';
 
+                //set auth state
+                $login_data["auth"] = "existing_user";
+
                 //unset fields we won't wish to update
                 unset($properties['first_name'], $properties['last_name']);
                 //update user ignoring arbitrary set keys
                 $user->update($properties);
             }
             else {
+
                 $user = new $users_class();
-                //extend properties
-                $properties['account_flag'] = 'enabled'; //set account flag as active
+
+                //set account flag as active
+                $properties['account_flag'] = 'enabled';
+                //set auth state
+                $login_data["auth"] = "new_user";
+
                 //insert user
                 if (!$user->save($properties))
                     $this->_sendJsonResponse(200, $user->filterMessages(), true);
@@ -628,7 +641,7 @@ trait FacebookAuth
 
         //log exception
         $this->logger->debug("Facebook::__getAccesTokenPermissions -> Exception: ".$exception->getMessage().", userID: $user_id ");
-        return [];
+        return false;
     }
 
     /**
