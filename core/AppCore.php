@@ -125,13 +125,21 @@ abstract class AppCore extends Controller
         if(empty($options["controller"]) || empty($options["action"]))
             throw new Exception("AppCore::_asyncRequest -> controller & action params are required");
 
-        //set base url & uri
-        $options["base_url"] = empty($options["module"]) ? $this->_baseUrl() : \CrazyCake\Phalcon\AppLoader::getModuleURL($options["module"]);
-        $options["uri"]      = $options["controller"]."/".$options["action"]."/";
+        //set base url
+        if(empty($options["base_url"]))
+            $options["base_url"] = empty($options["module"]) ? $this->_baseUrl() : \CrazyCake\Phalcon\AppLoader::getModuleURL($options["module"]);
+
+        //set uri
+        if(empty($options["uri"]))
+            $options["uri"] = $options["controller"]."/".$options["action"]."/";
 
         //special case for module cross requests
-        if(!empty($options["module"]) && $options["module"] == "api")
-            $options["headers"] = [\CrazyCake\Core\WsCore::HEADER_API_KEY => $this->config->app->api->key];
+        if(!empty($options["module"]) && $options["module"] == "api") {
+
+            //get API key header name
+            $api_key_header_name = str_replace("_", "-", \CrazyCake\Core\WsCore::HEADER_API_KEY);
+            $options["headers"]  = [ $api_key_header_name => $this->config->app->api->key];
+        }
 
         if(APP_ENVIRONMENT == "local")
             $this->logger->debug("AppCore::_asyncRequest -> Options: ".json_encode($options, JSON_UNESCAPED_SLASHES));

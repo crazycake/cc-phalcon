@@ -41,8 +41,8 @@ trait Guzzle
         if(empty($options["payload"]))
             $options["payload"] = "";
 
-        if(empty($options["method"]))
-            $options["method"] = "GET"; //default value
+        //set method, default is GET, value is uppercased
+        $options["method"] = empty($options["method"]) ? "GET" : strtoupper($options["method"]);
 
         try {
             //socket async call?
@@ -53,10 +53,6 @@ trait Guzzle
                 'base_uri' => $options["base_url"],
                 'timeout'  => self::$REQUEST_TIMEOUT
             ];
-
-            //set headers?
-            if(!empty($options["headers"]))
-                $guzzle_options["headers"] = $options["headers"];
 
             $client = new GuzzleClient($guzzle_options);
 
@@ -86,13 +82,19 @@ trait Guzzle
         $verify_host = (APP_ENVIRONMENT != "production") ? false : 2; //prod_recommended: 2
         $verify_peer = (APP_ENVIRONMENT != "production") ? false : true; //prod_recommended: true
 
-        $promise = $client->getAsync($options["uri"]."/".$options["payload"], [
+        $guzzle_options = [
             'curl' => [
                 CURLOPT_SSL_VERIFYHOST => $verify_host,
                 CURLOPT_SSL_VERIFYPEER => $verify_peer
             ]
-        ]);
+        ];
 
+        //set headers?
+        if(!empty($options["headers"]))
+            $guzzle_options["headers"] = $options["headers"];
+
+        //set promise
+        $promise = $client->requestAsync("GET", $options["uri"]."/".$options["payload"], $guzzle_options);
         //send promise
         $this->_sendPromise($promise, $options["uri"]);
     }
@@ -108,27 +110,33 @@ trait Guzzle
         $verify_host = (APP_ENVIRONMENT != "production") ? false : 2;
         $verify_peer = (APP_ENVIRONMENT != "production") ? false : true;
 
-        $promise = $client->postAsync($options["uri"], [
+        $guzzle_options = [
             'form_params' => ["payload" => $options["payload"]],
             'curl' => [
                 CURLOPT_SSL_VERIFYHOST => $verify_host,
                 CURLOPT_SSL_VERIFYPEER => $verify_peer
             ]
-        ]);
+        ];
 
+        //set headers?
+        if(!empty($options["headers"]))
+            $guzzle_options["headers"] = $options["headers"];
+
+        //set promise
+        $promise = $client->requestAsync("POST", $options["uri"], $guzzle_options);
         //send promise
-        $this->_sendPromise($promise, $options["uri"]);
+        $this->_sendPromise($promise, $options);
     }
 
     /**
      * Logs Guzzle promise response
      * @param object $promise - The promise object
-     * @param string $uri - A given URI
+     * @param array $options - The input options
      */
-    private function _sendPromise($promise = null, $uri = "uknown")
+    private function _sendPromise($promise = null, $options = array())
     {
         //handle promise
-        $promise->then(function ($response) use ($uri) {
+        $promise->then(function ($response) use ($options) {
 
             //set logger
             $di = \Phalcon\DI::getDefault();
@@ -141,17 +149,17 @@ trait Guzzle
 
             //handle response (OK status)
             if ($response->getStatusCode() == 200 && strpos($body, "<!DOCTYPE") === false) {
-                $logger->debug("Guzzle::_sendPromise -> Uri: $uri, response: $body");
+                $logger->debug("Guzzle::_sendPromise -> Uri: ".$options["uri"].", response: $body");
             }
             else {
 
                 if(isset($this->router)) {
                     $controllerName = $this->router->getControllerName();
                     $actionName     = $this->router->getActionName();
-                    $logger->error("Guzzle::_sendPromise -> Error on request ($uri): $controllerName -> $actionName");
+                    $logger->error("Guzzle::_sendPromise -> Error on request (".$options["uri"]."): $controllerName -> $actionName");
                 }
                 else {
-                    $logger->error("Guzzle::_sendPromise -> An Error occurred on request: $uri");
+                    $logger->error("Guzzle::_sendPromise -> An Error occurred on request, uri: ".$options["uri"]);
                 }
 
                 //catch response for app errors
@@ -204,10 +212,19 @@ trait Guzzle
         $out .= "User-Agent: AppLocalServer\r\n";
         $out .= "Content-Type: application/x-www-form-urlencoded\r\n";
         $out .= "Content-Length: ".$length."\r\n";
+
+        //set headers
+        if(!empty($options["headers"])) {
+
+            foreach ($options["headers"] as $header => $value)
+                $out .= $header.": ".$value."\r\n";
+        }
+
+        //closer
         $out .= "Connection: Close\r\n\r\n";
 
         // Data goes in the request body for a POST request
-        if ($options["method"] == 'POST' && !empty($options["payload"]))
+        if ($options["method"] == "POST" && !empty($options["payload"]))
             $out .= $options["payload"];
 
         fwrite($socket, $out);

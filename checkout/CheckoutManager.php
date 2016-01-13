@@ -152,17 +152,16 @@ trait CheckoutManager
     /**
      * Succesful checkout, Called when checkout was made succesfuly (eg: after payment)
      * @param object $checkout - The checkout sesssion object
-     * @param boolean $async - If false wait for response
      * @return object Checkout
      */
-    public function successCheckout($checkout, $async = true)
+    public function successCheckout($checkout)
     {
         //executes another async self request, this time as socket (connection is closed before waiting for response)
         $this->_asyncRequest([
             "controller" => "checkout",
             "action"     => "successCheckoutTask",
-            "method"     => "POST",
-            "socket"     => $async,
+            "method"     => "post",
+            "socket"     => true,
             "payload"    => ["buy_order" => $checkout->buy_order]
         ]);
     }

@@ -171,6 +171,7 @@ abstract class WsCore extends AppCore
         //get API key from config file & request header Api Key
         $app_api_key    = $this->config->app->api->key;
         $header_api_key = $this->request->getHeader(self::HEADER_API_KEY);
+        //print_r($this->request->getHeaders());exit;
 
         //check if keys are equal
         if ($app_api_key !== $header_api_key)
