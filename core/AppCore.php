@@ -122,9 +122,6 @@ abstract class AppCore extends Controller
         if(!empty($options["payload"]))
             $options["payload"] = $this->cryptify->encryptForGetRequest($options["payload"]);
 
-        if(empty($options["controller"]) || empty($options["action"]))
-            throw new Exception("AppCore::_asyncRequest -> controller & action params are required");
-
         //set base url
         if(empty($options["base_url"]))
             $options["base_url"] = empty($options["module"]) ? $this->_baseUrl() : \CrazyCake\Phalcon\AppLoader::getModuleURL($options["module"]);
@@ -141,7 +138,7 @@ abstract class AppCore extends Controller
             $options["headers"]  = [ $api_key_header_name => $this->config->app->api->key];
         }
 
-        if(APP_ENVIRONMENT == "local")
+        if(APP_ENVIRONMENT != "production")
             $this->logger->debug("AppCore::_asyncRequest -> Options: ".json_encode($options, JSON_UNESCAPED_SLASHES));
 
         //child method

@@ -38,6 +38,7 @@ return array (
     1 => 'BasePushNotifications.php',
     2 => 'Gcm.php',
     3 => 'PushManager.php',
+    4 => 'PushWebServices.php',
   ),
   'models' => 
   array (
