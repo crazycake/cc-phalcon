@@ -69,6 +69,11 @@ class BaseUsersCheckoutsTrx extends \CrazyCake\Models\Base
     {
         //Skips fields/columns on both INSERT/UPDATE operations
         $this->skipAttributes(['_ext']);
+
+        //get class
+        $users_checkouts_class = \CrazyCake\Core\AppCore::getModuleClass("users_checkouts", false);
+        //model relations
+        $this->hasOne("buy_order", $users_checkouts_class, "buy_order");
     }
 
     /**

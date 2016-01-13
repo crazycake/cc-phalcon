@@ -12,7 +12,6 @@ namespace CrazyCake\Tickets;
 class BaseUsersTickets extends \CrazyCake\Models\Base
 {
     /* static vars */
-    public static $DEFAULT_USERS_CLASS = "Users";
 
     //this static methods can be 'overrided' as late binding
     public static $QR_CODE_LEGTH     = 40;
@@ -55,10 +54,10 @@ class BaseUsersTickets extends \CrazyCake\Models\Base
      */
     public function initialize()
     {
+        //get class
+        $users_class = \CrazyCake\Core\AppCore::getModuleClass("users", false);
         //model relations
-        if(isset($user_id)) {
-            $this->hasOne("user_id",  static::$DEFAULT_USERS_CLASS, "id");
-        }
+        $this->hasOne("user_id", $users_class, "id");
 
         //Skips fields/columns on both INSERT/UPDATE operations
         $this->skipAttributes(['_ext']);
@@ -155,9 +154,9 @@ class BaseUsersTickets extends \CrazyCake\Models\Base
             return false;
 
         //return user object
-        $usersClass = static::$DEFAULT_USERS_CLASS;
+        $users_class = \CrazyCake\Core\AppCore::getModuleClass("users", false);
 
-        return $usersClass::getObjectById($ticket->user_id);
+        return $users_class::getObjectById($ticket->user_id);
     }
 
     /**

@@ -57,18 +57,33 @@ abstract class AppCore extends Controller
      * Get Module Model Class Name
      * A prefix can be set in module options
      * @param string $key - The class module name uncamelize, example: 'some_class'
+     * @param boolean $prefix - Append prefix
      */
-    protected function _getModuleClass($key = "")
+    protected function _getModuleClass($key = "", $prefix = true)
     {
+        return self::getModuleClass($key, $prefix);
+    }
+
+    /**
+     * Get Module Model Class Name
+     * A prefix can be set in module options
+     * @param string $key - The class module name uncamelize, example: 'some_class'
+     * @param boolean $prefix - Append prefix
+     */
+    public static function getModuleClass($key = "", $prefix = true)
+    {
+        //get DI
+        $di     = \Phalcon\DI::getDefault();
+        $config = $di->getShared("config")->app;
         //get module class prefix
-        $class_map = isset($this->config->app->classMap) ? $this->config->app->classMap : [];
+        $class_map = isset($config->classMap) ? $config->classMap : [];
 
         //check for prefix in module settings
         $class_name = isset($class_map[$key]) ? $class_map[$key] : $key;
 
         $camelized_class_name = \Phalcon\Text::camelize($class_name);
 
-        return "\\$camelized_class_name";
+        return $prefix ? "\\$camelized_class_name" : $camelized_class_name;
     }
 
     /**

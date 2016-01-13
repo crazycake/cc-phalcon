@@ -69,6 +69,8 @@ trait PushManager
 
         //set method
         $notificationService = "_sendNotification".$data["service"];
+        //log action
+        $this->logger->debug("PushManager::sendNotification -> new push queue: ".json_encode($data, JSON_UNESCAPED_SLASHES));
 
 		//return payload [reflection]
 		return $this->$notificationService($data);

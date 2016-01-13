@@ -31,10 +31,10 @@ trait CheckoutManager
 
     /**
      * Listener - Success checkout Task completed
-     * @param object $user - The ORM user object
+     * @param int $user - The user ID
      * @param object $checkout - The checkout object
      */
-    abstract public function onSuccessCheckoutTaskComplete($user, &$checkout);
+    abstract public function onSuccessCheckoutTaskComplete($user_id, &$checkout);
 
     /**
      * Listener - On skipped payment [testing]
@@ -237,7 +237,7 @@ trait CheckoutManager
             //$this->logger->debug("Checkout task complete: ".print_r($checkout, true));
 
             //3) Call listener
-            $this->onSuccessCheckoutTaskComplete($user, $checkout);
+            $this->onSuccessCheckoutTaskComplete($user->id, $checkout);
         }
         catch(Exception $e) {
             //get mailer controller

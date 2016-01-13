@@ -84,8 +84,10 @@ class BaseUsersCheckouts extends \CrazyCake\Models\Base
      */
     public function initialize()
     {
+        //get class
+        $user_class = \CrazyCake\Core\AppCore::getModuleClass("users", false);
         //model relations
-        $this->hasOne("user_id", "Users", "id");
+        $this->hasOne("user_id", $user_class, "id");
     }
 
     /**
