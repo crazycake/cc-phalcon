@@ -139,31 +139,21 @@ class BasePushNotifications extends \CrazyCake\Models\Base
         if(empty($payload))
 			throw new Exception("Payload input is required");
 
-        foreach ($payload as $key => $value) {
+        //update payload
 
-            if(is_null($value) || $value === "")
-                $value = false;
-
-            //check keys exists
-            if(!array_key_exists($key, $currentPayload)) {
-                $currentPayload[$key] = $value;
-                continue;
-            }
-
-            //set updated value (concat) for different object types
-            if(is_bool($value)) {
-                $currentPayload[$key] = $value;
-            }
-            else if(is_string($value) && $value[0] == "+") {
-                $currentPayload[$key] += (int)(substr($value, 1));
-            }
-            //numeric or string value, ommits same value
-            else if((is_numeric($value) || is_string($value))) {
-                $currentPayload[$key] = empty($currentPayload[$key]) ? $value : $currentPayload[$key].",".$value;
-            }
-            else if(is_array($value)) {
-                $currentPayload[$key] = array_merge($currentPayload[$key], $value);
-            }
+        if(is_array($currentPayload)) {
+            array_push($currentPayload, $payload);
+        }
+        else if(is_null($currentPayload)) {
+            $currentPayload = [];
+            array_push($currentPayload, $payload);
+        }
+        else {
+            $obj = $currentPayload;
+            //creates a new array
+            $currentPayload = [];
+            array_push($currentPayload, $obj);
+            array_push($currentPayload, $payload);
         }
 
         $payload = json_encode($currentPayload, JSON_UNESCAPED_SLASHES);

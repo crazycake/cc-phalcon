@@ -195,6 +195,7 @@ trait PushManager
         return [
             "success" => $successful_delivers,
             "failed"  => $failed_delivers,
+            "data"    => $data
         ];
     }
 
@@ -264,6 +265,7 @@ trait PushManager
         return [
             "success" => $successful_delivers,
             "failed"  => $failed_delivers,
+            "payload" => json_decode($data["payload"])
         ];
     }
 }
