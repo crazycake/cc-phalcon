@@ -105,14 +105,22 @@ class BasePushNotifications extends \CrazyCake\Models\Base
      * Gets all subscribed users
      * @static
      * @param string $service - The service.
-     * @return resultset
+     * @param boolean $as_string - If true, result will be uuids concatenated as string with ',' delimeter.
+     * @return mixed resultset|string
      */
-    public static function getSubscribers($service)
+    public static function getSubscribers($service, $as_string = false)
     {
         $conditions = "service = ?1";
         $parameters = [1 => $service];
 
-        return self::find([$conditions, "bind" => $parameters]);
+        $subscribers = self::find([$conditions, "bind" => $parameters]);
+
+        if(!$as_string)
+            return $subscribers;
+
+        $uuids = \CrazyCake\Models\BaseResultset::getIdsArray($subscribers, "uuid");
+
+        return $uuids ? implode(",", $uuids) : false;
     }
 
     /**
