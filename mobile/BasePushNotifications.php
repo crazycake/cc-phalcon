@@ -164,7 +164,7 @@ class BasePushNotifications extends \CrazyCake\Models\Base
             "payload"       => $payload,
             "bagde_counter" => $bagde_counter
         ]);
-        //return payload as array
-        return $currentPayload;
+        //update instanced object
+        $this->payload = $payload;
 	}
 }
