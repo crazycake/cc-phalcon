@@ -108,10 +108,10 @@ trait FacebookAuth
                 $response["perms"] = null;
 
             //route object
-            $route = (object)[
+            $route = [
                 "controller" => $this->router->getControllerName(),
                 "action"     => $this->router->getActionName(),
-                "strategy"   => "js"
+                "strategy"   => "js-sdk"
             ];
 
             //call listener
@@ -152,11 +152,11 @@ trait FacebookAuth
             $response = $this->__loginUserFacebook($fac);
 
             //get decrypted params
-            $route = $this->cryptify->decryptForGetResponse($encrypted_data, true);
+            $route = (array)$this->cryptify->decryptForGetResponse($encrypted_data, true);
 
             //check perms
-            if(isset($route->check_perms) && !empty($route->check_perms))
-                $response["perms"] = $this->__getAccesTokenPermissions($fac, 0, $route->check_perms);
+            if(!empty($route["check_perms"]))
+                $response["perms"] = $this->__getAccesTokenPermissions($fac, 0, $route["check_perms"]);
             else
                 $response["perms"] = null;
 
@@ -164,11 +164,11 @@ trait FacebookAuth
             $this->onSuccessAuth($route, $response);
 
             //handle response automatically
-            if(empty($route->controller))
+            if(empty($route["controller"]))
                 return $this->_handleResponseOnLoggedIn();
 
             //Redirect
-            $uri = $route->controller."/".$route->action."/".(empty($route->params) ? "" : implode("/", $route->params));
+            $uri = $route["controller"]."/".$route["action"]."/".(empty($route["payload"]) ? "" : implode("/", $route["payload"]));
             return $this->_redirectTo($uri);
         }
         catch (FacebookResponseException $e) { $exception = $e; }
@@ -196,18 +196,18 @@ trait FacebookAuth
     {
         //append request uri as hashed string
         $scope  = $this->config->app->facebook->appScope;
-        $params = [
+        $route = [
             "controller"  => isset($route["controller"]) ? $route["controller"] : null,
             "action"      => isset($route["action"]) ? $route["action"] : null,
-            "params"      => isset($route["params"]) ? $route["params"] : null,
+            "payload"     => isset($route["payload"]) ? $route["payload"] : null,
             "strategy"    => "redirection",
             "check_perms" => $check_perms ? $scope : false
         ];
 
         //encrypt data
-        $params = $this->cryptify->encryptForGetRequest($params);
+        $route = $this->cryptify->encryptForGetRequest($route);
         //set callback
-        $callback = $this->_baseUrl("facebook/loginByRedirect/".$params);
+        $callback = $this->_baseUrl("facebook/loginByRedirect/".$route);
         //set helper
         $helper = $this->fb->getRedirectLoginHelper();
         //get the url
