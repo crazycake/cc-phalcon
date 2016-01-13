@@ -109,6 +109,8 @@ trait KccManager
      */
     public function successTrxAction($encrypted_data = null)
     {
+        $this->logger->debug("KccManager::_successTrxAction -> Got  encrypted data: $encrypted_data");
+
         if(empty($encrypted_data))
             $this->_redirectToNotFound();
 
@@ -127,6 +129,8 @@ trait KccManager
             if(!$checkout)
                 throw new Exception("Checkout not found with Buy Order: $buy_order");
 
+            //reduce checkout object
+            $checkout = $checkout->reduce();
             //parse transbank MAC file
             $params = $this->_parseMacFile($buy_order);
 
@@ -143,6 +147,8 @@ trait KccManager
 
             if(!$trx->save($this->_parseKccTrx($params, $checkout)))
                 throw new Exception("Error saving transaction: ".$trx->filterMessages(true));
+
+            $this->logger->debug("KccManager::successTrxAction -> successCheckout: ".json_encode($checkout));
 
             //call succes checkout and get checkout objects
             $checkout_controller = $this->_getModuleClass('checkout_controller');
@@ -190,9 +196,9 @@ trait KccManager
 
         try {
             //model classes
-            $users_checkouts_class        = $this->_getModuleClass('users_checkouts');
+            $users_checkouts_class         = $this->_getModuleClass('users_checkouts');
             $users_checkouts_objects_class = $this->_getModuleClass('users_checkouts_objects');
-            $checkout_trx_class           = $this->_getModuleClass('users_checkouts_trx');
+            $checkout_trx_class            = $this->_getModuleClass('users_checkouts_trx');
 
             //get checkout
             $checkout = $users_checkouts_class::getCheckout($data["TBK_ORDEN_COMPRA"]);

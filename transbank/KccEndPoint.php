@@ -21,7 +21,7 @@ class KccEndPoint extends AppCore
     use Guzzle;
 
     // URI SUCCES TRX Handler
-    const SUCCESS_URI_HANDLER = "webpay/successTrx";
+    const SUCCESS_URI_HANDLER = "webpay/successTrx/";
     // MAC file prefix name
     const MAC_FILE_PREFIX_NAME = "MAC01Normal_";
 
@@ -170,9 +170,6 @@ class KccEndPoint extends AppCore
 
         //Base URL is kept in client data for CGI call.
         $client = json_decode($checkout->client);
-
-        //log call (debug)
-        $this->logOutput("OnSuccessTrx async-request: ".$client->baseUrl." -> ".self::SUCCESS_URI_HANDLER);
 
         //async request
         $this->_asyncRequest([

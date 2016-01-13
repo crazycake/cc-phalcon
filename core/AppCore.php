@@ -138,8 +138,8 @@ abstract class AppCore extends Controller
             $options["headers"]  = [ $api_key_header_name => $this->config->app->api->key];
         }
 
-        if(APP_ENVIRONMENT != "production")
-            $this->logger->debug("AppCore::_asyncRequest -> Options: ".json_encode($options, JSON_UNESCAPED_SLASHES));
+        //log asyn request
+        $this->logger->debug("AppCore::_asyncRequest -> Options: ".json_encode($options, JSON_UNESCAPED_SLASHES));
 
         //child method
         $this->_sendAsyncRequest($options);

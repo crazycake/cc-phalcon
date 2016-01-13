@@ -19,7 +19,8 @@ use GuzzleHttp\Promise;
 trait Guzzle
 {
     /** static vars */
-    protected static $REQUEST_TIMEOUT = 30.0;
+    protected static $REQUEST_TIMEOUT     = 30.0;
+    protected static $SOCKET_DEFAULT_PORT = 80;
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
@@ -182,22 +183,20 @@ trait Guzzle
         //full URL
         $parts = parse_url($options["base_url"].$options["uri"]);
 
-        $default_port = 80;
-
         /*if($parts["sheme"] == "https")
             $default_port = 443; //SSL*/
 
         // set socket to be opened
         $socket = fsockopen(
             $parts['host'],
-            isset($parts['port']) ? $parts['port'] : $default_port,
+            isset($parts['port']) ? $parts['port'] : self::$SOCKET_DEFAULT_PORT,
             $errno,
             $errstr,
             self::$REQUEST_TIMEOUT
         );
 
         // Data goes in the path for a GET request
-        if($options["method"] == 'GET') {
+        if($options["method"] == "GET") {
             $parts['path'] .= $options["payload"]; //normal would be a ? symbol with & delimeter
             $length = 0;
         }
@@ -224,8 +223,10 @@ trait Guzzle
         $out .= "Connection: Close\r\n\r\n";
 
         // Data goes in the request body for a POST request
-        if ($options["method"] == "POST" && !empty($options["payload"]))
+        if ($options["method"] == "POST" && !empty($options["payload"])) {
             $out .= $options["payload"];
+        }
+        //$this->logger->debug("Guzzle::_socketAsync -> sending out request ".print_r($out, true));
 
         fwrite($socket, $out);
         fclose($socket);
