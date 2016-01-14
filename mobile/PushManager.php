@@ -45,10 +45,25 @@ trait PushManager
         $subscriber = $push_class::getSubscriber($data["service"], $data["uuid"]);
 
         //if exists update data
-        if($subscriber)
+        if($subscriber) {
+
+            //update object
             $subscriber->update($data);
-        else
+
+            //check for pending push notification
+            if(!empty($subscriber->payload)) {
+
+                $this->sendNotification([
+                    "uuids"   => $data["uuid"],
+                    "service" => $data["service"],
+                    "message" => $this->config->app->name." pending notification.",
+                    "payload" => $subscriber->payload
+                ]);
+            }
+        }
+        else {
             $subscriber = (new $push_class())->save($data);
+        }
 
         return $subscriber;
     }
@@ -60,20 +75,17 @@ trait PushManager
      */
     protected function sendNotification($data)
     {
-        if(empty($data["uuids"]) || empty($data["service"]) || empty("message"))
-            throw new Exception("missing input params");
+        if(empty($data["uuids"]) || empty($data["service"]) || empty($data["message"]) || empty($data["payload"]) )
+            throw new Exception("missing input params: uuid, service, message, payload.");
 
         //set uuids
         if(is_string($data["uuids"]))
             $data["uuids"] = explode(",", trim($data["uuids"]));
 
         //set method
-        $notificationService = "_sendNotification".$data["service"];
-        //log action
-        $this->logger->debug("PushManager::sendNotification -> new push queue: ".json_encode($data, JSON_UNESCAPED_SLASHES));
-
-		//return payload [reflection]
-		return $this->$notificationService($data);
+        $push = "_sendNotification".$data["service"];
+		//get response [reflection]
+		return $this->$push($data);
     }
 
     /**
@@ -179,14 +191,16 @@ trait PushManager
 												"default"				     //default sound
 												);
 
+            //log action
+            $this->logger->debug("PushManager::_sendNotificationAPN -> new push to $uuid: ".$subscriber->payload);
+
             //handle response
             if($response) {
                 $successful_delivers++;
 			}
 			else {
 
-				$this->logger->error("PushManager -> APN onNotificationSent error: $this->apn->error,  token: $subscriber->token, ".
-                                     "uuid: $subscriber->uuid, payload: $payload");
+				$this->logger->error("PushManager -> APN onNotificationSent error: ".$this->apn->error.", token: ".$subscriber->token.", uuid: ".$uuid);
 				$failed_delivers++;
 			}
         }
@@ -194,8 +208,7 @@ trait PushManager
         //send response
         return [
             "success" => $successful_delivers,
-            "failed"  => $failed_delivers,
-            "data"    => $data
+            "failed"  => $failed_delivers
         ];
     }
 
@@ -242,6 +255,9 @@ trait PushManager
 			//send message
 			$response = $this->gcm->send();
 
+            //log action
+            $this->logger->debug("PushManager::_sendNotificationGCM -> new push to $uuid: ".$subscriber->payload);
+
             //handle response
             if($response) {
                 $successful_delivers++;
@@ -255,8 +271,7 @@ trait PushManager
 				if(is_array($gcm_send_status))
 					$gcm_send_status = implode(";", $gcm_send_status);
 
-				$this->logger->error("PushManager -> GCM onNotificationSent error: $gcm_send_status, token: $subscriber->token, ".
-                                     "uuid: $subscriber->uuid, payload: $payload");
+				$this->logger->error("PushManager -> GCM onNotificationSent error: $gcm_send_status, token: ".$subscriber->token.", uuid: ".$uuid);
 				$failed_delivers++;
 			}
         }
@@ -264,8 +279,7 @@ trait PushManager
         //send response
         return [
             "success" => $successful_delivers,
-            "failed"  => $failed_delivers,
-            "payload" => json_decode($data["payload"])
+            "failed"  => $failed_delivers
         ];
     }
 }

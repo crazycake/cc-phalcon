@@ -140,31 +140,19 @@ class BasePushNotifications extends \CrazyCake\Models\Base
 			throw new Exception("Payload input is required");
 
         //update payload
-
         if(is_array($currentPayload)) {
             array_push($currentPayload, $payload);
         }
-        else if(is_null($currentPayload)) {
-            $currentPayload = [];
-            array_push($currentPayload, $payload);
-        }
         else {
-            $obj = $currentPayload;
-            //creates a new array
             $currentPayload = [];
-            array_push($currentPayload, $obj);
             array_push($currentPayload, $payload);
         }
 
         $payload = json_encode($currentPayload, JSON_UNESCAPED_SLASHES);
         //badge counter for new notification payload
-        $bagde_counter = ($this->payload == $payload) ? (int)$this->badge_counter : $this->badge_counter+1;
-        //save it
-        $this->save([
-            "payload"       => $payload,
-            "bagde_counter" => $bagde_counter
-        ]);
-        //update instanced object
+        $this->badge_counter++;
         $this->payload = $payload;
+        //save it
+        $this->save();
 	}
 }
