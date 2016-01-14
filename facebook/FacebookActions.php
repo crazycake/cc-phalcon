@@ -99,7 +99,7 @@ trait FacebookActions
         $exception      = false;
 
         //if user dont have a linked FB account.
-        if(is_null($user_fb) || is_null($user_fb->fac))
+        if(!is_object($user_fb) || !isset($user_fb->fac))
             $fallbackAction = true;
         //agent type
         else if(!is_null($payload["type"]) && $payload["type"] != "parent")
