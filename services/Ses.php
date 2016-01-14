@@ -61,8 +61,6 @@ trait Ses
      */
     public function sendSystemMail($message_data)
     {
-    	$this->_checkConfigurations();
-
     	if(empty($message_data))
     		return false;
 
@@ -111,8 +109,6 @@ trait Ses
      */
     public function sendMailForAccountActivation($user_id)
     {
-        $this->_checkConfigurations();
-
         $users_class = $this->_getModuleClass('users');
         $user = $users_class::getObjectById($user_id);
 
@@ -151,8 +147,6 @@ trait Ses
      */
     public function sendMailForPasswordRecovery($user_id)
     {
-        $this->_checkConfigurations();
-
         $users_class = $this->_getModuleClass('users');
         $user = $users_class::getObjectById($user_id);
 
@@ -194,8 +188,6 @@ trait Ses
      */
     public function _getInlineStyledHtml($mail, $data)
     {
-    	$this->_checkConfigurations();
-
         //css file
         $cssFile = $this->sesConfig['cssFile'];
 
@@ -223,7 +215,8 @@ trait Ses
      */
     public function _sendMessage($html_raw, $subject, $recipients, $tags = array(), $attachments = array(), $async = true)
     {
-    	$this->_checkConfigurations();
+        //handle confs
+    	$this->_handleConfigurations();
 
         //validation
         if (empty($html_raw) || empty($subject) || empty($recipients))
@@ -279,12 +272,12 @@ trait Ses
     /**
      * Check configurations properties
      */
-    private function _checkConfigurations()
+    private function _handleConfigurations()
     {
         if (!isset($this->sesConfig['appName']) || !isset($this->sesConfig['mandrillKey']) || !isset($this->sesConfig['cssFile']))
-            throw new Exception("Ses::_checkConfigurations -> SES configuration properties are not defined. (appName, mandrillKey, cssFile)");
+            throw new Exception("Ses::_handleConfigurations -> SES configuration properties are not defined. (appName, mandrillKey, cssFile)");
 
         if (!isset($this->sesConfig['senderEmail']) || !isset($this->sesConfig['contactEmail']))
-        	throw new Exception("Ses::_checkConfigurations -> SES sender & contact emails are not defined.");
+        	throw new Exception("Ses::_handleConfigurations -> SES sender & contact emails are not defined.");
     }
 }

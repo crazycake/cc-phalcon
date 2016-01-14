@@ -182,7 +182,8 @@ trait FacebookAuth
             return $this->_sendJsonResponse(200, $exception->getMessage(), true);
 
         //set message
-        $this->view->setVar("error_message", $this->fbConfig['trans']['oauth_redirected']);
+        $msg = $this->fbConfig['trans']['oauth_redirected']."\n".$e->getMessage();
+        $this->view->setVar("error_message", $msg);
         $this->dispatcher->forward(["controller" => "errors", "action" => "internal"]);
     }
 
@@ -481,7 +482,7 @@ trait FacebookAuth
                 throw new Exception($this->fbConfig['trans']['session_error']);
             //print_r($properties);exit;
 
-            //email validation
+            //email validation (use TRUE for debug)
             if (empty($properties['email']) || !filter_var($properties['email'], FILTER_VALIDATE_EMAIL)) {
                 $this->logger->error("Facebook::__loginUserFacebook() -> Facebook Session (".$properties["fb_id"].") invalid email: ".$properties['email']);
                 throw new Exception(str_replace("{email}", $properties['email'], $this->fbConfig['trans']['invalid_email']));
@@ -585,7 +586,7 @@ trait FacebookAuth
 
         $user_data = $user_fb->toArray();
         //extend properties
-        $user_data["event"] = "deleted";
+        $user_data["action"] = "deleted";
         //call listener
         $this->onAppDeauthorized($user_data);
         //delete user
