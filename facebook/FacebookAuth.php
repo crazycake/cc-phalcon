@@ -92,7 +92,7 @@ trait FacebookAuth
 
         try {
             //check signed request
-            if(!$this->_parseSignedRequest($data['signed_request']))
+            if(!$this->__parseSignedRequest($data['signed_request']))
                 return $this->_sendJsonResponse(405);
 
             //call js helper
@@ -103,7 +103,7 @@ trait FacebookAuth
 
             //check perms
             if(isset($data["check_perms"]) && $data["check_perms"])
-                $response["perms"] = $this->__getAccesTokenPermissions($fac, 0, $data["check_perms"]);
+                $response["perms"] = $this->_getAccesTokenPermissions($fac, 0, $data["check_perms"]);
             else
                 $response["perms"] = null;
 
@@ -156,7 +156,7 @@ trait FacebookAuth
 
             //check perms
             if(!empty($route["check_perms"]))
-                $response["perms"] = $this->__getAccesTokenPermissions($fac, 0, $route["check_perms"]);
+                $response["perms"] = $this->_getAccesTokenPermissions($fac, 0, $route["check_perms"]);
             else
                 $response["perms"] = null;
 
@@ -298,24 +298,15 @@ trait FacebookAuth
             /** 1.- User deleted tha app from his facebook account settings */
             if(!empty($data['signed_request'])) {
 
-                $fb_data = $this->_parseSignedRequest($data['signed_request']);
+                $fb_data = $this->__parseSignedRequest($data['signed_request']);
 
                 if(!$fb_data)
-                    throw new Exception("invalid Facebook Signed Request: ".print_r($fb_data, true));
+                    throw new Exception("invalid Facebook Signed Request: ".json_encode($fb_data));
 
-                //find user on db
-                $users_facebook_class = $this->_getModuleClass('users_facebook');
-                $user_fb = $users_facebook_class::getObjectById($fb_data["user_id"]);
-
-                if($user_fb) {
-                    //remove user from facebook table
-                    $user_fb->delete();
-                }
-
-                //listener, must be implemented
-                $this->onAppDeauthorized($user_fb->toArray());
+                //remove user on db
+                $this->_deleteFacebookUser($fb_data["fb_id"]);
                 //set data Response
-                $data = $fb_data["user_id"];
+                $data = $fb_data["fb_id"];
             }
             /** 2.- An app permission field changed in user facebook account app settings */
             else if(isset($body) && is_array($body->entry) && !is_null($body->entry[0])) {
@@ -328,11 +319,12 @@ trait FacebookAuth
                 $data["fb_id"]          = $body->entry[0]->id;
                 $data["time"]           = $body->entry[0]->time;
                 $data["changed_fields"] = $body->entry[0]->changed_fields;
+                //append user data
 
                 //listener, must be implemented
                 $this->onAppDeauthorized($data);
             }
-            /** 3.- Validates a FB webhook [Handling Verification Requests] **/
+            /** 3.- Validates a FB webhook [Handling Verification Requests, DEV only] **/
             else if(!empty($data["hub_challenge"]) && !empty($data["hub_verify_token"])) {
 
                 //throw Exception for a invalid token
@@ -377,7 +369,7 @@ trait FacebookAuth
 
             //validate permissions
             $scope = $this->config->app->facebook->appScope;
-            $perms = $this->__getAccesTokenPermissions(null, $this->user_session['id'], $scope);
+            $perms = $this->_getAccesTokenPermissions(null, $this->user_session['id'], $scope);
 
             if(!$perms)
                 throw new Exception("App permissions not granted");
@@ -409,7 +401,7 @@ trait FacebookAuth
             $this->_sendJsonResponse(404);
 
         //remove user
-        $this->_removeFacebookUser($this->user_session['id']);
+        $this->_deleteFacebookUser($this->user_session['fb_id']);
         //send JSON response
         $this->_sendJsonResponse(200);
     }
@@ -578,15 +570,25 @@ trait FacebookAuth
     }
 
     /**
-     * Removes a facebook user
-     * @param int $user_id - The user ID
+     * Removes a facebook user from facebook users table
+     * @param int $fb_id - The Facebook user ID
      */
-    protected function _removeFacebookUser($user_id = 0)
+    protected function _deleteFacebookUser($fb_id = 0)
     {
+        //get object class
         $users_facebook_class = $this->_getModuleClass('users_facebook');
-
         //get user & update properties
-        $user_fb = $users_facebook_class::getFacebookDataByUserId($user_id);
+        $user_fb = $users_facebook_class::getObjectById($fb_id);
+
+        if(!$user_fb)
+            return false;
+
+        $user_data = $user_fb->toArray();
+        //extend properties
+        $user_data["event"] = "deleted";
+        //call listener
+        $this->onAppDeauthorized($user_data);
+        //delete user
         $user_fb->delete();
     }
 
@@ -597,13 +599,13 @@ trait FacebookAuth
      * @param mixed [boolean, string, array] $scope - If value is set then validates also the granted perms
      * @return array
      */
-    private function __getAccesTokenPermissions($fac = null, $user_id = 0, $scope = false)
+    protected function _getAccesTokenPermissions($fac = null, $user_id = 0, $scope = false)
     {
         //get session using short access token or with saved access token
         $this->__setUserAccessToken($fac, $user_id);
 
         try {
-            $this->logger->debug("Facebook::__getAccesTokenPermissions -> checking fac perms for userID: $user_id,  scope: ".json_encode($scope));
+            $this->logger->debug("Facebook::_getAccesTokenPermissions -> checking fac perms for userID: $user_id,  scope: ".json_encode($scope));
 
             $response = $this->fb->get('/me/permissions');
 
@@ -624,6 +626,7 @@ trait FacebookAuth
 
                 $scope = is_array($scope) ? $scope : explode(',', $scope);
 
+                //se valida desde los permisos entregados por facebook
                 foreach ($perms as $p) {
 
                     //validates permission
@@ -640,7 +643,7 @@ trait FacebookAuth
         catch (\Exception $e)                { $exception = $e; }
 
         //log exception
-        $this->logger->debug("Facebook::__getAccesTokenPermissions -> Exception: ".$exception->getMessage().", userID: $user_id ");
+        $this->logger->debug("Facebook::_getAccesTokenPermissions -> Exception: ".$exception->getMessage().", userID: $user_id ");
         return false;
     }
 
@@ -713,7 +716,7 @@ trait FacebookAuth
      * @param string $signed_request - Signed request received from Facebook API
      * @return mixed
      */
-    protected function _parseSignedRequest($signed_request = null)
+    private function __parseSignedRequest($signed_request = null)
     {
         if(is_null($signed_request))
             return false;
@@ -733,7 +736,7 @@ trait FacebookAuth
         $data = json_decode($base64_decode_url($payload), true);
         //check algorithm
         if (strtoupper($data['algorithm']) !== 'HMAC-SHA256') {
-            $this->logger->error('Facebook::_parseSignedRequest -> Unknown algorithm. Expected HMAC-SHA256');
+            $this->logger->error('Facebook::__parseSignedRequest -> Unknown algorithm. Expected HMAC-SHA256');
             return false;
         }
         //adding the verification of the signed_request below
@@ -741,8 +744,14 @@ trait FacebookAuth
         $signature    = $base64_decode_url($encoded_sig);
 
         if ($signature !== $expected_sig) {
-            $this->logger->error('Facebook::_parseSignedRequest -> Invalid JSON Signature!');
+            $this->logger->error('Facebook::__parseSignedRequest -> Invalid JSON Signature!');
             return false;
+        }
+
+        //parse data to avoid var mistakes
+        if(isset($data["user_id"])) {
+            $data["fb_id"] = $data["user_id"];
+            unset($data["user_id"]);
         }
 
         return $data;
