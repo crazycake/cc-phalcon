@@ -597,7 +597,7 @@ trait FacebookAuth
      * @param object $fac - The facebook access token
      * @param int $user_id - The user ID
      * @param mixed [boolean, string, array] $scope - If value is set then validates also the granted perms
-     * @return array
+     * @return mixed [boolean|array] - False if perms validation fail
      */
     protected function _getAccesTokenPermissions($fac = null, $user_id = 0, $scope = false)
     {
