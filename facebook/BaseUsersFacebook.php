@@ -40,13 +40,18 @@ class BaseUsersFacebook extends \CrazyCake\Models\Base
      */
     public function initialize()
     {
-        //Skips fields/columns on both INSERT/UPDATE operations
-        $this->skipAttributes(['created_at']);
-
         //get class
         $users_class = \CrazyCake\Core\AppCore::getModuleClass("users", false);
         //model relations
         $this->hasOne("user_id", $users_class, "id");
+    }
+
+    /**
+     * Before Validation Event [onCreate, onUpdate]
+     */
+    public function beforeValidation()
+    {
+        $this->created_at = date('Y-m-d H:i:s');
     }
 
     /** ------------------------------------------- § ------------------------------------------------ **/

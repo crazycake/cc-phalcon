@@ -251,11 +251,10 @@ trait FacebookAuth
             //save new long-live access token?
             if ($fac) {
                 //set new access token
-                $data = [];
-                $data['fac'] = $fac->getValue();
+                $data = ["fac" => $fac->getValue()];
 
                 if(is_object($fac->getExpiresAt()))
-                    $data['expires_at'] = $fac->getExpiresAt()->format('Y-m-d H:i:s');
+                    $data["expires_at"] = $fac->getExpiresAt()->format("Y-m-d H:i:s");
 
                 //update in db
                 $user_fb->update($data);
