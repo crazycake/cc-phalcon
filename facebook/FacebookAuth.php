@@ -62,6 +62,12 @@ trait FacebookAuth
      */
     public static $FB_USER_IMAGE_URI = "graph.facebook.com/<fb_id>/picture?type=<size>";
 
+    /**
+     * Facebook Email settings URL
+     * @var string
+     */
+    public static $FB_EMAIL_SETTINGS_URL = "https://www.facebook.com/settings?tab=account&section=email&view";
+
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
