@@ -102,8 +102,8 @@ trait FacebookActions
         if(!is_object($user_fb) || !isset($user_fb->fac))
             $fallbackAction = true;
         //agent type
-        else if(!is_null($payload["type"]) && $payload["type"] != "parent")
-            $fallbackAction = true;
+        /*else if(!is_null($payload["type"]) && $payload["type"] != "parent")
+            $fallbackAction = true;*/
 
         //for fallback, switch to user page data
         if($fallbackAction)
@@ -201,7 +201,7 @@ trait FacebookActions
      */
     private function _storyAction($user_fb, $object, $fallbackAction = false, $count = 0)
     {
-        if($fallbackAction || (APP_ENVIRONMENT == "production" && $count > 2))
+        if($fallbackAction || (APP_ENVIRONMENT == "production" && $count > 1))
             throw new Exception("User reached story max post times for today");
 
         //get event facebook object
