@@ -41,6 +41,10 @@ trait AccountManager
     {
         parent::initialize();
 
+        //if not logged In, set this URI to redirected after logIn
+        if(!$this->_checkUserIsLoggedIn())
+            $this->_setSessionRedirectionOnLoggedIn();
+
         //check if user is logged in, if not dispatch to auth/logout
         $this->_checkUserIsLoggedIn(true);
 
