@@ -165,8 +165,10 @@ trait FacebookActions
      */
     private function _checkinAction($user_fb, $object, $fallbackAction = false, $count = 0)
     {
-        if($fallbackAction || ($this->fbConfig["publish_day_limit"] && $count > 1))
-            throw new Exception("User reached checkin max post times for today");
+        if($fallbackAction)
+            throw new Exception("Checkin publish action failed (fb error).");
+        else if($this->fbConfig["publish_day_limit"] && $count > 1)
+            throw new Exception("User reached checkin max post times for today (app restriction)");
 
         //get event facebook object
         $fb_object = $object->{$this->fbConfig["object_fb_relation"]};
@@ -201,8 +203,10 @@ trait FacebookActions
      */
     private function _storyAction($user_fb, $object, $fallbackAction = false, $count = 0)
     {
-        if($fallbackAction || ($this->fbConfig["publish_day_limit"] && $count > 1))
-            throw new Exception("User reached story max post times for today");
+        if($fallbackAction)
+            throw new Exception("Story publish action failed (fb error).");
+        else if($this->fbConfig["publish_day_limit"] && $count > 1)
+            throw new Exception("User reached story max post times for today (app restriction)");
 
         //get event facebook object
         $fb_object = $object->{$this->fbConfig["object_fb_relation"]};
