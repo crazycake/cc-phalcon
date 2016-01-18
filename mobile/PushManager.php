@@ -192,7 +192,8 @@ trait PushManager
 												);
 
             //log action
-            $this->logger->debug("PushManager::_sendNotificationAPN -> new push to $uuid: ".$subscriber->payload);
+            if(APP_ENVIRONMENT != "production")
+                $this->logger->debug("PushManager::_sendNotificationAPN -> new push to $uuid: ".$subscriber->payload);
 
             //handle response
             if($response) {
@@ -256,7 +257,8 @@ trait PushManager
 			$response = $this->gcm->send();
 
             //log action
-            $this->logger->debug("PushManager::_sendNotificationGCM -> new push to $uuid: ".$subscriber->payload);
+            if(APP_ENVIRONMENT != "production")
+                $this->logger->debug("PushManager::_sendNotificationGCM -> new push to $uuid: ".$subscriber->payload);
 
             //handle response
             if($response) {

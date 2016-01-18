@@ -172,9 +172,12 @@ abstract class WebCore extends AppCore implements WebSecurity
 
     /**
      * Sends a simple text response
-     * @param  string $text - Any text string
+     * @param  mixed [string|array] $text - Any text string
      */
     protected function _sendTextResponse($text = "OK"){
+
+        if(is_array($text) || is_object($text))
+            $text = json_encode($text, JSON_UNESCAPED_SLASHES);
 
         //output the response
         $this->view->disable(); //disable view output
