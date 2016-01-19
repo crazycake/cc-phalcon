@@ -9,8 +9,7 @@ namespace CrazyCake\Utils;
 
 //imports
 use Phalcon\Exception;
-use Knp\Snappy\Pdf as PDF;           //PDF printer
-use Clegginabox\PDFMerger\PDFMerger; //PDF merger lib
+use Knp\Snappy\Pdf as PDF; //PDF renderizer
 
 /**
  * PDF Helper
@@ -89,7 +88,12 @@ class PdfHelper
             throw new Exception("PdfHelper::mergePdfFiles -> Input files is empty");
 
         //Merge PDFs
-        $pdf = new PDFMerger();
+        try {
+            $pdf = new \Clegginabox\PDFMerger\PDFMerger();
+        }
+        catch (Exception $e) {
+            throw new Exception("PdfHelper::mergePdfFiles -> \Clegginabox\PDFMerger\PDFMerger class is required");
+        }
 
         foreach ($files as $f)
             $pdf->addPDF($f);
