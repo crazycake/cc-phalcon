@@ -21,7 +21,7 @@ abstract class AppLoader
     const CCLIBS_NAMESPACE = "cc-phalcon";
 
     /**
-     * Set App environment
+     * Set App environment (required)
      */
     abstract protected function setAppEnvironment();
 
@@ -109,26 +109,12 @@ abstract class AppLoader
         define("EXEC_START", microtime(true));  //for debugging render time
 
         //start webapp loader flux
-        $this->_directoriesSetup();
+        $this->_directoriesSetup(); //required for autoload classes
         $this->_autoloadClasses();
-        //set env
-        $this->_environmentSetUp(); //set APP_ENVIRONMENT & APP_BASE_URL
-        $this->_databaseSetup();
-    }
-
-    /**
-     * Set App Dependency Injector
-     * @access public
-     */
-    public function setAppDependencyInjector()
-    {
-        $module_configs = is_file(APP_PATH."config/config.php") ? include APP_PATH."config/config.php" : null;
-
-        //set module extended configurations
-        $this->_moduleConfigurationSetUp($module_configs);
-        //get DI preset services for module
-        $services = new AppServices(MODULE_NAME, $this);
-        $this->di = $services->getDI();
+        //set environment setup
+        $this->_environmentSetUp(); //set APP_ENVIRONMENT & APP_BASE_URL (requires composer)
+        //set phalcon DI services
+        $this->_setAppDependencyInjector();
     }
 
     /**
@@ -290,12 +276,31 @@ abstract class AppLoader
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
+     * Set App Dependency Injector
+     * @access private
+     */
+    private function _setAppDependencyInjector()
+    {
+        //check for custom module configurations
+        $module_configs = is_file(APP_PATH."config/config.php") ? include APP_PATH."config/config.php" : null;
+        //set module extended configurations
+        $this->_moduleConfigurationSetUp($module_configs);
+
+        //get DI preset services for module
+        $services = new AppServices(MODULE_NAME, $this);
+        $this->di = $services->getDI();
+    }
+
+    /**
      * Set Module configurations
      * @access private
      * @param array $module_configs - The module config options
      */
     private function _moduleConfigurationSetUp($module_configs = array())
     {
+        //set dabase configs
+        $this->_databaseSetup();
+
         //merge with input module configs?
         if(!empty($module_configs))
             $this->app_props = array_merge($this->app_props, $module_configs);
