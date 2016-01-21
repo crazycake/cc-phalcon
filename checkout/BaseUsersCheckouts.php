@@ -17,8 +17,8 @@ use Phalcon\Mvc\Model\Validator\InclusionIn;
 class BaseUsersCheckouts extends \CrazyCake\Models\Base
 {
     /* static vars */
-    public static $DEFAULT_OBJECTS_CLASS = "UsersCheckoutsObjects";
-    public static $BUY_ORDER_CODE_LENGTH = 16;
+    public static $DEFAULT_EXPIRATION_TIME = 5;  //minutes
+    public static $BUY_ORDER_CODE_LENGTH   = 16;
 
     /* properties */
 
@@ -185,7 +185,7 @@ class BaseUsersCheckouts extends \CrazyCake\Models\Base
         //get classes
         $checkoutModel = static::who();
         //get checkouts objects class
-        $objectsModel = static::$DEFAULT_OBJECTS_CLASS;
+        $objectsModel = \CrazyCake\Core\AppCore::getModuleClass("users_checkouts_objects");
 
         //generates buy order
         $buy_order = self::generateBuyOrder(static::$BUY_ORDER_CODE_LENGTH);
@@ -276,7 +276,7 @@ class BaseUsersCheckouts extends \CrazyCake\Models\Base
         //get classes
         $checkoutModel = static::who();
         //get checkouts objects class
-        $objectsModel = static::$DEFAULT_OBJECTS_CLASS;
+        $objectsModel = \CrazyCake\Core\AppCore::getModuleClass("users_checkouts_objects");
 
         //get pending checkouts items quantity
         $objects = $checkoutModel::getObjectsByPhql(
@@ -326,7 +326,7 @@ class BaseUsersCheckouts extends \CrazyCake\Models\Base
         //get classes
         $checkoutModel = static::who();
         //get checkouts objects class
-        $objectsModel = static::$DEFAULT_OBJECTS_CLASS;
+        $objectsModel = \CrazyCake\Core\AppCore::getModuleClass("users_checkouts_objects");
 
         $conditions = "";
 
@@ -393,6 +393,51 @@ class BaseUsersCheckouts extends \CrazyCake\Models\Base
                 ",
                 [$orm_object->id, $updated_quantity, $state]
             );
+        }
+    }
+
+
+    /**
+     * Deletes expired pending checkouts
+     * Requires Carbon library
+     * @param int $expiration_mins - The expiration threshold in minutes
+     * @return int
+     */
+    public static function deleteExpiredCheckouts($expiration_mins = 0) {
+
+        if(empty($expiration_mins))
+            $expiration_mins = static::$DEFAULT_EXPIRATION_TIME;
+
+        //use carbon to manipulate days
+        try {
+
+            //use server datetime
+            $now = new \Carbon\Carbon();
+            //consider one hour early from date
+            $now->subMinutes($expiration_mins);
+            //s($now->toDateTimeString());exit;
+
+            //get expired objects
+            $conditions = "state = ?1 AND local_time < ?2";
+            $parameters = [1 => "pending", 2 => $now->toDateTimeString()];
+            //query
+            $objects = self::find([$conditions, "bind" => $parameters]);
+
+            $count = 0;
+
+            if($objects) {
+                //set count
+                $count = $objects->count();
+                //delete action
+                $objects->delete();
+            }
+
+            //delete expired objects
+            return $count;
+        }
+        catch(Exception $e) {
+            //throw new Exception("Events::isRunning -> error: ".$e->getMessage());
+            return 0;
         }
     }
 }
