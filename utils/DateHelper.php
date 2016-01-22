@@ -176,7 +176,7 @@ class DateHelper
     }
 
     /**
-     * Get translated current day
+     * Get translated current date
      * @static
      * @return string - The translated date
      */
