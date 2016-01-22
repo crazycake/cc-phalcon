@@ -17,8 +17,8 @@ use Phalcon\Mvc\Model\Validator\InclusionIn;
 class BaseUsersCheckouts extends \CrazyCake\Models\Base
 {
     /* static vars */
-    public static $DEFAULT_EXPIRATION_TIME = 5;  //minutes
-    public static $BUY_ORDER_CODE_LENGTH   = 16;
+    public static $CHECKOUT_EXPIRES_THRESHOLD = 5;  //minutes
+    public static $BUY_ORDER_CODE_LENGTH      = 16;
 
     /* properties */
 
@@ -136,9 +136,9 @@ class BaseUsersCheckouts extends \CrazyCake\Models\Base
     public static function getCheckout($buy_order = "")
     {
         $conditions = "buy_order = ?1";
-        $parameters = [1 => $buy_order];
+        $binding    = [1 => $buy_order];
 
-        return self::findFirst([$conditions, "bind" => $parameters]);
+        return self::findFirst([$conditions, "bind" => $binding]);
     }
 
     /**
@@ -149,9 +149,9 @@ class BaseUsersCheckouts extends \CrazyCake\Models\Base
     public static function getLastUserCheckout($user_id = 0, $state = 'pending')
     {
         $conditions = "user_id = ?1 AND state = ?2";
-        $parameters = [1 => $user_id, 2 => $state];
+        $binding    = [1 => $user_id, 2 => $state];
 
-        return self::findFirst([$conditions, "bind" => $parameters, "order" => "local_time DESC"]);
+        return self::findFirst([$conditions, "bind" => $binding, "order" => "local_time DESC"]);
     }
 
     /**
@@ -400,28 +400,24 @@ class BaseUsersCheckouts extends \CrazyCake\Models\Base
     /**
      * Deletes expired pending checkouts
      * Requires Carbon library
-     * @param int $expiration_mins - The expiration threshold in minutes
      * @return int
      */
-    public static function deleteExpiredCheckouts($expiration_mins = 0) {
-
-        if(empty($expiration_mins))
-            $expiration_mins = static::$DEFAULT_EXPIRATION_TIME;
-
-        //use carbon to manipulate days
+    public static function deleteExpiredCheckouts()
+    {
+        //use carbon library to manipulate time
         try {
 
             //use server datetime
             $now = new \Carbon\Carbon();
             //consider one hour early from date
-            $now->subMinutes($expiration_mins);
+            $now->subMinutes(static::$CHECKOUT_EXPIRES_THRESHOLD);
             //s($now->toDateTimeString());exit;
 
             //get expired objects
             $conditions = "state = ?1 AND local_time < ?2";
-            $parameters = [1 => "pending", 2 => $now->toDateTimeString()];
+            $binding    = [1 => "pending", 2 => $now->toDateTimeString()];
             //query
-            $objects = self::find([$conditions, "bind" => $parameters]);
+            $objects = self::find([$conditions, "bind" => $binding]);
 
             $count = 0;
 
@@ -436,7 +432,7 @@ class BaseUsersCheckouts extends \CrazyCake\Models\Base
             return $count;
         }
         catch(Exception $e) {
-            //throw new Exception("Events::isRunning -> error: ".$e->getMessage());
+            //throw new Exception("BaseUsersCheckouts::deleteExpiredCheckouts -> error: ".$e->getMessage());
             return 0;
         }
     }
