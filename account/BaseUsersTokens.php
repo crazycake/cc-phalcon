@@ -203,7 +203,6 @@ class BaseUsersTokens extends \CrazyCake\Models\Base
     /**
      * Deletes expired tokens
      * Requires Carbon library
-     * @param int $expiration_mins - The expiration threshold in minutes
      * @return int
      */
     public static function deleteExpiredTokens()
