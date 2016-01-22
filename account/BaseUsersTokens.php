@@ -79,9 +79,9 @@ class BaseUsersTokens extends \CrazyCake\Models\Base
     public static function getTokenByUserAndValue($user_id, $type = 'activation', $token)
     {
         $conditions = "user_id = ?1 AND type = ?2 AND token = ?3";
-        $parameters = [1 => $user_id, 2 => $type, 3 => $token];
+        $binding    = [1 => $user_id, 2 => $type, 3 => $token];
 
-        return self::findFirst([$conditions, "bind" => $parameters]);
+        return self::findFirst([$conditions, "bind" => $binding]);
     }
 
     /**
@@ -94,9 +94,9 @@ class BaseUsersTokens extends \CrazyCake\Models\Base
     public static function getTokenByUserAndType($user_id, $type = 'activation')
     {
         $conditions = "user_id = ?1 AND type = ?2";
-        $parameters = [1 => $user_id, 2 => $type];
+        $binding    = [1 => $user_id, 2 => $type];
 
-        return self::findFirst([$conditions, "bind" => $parameters]);
+        return self::findFirst([$conditions, "bind" => $binding]);
     }
 
     /**
@@ -117,10 +117,9 @@ class BaseUsersTokens extends \CrazyCake\Models\Base
         $token->type       = $type;
         $token->created_at = date("Y-m-d H:i:s");
 
-        if($token->save())
-            return $token;
-        else
-            return false;
+        //save token
+        return $token->save() ? $token : false;
+
     }
 
     /**
@@ -199,5 +198,45 @@ class BaseUsersTokens extends \CrazyCake\Models\Base
             throw new Exception("temporal token (id: ".$token->id.") has expired (".$days_passed." days passed since ".$token->created_at.")");
 
         return $data;
+    }
+
+    /**
+     * Deletes expired tokens
+     * Requires Carbon library
+     * @param int $expiration_mins - The expiration threshold in minutes
+     * @return int
+     */
+    public static function deleteExpiredTokens()
+    {
+        //use carbon to manipulate days
+        try {
+
+            //use server datetime
+            $now = new \Carbon\Carbon();
+            //consider one hour early from date
+            $now->subDays(static::$TOKEN_EXPIRES_THRESHOLD);
+
+            //get expired objects
+            $conditions = "created_at < ?1";
+            $binding    = [1 => $now->toDateTimeString()];
+            //query
+            $objects = self::find([$conditions, "bind" => $binding]);
+
+            $count = 0;
+
+            if($objects) {
+                //set count
+                $count = $objects->count();
+                //delete action
+                $objects->delete();
+            }
+
+            //delete expired objects
+            return $count;
+        }
+        catch(Exception $e) {
+            //throw new Exception("BaseUsersTokens::deleteExpiredTokens -> error: ".$e->getMessage());
+            return 0;
+        }
     }
 }
