@@ -17,16 +17,19 @@ require "AppServices.php";
 abstract class AppLoader
 {
     /** const **/
-    const CCLIBS_PACKAGE   = "CrazyCake\\";
-    const CCLIBS_NAMESPACE = "cc-phalcon";
+    const APP_CORE_PACKAGE   = "CrazyCake\\";
+    const APP_CORE_NAMESPACE = "cc-phalcon";
 
     /**
      * Set App environment (required)
      */
     abstract protected function setAppEnvironment();
 
-
-    protected static $CCLIBS_DEFAULT_PACKAGES = ['services', 'core', 'utils', 'models'];
+    /**
+     * App Core default packages
+     * @var array
+     */
+    protected static $APP_CORE_DEFAULT_PACKAGES = ['services', 'core', 'utils', 'models'];
 
     /**
      * The root app path
@@ -50,7 +53,7 @@ abstract class AppLoader
      * CrazyCake libraries needed for each module
      * @var string
      */
-    protected $modules_cclibs;
+    protected $modules_core;
 
     /**
      * Module supported langs
@@ -379,9 +382,9 @@ abstract class AppLoader
         $loader = new \Phalcon\Loader();
         $loader->registerDirs($this->app_config["directories"]);
 
-        //2.- Register any static libs (like cclibs)
-        if(isset($this->modules_cclibs[MODULE_NAME]))
-            $this->_loadStaticLibs($loader, $this->modules_cclibs[MODULE_NAME]);
+        //2.- Register any static libs (like core)
+        if(isset($this->modules_core[MODULE_NAME]))
+            $this->_loadStaticLibs($loader, $this->modules_core[MODULE_NAME]);
 
         //3.- Composer libs auto loader
         if (!is_file(COMPOSER_PATH.'vendor/autoload.php'))
@@ -409,10 +412,10 @@ abstract class AppLoader
             return;
 
         //merge packages with defaults
-        $packages = array_merge(self::$CCLIBS_DEFAULT_PACKAGES, $packages);
+        $packages = array_merge(self::$APP_CORE_DEFAULT_PACKAGES, $packages);
 
         //check if library was loaded from dev environment
-        $class_path = is_link(PACKAGES_PATH.self::CCLIBS_NAMESPACE) ? PACKAGES_PATH.self::CCLIBS_NAMESPACE : false;
+        $class_path = is_link(PACKAGES_PATH.self::APP_CORE_NAMESPACE) ? PACKAGES_PATH.self::APP_CORE_NAMESPACE : false;
 
         //load classes directly form phar
         if(!$class_path) {
@@ -430,7 +433,7 @@ abstract class AppLoader
         //load classes from symlink
         $namespaces = array();
         foreach ($packages as $lib) {
-            $namespaces[self::CCLIBS_PACKAGE.ucfirst($lib)] = "$class_path/$lib/";
+            $namespaces[self::APP_CORE_PACKAGE.ucfirst($lib)] = "$class_path/$lib/";
         }
         //var_dump($class_path, $namespaces);
 
