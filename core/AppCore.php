@@ -355,7 +355,7 @@ abstract class AppCore extends Controller
             $offset = 0;
         }
 
-        return array("number" => $number, "offset" => $offset);
+        return ["number" => $number, "offset" => $offset];
     }
 
     /**
