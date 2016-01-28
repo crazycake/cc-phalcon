@@ -42,7 +42,6 @@ trait CheckoutManager
      */
     abstract public function onSkippedPayment(&$checkout);
 
-
     /**
      * Config var
      * @var array
@@ -110,43 +109,6 @@ trait CheckoutManager
         catch (\Exception $e) { $exception = $e->getMessage(); }
         //sends an error message
         $this->_sendJsonResponse(200, $exception, 'alert');
-    }
-
-    /**
-     * Ajax - process a free type checkout
-     */
-    public function processAction()
-    {
-        //make sure is ajax request
-        $this->_onlyAjax();
-        //get form data
-        $data = $this->_handleRequestParams([
-            "buy_order" => "string"
-        ]);
-
-        try {
-            //get class
-            $users_checkouts_class = $this->_getModuleClass('users_checkouts');
-
-            //instance cache lib and get data
-            $checkout = $users_checkouts_class::getCheckout($buy_order);
-
-            if(!$checkout)
-                throw new Exception($this->checkoutConfig["trans"]["error_unexpected"]);
-
-            //check buy orders
-            if($data["buy_order"] != $checkout->buy_order)
-                throw new Exception($this->checkoutConfig["trans"]["error_unexpected"]);
-
-            //set flash message
-            $this->flash->success($this->checkoutConfig["trans"]["success_checkout"]);
-            //call succes checkout
-            $this->successCheckout($checkout);
-        }
-        catch (Exception $e) {
-            //sends an error message
-            $this->_sendJsonResponse(200, $e->getMessage(), 'alert');
-        }
     }
 
     /**
@@ -299,11 +261,11 @@ trait CheckoutManager
             die("No pending checkout found for user id:".$this->user_session["id"]);
 
         //basic security
-        if(APP_ENVIRONMENT !== 'local' && $code !== sha1($checkout->buy_order))
-            $this->_redirectToNotFound();
+        if($code !== sha1($checkout->buy_order."_".$this->config->app->cryptKey))
+            return $this->_redirectToNotFound();
 
         //append custom comment
-        $this->onSkippedPayment($checkout, $this->checkoutConfig["debug"]);
+        $this->onSkippedPayment($checkout);
 
         //log
         $this->logger->debug("CheckoutManager::skipPaymentAction -> Skipped payment for userId: ".$checkout->user_id.", BO: ".$checkout->buy_order);
@@ -386,6 +348,7 @@ trait CheckoutManager
                 "objectsClasses" => $objectsClasses
             ]
         ],
+            //merge with array
             count($js_modules) > 1 ? array_slice($js_modules, 1) : []
         ));
 

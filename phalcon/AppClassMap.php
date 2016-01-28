@@ -16,6 +16,7 @@ return array (
     1 => 'BaseUsersCheckoutsObjects.php',
     2 => 'BaseUsersCheckoutsTrx.php',
     3 => 'CheckoutManager.php',
+    4 => 'CheckoutStripe.php',
   ),
   'core' => 
   array (
