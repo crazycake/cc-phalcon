@@ -40,7 +40,7 @@ class BaseUsersCheckouts extends \CrazyCake\Models\Base
     /**
      * @var string
      */
-    public $coin;
+    public $currency;
 
     /**
      * @var string
@@ -195,7 +195,7 @@ class BaseUsersCheckouts extends \CrazyCake\Models\Base
         $checkout->user_id       = $user_id;
         $checkout->buy_order     = $buy_order;
         $checkout->amount        = $checkoutObj->amount;
-        $checkout->coin          = $checkoutObj->coin;
+        $checkout->currency          = $checkoutObj->currency;
         $checkout->gateway       = $checkoutObj->gateway;
         $checkout->categories    = implode(",", $checkoutObj->categories);
         $checkout->invoice_email = $checkoutObj->invoice_email;

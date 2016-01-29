@@ -36,7 +36,7 @@ class BaseTickets extends \CrazyCake\Models\Base
     /**
      * @var string
      */
-    public $coin;
+    public $currency;
 
     /**
      * @var int
@@ -86,8 +86,8 @@ class BaseTickets extends \CrazyCake\Models\Base
         $this->_ext = ["id_hashed" => $id_hashed];
 
         //format ticket price (custom prop)
-        if(!is_null($this->price) && !is_null($this->coin))
-            $this->_ext["price_formatted"] = FormHelper::formatPrice($this->price, $this->coin);
+        if(!is_null($this->price) && !is_null($this->currency))
+            $this->_ext["price_formatted"] = FormHelper::formatPrice($this->price, $this->currency);
     }
 
     /**

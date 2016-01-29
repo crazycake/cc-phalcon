@@ -36,17 +36,17 @@ class FormHelper
 
     /**
      * Formats price
-     * @todo Complete other global coins formats
+     * @todo Complete other global currencys formats
      * @static
      * @param numeric $price - The price numeric value
-     * @param string $coin - The price coin
+     * @param string $currency - The price currency
      * @return string
      */
-    public static function formatPrice($price, $coin)
+    public static function formatPrice($price, $currency)
     {
         $formatted = $price;
 
-        switch ($coin) {
+        switch ($currency) {
             case 'CLP':
                 $formatted = "$".str_replace(".00", "", number_format($formatted));
                 $formatted = str_replace(",", ".", $formatted);

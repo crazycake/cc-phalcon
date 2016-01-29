@@ -168,7 +168,7 @@ trait CheckoutManager
 
             //extended properties
             $checkout->type            = "payment";
-            $checkout->amountFormatted = FormHelper::formatPrice($checkout->amount, $checkout->coin);
+            $checkout->amountFormatted = FormHelper::formatPrice($checkout->amount, $checkout->currency);
             $checkout->objects         = $users_checkouts_objects_class::getCheckoutObjects($checkout->buy_order);
             $checkout->categories      = explode(",", $checkout->categories); //set categories as array
 
@@ -388,7 +388,7 @@ trait CheckoutManager
         $checkout->categories    = explode(",", $data["categories"]);
         $checkout->gateway       = $data["gateway"];
         $checkout->invoice_email = $data["invoiceEmail"];
-        $checkout->coin          = $this->checkoutConfig["default_coin"];
+        $checkout->currency      = $this->checkoutConfig["default_currency"];
         $checkout->objects       = [];
         $checkout->amount        = 0;
 

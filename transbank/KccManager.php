@@ -348,7 +348,7 @@ trait KccManager
             "type"             => $params["TBK_TIPO_PAGO"][0],
             "card_last_digits" => $params["TBK_FINAL_NUMERO_TARJETA"],
             "amount"           => $checkout->amount,
-            "coin"             => $checkout->coin,
+            "currency"         => $checkout->currency,
             "date"             => $result_date
         ];
     }

@@ -85,11 +85,11 @@ class BaseUsersCheckoutsObjects extends \CrazyCake\Models\Base
 
             //extedend common object props
             $new_object->price = $props->price;
-            $new_object->coin  = $props->coin;
+            $new_object->currency  = $props->currency;
 
             //UI props
-            $new_object->formattedPrice = FormHelper::formatPrice($props->price, $props->coin);
-            $new_object->formattedTotal = FormHelper::formatPrice($props->price * $obj->quantity, $props->coin);
+            $new_object->formattedPrice = FormHelper::formatPrice($props->price, $props->currency);
+            $new_object->formattedTotal = FormHelper::formatPrice($props->price * $obj->quantity, $props->currency);
 
             array_push($result, $new_object);
        }
