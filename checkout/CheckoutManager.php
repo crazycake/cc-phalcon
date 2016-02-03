@@ -261,7 +261,9 @@ trait CheckoutManager
             die("No pending checkout found for user id:".$this->user_session["id"]);
 
         //basic security
-        if($code !== sha1($checkout->buy_order."_".$this->config->app->cryptKey))
+        $hashed_key = sha1($checkout->buy_order."_".$this->config->app->cryptKey);
+
+        if(APP_ENVIRONMENT != "local" && $code !== $hashed_key)
             return $this->_redirectToNotFound();
 
         //append custom comment

@@ -39,6 +39,7 @@ trait CheckoutStripe
 
     /**
      * Ajax - Process Post Checkout Stripe Token.
+     * TODO: process request
      */
     public function stripeAction()
     {
