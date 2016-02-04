@@ -79,8 +79,10 @@ abstract class WebCore extends AppCore implements WebSecurity
             return;
 
         //Set App common vars (this must be set before render any page)
-        $this->view->setVar("app", $this->config->app); //app configuration vars
-        $this->view->setVar("client", $this->client);   //client object
+        $this->view->setVars([
+            "app"    => $this->config->app,  //app configuration vars
+            "client" => $this->client        //client object
+        ]);
     }
 
     /**
@@ -94,8 +96,8 @@ abstract class WebCore extends AppCore implements WebSecurity
 
         //set javascript vars in view
         $this->_setAppJavascriptObjectsForView();
-        //load app assets
-        $this->_loadAppAssets();
+        //set app assets
+        $this->_setAppAssets();
         //update client object property, request uri afterExecuteRoute event.
         $this->_updateClientObjectProp('requestedUri', $this->_getRequestedUri());
         //check browser is supported (child method)
@@ -272,92 +274,26 @@ abstract class WebCore extends AppCore implements WebSecurity
     }
 
     /**
-     * Loads app assets, files are located in each module config file
+     * Set app assets (app.css & app.js)
      * @access protected
      */
-    protected function _loadAppAssets()
+    protected function _setAppAssets()
     {
-        //CSS Core files, already minified
-        $this->_loadCssFiles($this->config->app->cssCore, 'css_core');
+        $version = isset($this->config->app->deployVersion) ? $this->config->app->deployVersion : "0.0.1";
 
-        //check specials cases for legacy js files
-        if($this->client->isLegacy)
-            return;
+        $css_url = $this->_baseUrl(self::ASSETS_MIN_FOLDER_PATH."app.min.css?v=$version");
+        $js_url  = $this->_baseUrl(self::ASSETS_MIN_FOLDER_PATH."app.min.js?v=$version");
 
-        //JS Core files, already minified
-        $this->_loadJavascriptFiles($this->config->app->jsCore, 'js_core');
-
-        //join and minify collections
-        $this->_joinAssetsCollections([
-            "css_core" => false,
-            "js_core" => false,
-            "js_dom" => true
-        ],
-        self::ASSETS_MIN_FOLDER_PATH, $this->config->app->deployVersion);
-    }
-
-    /**
-     * Load Javascript files into a assets Collection
-     * @access protected
-     * @param array $files - CSS Files to be loaded
-     * @param string $collection - Name of the collection
-     */
-    protected function _loadCssFiles($files = array(), $collection = "css_core")
-    {
-        if (empty($files))
-            return;
-
-        //loop through CSS files
-        foreach ($files as $file) {
-            //check for mobile prefix
-            if (!$this->client->isMobile && $file[0] === "@")
-                continue;
-            else
-                $file = str_replace("@", "", $file);
-
-            //append min suffix for non dev environment
-            if(APP_ENVIRONMENT !== "local" && $file === "app.css")
-                $file = str_replace(".css", ".min.css", $file);
-
-            $this->assets->collection($collection)->addCss("assets/$file");
+        if(APP_ENVIRONMENT === "local") {
+            $css_url = str_replace(".min.css", ".css", $css_url);
+            $js_url  = str_replace(".min.js", ".js", $js_url);
         }
-    }
 
-    /**
-     * Load Javascript files into a assets Collection
-     * @access protected
-     * @param array $files - JS Files to be loaded
-     * @param string $collection - Name of the collection
-     */
-    protected function _loadJavascriptFiles($files = array(), $collection = "js_core")
-    {
-        if (empty($files))
-            return;
-
-        //loop through JS files
-        foreach ($files as $file) {
-            //check for mobile prefix
-            if (!$this->client->isMobile && $file[0] === "@")
-                continue;
-            else
-                $file = str_replace("@", "", $file);
-
-            //append min suffix for non dev environment
-            if(APP_ENVIRONMENT !== "local" && $file === "app.js")
-                $file = str_replace(".js", ".min.js", $file);
-
-            //has dynamic params? (for example file_name.{property}.js, useful for js lang files)
-            /*if (preg_match("/^(.{1,})\\{([a-z]{1,})\\}(.{1,})$/", $file, $regex)) {
-                //lang case
-                if ($regex[2] === "lang")
-                    $file = $regex[1].$this->client->lang.$regex[3];
-            }*/
-
-            //TODO: append cdn prefix?
-            //$this->assets->collection($collection)->setPrefix('http://cdn.liveon.cl/');
-
-            $this->assets->collection($collection)->addJs("assets/$file");
-        }
+        //set vars
+        $this->view->setVars([
+            "css_url" => $css_url,
+            "js_url"  => $js_url
+        ]);
     }
 
     /**
@@ -371,7 +307,7 @@ abstract class WebCore extends AppCore implements WebSecurity
         if($this->client->isLegacy || empty($modules))
             return;
 
-        $param = json_encode($modules, JSON_UNESCAPED_SLASHES);
+        $param  = json_encode($modules, JSON_UNESCAPED_SLASHES);
         $script = "$fn($param);";
         //send javascript vars to view as JSON enconded
         $this->view->setVar("js_loader", $script);
@@ -468,71 +404,19 @@ abstract class WebCore extends AppCore implements WebSecurity
         $js_app->name    = $this->config->app->name;
         $js_app->version = $this->config->app->deployVersion;
         $js_app->baseUrl = $this->_baseUrl();
-        $js_app->dev     = (APP_ENVIRONMENT == 'production') ? 0 : 1;
+        $js_app->dev     = (int)(APP_ENVIRONMENT === "production");
 
         //set custom properties
         $this->setAppJavascriptProperties($js_app);
-
-        //set APP.UI properties?
-        if(isset($this->config->app->uiSettings))
-            $js_app->UI = (object)$this->config->app->uiSettings;
 
         //set translations?
         if(class_exists("TranslationsController"))
             $js_app->TRANS = \TranslationsController::getJavascriptTranslations();
 
         //send javascript vars to view as JSON enconded
-        $this->view->setVar("js_app", json_encode($js_app, JSON_UNESCAPED_SLASHES));
-        $this->view->setVar("js_client", json_encode($this->client, JSON_UNESCAPED_SLASHES));
-    }
-
-    /**
-     * Join and Minify Assets collections for view output
-     * @access private
-     * @param array $collections - Phalcon Assets collections, the key is a boolean minimize flag.
-     * @param string $cache_path - The cache path
-     * @param string $deploy_version - A deploy version to refresh cached file (optional)
-     */
-    private function _joinAssetsCollections($collections = array(), $cache_path = null, $deploy_version = "0.1")
-    {
-        if (empty($collections) || empty($cache_path))
-            return;
-
-        //loop through collections
-        foreach ($collections as $cname => $minify) {
-            $collection_exists = true;
-            //handle exceptions
-            try {
-                $this->assets->get($cname);
-            }
-            catch (Exception $e) {
-                $collection_exists = false;
-            }
-            //check collection exists
-            if (!$collection_exists)
-                continue;
-
-            $props = explode("_", $cname);
-            $fname = $props[1].".".$props[0];
-            $path  = PUBLIC_PATH.$cache_path.$fname;
-            $uri   = $cache_path."$fname?v=".$deploy_version;
-
-            //set assets props
-            $this->assets->collection($cname)->setTargetPath($path)->setTargetUri($uri)->join(true);
-
-            //minify assets?
-            if($minify)
-                $this->assets->collection($cname)->addFilter(($props[0] == "css") ? new Cssmin() : new Jsmin());
-            else
-                $this->assets->collection($cname)->addFilter(new \CrazyCake\Phalcon\MinifiedFilter());
-
-            //for js_dom, generate file & supress output (echo calls)
-            if ($cname == "js_dom") {
-                ob_start();
-                $this->assets->outputJs($cname);
-                ob_end_clean();
-                $this->assets->js_dom = file_get_contents($path);
-            }
-        }
+        $this->view->setVars([
+            "js_app"    => json_encode($js_app, JSON_UNESCAPED_SLASHES),
+            "js_client" => json_encode($this->client, JSON_UNESCAPED_SLASHES)
+        ]);
     }
 }

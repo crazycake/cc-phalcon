@@ -76,20 +76,3 @@ class ExceptionsPlugin extends \Phalcon\Mvc\User\Plugin
 		return false;
 	}
 }
-
-/**
- * Custom Assets filter for already minified files.
- */
-class MinifiedFilter implements \Phalcon\Assets\FilterInterface
-{
-	/**
-	 * Filter for minified files
-	 * @param string $contents - A input string to filter
-	 * @return string
-	 */
-    public function filter($contents)
-    {
-        //$contents = str_replace(array("\n", "\r", " "), '', $contents);
-        return $contents;
-    }
-}
