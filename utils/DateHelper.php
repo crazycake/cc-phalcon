@@ -79,28 +79,28 @@ class DateHelper
         //get DI instance (static)
         $di = \Phalcon\DI::getDefault();
 
-        if(!$di->has("translate"))
+        if(!$di->has("trans"))
             return $month;
 
-        $translate = $di->getShared("translate");
+        $trans = $di->getShared("trans");
 
         //set month
         $month = (int)$month;
 
         //get translated month name
         switch ($month) {
-            case 1: $month  = ($abbr) ? $translate->_("Ene") : $translate->_("Enero"); break;
-            case 2: $month  = ($abbr) ? $translate->_("Feb") : $translate->_("Febrero"); break;
-            case 3: $month  = ($abbr) ? $translate->_("Mar") : $translate->_("Marzo"); break;
-            case 4: $month  = ($abbr) ? $translate->_("Abr") : $translate->_("Abril"); break;
-            case 5: $month  = ($abbr) ? $translate->_("May") : $translate->_("Mayo"); break;
-            case 6: $month  = ($abbr) ? $translate->_("Jun") : $translate->_("Junio"); break;
-            case 7: $month  = ($abbr) ? $translate->_("Jul") : $translate->_("Julio"); break;
-            case 8: $month  = ($abbr) ? $translate->_("Ago") : $translate->_("Agosto"); break;
-            case 9: $month  = ($abbr) ? $translate->_("Sep") : $translate->_("Septiembre"); break;
-            case 10: $month = ($abbr) ? $translate->_("Oct") : $translate->_("Octubre"); break;
-            case 11: $month = ($abbr) ? $translate->_("Nov") : $translate->_("Noviembre"); break;
-            case 12: $month = ($abbr) ? $translate->_("Dic") : $translate->_("Diciembre"); break;
+            case 1: $month  = ($abbr) ? $trans->_("Ene") : $trans->_("Enero"); break;
+            case 2: $month  = ($abbr) ? $trans->_("Feb") : $trans->_("Febrero"); break;
+            case 3: $month  = ($abbr) ? $trans->_("Mar") : $trans->_("Marzo"); break;
+            case 4: $month  = ($abbr) ? $trans->_("Abr") : $trans->_("Abril"); break;
+            case 5: $month  = ($abbr) ? $trans->_("May") : $trans->_("Mayo"); break;
+            case 6: $month  = ($abbr) ? $trans->_("Jun") : $trans->_("Junio"); break;
+            case 7: $month  = ($abbr) ? $trans->_("Jul") : $trans->_("Julio"); break;
+            case 8: $month  = ($abbr) ? $trans->_("Ago") : $trans->_("Agosto"); break;
+            case 9: $month  = ($abbr) ? $trans->_("Sep") : $trans->_("Septiembre"); break;
+            case 10: $month = ($abbr) ? $trans->_("Oct") : $trans->_("Octubre"); break;
+            case 11: $month = ($abbr) ? $trans->_("Nov") : $trans->_("Noviembre"); break;
+            case 12: $month = ($abbr) ? $trans->_("Dic") : $trans->_("Diciembre"); break;
             default: break;
         }
 
@@ -124,17 +124,17 @@ class DateHelper
         //get DI instance (static)
         $di = \Phalcon\DI::getDefault();
 
-        if(!$di->has("translate"))
+        if(!$di->has("trans"))
             return $day."-".$month."-".$year;
 
-        $translate = $di->getShared("translate");
+        $trans = $di->getShared("trans");
 
         //get translated Month
         $month = self::getTranslatedMonthName($month, false);
 
         //format with year & month
         if(empty($day)) {
-            return $translate->_("%month% del %year%", [
+            return $trans->_("%month% del %year%", [
                 "month" => $month,
                 "year"  => $year
             ]);
@@ -142,7 +142,7 @@ class DateHelper
 
         //format with day & month & time
         if(empty($year) && !empty($day) && !empty($time)) {
-            return $translate->_("%day% de %month%, a las %time% hrs.", [
+            return $trans->_("%day% de %month%, a las %time% hrs.", [
                 "day"   => $day,
                 "month" => $month,
                 "time"  => $time
@@ -151,7 +151,7 @@ class DateHelper
 
         //format with month & day
         if(empty($year)) {
-            return $translate->_("%day% %month%", [
+            return $trans->_("%day% %month%", [
                 "day"   => $day,
                 "month" => $month
             ]);
@@ -159,7 +159,7 @@ class DateHelper
 
         //format with year, month & day
         if(empty($time)) {
-            return $translate->_("%day% de %month% del %year%", [
+            return $trans->_("%day% de %month% del %year%", [
                 "day"   => $day,
                 "month" => $month,
                 "year"  => $year
@@ -167,7 +167,7 @@ class DateHelper
         }
 
         //format with year, month, day & time
-        return $translate->_("%day% de %month% del %year%, a las %time hrs.", [
+        return $trans->_("%day% de %month% del %year%, a las %time hrs.", [
             "day"   => $day,
             "month" => $month,
             "year"  => $year,

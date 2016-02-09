@@ -61,12 +61,12 @@ trait KccManager
 
         //set payment types
         $this->paymentTypes = [
-            "VN" => ['credit', $this->translate->_("Crédito"), $this->translate->_("Sin Cuotas"), "0"],
-            "VC" => ['credit', $this->translate->_("Crédito"), $this->translate->_("Cuotas normales"), "4-48"],
-            "SI" => ['credit', $this->translate->_("Crédito"), $this->translate->_("Sin interés"), "3"],
-            "S2" => ['credit', $this->translate->_("Crédito"),  $this->translate->_("Sin interés"), "2"],
-            "CI" => ['credit', $this->translate->_("Crédito"), $this->translate->_("Cuotas Comercio"), $this->translate->_("Número no definido")],
-            "VD" => ['debit', $this->translate->_("Redcompra"), $this->translate->_("Débito"), "0"]
+            "VN" => ['credit', $this->trans->_("Crédito"), $this->trans->_("Sin Cuotas"), "0"],
+            "VC" => ['credit', $this->trans->_("Crédito"), $this->trans->_("Cuotas normales"), "4-48"],
+            "SI" => ['credit', $this->trans->_("Crédito"), $this->trans->_("Sin interés"), "3"],
+            "S2" => ['credit', $this->trans->_("Crédito"),  $this->trans->_("Sin interés"), "2"],
+            "CI" => ['credit', $this->trans->_("Crédito"), $this->trans->_("Cuotas Comercio"), $this->trans->_("Número no definido")],
+            "VD" => ['debit', $this->trans->_("Redcompra"), $this->trans->_("Débito"), "0"]
         ];
     }
 

@@ -335,7 +335,7 @@ abstract class WebCore extends AppCore implements WebSecurity
             //get client from session
             $this->client = $this->session->get("client");
             //in each request set language
-            $this->translate->setLanguage($this->client->lang);
+            $this->trans->setLanguage($this->client->lang);
             //set HTTP protocol
             $this->client->protocol = isset($_SERVER["HTTPS"]) ? "https://" : "http://";
 
@@ -345,13 +345,13 @@ abstract class WebCore extends AppCore implements WebSecurity
         //first-time properties. This static properties are saved in session.
         //set language, if only one lang is supported, force it.
         if(count($this->config->app->langs) > 1)
-            $this->translate->setLanguage($this->request->getBestLanguage());
+            $this->trans->setLanguage($this->request->getBestLanguage());
         else
-            $this->translate->setLanguage($this->config->app->langs[0]);
+            $this->trans->setLanguage($this->config->app->langs[0]);
 
         //create a client object
         $this->client           = new \stdClass();
-        $this->client->lang     = $this->translate->getLanguage();
+        $this->client->lang     = $this->trans->getLanguage();
         $this->client->tokenKey = $this->security->getTokenKey();  //CSRF token key
         $this->client->token    = $this->security->getToken();     //CSRF token
 
