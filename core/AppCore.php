@@ -68,7 +68,7 @@ abstract class AppCore extends Controller
      * Get Module Model Class Name
      * A prefix can be set in module options
      * @param string $key - The class module name uncamelize, example: 'some_class'
-     * @param boolean $prefix - Append prefix
+     * @param boolean $prefix - Append prefix (double slash)
      */
     public static function getModuleClass($key = "", $prefix = true)
     {
