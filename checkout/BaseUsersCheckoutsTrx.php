@@ -4,7 +4,7 @@
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
-namespace CrazyCake\Checkouts;
+namespace CrazyCake\Checkout;
 
 //other imports
 use CrazyCake\Utils\DateHelper;
