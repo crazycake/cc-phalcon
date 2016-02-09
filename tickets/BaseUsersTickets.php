@@ -131,11 +131,11 @@ class BaseUsersTickets extends \CrazyCake\Models\Base
     {
         if(empty($user_id)) {
             $conditions = "code = ?1";
-            $parameters = array(1 => $code);
+            $parameters = [1 => $code];
         }
         else {
             $conditions = "user_id = ?1 AND code = ?2";
-            $parameters = array(1 => $user_id, 2 => $code);
+            $parameters = [1 => $user_id, 2 => $code];
         }
 
         return self::findFirst(array($conditions, "bind" => $parameters));

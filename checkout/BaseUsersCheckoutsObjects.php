@@ -76,7 +76,7 @@ class BaseUsersCheckoutsObjects extends \CrazyCake\Models\Base
             $new_object = self::newCheckoutObject($obj->object_id, $object_class, $obj->quantity);
 
             //get object local props
-            $props = $object_class::findFirst(["id ='".$obj->object_id."'"]);
+            $props = $object_class::findFirst(["id = ?1", "bind" => [1 => $obj->object_id]]);
 
             if(!$props) continue;
 

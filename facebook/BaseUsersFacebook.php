@@ -64,6 +64,6 @@ class BaseUsersFacebook extends \CrazyCake\Models\Base
      */
     public static function getFacebookDataByUserId($user_id)
     {
-        return self::findFirst("user_id = '$user_id'");
+        return self::findFirst(["user_id = ?1", "bind" => [1 => $user_id]]);        
     }
 }

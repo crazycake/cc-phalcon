@@ -116,7 +116,7 @@ class BaseUsersCheckouts extends \CrazyCake\Models\Base
     public function validation()
     {
         //inclusion
-        $this->validate( new InclusionIn([
+        $this->validate(new InclusionIn([
             "field"   => "state",
             "domain"  => self::$STATES,
             "message" => 'Invalid state. States supported: '.implode(", ", self::$STATES)
@@ -195,7 +195,7 @@ class BaseUsersCheckouts extends \CrazyCake\Models\Base
         $checkout->user_id       = $user_id;
         $checkout->buy_order     = $buy_order;
         $checkout->amount        = $checkoutObj->amount;
-        $checkout->currency          = $checkoutObj->currency;
+        $checkout->currency      = $checkoutObj->currency;
         $checkout->gateway       = $checkoutObj->gateway;
         $checkout->categories    = implode(",", $checkoutObj->categories);
         $checkout->invoice_email = $checkoutObj->invoice_email;
@@ -331,7 +331,7 @@ class BaseUsersCheckouts extends \CrazyCake\Models\Base
         $conditions = "";
 
         foreach ($object_ids as $key => $id)
-            $object_ids[$key] = "objects.object_id = '$id'";
+            $object_ids[$key] = "objects.object_id = '".(int)$id."'"; //prevent string injections
 
         $ids_filter = implode(" OR ", $object_ids);
         $conditions .= " AND (".$ids_filter.") ";
@@ -372,7 +372,7 @@ class BaseUsersCheckouts extends \CrazyCake\Models\Base
 
             $object_class = $obj->className;
 
-            $orm_object       = $object_class::findFirst(["id ='".$obj->id."'"]);
+            $orm_object       = $object_class::findFirst(["id = ?1", "bind" => [1 => $obj->id]]);
             $current_quantity = $orm_object->quantity;
             $updated_quantity = (int)($current_quantity - $obj->quantity);
 

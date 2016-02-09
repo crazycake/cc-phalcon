@@ -55,8 +55,7 @@ class Base extends \Phalcon\Mvc\Model
      */
     public static function getObjectById($id)
     {
-        $object = self::findFirst(["id = '$id'"]); //conditions
-
+        $object = self::findFirst(["id = ?1", "bind" => [1 => $id]]);
         return $object;
     }
 
