@@ -404,7 +404,7 @@ abstract class WebCore extends AppCore implements WebSecurity
         $js_app->name    = $this->config->app->name;
         $js_app->version = $this->config->app->deployVersion;
         $js_app->baseUrl = $this->_baseUrl();
-        $js_app->dev     = (int)(APP_ENVIRONMENT === "production");
+        $js_app->dev     = APP_ENVIRONMENT === "production" ? 0 : 1;
 
         //set custom properties
         $this->setAppJavascriptProperties($js_app);
