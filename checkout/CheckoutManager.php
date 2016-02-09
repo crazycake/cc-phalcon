@@ -372,7 +372,7 @@ trait CheckoutManager
         ]);
 
         //get module class name
-        $users_checkouts_class = $this->_getModuleClass('users_checkouts');
+        $users_checkouts_objects_class = $this->_getModuleClass('users_checkouts_objects');
 
         //check invoice email if set
         if(!isset($data["invoiceEmail"]) || !filter_var($data['invoiceEmail'], FILTER_VALIDATE_EMAIL))
@@ -417,7 +417,7 @@ trait CheckoutManager
             //var_dump($class_name, $object_id, $object->toArray());exit;
 
             //check that object is in stock (also validates object exists)
-            if(!$users_checkouts_class::validateObjectStock($class_name, $object_id, $q)) {
+            if(!$users_checkouts_objects_class::validateObjectStock($class_name, $object_id, $q)) {
                 $this->logger->error("CheckoutManager::_parseCheckoutObjects -> No stock for object '$class_name' ID: $object_id, q: $q.");
                 throw new Exception(str_replace("{name}", $object->name, $this->checkoutConfig["trans"]["error_no_stock"]));
             }
