@@ -97,8 +97,7 @@ trait KccManager
 
         //pass data to view
         $this->view->setVars([
-            "html_disallow_robots" => true,
-            "webpayInputs"         => $inputs
+            "webpayInputs" => $inputs
         ]);
     }
 
@@ -280,7 +279,7 @@ trait KccManager
      */
     public function renderSuccessAction()
     {
-        if(APP_ENVIRONMENT !== 'local')
+        if(APP_ENVIRONMENT == 'production')
             $this->_redirectToNotFound();
 
         //handle response, dispatch to auth/logout
