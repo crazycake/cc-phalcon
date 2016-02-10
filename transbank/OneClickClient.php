@@ -59,7 +59,7 @@ class OneClickClient
 		$oneClickInscriptionInput->email 	   = $email;
 		$oneClickInscriptionInput->responseURL = $response_url;
 
-		$oneClickInscriptionResponse = $this->handler->initInscription(array("arg0" => $oneClickInscriptionInput));
+		$oneClickInscriptionResponse = $this->handler->initInscription(["arg0" => $oneClickInscriptionInput]);
 
 		$xmlResponse = $this->handler->soapClient->__getLastResponse();
 
@@ -69,7 +69,7 @@ class OneClickClient
 		$oneClickInscriptionOutput = $oneClickInscriptionResponse->return; //Esto obtiene el resultado de la operación
 
 		$payload = new \stdClass();
-		$payload->token 	= $oneClickInscriptionOutput->token; //Token de resultado
+		$payload->token 		 = $oneClickInscriptionOutput->token; //Token de resultado
 		$payload->inscriptionURL = $oneClickInscriptionOutput->urlWebpay;//URL para realizar el post
 		return $payload;
 	}
@@ -84,7 +84,7 @@ class OneClickClient
 		$oneClickFinishInscriptionInput = new oneClickFinishInscriptionInput();
 		$oneClickFinishInscriptionInput->token = $received_token; // es el token de resultado obtenido en el metodo initInscription.
 
-		$oneClickFinishInscriptionResponse = $this->handler->finishInscription(array( "arg0" => $oneClickFinishInscriptionInput));
+		$oneClickFinishInscriptionResponse = $this->handler->finishInscription(["arg0" => $oneClickFinishInscriptionInput]);
 
 		$xmlResponse = $this->handler->soapClient->__getLastResponse();
 
@@ -115,7 +115,7 @@ class OneClickClient
 		$oneClickRemoveUserInput->tbkUser  = $tbkUser; // identificador de usuario entregado en el servicio finishInscription
 		$oneClickRemoveUserInput->username = $commerceUser; // identificador de usuario del comercio
 
-		$removeUserResponse = $this->handler->removeUser(array("arg0" => $oneClickRemoveUserInput));
+		$removeUserResponse = $this->handler->removeUser(["arg0" => $oneClickRemoveUserInput]);
 
 		$xmlResponse = $this->handler->soapClient->__getLastResponse();
 
@@ -135,12 +135,12 @@ class OneClickClient
 	public function authorizeCardPayment($amount, $buyOrder, $tbkUser, $username)
 	{
 		$oneClickPayInput = new oneClickPayInput();
-		$oneClickPayInput->amount = $amount; // monto de pago
+		$oneClickPayInput->amount 	 = $amount; // monto de pago
 		$oneClickPayInput->buy_order = $buyOrder; // orden de compra
-		$oneClickPayInput->tbkUser 	= $tbkUser; // identificador de usuario entregado en el servicio finishInscription
-		$oneClickPayInput->username = $username; // identificador de usuario del comercio
+		$oneClickPayInput->tbkUser 	 = $tbkUser; // identificador de usuario entregado en el servicio finishInscription
+		$oneClickPayInput->username  = $username; // identificador de usuario del comercio
 
-		$oneClickauthorizeResponse = $this->handler->authorize(array ("arg0" => $oneClickPayInput));
+		$oneClickauthorizeResponse = $this->handler->authorize(["arg0" => $oneClickPayInput]);
 
 		$xmlResponse = $this->handler->soapClient->__getLastResponse();
 
@@ -169,7 +169,7 @@ class OneClickClient
 		$oneClickReverseInput = new oneClickReverseInput();
 		$oneClickReverseInput->buy_order= $buyOrder;
 
-		$revertTransaction = $this->handler->codeReverseOneClick(array("arg0" => $oneClickReverseInput));
+		$revertTransaction = $this->handler->codeReverseOneClick(["arg0" => $oneClickReverseInput]);
 
 		$xmlResponse = $this->handler->soapClient->__getLastResponse();
 
@@ -179,7 +179,7 @@ class OneClickClient
 
 		$payload = new \stdClass();
 		$payload->reversed 	 = $response ? $response->reversed : false;
-		$payload->reverse_id = $response ? $response->reverseCode  : false;
+		$payload->reverse_id = $response ? $response->reverseCode : false;
 
 		return $payload;
 	}

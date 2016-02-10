@@ -69,12 +69,12 @@ class OneClickHandler
 
         try {
             //new soap client
-            $this->soapClient = new \CrazyCake\Soap\SoapClientHelper($url, array(
+            $this->soapClient = new \CrazyCake\Soap\SoapClientHelper($url, [
                 "classmap"       => self::$classmap,
                 "trace"          => true,
                 "exceptions"     => true,
-                'stream_context' => stream_context_create($opts))
-            );
+                'stream_context' => stream_context_create($opts)
+            ]);
             //set security files
             $this->soapClient->setSecurityFiles($key_file_path, $cert_file_path);
         }
