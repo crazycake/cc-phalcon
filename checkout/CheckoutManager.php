@@ -325,6 +325,9 @@ trait CheckoutManager
 
         //pass data to view
         $this->view->setVars([
+            //disallow robots for this page
+            "html_disallow_robots" => true,
+            //checkout vars
             "objectsClasses"       => $objectsClasses,
             "invoiceEmail"         => !empty($lastInvoiceEmail) ? $lastInvoiceEmail : $user->email,
             "checkoutInputs"       => $inputs,
