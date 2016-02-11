@@ -321,15 +321,18 @@ trait CheckoutManager
             "order" => "local_time DESC",
             "bind"  => [$user->id]
         ]);
+
+        //set invoice
         $lastInvoiceEmail = $lastCheckout ? $lastCheckout->invoice_email : "";
+        $invoiceEmail     = empty($lastInvoiceEmail) ? $user->email : $lastInvoiceEmail;
 
         //pass data to view
         $this->view->setVars([
             //disallow robots for this page
             "html_disallow_robots" => true,
             //checkout vars
+            "invoiceEmail"         => $invoiceEmail,
             "objectsClasses"       => $objectsClasses,
-            "invoiceEmail"         => !empty($lastInvoiceEmail) ? $lastInvoiceEmail : $user->email,
             "checkoutInputs"       => $inputs,
             "checkoutInputsPrefix" => "checkout_"
         ]);
