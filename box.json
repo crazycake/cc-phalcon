@@ -13,7 +13,8 @@
 		"tickets",
 		"mobile",
 		"soap",
-		"transbank"
+		"transbank",
+		"paypal"
 	],
     "bootstrap" : "Bootstrap.php",
     "main"      : "autoload.php",
