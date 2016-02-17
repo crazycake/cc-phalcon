@@ -45,10 +45,6 @@ return array (
     0 => 'Base.php',
     1 => 'BaseResultset.php',
   ),
-  'paypal' => 
-  array (
-    0 => 'ExpressManager.php',
-  ),
   'phalcon' => 
   array (
     0 => 'AppClassMap.php',
