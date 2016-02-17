@@ -138,7 +138,7 @@ class AppServices
 
         //Logger adapter
         $di->setShared('logger', function() {
-            $logger = new \Phalcon\Logger\Adapter\File(APP_PATH."logs/".date("d_m_Y").".log");
+            $logger = new \Phalcon\Logger\Adapter\File(APP_PATH."logs/".date("d-m-Y").".log");
             return $logger;
         });
 

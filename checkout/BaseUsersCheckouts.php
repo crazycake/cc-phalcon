@@ -17,7 +17,7 @@ use Phalcon\Mvc\Model\Validator\InclusionIn;
 class BaseUsersCheckouts extends \CrazyCake\Models\Base
 {
     /* static vars */
-    public static $CHECKOUT_EXPIRES_THRESHOLD = 5;  //minutes
+    public static $CHECKOUT_EXPIRES_THRESHOLD = 10;  //minutes
     public static $BUY_ORDER_CODE_LENGTH      = 16;
 
     /* properties */
@@ -201,6 +201,9 @@ class BaseUsersCheckouts extends \CrazyCake\Models\Base
         $checkout->invoice_email = $checkoutObj->invoice_email;
         $checkout->client        = $checkoutObj->client;
 
+        //log statement
+        $di->getShared('logger')->debug("BaseUsersCheckouts::newBuyOrder -> Saving BuyOrder: $buy_order, for UserID: $user_id, Email: $checkoutObj->invoice_email");
+
         try {
             //begin trx
             $di->getShared('db')->begin();
@@ -262,12 +265,11 @@ class BaseUsersCheckouts extends \CrazyCake\Models\Base
      */
     public static function deleteExpiredCheckouts()
     {
-        //use carbon library to manipulate time
         try {
 
-            //use server datetime
+            //use carbon library to handle time
             $now = new \Carbon\Carbon();
-            //consider one hour early from date
+            //substract time
             $now->subMinutes(static::$CHECKOUT_EXPIRES_THRESHOLD);
             //s($now->toDateTimeString());exit;
 

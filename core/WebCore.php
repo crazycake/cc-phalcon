@@ -9,11 +9,8 @@ namespace CrazyCake\Core;
 
 //imports
 use Phalcon\Exception;
-//phalcon imports
-use Phalcon\Assets\Filters\Cssmin;  //CSS resources minification
-use Phalcon\Assets\Filters\Jsmin;   //JS resources minification
 //CrazyCake Utils & Traits
-use CrazyCake\Utils\UserAgent;      //User Agent identifier
+use CrazyCake\Utils\UserAgent;
 use CrazyCake\Services\Guzzle;
 
 /**

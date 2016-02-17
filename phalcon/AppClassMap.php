@@ -16,7 +16,6 @@ return array (
     1 => 'BaseUsersCheckoutsObjects.php',
     2 => 'BaseUsersCheckoutsTrx.php',
     3 => 'CheckoutManager.php',
-    4 => 'CheckoutStripe.php',
   ),
   'core' => 
   array (
@@ -45,6 +44,10 @@ return array (
   array (
     0 => 'Base.php',
     1 => 'BaseResultset.php',
+  ),
+  'paypal' => 
+  array (
+    0 => 'ExpressManager.php',
   ),
   'phalcon' => 
   array (
