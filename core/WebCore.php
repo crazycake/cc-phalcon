@@ -138,8 +138,8 @@ abstract class WebCore extends AppCore implements WebSecurity
             if (!is_string($error_type))
                 $error_type = "warning";
 
-            //set payload
-            $payload = [
+            //set response struct
+            $response = [
                 "error"     => $payload,
                 "type"      => $error_type,
                 "namespace" => $error_namespace
@@ -148,17 +148,19 @@ abstract class WebCore extends AppCore implements WebSecurity
         else {
             //convert object to associative array
             if (is_string($payload))
-                $payload = array("payload" => $payload);
+                $response = ["payload" => $payload];
             elseif (is_object($payload))
-                $payload = get_object_vars($payload);
+                $response = get_object_vars($payload);
+            else
+                $response = $payload;
         }
 
         //if response is successful an payload is empty, append the OK message
         if($status_code == 200 && empty($payload))
-            $payload = $msg_code[$status_code];
+            $response = $msg_code[$status_code];
 
         //encode JSON
-        $content = json_encode($payload, JSON_UNESCAPED_SLASHES);
+        $content = json_encode($response, JSON_UNESCAPED_SLASHES);
 
         //output the response
         $this->view->disable(); //disable view output

@@ -106,10 +106,7 @@ abstract class WsCore extends AppCore
                 $response["message"] = $data;
 
             //set error for non array
-            if (is_array($data))
-                $response["error"] = implode(". ", $data);
-            else
-                $response["error"] = $this->CODES[$code];
+            $response["error"] = is_array($data) ? implode(". ", $data) : $this->CODES[$code];
         }
         //success data
         else {
