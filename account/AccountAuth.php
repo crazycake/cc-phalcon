@@ -10,7 +10,6 @@ namespace CrazyCake\Account;
 
 //imports
 use Phalcon\Exception;
-use CrazyCake\Utils\DateHelper;
 use CrazyCake\Utils\FormHelper;
 use CrazyCake\Utils\ReCaptcha;
 

@@ -80,7 +80,7 @@ class FormHelper
         $days_array[""] = $trans->_("Día");
         //loop
         for ($i = 1; $i <= 31; $i++) {
-            $prefix = ($i <= 9) ? "_0$i" : "_$i";
+            $prefix = ($i <= 9) ? "0$i" : "$i";
             $days_array[$prefix] = $i;
         }
 
@@ -89,12 +89,11 @@ class FormHelper
         $months_array[""] = $trans->_("Mes");
         //loop
         for ($i = 1; $i <= 12; $i++) {
-            $prefix = ($i <= 9) ? "_0$i" : "_$i";
+            $prefix = ($i <= 9) ? "0$i" : "$i";
             $month = strftime('%m', mktime(0, 0, 0, $i, 1));
 
             //get abbr month
-            if(class_exists("DateHelper"))
-                $month = DateHelper::getTranslatedMonthName($month, true);
+            $month = DateHelper::getTranslatedMonthName($month, true);
 
             //set month array
             $months_array[$prefix] = $month;
@@ -104,8 +103,8 @@ class FormHelper
         $years_array = [];
         $years_array[""] = $trans->_("Año");
         //loop
-        for ($i = (int) date('Y'); $i >= 1914; $i--)
-            $years_array["_$i"] = $i;
+        for ($i = (int) date('Y'); $i >= 1930; $i--)
+            $years_array["$i"] = $i;
 
         return [$years_array, $months_array, $days_array];
     }
