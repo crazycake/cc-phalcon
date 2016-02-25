@@ -331,10 +331,9 @@ trait CheckoutManager
             //disallow robots for this page
             "html_disallow_robots" => true,
             //checkout vars
-            "invoiceEmail"         => $invoiceEmail,
-            "objectsClasses"       => $objectsClasses,
-            "checkoutInputs"       => $inputs,
-            "checkoutInputsPrefix" => "checkout_"
+            "invoiceEmail"   => $invoiceEmail,
+            "objectsClasses" => $objectsClasses,
+            "checkoutInputs" => $inputs
         ]);
 
         //prepare tickets JS
