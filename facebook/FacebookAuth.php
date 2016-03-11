@@ -563,7 +563,7 @@ trait FacebookAuth
         catch (\Exception $e)                { $exception = $e; }
         //throw one exception type
         if ($exception){
-            $this->logger->error("Facebook::__loginUserFacebook -> Exception: ".$exception->getMessage().". fb_id: ".(isset($user_fb) ? $user_fb->id : "undefined"));
+            $this->logger->error("Facebook::__loginUserFacebook -> Exception: ".$exception->getMessage().". fb_id: ".(is_array($properties) ? $properties["fb_id"] : "undefined"));
             throw new Exception($e->getMessage());
         }
 
