@@ -34,6 +34,11 @@ class OneClickClient
     	if(!isset($setup['oneClickKey']) || !isset($setup['oneClickCert']) || !isset($setup['oneClickTransbankCert']))
     		throw new Exception('OneClickClient -> Invalid webpay setup input array.');
 
+		//replace base uris
+		$setup['oneClickKey'] 			= str_replace("./", PROJECT_PATH, $setup['oneClickKey']);
+		$setup['oneClickCert'] 		    = str_replace("./", PROJECT_PATH, $setup['oneClickCert']);
+		$setup['oneClickTransbankCert'] = str_replace("./", PROJECT_PATH, $setup['oneClickTransbankCert']);
+
 		//validate files
 		if(!is_file($setup['oneClickKey']) || !is_file($setup['oneClickCert']) || !is_file($setup['oneClickTransbankCert']))
 			throw new Exception('OneClickClient -> Invalid webpay files, files not found!');
