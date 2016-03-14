@@ -21,9 +21,10 @@ abstract class AppLoader
     const APP_CORE_NAMESPACE = "cc-phalcon";
 
     /**
-     * Set App environment (required)
+     * Set App config (required)
+     * @return array
      */
-    abstract protected function setAppEnvironment();
+    abstract protected function config();
 
     /**
      * App Core default packages
@@ -32,22 +33,16 @@ abstract class AppLoader
     protected static $APP_CORE_DEFAULT_PACKAGES = ['services', 'core', 'utils', 'models'];
 
     /**
-     * The root app path
-     * @var string
-     */
-    protected $app_path;
-
-    /**
      * The module name, values: frontend, backend, api.
      * @var string
      */
     protected $module;
 
     /**
-     * The module components
+     * The module loader components
      * @var string
      */
-    protected $modules_components;
+    protected $modules_loader;
 
     /**
      * CrazyCake libraries needed for each module
@@ -56,28 +51,22 @@ abstract class AppLoader
     protected $modules_core;
 
     /**
+     * Module production URIS
+     * @var array
+     */
+    protected static $modules_production_urls;
+
+    /**
      * Module supported langs
      * @var string
      */
     public $modules_langs;
 
     /**
-     * Module production URIS
-     * @var array
-     */
-    public static $modules_production_urls;
-
-    /**
      * The App configuration array
      * @var array
      */
     public $app_config = array();
-
-    /**
-     * App properties for configuration array, access by config->app->property
-     * @var array
-     */
-    protected $app_props = array();
 
     /**
      * The App Dependency injector
@@ -88,24 +77,31 @@ abstract class AppLoader
     /**
      * Constructor
      * @access public
-     * @param string $mod - The input module
+     * @param string $mod_name - The input module
      */
-    public function __construct($mod = null)
+    public function __construct($mod_name = null)
     {
-        //set environment vars (child method)
-        $this->setAppEnvironment();
+        //set app configurations
+        $config = $this->config();
 
-        if(is_null($this->app_path))
-            throw new Exception("AppLoader::__construct -> app_path property is not set.");
+        //modules loader components
+        $this->modules_loader = $config["loader"];
+        //modules private core
+        $this->modules_core = $config["core"];
+        //modules langs translations
+        $this->modules_langs = $config["langs"];
+        //production static shared URLs
+        self::$modules_production_urls = $config["productionUrls"];
 
-        if(is_null($mod))
-            throw new Exception("AppLoader::__construct -> invalid input module.");
+        //validations
+        if(empty($mod_name) || empty($config))
+            throw new Exception("AppLoader::__construct -> invalid input module, check setup.");
 
         //define APP contants
-        define("PROJECT_PATH", $this->app_path);
+        define("PROJECT_PATH", $config["projectPath"]);
         define("PACKAGES_PATH", PROJECT_PATH."packages/");
         define("COMPOSER_PATH", PACKAGES_PATH."composer/");
-        define("MODULE_NAME", $mod);
+        define("MODULE_NAME", $mod_name);
         define("MODULE_PATH", PROJECT_PATH.MODULE_NAME."/");
         define("APP_PATH", MODULE_PATH."app/" );
         define("PUBLIC_PATH", MODULE_PATH."public/");
@@ -117,7 +113,7 @@ abstract class AppLoader
         //set environment setup
         $this->_environmentSetUp(); //set APP_ENVIRONMENT & APP_BASE_URL (requires composer)
         //set phalcon DI services
-        $this->_setAppDependencyInjector();
+        $this->_setAppDependencyInjector($config["app"]);
     }
 
     /**
@@ -162,6 +158,7 @@ abstract class AppLoader
             //define global constants for the current task and action
             define('CLI_TASK',   isset($argv[1]) ? $argv[1] : null);
             define('CLI_ACTION', isset($argv[2]) ? $argv[2] : null);
+            
             //handle incoming arguments
             $application->handle($arguments);
         }
@@ -281,48 +278,39 @@ abstract class AppLoader
     /**
      * Set App Dependency Injector
      * @access private
+     * @param array $app_di - The DI app properties
      */
-    private function _setAppDependencyInjector()
+    private function _setAppDependencyInjector($app_di = array())
     {
         //check for custom module configurations
         $module_configs = is_file(APP_PATH."config/config.php") ? include APP_PATH."config/config.php" : null;
-        //set module extended configurations
-        $this->_moduleConfigurationSetUp($module_configs);
 
-        //get DI preset services for module
-        $services = new AppServices(MODULE_NAME, $this);
-        $this->di = $services->getDI();
-    }
-
-    /**
-     * Set Module configurations
-     * @access private
-     * @param array $module_configs - The module config options
-     */
-    private function _moduleConfigurationSetUp($module_configs = array())
-    {
         //set dabase configs
         $this->_databaseSetup();
 
         //merge with input module configs?
         if(!empty($module_configs))
-            $this->app_props = array_merge($this->app_props, $module_configs);
+            $app_di = array_merge($app_di, $module_configs);
 
         //check for langs supported
         if(isset($this->modules_langs[MODULE_NAME])) {
-            $this->app_props['langs'] = $this->modules_langs[MODULE_NAME];
+            $app_di['langs'] = $this->modules_langs[MODULE_NAME];
         }
 
         //set static uri for assets
-        if(APP_ENVIRONMENT == 'local' || !isset($this->app_props['staticUri']) || empty($this->app_props['staticUri']))
-            $this->app_props['staticUri'] = APP_BASE_URL;
+        if(APP_ENVIRONMENT == 'local' || !isset($app_di['staticUri']) || empty($app_di['staticUri']))
+            $app_di['staticUri'] = APP_BASE_URL;
 
         //set environment dynamic props
-        if(isset($this->app_props['aws']['s3Bucket']))
-            $this->app_props['aws']['s3Bucket'] .= (APP_ENVIRONMENT == 'production') ? '-prod' : "-dev";
+        if(isset($app_di['aws']['s3Bucket']))
+            $app_di['aws']['s3Bucket'] .= (APP_ENVIRONMENT == 'production') ? '-prod' : "-dev";
 
         //finally, set app properties
-        $this->app_config["app"] = $this->app_props;
+        $this->app_config["app"] = $app_di;
+
+        //get DI preset services for module
+        $services = new AppServices(MODULE_NAME, $this);
+        $this->di = $services->getDI();
     }
 
     /**
@@ -353,14 +341,14 @@ abstract class AppLoader
         //default directories
         $app_dirs['controllers'] = APP_PATH.'controllers/';
 
-        if(isset($this->modules_components[MODULE_NAME])) {
+        if(isset($this->modules_loader[MODULE_NAME])) {
 
-            foreach ($this->modules_components[MODULE_NAME] as $dir) {
+            foreach ($this->modules_loader[MODULE_NAME] as $dir) {
 
                 $paths = explode("/", $dir, 2);
 
                 //set directory path (if first index is a module)
-                if(count($paths) > 1 && in_array($paths[0], array_keys($this->modules_components)))
+                if(count($paths) > 1 && in_array($paths[0], array_keys($this->modules_loader)))
                     $app_dirs[$dir] = PROJECT_PATH.$paths[0]."/app/".$paths[1]."/";
                 else
                     $app_dirs[$dir] = APP_PATH.$dir."/";
