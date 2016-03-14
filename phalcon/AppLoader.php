@@ -158,11 +158,12 @@ abstract class AppLoader
             //define global constants for the current task and action
             define('CLI_TASK',   isset($argv[1]) ? $argv[1] : null);
             define('CLI_ACTION', isset($argv[2]) ? $argv[2] : null);
-            
+
             //handle incoming arguments
             $application->handle($arguments);
         }
         else if(MODULE_NAME == "api") {
+
             //new micro app
             $application = new \Phalcon\Mvc\Micro($this->di);
             //apply a routes function if param given (must be done before object instance)
@@ -173,6 +174,7 @@ abstract class AppLoader
             echo $application->handle();
         }
         else {
+
             //apply a routes function if param given (must be done after object instance)
             if(is_callable($routes_fn)) {
                 //creates a router object (for use custom URL behavior use 'false' param)
@@ -298,7 +300,7 @@ abstract class AppLoader
         }
 
         //set static uri for assets
-        if(APP_ENVIRONMENT == 'local' || !isset($app_di['staticUri']) || empty($app_di['staticUri']))
+        if(APP_ENVIRONMENT == 'local' || empty($app_di['staticUri']))
             $app_di['staticUri'] = APP_BASE_URL;
 
         //set environment dynamic props
