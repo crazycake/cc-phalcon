@@ -299,13 +299,13 @@ abstract class AppLoader
             $app_di['langs'] = $this->modules_langs[MODULE_NAME];
         }
 
-        //set static uri for assets
-        if(APP_ENVIRONMENT == 'local' || empty($app_di['staticUri']))
+        //set static uri for assets, cdn only for production
+        if(empty($app_di['staticUri']) || APP_ENVIRONMENT !== 'production')
             $app_di['staticUri'] = APP_BASE_URL;
 
-        //set environment dynamic props
+        //set app AWS S3 bucket
         if(isset($app_di['aws']['s3Bucket']))
-            $app_di['aws']['s3Bucket'] .= (APP_ENVIRONMENT == 'production') ? '-prod' : "-dev";
+            $app_di['aws']['s3Bucket'] .= (APP_ENVIRONMENT === 'production') ? '-prod' : "-dev";
 
         //finally, set app properties
         $this->app_config["app"] = $app_di;

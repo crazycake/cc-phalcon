@@ -280,8 +280,8 @@ abstract class WebCore extends AppCore implements WebSecurity
     {
         $version = isset($this->config->app->deployVersion) ? $this->config->app->deployVersion : "0.0.1";
 
-        $css_url = $this->_baseUrl(self::ASSETS_MIN_FOLDER_PATH."app.min.css?v=$version");
-        $js_url  = $this->_baseUrl(self::ASSETS_MIN_FOLDER_PATH."app.min.js?v=$version");
+        $css_url = $this->_staticUrl(self::ASSETS_MIN_FOLDER_PATH."app.min.css?v=$version");
+        $js_url  = $this->_staticUrl(self::ASSETS_MIN_FOLDER_PATH."app.min.js?v=$version");
 
         if(APP_ENVIRONMENT === "local") {
             $css_url = str_replace(".min.css", ".css", $css_url);
@@ -322,6 +322,7 @@ abstract class WebCore extends AppCore implements WebSecurity
     {
         //for API make a API simple client object
         if(MODULE_NAME == "api") {
+
             $this->client = (object)[
                 "lang"     => "en",
                 "protocol" => isset($_SERVER["HTTPS"]) ? "https://" : "http://"
@@ -349,7 +350,8 @@ abstract class WebCore extends AppCore implements WebSecurity
             $this->trans->setLanguage($this->config->app->langs[0]);
 
         //create a client object
-        $this->client           = new \stdClass();
+        $this->client = new \stdClass();
+        //props
         $this->client->lang     = $this->trans->getLanguage();
         $this->client->tokenKey = $this->security->getTokenKey();  //CSRF token key
         $this->client->token    = $this->security->getToken();     //CSRF token
