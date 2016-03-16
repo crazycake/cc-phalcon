@@ -9,7 +9,8 @@ namespace CrazyCake\Core;
 
 //imports
 use Phalcon\Exception;
-//other imports
+//core
+use CrazyCake\Phalcon\AppLoader;
 use CrazyCake\Services\Guzzle;
 
 /**
@@ -39,7 +40,7 @@ abstract class WsCore extends AppCore
      */
     protected function onConstruct()
     {
-        /** -- API codes -- **/
+        // API Codes
         $this->CODES = [
             //success
             "200" => "ok",
@@ -59,9 +60,8 @@ abstract class WsCore extends AppCore
             "902" => "invalid format of file attached"
         ];
 
-        /* API Key Validation */
-        if ($this->config->app->api->keyEnabled)
-            $this->_validateApiKey();
+        // API Key Validation
+        $this->_validateApiKey();
     }
 
     /**
@@ -149,9 +149,7 @@ abstract class WsCore extends AppCore
         ], $method);
 
         //get model data
-        $object = $class_name::findFirst([
-            "id = '".$data[$prop]."'" //conditions
-        ]);
+        $object = $class_name::findFirst(["id = ?1", "bind" => [1 => $data[$prop]]]);
 
         if(!$object)
             $this->_sendJsonResponse(400);
@@ -165,13 +163,18 @@ abstract class WsCore extends AppCore
      */
     private function _validateApiKey()
     {
-        //get API key from config file & request header Api Key
-        $app_api_key    = $this->config->app->api->key;
-        $header_api_key = $this->request->getHeader(self::HEADER_API_KEY);
+        $apiKey     = AppLoader::getModuleConfigProp("key");
+        $keyEnabled = AppLoader::getModuleConfigProp("keyEnabled");
+
+        if (!$keyEnabled)
+            return;
+
+        //get API key from request headers
+        $headerApiKey = $this->request->getHeader(self::HEADER_API_KEY);
         //print_r($this->request->getHeaders());exit;
 
         //check if keys are equal
-        if ($app_api_key !== $header_api_key)
+        if ($apiKey !== $headerApiKey)
             $this->_sendJsonResponse(498);
     }
 }

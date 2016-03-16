@@ -9,7 +9,8 @@ namespace CrazyCake\Core;
 
 //imports
 use Phalcon\Exception;
-//CrazyCake Utils & Traits
+//core
+use CrazyCake\Phalcon\AppLoader;
 use CrazyCake\Utils\UserAgent;
 use CrazyCake\Services\Guzzle;
 
@@ -97,6 +98,7 @@ abstract class WebCore extends AppCore implements WebSecurity
         $this->_setAppAssets();
         //update client object property, request uri afterExecuteRoute event.
         $this->_updateClientObjectProp('requestedUri', $this->_getRequestedUri());
+
         //check browser is supported (child method)
         $supported = $this->checkBrowserSupport($this->client->browser, $this->client->shortVersion);
         //prevents loops
@@ -278,11 +280,14 @@ abstract class WebCore extends AppCore implements WebSecurity
      */
     protected function _setAppAssets()
     {
-        $version = isset($this->config->app->deployVersion) ? $this->config->app->deployVersion : "0.0.1";
+        $version = AppLoader::getModuleConfigProp("version");
+        //set version string
+        $version = $version ? "?v=".$version : "";
 
-        $css_url = $this->_staticUrl(self::ASSETS_MIN_FOLDER_PATH."app.min.css?v=$version");
-        $js_url  = $this->_staticUrl(self::ASSETS_MIN_FOLDER_PATH."app.min.js?v=$version");
+        $css_url = $this->_staticUrl(self::ASSETS_MIN_FOLDER_PATH."app.min.css".$version);
+        $js_url  = $this->_staticUrl(self::ASSETS_MIN_FOLDER_PATH."app.min.js".$version);
 
+        //set no-min assets for local dev
         if(APP_ENVIRONMENT === "local") {
             $css_url = str_replace(".min.css", ".css", $css_url);
             $js_url  = str_replace(".min.js", ".js", $js_url);
@@ -402,10 +407,11 @@ abstract class WebCore extends AppCore implements WebSecurity
     {
         //set javascript global objects
         $js_app = new \stdClass();
-        $js_app->name    = $this->config->app->name;
-        $js_app->version = $this->config->app->deployVersion;
-        $js_app->baseUrl = $this->_baseUrl();
-        $js_app->dev     = APP_ENVIRONMENT === "production" ? 0 : 1;
+        $js_app->name      = $this->config->app->name;
+        $js_app->baseUrl   = $this->_baseUrl();
+        $js_app->staticUrl = $this->_staticUrl();
+        $js_app->dev       = (APP_ENVIRONMENT === "production") ? 0 : 1;
+        $js_app->version   = AppLoader::getModuleConfigProp("version");
 
         //set custom properties
         $this->setAppJavascriptProperties($js_app);

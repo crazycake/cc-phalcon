@@ -19,37 +19,29 @@ require "AppPlugins.php";
 class AppServices
 {
     /**
-     * Module var
-     * @var string
-     */
-    private $module;
-
-    /**
-     * Configuration var
-     * @var array
+     * Phalcon config object
+     * @var object
      */
     private $config;
 
     /**
-     * Module langs var
-     * @var string
+     * Module properties
+     * @var function
      */
-    private $langs;
+    private $props;
 
     /**
      * Constructor
-     * @param string $mod - The app module
-     * @param array $loader - The app loader instance
+     * @param object $loaderObj - The app loader instance
      */
-    public function __construct($mod = null, $loader = null)
+    public function __construct($loaderObj = null)
     {
-        if(is_null($mod) || is_null($loader))
-            throw new Exception("AppServices::__construct -> 'module' and 'loader' parameters are required.");
+        if(is_null($loaderObj))
+            throw new Exception("AppServices::__construct -> 'loader' object is required.");
 
         //set class vars
-        $this->module = $mod;
-        $this->config = new \Phalcon\Config($loader->app_config);
-        $this->langs  = $loader->modules_langs;
+        $this->config = new \Phalcon\Config($loaderObj->app_conf);
+        $this->props  = $loaderObj::$modules_conf[MODULE_NAME];
     }
 
     /**
@@ -58,12 +50,13 @@ class AppServices
      */
     public function getDI()
     {
-        if($this->module == 'api')
+        if(MODULE_NAME == 'api')
             return $this->_getMicroDI();
-        else if($this->module == 'cli')
+        else if(MODULE_NAME == 'cli')
             return $this->_getCliDI();
-        else
-            return $this->_getMvcDI();
+
+        //frontend or backend
+        return $this->_getMvcDI();
     }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
@@ -78,12 +71,7 @@ class AppServices
         $di = new \Phalcon\DI\FactoryDefault();
         $this->_setCommonServices($di);
         $this->_setDatabaseService($di);
-
-        //load translations?
-        if(isset($this->langs[$this->module])) {
-            $this->_setTranslationService($di);
-        }
-
+        $this->_setTranslationService($di);
         return $di;
     }
 
@@ -130,20 +118,31 @@ class AppServices
         $di->setShared('url', function() {
 
             $url = new \Phalcon\Mvc\Url();
+            //Base URL
             $url->setBaseUri(APP_BASE_URL);
-            $url->setStaticBaseUri($this->config->app->staticUri);
+
+            //get static url
+            $staticUrl = isset($this->props["staticUrl"]) ? $this->props["staticUrl"] : false;
+
+            //set static uri for assets, cdn only for production
+            if(!$staticUrl || APP_ENVIRONMENT !== 'production')
+                $staticUrl = APP_BASE_URL;
+
+            $url->setStaticBaseUri($staticUrl);
 
             return $url;
         });
 
         //Logger adapter
         $di->setShared('logger', function() {
+
             $logger = new \Phalcon\Logger\Adapter\File(APP_PATH."logs/".date("d-m-Y").".log");
             return $logger;
         });
 
         //Basic http security
         $di->setShared('security', function() {
+
             $security = new \Phalcon\Security();
             //Set the password hashing factor to X rounds
             $security->setWorkFactor(12);
@@ -152,6 +151,7 @@ class AppServices
 
         //Phalcon Crypt service
         $di->setShared('crypt', function() {
+
             $crypt = new \Phalcon\Crypt();
             $crypt->setKey($this->config->app->cryptKey);
             return $crypt;
@@ -159,6 +159,7 @@ class AppServices
 
         //Extended encryption, Cryptify adapter (cryptography helper)
         if(class_exists('\CrazyCake\Utils\Cryptify')) {
+
             $di->setShared('cryptify', function() {
                 return new \CrazyCake\Utils\Cryptify($this->config->app->cryptKey);
             });
@@ -178,6 +179,7 @@ class AppServices
 
         //Database connection is created based in the parameters defined in the configuration file
         $di->setShared('db', function() {
+
             return new \Phalcon\Db\Adapter\Pdo\Mysql([
                 "host"     => $this->config->database["host"],
                 "username" => $this->config->database["username"],
@@ -196,10 +198,15 @@ class AppServices
      */
     private function _setTranslationService(&$di)
     {
+        //check if langs are set
+        if(empty($this->config->app->langs))
+            return;
+
         $di->setShared('trans', function() {
+
             return new \CrazyCake\Services\GetText([
                 'domain'    => $this->config->app->name,
-                'supported' => (array)$this->config->app->langs,
+                'supported' => (array)$this->config->app->langs, //config obj to array
                 'directory' => APP_PATH."langs/"
             ]);
         });
@@ -274,12 +281,14 @@ class AppServices
 
         //Setting up the simpleView component, same as view
         $di->setShared('simpleView', function() use (&$di_view_engines) {
+
             //simpleView
             $view = new \Phalcon\Mvc\View\Simple();
             //set directory views
             $view->setViewsDir(APP_PATH."views/");
             //register volt view engine
             $view->registerEngines($di_view_engines);
+
             return $view;
         });
 
@@ -295,12 +304,14 @@ class AppServices
 
         //Flash messages
         $di->setShared('flash', function() {
+
             $flash = new \Phalcon\Flash\Session([
                 'success' => 'success',
                 'error'   => 'alert',
                 'notice'  => 'notice',
                 'warning' => 'warning'
             ]);
+
             return $flash;
         });
     }

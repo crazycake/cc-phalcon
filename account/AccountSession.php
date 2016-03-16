@@ -7,7 +7,8 @@
 
 namespace CrazyCake\Account;
 
-//CrazyCake Utils
+//core
+use CrazyCake\Phalcon\AppLoader;
 use CrazyCake\Utils\DateHelper;
 
 /**
@@ -46,11 +47,13 @@ trait AccountSession
         if(MODULE_NAME == "api")
             return;
 
-        //check for non secure connection
-        if(APP_ENVIRONMENT == 'production'
+        //check enable SSL option
+        $enableSSL = AppLoader::getModuleConfigProp("enableSSL");
+
+        //if enabledSSL, force redirect for non-https request
+        if( APP_ENVIRONMENT === 'production'
             && isset($_SERVER["HTTP_HOST"])
-            && isset($this->config->app->enableProductionSSL)
-            && $this->config->app->enableProductionSSL
+            && $enableSSL
             && !$this->request->isSecureRequest()) {
 
             $url = "https://".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
@@ -85,6 +88,7 @@ trait AccountSession
     {
         //anonymous function
         $loggedIn = function() {
+
             if (!$this->session->has("user"))
                 return false;
 
@@ -243,6 +247,7 @@ trait AccountSession
             return false;
 
         foreach ($data as $key => $value) {
+
             if(isset($user_session[$key]))
                 $user_session[$key] = $value;
         }
@@ -285,6 +290,7 @@ trait AccountSession
             array_push($objects, $obj);
         else
             $objects[$index] = $obj;
+
         //save in session
         $this->session->set($key, $objects);
         return true;

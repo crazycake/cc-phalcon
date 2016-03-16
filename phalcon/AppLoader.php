@@ -30,43 +30,25 @@ abstract class AppLoader
      * App Core default packages
      * @var array
      */
-    protected static $APP_CORE_DEFAULT_PACKAGES = ['services', 'core', 'utils', 'models'];
+    protected static $CORE_DEFAULT_PACKAGES = ['services', 'core', 'utils', 'models', 'account'];
 
     /**
-     * The module name, values: frontend, backend, api.
-     * @var string
-     */
-    protected $module;
-
-    /**
-     * The module loader components
-     * @var string
-     */
-    protected $modules_loader;
-
-    /**
-     * CrazyCake libraries needed for each module
-     * @var string
-     */
-    protected $modules_core;
-
-    /**
-     * Module production URIS
+     * App Core default modules
      * @var array
      */
-    protected static $modules_production_urls;
+    protected static $CORE_DEFAULT_MODULES = ['cli', 'api', 'backend', 'frontend'];
 
     /**
-     * Module supported langs
-     * @var string
+     * Modules Config
+     * @var array
      */
-    public $modules_langs;
+    public static $modules_conf;
 
     /**
      * The App configuration array
      * @var array
      */
-    public $app_config = array();
+    public $app_conf;
 
     /**
      * The App Dependency injector
@@ -83,15 +65,8 @@ abstract class AppLoader
     {
         //set app configurations
         $config = $this->config();
-
-        //modules loader components
-        $this->modules_loader = $config["loader"];
-        //modules private core
-        $this->modules_core = $config["core"];
-        //modules langs translations
-        $this->modules_langs = $config["langs"];
-        //production static shared URLs
-        self::$modules_production_urls = $config["productionUrls"];
+        //modules config
+        self::$modules_conf = $config["modules"];
 
         //validations
         if(empty($mod_name) || empty($config))
@@ -212,18 +187,27 @@ abstract class AppLoader
      * @static
      * @param  string $module - The module name
      * @param  string $uri - A uri to be appended
+     * @param  string $type - The url path type: 'base' or 'static'
      * @return string
      */
-    public static function getModuleURL($module = "", $uri = "")
+    public static function getModuleUrl($module = "", $uri = "", $type = "base")
     {
-        $url = "";
+        if(APP_ENVIRONMENT === "production") {
 
-        if(APP_ENVIRONMENT === "production")
-            $url = static::$modules_production_urls[$module];
-        else if(APP_ENVIRONMENT === "local")
+            //production
+            $baseUrl   = self::getModuleConfigProp("baseUrl", $module);
+            $staticUrl = self::getModuleConfigProp("staticUrl", $module);
+            //set URL
+            $url = ($type == "static" && $staticUrl) ? $staticUrl : $baseUrl;
+        }
+        else if(APP_ENVIRONMENT === "local") {
+
             $url = str_replace(['/api/', '/frontend/', '/backend/'], "/$module/", APP_BASE_URL);
-        else
+        }
+        else {
+
             $url = str_replace(['.api.', '.frontend.', '.backend.'], ".$module.", APP_BASE_URL);
+        }
 
         return $url.$uri;
     }
@@ -275,6 +259,25 @@ abstract class AppLoader
         return $output_path;
     }
 
+    /**
+     * Gets current Module property value
+     * @static
+     * @param  string $prop - A input property
+     * @param  string $mod_name - The module name
+     * @return mixed
+     */
+    public static function getModuleConfigProp($prop = "", $mod_name = "")
+    {
+        $module = empty($mod_name) ? MODULE_NAME : $mod_name;
+
+        if(!isset(self::$modules_conf[$module]))
+            return false;
+
+        if(!isset(self::$modules_conf[$module][$prop]))
+            return false;
+
+        return self::$modules_conf[$module][$prop];
+    }
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
@@ -284,34 +287,21 @@ abstract class AppLoader
      */
     private function _setAppDependencyInjector($app_di = array())
     {
-        //check for custom module configurations
-        $module_configs = is_file(APP_PATH."config/config.php") ? include APP_PATH."config/config.php" : null;
-
         //set dabase configs
         $this->_databaseSetup();
 
-        //merge with input module configs?
-        if(!empty($module_configs))
-            $app_di = array_merge($app_di, $module_configs);
-
-        //check for langs supported
-        if(isset($this->modules_langs[MODULE_NAME])) {
-            $app_di['langs'] = $this->modules_langs[MODULE_NAME];
-        }
-
-        //set static uri for assets, cdn only for production
-        if(empty($app_di['staticUri']) || APP_ENVIRONMENT !== 'production')
-            $app_di['staticUri'] = APP_BASE_URL;
+        //langs
+        $app_di['langs'] = self::getModuleConfigProp("langs");
 
         //set app AWS S3 bucket
         if(isset($app_di['aws']['s3Bucket']))
             $app_di['aws']['s3Bucket'] .= (APP_ENVIRONMENT === 'production') ? '-prod' : "-dev";
 
         //finally, set app properties
-        $this->app_config["app"] = $app_di;
+        $this->app_conf["app"] = $app_di;
 
         //get DI preset services for module
-        $services = new AppServices(MODULE_NAME, $this);
+        $services = new AppServices($this);
         $this->di = $services->getDI();
     }
 
@@ -325,7 +315,7 @@ abstract class AppLoader
             throw new Exception("AppLoader::_databaseSetup -> DB environment is not set.");
 
         //set database config
-        $this->app_config["database"] = [
+        $this->app_conf["database"] = [
             'host'      => getenv('DB_HOST'),
             'username'  => getenv('DB_USER'),
             'password'  => getenv('DB_PASS'),
@@ -339,18 +329,20 @@ abstract class AppLoader
      */
     private function _directoriesSetup()
     {
-        $app_dirs = array();
-        //default directories
-        $app_dirs['controllers'] = APP_PATH.'controllers/';
+        $app_dirs = [
+            "controllers" => APP_PATH.'controllers/'
+        ];
 
-        if(isset($this->modules_loader[MODULE_NAME])) {
+        $folders = self::getModuleConfigProp("loader");
 
-            foreach ($this->modules_loader[MODULE_NAME] as $dir) {
+        if($folders) {
+
+            foreach ($folders as $dir) {
 
                 $paths = explode("/", $dir, 2);
 
                 //set directory path (if first index is a module)
-                if(count($paths) > 1 && in_array($paths[0], array_keys($this->modules_loader)))
+                if(count($paths) > 1 && in_array($paths[0], self::$CORE_DEFAULT_MODULES))
                     $app_dirs[$dir] = PROJECT_PATH.$paths[0]."/app/".$paths[1]."/";
                 else
                     $app_dirs[$dir] = APP_PATH.$dir."/";
@@ -359,7 +351,7 @@ abstract class AppLoader
 
         //inverted sort
         arsort($app_dirs);
-        $this->app_config["directories"] = $app_dirs;
+        $this->app_conf["directories"] = $app_dirs;
     }
 
     /**
@@ -370,11 +362,13 @@ abstract class AppLoader
     {
         //1.- Load app directories (components)
         $loader = new \Phalcon\Loader();
-        $loader->registerDirs($this->app_config["directories"]);
+        $loader->registerDirs($this->app_conf["directories"]);
+
+        $core_libs = self::getModuleConfigProp("core");
 
         //2.- Register any static libs (like core)
-        if(isset($this->modules_core[MODULE_NAME]))
-            $this->_loadStaticLibs($loader, $this->modules_core[MODULE_NAME]);
+        if($core_libs)
+            $this->_loadStaticLibs($loader, $core_libs);
 
         //3.- Composer libs auto loader
         if (!is_file(COMPOSER_PATH.'vendor/autoload.php'))
@@ -402,7 +396,7 @@ abstract class AppLoader
             return;
 
         //merge packages with defaults
-        $packages = array_merge(self::$APP_CORE_DEFAULT_PACKAGES, $packages);
+        $packages = array_merge(self::$CORE_DEFAULT_PACKAGES, $packages);
 
         //check if library was loaded from dev environment
         $class_path = is_link(PACKAGES_PATH.self::APP_CORE_NAMESPACE) ? PACKAGES_PATH.self::APP_CORE_NAMESPACE : false;

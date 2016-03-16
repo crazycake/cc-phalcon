@@ -10,6 +10,8 @@ namespace CrazyCake\Core;
 //imports
 use Phalcon\Mvc\Controller;
 use Phalcon\Exception;
+//core
+use CrazyCake\Phalcon\AppLoader;
 
 /**
  * Web Security Interface
@@ -72,18 +74,18 @@ abstract class AppCore extends Controller
      */
     public static function getModuleClass($key = "", $prefix = true)
     {
-        //get DI
-        $di     = \Phalcon\DI::getDefault();
-        $config = $di->getShared("config")->app;
-        //get module class prefix
-        $class_map = isset($config->classMap) ? $config->classMap : [];
+        //get 'classMap' module property
+        $classMap = AppLoader::getModuleConfigProp("classMap");
+
+        if(!$classMap)
+            $classMap = [];
 
         //check for prefix in module settings
-        $class_name = isset($class_map[$key]) ? $class_map[$key] : $key;
+        $className = isset($classMap[$key]) ? $classMap[$key] : $key;
 
-        $camelized_class_name = \Phalcon\Text::camelize($class_name);
+        $camelizedClassName = \Phalcon\Text::camelize($className);
 
-        return $prefix ? "\\$camelized_class_name" : $camelized_class_name;
+        return $prefix ? "\\$camelizedClassName" : $camelizedClassName;
     }
 
     /**
@@ -139,7 +141,7 @@ abstract class AppCore extends Controller
 
         //set base url
         if(empty($options["base_url"]))
-            $options["base_url"] = empty($options["module"]) ? $this->_baseUrl() : \CrazyCake\Phalcon\AppLoader::getModuleURL($options["module"]);
+            $options["base_url"] = empty($options["module"]) ? $this->_baseUrl() : AppLoader::getModuleUrl($options["module"]);
 
         //set uri
         if(empty($options["uri"]))
