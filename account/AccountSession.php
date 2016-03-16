@@ -168,7 +168,7 @@ trait AccountSession
 
         //check for ajax request
         if($this->request->isAjax()) {
-            $this->_sendJsonResponse(200, empty($payload) ? ["redirectUri" => $uri] : $payload);
+            $this->_sendJsonResponse(200, empty($payload) ? ["redirect" => $uri] : $payload);
         }
         else {
             $this->_redirectTo($uri);

@@ -60,12 +60,12 @@ trait AccountManager
     public function updateProfileAction()
     {
         //get post params
-        $default_params = array(
+        $default_params = [
             'first_name'     => 'string',
             'last_name'      => 'string',
             '@current_pass'  => 'string',
             '@pass'          => 'string'
-        );
+        ];
 
         //get model class name
         $users_class = $this->_getModuleClass('users');
@@ -146,7 +146,7 @@ trait AccountManager
             }
         }
         catch (Exception $e) {
-            $this->_sendJsonResponse(200, $e->getMessage(), true);
+            $this->_sendJsonResponse(200, $e->getMessage(), "warning");
         }
 
         //set paylaod

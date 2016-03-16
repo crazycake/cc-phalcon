@@ -157,7 +157,7 @@ trait AccountAuth
 
         //check user & given hash with the one stored (wrong combination)
         if (!$user || !$this->security->checkHash($data['pass'], $user->pass)) {
-            $this->_sendJsonResponse(200, $this->accountConfig['trans']['auth_failed'], 'alert');
+            $this->_sendJsonResponse(200, $this->accountConfig['trans']['auth_failed'], "alert");
         }
 
         //check user account flag
@@ -173,7 +173,7 @@ trait AccountAuth
             }
 
             //show error message with custom handler
-            $this->_sendJsonResponse(200, $msg, true, $namespace);
+            $this->_sendJsonResponse(200, $msg, "warning", $namespace);
         }
 
         //success login
@@ -200,9 +200,10 @@ trait AccountAuth
 
         //validate names
         $nums = '0123456789';
-        if(strcspn($data['first_name'], $nums) != strlen($data['first_name'])
-           || strcspn($data['last_name'], $nums) != strlen($data['last_name'])) {
-            $this->_sendJsonResponse(200, $this->accountConfig['trans']['invalid_names'], 'alert');
+        if(strcspn($data['first_name'], $nums) != strlen($data['first_name']) ||
+           strcspn($data['last_name'], $nums) != strlen($data['last_name'])) {
+
+            $this->_sendJsonResponse(200, $this->accountConfig['trans']['invalid_names'], "alert");
         }
 
         //format to capitalized name
@@ -219,7 +220,7 @@ trait AccountAuth
 
         //if user dont exists, show error message
         if (!$user->save($data))
-            $this->_sendJsonResponse(200, $user->filterMessages(), true);
+            $this->_sendJsonResponse(200, $user->filterMessages(), "alert");
 
         //set a flash message to show on account controller
         $this->flash->success(str_replace("{email}", $user->email, $this->accountConfig['trans']['activation_pending']));
@@ -245,7 +246,7 @@ trait AccountAuth
         //check valid reCaptcha
         if (empty($data['g-recaptcha-response']) || !$recaptcha->isValid($data['g-recaptcha-response'])) {
             //show error message
-            return $this->_sendJsonResponse(200, $this->accountConfig['trans']['recaptcha_failed'], true);
+            return $this->_sendJsonResponse(200, $this->accountConfig['trans']['recaptcha_failed'], "alert");
         }
 
         //get model classes

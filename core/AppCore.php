@@ -1,6 +1,6 @@
 <?php
 /**
- * App Core Controller, includes basic and helper methods for web & ws core controllers.
+ * App Core Controller (MVC), includes basic and helper methods for web & ws core controllers.
  * Requires a Phalcon DI Factory Services
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
@@ -30,10 +30,55 @@ abstract class AppCore extends Controller
     const JSON_RESPONSE_STRUCT = '{"response":{"code":"200","status":"ok","payload":@payload}}';
 
     /**
+     * HTTP API codes
+     * @var array
+     */
+    protected $CODES;
+
+    /**
+     * HTTP API messages
+     * @var array
+     */
+    protected $MSGS;
+
+    /**
      * Sends an async request
      * @param array $options - Options: controller, action, method, payload, socket, headers
      */
     abstract protected function _sendAsyncRequest($options = array());
+
+    /**
+     * on Construct event
+     */
+    protected function onConstruct()
+    {
+        //set API Codes
+        $this->CODES = [
+            //success
+            "200" => "ok",
+            //client errors
+            "400" => "Bad Request, invalid GET or POST data",
+            "401" => "Unauthorized",
+            "403" => "Forbidden",
+            "404" => "Not Found",
+            "405" => "Method Not Allowed",
+            "406" => "Not Acceptable",
+            "408" => "Request Timeout",
+            "498" => "Invalid Token",
+            //server
+            "500" => "Internal Server Error",
+            "501" => "Unknown error",
+            //db related
+            "800" => "No records found",
+            //resources related
+            "900" => "Resource not found",
+            "901" => "No files attached",
+            "902" => "Invalid format of file attached"
+        ];
+
+        //set message keys
+        $this->MSGS = [];
+    }
 
     /**
      * Base URL extended function
@@ -163,41 +208,96 @@ abstract class AppCore extends Controller
     }
 
     /**
-     * Sends a mail message to user asynchronously
-     * @param string $method - The Mailer method to call
-     * @param object $data - The data to be passed as args
-     * @return object response
+     * Sends a JSON response for APIs.
+     * The HTTP statusCode is always 200.
+     * Codes: ```200, 400, 404, 405, 498, 500, 501, 800, 900, 901, 902```
+     * @param string $code - The app message code.
+     * @param object $payload - Payload to send
+     * @param string $type - (optional) Append a type attr to the response.
+     * @param string $namespace - (optional) Append a type namespace to the response.
+     * @return string - The response
      */
-    protected function _sendMailMessage($method = null, $data = null)
+    protected function _sendJsonResponse($code = 200, $payload = null, $type = "", $namespace = "")
     {
-        //simple input validation
-        if (empty($method))
-            throw new Exception("AppCore::_sendMailMessage -> method param is required.");
+        //if code is not identified, mark as unknown error
+        if (!isset($this->CODES[$code]))
+            $this->CODES[$code] = $this->CODES[501];
 
-        //get the mailer controller name
-        $mailer_class = $this->_getModuleClass('mailer_controller');
+        //set response
+        $response = [
+            "code"   => (string)$code,
+            "status" => $code == 200 ? "ok" : "error"
+        ];
 
-        //checks that a MailerController exists
-        if(!class_exists($mailer_class))
-            throw new Exception("AppCore::_sendMailMessage -> A Mailer Controller is required.");
+        //type
+        if(!empty($type))
+            $response["type"] = $type;
 
-        $mailer = new $mailer_class();
+        //namespace
+        if(!empty($namespace))
+            $response["namespace"] = $namespace;
 
-        //checks that a MailerController exists
-        if(!method_exists($mailer, $method))
-            throw new Exception("AppCore::_sendMailMessage -> Method $method is not defined in Mailer Controller.");
+        //success data
+        if($code == 200) {
 
-        //call mailer class method (reflection)
-        $response = $mailer->{$method}($data);
+            //if data is an object convert to array
+            if (is_object($payload))
+                $payload = get_object_vars($payload);
 
-        if(is_array($response))
-            $response = json_encode($response);
+            //check redirection action
+            if(is_array($payload) && isset($payload["redirect"]))
+                $response["redirect"] = $payload["redirect"];
+            //append payload
+            else
+                $response["payload"] = $payload;
+        }
+        //error data
+        else {
 
-        //save response only for non production-environment
-        if(APP_ENVIRONMENT !== "production")
-            $this->logger->debug('AppCore::_sendMailMessage -> Got response from MailerController:\n' . $response);
+            //set payload as objectId for numeric data, for string set as error
+            if (is_numeric($payload))
+                $response["object_id"] = $payload;
+            else if (is_string($payload))
+                $response["message"] = $payload;
 
-        return $response;
+            //set error for non array
+            $response["error"] = is_object($payload) ? $payload : $this->CODES[$code];
+        }
+
+        //if a view service is set, disable rendering
+        if(isset($this->view))
+            $this->view->disable(); //disable view output
+
+        //encode JSON
+        $content = json_encode(['response' => $response], JSON_UNESCAPED_SLASHES);
+
+        //output the response
+        $this->response->setStatusCode(200, "OK");
+        $this->response->setContentType('application/json'); //set JSON as Content-Type header
+        $this->response->setContent($content);
+        $this->response->send();
+        die(); //exit
+    }
+
+    /**
+     * Sends a simple text response
+     * @param  mixed [string|array] $text - Any text string
+     */
+    protected function _sendTextResponse($text = "OK"){
+
+        if(is_array($text) || is_object($text))
+            $text = json_encode($text, JSON_UNESCAPED_SLASHES);
+
+        //if a view service is set, disable rendering
+        if(isset($this->view))
+            $this->view->disable(); //disable view output
+
+        //output the response
+        $this->response->setStatusCode(200, "OK");
+        $this->response->setContentType('text/html');
+        $this->response->setContent($text);
+        $this->response->send();
+        die(); //exit
     }
 
     /**
@@ -358,6 +458,44 @@ abstract class AppCore extends Controller
         }
 
         return ["number" => $number, "offset" => $offset];
+    }
+
+    /**
+     * Sends a mail message to user asynchronously
+     * @param string $method - The Mailer method to call
+     * @param object $data - The data to be passed as args
+     * @return object response
+     */
+    protected function _sendMailMessage($method = null, $data = null)
+    {
+        //simple input validation
+        if (empty($method))
+            throw new Exception("AppCore::_sendMailMessage -> method param is required.");
+
+        //get the mailer controller name
+        $mailer_class = $this->_getModuleClass('mailer_controller');
+
+        //checks that a MailerController exists
+        if(!class_exists($mailer_class))
+            throw new Exception("AppCore::_sendMailMessage -> A Mailer Controller is required.");
+
+        $mailer = new $mailer_class();
+
+        //checks that a MailerController exists
+        if(!method_exists($mailer, $method))
+            throw new Exception("AppCore::_sendMailMessage -> Method $method is not defined in Mailer Controller.");
+
+        //call mailer class method (reflection)
+        $response = $mailer->{$method}($data);
+
+        if(is_array($response))
+            $response = json_encode($response);
+
+        //save response only for non production-environment
+        if(APP_ENVIRONMENT !== "production")
+            $this->logger->debug('AppCore::_sendMailMessage -> Got response from MailerController:\n' . $response);
+
+        return $response;
     }
 
     /**

@@ -347,7 +347,7 @@ trait CheckoutManager
         //load JS modules
         $js_modules = $this->checkoutConfig["js_modules"];
 
-        $this->_loadJavascriptModules(array_merge([
+        $this->_loadJsModules(array_merge([
             "$js_modules[0]" => [
                 "checkoutType"   => $checkoutType,
                 "checkoutMax"    => $checkoutMax,

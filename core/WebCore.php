@@ -48,19 +48,11 @@ abstract class WebCore extends AppCore implements WebSecurity
     public $client;
 
     /**
-     * Translations Message Keys
-     * @var array
-     * @access protected
-     */
-    protected $MSGS;
-
-    /**
      * on Construct event
      */
     protected function onConstruct()
     {
-        //set message keys
-        $this->MSGS = array();
+        parent::onConstruct();
 
         //set client object with its properties (User-Agent)
         $this->_setClientObject();
@@ -108,88 +100,6 @@ abstract class WebCore extends AppCore implements WebSecurity
         }
     }
     /* --------------------------------------------------- § -------------------------------------------------------- */
-
-    /**
-     * Send a JSON response
-     * @access protected
-     * @param string $status_code - HTTP Response code like 200, 404, 500, etc.
-     * @param mixed $payload - Payload to send, array or string.
-     * @param bool $error_type - Can be ```success, warning, info, alert, secondary```.
-     * @param mixed [string|null] $error_namespace - For Javascript event handlers.
-     */
-    protected function _sendJsonResponse($status_code = 200, $payload = null, $error_type = false, $error_namespace = null)
-    {
-        $msg_code = [
-            "200" => "OK",
-            "400" => "Bad Request",
-            "403" => "Forbidden",
-            "404" => "Not Found",
-            "405" => "Method Not Allowed",
-            "498" => "Token expired/invalid",
-            "500" => "Server Error"
-        ];
-
-        //is payload an app error?
-        if ($error_type) {
-
-            //only one error at a time
-            if (is_array($payload))
-                $payload = $payload[0];
-
-            //set warning as default error type
-            if (!is_string($error_type))
-                $error_type = "warning";
-
-            //set response struct
-            $response = [
-                "error"     => $payload,
-                "type"      => $error_type,
-                "namespace" => $error_namespace
-            ];
-        }
-        else {
-            //convert object to associative array
-            if (is_string($payload))
-                $response = ["payload" => $payload];
-            elseif (is_object($payload))
-                $response = get_object_vars($payload);
-            else
-                $response = $payload;
-        }
-
-        //if response is successful an payload is empty, append the OK message
-        if($status_code == 200 && empty($payload))
-            $response = $msg_code[$status_code];
-
-        //encode JSON
-        $content = json_encode($response, JSON_UNESCAPED_SLASHES);
-
-        //output the response
-        $this->view->disable(); //disable view output
-        $this->response->setStatusCode($status_code, $msg_code[$status_code]);
-        $this->response->setContentType('application/json'); //set JSON as Content-Type header
-        $this->response->setContent($content);
-        $this->response->send();
-        die(); //exit
-    }
-
-    /**
-     * Sends a simple text response
-     * @param  mixed [string|array] $text - Any text string
-     */
-    protected function _sendTextResponse($text = "OK"){
-
-        if(is_array($text) || is_object($text))
-            $text = json_encode($text, JSON_UNESCAPED_SLASHES);
-
-        //output the response
-        $this->view->disable(); //disable view output
-        $this->response->setStatusCode(200, "OK");
-        $this->response->setContentType('text/html');
-        $this->response->setContent($text);
-        $this->response->send();
-        die(); //exit
-    }
 
     /**
      * Redirect to given uri as GET method
@@ -305,7 +215,7 @@ abstract class WebCore extends AppCore implements WebSecurity
      * @param array $modules - An array of modules => args
      * @param string $fn - The loader function name
      */
-    protected function _loadJavascriptModules($modules = array(), $fn = self::JS_LOADER_FUNCTION)
+    protected function _loadJsModules($modules = array(), $fn = self::JS_LOADER_FUNCTION)
     {
         //skip for legacy browsers
         if($this->client->isLegacy || empty($modules))
@@ -354,27 +264,29 @@ abstract class WebCore extends AppCore implements WebSecurity
         else
             $this->trans->setLanguage($this->config->app->langs[0]);
 
-        //create a client object
-        $this->client = new \stdClass();
-        //props
-        $this->client->lang     = $this->trans->getLanguage();
-        $this->client->tokenKey = $this->security->getTokenKey();  //CSRF token key
-        $this->client->token    = $this->security->getToken();     //CSRF token
-
         //parse user agent
         $userAgent = new UserAgent($this->request->getUserAgent());
         $userAgent = $userAgent->parseUserAgent();
-        //set properties
-        $this->client->platform      = $userAgent['platform'];
-        $this->client->browser       = $userAgent['browser'];
-        $this->client->version       = $userAgent['version'];
-        $this->client->shortVersion  = $userAgent['short_version'];
-        $this->client->isMobile      = $userAgent['is_mobile'];
-        $this->client->isLegacy      = $userAgent['is_legacy'];
-        //set vars to distinguish pecific platforms
-        $this->client->isIE = ($this->client->browser == "MSIE") ? true : false;
-        //set HTTP protocol
-        $this->client->protocol = isset($_SERVER["HTTPS"]) ? "https://" : "http://";
+
+        //create a client object
+        $this->client = (object)[
+            //props
+            "lang"     => $this->trans->getLanguage(),
+            //CSRF
+            "tokenKey" => $this->security->getTokenKey(),
+            "token"    => $this->security->getToken(),
+            //UA
+            "platform"      => $userAgent['platform'],
+            "browser"       => $userAgent['browser'],
+            "version"       => $userAgent['version'],
+            "shortVersion"  => $userAgent['short_version'],
+            "isMobile"      => $userAgent['is_mobile'],
+            "isLegacy"      => $userAgent['is_legacy'],
+            //set vars to distinguish pecific platforms
+            "isIE" => ($userAgent['browser'] == "MSIE") ? true : false,
+            //set HTTP protocol
+            "protocol" => isset($_SERVER["HTTPS"]) ? "https://" : "http://"
+        ];
 
         //save in session
         $this->session->set("client", $this->client);
@@ -406,12 +318,13 @@ abstract class WebCore extends AppCore implements WebSecurity
     private function _setAppJavascriptObjectsForView()
     {
         //set javascript global objects
-        $js_app = new \stdClass();
-        $js_app->name      = $this->config->app->name;
-        $js_app->baseUrl   = $this->_baseUrl();
-        $js_app->staticUrl = $this->_staticUrl();
-        $js_app->dev       = (APP_ENVIRONMENT === "production") ? 0 : 1;
-        $js_app->version   = AppLoader::getModuleConfigProp("version");
+        $js_app = (object)[
+            "name"      => $this->config->app->name,
+            "baseUrl"   => $this->_baseUrl(),
+            "staticUrl" => $this->_staticUrl(),
+            "dev"       => (APP_ENVIRONMENT === "production") ? 0 : 1,
+            "version"   => AppLoader::getModuleConfigProp("version")
+        ];
 
         //set custom properties
         $this->setAppJavascriptProperties($js_app);

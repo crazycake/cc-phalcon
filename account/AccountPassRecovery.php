@@ -50,7 +50,7 @@ trait AccountPassRecovery
         $this->view->setVar("js_recaptcha", true); //load reCaptcha
 
         //load javascript
-        $this->_loadJavascriptModules($this->accountConfig['javascript_modules']);
+        $this->_loadJsModules($this->accountConfig['javascript_modules']);
     }
 
     /**
@@ -70,7 +70,7 @@ trait AccountPassRecovery
             $this->view->setVar("edata", $encrypted_data); //pass to view the encrypted data
 
             //load javascript
-            $this->_loadJavascriptModules($this->accountConfig['javascript_modules']);
+            $this->_loadJsModules($this->accountConfig['javascript_modules']);
         }
         catch (Exception $e) {
             $this->logger->error('AccountPass::newAction -> Error in account activation, encrypted data (' . $encrypted_data . "). Trace: " . $e->getMessage());
@@ -95,7 +95,7 @@ trait AccountPassRecovery
         //check valid reCaptcha
         if (empty($data['g-recaptcha-response']) || !$recaptcha->isValid($data['g-recaptcha-response'])) {
             //show error message
-            return $this->_sendJsonResponse(200, $this->accountConfig['trans']['recaptcha_failed'], true);
+            return $this->_sendJsonResponse(200, $this->accountConfig['trans']['recaptcha_failed'], "alert");
         }
 
         //check if user exists is a active account
@@ -113,7 +113,7 @@ trait AccountPassRecovery
         $this->flash->success(str_replace("{email}", $data['email'], $this->accountConfig['trans']['pass_mail_sent']));
 
         //send JSON response
-        $this->_sendJsonResponse(200, ["redirectUri" => "signIn"]);
+        $this->_sendJsonResponse(200, ["redirect" => "signIn"]);
     }
 
     /**
@@ -163,6 +163,6 @@ trait AccountPassRecovery
         }
 
         //send JSON response
-        $this->_sendJsonResponse(200, ["redirectUri" => "signIn"]);
+        $this->_sendJsonResponse(200, ["redirect" => "signIn"]);
     }
 }

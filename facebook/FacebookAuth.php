@@ -185,7 +185,7 @@ trait FacebookAuth
         $this->logger->error("Facebook::loginByRedirectAction -> An error ocurred: ".$exception->getMessage());
 
         if($this->request->isAjax())
-            return $this->_sendJsonResponse(200, $exception->getMessage(), true);
+            return $this->_sendJsonResponse(200, $exception->getMessage(), "alert");
 
         //set message
         $msg = $this->fbConfig['trans']['oauth_redirected']."\n".$e->getMessage();
@@ -542,7 +542,7 @@ trait FacebookAuth
 
                 //insert user
                 if (!$user->save($properties))
-                    $this->_sendJsonResponse(200, $user->filterMessages(), true);
+                    $this->_sendJsonResponse(200, $user->filterMessages(), "alert");
             }
 
             //INSERT a new facebook user
@@ -563,7 +563,7 @@ trait FacebookAuth
         catch (\Exception $e)                { $exception = $e; }
         //throw one exception type
         if ($exception) {
-            
+
             $fb_id = (isset($properties) && is_array($properties)) ? $properties["fb_id"] : "undefined";
             $this->logger->error("Facebook::__loginUserFacebook -> Exception: ".$exception->getMessage().". fb_id: ".$fb_id);
             throw new Exception($e->getMessage());

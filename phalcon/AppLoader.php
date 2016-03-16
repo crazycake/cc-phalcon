@@ -463,7 +463,8 @@ abstract class AppLoader
             if(!isset($_SERVER['HTTP_HOST']))
                 $_SERVER['HTTP_HOST'] = "127.0.0.1";
 
-            $app_base_url = (isset($_SERVER["HTTPS"]) ? "https://" : "http://").$_SERVER['HTTP_HOST'].preg_replace('@/+$@', '', dirname($_SERVER['SCRIPT_NAME'])).'/';
+            $app_base_url = (isset($_SERVER["HTTPS"]) ? "https://" : "http://").
+                              $_SERVER['HTTP_HOST'].preg_replace('@/+$@', '', dirname($_SERVER['SCRIPT_NAME'])).'/';
         }
 
         //set environment consts & self vars
