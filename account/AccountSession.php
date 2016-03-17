@@ -113,6 +113,7 @@ trait AccountSession
         if ($loggedIn())
             return true;
 
+        //for ajax request sends a forbidden warning
         if ($this->request->isAjax()) {
             $this->_sendJsonResponse(403);
         }

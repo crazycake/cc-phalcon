@@ -152,9 +152,14 @@ trait TicketManager
                 throw new Exception("S3 lib could't copy ticket code: $src_code (S3 path: $src_s3_path)");
 
             //delete old one
-            $this->s3->deleteObject($src_s3_path);
+            //$this->s3->deleteObject($src_s3_path);
 
             return true;
+        }
+        catch (\S3Exception $e) {
+            //fallback for file
+            $this->logger->error("TicketStorage::getTicket (S3 Exception) -> Error Moving QR code in S3 bucket: $src_code, err: ".$e->getMessage());
+            return false;
         }
         catch (Exception $e) {
             //fallback for file
