@@ -60,8 +60,8 @@ return array (
   array (
     0 => 'GetText.php',
     1 => 'Guzzle.php',
-    2 => 'Redis.php',
-    3 => 'Ses.php',
+    2 => 'Mailer.php',
+    3 => 'Redis.php',
     4 => 'StorageS3.php',
   ),
   'soap' => 
