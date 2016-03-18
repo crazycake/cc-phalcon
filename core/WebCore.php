@@ -27,7 +27,7 @@ abstract class WebCore extends AppCore implements WebSecurity
      * Set App Javascript Properties for global scope
      * @param object $js_app - The javascript app object reference
      */
-    abstract protected function setAppJavascriptProperties($js_app);
+    abstract protected function setAppJsProperties($js_app);
 
     /**
      * Checks Browser Support
@@ -85,7 +85,7 @@ abstract class WebCore extends AppCore implements WebSecurity
             return;
 
         //set javascript vars in view
-        $this->_setAppJavascriptObjectsForView();
+        $this->_setAppJsObjectsForView();
         //set app assets
         $this->_setAppAssets();
         //update client object property, request uri afterExecuteRoute event.
@@ -315,7 +315,7 @@ abstract class WebCore extends AppCore implements WebSecurity
      * Set javascript vars for rendering view, call child method for customization.
      * @access private
      */
-    private function _setAppJavascriptObjectsForView()
+    private function _setAppJsObjectsForView()
     {
         //set javascript global objects
         $js_app = (object)[
@@ -327,7 +327,7 @@ abstract class WebCore extends AppCore implements WebSecurity
         ];
 
         //set custom properties
-        $this->setAppJavascriptProperties($js_app);
+        $this->setAppJsProperties($js_app);
 
         //set translations?
         if(class_exists("TranslationsController"))

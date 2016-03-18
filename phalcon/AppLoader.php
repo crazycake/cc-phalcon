@@ -367,8 +367,7 @@ abstract class AppLoader
         $core_libs = self::getModuleConfigProp("core");
 
         //2.- Register any static libs (like core)
-        if($core_libs)
-            $this->_loadStaticLibs($loader, $core_libs);
+        $this->_loadStaticLibs($loader, $core_libs);
 
         //3.- Composer libs auto loader
         if (!is_file(COMPOSER_PATH.'vendor/autoload.php'))
@@ -394,6 +393,9 @@ abstract class AppLoader
     {
         if(is_null($loader))
             return;
+
+        if(!is_array($packages))
+            $packages = [];
 
         //merge packages with defaults
         $packages = array_merge(self::$CORE_DEFAULT_PACKAGES, $packages);
