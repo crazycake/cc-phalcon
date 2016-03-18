@@ -198,7 +198,7 @@ abstract class AppCore extends Controller
             //get API key header name
             $api_key_header_name  = str_replace("_", "-", \CrazyCake\Core\WsCore::HEADER_API_KEY);
             $api_key_header_value = AppLoader::getModuleConfigProp("key", "api");
-            $options["headers"]   = [ $api_key_header_name => $api_key_header_value];
+            $options["headers"]   = [$api_key_header_name => $api_key_header_value];
         }
 
         //log asyn request
