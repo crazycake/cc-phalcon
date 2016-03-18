@@ -25,7 +25,7 @@ trait TicketManager
      * Config var
      * @var array
      */
-    protected $ticket_manager;
+    protected $ticket_manager_conf;
 
     /**
      * AWS S3 helper
@@ -69,7 +69,7 @@ trait TicketManager
     public function initTicketManager($conf = array())
     {
         //set manager
-        $this->ticket_manager = $conf;
+        $this->ticket_manager_conf = $conf;
 
         //instance library
         $this->s3 = new StorageS3($this->config->app->aws->accessKey,
@@ -92,7 +92,7 @@ trait TicketManager
         try {
 
             //validates that ticket belongs to user, get anonymous function from settings
-            $getUserTicket = $this->ticket_manager["getUserTicketFunction"];
+            $getUserTicket = $this->ticket_manager_conf["getUserTicketFunction"];
 
             if(!is_callable($getUserTicket))
                 throw new Exception("Invalid 'get user ticket' function");
@@ -131,7 +131,7 @@ trait TicketManager
     {
         try {
             //validates that ticket belongs to user, get anonymous function from settings
-            $getUserTicket = $this->ticket_manager["getUserTicketFunction"];
+            $getUserTicket = $this->ticket_manager_conf["getUserTicketFunction"];
 
             if(!is_callable($getUserTicket))
                 throw new Exception("Invalid 'get user ticket' function");
@@ -176,7 +176,7 @@ trait TicketManager
     public function generateQRForUserTickets($user_id = 0, $userTickets = array())
     {
         //set qr settings
-        $this->qr_settings = $this->ticket_manager['qr_settings'];
+        $this->qr_settings = $this->ticket_manager_conf['qr_settings'];
 
         //instance qr maker with log & cache paths
         $qr_maker = new QRMaker(APP_PATH."logs/", APP_PATH."cache/");
@@ -195,7 +195,7 @@ trait TicketManager
 
                 //set configs
                 $qr_filename = $ticket->code.".png";
-                $qr_savepath = $this->ticket_manager['local_temp_path'].$qr_filename;
+                $qr_savepath = $this->ticket_manager_conf['local_temp_path'].$qr_filename;
                 $s3_path     = self::$DEFAULT_S3_URI."/".$user_id."/".$qr_filename;
 
                 //set extended qr data
@@ -276,7 +276,7 @@ trait TicketManager
         //get user model class
         $users_class = $this->_getModuleClass('users');
         //get model class
-        $getObjectsForInvoice = $this->ticket_manager["getObjectsForInvoiceFunction"];
+        $getObjectsForInvoice = $this->ticket_manager_conf["getObjectsForInvoiceFunction"];
 
         if(!is_callable($getObjectsForInvoice))
             throw new Exception("Invalid getObjectsForInvoice function");
@@ -293,17 +293,17 @@ trait TicketManager
 
         //set file paths
         $pdf_filename = $this->pdf_settings["invoice_name"].".pdf";
-        $output_path  = $this->ticket_manager['local_temp_path'].$pdf_filename;
+        $output_path  = $this->ticket_manager_conf['local_temp_path'].$pdf_filename;
 
         //set extended pdf data
         $this->pdf_settings["data_date"]     = DateHelper::getTranslatedCurrentDate();
         $this->pdf_settings["data_user"]     = $user;
         $this->pdf_settings["data_checkout"] = $checkout;
         $this->pdf_settings["data_objects"]  = $objects;
-        $this->pdf_settings["data_storage"]  = $this->ticket_manager['local_temp_path'];
+        $this->pdf_settings["data_storage"]  = $this->ticket_manager_conf['local_temp_path'];
 
         //get template
-        $html_raw = $this->simpleView->render($this->ticket_manager['ticket_pdf_template_view'], $this->pdf_settings);
+        $html_raw = $this->simpleView->render($this->ticket_manager_conf['ticket_pdf_template_view'], $this->pdf_settings);
 
         //PDF generator (this is a heavy task for quick client response)
         $binary = (new PdfHelper())->generatePdfFileFromHtml($html_raw, $output_path, true);
@@ -342,7 +342,7 @@ trait TicketManager
 
             //set configs
             $qr_filename = $ticket->code.".png";
-            $qr_savepath = $this->ticket_manager['local_temp_path'].$qr_filename;
+            $qr_savepath = $this->ticket_manager_conf['local_temp_path'].$qr_filename;
             $s3_path     = self::$DEFAULT_S3_URI."/".$user_id."/".$qr_filename;
 
             //get image in S3
@@ -364,7 +364,7 @@ trait TicketManager
     private function _deleteTempFiles($path = null, $del_folder = false)
     {
         if(is_null($path))
-            $path = $this->ticket_manager['local_temp_path'];
+            $path = $this->ticket_manager_conf['local_temp_path'];
 
         foreach (self::$MIME_TYPES as $key => $value) {
             array_map('unlink', glob( "$path*.$key"));
