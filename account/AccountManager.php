@@ -16,11 +16,6 @@ use Phalcon\Exception;
  */
 trait AccountManager
 {
-	/**
-     * Set trait configurations
-     */
-    abstract public function setConfigurations();
-
     /**
      * Before update user profile Listener
      * @param object $user - The user object
@@ -32,10 +27,21 @@ trait AccountManager
      * Config var
      * @var array
      */
-    public $accountConfig;
+    public $account_manager_conf;
+
+    /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
-     * Initializer
+     * This method must be call in constructor parent class
+     * @param array $conf - The config array
+     */
+    public function initAccountManager($conf = array())
+    {
+        $this->account_manager_conf = $conf;
+    }
+
+    /**
+     * Phalcon Initializer Event
      */
     protected function initialize()
     {
@@ -76,7 +82,7 @@ trait AccountManager
             $this->_sendJsonResponse(404);
 
         //get settings params
-        $setting_params = isset($this->accountConfig['profile_request_params']) ? $this->accountConfig['profile_request_params'] : array();
+        $setting_params = isset($this->account_manager_conf['profile_request_params']) ? $this->account_manager_conf['profile_request_params'] : array();
         //validate and filter request params data, second params are the required fields
         $data = $this->_handleRequestParams(array_merge($default_params, $setting_params));
 
@@ -85,21 +91,21 @@ trait AccountManager
         try {
             //check for password
             if(!empty($data['pass']) && empty($data['current_pass']))
-                throw new Exception($this->accountConfig['trans']['current_pass_empty']);
+                throw new Exception($this->account_manager_conf['trans']['current_pass_empty']);
 
             //changed pass validation
             if(!empty($data['pass']) && !empty($data['current_pass'])) {
 
-                if(strlen($data['pass']) < $this->accountConfig['profile_pass_min_length'])
-                    throw new Exception($this->accountConfig['trans']['pass_too_short']);
+                if(strlen($data['pass']) < $this->account_manager_conf['profile_pass_min_length'])
+                    throw new Exception($this->account_manager_conf['trans']['pass_too_short']);
 
                 //check current pass
                 if(!$this->security->checkHash($data['current_pass'], $user->pass))
-                    throw new Exception($this->accountConfig['trans']['pass_dont_match']);
+                    throw new Exception($this->account_manager_conf['trans']['pass_dont_match']);
 
                 //check pass is diffetent to current
                 if($this->security->checkHash($data['pass'], $user->pass))
-                    throw new Exception($this->accountConfig['trans']['new_pass_equals']);
+                    throw new Exception($this->account_manager_conf['trans']['new_pass_equals']);
 
                 //ok, update pass
                 $updating_data["pass"] = $this->security->hash($data['pass']);
@@ -110,7 +116,7 @@ trait AccountManager
 
                 //validate name
                 if(strcspn($data['first_name'], '0123456789') != strlen($data['first_name']))
-                    throw new Exception($this->accountConfig['trans']['invalid_names']);
+                    throw new Exception($this->account_manager_conf['trans']['invalid_names']);
 
                 //format to capitalized name
                 $updating_data["first_name"] = mb_convert_case($data["first_name"], MB_CASE_TITLE, 'UTF-8');
@@ -120,7 +126,7 @@ trait AccountManager
 
                 //validate name
                 if(strcspn($data['last_name'], '0123456789') != strlen($data['last_name']))
-                    throw new Exception($this->accountConfig['trans']['invalid_names']);
+                    throw new Exception($this->account_manager_conf['trans']['invalid_names']);
 
                 //format to capitalized name
                 $updating_data["last_name"] = mb_convert_case($data["last_name"], MB_CASE_TITLE, 'UTF-8');
@@ -152,7 +158,7 @@ trait AccountManager
         //set paylaod
         $payload = [
             "user" => $updating_data,
-            "msg"  => $this->accountConfig['trans']['profile_saved']
+            "msg"  => $this->account_manager_conf['trans']['profile_saved']
         ];
         //send response
         $this->_sendJsonResponse(200, $payload);

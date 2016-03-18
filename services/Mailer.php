@@ -1,6 +1,6 @@
 <?php
 /**
- * Simple Email Service Trait
+ * Mailer - Email Service Trait
  * Requires a Frontend or Backend Module with CoreController
  * Requires Emogrifier & Mandrill class (composer)
  * Requires Users & UserTokens models
@@ -17,18 +17,24 @@ use Mandrill;
 /**
  * Simple Email Service Trait
  */
-trait Ses
+trait Mailer
 {
-	/**
-     * abstract required methods
-     */
-    abstract public function setConfigurations();
-
 	/**
 	 * Config var
 	 * @var array
 	 */
-	public $sesConfig;
+	public $mailer_conf;
+
+    /* --------------------------------------------------- § -------------------------------------------------------- */
+
+    /**
+     * This method must be call in constructor parent class
+     * @param array $conf - The config array
+     */
+    public function initMailer($conf = array())
+    {
+        $this->mailer_conf = $conf;
+    }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
@@ -44,7 +50,7 @@ trait Ses
             'message' => 'string'
         ]);
 
-        $data["subject"] = "Contacto ".$this->sesConfig['appName'];
+        $data["subject"] = "Contacto ".$this->mailer_conf['appName'];
 
         //send contact email
         $this->_sendMailMessage('sendSystemMail', $data);
@@ -65,8 +71,8 @@ trait Ses
     		return false;
 
         //set message properties
-        $subject = isset($message_data["subject"]) ? $message_data["subject"] : $this->sesConfig['appName'];
-        $to      = isset($message_data["to"]) ? $message_data["to"] : $this->sesConfig['contactEmail'];
+        $subject = isset($message_data["subject"]) ? $message_data["subject"] : $this->mailer_conf['appName'];
+        $to      = isset($message_data["to"]) ? $message_data["to"] : $this->mailer_conf['contactEmail'];
         $tags    = array('contact', 'support');
 
         //add prefix "data" to each element in array
@@ -125,15 +131,15 @@ trait Ses
         //create flux uri
         $uri = "auth/activation/".$token->encrypted;
         //set properties
-        $this->sesConfig["data_user"]  = $user;
-        $this->sesConfig["data_email"] = $user->email;
-        $this->sesConfig["data_url"]   = $this->_baseUrl($uri);
+        $this->mailer_conf["data_user"]  = $user;
+        $this->mailer_conf["data_email"] = $user->email;
+        $this->mailer_conf["data_url"]   = $this->_baseUrl($uri);
 
         //get HTML
-        $html_raw = $this->_getInlineStyledHtml("activation", $this->sesConfig);
+        $html_raw = $this->_getInlineStyledHtml("activation", $this->mailer_conf);
         //set message properties
-        $subject = $this->sesConfig['trans']['subject_activation'];
-        $to      = $this->sesConfig["data_email"];
+        $subject = $this->mailer_conf['trans']['subject_activation'];
+        $to      = $this->mailer_conf["data_email"];
         $tags    = array('account', 'activation');
         //sends async email
         return $this->_sendMessage($html_raw, $subject, $to, $tags);
@@ -164,16 +170,16 @@ trait Ses
         //create flux uri
         $uri = "password/new/".$token->encrypted;
         //set rendered view
-        $this->sesConfig["data_user"]  = $user;
-        $this->sesConfig["data_email"] = $user->email;
-        $this->sesConfig["data_url"]   = $this->_baseUrl($uri);
-        $this->sesConfig["data_token_expiration"] = $tokens_class::$TOKEN_EXPIRES_THRESHOLD;
+        $this->mailer_conf["data_user"]  = $user;
+        $this->mailer_conf["data_email"] = $user->email;
+        $this->mailer_conf["data_url"]   = $this->_baseUrl($uri);
+        $this->mailer_conf["data_token_expiration"] = $tokens_class::$TOKEN_EXPIRES_THRESHOLD;
 
         //get HTML
-        $html_raw = $this->_getInlineStyledHtml("passwordRecovery", $this->sesConfig);
+        $html_raw = $this->_getInlineStyledHtml("passwordRecovery", $this->mailer_conf);
         //set message properties
-        $subject = $this->sesConfig['trans']['subject_password'];
-        $to      = $this->sesConfig["data_email"];
+        $subject = $this->mailer_conf['trans']['subject_password'];
+        $to      = $this->mailer_conf["data_email"];
         $tags    = array('account', 'password', 'recovery');
         //sends async email
         return $this->_sendMessage($html_raw, $subject, $to, $tags);
@@ -189,7 +195,7 @@ trait Ses
     public function _getInlineStyledHtml($mail, $data)
     {
         //css file
-        $cssFile = $this->sesConfig['cssFile'];
+        $cssFile = $this->mailer_conf['cssFile'];
 
         //get the style file
         $html = $this->simpleView->render("mails/$mail", $data);
@@ -233,14 +239,14 @@ trait Ses
 
         //set default subject
         if (empty($subject))
-            $subject = $this->sesConfig['appName'];
+            $subject = $this->mailer_conf['appName'];
 
         //Send message email!
         $message = [
             'html'       => $html_raw,
             'subject'    => $subject,
-            'from_email' => $this->sesConfig['senderEmail'],
-            'from_name'  => $this->sesConfig['appName'],
+            'from_email' => $this->mailer_conf['senderEmail'],
+            'from_name'  => $this->mailer_conf['appName'],
             'to'         => $to,
             'tags'       => $tags
             //'inline_css' => true //same as __getInlineStyledHtml method. (generates more delay time)
@@ -255,7 +261,7 @@ trait Ses
 
         try {
         	//mandrill lib instance
-        	$mandrill = new Mandrill($this->sesConfig['mandrillKey']);
+        	$mandrill = new Mandrill($this->mailer_conf['mandrillKey']);
             $response = $mandrill->messages->send($message, $async);
         }
         catch (Mandrill_Error $e) {
@@ -274,10 +280,10 @@ trait Ses
      */
     private function _handleConfigurations()
     {
-        if (!isset($this->sesConfig['appName']) || !isset($this->sesConfig['mandrillKey']) || !isset($this->sesConfig['cssFile']))
+        if (!isset($this->mailer_conf['appName']) || !isset($this->mailer_conf['mandrillKey']) || !isset($this->mailer_conf['cssFile']))
             throw new Exception("Ses::_handleConfigurations -> SES configuration properties are not defined. (appName, mandrillKey, cssFile)");
 
-        if (!isset($this->sesConfig['senderEmail']) || !isset($this->sesConfig['contactEmail']))
+        if (!isset($this->mailer_conf['senderEmail']) || !isset($this->mailer_conf['contactEmail']))
         	throw new Exception("Ses::_handleConfigurations -> SES sender & contact emails are not defined.");
     }
 }

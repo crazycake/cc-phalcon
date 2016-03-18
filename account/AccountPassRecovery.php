@@ -18,18 +18,24 @@ use CrazyCake\Utils\ReCaptcha;
 trait AccountPassRecovery
 {
     /**
-     * Set trait configurations
-     */
-    abstract public function setConfigurations();
-
-    /**
      * Config var
      * @var array
      */
-    public $accountConfig;
+    public $account_pass_recovery_conf;
+
+    /* --------------------------------------------------- § -------------------------------------------------------- */
+    
+    /**
+     * This method must be call in constructor parent class
+     * @param array $conf - The config array
+     */
+    public function initAccountPassRecovery($conf = array())
+    {
+        $this->account_pass_recovery_conf = $conf;
+    }
 
     /**
-     * Initializer
+     * Phalcon Initializer Event
      */
     protected function initialize()
     {
@@ -46,11 +52,11 @@ trait AccountPassRecovery
     public function recoveryAction()
     {
         //view vars
-        $this->view->setVar("html_title", $this->accountConfig['trans']['title_recovery']);
+        $this->view->setVar("html_title", $this->account_pass_recovery_conf['trans']['title_recovery']);
         $this->view->setVar("js_recaptcha", true); //load reCaptcha
 
         //load javascript
-        $this->_loadJsModules($this->accountConfig['javascript_modules']);
+        $this->_loadJsModules($this->account_pass_recovery_conf['javascript_modules']);
     }
 
     /**
@@ -66,11 +72,11 @@ trait AccountPassRecovery
             $tokens_class::handleUserTokenValidation($encrypted_data);
 
             //view vars
-            $this->view->setVar("html_title", $this->accountConfig['trans']['title_create_pass']);
+            $this->view->setVar("html_title", $this->account_pass_recovery_conf['trans']['title_create_pass']);
             $this->view->setVar("edata", $encrypted_data); //pass to view the encrypted data
 
             //load javascript
-            $this->_loadJsModules($this->accountConfig['javascript_modules']);
+            $this->_loadJsModules($this->account_pass_recovery_conf['javascript_modules']);
         }
         catch (Exception $e) {
             $this->logger->error('AccountPass::newAction -> Error in account activation, encrypted data (' . $encrypted_data . "). Trace: " . $e->getMessage());
@@ -95,7 +101,7 @@ trait AccountPassRecovery
         //check valid reCaptcha
         if (empty($data['g-recaptcha-response']) || !$recaptcha->isValid($data['g-recaptcha-response'])) {
             //show error message
-            return $this->_sendJsonResponse(200, $this->accountConfig['trans']['recaptcha_failed'], "alert");
+            return $this->_sendJsonResponse(200, $this->account_pass_recovery_conf['trans']['recaptcha_failed'], "alert");
         }
 
         //check if user exists is a active account
@@ -104,13 +110,13 @@ trait AccountPassRecovery
 
         //if user not exists, send message
         if (!$user)
-            $this->_sendJsonResponse(200, $this->accountConfig['trans']['account_not_found'], 'alert');
+            $this->_sendJsonResponse(200, $this->account_pass_recovery_conf['trans']['account_not_found'], 'alert');
 
         //send email message with password recovery steps
-        $this->_sendMailMessage($this->accountConfig['mailer_pass_recovery_method'], $user->id);
+        $this->_sendMailMessage($this->account_pass_recovery_conf['mailer_pass_recovery_method'], $user->id);
 
         //set a flash message to show on account controller
-        $this->flash->success(str_replace("{email}", $data['email'], $this->accountConfig['trans']['pass_mail_sent']));
+        $this->flash->success(str_replace("{email}", $data['email'], $this->account_pass_recovery_conf['trans']['pass_mail_sent']));
 
         //send JSON response
         $this->_sendJsonResponse(200, ["redirect" => "signIn"]);
@@ -152,7 +158,7 @@ trait AccountPassRecovery
             $token->delete();
 
             //set a flash message to show on account controller
-            $this->flash->success($this->accountConfig['trans']['new_pass_saved']);
+            $this->flash->success($this->account_pass_recovery_conf['trans']['new_pass_saved']);
 
             //abstract parent controller
             $this->_setUserSessionAsLoggedIn($user->id);

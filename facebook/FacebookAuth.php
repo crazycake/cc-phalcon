@@ -26,11 +26,6 @@ use CrazyCake\Utils\DateHelper;
 trait FacebookAuth
 {
     /**
-     * Set Trait configurations
-     */
-    abstract public function setConfigurations();
-
-    /**
      * Listener - On success auth
      * @param object $route - The app route object
      * @param object $response - The received response
@@ -47,7 +42,7 @@ trait FacebookAuth
      * Config var
      * @var array
      */
-    public $fbConfig;
+    public $facebook_auth_conf;
 
     /**
      * Lib var
@@ -72,16 +67,22 @@ trait FacebookAuth
 
     /**
      * This method must be call in constructor parent class
+     * @param array $conf - The config array
      */
-    public function initFacebookSDK()
+    public function initFacebookAuth($conf = array())
     {
+        $this->facebook_auth_conf = $conf;
+
         //set Facebook Object
-        $this->fb = new \Facebook\Facebook([
-            'app_id'     => $this->config->app->facebook->appID,
-            'app_secret' => $this->config->app->facebook->appKey,
-            //api version
-            'default_graph_version' => 'v2.5'
-        ]);
+        if(is_null($this->fb)) {
+
+            $this->fb = new \Facebook\Facebook([
+                'app_id'     => $this->config->app->facebook->appID,
+                'app_secret' => $this->config->app->facebook->appKey,
+                //api version
+                'default_graph_version' => 'v2.5'
+            ]);
+        }
     }
 
     /**
@@ -135,10 +136,10 @@ trait FacebookAuth
         catch (\Exception $e)                { $exception = $e; }
 
         //an exception ocurred
-        $msg = isset($exception) ? $exception->getMessage() : $this->fbConfig['trans']['oauth_redirected'];
+        $msg = isset($exception) ? $exception->getMessage() : $this->facebook_auth_conf['trans']['oauth_redirected'];
 
         if($exception instanceof FacebookResponseException)
-            $msg = $this->fbConfig['trans']['oauth_perms'];
+            $msg = $this->facebook_auth_conf['trans']['oauth_perms'];
 
         return $this->_sendJsonResponse(200, $msg, true);
     }
@@ -188,7 +189,7 @@ trait FacebookAuth
             return $this->_sendJsonResponse(200, $exception->getMessage(), "alert");
 
         //set message
-        $msg = $this->fbConfig['trans']['oauth_redirected']."\n".$e->getMessage();
+        $msg = $this->facebook_auth_conf['trans']['oauth_redirected']."\n".$e->getMessage();
         $this->view->setVar("error_message", $msg);
         $this->dispatcher->forward(["controller" => "errors", "action" => "internal"]);
     }
@@ -484,13 +485,13 @@ trait FacebookAuth
 
             //validate fb session properties
             if(!$properties)
-                throw new Exception($this->fbConfig['trans']['session_error']);
+                throw new Exception($this->facebook_auth_conf['trans']['session_error']);
             //print_r($properties);exit;
 
             //email validation (use TRUE for debug)
             if (empty($properties['email']) || !filter_var($properties['email'], FILTER_VALIDATE_EMAIL)) {
                 $this->logger->error("Facebook::__loginUserFacebook() -> Facebook Session (".$properties["fb_id"].") invalid email: ".$properties['email']);
-                throw new Exception(str_replace("{email}", $properties['email'], $this->fbConfig['trans']['invalid_email']));
+                throw new Exception(str_replace("{email}", $properties['email'], $this->facebook_auth_conf['trans']['invalid_email']));
             }
 
             //OK, check if user exists in Users Facebook table & get session data
@@ -500,13 +501,13 @@ trait FacebookAuth
             //check if user is logged, have a FB user, and he is attempting to login facebook with another account
             if ($user_session && $user_session["fb_id"] && $user_session["fb_id"] != $properties["fb_id"]) {
                 $this->logger->error("Facebook::__loginUserFacebook() -> App Session fb_id (".$user_session["fb_id"].") & sdk session (".$properties["fb_id"].") data doesn't match.");
-                throw new Exception($this->fbConfig['trans']['session_switched']);
+                throw new Exception($this->facebook_auth_conf['trans']['session_switched']);
             }
 
             //check user is logged in, don't a have a FB user and the logged in user has another user id.
             if ($user_session && $user_fb && $user_fb->user_id != $user_session["id"]) {
                 $this->logger->error("Facebook::__loginUserFacebook() -> App Session fb_id (".$user_session["fb_id"].") & sdk session (".$properties["fb_id"].") data doesn't match.");
-                throw new Exception($this->fbConfig['trans']['account_switched']);
+                throw new Exception($this->facebook_auth_conf['trans']['account_switched']);
             }
 
             //check if user has already a account registered by email
@@ -517,7 +518,7 @@ trait FacebookAuth
 
                 //disabled account
                 if ($user->account_flag == 'disabled')
-                    throw new Exception($this->fbConfig['trans']['account_disabled']);
+                    throw new Exception($this->facebook_auth_conf['trans']['account_disabled']);
 
                 //update user flag if account was pending, or if account is disabled show a warning
                 if ($user->account_flag == 'pending')
@@ -712,7 +713,7 @@ trait FacebookAuth
             $user = $users_class::getObjectById($user_id);
             $user->delete();
             //raise an error
-            throw new Exception($this->fbConfig['trans']['session_error']);
+            throw new Exception($this->facebook_auth_conf['trans']['session_error']);
         }
 
         return $user_fb;

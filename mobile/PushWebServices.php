@@ -21,7 +21,7 @@ trait PushWebServices
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
-     * Constructor Event
+     * Phalcon Constructor Event
      */
     protected function onConstruct()
     {
@@ -32,6 +32,8 @@ trait PushWebServices
         $this->CODES['3600'] = "push notification error";
         $this->CODES['3601'] = "invalid service";
     }
+
+    /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
      * (POST) Subscribe action

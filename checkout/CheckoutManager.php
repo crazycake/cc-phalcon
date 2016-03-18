@@ -19,11 +19,6 @@ use CrazyCake\Utils\FormHelper;
 trait CheckoutManager
 {
     /**
-     * Set Trait configurations
-     */
-    abstract public function setConfigurations();
-
-    /**
      * Listener - Before Inster a new Buy Order record
      * @param object $checkout - The checkout object
      */
@@ -46,10 +41,21 @@ trait CheckoutManager
      * Config var
      * @var array
      */
-    public $checkoutConfig;
+    public $checkout_manager_conf;
+
+    /* --------------------------------------------------- § -------------------------------------------------------- */
+    
+    /**
+     * This method must be call in constructor parent class
+     * @param array $conf - The config array
+     */
+    public function initCheckoutManager($conf = array())
+    {
+        $this->checkout_manager_conf = $conf;
+    }
 
     /**
-     * Initializer
+     * Phalcon Initializer Event
      */
     protected function initialize()
     {
@@ -63,7 +69,7 @@ trait CheckoutManager
         if(!$this->_checkUserIsLoggedIn()) {
 
             //set a flash message for non authenticated users
-            $this->flash->notice($this->checkoutConfig["trans"]["notice_auth"]);
+            $this->flash->notice($this->checkout_manager_conf["trans"]["notice_auth"]);
             //if not logged In, set this URI to redirected after logIn
             $this->_setSessionRedirectionOnLoggedIn();
         }
@@ -97,7 +103,7 @@ trait CheckoutManager
 
             //check if an error occurred
             if(!$checkoutOrm)
-                throw new Exception($this->checkoutConfig["trans"]["error_unexpected"]);
+                throw new Exception($this->checkout_manager_conf["trans"]["error_unexpected"]);
 
             //set buy order
             $checkout->buy_order = $checkoutOrm->buy_order;
@@ -275,10 +281,10 @@ trait CheckoutManager
         $this->successCheckout($checkout);
 
         //set flash message
-        $this->flash->success($this->checkoutConfig["trans"]["success_checkout"]);
+        $this->flash->success($this->checkout_manager_conf["trans"]["success_checkout"]);
 
         //redirect
-        if(!$this->checkoutConfig["debug"])
+        if(!$this->checkout_manager_conf["debug"])
             $this->_redirectTo("account");
         else
             echo "CheckoutConfig Debug Mode On...";
@@ -312,7 +318,7 @@ trait CheckoutManager
 
         //increase max item allowed
         if($checkoutType == "paid") {
-            $checkoutMax = $this->checkoutConfig["max_per_item_allowed"];
+            $checkoutMax = $this->checkout_manager_conf["max_per_item_allowed"];
         }
 
         //check for last used invoice email
@@ -341,11 +347,11 @@ trait CheckoutManager
 
         if(empty($objectsJs)) {
             foreach ($objects as $obj)
-                $objectsJs[] = $obj->toArray($this->checkoutConfig["object_properties"]);
+                $objectsJs[] = $obj->toArray($this->checkout_manager_conf["object_properties"]);
         }
 
         //load JS modules
-        $js_modules = $this->checkoutConfig["js_modules"];
+        $js_modules = $this->checkout_manager_conf["js_modules"];
 
         $this->_loadJsModules(array_merge([
             "$js_modules[0]" => [
@@ -395,7 +401,7 @@ trait CheckoutManager
         $checkout->categories    = explode(",", $data["categories"]);
         $checkout->gateway       = $data["gateway"];
         $checkout->invoice_email = $data["invoiceEmail"];
-        $checkout->currency      = $this->checkoutConfig["default_currency"];
+        $checkout->currency      = $this->checkout_manager_conf["default_currency"];
         $checkout->objects       = [];
         $checkout->amount        = 0;
 
@@ -423,8 +429,9 @@ trait CheckoutManager
 
             //check that object is in stock (also validates object exists)
             if(!$users_checkouts_objects_class::validateObjectStock($class_name, $object_id, $q)) {
+
                 $this->logger->error("CheckoutManager::_parseCheckoutObjects -> No stock for object '$class_name' ID: $object_id, q: $q.");
-                throw new Exception(str_replace("{name}", $object->name, $this->checkoutConfig["trans"]["error_no_stock"]));
+                throw new Exception(str_replace("{name}", $object->name, $this->checkout_manager_conf["trans"]["error_no_stock"]));
             }
 
             //append object class
@@ -442,11 +449,11 @@ trait CheckoutManager
 
         //weird error, no checkout objects
         if(empty($checkout->objects))
-            throw new Exception($this->checkoutConfig["trans"]["error_unexpected"]);
+            throw new Exception($this->checkout_manager_conf["trans"]["error_unexpected"]);
 
         //check max objects allowed
-        if($totalQ > $this->checkoutConfig["max_user_acquisition"])
-            throw new Exception($this->checkoutConfig["trans"]["error_max_total"]);
+        if($totalQ > $this->checkout_manager_conf["max_user_acquisition"])
+            throw new Exception(str_replace("{num}", $this->checkout_manager_conf["max_user_acquisition"], $this->checkout_manager_conf["trans"]["error_max_total"]));
 
         //set objectsClassName
         $checkout->objectsClasses = $classes;

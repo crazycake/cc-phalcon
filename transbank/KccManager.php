@@ -22,11 +22,6 @@ trait KccManager
     /* required functions */
 
     /**
-     * Set Trait configurations
-     */
-    abstract public function setConfigurations();
-
-    /**
      * Listener - Before render the success page
      * @param object $checkout - The checkout object reference
      */
@@ -44,28 +39,30 @@ trait KccManager
      * Config var
      * @var array
      */
-    public $kccConfig;
+    public $kcc_manager_conf;
 
     /**
      * Payment types
      * @var array
      */
-    public $paymentTypes;
+    public $kcc_payment_types;
 
     /**
-     * Initializer
+     * This method must be call in constructor parent class
+     * @param array $conf - The config array
      */
-    protected function initialize()
+    protected function initKccManager($conf = array())
     {
-        parent::initialize();
+        //set conf
+        $this->kcc_manager_conf = $conf;
 
         //set payment types
-        $this->paymentTypes = [
-            "VN" => ['credit', $this->trans->_("Crédito"), $this->trans->_("Sin Cuotas"), "0"],
-            "VC" => ['credit', $this->trans->_("Crédito"), $this->trans->_("Cuotas normales"), "4-48"],
-            "SI" => ['credit', $this->trans->_("Crédito"), $this->trans->_("Sin interés"), "3"],
+        $this->kcc_payment_types = [
+            "VN" => ['credit', $this->trans->_("Crédito"),  $this->trans->_("Sin Cuotas"), "0"],
+            "VC" => ['credit', $this->trans->_("Crédito"),  $this->trans->_("Cuotas normales"), "4-48"],
+            "SI" => ['credit', $this->trans->_("Crédito"),  $this->trans->_("Sin interés"), "3"],
             "S2" => ['credit', $this->trans->_("Crédito"),  $this->trans->_("Sin interés"), "2"],
-            "CI" => ['credit', $this->trans->_("Crédito"), $this->trans->_("Cuotas Comercio"), $this->trans->_("Número no definido")],
+            "CI" => ['credit', $this->trans->_("Crédito"),  $this->trans->_("Cuotas Comercio"), $this->trans->_("Número no definido")],
             "VD" => ['debit', $this->trans->_("Redcompra"), $this->trans->_("Débito"), "0"]
         ];
     }
@@ -80,9 +77,9 @@ trait KccManager
         //set post input hiddens
         $inputs = [
             //set kcc params data (empty params will be set later when generating an order_buy)
-            "TBK_URL_PAGO"         => $this->_baseUrl($this->kccConfig['paymentCgiUri']), //Payment URI location
-            "TBK_URL_EXITO"        => $this->_baseUrl($this->kccConfig['successUri']),    //Success page
-            "TBK_URL_FRACASO"      => $this->_baseUrl($this->kccConfig['failedUri']),     //Failure page
+            "TBK_URL_PAGO"         => $this->_baseUrl($this->kcc_manager_conf['paymentCgiUri']), //Payment URI location
+            "TBK_URL_EXITO"        => $this->_baseUrl($this->kcc_manager_conf['successUri']),    //Success page
+            "TBK_URL_FRACASO"      => $this->_baseUrl($this->kcc_manager_conf['failedUri']),     //Failure page
             "TBK_TIPO_TRANSACCION" => "TR_NORMAL",
             //dynamic inputs
             "TBK_ID_SESION"        => sha1(uniqid().microtime()),
@@ -227,7 +224,7 @@ trait KccManager
             $this->onBeforeRenderSuccessPage($checkout);
 
             //set flash message
-            $this->flash->success($this->kccConfig["trans"]["success_trx"]);
+            $this->flash->success($this->kcc_manager_conf["trans"]["success_trx"]);
 
             //set view vars
             $this->view->setVar("webpay", $params);
@@ -416,10 +413,10 @@ trait KccManager
             $params["TBK_DATE_FORMATO"] = DateHelper::getTranslatedDateTime(null, $date[0], $date[1], implode(":", $time));
 
             //payment type
-            if(isset($this->paymentTypes[$params["TBK_TIPO_PAGO"]])) {
+            if(isset($this->kcc_payment_types[$params["TBK_TIPO_PAGO"]])) {
 
                 $type = $params["TBK_TIPO_PAGO"];
-                $params["TBK_TIPO_PAGO"] = $this->paymentTypes[$type];
+                $params["TBK_TIPO_PAGO"] = $this->kcc_payment_types[$type];
                 //caso especial para cuotas VC
                 if($type == "VC")
                     $params["TBK_TIPO_PAGO"][3] = $params["TBK_NUMERO_CUOTAS"];

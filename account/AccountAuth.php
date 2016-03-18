@@ -18,11 +18,6 @@ use CrazyCake\Utils\ReCaptcha;
  */
 trait AccountAuth
 {
-	/**
-     * Set Trait Configurations
-     */
-    abstract public function setConfigurations();
-
     /**
      * Before Render SignIn View Listener
      */
@@ -37,7 +32,18 @@ trait AccountAuth
      * Config var
      * @var array
      */
-    public $accountConfig;
+    public $account_auth_conf;
+
+    /* --------------------------------------------------- § -------------------------------------------------------- */
+
+    /**
+     * This method must be call in constructor parent class
+     * @param array $conf - The config array
+     */
+    public function initAccountAuth($conf = array())
+    {
+        $this->account_auth_conf = $conf;
+    }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
@@ -50,9 +56,9 @@ trait AccountAuth
         $this->_redirectToAccount(true);
 
         //view vars
-        $this->view->setVar("html_title", $this->accountConfig['trans']['title_sign_in']);
+        $this->view->setVar("html_title", $this->account_auth_conf['trans']['title_sign_in']);
         //load js reCaptcha?
-        $this->view->setVar("js_recaptcha", $this->accountConfig['js_recaptcha']);
+        $this->view->setVar("js_recaptcha", $this->account_auth_conf['js_recaptcha']);
 
         //call abstract method
         $this->beforeRenderSignInView();
@@ -67,7 +73,7 @@ trait AccountAuth
         $this->_redirectToAccount(true);
 
         //view vars
-        $this->view->setVar("html_title", $this->accountConfig['trans']['title_sign_up']);
+        $this->view->setVar("html_title", $this->account_auth_conf['trans']['title_sign_up']);
 
         //check sign_up session data for auto completion field
         $signup_session = $this->_getSessionObjects("signup_session");
@@ -75,7 +81,7 @@ trait AccountAuth
         $this->view->setVar("signup_session", $signup_session);
 
         //send birthday data for form
-        if(isset($this->accountConfig['profile_request_params']['birthday']))
+        if(isset($this->account_auth_conf['profile_request_params']['birthday']))
             $this->view->setVar("birthday_elements", FormHelper::getBirthdaySelectors());
 
         //call abstract method
@@ -116,7 +122,7 @@ trait AccountAuth
             $token->delete();
 
             //set a flash message to show on account controller
-            $this->flash->success($this->accountConfig['trans']['activation_success']);
+            $this->flash->success($this->account_auth_conf['trans']['activation_success']);
 
             //success login
             $this->_setUserSessionAsLoggedIn($user_id);
@@ -157,17 +163,17 @@ trait AccountAuth
 
         //check user & given hash with the one stored (wrong combination)
         if (!$user || !$this->security->checkHash($data['pass'], $user->pass)) {
-            $this->_sendJsonResponse(200, $this->accountConfig['trans']['auth_failed'], "alert");
+            $this->_sendJsonResponse(200, $this->account_auth_conf['trans']['auth_failed'], "alert");
         }
 
         //check user account flag
         if ($user->account_flag != 'enabled') {
             //set message
-            $msg = $this->accountConfig['trans']['account_disabled'];
+            $msg = $this->account_auth_conf['trans']['account_disabled'];
             $namespace = null;
             //check account is pending
             if ($user->account_flag == 'pending') {
-                $msg = $this->accountConfig['trans']['account_pending'];
+                $msg = $this->account_auth_conf['trans']['account_pending'];
                 //set name for javascript view
                 $namespace = 'ACCOUNT_PENDING';
             }
@@ -193,7 +199,7 @@ trait AccountAuth
             'last_name'  => 'string'
         ];
 
-        $setting_params = isset($this->accountConfig['profile_request_params']) ? $this->accountConfig['profile_request_params'] : array();
+        $setting_params = isset($this->account_auth_conf['profile_request_params']) ? $this->account_auth_conf['profile_request_params'] : array();
 
         //validate and filter request params data, second params are the required fields
         $data = $this->_handleRequestParams(array_merge($default_params, $setting_params));
@@ -203,7 +209,7 @@ trait AccountAuth
         if(strcspn($data['first_name'], $nums) != strlen($data['first_name']) ||
            strcspn($data['last_name'], $nums) != strlen($data['last_name'])) {
 
-            $this->_sendJsonResponse(200, $this->accountConfig['trans']['invalid_names'], "alert");
+            $this->_sendJsonResponse(200, $this->account_auth_conf['trans']['invalid_names'], "alert");
         }
 
         //format to capitalized name
@@ -223,9 +229,9 @@ trait AccountAuth
             $this->_sendJsonResponse(200, $user->filterMessages(), "alert");
 
         //set a flash message to show on account controller
-        $this->flash->success(str_replace("{email}", $user->email, $this->accountConfig['trans']['activation_pending']));
+        $this->flash->success(str_replace("{email}", $user->email, $this->account_auth_conf['trans']['activation_pending']));
         //send activation account email
-        $this->_sendMailMessage($this->accountConfig['method_mailer_activation'], $user->id);
+        $this->_sendMailMessage($this->account_auth_conf['method_mailer_activation'], $user->id);
         //force redirection
         $this->_handleResponseOnLoggedIn("signIn", null, false);
     }
@@ -246,7 +252,7 @@ trait AccountAuth
         //check valid reCaptcha
         if (empty($data['g-recaptcha-response']) || !$recaptcha->isValid($data['g-recaptcha-response'])) {
             //show error message
-            return $this->_sendJsonResponse(200, $this->accountConfig['trans']['recaptcha_failed'], "alert");
+            return $this->_sendJsonResponse(200, $this->account_auth_conf['trans']['recaptcha_failed'], "alert");
         }
 
         //get model classes
@@ -255,13 +261,13 @@ trait AccountAuth
 
         //check if user exists is a pending account
         if (!$user)
-            $this->_sendJsonResponse(200, $this->accountConfig['trans']['account_not_found'], 'alert');
+            $this->_sendJsonResponse(200, $this->account_auth_conf['trans']['account_not_found'], 'alert');
 
         //send email message with password recovery steps
-        $this->_sendMailMessage($this->accountConfig['method_mailer_activation'], $user->id);
+        $this->_sendMailMessage($this->account_auth_conf['method_mailer_activation'], $user->id);
 
         //set payload
-        $payload = str_replace("{email}", $data['email'], $this->accountConfig['trans']['activation_pending']);
+        $payload = str_replace("{email}", $data['email'], $this->account_auth_conf['trans']['activation_pending']);
 
         //send JSON response
         $this->_sendJsonResponse(200, $payload);

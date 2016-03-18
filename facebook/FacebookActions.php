@@ -31,11 +31,6 @@ use CrazyCake\Utils\DateHelper;
 trait FacebookActions
 {
     /**
-     * Set Trait configurations
-     */
-    abstract public function setConfigurations();
-
-    /**
      * Set Facebook Story Data
      * @param object $object - The OG object
      */
@@ -45,7 +40,7 @@ trait FacebookActions
      * Config var
      * @var array
      */
-    public $fbConfig;
+    public $facebook_actions_conf;
 
     /**
      * Lib var
@@ -64,22 +59,28 @@ trait FacebookActions
     /**
      * This method must be call in constructor parent class
      */
-    public function initFacebookSDK()
+    public function initFacebookActions($conf = array())
     {
+        //set confs
+        $this->facebook_actions_conf = $conf;
+
         //upload path
-        if(!is_dir($this->fbConfig["upload_path"]))
-            mkdir($this->fbConfig["upload_path"], 0755);
+        if(!is_dir($this->facebook_actions_conf["upload_path"]))
+            mkdir($this->facebook_actions_conf["upload_path"], 0755);
 
         //set redis service
         $this->redis = new Redis();
 
         //set Facebook SDK Object
-        $this->fb = new \Facebook\Facebook([
-            'app_id'     => $this->config->app->facebook->appID,
-            'app_secret' => $this->config->app->facebook->appKey,
-            //api version
-            'default_graph_version' => isset($this->fbConfig["graph_version"]) ? $this->fbConfig["graph_version"] : "v2.5"
-        ]);
+        if(is_null($this->fb)) {
+
+            $this->fb = new \Facebook\Facebook([
+                'app_id'     => $this->config->app->facebook->appID,
+                'app_secret' => $this->config->app->facebook->appKey,
+                //api version
+                'default_graph_version' => "v2.5"
+            ]);
+        }
     }
 
     /**
@@ -167,15 +168,15 @@ trait FacebookActions
     {
         if($fallbackAction)
             throw new Exception("Checkin publish action failed (fb error).");
-        else if($this->fbConfig["publish_day_limit"] && $count > 1)
+        else if($this->facebook_actions_conf["publish_day_limit"] && $count > 1)
             throw new Exception("User reached checkin max post times for today (app restriction)");
 
         //get event facebook object
-        $fb_object = $object->{$this->fbConfig["object_fb_relation"]};
+        $fb_object = $object->{$this->facebook_actions_conf["object_fb_relation"]};
         //get message
-        $msg = !is_null($fb_object->checkin_text) ? $fb_object->checkin_text : $this->fbConfig["og_default_message"];
+        $msg = !is_null($fb_object->checkin_text) ? $fb_object->checkin_text : $this->facebook_actions_conf["og_default_message"];
         //get place facebook id
-        $place_id = !is_null($fb_object->place_id) ? $fb_object->place_id : $this->fbConfig["og_default_place_id"];
+        $place_id = !is_null($fb_object->place_id) ? $fb_object->place_id : $this->facebook_actions_conf["og_default_place_id"];
 
         //set params
         $data = [
@@ -205,20 +206,20 @@ trait FacebookActions
     {
         if($fallbackAction)
             throw new Exception("Story publish action failed (fb error).");
-        else if($this->fbConfig["publish_day_limit"] && $count > 1)
+        else if($this->facebook_actions_conf["publish_day_limit"] && $count > 1)
             throw new Exception("User reached story max post times for today (app restriction)");
 
         //get event facebook object
-        $fb_object = $object->{$this->fbConfig["object_fb_relation"]};
+        $fb_object = $object->{$this->facebook_actions_conf["object_fb_relation"]};
         //set message
-        $msg = !is_null($fb_object->story_text) ? $fb_object->story_text : $this->fbConfig["og_default_message"];
+        $msg = !is_null($fb_object->story_text) ? $fb_object->story_text : $this->facebook_actions_conf["og_default_message"];
         //get place facebook id
-        $place_id = !is_null($fb_object->place_id) ? $fb_object->place_id : $this->fbConfig["og_default_place_id"];
+        $place_id = !is_null($fb_object->place_id) ? $fb_object->place_id : $this->facebook_actions_conf["og_default_place_id"];
 
         //new facebook story object
         $object = $this->_getNewFacebookStoryObject($object);
 
-        $story_object = $this->fbConfig["og_namespace"].":".$this->fbConfig["og_story_object"];
+        $story_object = $this->facebook_actions_conf["og_namespace"].":".$this->facebook_actions_conf["og_story_object"];
         //push open graph object
         $response = $this->fb->post('me/objects/'.$story_object,
                              ["object" => $object], $user_fb->fac)
@@ -232,7 +233,7 @@ trait FacebookActions
         //now post this story
         $data = [
             //object
-            $this->fbConfig["og_story_object"] => $object_id,
+            $this->facebook_actions_conf["og_story_object"] => $object_id,
             //common props
             "message"              => $msg,
             "place"                => $place_id,
@@ -244,7 +245,7 @@ trait FacebookActions
             "end_time"   => (new \DateTime())->modify('+2 day')->format("Y-m-d\TH:i:s") //end time, HARDCODED
         ];
         //print_r($params);exit;
-        $action   = $this->fbConfig["og_namespace"].":".$this->fbConfig["og_story_action"];
+        $action   = $this->facebook_actions_conf["og_namespace"].":".$this->facebook_actions_conf["og_story_action"];
         $response = $this->fb->post('/me/'.$action, $data, $user_fb->fac)->getGraphNode();
         //print_r($response);exit;
 
@@ -264,14 +265,14 @@ trait FacebookActions
            throw new Exception("No files attached to request");
 
         //get event facebook object
-        $fb_object = $object->{$this->fbConfig["object_fb_relation"]};
-        $msg = !is_null($fb_object->photo_text) ? $fb_object->photo_text : $this->fbConfig["og_default_message"];
+        $fb_object = $object->{$this->facebook_actions_conf["object_fb_relation"]};
+        $msg = !is_null($fb_object->photo_text) ? $fb_object->photo_text : $this->facebook_actions_conf["og_default_message"];
 
         //get uploaded files
         $uploaded_files = $this->request->getUploadedFiles();
         //get uploaded file
         $file      = current($uploaded_files);
-        $file_path = $this->fbConfig["upload_path"].$file->getName();
+        $file_path = $this->facebook_actions_conf["upload_path"].$file->getName();
         $file->moveTo($file_path);
 
         //set action URI
@@ -336,7 +337,7 @@ trait FacebookActions
     {
         $data = $this->setStoryData($object);
 
-        $story_object = $this->fbConfig["og_namespace"].":".$this->fbConfig["og_story_object"];
+        $story_object = $this->facebook_actions_conf["og_namespace"].":".$this->facebook_actions_conf["og_story_object"];
 
         //new object for JSON encoding
         $obj = new \stdClass();
@@ -353,7 +354,7 @@ trait FacebookActions
         if($obj->og__type == $story_object) {
 
             //set place caption
-            $namespace = $this->fbConfig["og_namespace"]."__place_caption";
+            $namespace = $this->facebook_actions_conf["og_namespace"]."__place_caption";
             $obj->{$namespace} = $data["place"];
         }
 

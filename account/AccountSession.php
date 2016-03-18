@@ -38,11 +38,16 @@ trait AccountSession
      */
     protected $user_session;
 
+    /* --------------------------------------------------- § -------------------------------------------------------- */
+
     /**
-     * Init constructor
+     * Phalcon Constructor Event
      */
-    protected function _init()
+    protected function onConstruct()
     {
+        //always call parent constructor
+        parent::onConstruct();
+
         //exclude api controller includes
         if(MODULE_NAME == "api")
             return;
@@ -67,6 +72,8 @@ trait AccountSession
         $this->_setUserDataForView(self::$DEFAULT_USER_PROPS_FILTER);
     }
 
+    /* --------------------------------------------------- § -------------------------------------------------------- */
+    
     /**
      * Set user data object for view
      * @param array $filter - A string array of properties to filter
