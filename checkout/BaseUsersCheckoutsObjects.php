@@ -106,13 +106,11 @@ class BaseUsersCheckoutsObjects extends \CrazyCake\Models\Base
      */
     public static function newCheckoutObject($id = 0, $className = "CheckoutObject", $quantity = 1)
     {
-        $new_object = new \stdClass();
-
-        $new_object->id        = $id;
-        $new_object->className = $className;
-        $new_object->quantity  = $quantity;
-
-        return $new_object;
+        return (object)[
+            "id"        => $id,
+            "className" => $className,
+            "quantity"  => $quantity
+        ];
     }
 
     /**

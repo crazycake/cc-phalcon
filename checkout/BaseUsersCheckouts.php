@@ -211,17 +211,15 @@ class BaseUsersCheckouts extends \CrazyCake\Models\Base
             if(!$checkout->save())
                 throw new Exception("A DB error ocurred saving in checkouts model.");
 
-            //save each item (format: {class_objectId} : {q})
-            foreach ($checkoutObj->objects as $key => $q) {
+            //save each cehckout item
+            foreach ($checkoutObj->objects as $obj) {
 
-                $props = explode("_", $key);
                 //creates an object
                 $checkoutObj = new $objectsModel();
                 $checkoutObj->buy_order    = $buy_order;
-                $checkoutObj->object_class = $props[0];
-                $checkoutObj->object_id    = $props[1];
-                //set quantity
-                $checkoutObj->quantity = $q;
+                $checkoutObj->object_id    = $obj->id;
+                $checkoutObj->object_class = $obj->className;
+                $checkoutObj->quantity     = $obj->quantity;
 
                 if(!$checkoutObj->save())
                     throw new Exception("A DB error ocurred saving in checkoutsObjects model.");

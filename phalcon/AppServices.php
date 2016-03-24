@@ -233,7 +233,7 @@ class AppServices
 
         //Session Adapter
         $di->setShared('session', function() {
-            
+
             $session = new \Phalcon\Session\Adapter\Files([
                 'uniqueId' => MODULE_NAME
             ]);

@@ -24,7 +24,7 @@ trait AccountPassRecovery
     public $account_pass_recovery_conf;
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
-    
+
     /**
      * This method must be call in constructor parent class
      * @param array $conf - The config array
@@ -113,7 +113,7 @@ trait AccountPassRecovery
             $this->_sendJsonResponse(200, $this->account_pass_recovery_conf['trans']['account_not_found'], 'alert');
 
         //send email message with password recovery steps
-        $this->_sendMailMessage($this->account_pass_recovery_conf['mailer_pass_recovery_method'], $user->id);
+        $this->_sendMailMessage("sendMailForPasswordRecovery", $user->id);
 
         //set a flash message to show on account controller
         $this->flash->success(str_replace("{email}", $data['email'], $this->account_pass_recovery_conf['trans']['pass_mail_sent']));

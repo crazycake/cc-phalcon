@@ -44,7 +44,7 @@ trait CheckoutManager
     public $checkout_manager_conf;
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
-    
+
     /**
      * This method must be call in constructor parent class
      * @param array $conf - The config array
@@ -290,6 +290,73 @@ trait CheckoutManager
             echo "CheckoutConfig Debug Mode On...";
     }
 
+    /**
+     * Parses objects checkout & set new props by reference
+     * @param object $checkout - The checkout object
+     * @param array $data - The received form data
+     */
+    public function parseCheckoutObjects(&$checkout = null, $data = array())
+    {
+        if(empty($checkout) || empty($data))
+            return;
+
+        if(empty($checkout->objects));
+            $checkout->objects = [];
+
+        if(empty($checkout->amount))
+            $checkout->amount = 0;
+
+        //get module class name
+        $users_checkouts_objects_class = $this->_getModuleClass('users_checkouts_objects');
+
+        //computed vars
+        $classes = empty($checkout->objectsClasses) ? [] : $checkout->objectsClasses;
+        $totalQ  = empty($checkout->totalQ) ? 0 : $checkout->totalQ;
+
+        //loop throught checkout items
+        foreach ($data as $key => $q) {
+
+            //parse properties
+            $props = explode("_", $key);
+
+            //validates checkout data has defined prefix
+            if(strpos($key, "checkout_") === false || count($props) != 3 || empty($q))
+                continue;
+
+            //get object props
+            $class_name = $props[1];
+            $object_id  = $this->cryptify->decryptHashId($props[2]);
+
+            $preffixed_object_class = "\\$class_name";
+            $object = $preffixed_object_class::getObjectById($object_id);
+            //var_dump($class_name, $object_id, $object->toArray());exit;
+
+            //check that object is in stock (also validates object exists)
+            if(!$users_checkouts_objects_class::validateObjectStock($class_name, $object_id, $q)) {
+
+                $this->logger->error("CheckoutManager::_parseCheckoutObjects -> No stock for object '$class_name' ID: $object_id, q: $q.");
+                throw new Exception(str_replace("{name}", $object->name, $this->checkout_manager_conf["trans"]["error_no_stock"]));
+            }
+
+            //append object class
+            if(!in_array($class_name, $classes))
+                array_push($classes, $class_name);
+
+            //update total Q
+            $totalQ += $q;
+
+            //update amount
+            $checkout->amount += $q * $object->price;
+
+            //set item in array as string or plain object
+            $checkout->objects[] = $users_checkouts_objects_class::newCheckoutObject($object_id, $class_name, $q);
+        }
+
+        //set objectsClassName
+        $checkout->objectsClasses = $classes;
+        //update total Q
+        $checkout->totalQ = $totalQ;
+    }
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
@@ -382,9 +449,6 @@ trait CheckoutManager
             "@invoiceEmail" => "string"   //optional, custom validation
         ]);
 
-        //get module class name
-        $users_checkouts_objects_class = $this->_getModuleClass('users_checkouts_objects');
-
         //check invoice email if set
         if(!isset($data["invoiceEmail"]) || !filter_var($data['invoiceEmail'], FILTER_VALIDATE_EMAIL))
             throw new Exception($this->MSGS["ERROR_INVOICE_EMAIL"]);
@@ -402,49 +466,9 @@ trait CheckoutManager
         $checkout->gateway       = $data["gateway"];
         $checkout->invoice_email = $data["invoiceEmail"];
         $checkout->currency      = $this->checkout_manager_conf["default_currency"];
-        $checkout->objects       = [];
-        $checkout->amount        = 0;
 
-        //temp vars
-        $totalQ  = 0;
-        $classes = [];
-
-        //loop throught checkout items
-        foreach ($data as $key => $q) {
-
-            //parse properties
-            $props = explode("_", $key);
-
-            //validates checkout data has defined prefix
-            if(strpos($key, "checkout_") === false || count($props) != 3 || empty($q))
-                continue;
-
-            //get object props
-            $class_name = $props[1];
-            $object_id  = $this->cryptify->decryptHashId($props[2]);
-
-            $preffixed_object_class = "\\$class_name";
-            $object = $preffixed_object_class::getObjectById($object_id);
-            //var_dump($class_name, $object_id, $object->toArray());exit;
-
-            //check that object is in stock (also validates object exists)
-            if(!$users_checkouts_objects_class::validateObjectStock($class_name, $object_id, $q)) {
-
-                $this->logger->error("CheckoutManager::_parseCheckoutObjects -> No stock for object '$class_name' ID: $object_id, q: $q.");
-                throw new Exception(str_replace("{name}", $object->name, $this->checkout_manager_conf["trans"]["error_no_stock"]));
-            }
-
-            //append object class
-            if(!in_array($class_name, $classes))
-                array_push($classes, $class_name);
-
-            //update amount
-            $checkout->amount += $q * $object->price;
-            //set item in array
-            $checkout->objects[$class_name."_".$object_id] = $q;
-            //update total Q
-            $totalQ += $q;
-        }
+        //parse checkout objects
+        $this->parseCheckoutObjects($checkout, $data);
         //print_r($checkout);exit;
 
         //weird error, no checkout objects
@@ -452,13 +476,11 @@ trait CheckoutManager
             throw new Exception($this->checkout_manager_conf["trans"]["error_unexpected"]);
 
         //check max objects allowed
-        if($totalQ > $this->checkout_manager_conf["max_user_acquisition"])
-            throw new Exception(str_replace("{num}", $this->checkout_manager_conf["max_user_acquisition"], $this->checkout_manager_conf["trans"]["error_max_total"]));
+        if($checkout->totalQ > $this->checkout_manager_conf["max_user_acquisition"]) {
 
-        //set objectsClassName
-        $checkout->objectsClasses = $classes;
-        //update total Q
-        $checkout->totalQ = $totalQ;
+            throw new Exception(str_replace("{num}", $this->checkout_manager_conf["max_user_acquisition"],
+                                                     $this->checkout_manager_conf["trans"]["error_max_total"]));
+        }
 
         return $checkout;
     }

@@ -231,7 +231,7 @@ trait AccountAuth
         //set a flash message to show on account controller
         $this->flash->success(str_replace("{email}", $user->email, $this->account_auth_conf['trans']['activation_pending']));
         //send activation account email
-        $this->_sendMailMessage($this->account_auth_conf['method_mailer_activation'], $user->id);
+        $this->_sendMailMessage("sendMailForAccountActivation", $user->id);
         //force redirection
         $this->_handleResponseOnLoggedIn("signIn", null, false);
     }
@@ -264,7 +264,7 @@ trait AccountAuth
             $this->_sendJsonResponse(200, $this->account_auth_conf['trans']['account_not_found'], 'alert');
 
         //send email message with password recovery steps
-        $this->_sendMailMessage($this->account_auth_conf['method_mailer_activation'], $user->id);
+        $this->_sendMailMessage("sendMailForAccountActivation", $user->id);
 
         //set payload
         $payload = str_replace("{email}", $data['email'], $this->account_auth_conf['trans']['activation_pending']);
