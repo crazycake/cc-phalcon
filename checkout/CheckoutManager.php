@@ -334,6 +334,7 @@ trait CheckoutManager
             //check that object is in stock (also validates object exists)
             if(!$users_checkouts_objects_class::validateObjectStock($class_name, $object_id, $q)) {
 
+                //TODO: special case for assets.
                 $this->logger->error("CheckoutManager::_parseCheckoutObjects -> No stock for object '$class_name' ID: $object_id, q: $q.");
                 throw new Exception(str_replace("{name}", $object->name, $this->checkout_manager_conf["trans"]["error_no_stock"]));
             }

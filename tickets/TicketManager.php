@@ -256,7 +256,7 @@ trait TicketManager
         }
 
         if(isset($result->error)) {
-            $this->logger->error("TicketStorage::generateInvoice ($type) -> Error while generating and storing PDF: $result->error");
+            $this->logger->error("TicketStorage::generateInvoice (userId: $user_id) -> Error while generating and storing PDF: $result->error");
             return $result;
         }
 

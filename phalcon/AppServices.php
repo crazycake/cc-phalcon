@@ -261,8 +261,10 @@ class AppServices
 
                 //++ Binds some PHP functions to volt
 
-                //++ str replace
+                //++ str_replace
                 $compiler->addFunction('replace', 'str_replace');
+                //++ in_array
+                $compiler->addFunction('in_array', 'in_array');
 
                 return $volt;
             },
