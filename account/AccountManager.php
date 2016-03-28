@@ -67,10 +67,10 @@ trait AccountManager
     {
         //get post params
         $default_params = [
-            'first_name'     => 'string',
-            'last_name'      => 'string',
-            '@current_pass'  => 'string',
-            '@pass'          => 'string'
+            'first_name'    => 'string',
+            'last_name'     => 'string',
+            '@current_pass' => 'string',
+            '@pass'         => 'string'
         ];
 
         //get model class name
