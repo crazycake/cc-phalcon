@@ -142,7 +142,11 @@ class KccEndPoint extends AppCore
             $this->logOutput($log);
 
         //outputs response
-        die("<html>".($success ? "ACEPTADO" : "RECHAZADO")."</html>");
+        $response = "<html>".($success ? "ACEPTADO" : "RECHAZADO")."</html>";
+        //log response
+        $this->logOutput("response: ".$response);
+
+        $this->_sendTextResponse($response);
     }
 
     /**
