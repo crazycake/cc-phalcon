@@ -1,6 +1,9 @@
 #! /bin/bash
 # Deploy script for testing & production environments
 
+# owner user name
+MACHINE_USER_NAME="$(whoami)"
+
 # project paths
 PROJECT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PROJECT_PATH="$(dirname "$PROJECT_PATH")"
@@ -37,7 +40,7 @@ fi
 
 # help output
 scriptHelp() {
-	echo -e "\033[93mWebapp deploy script.\nValid commands:\033[0m"
+	echo -e "\033[93mWebapp deploy script [$APP_ENV].\nValid commands:\033[0m"
 	echo -e "\033[95m -t <option>: deploy to testing environment. \033[0m"
     echo -e "\033[95m -s <option>: deploy to staging environment (branch staging requried). \033[0m"
     echo -e "\033[95m -p <option>: deploy to production environment (branch production requried). \033[0m"
@@ -60,8 +63,8 @@ checkEnvVars() {
 	PRODUCTION_SSH_CMD="$SSH_DIR/$PRODUCTION_KEY $PRODUCTION_HOST"
 }
 
-# check machine
-if [ ! $APP_ENV = "" ] && [ ! $APP_ENV = "local" ]; then
+# check onwer machine (basic AWS security)
+if [ $MACHINE_USER_NAME = "ubuntu" ]; then
 
 	#check if directory exists
 	if [ "$1" = "" ] || [ ! -d "$1" ]; then
@@ -151,12 +154,17 @@ if [ "$1" = "-t" ] || [ "$1" = "-s" ] || [ "$1" = "-p" ]; then
 	echo -e "\033[95mChecking out to branch $CURRENT_BRANCH \033[0m"
 	git checkout $CURRENT_BRANCH
 
+	echo -e "\033[95mDeploy path: $DEPLOY_REMOTE_PATH $1 $2 \033[0m"
+
 	# exec remote command on machine
 	if [ "$1" = "-t" ]; then
-		ssh -i $TESTING_SSH_CMD 'bash -s' -- < ./_deploy.bash $DEPLOY_REMOTE_PATH "$2"
+		echo -e "\033[95mSSH: $TESTING_SSH_CMD \033[0m"
+		ssh -v -i $TESTING_SSH_CMD 'bash -s' -- < ./_deploy.bash $DEPLOY_REMOTE_PATH "$2"
 	elif [ "$1" = "-s" ]; then
+		echo -e "\033[95mSSH: $STAGING_SSH_CMD \033[0m"
 		ssh -i $STAGING_SSH_CMD 'bash -s' -- < ./_deploy.bash $DEPLOY_REMOTE_PATH "$2"
 	else
+		echo -e "\033[95mSSH: $PRODUCTION_SSH_CMD \033[0m"
 		ssh -i $PRODUCTION_SSH_CMD 'bash -s' -- < ./_deploy.bash $DEPLOY_REMOTE_PATH "$2"
 
 		# cdn push?

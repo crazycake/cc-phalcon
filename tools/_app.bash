@@ -5,7 +5,7 @@
 # stop script if an error occurs
 set -e
 # current path
-CURRENT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+PROJECT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # App Name
 APP_NAME=${PWD##*/}
@@ -13,15 +13,15 @@ APP_NAME="${APP_NAME/-webapp/}"
 
 # module components paths
 MODULES_NAME=("frontend" "backend" "api" "cli")
-FRONTEND_PATH=$CURRENT_PATH"/frontend/"
-BACKEND_PATH=$CURRENT_PATH"/backend/"
-API_PATH=$CURRENT_PATH"/api/"
-CLI_PATH=$CURRENT_PATH"/cli/"
+FRONTEND_PATH=$PROJECT_PATH"/frontend/"
+BACKEND_PATH=$PROJECT_PATH"/backend/"
+API_PATH=$PROJECT_PATH"/api/"
+CLI_PATH=$PROJECT_PATH"/cli/"
 MOD_NAME=""
 
 # tools & packages path
-TOOLS_PATH=$CURRENT_PATH"/.tools/"
-PACKAGES_PATH=$CURRENT_PATH"/packages/"
+TOOLS_PATH=$PROJECT_PATH"/.tools/"
+PACKAGES_PATH=$PROJECT_PATH"/packages/"
 COMPOSER_PATH=$PACKAGES_PATH"composer/"
 
 # npm global dependencies
@@ -44,7 +44,7 @@ fi
 
 # help output
 scriptHelp() {
-	echo -e "\033[93m"$APP_NAME" webapp CLI \033[0m"
+	echo -e "\033[93m"$APP_NAME" webapp CLI [$APP_ENV]\033[0m"
 	echo -e "\033[94mApp:\033[0m"
 	echo -e "\033[95m -env: App environment set up, sets owner group & perms for apache folders.\033[0m"
 	echo -e "\033[95m -composer <option>: Installs/Updates composer libraries with autoload-class dump. Use -s to composer self-update. Use -o for optimized dump.\033[0m"
@@ -128,7 +128,7 @@ fi
 
 if [ $1 = "-env" ]; then
 	# print project dir
-	echo -e "\033[96mProject Dir: "$CURRENT_PATH" \033[0m"
+	echo -e "\033[96mProject Dir: "$PROJECT_PATH" \033[0m"
 
 	# set default perms for folders & files (use 'xargs -I {} -0 sudo chmod xxxx {}' if args is to long)
 	echo -e "\033[95mApplying user-perms for all folders and files (sudo is required)... \033[0m"
@@ -230,7 +230,7 @@ elif [ $1 = "-composer" ]; then
 	fi
 
 	php composer.phar dump-autoload --optimize --no-dev
-	cd $CURRENT_PATH
+	cd $PROJECT_PATH
 	# task done!
 	echo -e "\033[95mComposer optimized autoload dump created! \033[0m"
 	echo -e "\033[92mScript successfully executed! \033[0m"
@@ -257,12 +257,12 @@ elif [ $1 = "-clean" ]; then
 	do
 		echo -e "\033[95mCleaning module cache and log files for $MOD_NAME. \033[0m"
 
-		if [ ! -d $CURRENT_PATH"/"$MOD_NAME"/" ]; then
+		if [ ! -d $PROJECT_PATH"/"$MOD_NAME"/" ]; then
 			continue
 		fi
 
-		sudo rm -rf $CURRENT_PATH"/"$MOD_NAME"/app/logs/"
-		sudo rm -rf $CURRENT_PATH"/"$MOD_NAME"/app/cache/"
+		sudo rm -rf $PROJECT_PATH"/"$MOD_NAME"/app/logs/"
+		sudo rm -rf $PROJECT_PATH"/"$MOD_NAME"/app/cache/"
 	done
 
 	# checkout removed .html files
@@ -358,7 +358,7 @@ elif [ $1 = "-aws-cdn" ]; then
 	handleModuleArgument "$2"
 
 	#sync assets
-	SYNC_LOCAL_PATH="$CURRENT_PATH/$MOD_NAME/public/assets/"
+	SYNC_LOCAL_PATH="$PROJECT_PATH/$MOD_NAME/public/assets/"
 	SYNC_REMOTE_PATH="s3://$APP_NAME-cdn/$MOD_NAME/assets/"
 
 	echo -e "\033[95mBucket Syncing $SYNC_LOCAL_PATH -> $SYNC_REMOTE_PATH \033[0m"
@@ -366,7 +366,7 @@ elif [ $1 = "-aws-cdn" ]; then
 	aws s3 sync $SYNC_LOCAL_PATH $SYNC_REMOTE_PATH --delete --cache-control max-age=7200 --exclude '*' --include '*.min.css' --include '*.min.js'
 
 	#sync images
-	SYNC_LOCAL_PATH="$CURRENT_PATH/$MOD_NAME/public/images/"
+	SYNC_LOCAL_PATH="$PROJECT_PATH/$MOD_NAME/public/images/"
 	SYNC_REMOTE_PATH="s3://$APP_NAME-cdn/$MOD_NAME/images/"
 
 	echo -e "\033[95mBucket Syncing $SYNC_LOCAL_PATH -> $SYNC_REMOTE_PATH \033[0m"
@@ -374,7 +374,7 @@ elif [ $1 = "-aws-cdn" ]; then
 	aws s3 sync $SYNC_LOCAL_PATH $SYNC_REMOTE_PATH --delete --cache-control max-age=43200 --exclude '*.htaccess' --exclude '*.DS_Store' --exclude '*.html'
 
 	#sync fonts
-	SYNC_LOCAL_PATH="$CURRENT_PATH/$MOD_NAME/public/fonts/"
+	SYNC_LOCAL_PATH="$PROJECT_PATH/$MOD_NAME/public/fonts/"
 	SYNC_REMOTE_PATH="s3://$APP_NAME-cdn/$MOD_NAME/fonts/"
 
 	echo -e "\033[95mBucket Syncing $SYNC_LOCAL_PATH -> $SYNC_REMOTE_PATH \033[0m"
