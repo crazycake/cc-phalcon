@@ -1,10 +1,10 @@
 <?php
 /**
- * GPS helper : Utils for GPS operations.
+ * GPS helper : Helper for GPS operations.
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
-namespace CrazyCake\Utils;
+namespace CrazyCake\Helpers;
 
 //imports
 use Phalcon\Exception;

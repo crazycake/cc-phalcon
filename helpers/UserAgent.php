@@ -7,7 +7,7 @@
  * @link https://github.com/serbanghita/Mobile-Detect/
  */
 
-namespace CrazyCake\Utils;
+namespace CrazyCake\Helpers;
 
 //imports
 use Phalcon\Exception;
