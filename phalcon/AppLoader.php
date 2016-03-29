@@ -30,7 +30,7 @@ abstract class AppLoader
      * App Core default packages
      * @var array
      */
-    protected static $CORE_DEFAULT_PACKAGES = ['services', 'core', 'utils', 'models', 'account'];
+    protected static $CORE_DEFAULT_PACKAGES = ['services', 'core', 'helpers', 'models', 'account'];
 
     /**
      * App Core default modules

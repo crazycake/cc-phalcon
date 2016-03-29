@@ -32,6 +32,17 @@ return array (
     2 => 'FacebookActions.php',
     3 => 'FacebookAuth.php',
   ),
+  'helpers' => 
+  array (
+    0 => 'Cryptify.php',
+    1 => 'DateHelper.php',
+    2 => 'FormHelper.php',
+    3 => 'GPS.php',
+    4 => 'PdfHelper.php',
+    5 => 'ReCaptcha.php',
+    6 => 'Slug.php',
+    7 => 'UserAgent.php',
+  ),
   'mobile' => 
   array (
     0 => 'Apn.php',
@@ -81,17 +92,6 @@ return array (
     1 => 'KccManager.php',
     2 => 'OneClickClient.php',
     3 => 'OneClickHandler.php',
-  ),
-  'utils' => 
-  array (
-    0 => 'Cryptify.php',
-    1 => 'DateHelper.php',
-    2 => 'FormHelper.php',
-    3 => 'GPS.php',
-    4 => 'PdfHelper.php',
-    5 => 'ReCaptcha.php',
-    6 => 'Slug.php',
-    7 => 'UserAgent.php',
   ),
 );
 ?>

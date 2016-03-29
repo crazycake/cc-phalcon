@@ -9,7 +9,7 @@ namespace CrazyCake\Tickets;
 //imports
 use Phalcon\Mvc\Model\Validator\InclusionIn;
 //other imports
-use CrazyCake\Utils\FormHelper;
+use CrazyCake\Helpers\FormHelper;
 
 /**
  * Base Tickets Assets Model

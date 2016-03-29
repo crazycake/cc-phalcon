@@ -6,7 +6,7 @@
 		"models",
 		"services",
 		"account",
-		"utils",
+		"helpers",
 		"qr",
 		"facebook",
 		"checkout",

@@ -21,9 +21,9 @@ use Facebook\FacebookSession;
 use Facebook\FacebookRequest;
 use Facebook\Helpers\FacebookJavaScriptHelper;
 use Facebook\Exceptions\FacebookSDKException;
-//CrazyCake Utils
+//CrazyCake Libs
 use CrazyCake\Services\Redis;
-use CrazyCake\Utils\DateHelper;
+use CrazyCake\Helpers\DateHelper;
 
 /**
  * Facebook Actions

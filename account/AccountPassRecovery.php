@@ -10,7 +10,7 @@ namespace CrazyCake\Account;
 
 //imports
 use Phalcon\Exception;
-use CrazyCake\Utils\ReCaptcha;
+use CrazyCake\Helpers\ReCaptcha;
 
 /**
  * Account Password Recovery

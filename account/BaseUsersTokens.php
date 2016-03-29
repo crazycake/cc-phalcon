@@ -10,7 +10,7 @@ namespace CrazyCake\Account;
 use Phalcon\Exception;
 use Phalcon\Mvc\Model\Validator\InclusionIn;
 //other imports
-use CrazyCake\Utils\DateHelper;
+use CrazyCake\Helpers\DateHelper;
 
 /**
  * Base User Tokens Model

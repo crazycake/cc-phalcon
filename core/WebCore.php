@@ -11,7 +11,7 @@ namespace CrazyCake\Core;
 use Phalcon\Exception;
 //core
 use CrazyCake\Phalcon\AppLoader;
-use CrazyCake\Utils\UserAgent;
+use CrazyCake\Helpers\UserAgent;
 use CrazyCake\Services\Guzzle;
 
 /**

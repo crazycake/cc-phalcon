@@ -7,7 +7,7 @@
 namespace CrazyCake\Checkout;
 
 //imports
-use CrazyCake\Utils\FormHelper;
+use CrazyCake\Helpers\FormHelper;
 
 /**
  * Base User Checkouts objects

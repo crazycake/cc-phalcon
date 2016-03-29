@@ -11,8 +11,8 @@ namespace CrazyCake\Transbank;
 //imports
 use Phalcon\Exception;
 //other imports
-use CrazyCake\Utils\DateHelper;
-use CrazyCake\Utils\FormHelper;
+use CrazyCake\Helpers\DateHelper;
+use CrazyCake\Helpers\FormHelper;
 
 /**
  * Webpay Kcc Manager

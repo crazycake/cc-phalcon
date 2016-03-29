@@ -12,5 +12,10 @@
 *.phar
 !box.phar
 
-# PhalconPHP
+# PhalconPHP Dev-tools
 .phalcon
+
+# Node & Webpacks
+node_modules
+# YuiDoc Themes
+!webpacks/node_modules/yuidoc-lucid-theme/partials/index.handlebars

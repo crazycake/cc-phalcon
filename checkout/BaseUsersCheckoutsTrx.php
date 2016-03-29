@@ -7,8 +7,8 @@
 namespace CrazyCake\Checkout;
 
 //other imports
-use CrazyCake\Utils\DateHelper;
-use CrazyCake\Utils\FormHelper;
+use CrazyCake\Helpers\DateHelper;
+use CrazyCake\Helpers\FormHelper;
 
 /**
  * Base Tickets Model

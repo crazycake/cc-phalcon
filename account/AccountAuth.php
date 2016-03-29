@@ -10,8 +10,8 @@ namespace CrazyCake\Account;
 
 //imports
 use Phalcon\Exception;
-use CrazyCake\Utils\FormHelper;
-use CrazyCake\Utils\ReCaptcha;
+use CrazyCake\Helpers\FormHelper;
+use CrazyCake\Helpers\ReCaptcha;
 
 /**
  * Account Authentication

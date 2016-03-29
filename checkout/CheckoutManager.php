@@ -11,7 +11,7 @@ namespace CrazyCake\Checkout;
 //imports
 use Phalcon\Exception;
 //other imports
-use CrazyCake\Utils\FormHelper;
+use CrazyCake\Helpers\FormHelper;
 
 /**
  * Checkout Manager

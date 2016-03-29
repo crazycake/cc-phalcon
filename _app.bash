@@ -1,32 +1,40 @@
 #! /bin/bash
-# cc-phalcon task runner
-# dependencies: php apigen & node apidoc (for PHP APIs)
+# cc-phalcon CLI tools
 
-# se interrumpe el script si ocurre un error
+# stop execution for exceptions
 set -e
+
 #Current path
 CURRENT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 MACHINE_USER_NAME="$(whoami)"
-# WebApp properties
+
+# Package properties
 APP_NAME="cc-phalcon"
 APP_NAMESPACE="$(echo "$APP_NAME" | tr '[:upper:]' '[:lower:]')"
 
-# Local documentation path
-# TODO: implement input file .doc
-DOC_INPUTS="account,checkout,core,facebook,models,phalcon,services,tickets,utils,mobile"
-DOC_INPUTS="$DOC_INPUTS,transbank/OneClickClient.php,transbank/KccEndPoint.php,transbank/KccManager.php"
-DOC_INPUTS="$DOC_INPUTS,qr/QRMaker.php,soap/SoapClientHelper.php"
-DOC_OUTPUT_PATH=$CURRENT_PATH"/../cc-docs/cc-phalcon/"
+# Webpacks path
+WEBPACKS_PATH=$CURRENT_PATH"/webpacks/"
+
+# Local documentation path. TODO: json file for input libs
+# PHP Core
+DOC_PHP_INPUTS="account,checkout,core,facebook,models,phalcon,services,tickets,helpers,mobile"
+DOC_PHP_INPUTS="$DOC_PHP_INPUTS,transbank/OneClickClient.php,transbank/KccEndPoint.php,transbank/KccManager.php"
+DOC_PHP_INPUTS="$DOC_PHP_INPUTS,qr/QRMaker.php,soap/SoapClientHelper.php"
+DOC_PHP_OUTPUT_PATH=$CURRENT_PATH"/../cc-docs/cc-phalcon/"
+# JS Core
+DOC_JS_INPUTS=$WEBPACKS_PATH"src/"
 
 #script help function
 scriptHelp() {
 	echo -e "\033[93m"$APP_NAME" WebApp Environment Script\nValid commands:\033[0m"
 	echo -e "\033[95m -env: App environment set up, set correct permissions on directories and files.\033[0m"
-	echo -e "\033[95m -build: Builds phar file with default box.json file.\033[0m"
-	echo -e "\033[95m -tree: Returns the file tree of phar file.\033[0m"
-	echo -e "\033[95m -doc: Generates PHP API Docs.\033[0m"
+	echo -e "\033[95m -build: [PHP] Builds phar file with default box.json file.\033[0m"
+	echo -e "\033[95m -tree: [PHP] Returns the file tree of phar file.\033[0m"
+	echo -e "\033[95m -npm: [JS] Install or update npm dev dependencies.\033[0m"
+	echo -e "\033[95m -watch: [JS] Watch and builds webpack core.\033[0m"
+	echo -e "\033[95m -docs: Generates PHP & JS API Docs (PHP apigen & JS apidoc required).\033[0m"
 	echo -e "\033[95m -release: Creates a new tag release. Required version and message.\033[0m"
-	echo -e "\033[95m -delete-tags: Removes local and remote tags in the bower package.\033[0m"
+	echo -e "\033[95m -delete-tags: Removes local and remote repository tags.\033[0m"
 	exit
 }
 
@@ -69,9 +77,35 @@ elif [ $1 = "-tree" ]; then
 	# task done!
 	echo -e "\033[92mScript successfully executed! \033[0m"
 
-elif [ $1 = "-doc" ]; then
+elif [ $1 = "-npm" ]; then
 
-	apigen generate --source $DOC_INPUTS --destination $DOC_OUTPUT_PATH --template-theme "bootstrap"
+	cd $WEBPACKS_PATH
+
+	echo -e "\033[35mInstalling npm dependencies in $WEBPACKS_PATH...\033[0m"
+
+	# package instalation
+	if [ "$(uname)" == "Darwin" ]; then
+		npm install
+	else
+		sudo npm install
+	fi
+
+elif [ $1 = "-watch" ]; then
+
+	cd $WEBPACKS_PATH
+
+	#executes gulp task
+	gulp build
+
+elif [ $1 = "-docs" ]; then
+
+	#PHP
+	echo -e "\033[35mGenerating PHP Docs...\033[0m"
+	apigen generate --source $DOC_PHP_INPUTS --destination $DOC_PHP_OUTPUT_PATH --template-theme "bootstrap"
+
+	#JS
+	echo -e "\033[35mGenerating JS Docs...\033[0m"
+	yuidoc $DOC_JS_INPUTS
 
 elif [ $1 = "-release" ]; then
 

@@ -7,7 +7,7 @@
 namespace CrazyCake\Facebook;
 
 //other imports
-use CrazyCake\Utils\DateHelper;
+use CrazyCake\Helpers\DateHelper;
 
 /**
  * Base Facebook Graph API Actions
