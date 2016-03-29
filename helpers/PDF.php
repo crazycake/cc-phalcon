@@ -1,6 +1,6 @@
 <?php
 /**
- * PdfHelper: PDF helper to generate PDF files
+ * PDF: PDF helper to generate PDF files
  * Requires Snappy composer library and wkhtmltopdf library.
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
@@ -52,10 +52,10 @@ class PDF
     public function generatePdfFileFromHtml($html, $output_path, $binary = true)
     {
         if(empty($html))
-            throw new Exception("PdfHelper::generatePdfFileFromHtml -> The html input string is required.");
+            throw new Exception("PDF::generatePdfFileFromHtml -> The html input string is required.");
 
         if(empty($output_path))
-            throw new Exception("PdfHelper::generatePdfFileFromHtml -> The output_path input string is required.");
+            throw new Exception("PDF::generatePdfFileFromHtml -> The output_path input string is required.");
 
         //remove file?
         if(is_file($output_path))
@@ -66,7 +66,7 @@ class PDF
             $this->snappy->generateFromHtml($html, $output_path);
         }
         catch(\Exception $e) {
-            throw new Exception("PdfHelper::generatePdfFileFromHtml -> Snappy library error: ".$e->getMessage());
+            throw new Exception("PDF::generatePdfFileFromHtml -> Snappy library error: ".$e->getMessage());
         }
 
         //get binary file?
@@ -85,14 +85,14 @@ class PDF
     public function mergePdfFiles($files = array(), $output = "pdf_merged.pdf", $option = "browser")
     {
         if(empty($files))
-            throw new Exception("PdfHelper::mergePdfFiles -> Input files is empty");
+            throw new Exception("PDF::mergePdfFiles -> Input files is empty");
 
         //Merge PDFs
         try {
             $pdf = new \Clegginabox\PDFMerger\PDFMerger();
         }
         catch (Exception $e) {
-            throw new Exception("PdfHelper::mergePdfFiles -> \Clegginabox\PDFMerger\PDFMerger class is required");
+            throw new Exception("PDF::mergePdfFiles -> \Clegginabox\PDFMerger\PDFMerger class is required");
         }
 
         foreach ($files as $f)
