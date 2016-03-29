@@ -6,8 +6,7 @@
 set -e
 # current path
 CURRENT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-# machine name
-MACHINE_USER_NAME="$(whoami)"
+
 # App Name
 APP_NAME=${PWD##*/}
 APP_NAME="${APP_NAME/-webapp/}"
@@ -37,6 +36,11 @@ fi
 
 # folders that apache must own
 APACHE_OWNER_FOLDERS=("app/cache/" "app/logs/" "app/langs/" "public/uploads/" "public/assets/" "outputs/" "storage/" "bootstrap/cache/")
+
+# load environment file if exists
+if [ -f "$PROJECT_PATH/.env" ]; then
+	source "$PROJECT_PATH/.env"
+fi
 
 # help output
 scriptHelp() {
@@ -97,7 +101,7 @@ appDeploy() {
 # prevents machine from executing some task
 excludeDeployMachine() {
 	# check deploy machine
-	if [ $MACHINE_USER_NAME = "ubuntu" ]; then
+	if [ ! $APP_ENV = "local" ]; then
 		echo -e "\033[31mThis script is for local environment only.\033[0m"
 		exit
 	fi
@@ -289,7 +293,7 @@ elif [ $1 = "-core" ]; then
 
 	excludeDeployMachine
 
-	bash $TOOLS_PATH"/_core.bash"
+	bash $TOOLS_PATH"_core.bash"
 
 elif [ $1 = "-npm-global" ]; then
 

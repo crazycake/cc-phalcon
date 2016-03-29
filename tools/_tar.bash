@@ -7,7 +7,6 @@ set -e
 #Current path
 PROJECT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PROJECT_PATH="$(dirname "$PROJECT_PATH")"
-MACHINE_USER_NAME="$(whoami)"
 
 # help output
 scriptHelp() {

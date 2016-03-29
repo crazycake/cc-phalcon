@@ -1,14 +1,12 @@
 #! /bin/bash
 # Deploy script for testing & production environments
 
-# Current path
+# project paths
 PROJECT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PROJECT_PATH="$(dirname "$PROJECT_PATH")"
-MACHINE_USER_NAME="$(whoami)"
 
 # Deploy settings
 SSH_DIR="$HOME/.ssh"
-DEPLOY_FILENAME="$PROJECT_PATH/.env"
 
 # environment vars
 DEPLOY_REMOTE_PATH=""
@@ -32,6 +30,11 @@ PRODUCTION_SSH_CMD=""
 # date NOW
 NOW=$(date +"%d-%m-%Y %R")
 
+# load environment file if exists
+if [ -f "$PROJECT_PATH/.env" ]; then
+	source "$PROJECT_PATH/.env"
+fi
+
 # help output
 scriptHelp() {
 	echo -e "\033[93mWebapp deploy script.\nValid commands:\033[0m"
@@ -42,21 +45,12 @@ scriptHelp() {
 	exit
 }
 
-# read deploy file
-readDeployFile() {
-
-	#check if file exists
-	if [ ! -f $DEPLOY_FILENAME ]; then
-		echo -e "\033[31mDeploy file not found.\033[0m"
-		exit
-	fi
-
-	#iterate through lines
-	source $DEPLOY_FILENAME
+# read env file
+checkEnvVars() {
 
 	#check values
 	if [ "$DEPLOY_REMOTE_PATH" = "" ] || [ "$TESTING_KEY" = "" ] || [ "$TESTING_HOST" = "" ]; then
-		echo -e "\033[31mInvalid deploy file struct. Check that file must end with an empty space.\033[0m"
+		echo -e "\033[31mInvalid environment file struct. Check that file must end with an empty space.\033[0m"
 		exit
 	fi
 
@@ -67,7 +61,7 @@ readDeployFile() {
 }
 
 # check machine
-if [ $MACHINE_USER_NAME = "ubuntu" ]; then
+if [ ! $APP_ENV = "" ] && [ ! $APP_ENV = "local" ]; then
 
 	#check if directory exists
 	if [ "$1" = "" ] || [ ! -d "$1" ]; then
@@ -116,7 +110,7 @@ fi
 
 if [ "$1" = "-t" ] || [ "$1" = "-s" ] || [ "$1" = "-p" ]; then
 
-	readDeployFile
+	checkEnvVars
 
 	# GIT properties
 	CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"

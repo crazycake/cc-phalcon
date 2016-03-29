@@ -7,7 +7,6 @@ set -e
 # current path
 PROJECT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PROJECT_PATH="$(dirname "$PROJECT_PATH")"
-MACHINE_USER_NAME="$(whoami)"
 # App Name
 APP_NAME=${PWD##*/}
 APP_NAME="${APP_NAME/-webapp/}"
@@ -20,6 +19,11 @@ APP_CORE_PATH=$PROJECT_PATH"/packages/cc-phalcon/"
 MO_FILE=$APP_NAMESPACE".mo"
 TEMP_FILE="temp_file"
 
+# load environment file if exists
+if [ -f "$PROJECT_PATH/.env" ]; then
+	source "$PROJECT_PATH/.env"
+fi
+
 # help output
 scriptHelp() {
 	echo -e "\033[93m WebApp Translations Script\nValid commands:\033[0m"
@@ -30,7 +34,7 @@ scriptHelp() {
 }
 
 # check machine
-if [ $MACHINE_USER_NAME = "ubuntu" ]; then
+if [ ! $APP_ENV = "local" ]; then
 	echo -e "\033[31mThis script is for local environment only.\033[0m"
 	exit
 # set module

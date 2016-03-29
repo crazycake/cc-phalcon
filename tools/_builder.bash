@@ -5,7 +5,10 @@
 set -e
 echo -e "\033[94mPhalcon App Builder... \033[0m"
 
+# current path
 PROJECT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+PROJECT_PATH="$(dirname "$PROJECT_PATH")"
+# project paths
 TOOLS_PATH=$PROJECT_PATH"/.tools/"
 FRONTEND_PATH=$CURRENT_PATH"/frontend/"
 BACKEND_PATH=$CURRENT_PATH"/backend/"
