@@ -20,9 +20,7 @@ WEBPACKS_PATH=$CURRENT_PATH"/webpacks/"
 DOC_PHP_INPUTS="account,checkout,core,facebook,models,phalcon,services,tickets,helpers,mobile"
 DOC_PHP_INPUTS="$DOC_PHP_INPUTS,transbank/OneClickClient.php,transbank/KccEndPoint.php,transbank/KccManager.php"
 DOC_PHP_INPUTS="$DOC_PHP_INPUTS,qr/QRMaker.php,soap/SoapClientHelper.php"
-DOC_PHP_OUTPUT_PATH=$CURRENT_PATH"/../cc-docs/cc-phalcon/"
-# JS Core
-DOC_JS_INPUTS=$WEBPACKS_PATH"src/"
+DOC_PHP_OUTPUT_PATH=$CURRENT_PATH"/../cc-docs/cc-phalcon/php/"
 
 #script help function
 scriptHelp() {
@@ -104,8 +102,9 @@ elif [ $1 = "-docs" ]; then
 	apigen generate --source $DOC_PHP_INPUTS --destination $DOC_PHP_OUTPUT_PATH --template-theme "bootstrap"
 
 	#JS
+	cd $WEBPACKS_PATH
 	echo -e "\033[35mGenerating JS Docs...\033[0m"
-	yuidoc $DOC_JS_INPUTS
+	yuidoc "src/"
 
 elif [ $1 = "-release" ]; then
 
