@@ -47,7 +47,7 @@ function bundleApp() {
 //javascript task
 gulp.task('js', function() {
 
-    gutil.log(gutil.colors.orange('Watching ' + webpack_file + ' changes...'));
+    gutil.log(gutil.colors.yellow('Watching ' + webpack_file + ' changes...'));
 
     //browserify
     bundleApp();
