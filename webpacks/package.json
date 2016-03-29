@@ -1,0 +1,61 @@
+{
+	"author"      : "Nicolas Pulido M",
+	"description" : "CrazyCake Webpacks",
+	"readme"      : "Run npm install for package install.",
+	"repository"  : "private",
+	"license"     : "MIT",
+	"main"        : "gulpfile.js",
+	"devDependencies": {
+		"browserify"          : "^11.2.0",
+		"browserify-shim"     : "^3.8.10",
+		"gulp"                : "^3.9.0",
+		"gulp-util"           : "^3.0.6",
+		"gulp-watch"          : "^4.3.3",
+		"lodash.assign"       : "^3.2.0",
+		"vinyl-buffer"        : "^1.0.0",
+		"vinyl-source-stream" : "^1.1.0",
+		"watchify"            : "^3.3.0",
+		"yuidoc-lucid-theme"  : "^0.1.1"
+	},
+	"dependencies": {
+		"html5shiv": "^3.7.2",
+		"fastclick": "^1.0.6",
+		"lodash": "^4.6.1",
+		"js-cookie": "^2.1.0",
+		"jquery": "^2.2.2",
+		"vue": "^1.0.20",
+		"q": "1.4.1",
+		"velocity-animate": "1.2.3",
+		"jquery.scrollto":"2.1.2"
+	},
+	"browserify": {
+		"transform": [
+			"browserify-shim"
+		]
+	},
+	"browser": {
+		"html5shiv"                        : "./node_modules/html5shiv/html5shiv.js",
+		"fastclick"                        : "./node_modules/fastclick/fastclick.js",
+		"lodash"                           : "./node_modules/lodash/lodash.js",
+		"js-cookie"                        : "./node_modules/js-cookie/js.cookie.js",
+		"jquery"                           : "./node_modules/jquery/jquery.js",
+		"vue"                              : "./node_modules/vue/vue.js",
+		"q"                                : "./node_modules/q/q.js",
+		"velocity"                         : "./node_modules/velocity-animate/velocity.js",
+		"velocity.ui"                      : "./node_modules/velocity-animate/velocity.ui.js",
+		"jquery.scrollTo"                  : "./node_modules/jquery.scrollTo/jquery.scrollTo.js",
+		"jquery.extended"                  : "./private/jquery-plugins/jquery.extended.js",
+		"jquery.modality"                  : "./private/jquery-plugins/jquery.modality.js",
+		"jquery.modality.dialog"           : "./private/jquery-plugins/jquery.modality.dialog.js",
+		"jquery.formValidation"            : "./private/form-validation/js/formValidation.popular.min.js",
+		"jquery.formValidation.foundation" : "./private/form-validation/js/framework/foundation.js"
+	},
+	"browserify-shim": {
+		"lodash"     : "_",
+		"js-cookie"  : "Cookies",
+		"knockout"   : "ko",
+		"vue"        : "Vue",
+		"q"          : "Q",
+		"jquery"     : "jQuery"
+	}
+}

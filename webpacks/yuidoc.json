@@ -1,0 +1,11 @@
+{
+    "name": "cc-bower",
+    "description": "cc-bower webpack api",
+    "version": "0.2.0",
+    "url": "http://docs.crazycake.cl/",
+    "options": {
+        "outdir": "../cc-docs/cc-bower/",
+        "themedir" : "node_modules/yuidoc-lucid-theme",
+        "helpers" : ["node_modules/yuidoc-lucid-theme/helpers/helpers.js"]
+    }
+}

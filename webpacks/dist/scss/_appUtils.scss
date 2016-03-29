@@ -1,0 +1,199 @@
+/**
+ * App Utils
+ * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
+ */
+
+/* Functions
+---------------------------------------------------------------------------------------- */
+
+/**
+ * String Replacer
+ * @param  {string} $string - The input string
+ * @param  {string} $search - The string to look for
+ * @param  {string} $replace - Replace Token
+ * @return {string}
+ */
+@function str-replace($string, $search, $replace: '') {
+
+    $index: str-index($string, $search);
+    //@debug $index, $replace;
+    @if $index {
+        @return str-slice($string, 1, $index - 1) + $replace + str-replace(str-slice($string, $index + str-length($search)), $search, $replace);
+    }
+
+    @return $string;
+}
+
+/* Mixins
+---------------------------------------------------------------------------------------- */
+
+//for box-spaced contents with a topbar
+@mixin app-fill-space($padding-top: 0) {
+	min-height: 100%;
+    padding-top: $padding-top;
+}
+
+//background cover image (3rd argument to use custom background to small & medium screen)
+@mixin app-bg-cover($image_path, $attachment: fixed, $responsive: null) {
+	//set image
+	@if $image_path != null {
+		background: url($image_path) no-repeat center center $attachment;
+		@include app-background-size();
+	}
+	//small view
+	@if $responsive != null and mixin-exists(breakpoint) {
+        //MediaQueries
+		@include breakpoint(small only) {
+			$url: str-replace($image_path, $responsive, '-small#{$responsive}');
+            //@debug $url;
+			background: url($url) no-repeat 100% 100% $attachment;
+            -webkit-background-size: cover;
+            -moz-background-size: cover;
+            -o-background-size: cover;
+            background-size: cover;
+		}
+        //medium
+		@include breakpoint(medium only) {
+			$url: str-replace($image_path, $responsive, '-medium#{$responsive}');
+            //@debug $url;
+            background: url($url) no-repeat 100% 100% $attachment;
+            -webkit-background-size: cover;
+            -moz-background-size: cover;
+            -o-background-size: cover;
+            background-size: cover;
+		}
+	}
+}
+
+//background image cover pollyfills
+@mixin app-background-size($size: cover) {
+	background-size: $size;
+}
+
+//background image retina support
+@mixin app-bg-image-retina($file, $type, $width, $height, $version:'0.1') {
+    background-image: url($file + '.' + $type + "?v=" + $version);
+    //MediaQueries
+    @media only screen and (-webkit-min-device-pixel-ratio: 2),
+    only screen and (-moz-min-device-pixel-ratio: 2),
+    only screen and (-o-min-device-pixel-ratio: 2/1),
+    only screen and (min-device-pixel-ratio: 2),
+    only screen and (min-resolution: 192dpi),
+    only screen and (min-resolution: 2dppx) {
+        & {
+            background-image: url($file + '@2x.' + $type + "?v=" + $version);
+            -webkit-background-size: $width $height;
+            -moz-background-size: $width $height;
+            -o-background-size: $width $height;
+            background-size: $width $height;
+        }
+    }
+}
+
+//mixin for RGBa background
+@mixin app-bg-color-opacity($factor: 0, $opacity: 0.95) {
+	background-color: rgb($factor, $factor, $factor);
+	background-color: rgba($factor, $factor, $factor, $opacity) !important;
+	//transition
+    transition: all 0.3s ease;
+}
+
+//bg loading for images
+@mixin app-loading-image($bg_color, $index, $width, $height) {
+	background: $bg_color;
+	@include app-bg-image-retina('../images/icons/icon-loading#{$index}', 'gif', $width, $height);
+	background-repeat: no-repeat;
+	background-position: center center;
+}
+
+/* Placeholders
+---------------------------------------------------------------------------------------- */
+
+//inline block property
+%app-inline-block {
+	display: inline-block;
+	vertical-align: top;
+}
+
+//center an element
+%app-center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+//element centered in middle of screen (check safari!)
+%app-centered-screen {
+	position: absolute;
+  	top: 50%;
+  	left: 50%;
+  	transform: translate(-50%, -50%);
+}
+
+//vertical align middle
+%app-vertical-align {
+	position: relative;
+	top: 50%;
+	transform: translateY(-50%);
+}
+
+//element hidden using block space
+%app-block-hidden {
+	visibility: hidden;
+	opacity: 0;
+}
+
+//text wrap with overflow hidden
+%app-text-overflow-hidden {
+	overflow-x: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+/* Other Helpful classes
+---------------------------------------------------------------------------------------- */
+
+//Vue framework
+[v-cloak] { visibility: hidden; }
+
+//padding handlers
+.app-no-padding        { padding: 0 !important; }
+.app-no-padding-top    { padding-top: 0 !important; }
+.app-no-padding-bottom { padding-bottom: 0 !important; }
+.app-no-padding-left   { padding-left: 0 !important;  }
+.app-no-padding-right  { padding-right: 0 !important;  }
+.app-line-spacer       { height: 2px; }
+
+//fixed position
+.app-fixed {
+    position: fixed;
+    width: 100%;
+    z-index: 99;
+    &.top-left {
+        top: 0;
+        left: 0;
+    }
+}
+
+//hide an element with absolute property
+.app-absolute-hide {
+	position: absolute !important;
+	top: -99999px !important;
+	left: -99999px !important;
+	visibility: hidden;
+}
+
+//for page printing
+.app-print-only { display: none; }
+
+//no-script fallback (uses classes fixed and center)
+noscript.app-no-js {
+    display:block;
+    width: 100%;
+    padding: 12px;
+    z-index: 9999;
+    background: #FEF1CC;
+    border-top: 2px solid #EBD085;
+    border-bottom: 2px solid #EBD085;
+    color: #985A35;
+}
