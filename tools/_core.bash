@@ -11,15 +11,15 @@ PROJECT_PATH="$(dirname "$PROJECT_PATH")"
 
 TOOLS_PATH=$PROJECT_PATH"/.tools/"
 PACKAGES_PATH=$PROJECT_PATH"/packages/"
-WEBPACKS_PATH=$PACKAGES_PATH"/webpacks/"
+WEBPACKS_PATH=$PACKAGES_PATH"webpacks/"
 FRONTEND_PATH=$PROJECT_PATH"/frontend/"
 BACKEND_PATH=$PROJECT_PATH"/backend/"
 
 # cc-phalcon paths
 CORE_NAMESPACE="cc-phalcon"
 CORE_PATH=$PACKAGES_PATH$CORE_NAMESPACE"/"
-CORE_TOOLS_PATH=$CORE_PATH"/tools/"
-CORE_WEBPACKS_PATH=$CORE_PATH"/webpacks/"
+CORE_TOOLS_PATH=$CORE_PATH"tools/"
+CORE_WEBPACKS_PATH=$CORE_PATH"webpacks/"
 
 # main app bash file
 MAIN_TOOL_FILE="_app"
@@ -67,10 +67,10 @@ if [ -d $FRONTEND_PATH"app/views/" ]; then
 fi
 
 # 3) webpacks folder & files
-rm -rf $WEBPACKS_PATH"dist/"
-rm -rf $WEBPACKS_PATH"private/"
 mkdir -p $WEBPACKS_PATH"dist/"
 mkdir -p $WEBPACKS_PATH"private/"
+rm -rf $WEBPACKS_PATH"dist/*"
+rm -rf $WEBPACKS_PATH"private/*"
 #copy webpack files
 echo -e "\033[94mCopying webpacks files to $PACKAGES_PATH... \033[0m"
 cp -r $CORE_WEBPACKS_PATH"dist/" $WEBPACKS_PATH"dist/"
