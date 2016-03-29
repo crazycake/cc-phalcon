@@ -11,7 +11,7 @@ namespace CrazyCake\Checkout;
 //imports
 use Phalcon\Exception;
 //other imports
-use CrazyCake\Helpers\FormHelper;
+use CrazyCake\Helpers\Forms;
 
 /**
  * Checkout Manager
@@ -174,7 +174,7 @@ trait CheckoutManager
 
             //extended properties
             $checkout->type            = "payment";
-            $checkout->amountFormatted = FormHelper::formatPrice($checkout->amount, $checkout->currency);
+            $checkout->amountFormatted = Forms::formatPrice($checkout->amount, $checkout->currency);
             $checkout->objects         = $users_checkouts_objects_class::getCheckoutObjects($checkout->buy_order);
             $checkout->categories      = explode(",", $checkout->categories); //set categories as array
 

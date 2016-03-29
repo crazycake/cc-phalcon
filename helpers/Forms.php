@@ -1,7 +1,7 @@
 <?php
 /**
- * Form Helper
- * Requires DateHelper for birthday selector
+ * Forms Helper
+ * Requires Dates for birthday selector
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
@@ -13,7 +13,7 @@ use Phalcon\Exception;
 /**
  * Form Helper
  */
-class FormHelper
+class Forms
 {
     /* consts */
     const RUT_EXP = "/^[0-9]+-[0-9kK]{1}/";
@@ -71,7 +71,7 @@ class FormHelper
         $di = \Phalcon\DI::getDefault();
 
         if(!$di->has("trans"))
-            throw new Exception("FormHelper -> no translate service adapter found.");
+            throw new Exception("Forms -> no translate service adapter found.");
 
         $trans = $di->getShared("trans");
 
@@ -93,7 +93,7 @@ class FormHelper
             $month = strftime('%m', mktime(0, 0, 0, $i, 1));
 
             //get abbr month
-            $month = DateHelper::getTranslatedMonthName($month, true);
+            $month = Dates::getTranslatedMonthName($month, true);
 
             //set month array
             $months_array[$prefix] = $month;

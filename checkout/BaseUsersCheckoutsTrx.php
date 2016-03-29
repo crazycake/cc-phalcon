@@ -7,8 +7,8 @@
 namespace CrazyCake\Checkout;
 
 //other imports
-use CrazyCake\Helpers\DateHelper;
-use CrazyCake\Helpers\FormHelper;
+use CrazyCake\Helpers\Dates;
+use CrazyCake\Helpers\Forms;
 
 /**
  * Base Tickets Model
@@ -85,7 +85,7 @@ class BaseUsersCheckoutsTrx extends \CrazyCake\Models\Base
         $this->_ext = [
             //amount formatted
             "date_formatted"   => (new \DateTime($this->local_time))->format('d-m-Y H:i:s'),
-            "amount_formatted" => FormHelper::formatPrice($this->amount, $this->currency)
+            "amount_formatted" => Forms::formatPrice($this->amount, $this->currency)
         ];
     }
 

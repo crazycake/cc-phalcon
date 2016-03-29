@@ -11,8 +11,8 @@ namespace CrazyCake\Transbank;
 //imports
 use Phalcon\Exception;
 //other imports
-use CrazyCake\Helpers\DateHelper;
-use CrazyCake\Helpers\FormHelper;
+use CrazyCake\Helpers\Dates;
+use CrazyCake\Helpers\Forms;
 
 /**
  * Webpay Kcc Manager
@@ -403,14 +403,14 @@ trait KccManager
             //amount
             $params["TBK_MONTO"] = self::formatAmountForKcc($params["TBK_MONTO"], true);
             //amount with format
-            $params["TBK_MONTO_FORMATO"] = FormHelper::formatPrice($params["TBK_MONTO"], 'CLP')." (CLP)";
+            $params["TBK_MONTO_FORMATO"] = Forms::formatPrice($params["TBK_MONTO"], 'CLP')." (CLP)";
 
             //date & time
             $date = str_split($params["TBK_FECHA_TRANSACCION"], 2);
             $time = str_split($params["TBK_HORA_TRANSACCION"], 2);
 
             $params["TBK_DATE"]         = $params["TBK_FECHA_TRANSACCION"]."-".$params["TBK_HORA_TRANSACCION"];
-            $params["TBK_DATE_FORMATO"] = DateHelper::getTranslatedDateTime(null, $date[0], $date[1], implode(":", $time));
+            $params["TBK_DATE_FORMATO"] = Dates::getTranslatedDateTime(null, $date[0], $date[1], implode(":", $time));
 
             //payment type
             if(isset($this->kcc_payment_types[$params["TBK_TIPO_PAGO"]])) {

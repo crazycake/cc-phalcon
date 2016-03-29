@@ -1,6 +1,6 @@
 <?php
 /**
- * Date Helper
+ * Dates Helper
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
@@ -10,9 +10,9 @@ namespace CrazyCake\Helpers;
 use Phalcon\Exception;
 
 /**
- * Date Helper
+ * Dates Helper
  */
-class DateHelper
+class Dates
 {
     /**
      * Returns daytime passed from Now and given date
@@ -25,7 +25,7 @@ class DateHelper
     {
         //validation
         if (is_null($date))
-            throw new Exception("DateHelper::getTimePassedFromDate -> invalid date parameter, must be string or DateTime object.");
+            throw new Exception("Dates::getTimePassedFromDate -> invalid date parameter, must be string or DateTime object.");
 
         //check if is a DateTime object
         $target_date = $date instanceof \DateTime ? $date : new \DateTime($date);
@@ -51,7 +51,7 @@ class DateHelper
     {
         //validation
         if (is_null($date1) || is_null($date2) )
-            throw new Exception("DateHelper::getTimeDiff -> both input dates must be string or DateTime objects.");
+            throw new Exception("Dates::getTimeDiff -> both input dates must be string or DateTime objects.");
 
         //check if is a DateTime object
         $date1 = $date1 instanceof \DateTime ? $date1 : new \DateTime($date1);
@@ -74,7 +74,7 @@ class DateHelper
     public static function getTranslatedMonthName($month = null, $abbr = false)
     {
         if(empty($month))
-            throw new Exception("DateHelper::getTranslatedMonthName -> 'month' is required");
+            throw new Exception("Dates::getTranslatedMonthName -> 'month' is required");
 
         //get DI instance (static)
         $di = \Phalcon\DI::getDefault();
@@ -119,7 +119,7 @@ class DateHelper
     public static function getTranslatedDateTime($year = "", $month = "", $day = "", $time = "")
     {
         if(empty($month))
-            throw new Exception("DateHelper::getTranslatedDateTime -> month is required.");
+            throw new Exception("Dates::getTranslatedDateTime -> month is required.");
 
         //get DI instance (static)
         $di = \Phalcon\DI::getDefault();

@@ -9,7 +9,7 @@ namespace CrazyCake\Account;
 
 //core
 use CrazyCake\Phalcon\AppLoader;
-use CrazyCake\Helpers\DateHelper;
+use CrazyCake\Helpers\Dates;
 
 /**
  * Account Session Handler

@@ -13,8 +13,8 @@ namespace CrazyCake\Tickets;
 use Phalcon\Exception;
 use CrazyCake\Services\StorageS3; //AWS S3 File Storage helper
 use CrazyCake\Qr\QRMaker;         //CrazyCake QR
-use CrazyCake\Helpers\PdfHelper;    //PDF generator
-use CrazyCake\Helpers\DateHelper;   //Date Helper functions
+use CrazyCake\Helpers\PDF;        //PDF helper
+use CrazyCake\Helpers\Dates; //Date Helper functions
 
 /**
  * Ticket Manager Trait
@@ -296,7 +296,7 @@ trait TicketManager
         $output_path  = $this->ticket_manager_conf['local_temp_path'].$pdf_filename;
 
         //set extended pdf data
-        $this->pdf_settings["data_date"]     = DateHelper::getTranslatedCurrentDate();
+        $this->pdf_settings["data_date"]     = Dates::getTranslatedCurrentDate();
         $this->pdf_settings["data_user"]     = $user;
         $this->pdf_settings["data_checkout"] = $checkout;
         $this->pdf_settings["data_objects"]  = $objects;
@@ -306,7 +306,7 @@ trait TicketManager
         $html_raw = $this->simpleView->render($this->ticket_manager_conf['ticket_pdf_template_view'], $this->pdf_settings);
 
         //PDF generator (this is a heavy task for quick client response)
-        $binary = (new PdfHelper())->generatePdfFileFromHtml($html_raw, $output_path, true);
+        $binary = (new PDF())->generatePdfFileFromHtml($html_raw, $output_path, true);
 
         //upload pdf file to S3
         if($this->pdf_settings["otf"]) {

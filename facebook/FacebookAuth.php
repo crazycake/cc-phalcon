@@ -18,7 +18,7 @@ use Facebook\Helpers\FacebookJavaScriptHelper;
 use Facebook\Exceptions\FacebookSDKException;
 use Facebook\Exceptions\FacebookResponseException;
 //CrazyCake Libs
-use CrazyCake\Helpers\DateHelper;
+use CrazyCake\Helpers\Dates;
 
 /**
  * Facebook Authentication

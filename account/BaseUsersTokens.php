@@ -10,7 +10,7 @@ namespace CrazyCake\Account;
 use Phalcon\Exception;
 use Phalcon\Mvc\Model\Validator\InclusionIn;
 //other imports
-use CrazyCake\Helpers\DateHelper;
+use CrazyCake\Helpers\Dates;
 
 /**
  * Base User Tokens Model
@@ -135,7 +135,7 @@ class BaseUsersTokens extends \CrazyCake\Models\Base
 
         if ($token) {
             //check token 'days passed' (checks if token is expired)
-            $days_passed = DateHelper::getTimePassedFromDate($token->created_at);
+            $days_passed = Dates::getTimePassedFromDate($token->created_at);
 
             if ($days_passed > static::$TOKEN_EXPIRES_THRESHOLD) {
                 //if token has expired delete it and generate a new one
@@ -192,7 +192,7 @@ class BaseUsersTokens extends \CrazyCake\Models\Base
         }
 
         //for other token type, get days passed
-        $days_passed = DateHelper::getTimePassedFromDate($token->created_at);
+        $days_passed = Dates::getTimePassedFromDate($token->created_at);
 
         if ($days_passed > static::$TOKEN_EXPIRES_THRESHOLD)
             throw new Exception("temporal token (id: ".$token->id.") has expired (".$days_passed." days passed since ".$token->created_at.")");

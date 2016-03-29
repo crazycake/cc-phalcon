@@ -9,7 +9,7 @@ namespace CrazyCake\Tickets;
 //imports
 use Phalcon\Mvc\Model\Validator\InclusionIn;
 //other imports
-use CrazyCake\Helpers\FormHelper;
+use CrazyCake\Helpers\Forms;
 
 /**
  * Base Tickets Model
@@ -87,7 +87,7 @@ class BaseTickets extends \CrazyCake\Models\Base
 
         //format ticket price (custom prop)
         if(!is_null($this->price) && !is_null($this->currency))
-            $this->_ext["price_formatted"] = FormHelper::formatPrice($this->price, $this->currency);
+            $this->_ext["price_formatted"] = Forms::formatPrice($this->price, $this->currency);
     }
 
     /**

@@ -10,7 +10,7 @@ namespace CrazyCake\Account;
 
 //imports
 use Phalcon\Exception;
-use CrazyCake\Helpers\FormHelper;
+use CrazyCake\Helpers\Forms;
 use CrazyCake\Helpers\ReCaptcha;
 
 /**
@@ -82,7 +82,7 @@ trait AccountAuth
 
         //send birthday data for form
         if(isset($this->account_auth_conf['profile_request_params']['birthday']))
-            $this->view->setVar("birthday_elements", FormHelper::getBirthdaySelectors());
+            $this->view->setVar("birthday_elements", Forms::getBirthdaySelectors());
 
         //call abstract method
         $this->beforeRenderSignUpView();

@@ -7,7 +7,7 @@
 namespace CrazyCake\Checkout;
 
 //imports
-use CrazyCake\Helpers\FormHelper;
+use CrazyCake\Helpers\Forms;
 
 /**
  * Base User Checkouts objects
@@ -88,8 +88,8 @@ class BaseUsersCheckoutsObjects extends \CrazyCake\Models\Base
             $new_object->currency = $props->currency;
 
             //UI props
-            $new_object->formattedPrice = FormHelper::formatPrice($props->price, $props->currency);
-            $new_object->formattedTotal = FormHelper::formatPrice($props->price * $obj->quantity, $props->currency);
+            $new_object->formattedPrice = Forms::formatPrice($props->price, $props->currency);
+            $new_object->formattedTotal = Forms::formatPrice($props->price * $obj->quantity, $props->currency);
 
             array_push($result, $new_object);
        }

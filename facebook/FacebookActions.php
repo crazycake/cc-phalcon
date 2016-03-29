@@ -23,7 +23,7 @@ use Facebook\Helpers\FacebookJavaScriptHelper;
 use Facebook\Exceptions\FacebookSDKException;
 //CrazyCake Libs
 use CrazyCake\Services\Redis;
-use CrazyCake\Helpers\DateHelper;
+use CrazyCake\Helpers\Dates;
 
 /**
  * Facebook Actions

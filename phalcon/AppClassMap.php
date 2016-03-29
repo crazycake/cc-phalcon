@@ -35,10 +35,10 @@ return array (
   'helpers' => 
   array (
     0 => 'Cryptify.php',
-    1 => 'DateHelper.php',
-    2 => 'FormHelper.php',
+    1 => 'Dates.php',
+    2 => 'Forms.php',
     3 => 'GPS.php',
-    4 => 'PdfHelper.php',
+    4 => 'PDF.php',
     5 => 'ReCaptcha.php',
     6 => 'Slug.php',
     7 => 'UserAgent.php',
