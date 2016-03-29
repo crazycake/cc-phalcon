@@ -44,7 +44,8 @@ fi
 
 # help output
 scriptHelp() {
-	echo -e "\033[93m"$APP_NAME" webapp CLI\nApp:\033[0m"
+	echo -e "\033[93m"$APP_NAME" webapp CLI \033[0m"
+	echo -e "\033[94mApp:\033[0m"
 	echo -e "\033[95m -env: App environment set up, sets owner group & perms for apache folders.\033[0m"
 	echo -e "\033[95m -composer <option>: Installs/Updates composer libraries with autoload-class dump. Use -s to composer self-update. Use -o for optimized dump.\033[0m"
 	echo -e "\033[95m -phinx: Executes phinx db migrations. Run -phinx to display commands.\033[0m"
