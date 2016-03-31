@@ -11,9 +11,12 @@ PROJECT_PATH="$(dirname "$PROJECT_PATH")"
 
 TOOLS_PATH=$PROJECT_PATH"/.tools/"
 PACKAGES_PATH=$PROJECT_PATH"/packages/"
-WEBPACKS_PATH=$PACKAGES_PATH"webpacks/"
 FRONTEND_PATH=$PROJECT_PATH"/frontend/"
 BACKEND_PATH=$PROJECT_PATH"/backend/"
+
+#webpacks path
+WEBPACKS_PATH=$PACKAGES_PATH"webpacks/"
+
 
 # cc-phalcon paths
 CORE_NAMESPACE="cc-phalcon"
@@ -73,8 +76,8 @@ rm -rf $WEBPACKS_PATH"dist/*"
 rm -rf $WEBPACKS_PATH"private/*"
 #copy webpack files
 echo -e "\033[94mCopying webpacks files to $PACKAGES_PATH... \033[0m"
-cp -r $CORE_WEBPACKS_PATH"dist/" $WEBPACKS_PATH"dist/"
-cp -r $CORE_WEBPACKS_PATH"private/" $WEBPACKS_PATH"private/"
+cp -R $CORE_WEBPACKS_PATH"dist/" $WEBPACKS_PATH"dist"
+cp -R $CORE_WEBPACKS_PATH"private/" $WEBPACKS_PATH"private"
 
 # 4) php phar core builder
 # build the PHP phar file and copy to packages folder

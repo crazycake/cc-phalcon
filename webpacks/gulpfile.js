@@ -12,6 +12,7 @@ var watchify   = require('watchify');
 var assign     = require('lodash.assign');
 
 //++ Browserify
+//NOTE: use yargs npm-module for input webpack name core.
 
 var webpack_file = 'webpack_core.js';
 var webpack_src  = './src/' + webpack_file;
