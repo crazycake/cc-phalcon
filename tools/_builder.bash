@@ -10,8 +10,8 @@ PROJECT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PROJECT_PATH="$(dirname "$PROJECT_PATH")"
 # project paths
 TOOLS_PATH=$PROJECT_PATH"/.tools/"
-FRONTEND_PATH=$CURRENT_PATH"/frontend/"
-BACKEND_PATH=$CURRENT_PATH"/backend/"
+FRONTEND_PATH=$PROJECT_PATH"/frontend/"
+BACKEND_PATH=$PROJECT_PATH"/backend/"
 
 buildTask() {
 
