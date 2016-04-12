@@ -159,7 +159,7 @@ if [ "$1" = "-t" ] || [ "$1" = "-s" ] || [ "$1" = "-p" ]; then
 	# exec remote command on machine
 	if [ "$1" = "-t" ]; then
 		echo -e "\033[95mSSH: $TESTING_SSH_CMD \033[0m"
-		ssh -v -i $TESTING_SSH_CMD 'bash -s' -- < ./_deploy.bash $DEPLOY_REMOTE_PATH "$2"
+		ssh -i $TESTING_SSH_CMD 'bash -s' -- < ./_deploy.bash $DEPLOY_REMOTE_PATH "$2"
 	elif [ "$1" = "-s" ]; then
 		echo -e "\033[95mSSH: $STAGING_SSH_CMD \033[0m"
 		ssh -i $STAGING_SSH_CMD 'bash -s' -- < ./_deploy.bash $DEPLOY_REMOTE_PATH "$2"
