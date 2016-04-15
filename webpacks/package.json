@@ -43,11 +43,7 @@
         "q"                      : "./node_modules/q/q.js",
         "velocity"               : "./node_modules/velocity-animate/velocity.js",
         "velocity.ui"            : "./node_modules/velocity-animate/velocity.ui.js",
-        "jquery.scrollTo"        : "./node_modules/jquery.scrollto/jquery.scrollTo.js",
-        "jquery.extended"        : "./private/jquery-plugins/src/jquery.extended.js",
-        "jquery.modality"        : "./private/jquery-plugins/src/jquery.modality.js",
-        "jquery.modality.dialog" : "./private/jquery-plugins/src/jquery.modality.dialog.js",
-        "jquery.formValidation"  : "./private/form-validation/js/formValidation.popular.min.js"
+        "jquery.scrollTo"        : "./node_modules/jquery.scrollto/jquery.scrollTo.js"
 	},
 	"browserify-shim": {
 		"lodash"     : "_",

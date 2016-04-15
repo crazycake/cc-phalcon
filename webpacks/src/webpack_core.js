@@ -13,13 +13,16 @@ require('js-cookie');
 require('jquery');
 require('velocity');
 require('velocity.ui');
+require('jquery.scrollTo');
 
 //plugins
-require('jquery.extended');
-require('jquery.modality');
-require('jquery.modality.dialog');
-require('jquery.scrollTo');
-require('jquery.formValidation');
+require('./plugins/jquery.extended');
+require('./plugins/jquery.modality');
+require('./plugins/jquery.modality.dialog');
+require('./plugins/jquery.flowType');
+require('./plugins/jquery.formValidation');
+require('./plugins/jquery.formValidation.bootstrap');
+require('./plugins/jquery.formValidation.foundation');
 
 /* Load modules */
 

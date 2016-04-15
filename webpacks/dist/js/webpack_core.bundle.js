@@ -43097,563 +43097,6 @@ var template = Object.freeze({
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],12:[function(require,module,exports){
-/*!
- * FormValidation (http://formvalidation.io)
- * The best jQuery plugin to validate form fields. Support Bootstrap, Foundation, Pure, SemanticUI, UIKit and custom frameworks
- * 
- * This is a custom build that does NOT consist of all validators. Only popular validators are included:
- * - between
- * - callback
- * - choice
- * - color
- * - creditCard
- * - date
- * - different
- * - digits
- * - emailAddress
- * - file
- * - greaterThan
- * - identical
- * - integer
- * - lessThan
- * - notEmpty
- * - numeric
- * - promise
- * - regexp
- * - remote
- * - stringLength
- * - uri
- *
- * Use formValidation(.min).js file if you want to have all validators.
- *
- * @version     v0.7.1, built on 2016-02-01 12:00:57 AM
- * @author      https://twitter.com/formvalidation
- * @copyright   (c) 2013 - 2016 Nguyen Huu Phuoc
- * @license     http://formvalidation.io/license/
- */
-if(window.FormValidation={AddOn:{},Framework:{},I18n:{},Validator:{}},"undefined"==typeof jQuery)throw new Error("FormValidation requires jQuery");!function(a){var b=a.fn.jquery.split(" ")[0].split(".");if(+b[0]<2&&+b[1]<9||1===+b[0]&&9===+b[1]&&+b[2]<1)throw new Error("FormValidation requires jQuery version 1.9.1 or higher")}(jQuery),function(a){FormValidation.Base=function(b,c,d){this.$form=a(b),this.options=a.extend({},a.fn.formValidation.DEFAULT_OPTIONS,c),this._namespace=d||"fv",this.$invalidFields=a([]),this.$submitButton=null,this.$hiddenButton=null,this.STATUS_NOT_VALIDATED="NOT_VALIDATED",this.STATUS_VALIDATING="VALIDATING",this.STATUS_INVALID="INVALID",this.STATUS_VALID="VALID",this.STATUS_IGNORED="IGNORED",this.DEFAULT_MESSAGE=a.fn.formValidation.DEFAULT_MESSAGE,this._ieVersion=function(){for(var a=3,b=document.createElement("div"),c=b.all||[];b.innerHTML="<!--[if gt IE "+ ++a+"]><br><![endif]-->",c[0];);return a>4?a:document.documentMode}();var e=document.createElement("div");this._changeEvent=9!==this._ieVersion&&"oninput"in e?"input":"keyup",this._submitIfValid=null,this._cacheFields={},this._init()},FormValidation.Base.prototype={constructor:FormValidation.Base,_exceedThreshold:function(b){var c=this._namespace,d=b.attr("data-"+c+"-field"),e=this.options.fields[d].threshold||this.options.threshold;if(!e)return!0;var f=-1!==a.inArray(b.attr("type"),["button","checkbox","file","hidden","image","radio","reset","submit"]);return f||b.val().length>=e},_init:function(){var b=this,c=this._namespace,d={addOns:{},autoFocus:this.$form.attr("data-"+c+"-autofocus"),button:{selector:this.$form.attr("data-"+c+"-button-selector")||this.$form.attr("data-"+c+"-submitbuttons"),disabled:this.$form.attr("data-"+c+"-button-disabled")},control:{valid:this.$form.attr("data-"+c+"-control-valid"),invalid:this.$form.attr("data-"+c+"-control-invalid")},err:{clazz:this.$form.attr("data-"+c+"-err-clazz"),container:this.$form.attr("data-"+c+"-err-container")||this.$form.attr("data-"+c+"-container"),parent:this.$form.attr("data-"+c+"-err-parent")},events:{formInit:this.$form.attr("data-"+c+"-events-form-init"),formPreValidate:this.$form.attr("data-"+c+"-events-form-prevalidate"),formError:this.$form.attr("data-"+c+"-events-form-error"),formReset:this.$form.attr("data-"+c+"-events-form-reset"),formSuccess:this.$form.attr("data-"+c+"-events-form-success"),fieldAdded:this.$form.attr("data-"+c+"-events-field-added"),fieldRemoved:this.$form.attr("data-"+c+"-events-field-removed"),fieldInit:this.$form.attr("data-"+c+"-events-field-init"),fieldError:this.$form.attr("data-"+c+"-events-field-error"),fieldReset:this.$form.attr("data-"+c+"-events-field-reset"),fieldSuccess:this.$form.attr("data-"+c+"-events-field-success"),fieldStatus:this.$form.attr("data-"+c+"-events-field-status"),localeChanged:this.$form.attr("data-"+c+"-events-locale-changed"),validatorError:this.$form.attr("data-"+c+"-events-validator-error"),validatorSuccess:this.$form.attr("data-"+c+"-events-validator-success"),validatorIgnored:this.$form.attr("data-"+c+"-events-validator-ignored")},excluded:this.$form.attr("data-"+c+"-excluded"),icon:{valid:this.$form.attr("data-"+c+"-icon-valid")||this.$form.attr("data-"+c+"-feedbackicons-valid"),invalid:this.$form.attr("data-"+c+"-icon-invalid")||this.$form.attr("data-"+c+"-feedbackicons-invalid"),validating:this.$form.attr("data-"+c+"-icon-validating")||this.$form.attr("data-"+c+"-feedbackicons-validating"),feedback:this.$form.attr("data-"+c+"-icon-feedback")},live:this.$form.attr("data-"+c+"-live"),locale:this.$form.attr("data-"+c+"-locale"),message:this.$form.attr("data-"+c+"-message"),onPreValidate:this.$form.attr("data-"+c+"-onprevalidate"),onError:this.$form.attr("data-"+c+"-onerror"),onReset:this.$form.attr("data-"+c+"-onreset"),onSuccess:this.$form.attr("data-"+c+"-onsuccess"),row:{selector:this.$form.attr("data-"+c+"-row-selector")||this.$form.attr("data-"+c+"-group"),valid:this.$form.attr("data-"+c+"-row-valid"),invalid:this.$form.attr("data-"+c+"-row-invalid"),feedback:this.$form.attr("data-"+c+"-row-feedback")},threshold:this.$form.attr("data-"+c+"-threshold"),trigger:this.$form.attr("data-"+c+"-trigger"),verbose:this.$form.attr("data-"+c+"-verbose"),fields:{}};this.$form.attr("novalidate","novalidate").addClass(this.options.elementClass).on("submit."+c,function(a){a.preventDefault(),b.validate()}).on("click."+c,this.options.button.selector,function(){b.$submitButton=a(this),b._submitIfValid=!0}),(this.options.declarative===!0||"true"===this.options.declarative)&&this.$form.find("[name], [data-"+c+"-field]").each(function(){var e=a(this),f=e.attr("name")||e.attr("data-"+c+"-field"),g=b._parseOptions(e);g&&(e.attr("data-"+c+"-field",f),d.fields[f]=a.extend({},g,d.fields[f]))}),this.options=a.extend(!0,this.options,d),"string"==typeof this.options.err.parent&&(this.options.err.parent=new RegExp(this.options.err.parent)),this.options.container&&(this.options.err.container=this.options.container,delete this.options.container),this.options.feedbackIcons&&(this.options.icon=a.extend(!0,this.options.icon,this.options.feedbackIcons),delete this.options.feedbackIcons),this.options.group&&(this.options.row.selector=this.options.group,delete this.options.group),this.options.submitButtons&&(this.options.button.selector=this.options.submitButtons,delete this.options.submitButtons),FormValidation.I18n[this.options.locale]||(this.options.locale=a.fn.formValidation.DEFAULT_OPTIONS.locale),(this.options.declarative===!0||"true"===this.options.declarative)&&(this.options=a.extend(!0,this.options,{addOns:this._parseAddOnOptions()})),this.$hiddenButton=a("<button/>").attr("type","submit").prependTo(this.$form).addClass("fv-hidden-submit").css({display:"none",width:0,height:0}),this.$form.on("click."+this._namespace,'[type="submit"]',function(c){if(!c.isDefaultPrevented()){var d=a(c.target),e=d.is('[type="submit"]')?d.eq(0):d.parent('[type="submit"]').eq(0);!b.options.button.selector||e.is(b.options.button.selector)||e.is(b.$hiddenButton)||b.$form.off("submit."+b._namespace).submit()}});for(var e in this.options.fields)this._initField(e);for(var f in this.options.addOns)"function"==typeof FormValidation.AddOn[f].init&&FormValidation.AddOn[f].init(this,this.options.addOns[f]);this.$form.trigger(a.Event(this.options.events.formInit),{bv:this,fv:this,options:this.options}),this.options.onPreValidate&&this.$form.on(this.options.events.formPreValidate,function(a){FormValidation.Helper.call(b.options.onPreValidate,[a])}),this.options.onSuccess&&this.$form.on(this.options.events.formSuccess,function(a){FormValidation.Helper.call(b.options.onSuccess,[a])}),this.options.onError&&this.$form.on(this.options.events.formError,function(a){FormValidation.Helper.call(b.options.onError,[a])}),this.options.onReset&&this.$form.on(this.options.events.formReset,function(a){FormValidation.Helper.call(b.options.onReset,[a])})},_initField:function(b){var c=this._namespace,d=a([]);switch(typeof b){case"object":d=b,b=b.attr("data-"+c+"-field");break;case"string":d=this.getFieldElements(b),d.attr("data-"+c+"-field",b)}if(0!==d.length&&null!==this.options.fields[b]&&null!==this.options.fields[b].validators){var e,f,g=this.options.fields[b].validators;for(e in g)f=g[e].alias||e,FormValidation.Validator[f]||delete this.options.fields[b].validators[e];null===this.options.fields[b].enabled&&(this.options.fields[b].enabled=!0);for(var h=this,i=d.length,j=d.attr("type"),k=1===i||"radio"===j||"checkbox"===j,l=this._getFieldTrigger(d.eq(0)),m=this.options.err.clazz.split(" ").join("."),n=a.map(l,function(a){return a+".update."+c}).join(" "),o=0;i>o;o++){var p=d.eq(o),q=this.options.fields[b].row||this.options.row.selector,r=p.closest(q),s="function"==typeof(this.options.fields[b].container||this.options.fields[b].err||this.options.err.container)?(this.options.fields[b].container||this.options.fields[b].err||this.options.err.container).call(this,p,this):this.options.fields[b].container||this.options.fields[b].err||this.options.err.container,t=s&&"tooltip"!==s&&"popover"!==s?a(s):this._getMessageContainer(p,q);s&&"tooltip"!==s&&"popover"!==s&&t.addClass(this.options.err.clazz),t.find("."+m+"[data-"+c+"-validator][data-"+c+'-for="'+b+'"]').remove(),r.find("i[data-"+c+'-icon-for="'+b+'"]').remove(),p.off(n).on(n,function(){h.updateStatus(a(this),h.STATUS_NOT_VALIDATED)}),p.data(c+".messages",t);for(e in g)p.data(c+".result."+e,this.STATUS_NOT_VALIDATED),k&&o!==i-1||a("<small/>").css("display","none").addClass(this.options.err.clazz).attr("data-"+c+"-validator",e).attr("data-"+c+"-for",b).attr("data-"+c+"-result",this.STATUS_NOT_VALIDATED).html(this._getMessage(b,e)).appendTo(t),f=g[e].alias||e,"function"==typeof FormValidation.Validator[f].init&&FormValidation.Validator[f].init(this,p,this.options.fields[b].validators[e],e);if(this.options.fields[b].icon!==!1&&"false"!==this.options.fields[b].icon&&this.options.icon&&this.options.icon.valid&&this.options.icon.invalid&&this.options.icon.validating&&(!k||o===i-1)){r.addClass(this.options.row.feedback);var u=a("<i/>").css("display","none").addClass(this.options.icon.feedback).attr("data-"+c+"-icon-for",b).insertAfter(p);(k?d:p).data(c+".icon",u),("tooltip"===s||"popover"===s)&&((k?d:p).on(this.options.events.fieldError,function(){r.addClass("fv-has-tooltip")}).on(this.options.events.fieldSuccess,function(){r.removeClass("fv-has-tooltip")}),p.off("focus.container."+c).on("focus.container."+c,function(){h._showTooltip(a(this),s)}).off("blur.container."+c).on("blur.container."+c,function(){h._hideTooltip(a(this),s)})),"string"==typeof this.options.fields[b].icon&&"true"!==this.options.fields[b].icon?u.appendTo(a(this.options.fields[b].icon)):this._fixIcon(p,u)}}var v=[];for(e in g)f=g[e].alias||e,g[e].priority=parseInt(g[e].priority||FormValidation.Validator[f].priority||1,10),v.push({validator:e,priority:g[e].priority});v=v.sort(function(a,b){return a.priority-b.priority}),d.data(c+".validators",v).on(this.options.events.fieldSuccess,function(a,b){var c=h.getOptions(b.field,null,"onSuccess");c&&FormValidation.Helper.call(c,[a,b])}).on(this.options.events.fieldError,function(a,b){var c=h.getOptions(b.field,null,"onError");c&&FormValidation.Helper.call(c,[a,b])}).on(this.options.events.fieldReset,function(a,b){var c=h.getOptions(b.field,null,"onReset");c&&FormValidation.Helper.call(c,[a,b])}).on(this.options.events.fieldStatus,function(a,b){var c=h.getOptions(b.field,null,"onStatus");c&&FormValidation.Helper.call(c,[a,b])}).on(this.options.events.validatorError,function(a,b){var c=h.getOptions(b.field,b.validator,"onError");c&&FormValidation.Helper.call(c,[a,b])}).on(this.options.events.validatorIgnored,function(a,b){var c=h.getOptions(b.field,b.validator,"onIgnored");c&&FormValidation.Helper.call(c,[a,b])}).on(this.options.events.validatorSuccess,function(a,b){var c=h.getOptions(b.field,b.validator,"onSuccess");c&&FormValidation.Helper.call(c,[a,b])}),this.onLiveChange(d,"live",function(){h._exceedThreshold(a(this))&&h.validateField(a(this))}),d.trigger(a.Event(this.options.events.fieldInit),{bv:this,fv:this,field:b,element:d})}},_isExcluded:function(b){var c=this._namespace,d=b.attr("data-"+c+"-excluded"),e=b.attr("data-"+c+"-field")||b.attr("name");switch(!0){case!!e&&this.options.fields&&this.options.fields[e]&&("true"===this.options.fields[e].excluded||this.options.fields[e].excluded===!0):case"true"===d:case""===d:return!0;case!!e&&this.options.fields&&this.options.fields[e]&&("false"===this.options.fields[e].excluded||this.options.fields[e].excluded===!1):case"false"===d:return!1;case!!e&&this.options.fields&&this.options.fields[e]&&"function"==typeof this.options.fields[e].excluded:return this.options.fields[e].excluded.call(this,b,this);case!!e&&this.options.fields&&this.options.fields[e]&&"string"==typeof this.options.fields[e].excluded:case d:return FormValidation.Helper.call(this.options.fields[e].excluded,[b,this]);default:if(this.options.excluded){"string"==typeof this.options.excluded&&(this.options.excluded=a.map(this.options.excluded.split(","),function(b){return a.trim(b)}));for(var f=this.options.excluded.length,g=0;f>g;g++)if("string"==typeof this.options.excluded[g]&&b.is(this.options.excluded[g])||"function"==typeof this.options.excluded[g]&&this.options.excluded[g].call(this,b,this)===!0)return!0}return!1}},_getFieldTrigger:function(a){var b=this._namespace,c=a.data(b+".trigger");if(c)return c;var d=a.attr("type"),e=a.attr("data-"+b+"-field"),f="radio"===d||"checkbox"===d||"file"===d||"SELECT"===a.get(0).tagName?"change":this._ieVersion>=10&&a.attr("placeholder")?"keyup":this._changeEvent;return c=((this.options.fields[e]?this.options.fields[e].trigger:null)||this.options.trigger||f).split(" "),a.data(b+".trigger",c),c},_getMessage:function(a,b){if(!this.options.fields[a]||!this.options.fields[a].validators)return"";var c=this.options.fields[a].validators,d=c[b]&&c[b].alias?c[b].alias:b;if(!FormValidation.Validator[d])return"";switch(!0){case!!c[b].message:return c[b].message;case!!this.options.fields[a].message:return this.options.fields[a].message;case!!this.options.message:return this.options.message;case!!FormValidation.I18n[this.options.locale]&&!!FormValidation.I18n[this.options.locale][d]&&!!FormValidation.I18n[this.options.locale][d]["default"]:return FormValidation.I18n[this.options.locale][d]["default"];default:return this.DEFAULT_MESSAGE}},_getMessageContainer:function(a,b){if(!this.options.err.parent)throw new Error("The err.parent option is not defined");var c=a.parent();if(c.is(b))return c;var d=c.attr("class");return d&&this.options.err.parent.test(d)?c:this._getMessageContainer(c,b)},_parseAddOnOptions:function(){var a=this._namespace,b=this.$form.attr("data-"+a+"-addons"),c=this.options.addOns||{};if(b){b=b.replace(/\s/g,"").split(",");for(var d=0;d<b.length;d++)c[b[d]]||(c[b[d]]={})}var e,f,g,h;for(e in c)if(FormValidation.AddOn[e]){if(f=FormValidation.AddOn[e].html5Attributes)for(g in f)h=this.$form.attr("data-"+a+"-addons-"+e.toLowerCase()+"-"+g.toLowerCase()),h&&(c[e][f[g]]=h)}else delete c[e];return c},_parseOptions:function(b){var c,d,e,f,g,h,i,j,k,l=this._namespace,m=b.attr("name")||b.attr("data-"+l+"-field"),n={},o=new RegExp("^data-"+l+"-([a-z]+)-alias$"),p=a.extend({},FormValidation.Validator);a.each(b.get(0).attributes,function(a,b){b.value&&o.test(b.name)&&(d=b.name.split("-")[2],p[b.value]&&(p[d]=p[b.value],p[d].alias=b.value))});for(d in p)if(c=p[d],e="data-"+l+"-"+d.toLowerCase(),f=b.attr(e)+"",k="function"==typeof c.enableByHtml5?c.enableByHtml5(b):null,k&&"false"!==f||k!==!0&&(""===f||"true"===f||e===f.toLowerCase())){c.html5Attributes=a.extend({},{message:"message",onerror:"onError",onreset:"onReset",onsuccess:"onSuccess",priority:"priority",transformer:"transformer"},c.html5Attributes),n[d]=a.extend({},k===!0?{}:k,n[d]),c.alias&&(n[d].alias=c.alias);for(j in c.html5Attributes)g=c.html5Attributes[j],h="data-"+l+"-"+d.toLowerCase()+"-"+j,i=b.attr(h),i&&("true"===i||h===i.toLowerCase()?i=!0:"false"===i&&(i=!1),n[d][g]=i)}var q={autoFocus:b.attr("data-"+l+"-autofocus"),err:b.attr("data-"+l+"-err-container")||b.attr("data-"+l+"-container"),enabled:b.attr("data-"+l+"-enabled"),excluded:b.attr("data-"+l+"-excluded"),icon:b.attr("data-"+l+"-icon")||b.attr("data-"+l+"-feedbackicons")||(this.options.fields&&this.options.fields[m]?this.options.fields[m].feedbackIcons:null),message:b.attr("data-"+l+"-message"),onError:b.attr("data-"+l+"-onerror"),onReset:b.attr("data-"+l+"-onreset"),onStatus:b.attr("data-"+l+"-onstatus"),onSuccess:b.attr("data-"+l+"-onsuccess"),row:b.attr("data-"+l+"-row")||b.attr("data-"+l+"-group")||(this.options.fields&&this.options.fields[m]?this.options.fields[m].group:null),selector:b.attr("data-"+l+"-selector"),threshold:b.attr("data-"+l+"-threshold"),transformer:b.attr("data-"+l+"-transformer"),trigger:b.attr("data-"+l+"-trigger"),verbose:b.attr("data-"+l+"-verbose"),validators:n},r=a.isEmptyObject(q),s=a.isEmptyObject(n);return!s||!r&&this.options.fields&&this.options.fields[m]?q:null},_submit:function(){var b=this.isValid();if(null!==b){var c=b?this.options.events.formSuccess:this.options.events.formError,d=a.Event(c);this.$form.trigger(d),this.$submitButton&&(b?this._onSuccess(d):this._onError(d))}},_onError:function(b){if(!b.isDefaultPrevented()){if("submitted"===this.options.live){this.options.live="enabled";var c=this;for(var d in this.options.fields)!function(b){var d=c.getFieldElements(b);d.length&&c.onLiveChange(d,"live",function(){c._exceedThreshold(a(this))&&c.validateField(a(this))})}(d)}for(var e=this._namespace,f=0;f<this.$invalidFields.length;f++){var g=this.$invalidFields.eq(f),h=this.isOptionEnabled(g.attr("data-"+e+"-field"),"autoFocus");if(h){g.focus();break}}}},_onFieldValidated:function(b,c){var d=this._namespace,e=b.attr("data-"+d+"-field"),f=this.options.fields[e].validators,g={},h=0,i={bv:this,fv:this,field:e,element:b,validator:c,result:b.data(d+".response."+c)};if(c)switch(b.data(d+".result."+c)){case this.STATUS_INVALID:b.trigger(a.Event(this.options.events.validatorError),i);break;case this.STATUS_VALID:b.trigger(a.Event(this.options.events.validatorSuccess),i);break;case this.STATUS_IGNORED:b.trigger(a.Event(this.options.events.validatorIgnored),i)}g[this.STATUS_NOT_VALIDATED]=0,g[this.STATUS_VALIDATING]=0,g[this.STATUS_INVALID]=0,g[this.STATUS_VALID]=0,g[this.STATUS_IGNORED]=0;for(var j in f)if(f[j].enabled!==!1){h++;var k=b.data(d+".result."+j);k&&g[k]++}g[this.STATUS_VALID]+g[this.STATUS_IGNORED]===h?(this.$invalidFields=this.$invalidFields.not(b),b.trigger(a.Event(this.options.events.fieldSuccess),i)):(0===g[this.STATUS_NOT_VALIDATED]||!this.isOptionEnabled(e,"verbose"))&&0===g[this.STATUS_VALIDATING]&&g[this.STATUS_INVALID]>0&&(this.$invalidFields=this.$invalidFields.add(b),b.trigger(a.Event(this.options.events.fieldError),i))},_onSuccess:function(a){a.isDefaultPrevented()||this.disableSubmitButtons(!0).defaultSubmit()},_fixIcon:function(a,b){},_createTooltip:function(a,b,c){},_destroyTooltip:function(a,b){},_hideTooltip:function(a,b){},_showTooltip:function(a,b){},defaultSubmit:function(){var b=this._namespace;this.$submitButton&&a("<input/>").attr({type:"hidden",name:this.$submitButton.attr("name")}).attr("data-"+b+"-submit-hidden","").val(this.$submitButton.val()).appendTo(this.$form),this.$form.off("submit."+b).submit()},disableSubmitButtons:function(a){return a?"disabled"!==this.options.live&&this.$form.find(this.options.button.selector).attr("disabled","disabled").addClass(this.options.button.disabled):this.$form.find(this.options.button.selector).removeAttr("disabled").removeClass(this.options.button.disabled),this},getFieldElements:function(b){if(!this._cacheFields[b])if(this.options.fields[b]&&this.options.fields[b].selector){var c=this.$form.find(this.options.fields[b].selector);this._cacheFields[b]=c.length?c:a(this.options.fields[b].selector)}else this._cacheFields[b]=this.$form.find('[name="'+b+'"]');return this._cacheFields[b]},getFieldValue:function(a,b){var c,d=this._namespace;if("string"==typeof a){if(c=this.getFieldElements(a),0===c.length)return null}else c=a,a=c.attr("data-"+d+"-field");if(!a||!this.options.fields[a])return c.val();var e=(this.options.fields[a].validators&&this.options.fields[a].validators[b]?this.options.fields[a].validators[b].transformer:null)||this.options.fields[a].transformer;return e?FormValidation.Helper.call(e,[c,b,this]):c.val()},getNamespace:function(){return this._namespace},getOptions:function(a,b,c){var d=this._namespace;if(!a)return c?this.options[c]:this.options;if("object"==typeof a&&(a=a.attr("data-"+d+"-field")),!this.options.fields[a])return null;var e=this.options.fields[a];return b?e.validators&&e.validators[b]?c?e.validators[b][c]:e.validators[b]:null:c?e[c]:e},getStatus:function(a,b){var c=this._namespace;switch(typeof a){case"object":return a.data(c+".result."+b);case"string":default:return this.getFieldElements(a).eq(0).data(c+".result."+b)}},isOptionEnabled:function(a,b){return!this.options.fields[a]||"true"!==this.options.fields[a][b]&&this.options.fields[a][b]!==!0?!this.options.fields[a]||"false"!==this.options.fields[a][b]&&this.options.fields[a][b]!==!1?"true"===this.options[b]||this.options[b]===!0:!1:!0},isValid:function(){for(var a in this.options.fields){var b=this.isValidField(a);if(null===b)return null;if(b===!1)return!1}return!0},isValidContainer:function(b){var c=this,d=this._namespace,e=[],f="string"==typeof b?a(b):b;if(0===f.length)return!0;f.find("[data-"+d+"-field]").each(function(){var b=a(this);c._isExcluded(b)||e.push(b)});for(var g=e.length,h=this.options.err.clazz.split(" ").join("."),i=0;g>i;i++){var j=e[i],k=j.attr("data-"+d+"-field"),l=j.data(d+".messages").find("."+h+"[data-"+d+"-validator][data-"+d+'-for="'+k+'"]');if(!this.options.fields||!this.options.fields[k]||"false"!==this.options.fields[k].enabled&&this.options.fields[k].enabled!==!1){if(l.filter("[data-"+d+'-result="'+this.STATUS_INVALID+'"]').length>0)return!1;if(l.filter("[data-"+d+'-result="'+this.STATUS_NOT_VALIDATED+'"]').length>0||l.filter("[data-"+d+'-result="'+this.STATUS_VALIDATING+'"]').length>0)return null}}return!0},isValidField:function(b){var c=this._namespace,d=a([]);switch(typeof b){case"object":d=b,b=b.attr("data-"+c+"-field");break;case"string":d=this.getFieldElements(b)}if(0===d.length||!this.options.fields[b]||"false"===this.options.fields[b].enabled||this.options.fields[b].enabled===!1)return!0;for(var e,f,g,h=d.attr("type"),i="radio"===h||"checkbox"===h?1:d.length,j=0;i>j;j++)if(e=d.eq(j),!this._isExcluded(e))for(f in this.options.fields[b].validators)if(this.options.fields[b].validators[f].enabled!==!1){if(g=e.data(c+".result."+f),g===this.STATUS_VALIDATING||g===this.STATUS_NOT_VALIDATED)return null;if(g===this.STATUS_INVALID)return!1}return!0},offLiveChange:function(b,c){if(null===b||0===b.length)return this;var d=this._namespace,e=this._getFieldTrigger(b.eq(0)),f=a.map(e,function(a){return a+"."+c+"."+d}).join(" ");return b.off(f),this},onLiveChange:function(b,c,d){if(null===b||0===b.length)return this;var e=this._namespace,f=this._getFieldTrigger(b.eq(0)),g=a.map(f,function(a){return a+"."+c+"."+e}).join(" ");switch(this.options.live){case"submitted":break;case"disabled":b.off(g);break;case"enabled":default:b.off(g).on(g,function(a){d.apply(this,arguments)})}return this},updateMessage:function(b,c,d){var e=this._namespace,f=a([]);switch(typeof b){case"object":f=b,b=b.attr("data-"+e+"-field");break;case"string":f=this.getFieldElements(b)}var g=this.options.err.clazz.split(" ").join(".");return f.each(function(){a(this).data(e+".messages").find("."+g+"[data-"+e+'-validator="'+c+'"][data-'+e+'-for="'+b+'"]').html(d)}),this},updateStatus:function(b,c,d){var e=this._namespace,f=a([]);switch(typeof b){case"object":f=b,b=b.attr("data-"+e+"-field");break;case"string":f=this.getFieldElements(b)}if(!b||!this.options.fields[b])return this;c===this.STATUS_NOT_VALIDATED&&(this._submitIfValid=!1);for(var g=this,h=f.attr("type"),i=this.options.fields[b].row||this.options.row.selector,j="radio"===h||"checkbox"===h?1:f.length,k=this.options.err.clazz.split(" ").join("."),l=0;j>l;l++){var m=f.eq(l);if(!this._isExcluded(m)){var n,o,p=m.closest(i),q=m.data(e+".messages"),r=q.find("."+k+"[data-"+e+"-validator][data-"+e+'-for="'+b+'"]'),s=d?r.filter("[data-"+e+'-validator="'+d+'"]'):r,t=m.data(e+".icon"),u="function"==typeof(this.options.fields[b].container||this.options.fields[b].err||this.options.err.container)?(this.options.fields[b].container||this.options.fields[b].err||this.options.err.container).call(this,m,this):this.options.fields[b].container||this.options.fields[b].err||this.options.err.container,v=null;if(d)m.data(e+".result."+d,c);else for(var w in this.options.fields[b].validators)m.data(e+".result."+w,c);switch(s.attr("data-"+e+"-result",c),c){case this.STATUS_VALIDATING:v=null,this.disableSubmitButtons(!0),m.removeClass(this.options.control.valid).removeClass(this.options.control.invalid),p.removeClass(this.options.row.valid).removeClass(this.options.row.invalid),t&&t.removeClass(this.options.icon.valid).removeClass(this.options.icon.invalid).addClass(this.options.icon.validating).show();break;case this.STATUS_INVALID:v=!1,this.disableSubmitButtons(!0),m.removeClass(this.options.control.valid).addClass(this.options.control.invalid),p.removeClass(this.options.row.valid).addClass(this.options.row.invalid),t&&t.removeClass(this.options.icon.valid).removeClass(this.options.icon.validating).addClass(this.options.icon.invalid).show();break;case this.STATUS_IGNORED:case this.STATUS_VALID:n=r.filter("[data-"+e+'-result="'+this.STATUS_VALIDATING+'"]').length>0,o=r.filter("[data-"+e+'-result="'+this.STATUS_NOT_VALIDATED+'"]').length>0;var x=r.filter("[data-"+e+'-result="'+this.STATUS_IGNORED+'"]').length;v=n||o?null:r.filter("[data-"+e+'-result="'+this.STATUS_VALID+'"]').length+x===r.length,m.removeClass(this.options.control.valid).removeClass(this.options.control.invalid),v===!0?(this.disableSubmitButtons(this.isValid()===!1),c===this.STATUS_VALID&&m.addClass(this.options.control.valid)):v===!1&&(this.disableSubmitButtons(!0),c===this.STATUS_VALID&&m.addClass(this.options.control.invalid)),t&&(t.removeClass(this.options.icon.invalid).removeClass(this.options.icon.validating).removeClass(this.options.icon.valid),(c===this.STATUS_VALID||x!==r.length)&&t.addClass(n?this.options.icon.validating:null===v?"":v?this.options.icon.valid:this.options.icon.invalid).show());var y=this.isValidContainer(p);null!==y&&(p.removeClass(this.options.row.valid).removeClass(this.options.row.invalid),(c===this.STATUS_VALID||x!==r.length)&&p.addClass(y?this.options.row.valid:this.options.row.invalid));break;case this.STATUS_NOT_VALIDATED:default:v=null,this.disableSubmitButtons(!1),m.removeClass(this.options.control.valid).removeClass(this.options.control.invalid),p.removeClass(this.options.row.valid).removeClass(this.options.row.invalid),t&&t.removeClass(this.options.icon.valid).removeClass(this.options.icon.invalid).removeClass(this.options.icon.validating).hide()}!t||"tooltip"!==u&&"popover"!==u?c===this.STATUS_INVALID?s.show():s.hide():v===!1?this._createTooltip(m,r.filter("[data-"+e+'-result="'+g.STATUS_INVALID+'"]').eq(0).html(),u):this._destroyTooltip(m,u),m.trigger(a.Event(this.options.events.fieldStatus),{bv:this,fv:this,field:b,element:m,status:c}),this._onFieldValidated(m,d)}}return this},validate:function(){if(a.isEmptyObject(this.options.fields))return this._submit(),this;this.$form.trigger(a.Event(this.options.events.formPreValidate)),this.disableSubmitButtons(!0),this._submitIfValid=!1;for(var b in this.options.fields)this.validateField(b);return this._submit(),this._submitIfValid=!0,this},validateField:function(b){var c=this._namespace,d=a([]);switch(typeof b){case"object":d=b,b=b.attr("data-"+c+"-field");break;case"string":d=this.getFieldElements(b)}if(0===d.length||!this.options.fields[b]||"false"===this.options.fields[b].enabled||this.options.fields[b].enabled===!1)return this;for(var e,f,g,h=this,i=d.attr("type"),j="radio"===i||"checkbox"===i?1:d.length,k="radio"===i||"checkbox"===i,l=this.options.fields[b].validators,m=this.isOptionEnabled(b,"verbose"),n=0;j>n;n++){var o=d.eq(n);if(!this._isExcluded(o))for(var p=!1,q=o.data(c+".validators"),r=q.length,s=0;r>s&&(e=q[s].validator,o.data(c+".dfs."+e)&&o.data(c+".dfs."+e).reject(),!p);s++){var t=o.data(c+".result."+e);if(t!==this.STATUS_VALID&&t!==this.STATUS_INVALID)if(l[e].enabled!==!1)if(o.data(c+".result."+e,this.STATUS_VALIDATING),f=l[e].alias||e,g=FormValidation.Validator[f].validate(this,o,l[e],e),"object"==typeof g&&g.resolve)this.updateStatus(k?b:o,this.STATUS_VALIDATING,e),o.data(c+".dfs."+e,g),g.done(function(a,b,d){a.removeData(c+".dfs."+b).data(c+".response."+b,d),d.message&&h.updateMessage(a,b,d.message),h.updateStatus(k?a.attr("data-"+c+"-field"):a,d.valid===!0?h.STATUS_VALID:d.valid===!1?h.STATUS_INVALID:h.STATUS_IGNORED,b),d.valid&&h._submitIfValid===!0?h._submit():d.valid!==!1||m||(p=!0)});else if("object"==typeof g&&void 0!==g.valid){if(o.data(c+".response."+e,g),g.message&&this.updateMessage(k?b:o,e,g.message),this.updateStatus(k?b:o,g.valid===!0?this.STATUS_VALID:g.valid===!1?this.STATUS_INVALID:this.STATUS_IGNORED,e),g.valid===!1&&!m)break}else if("boolean"==typeof g){if(o.data(c+".response."+e,g),this.updateStatus(k?b:o,g?this.STATUS_VALID:this.STATUS_INVALID,e),!g&&!m)break}else null===g&&(o.data(c+".response."+e,g),this.updateStatus(k?b:o,this.STATUS_IGNORED,e));else this.updateStatus(k?b:o,this.STATUS_IGNORED,e);else this._onFieldValidated(o,e)}}return this},addField:function(b,c){var d=this._namespace,e=a([]);switch(typeof b){case"object":e=b,b=b.attr("data-"+d+"-field")||b.attr("name");break;case"string":delete this._cacheFields[b],e=this.getFieldElements(b)}e.attr("data-"+d+"-field",b);for(var f=e.attr("type"),g="radio"===f||"checkbox"===f?1:e.length,h=0;g>h;h++){var i=e.eq(h),j=this._parseOptions(i);j=null===j?c:a.extend(!0,j,c),this.options.fields[b]=a.extend(!0,this.options.fields[b],j),this._cacheFields[b]=this._cacheFields[b]?this._cacheFields[b].add(i):i,this._initField("checkbox"===f||"radio"===f?b:i)}return this.disableSubmitButtons(!1),this.$form.trigger(a.Event(this.options.events.fieldAdded),{field:b,element:e,options:this.options.fields[b]}),this},destroy:function(){var a,b,c,d,e,f,g,h,i=this._namespace;for(b in this.options.fields)for(c=this.getFieldElements(b),a=0;a<c.length;a++){d=c.eq(a);for(e in this.options.fields[b].validators)d.data(i+".dfs."+e)&&d.data(i+".dfs."+e).reject(),d.removeData(i+".result."+e).removeData(i+".response."+e).removeData(i+".dfs."+e),h=this.options.fields[b].validators[e].alias||e,"function"==typeof FormValidation.Validator[h].destroy&&FormValidation.Validator[h].destroy(this,d,this.options.fields[b].validators[e],e)}var j=this.options.err.clazz.split(" ").join(".");for(b in this.options.fields)for(c=this.getFieldElements(b),g=this.options.fields[b].row||this.options.row.selector,a=0;a<c.length;a++){d=c.eq(a),d.data(i+".messages").find("."+j+"[data-"+i+"-validator][data-"+i+'-for="'+b+'"]').remove().end().end().removeData(i+".messages").removeData(i+".validators").closest(g).removeClass(this.options.row.valid).removeClass(this.options.row.invalid).removeClass(this.options.row.feedback).end().off("."+i).removeAttr("data-"+i+"-field");var k="function"==typeof(this.options.fields[b].container||this.options.fields[b].err||this.options.err.container)?(this.options.fields[b].container||this.options.fields[b].err||this.options.err.container).call(this,d,this):this.options.fields[b].container||this.options.fields[b].err||this.options.err.container;("tooltip"===k||"popover"===k)&&this._destroyTooltip(d,k),f=d.data(i+".icon"),f&&f.remove(),d.removeData(i+".icon").removeData(i+".trigger")}for(var l in this.options.addOns)"function"==typeof FormValidation.AddOn[l].destroy&&FormValidation.AddOn[l].destroy(this,this.options.addOns[l]);this.disableSubmitButtons(!1),this.$hiddenButton.remove(),this.$form.removeClass(this.options.elementClass).off("."+i).removeData("bootstrapValidator").removeData("formValidation").find("[data-"+i+"-submit-hidden]").remove().end().find('[type="submit"]').off("click."+i)},enableFieldValidators:function(a,b,c){var d=this.options.fields[a].validators;if(c&&d&&d[c]&&d[c].enabled!==b)this.options.fields[a].validators[c].enabled=b,this.updateStatus(a,this.STATUS_NOT_VALIDATED,c);else if(!c&&this.options.fields[a].enabled!==b){this.options.fields[a].enabled=b;for(var e in d)this.enableFieldValidators(a,b,e)}return this},getDynamicOption:function(a,b){var c="string"==typeof a?this.getFieldElements(a):a,d=c.val();if("function"==typeof b)return FormValidation.Helper.call(b,[d,this,c]);if("string"==typeof b){var e=this.getFieldElements(b);return e.length?e.val():FormValidation.Helper.call(b,[d,this,c])||b}return null},getForm:function(){return this.$form},getInvalidFields:function(){return this.$invalidFields},getLocale:function(){
-return this.options.locale},getMessages:function(b,c){var d=this,e=this._namespace,f=[],g=a([]);switch(!0){case b&&"object"==typeof b:g=b;break;case b&&"string"==typeof b:var h=this.getFieldElements(b);if(h.length>0){var i=h.attr("type");g="radio"===i||"checkbox"===i?h.eq(0):h}break;default:g=this.$invalidFields}var j=c?"[data-"+e+'-validator="'+c+'"]':"",k=this.options.err.clazz.split(" ").join(".");return g.each(function(){f=f.concat(a(this).data(e+".messages").find("."+k+"[data-"+e+'-for="'+a(this).attr("data-"+e+"-field")+'"][data-'+e+'-result="'+d.STATUS_INVALID+'"]'+j).map(function(){var b=a(this).attr("data-"+e+"-validator"),c=a(this).attr("data-"+e+"-for");return d.options.fields[c].validators[b].enabled===!1?"":a(this).html()}).get())}),f},getSubmitButton:function(){return this.$submitButton},removeField:function(b){var c=this._namespace,d=a([]);switch(typeof b){case"object":d=b,b=b.attr("data-"+c+"-field")||b.attr("name"),d.attr("data-"+c+"-field",b);break;case"string":d=this.getFieldElements(b)}if(0===d.length)return this;for(var e=d.attr("type"),f="radio"===e||"checkbox"===e?1:d.length,g=0;f>g;g++){var h=d.eq(g);this.$invalidFields=this.$invalidFields.not(h),this._cacheFields[b]=this._cacheFields[b].not(h)}return this._cacheFields[b]&&0!==this._cacheFields[b].length||delete this.options.fields[b],("checkbox"===e||"radio"===e)&&this._initField(b),this.disableSubmitButtons(!1),this.$form.trigger(a.Event(this.options.events.fieldRemoved),{field:b,element:d}),this},resetField:function(b,c){var d=this._namespace,e=a([]);switch(typeof b){case"object":e=b,b=b.attr("data-"+d+"-field");break;case"string":e=this.getFieldElements(b)}var f=0,g=e.length;if(this.options.fields[b])for(f=0;g>f;f++)for(var h in this.options.fields[b].validators)e.eq(f).removeData(d+".dfs."+h);if(c){var i=e.attr("type");"radio"===i||"checkbox"===i?e.prop("checked",!1).removeAttr("selected"):e.val("")}for(this.updateStatus(b,this.STATUS_NOT_VALIDATED),f=0;g>f;f++)e.eq(f).trigger(a.Event(this.options.events.fieldReset),{fv:this,field:b,element:e.eq(f),resetValue:c});return this},resetForm:function(b){for(var c in this.options.fields)this.resetField(c,b);return this.$invalidFields=a([]),this.$submitButton=null,this.disableSubmitButtons(!1),this.$form.trigger(a.Event(this.options.events.formReset),{fv:this,resetValue:b}),this},revalidateField:function(a){return this.updateStatus(a,this.STATUS_NOT_VALIDATED).validateField(a),this},setLocale:function(b){return this.options.locale=b,this.$form.trigger(a.Event(this.options.events.localeChanged),{locale:b,bv:this,fv:this}),this},updateOption:function(a,b,c,d){var e=this._namespace;return"object"==typeof a&&(a=a.attr("data-"+e+"-field")),this.options.fields[a]&&this.options.fields[a].validators[b]&&(this.options.fields[a].validators[b][c]=d,this.updateStatus(a,this.STATUS_NOT_VALIDATED,b)),this},validateContainer:function(b){var c=this,d=this._namespace,e=[],f="string"==typeof b?a(b):b;if(0===f.length)return this;f.find("[data-"+d+"-field]").each(function(){var b=a(this);c._isExcluded(b)||e.push(b)});for(var g=e.length,h=0;g>h;h++)this.validateField(e[h]);return this}},a.fn.formValidation=function(b){var c=arguments;return this.each(function(){var d=a(this),e=d.data("formValidation"),f="object"==typeof b&&b;if(!e){var g=(f.framework||d.attr("data-fv-framework")||"bootstrap").toLowerCase(),h=g.substr(0,1).toUpperCase()+g.substr(1);if("undefined"==typeof FormValidation.Framework[h])throw new Error("The class FormValidation.Framework."+h+" is not implemented");e=new FormValidation.Framework[h](this,f),d.addClass("fv-form-"+g).data("formValidation",e)}"string"==typeof b&&e[b].apply(e,Array.prototype.slice.call(c,1))})},a.fn.formValidation.Constructor=FormValidation.Base,a.fn.formValidation.DEFAULT_MESSAGE="This value is not valid",a.fn.formValidation.DEFAULT_OPTIONS={autoFocus:!0,declarative:!0,elementClass:"fv-form",events:{formInit:"init.form.fv",formPreValidate:"prevalidate.form.fv",formError:"err.form.fv",formReset:"rst.form.fv",formSuccess:"success.form.fv",fieldAdded:"added.field.fv",fieldRemoved:"removed.field.fv",fieldInit:"init.field.fv",fieldError:"err.field.fv",fieldReset:"rst.field.fv",fieldSuccess:"success.field.fv",fieldStatus:"status.field.fv",localeChanged:"changed.locale.fv",validatorError:"err.validator.fv",validatorSuccess:"success.validator.fv",validatorIgnored:"ignored.validator.fv"},excluded:[":disabled",":hidden",":not(:visible)"],fields:null,live:"enabled",locale:"en_US",message:null,threshold:null,verbose:!0,button:{selector:'[type="submit"]:not([formnovalidate])',disabled:""},control:{valid:"",invalid:""},err:{clazz:"",container:null,parent:null},icon:{valid:null,invalid:null,validating:null,feedback:""},row:{selector:null,valid:"",invalid:"",feedback:""}}}(jQuery),function(a){FormValidation.Helper={call:function(a,b){if("function"==typeof a)return a.apply(this,b);if("string"==typeof a){"()"===a.substring(a.length-2)&&(a=a.substring(0,a.length-2));for(var c=a.split("."),d=c.pop(),e=window,f=0;f<c.length;f++)e=e[c[f]];return"undefined"==typeof e[d]?null:e[d].apply(this,b)}},date:function(a,b,c,d){if(isNaN(a)||isNaN(b)||isNaN(c))return!1;if(c.length>2||b.length>2||a.length>4)return!1;if(c=parseInt(c,10),b=parseInt(b,10),a=parseInt(a,10),1e3>a||a>9999||0>=b||b>12)return!1;var e=[31,28,31,30,31,30,31,31,30,31,30,31];if((a%400===0||a%100!==0&&a%4===0)&&(e[1]=29),0>=c||c>e[b-1])return!1;if(d===!0){var f=new Date,g=f.getFullYear(),h=f.getMonth(),i=f.getDate();return g>a||a===g&&h>b-1||a===g&&b-1===h&&i>c}return!0},format:function(b,c){a.isArray(c)||(c=[c]);for(var d in c)b=b.replace("%s",c[d]);return b},luhn:function(a){for(var b=a.length,c=0,d=[[0,1,2,3,4,5,6,7,8,9],[0,2,4,6,8,1,3,5,7,9]],e=0;b--;)e+=d[c][parseInt(a.charAt(b),10)],c^=1;return e%10===0&&e>0},mod11And10:function(a){for(var b=5,c=a.length,d=0;c>d;d++)b=(2*(b||10)%11+parseInt(a.charAt(d),10))%10;return 1===b},mod37And36:function(a,b){b=b||"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";for(var c=b.length,d=a.length,e=Math.floor(c/2),f=0;d>f;f++)e=(2*(e||c)%(c+1)+b.indexOf(a.charAt(f)))%c;return 1===e}}}(jQuery),function(a){FormValidation.I18n=a.extend(!0,FormValidation.I18n||{},{en_US:{between:{"default":"Please enter a value between %s and %s",notInclusive:"Please enter a value between %s and %s strictly"}}}),FormValidation.Validator.between={html5Attributes:{message:"message",min:"min",max:"max",inclusive:"inclusive"},enableByHtml5:function(a){return"range"===a.attr("type")?{min:a.attr("min"),max:a.attr("max")}:!1},validate:function(b,c,d,e){var f=b.getFieldValue(c,e);if(""===f)return!0;f=this._format(f);var g=b.getLocale(),h=a.isNumeric(d.min)?d.min:b.getDynamicOption(c,d.min),i=a.isNumeric(d.max)?d.max:b.getDynamicOption(c,d.max),j=this._format(h),k=this._format(i);return d.inclusive===!0||void 0===d.inclusive?{valid:a.isNumeric(f)&&parseFloat(f)>=j&&parseFloat(f)<=k,message:FormValidation.Helper.format(d.message||FormValidation.I18n[g].between["default"],[h,i])}:{valid:a.isNumeric(f)&&parseFloat(f)>j&&parseFloat(f)<k,message:FormValidation.Helper.format(d.message||FormValidation.I18n[g].between.notInclusive,[h,i])}},_format:function(a){return(a+"").replace(",",".")}}}(jQuery),function(a){FormValidation.I18n=a.extend(!0,FormValidation.I18n||{},{en_US:{callback:{"default":"Please enter a valid value"}}}),FormValidation.Validator.callback={priority:999,html5Attributes:{message:"message",callback:"callback"},validate:function(b,c,d,e){var f=b.getFieldValue(c,e),g=new a.Deferred,h={valid:!0};if(d.callback){var i=FormValidation.Helper.call(d.callback,[f,b,c]);h="boolean"==typeof i||null===i?{valid:i}:i}return g.resolve(c,e,h),g}}}(jQuery),function(a){FormValidation.I18n=a.extend(!0,FormValidation.I18n||{},{en_US:{choice:{"default":"Please enter a valid value",less:"Please choose %s options at minimum",more:"Please choose %s options at maximum",between:"Please choose %s - %s options"}}}),FormValidation.Validator.choice={html5Attributes:{message:"message",min:"min",max:"max"},validate:function(b,c,d,e){var f=b.getLocale(),g=b.getNamespace(),h=c.is("select")?b.getFieldElements(c.attr("data-"+g+"-field")).find("option").filter(":selected").length:b.getFieldElements(c.attr("data-"+g+"-field")).filter(":checked").length,i=d.min?a.isNumeric(d.min)?d.min:b.getDynamicOption(c,d.min):null,j=d.max?a.isNumeric(d.max)?d.max:b.getDynamicOption(c,d.max):null,k=!0,l=d.message||FormValidation.I18n[f].choice["default"];switch((i&&h<parseInt(i,10)||j&&h>parseInt(j,10))&&(k=!1),!0){case!!i&&!!j:l=FormValidation.Helper.format(d.message||FormValidation.I18n[f].choice.between,[parseInt(i,10),parseInt(j,10)]);break;case!!i:l=FormValidation.Helper.format(d.message||FormValidation.I18n[f].choice.less,parseInt(i,10));break;case!!j:l=FormValidation.Helper.format(d.message||FormValidation.I18n[f].choice.more,parseInt(j,10))}return{valid:k,message:l}}}}(jQuery),function(a){FormValidation.I18n=a.extend(!0,FormValidation.I18n||{},{en_US:{color:{"default":"Please enter a valid color"}}}),FormValidation.Validator.color={html5Attributes:{message:"message",type:"type"},enableByHtml5:function(a){return"color"===a.attr("type")},SUPPORTED_TYPES:["hex","rgb","rgba","hsl","hsla","keyword"],KEYWORD_COLORS:["aliceblue","antiquewhite","aqua","aquamarine","azure","beige","bisque","black","blanchedalmond","blue","blueviolet","brown","burlywood","cadetblue","chartreuse","chocolate","coral","cornflowerblue","cornsilk","crimson","cyan","darkblue","darkcyan","darkgoldenrod","darkgray","darkgreen","darkgrey","darkkhaki","darkmagenta","darkolivegreen","darkorange","darkorchid","darkred","darksalmon","darkseagreen","darkslateblue","darkslategray","darkslategrey","darkturquoise","darkviolet","deeppink","deepskyblue","dimgray","dimgrey","dodgerblue","firebrick","floralwhite","forestgreen","fuchsia","gainsboro","ghostwhite","gold","goldenrod","gray","green","greenyellow","grey","honeydew","hotpink","indianred","indigo","ivory","khaki","lavender","lavenderblush","lawngreen","lemonchiffon","lightblue","lightcoral","lightcyan","lightgoldenrodyellow","lightgray","lightgreen","lightgrey","lightpink","lightsalmon","lightseagreen","lightskyblue","lightslategray","lightslategrey","lightsteelblue","lightyellow","lime","limegreen","linen","magenta","maroon","mediumaquamarine","mediumblue","mediumorchid","mediumpurple","mediumseagreen","mediumslateblue","mediumspringgreen","mediumturquoise","mediumvioletred","midnightblue","mintcream","mistyrose","moccasin","navajowhite","navy","oldlace","olive","olivedrab","orange","orangered","orchid","palegoldenrod","palegreen","paleturquoise","palevioletred","papayawhip","peachpuff","peru","pink","plum","powderblue","purple","red","rosybrown","royalblue","saddlebrown","salmon","sandybrown","seagreen","seashell","sienna","silver","skyblue","slateblue","slategray","slategrey","snow","springgreen","steelblue","tan","teal","thistle","tomato","transparent","turquoise","violet","wheat","white","whitesmoke","yellow","yellowgreen"],validate:function(b,c,d,e){var f=b.getFieldValue(c,e);if(""===f)return!0;if(this.enableByHtml5(c))return/^#[0-9A-F]{6}$/i.test(f);var g=d.type||this.SUPPORTED_TYPES;a.isArray(g)||(g=g.replace(/s/g,"").split(","));for(var h,i,j=!1,k=0;k<g.length;k++)if(i=g[k],h="_"+i.toLowerCase(),j=j||this[h](f))return!0;return!1},_hex:function(a){return/(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(a)},_hsl:function(a){return/^hsl\((\s*(-?\d+)\s*,)(\s*(\b(0?\d{1,2}|100)\b%)\s*,)(\s*(\b(0?\d{1,2}|100)\b%)\s*)\)$/.test(a)},_hsla:function(a){return/^hsla\((\s*(-?\d+)\s*,)(\s*(\b(0?\d{1,2}|100)\b%)\s*,){2}(\s*(0?(\.\d+)?|1(\.0+)?)\s*)\)$/.test(a)},_keyword:function(b){return a.inArray(b,this.KEYWORD_COLORS)>=0},_rgb:function(a){var b=/^rgb\((\s*(\b([01]?\d{1,2}|2[0-4]\d|25[0-5])\b)\s*,){2}(\s*(\b([01]?\d{1,2}|2[0-4]\d|25[0-5])\b)\s*)\)$/,c=/^rgb\((\s*(\b(0?\d{1,2}|100)\b%)\s*,){2}(\s*(\b(0?\d{1,2}|100)\b%)\s*)\)$/;return b.test(a)||c.test(a)},_rgba:function(a){var b=/^rgba\((\s*(\b([01]?\d{1,2}|2[0-4]\d|25[0-5])\b)\s*,){3}(\s*(0?(\.\d+)?|1(\.0+)?)\s*)\)$/,c=/^rgba\((\s*(\b(0?\d{1,2}|100)\b%)\s*,){3}(\s*(0?(\.\d+)?|1(\.0+)?)\s*)\)$/;return b.test(a)||c.test(a)}}}(jQuery),function(a){FormValidation.I18n=a.extend(!0,FormValidation.I18n||{},{en_US:{creditCard:{"default":"Please enter a valid credit card number"}}}),FormValidation.Validator.creditCard={validate:function(b,c,d,e){var f=b.getFieldValue(c,e);if(""===f)return!0;if(/[^0-9-\s]+/.test(f))return!1;if(f=f.replace(/\D/g,""),!FormValidation.Helper.luhn(f))return!1;var g,h,i={AMERICAN_EXPRESS:{length:[15],prefix:["34","37"]},DINERS_CLUB:{length:[14],prefix:["300","301","302","303","304","305","36"]},DINERS_CLUB_US:{length:[16],prefix:["54","55"]},DISCOVER:{length:[16],prefix:["6011","622126","622127","622128","622129","62213","62214","62215","62216","62217","62218","62219","6222","6223","6224","6225","6226","6227","6228","62290","62291","622920","622921","622922","622923","622924","622925","644","645","646","647","648","649","65"]},JCB:{length:[16],prefix:["3528","3529","353","354","355","356","357","358"]},LASER:{length:[16,17,18,19],prefix:["6304","6706","6771","6709"]},MAESTRO:{length:[12,13,14,15,16,17,18,19],prefix:["5018","5020","5038","6304","6759","6761","6762","6763","6764","6765","6766"]},MASTERCARD:{length:[16],prefix:["51","52","53","54","55"]},SOLO:{length:[16,18,19],prefix:["6334","6767"]},UNIONPAY:{length:[16,17,18,19],prefix:["622126","622127","622128","622129","62213","62214","62215","62216","62217","62218","62219","6222","6223","6224","6225","6226","6227","6228","62290","62291","622920","622921","622922","622923","622924","622925"]},VISA:{length:[16],prefix:["4"]}};for(g in i)for(h in i[g].prefix)if(f.substr(0,i[g].prefix[h].length)===i[g].prefix[h]&&-1!==a.inArray(f.length,i[g].length))return{valid:!0,type:g};return!1}}}(jQuery),function(a){FormValidation.I18n=a.extend(!0,FormValidation.I18n||{},{en_US:{date:{"default":"Please enter a valid date",min:"Please enter a date after %s",max:"Please enter a date before %s",range:"Please enter a date in the range %s - %s"}}}),FormValidation.Validator.date={html5Attributes:{message:"message",format:"format",min:"min",max:"max",separator:"separator"},validate:function(b,c,d,e){var f=b.getFieldValue(c,e);if(""===f)return!0;d.format=d.format||"MM/DD/YYYY","date"===c.attr("type")&&(d.format="YYYY-MM-DD");var g=b.getLocale(),h=d.message||FormValidation.I18n[g].date["default"],i=d.format.split(" "),j=i[0],k=i.length>1?i[1]:null,l=i.length>2?i[2]:null,m=f.split(" "),n=m[0],o=m.length>1?m[1]:null;if(i.length!==m.length)return{valid:!1,message:h};var p=d.separator;if(p||(p=-1!==n.indexOf("/")?"/":-1!==n.indexOf("-")?"-":-1!==n.indexOf(".")?".":null),null===p||-1===n.indexOf(p))return{valid:!1,message:h};if(n=n.split(p),j=j.split(p),n.length!==j.length)return{valid:!1,message:h};var q=n[a.inArray("YYYY",j)],r=n[a.inArray("MM",j)],s=n[a.inArray("DD",j)];if(!q||!r||!s||4!==q.length)return{valid:!1,message:h};var t=null,u=null,v=null;if(k){if(k=k.split(":"),o=o.split(":"),k.length!==o.length)return{valid:!1,message:h};if(u=o.length>0?o[0]:null,t=o.length>1?o[1]:null,v=o.length>2?o[2]:null,""===u||""===t||""===v)return{valid:!1,message:h};if(v){if(isNaN(v)||v.length>2)return{valid:!1,message:h};if(v=parseInt(v,10),0>v||v>60)return{valid:!1,message:h}}if(u){if(isNaN(u)||u.length>2)return{valid:!1,message:h};if(u=parseInt(u,10),0>u||u>=24||l&&u>12)return{valid:!1,message:h}}if(t){if(isNaN(t)||t.length>2)return{valid:!1,message:h};if(t=parseInt(t,10),0>t||t>59)return{valid:!1,message:h}}}var w=FormValidation.Helper.date(q,r,s),x=null,y=null,z=d.min,A=d.max;switch(z&&(x=z instanceof Date?z:this._parseDate(z,j,p)||this._parseDate(b.getDynamicOption(c,z),j,p),z=this._formatDate(x,d.format)),A&&(y=A instanceof Date?A:this._parseDate(A,j,p)||this._parseDate(b.getDynamicOption(c,A),j,p),A=this._formatDate(y,d.format)),n=new Date(q,r-1,s,u,t,v),!0){case z&&!A&&w:w=n.getTime()>=x.getTime(),h=d.message||FormValidation.Helper.format(FormValidation.I18n[g].date.min,z);break;case A&&!z&&w:w=n.getTime()<=y.getTime(),h=d.message||FormValidation.Helper.format(FormValidation.I18n[g].date.max,A);break;case A&&z&&w:w=n.getTime()<=y.getTime()&&n.getTime()>=x.getTime(),h=d.message||FormValidation.Helper.format(FormValidation.I18n[g].date.range,[z,A])}return{valid:w,date:n,message:h}},_parseDate:function(b,c,d){if(b instanceof Date)return b;if("string"!=typeof b)return null;var e=a.inArray("YYYY",c),f=a.inArray("MM",c),g=a.inArray("DD",c);if(-1===e||-1===f||-1===g)return null;var h=0,i=0,j=0,k=b.split(" "),l=k[0].split(d);if(l.length<3)return null;if(k.length>1){var m=k[1].split(":");i=m.length>0?m[0]:null,h=m.length>1?m[1]:null,j=m.length>2?m[2]:null}return new Date(l[e],l[f]-1,l[g],i,h,j)},_formatDate:function(a,b){b=b.replace(/Y/g,"y").replace(/M/g,"m").replace(/D/g,"d").replace(/:m/g,":M").replace(/:mm/g,":MM").replace(/:S/,":s").replace(/:SS/,":ss");var c={d:function(a){return a.getDate()},dd:function(a){var b=a.getDate();return 10>b?"0"+b:b},m:function(a){return a.getMonth()+1},mm:function(a){var b=a.getMonth()+1;return 10>b?"0"+b:b},yy:function(a){return(""+a.getFullYear()).substr(2)},yyyy:function(a){return a.getFullYear()},h:function(a){return a.getHours()%12||12},hh:function(a){var b=a.getHours()%12||12;return 10>b?"0"+b:b},H:function(a){return a.getHours()},HH:function(a){var b=a.getHours();return 10>b?"0"+b:b},M:function(a){return a.getMinutes()},MM:function(a){var b=a.getMinutes();return 10>b?"0"+b:b},s:function(a){return a.getSeconds()},ss:function(a){var b=a.getSeconds();return 10>b?"0"+b:b}};return b.replace(/d{1,4}|m{1,4}|yy(?:yy)?|([HhMs])\1?|"[^"]*"|'[^']*'/g,function(b){return c[b]?c[b](a):b.slice(1,b.length-1)})}}}(jQuery),function(a){FormValidation.I18n=a.extend(!0,FormValidation.I18n||{},{en_US:{different:{"default":"Please enter a different value"}}}),FormValidation.Validator.different={html5Attributes:{message:"message",field:"field"},init:function(b,c,d,e){for(var f=d.field.split(","),g=0;g<f.length;g++){var h=b.getFieldElements(a.trim(f[g]));b.onLiveChange(h,"live_"+e,function(){var a=b.getStatus(c,e);a!==b.STATUS_NOT_VALIDATED&&b.revalidateField(c)})}},destroy:function(b,c,d,e){for(var f=d.field.split(","),g=0;g<f.length;g++){var h=b.getFieldElements(a.trim(f[g]));b.offLiveChange(h,"live_"+e)}},validate:function(b,c,d,e){var f=b.getFieldValue(c,e);if(""===f)return!0;for(var g=d.field.split(","),h=!0,i=0;i<g.length;i++){var j=b.getFieldElements(a.trim(g[i]));if(null!=j&&0!==j.length){var k=b.getFieldValue(j,e);f===k?h=!1:""!==k&&b.updateStatus(j,b.STATUS_VALID,e)}}return h}}}(jQuery),function(a){FormValidation.I18n=a.extend(!0,FormValidation.I18n||{},{en_US:{digits:{"default":"Please enter only digits"}}}),FormValidation.Validator.digits={validate:function(a,b,c,d){var e=a.getFieldValue(b,d);return""===e?!0:/^\d+$/.test(e)}}}(jQuery),function(a){FormValidation.I18n=a.extend(!0,FormValidation.I18n||{},{en_US:{emailAddress:{"default":"Please enter a valid email address"}}}),FormValidation.Validator.emailAddress={html5Attributes:{message:"message",multiple:"multiple",separator:"separator"},enableByHtml5:function(a){return"email"===a.attr("type")},validate:function(a,b,c,d){var e=a.getFieldValue(b,d);if(""===e)return!0;var f=/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,g=c.multiple===!0||"true"===c.multiple;if(g){for(var h=c.separator||/[,;]/,i=this._splitEmailAddresses(e,h),j=0;j<i.length;j++)if(!f.test(i[j]))return!1;return!0}return f.test(e)},_splitEmailAddresses:function(a,b){for(var c=a.split(/"/),d=c.length,e=[],f="",g=0;d>g;g++)if(g%2===0){var h=c[g].split(b),i=h.length;if(1===i)f+=h[0];else{e.push(f+h[0]);for(var j=1;i-1>j;j++)e.push(h[j]);f=h[i-1]}}else f+='"'+c[g],d-1>g&&(f+='"');return e.push(f),e}}}(jQuery),function(a){FormValidation.I18n=a.extend(!0,FormValidation.I18n||{},{en_US:{file:{"default":"Please choose a valid file"}}}),FormValidation.Validator.file={html5Attributes:{extension:"extension",maxfiles:"maxFiles",minfiles:"minFiles",maxsize:"maxSize",minsize:"minSize",maxtotalsize:"maxTotalSize",mintotalsize:"minTotalSize",message:"message",type:"type"},validate:function(b,c,d,e){var f=b.getFieldValue(c,e);if(""===f)return!0;var g,h=d.extension?d.extension.toLowerCase().split(","):null,i=d.type?d.type.toLowerCase().split(","):null,j=window.File&&window.FileList&&window.FileReader;if(j){var k=c.get(0).files,l=k.length,m=0;if(d.maxFiles&&l>parseInt(d.maxFiles,10)||d.minFiles&&l<parseInt(d.minFiles,10))return!1;for(var n=0;l>n;n++)if(m+=k[n].size,g=k[n].name.substr(k[n].name.lastIndexOf(".")+1),d.minSize&&k[n].size<parseInt(d.minSize,10)||d.maxSize&&k[n].size>parseInt(d.maxSize,10)||h&&-1===a.inArray(g.toLowerCase(),h)||k[n].type&&i&&-1===a.inArray(k[n].type.toLowerCase(),i))return!1;if(d.maxTotalSize&&m>parseInt(d.maxTotalSize,10)||d.minTotalSize&&m<parseInt(d.minTotalSize,10))return!1}else if(g=f.substr(f.lastIndexOf(".")+1),h&&-1===a.inArray(g.toLowerCase(),h))return!1;return!0}}}(jQuery),function(a){FormValidation.I18n=a.extend(!0,FormValidation.I18n||{},{en_US:{greaterThan:{"default":"Please enter a value greater than or equal to %s",notInclusive:"Please enter a value greater than %s"}}}),FormValidation.Validator.greaterThan={html5Attributes:{message:"message",value:"value",inclusive:"inclusive"},enableByHtml5:function(a){var b=a.attr("type"),c=a.attr("min");return c&&"date"!==b?{value:c}:!1},validate:function(b,c,d,e){var f=b.getFieldValue(c,e);if(""===f)return!0;f=this._format(f);var g=b.getLocale(),h=a.isNumeric(d.value)?d.value:b.getDynamicOption(c,d.value),i=this._format(h);return d.inclusive===!0||void 0===d.inclusive?{valid:a.isNumeric(f)&&parseFloat(f)>=i,message:FormValidation.Helper.format(d.message||FormValidation.I18n[g].greaterThan["default"],h)}:{valid:a.isNumeric(f)&&parseFloat(f)>i,message:FormValidation.Helper.format(d.message||FormValidation.I18n[g].greaterThan.notInclusive,h)}},_format:function(a){return(a+"").replace(",",".")}}}(jQuery),function(a){FormValidation.I18n=a.extend(!0,FormValidation.I18n||{},{en_US:{identical:{"default":"Please enter the same value"}}}),FormValidation.Validator.identical={html5Attributes:{message:"message",field:"field"},init:function(a,b,c,d){var e=a.getFieldElements(c.field);a.onLiveChange(e,"live_"+d,function(){var c=a.getStatus(b,d);c!==a.STATUS_NOT_VALIDATED&&a.revalidateField(b)})},destroy:function(a,b,c,d){var e=a.getFieldElements(c.field);a.offLiveChange(e,"live_"+d)},validate:function(a,b,c,d){var e=a.getFieldValue(b,d),f=a.getFieldElements(c.field);if(null===f||0===f.length)return!0;var g=a.getFieldValue(f,d);return e===g?(a.updateStatus(f,a.STATUS_VALID,d),!0):!1}}}(jQuery),function(a){FormValidation.I18n=a.extend(!0,FormValidation.I18n||{},{en_US:{integer:{"default":"Please enter a valid number"}}}),FormValidation.Validator.integer={html5Attributes:{message:"message",thousandsseparator:"thousandsSeparator",decimalseparator:"decimalSeparator"},enableByHtml5:function(a){return"number"===a.attr("type")&&(void 0===a.attr("step")||a.attr("step")%1===0)},validate:function(a,b,c,d){if(this.enableByHtml5(b)&&b.get(0).validity&&b.get(0).validity.badInput===!0)return!1;var e=a.getFieldValue(b,d);if(""===e)return!0;var f=c.decimalSeparator||".",g=c.thousandsSeparator||"";f="."===f?"\\.":f,g="."===g?"\\.":g;var h=new RegExp("^-?[0-9]{1,3}("+g+"[0-9]{3})*("+f+"[0-9]+)?$"),i=new RegExp(g,"g");return h.test(e)?(g&&(e=e.replace(i,"")),f&&(e=e.replace(f,".")),isNaN(e)||!isFinite(e)?!1:(e=parseFloat(e),Math.floor(e)===e)):!1}}}(jQuery),function(a){FormValidation.I18n=a.extend(!0,FormValidation.I18n||{},{en_US:{lessThan:{"default":"Please enter a value less than or equal to %s",notInclusive:"Please enter a value less than %s"}}}),FormValidation.Validator.lessThan={html5Attributes:{message:"message",value:"value",inclusive:"inclusive"},enableByHtml5:function(a){var b=a.attr("type"),c=a.attr("max");return c&&"date"!==b?{value:c}:!1},validate:function(b,c,d,e){var f=b.getFieldValue(c,e);if(""===f)return!0;f=this._format(f);var g=b.getLocale(),h=a.isNumeric(d.value)?d.value:b.getDynamicOption(c,d.value),i=this._format(h);return d.inclusive===!0||void 0===d.inclusive?{valid:a.isNumeric(f)&&parseFloat(f)<=i,message:FormValidation.Helper.format(d.message||FormValidation.I18n[g].lessThan["default"],h)}:{valid:a.isNumeric(f)&&parseFloat(f)<i,message:FormValidation.Helper.format(d.message||FormValidation.I18n[g].lessThan.notInclusive,h)}},_format:function(a){return(a+"").replace(",",".")}}}(jQuery),function(a){FormValidation.I18n=a.extend(!0,FormValidation.I18n||{},{en_US:{notEmpty:{"default":"Please enter a value"}}}),FormValidation.Validator.notEmpty={enableByHtml5:function(a){var b=a.attr("required")+"";return"required"===b||"true"===b},validate:function(b,c,d,e){var f=c.attr("type");if("radio"===f||"checkbox"===f){var g=b.getNamespace();return b.getFieldElements(c.attr("data-"+g+"-field")).filter(":checked").length>0}if("number"===f&&c.get(0).validity&&c.get(0).validity.badInput===!0)return!0;var h=b.getFieldValue(c,e);return""!==a.trim(h)}}}(jQuery),function(a){FormValidation.I18n=a.extend(!0,FormValidation.I18n||{},{en_US:{numeric:{"default":"Please enter a valid float number"}}}),FormValidation.Validator.numeric={html5Attributes:{message:"message",separator:"separator",thousandsseparator:"thousandsSeparator",decimalseparator:"decimalSeparator"},enableByHtml5:function(a){return"number"===a.attr("type")&&void 0!==a.attr("step")&&a.attr("step")%1!==0},validate:function(a,b,c,d){if(this.enableByHtml5(b)&&b.get(0).validity&&b.get(0).validity.badInput===!0)return!1;var e=a.getFieldValue(b,d);if(""===e)return!0;var f=c.separator||c.decimalSeparator||".",g=c.thousandsSeparator||"";e.substr(0,1)===f?e="0"+f+e.substr(1):e.substr(0,2)==="-"+f&&(e="-0"+f+e.substr(2)),f="."===f?"\\.":f,g="."===g?"\\.":g;var h=new RegExp("^-?[0-9]{1,3}("+g+"[0-9]{3})*("+f+"[0-9]+)?$"),i=new RegExp(g,"g");return h.test(e)?(g&&(e=e.replace(i,"")),f&&(e=e.replace(f,".")),!isNaN(parseFloat(e))&&isFinite(e)):!1}}}(jQuery),function(a){FormValidation.I18n=a.extend(!0,FormValidation.I18n||{},{en_US:{promise:{"default":"Please enter a valid value"}}}),FormValidation.Validator.promise={priority:999,html5Attributes:{message:"message",promise:"promise"},validate:function(b,c,d,e){var f=b.getFieldValue(c,e),g=new a.Deferred,h=FormValidation.Helper.call(d.promise,[f,b,c]);return h.done(function(a){g.resolve(c,e,a)}).fail(function(a){a=a||{},a.valid=!1,g.resolve(c,e,a)}),g}}}(jQuery),function(a){FormValidation.I18n=a.extend(!0,FormValidation.I18n||{},{en_US:{regexp:{"default":"Please enter a value matching the pattern"}}}),FormValidation.Validator.regexp={html5Attributes:{message:"message",flags:"flags",regexp:"regexp"},enableByHtml5:function(a){var b=a.attr("pattern");return b?{regexp:b}:!1},validate:function(a,b,c,d){var e=a.getFieldValue(b,d);if(""===e)return!0;var f="string"==typeof c.regexp?c.flags?new RegExp(c.regexp,c.flags):new RegExp(c.regexp):c.regexp;return f.test(e)}}}(jQuery),function(a){FormValidation.I18n=a.extend(!0,FormValidation.I18n||{},{en_US:{remote:{"default":"Please enter a valid value"}}}),FormValidation.Validator.remote={priority:1e3,html5Attributes:{async:"async",crossdomain:"crossDomain",data:"data",datatype:"dataType",delay:"delay",message:"message",name:"name",type:"type",url:"url",validkey:"validKey"},destroy:function(a,b,c,d){var e=a.getNamespace(),f=b.data(e+"."+d+".timer");f&&(clearTimeout(f),b.removeData(e+"."+d+".timer"))},validate:function(b,c,d,e){function f(){var b=a.ajax(n);return b.success(function(a){a.valid=a[m]===!0||"true"===a[m]?!0:a[m]===!1||"false"===a[m]?!1:null,i.resolve(c,e,a)}).error(function(a){i.resolve(c,e,{valid:!1})}),i.fail(function(){b.abort()}),i}var g=b.getNamespace(),h=b.getFieldValue(c,e),i=new a.Deferred;if(""===h)return i.resolve(c,e,{valid:!0}),i;var j=c.attr("data-"+g+"-field"),k=d.data||{},l=d.url,m=d.validKey||"valid";"function"==typeof k&&(k=k.call(this,b,c,h)),"string"==typeof k&&(k=JSON.parse(k)),"function"==typeof l&&(l=l.call(this,b,c,h)),k[d.name||j]=h;var n={async:null===d.async||d.async===!0||"true"===d.async,data:k,dataType:d.dataType||"json",headers:d.headers||{},type:d.type||"GET",url:l};return null!==d.crossDomain&&(n.crossDomain=d.crossDomain===!0||"true"===d.crossDomain),d.delay?(c.data(g+"."+e+".timer")&&clearTimeout(c.data(g+"."+e+".timer")),c.data(g+"."+e+".timer",setTimeout(f,d.delay)),i):f()}}}(jQuery),function(a){FormValidation.I18n=a.extend(!0,FormValidation.I18n||{},{en_US:{stringLength:{"default":"Please enter a value with valid length",less:"Please enter less than %s characters",more:"Please enter more than %s characters",between:"Please enter value between %s and %s characters long"}}}),FormValidation.Validator.stringLength={html5Attributes:{message:"message",min:"min",max:"max",trim:"trim",utf8bytes:"utf8Bytes"},enableByHtml5:function(b){var c={},d=b.attr("maxlength"),e=b.attr("minlength");return d&&(c.max=parseInt(d,10)),e&&(c.min=parseInt(e,10)),a.isEmptyObject(c)?!1:c},validate:function(b,c,d,e){var f=b.getFieldValue(c,e);if((d.trim===!0||"true"===d.trim)&&(f=a.trim(f)),""===f)return!0;var g=b.getLocale(),h=a.isNumeric(d.min)?d.min:b.getDynamicOption(c,d.min),i=a.isNumeric(d.max)?d.max:b.getDynamicOption(c,d.max),j=function(a){for(var b=a.length,c=a.length-1;c>=0;c--){var d=a.charCodeAt(c);d>127&&2047>=d?b++:d>2047&&65535>=d&&(b+=2),d>=56320&&57343>=d&&c--}return b},k=d.utf8Bytes?j(f):f.length,l=!0,m=d.message||FormValidation.I18n[g].stringLength["default"];switch((h&&k<parseInt(h,10)||i&&k>parseInt(i,10))&&(l=!1),!0){case!!h&&!!i:m=FormValidation.Helper.format(d.message||FormValidation.I18n[g].stringLength.between,[parseInt(h,10),parseInt(i,10)]);break;case!!h:m=FormValidation.Helper.format(d.message||FormValidation.I18n[g].stringLength.more,parseInt(h,10)-1);break;case!!i:m=FormValidation.Helper.format(d.message||FormValidation.I18n[g].stringLength.less,parseInt(i,10)+1)}return{valid:l,message:m}}}}(jQuery),function(a){FormValidation.I18n=a.extend(!0,FormValidation.I18n||{},{en_US:{uri:{"default":"Please enter a valid URI"}}}),FormValidation.Validator.uri={html5Attributes:{message:"message",allowlocal:"allowLocal",allowemptyprotocol:"allowEmptyProtocol",protocol:"protocol"},enableByHtml5:function(a){return"url"===a.attr("type")},validate:function(a,b,c,d){var e=a.getFieldValue(b,d);if(""===e)return!0;var f=c.allowLocal===!0||"true"===c.allowLocal,g=c.allowEmptyProtocol===!0||"true"===c.allowEmptyProtocol,h=(c.protocol||"http, https, ftp").split(",").join("|").replace(/\s/g,""),i=new RegExp("^(?:(?:"+h+")://)"+(g?"?":"")+"(?:\\S+(?::\\S*)?@)?(?:"+(f?"":"(?!(?:10|127)(?:\\.\\d{1,3}){3})(?!(?:169\\.254|192\\.168)(?:\\.\\d{1,3}){2})(?!172\\.(?:1[6-9]|2\\d|3[0-1])(?:\\.\\d{1,3}){2})")+"(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z\\u00a1-\\uffff0-9]-?)*[a-z\\u00a1-\\uffff0-9]+)(?:\\.(?:[a-z\\u00a1-\\uffff0-9]-?)*[a-z\\u00a1-\\uffff0-9])*(?:\\.(?:[a-z\\u00a1-\\uffff]{2,}))"+(f?"?":"")+")(?::\\d{2,5})?(?:/[^\\s]*)?$","i");return i.test(e)}}}(jQuery);
-},{}],13:[function(require,module,exports){
-/**
- * jQuery extended
- * Useful jQuery extensions
- * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
- * @version 1.0.0
- */
-
-/**
- * Centers an element with CSS position property
- * @param  string position CSS position property: [fixed, absolute, static]
- * @param  int top CSS top value
- * @param  int left CSS left value
- * @return object
- */
-jQuery.fn.center = function(position, top, left) {
-	//set CSS position (fixed, absolute, static)
-	if(typeof position === "undefined")
-		this.css("position", "absolute");
-	else
-		this.css("position", position);
-
-	var px_value = 0;
-
-	//set x position
-	if(typeof left === "undefined") {
-
-		px_value = Math.max(0, (($(window).width() - $(this).outerWidth()) / 2) + $(window).scrollLeft());
-		this.css("left", px_value + "px");
-	}
-	else {
-		this.css("left", left);
-	}
-
-	//set y position
-	if(typeof top === "undefined") {
-
-		px_value = Math.max(0, (($(window).height() - $(this).outerHeight()) / 2) + $(window).scrollTop());
-		this.css("top", px_value + "px");
-	}
-	else {
-		this.css("top", top);
-	}
-
-	return this;
-};
-
-/**
- * Gets the padding value of an element.
- * @param  string direction The padding CSS property: [top, bottom, left, right]. Defaults to left.
- * @return int
- */
-jQuery.fn.padding = function(direction) {
-
-	if(typeof direction === "undefined")
-		direction = "left";
-
-	//returns int value
-	return parseInt(this.css('padding-' + direction));
-};
-
-},{}],14:[function(require,module,exports){
-/**
- * Modality Dialog jQuery plugin v 1.0
- * Requires jQuery 1.7.x or superior, and Modality plugin
- * Supports mayor browsers including IE8
- * @author Nicolas Pulido M.
- * Usage: 
- * $(element).modalityDialog({
-	title       : (stirng) the dialog title
-	content     : (string) The dialog content, can be an HTML input
-	width       : (int) width size in pixels or a string with an int + measure unit
-	fixed       : (boolean) set if dialog has fixed or absolute position
-	buttons     : (array) array of buttons with the following object struct:
-					{ label : (string), click : (function) }
-	onClose     : (function) event onClose dialog
-	escape      : (boolean) Allows user to escape the modal with ESC key or a Click outside the element. Defaults is true.
-	zindex      : (int) css z-index value, default value is 100.
-	smallScreen : (int) small screen width Threshold, defaults value is 640.
-});
- */
-
-(function($)
-{
-	if(typeof $.modality !== "function")
-		throw new Error('Modality Dialogs -> jQuery modality plugin is required');
-
-	/** ------------------------------------------------------------------------------------------------
-		Modality public methods
-	------------------------------------------------------------------------------------------------ **/
-	$.modalityDialog = function(options) {
-
-		if(typeof options == "undefined")
-			options = {};
-
-		//returns the core object
-		return $.modalityDialog.core.init(options);
-	};
-
-	/**
-	 * Closes Modality
-	 */
-	$.modalityDialog.close = function() { 
-		$.modality.close();
-	};
-
-	/** ------------------------------------------------------------------------------------------------
-		Modality element
-	------------------------------------------------------------------------------------------------ **/
-
-	//DEFAULT VALUES
-	$.modalityDialog.defaults = {
-		title        : "",
-		content      : "",
-		width        : "60%",
-		fixed        : false,
-		overlay      : true,
-		overlayAlpha : 70,
-		overlayColor : "#000",
-		buttons      : [],
-		onClose      : null,
-		escape       : true,
-		zindex       : 100,
-		smallScreen  : 640
-	};
-
-	//CORE
-	$.modalityDialog.core = {
-
-		init: function(options) {
-			//extend options
-			this.opts = $.extend({}, $.modalityDialog.defaults, options);
-			//drop a previously created dialog
-			this.drop();
-			this.create(this.opts);
-			this.show(this.opts);
-
-			return this;
-		},
-		create: function(options) {
-
-			var self = this;
-			//wrappers
-			var div_wrapper = $("<div>").addClass("modality-dialog").css("display", "none");
-			var div_box     = $("<div>").addClass("box");
-
-			//contents
-			var div_title  = $("<div>").addClass("header").html(options.title);
-			var div_body   = $("<div>").addClass("body").html(options.content);
-			var div_footer = $("<div>").addClass("footer");
-						
-			//appends
-			div_wrapper.appendTo("body");
-			div_box.appendTo(div_wrapper);
-			div_title.appendTo(div_box);
-			div_body.appendTo(div_box);
-
-			//width
-			div_wrapper.width(options.width);
-
-			//fix width for small screens
-			if($(window).width() <= options.smallScreen && parseInt(options.width) < 80)
-				div_wrapper.width("90%");
-
-			//check if dialog must have buttons
-			if(typeof options.buttons !== 'object')
-				return;
-
-			//append buttons?
-			var show_footer = false;
-			//loop through buttons
-			var index = 0;
-			for(var key in options.buttons) {
-
-				var btn = options.buttons[key];
-
-				if(typeof btn !== 'object' || typeof btn.label == 'undefined')
-					continue;
-
-				var button_element = $("<button>")
-										.attr("name", 'button-'+index)
-										.addClass('button-'+index)
-										.html(btn.label);
-
-				if(typeof btn.click === 'function')
-					button_element.click(btn.click);
-				else
-					button_element.click(self.close);
-
-				button_element.appendTo(div_footer);
-
-				show_footer = true;
-				index++;
-			}
-
-			//footer append
-			if(show_footer)
-				div_footer.appendTo(div_box);
-		},
-		drop: function() {
-			//removes an existing dialog
-			if($("div.modality-dialog").length)
-				$("div.modality-dialog").remove();
-		},
-		show: function(options) {
-
-			var fn_onclose = null;
-			//check onClose function
-			if(typeof options.onClose === 'function')
-				fn_onclose = options.onClose;
-
-			//show modal
-			$("div.modality-dialog").modality({
-				fixed           : options.fixed,
-				overlay         : options.overlay,
-				overlayAlpha    : options.overlayAlpha,
-				overlayColor    : options.overlayColor,
-				escape          : options.escape,
-				zindex          : options.zindex,
-				onClose         : fn_onclose
-			});
-		},
-		close: function() { 
-			//simpleModal - close
-			$.modality.close();
-		}
-	};
-	/** ------------------------------------------------------------------------------------------------
-		jQuery setup
-	------------------------------------------------------------------------------------------------ **/
-	//creating an event "destroyed"
-	jQuery.event.special.destroyed = {
-		remove: function(o) {
-		  if(o.handler)
-			o.handler();
-		}
-	};
-
-})(jQuery);
-
-},{}],15:[function(require,module,exports){
-/**
- * Modality jQuery plugin v 1.1
- * Requires jQuery 1.7.x or superior
- * Supports mayor browsers including IE8
- * @author Nicolas Pulido M.
- * Usage: 
- * $(element).modality({
-		fixed        : (boolean) present a fixed element?
-		overlay      : (boolean) set an overlay?
-		overlayAlpha : (int) overlay opacity
-		overlayColor : (string) overlay bg color
-		top          : (int) css top value set as percentage
-		bottom       : (int) css bottom value set as percentage (optional)
-		left         : (int) css left value set as percentage
-		right        : (int) css right value set as percentage (optional)
-		onShow       : (function) event onShow
-		onClose      : (function) event onClose
-		onShowAnim   : (function) event onShowAnim, custom Show animation
-		onCloseAnim  : (function) event onCloseAnim, custom Close animation
-		zindex       : (int) css z-index value, default value is 100.
-		escape 		 : (boolean) Allows user to escape the modal with ESC key or a Click outside the element. Defaults is true.
-	});
- */
-
-(function($) {
-	/** ------------------------------------------------------------------------------------------------
-		Modality public methods
-	------------------------------------------------------------------------------------------------ **/
-	$.modality = function() {};
-
-	/**
-	 * Closes Modality
-	 */
-	$.modality.close = function() {
-
-		if(!$("div.modality-overlay").length)
-			return;
-
-		$("div.modality-overlay").trigger("click");
-		return;
-	};
-
-	/**
-	 * Returns boolean if modality is active or not
-	 */
-	$.modality.isActive = function() {
-		return $("div.modality-overlay").length ? true : false;
-	};
-
-	/** ------------------------------------------------------------------------------------------------
-		Modality element
-	------------------------------------------------------------------------------------------------ **/
-	$.fn.modality = function(options) {
-		//get context
-		var self = $(this);
-		return $.fn.modality.core.init(options, self);
-	};
-
-	//DEFAULT VALUES
-	$.fn.modality.defaults = {
-		fixed        : false,
-		overlay      : true,
-		overlayAlpha : 80,
-		overlayColor : "#000",
-		top          : 50,
-		left         : 50,
-		bottom       : null,
-		right        : null,
-		onShow       : null,
-		onClose      : null,
-		onShowAnim   : null,
-		onCloseAnim  : null,
-		zindex       : 100,
-		escape       : true
-	};
-
-	//CORE
-	$.fn.modality.core = {
-
-		init: function(options, obj) {
-			//extend options
-			this.opts = $.extend({}, $.fn.modality.defaults, options);
-			//check if modality was already invoked
-			if($("div.modality-overlay").length || obj.is(":visible"))
-				return;
-
-			//make and show
-			this.make(this.opts, obj);
-			this.show(this.opts, obj);
-
-			return this;
-		},
-		make: function(options, obj) {
-
-			var self = this;
-			//drop any overlay created before
-			self.drop();
-
-			//overlay div
-			var div_overlay = $("<div>").addClass("modality-overlay");
-
-			//OVERLAY CSS
-			if(options.overlay) {
-				//set opacity
-				var opacity = options.overlayAlpha;
-
-				var doc_height = $(document).height();
-
-				if(doc_height < $(window).height())
-					doc_height = "100%";
-				else
-					doc_height += "px";
-
-				div_overlay.css({
-					"display"    : "none",
-					"position"   : "fixed",
-					"top"        : "0",
-					"left"       : "0",
-					"width"      : "100%",
-					"height"     : doc_height,
-					"background" : options.overlayColor,
-					"opacity"    : opacity / 100,
-					"filter"     : "alpha(opacity="+opacity+")",
-					"z-index"    : options.zindex
-				});
-			}
-
-			//positioning element to display
-			var css_pos  	 = "absolute";
-			var css_x 	 	 = "0";
-			var css_y 	     = "0";
-			var css_margin_x = 0;
-			var css_margin_y = 0;
-
-			var x     = options.left;
-			var xRule = "left";
-
-			if(options.right !== null) {
-				x     = options.right;
-				xRule = "right";
-			}
-
-			var y     = options.top;
-			var yRule = "top";
-
-			if(options.bottom !== null) {
-				y     = options.bottom;
-				yRule = "bottom";
-			}
-
-			//get element width & height
-			var elem_width  = obj.width();
-			var elem_height = obj.height();
-
-			//FIXED position
-			if(options.fixed) { 
-				css_pos = "fixed";
-				//set css position props
-				css_x = x + "%";
-				css_y = y + "%";
-
-				css_margin_x = -(elem_width / (100/x)) + "px";
-				css_margin_y = -(elem_height / (100/y)) + "px";
-			}
-			//ABSOLUTE position
-			else {
-				//set css position props
-				css_x = (Math.max($(window).width() - elem_width, 0)/(100/x)) + $(window).scrollLeft();
-				css_y = (Math.max($(window).height() - elem_height, 0)/(100/y)) + $(window).scrollTop();
-			}
-
-			//set css props
-			obj.css({
-				"position" : css_pos,
-				"z-index"  : (options.zindex + 1)
-			});
-			//set margins
-			obj.css(xRule, css_x);
-			obj.css(yRule, css_y);
-			obj.css("margin-"+xRule, css_margin_x);
-			obj.css("margin-"+yRule, css_margin_y);
-
-			/** -- EVENTS -- **/
-			//force escape?
-			if(options.escape) {
-				//onClick event
-				div_overlay.one("click", function() { 
-					//close action
-					self.close(options, obj);
-				});
-
-				//onKeyUp event for ESC key
-				$(document).one("keyup", function(e) {
-					//prevent any binding action
-					e.preventDefault();
-					e.stopPropagation();
-
-					//ENTER or ESC key
-					if(e.keyCode == 27) {
-						self.close(options, obj);
-					}
-				});
-			}
-			else {
-				div_overlay.unbind("click");
-			}
-
-			//add "destroyed" event handler for "onClose" param
-			if(typeof options.onClose === 'function')               
-				div_overlay.bind('destroyed', options.onClose);
-
-			//append to body
-			div_overlay.appendTo("body");
-		},
-		drop: function() {
-			//removes an existing dialog
-			if($("div.modality-overlay").length)
-				$("div.modality-overlay").remove();
-		},
-		show: function(options, obj) {
-
-			//if fixed, disable html,body scroll
-			if(options.fixed) {
-				$("html").css("overflow","hidden");
-				$("body").css("position","relative");
-			}
-
-			//show overlay and element
-			$("div.modality-overlay").fadeIn("fast");
-
-			//blur focus on anchors, inputs & buttons
-			$("a").blur();
-			$("input").blur();
-			$("button").blur();
-
-			//show with defined animation?
-			if(typeof options.onShowAnim == "function")
-				options.onShowAnim.call();
-			else
-				obj.fadeIn("fast");
-
-			//call onShow function if set
-			if(typeof options.onShow === 'function')
-				options.onShow.call();
-		},
-		close: function(options, obj) {
-			
-			//close with defined animation?
-			if(typeof options.onCloseAnim == "function")
-				options.onCloseAnim.call();
-			else
-				obj.hide();
-
-			//modal close
-			$("div.modality-overlay").fadeOut();
-
-			//enable back scroll
-			if(options.fixed) {
-				$("html").css("overflow","visible");
-				$("body").css("position","static");				
-			}
-
-			//delete the overlay
-			this.drop();
-		}
-	};
-	/** ------------------------------------------------------------------------------------------------
-		jQuery setup
-	------------------------------------------------------------------------------------------------ **/
-	//creating an event "destroyed"
-	jQuery.event.special.destroyed = {
-		remove: function(o) {
-		  if(o.handler)
-			o.handler();
-		}
-	};
-
-})(jQuery);
-
-},{}],16:[function(require,module,exports){
 /**
  * Auth View Model - Handles Auth actions
  * @class Auth
@@ -43747,7 +43190,7 @@ module.exports = function() {
     };
 };
 
-},{}],17:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 /**
  * App Core: main app module.
  * Dependencies: `jQuery.js`, `VueJs`, `q.js`, `lodash.js`.
@@ -44607,7 +44050,7 @@ module.exports = function() {
     };
 };
 
-},{}],18:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 /**
  * Facebook View Model - SDK wrapper
  * Required scope vars: `{APP, UA}`.
@@ -44959,7 +44402,7 @@ module.exports = function() {
 	};
 };
 
-},{}],19:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 /**
  * Forms View Model - Handle Form Validation & Actions
  * Dependencies: ```formValidation jQuery plugin```, ```google reCaptcha JS SDK```
@@ -45291,7 +44734,7 @@ module.exports = function() {
     };
 };
 
-},{}],20:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 /**
  * Password Recovery View Model
  * @class PassRecovery
@@ -45334,6 +44777,5695 @@ module.exports = function() {
     };
 };
 
+},{}],17:[function(require,module,exports){
+/**
+ * jQuery extended
+ * Useful jQuery extensions
+ * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
+ * @version 1.0.0
+ */
+
+/**
+ * Centers an element with CSS position property
+ * @param  string position CSS position property: [fixed, absolute, static]
+ * @param  int top CSS top value
+ * @param  int left CSS left value
+ * @return object
+ */
+jQuery.fn.center = function(position, top, left) {
+	//set CSS position (fixed, absolute, static)
+	if(typeof position === "undefined")
+		this.css("position", "absolute");
+	else
+		this.css("position", position);
+
+	var px_value = 0;
+
+	//set x position
+	if(typeof left === "undefined") {
+
+		px_value = Math.max(0, (($(window).width() - $(this).outerWidth()) / 2) + $(window).scrollLeft());
+		this.css("left", px_value + "px");
+	}
+	else {
+		this.css("left", left);
+	}
+
+	//set y position
+	if(typeof top === "undefined") {
+
+		px_value = Math.max(0, (($(window).height() - $(this).outerHeight()) / 2) + $(window).scrollTop());
+		this.css("top", px_value + "px");
+	}
+	else {
+		this.css("top", top);
+	}
+
+	return this;
+};
+
+/**
+ * Gets the padding value of an element.
+ * @param  string direction The padding CSS property: [top, bottom, left, right]. Defaults to left.
+ * @return int
+ */
+jQuery.fn.padding = function(direction) {
+
+	if(typeof direction === "undefined")
+		direction = "left";
+
+	//returns int value
+	return parseInt(this.css('padding-' + direction));
+};
+
+},{}],18:[function(require,module,exports){
+/*
+* FlowType.JS v1.1
+* Copyright 2013-2014, Simple Focus http://simplefocus.com/
+*
+* FlowType.JS by Simple Focus (http://simplefocus.com/)
+* is licensed under the MIT License. Read a copy of the
+* license in the LICENSE.txt file or at
+* http://choosealicense.com/licenses/mit
+*
+* Thanks to Giovanni Difeterici (http://www.gdifeterici.com/)
+*/
+
+(function($)
+{
+   $.fn.flowtype = function(options) {
+
+// Establish default settings/variables
+// ====================================
+      var settings = $.extend({
+         maximum   : 9999,
+         minimum   : 1,
+         maxFont   : 9999,
+         minFont   : 1,
+         fontRatio : 35
+      }, options),
+
+// Do the magic math
+// =================
+      changes = function(el) {
+         var $el     = $(el),
+            elw      = $el.width(),
+            width    = elw > settings.maximum ? settings.maximum : elw < settings.minimum ? settings.minimum : elw,
+            fontBase = width / settings.fontRatio,
+            fontSize = fontBase > settings.maxFont ? settings.maxFont : fontBase < settings.minFont ? settings.minFont : fontBase;
+         $el.css('font-size', fontSize + 'px');
+      };
+
+// Make the magic visible
+// ======================
+      return this.each(function() {
+      // Context for resize callback
+         var self = this;
+      // Make changes upon resize
+         $(window).resize(function(){ changes(self); });
+      // Set changes on load
+         changes(this);
+      });
+   };
+}(jQuery));
+
+},{}],19:[function(require,module,exports){
+/*!
+ * FormValidation (http://formvalidation.io)
+ * The best jQuery plugin to validate form fields. Support Bootstrap, Foundation, Pure, SemanticUI, UIKit and custom frameworks
+ *
+ * @version     v0.7.1, built on 2016-02-01 12:00:57 AM
+ * @author      https://twitter.com/formvalidation
+ * @copyright   (c) 2013 - 2016 Nguyen Huu Phuoc
+ * @license     http://formvalidation.io/license/
+ */
+/**
+ * This class supports validating Bootstrap form (http://getbootstrap.com/)
+ */
+(function($) {
+    FormValidation.Framework.Bootstrap = function(element, options, namespace) {
+        options = $.extend(true, {
+            button: {
+                selector: '[type="submit"]:not([formnovalidate])',
+                // The class of disabled button
+                // http://getbootstrap.com/css/#buttons-disabled
+                disabled: 'disabled'
+            },
+            err: {
+                // http://getbootstrap.com/css/#forms-help-text
+                clazz: 'help-block',
+                parent: '^(.*)col-(xs|sm|md|lg)-(offset-){0,1}[0-9]+(.*)$'
+            },
+            // This feature requires Bootstrap v3.1.0 or later (http://getbootstrap.com/css/#forms-control-validation).
+            // Since Bootstrap doesn't provide any methods to know its version, this option cannot be on/off automatically.
+            // In other word, to use this feature you have to upgrade your Bootstrap to v3.1.0 or later.
+            //
+            // Examples:
+            // - Use Glyphicons icons:
+            //  icon: {
+            //      valid: 'glyphicon glyphicon-ok',
+            //      invalid: 'glyphicon glyphicon-remove',
+            //      validating: 'glyphicon glyphicon-refresh',
+            //      feedback: 'form-control-feedback'
+            //  }
+            // - Use FontAwesome icons:
+            //  icon: {
+            //      valid: 'fa fa-check',
+            //      invalid: 'fa fa-times',
+            //      validating: 'fa fa-refresh',
+            //      feedback: 'form-control-feedback'
+            //  }
+            icon: {
+                valid: null,
+                invalid: null,
+                validating: null,
+                feedback: 'form-control-feedback'
+            },
+            row: {
+                // By default, each field is placed inside the <div class="form-group"></div>
+                // http://getbootstrap.com/css/#forms
+                selector: '.form-group',
+                valid: 'has-success',
+                invalid: 'has-error',
+                feedback: 'has-feedback'
+            }
+        }, options);
+
+        FormValidation.Base.apply(this, [element, options, namespace]);
+    };
+
+    FormValidation.Framework.Bootstrap.prototype = $.extend({}, FormValidation.Base.prototype, {
+        /**
+         * Specific framework might need to adjust the icon position
+         *
+         * @param {jQuery} $field The field element
+         * @param {jQuery} $icon The icon element
+         */
+        _fixIcon: function($field, $icon) {
+            var ns      = this._namespace,
+                type    = $field.attr('type'),
+                field   = $field.attr('data-' + ns + '-field'),
+                row     = this.options.fields[field].row || this.options.row.selector,
+                $parent = $field.closest(row);
+
+            // Place it after the container of checkbox/radio
+            // so when clicking the icon, it doesn't effect to the checkbox/radio element
+            if ('checkbox' === type || 'radio' === type) {
+                var $fieldParent = $field.parent();
+                if ($fieldParent.hasClass(type)) {
+                    $icon.insertAfter($fieldParent);
+                } else if ($fieldParent.parent().hasClass(type)) {
+                    $icon.insertAfter($fieldParent.parent());
+                }
+            }
+
+            // The feedback icon does not render correctly if there is no label
+            // https://github.com/twbs/bootstrap/issues/12873
+            if ($parent.find('label').length === 0) {
+                $icon.addClass('fv-icon-no-label');
+            }
+            // Fix feedback icons in input-group
+            if ($parent.find('.input-group').length !== 0) {
+                $icon.addClass('fv-bootstrap-icon-input-group')
+                     .insertAfter($parent.find('.input-group').eq(0));
+            }
+        },
+
+        /**
+         * Create a tooltip or popover
+         * It will be shown when focusing on the field
+         *
+         * @param {jQuery} $field The field element
+         * @param {String} message The message
+         * @param {String} type Can be 'tooltip' or 'popover'
+         */
+        _createTooltip: function($field, message, type) {
+            var ns    = this._namespace,
+                $icon = $field.data(ns + '.icon');
+            if ($icon) {
+                switch (type) {
+                    case 'popover':
+                        $icon
+                            .css({
+                                'cursor': 'pointer',
+                                'pointer-events': 'auto'
+                            })
+                            .popover('destroy')
+                            .popover({
+                                container: 'body',
+                                content: message,
+                                html: true,
+                                placement: 'auto top',
+                                trigger: 'hover click'
+                            });
+                        break;
+
+                    case 'tooltip':
+                    /* falls through */
+                    default:
+                        $icon
+                            .css({
+                                'cursor': 'pointer',
+                                'pointer-events': 'auto'
+                            })
+                            .tooltip('destroy')
+                            .tooltip({
+                                container: 'body',
+                                html: true,
+                                placement: 'auto top',
+                                title: message
+                            });
+                        break;
+                }
+            }
+        },
+
+        /**
+         * Destroy the tooltip or popover
+         *
+         * @param {jQuery} $field The field element
+         * @param {String} type Can be 'tooltip' or 'popover'
+         */
+        _destroyTooltip: function($field, type) {
+            var ns    = this._namespace,
+                $icon = $field.data(ns + '.icon');
+            if ($icon) {
+                switch (type) {
+                    case 'popover':
+                        $icon
+                            .css({
+                                'cursor': '',
+                                'pointer-events': 'none'
+                            })
+                            .popover('destroy');
+                        break;
+
+                    case 'tooltip':
+                    /* falls through */
+                    default:
+                        $icon
+                            .css({
+                                'cursor': '',
+                                'pointer-events': 'none'
+                            })
+                            .tooltip('destroy');
+                        break;
+                }
+            }
+        },
+
+        /**
+         * Hide a tooltip or popover
+         *
+         * @param {jQuery} $field The field element
+         * @param {String} type Can be 'tooltip' or 'popover'
+         */
+        _hideTooltip: function($field, type) {
+            var ns    = this._namespace,
+                $icon = $field.data(ns + '.icon');
+            if ($icon) {
+                switch (type) {
+                    case 'popover':
+                        $icon.popover('hide');
+                        break;
+
+                    case 'tooltip':
+                    /* falls through */
+                    default:
+                        $icon.tooltip('hide');
+                        break;
+                }
+            }
+        },
+
+        /**
+         * Show a tooltip or popover
+         *
+         * @param {jQuery} $field The field element
+         * @param {String} type Can be 'tooltip' or 'popover'
+         */
+        _showTooltip: function($field, type) {
+            var ns    = this._namespace,
+                $icon = $field.data(ns + '.icon');
+            if ($icon) {
+                switch (type) {
+                    case 'popover':
+                        $icon.popover('show');
+                        break;
+
+                    case 'tooltip':
+                    /* falls through */
+                    default:
+                        $icon.tooltip('show');
+                        break;
+                }
+            }
+        }
+    });
+
+    /**
+     * Plugin definition
+     * Support backward
+     * @deprecated It will be removed soon. Instead of using $(form).bootstrapValidator(), use
+     *  $(form).formValidation({
+     *      framework: 'bootstrap'  // It's equivalent to use data-fv-framework="bootstrap" for <form>
+     *  });
+     */
+    $.fn.bootstrapValidator = function(option) {
+        var params = arguments;
+        return this.each(function() {
+            var $this   = $(this),
+                data    = $this.data('formValidation') || $this.data('bootstrapValidator'),
+                options = 'object' === typeof option && option;
+            if (!data) {
+                data = new FormValidation.Framework.Bootstrap(this, $.extend({}, {
+                    events: {
+                        // Support backward
+                        formInit: 'init.form.bv',
+                        formPreValidate: 'prevalidate.form.bv',
+                        formError: 'error.form.bv',
+                        formSuccess: 'success.form.bv',
+                        fieldAdded: 'added.field.bv',
+                        fieldRemoved: 'removed.field.bv',
+                        fieldInit: 'init.field.bv',
+                        fieldError: 'error.field.bv',
+                        fieldSuccess: 'success.field.bv',
+                        fieldStatus: 'status.field.bv',
+                        localeChanged: 'changed.locale.bv',
+                        validatorError: 'error.validator.bv',
+                        validatorSuccess: 'success.validator.bv'
+                    }
+                }, options), 'bv');
+
+                $this.addClass('fv-form-bootstrap')
+                     .data('formValidation', data)
+                     .data('bootstrapValidator', data);
+            }
+
+            // Allow to call plugin method
+            if ('string' === typeof option) {
+                data[option].apply(data, Array.prototype.slice.call(params, 1));
+            }
+        });
+    };
+
+    $.fn.bootstrapValidator.Constructor = FormValidation.Framework.Bootstrap;
+}(jQuery));
+
+},{}],20:[function(require,module,exports){
+/*!
+ * FormValidation (http://formvalidation.io)
+ * The best jQuery plugin to validate form fields. Support Bootstrap, Foundation, Pure, SemanticUI, UIKit and custom frameworks
+ *
+ * @version     v0.7.1, built on 2016-02-01 12:00:57 AM
+ * @author      https://twitter.com/formvalidation
+ * @copyright   (c) 2013 - 2016 Nguyen Huu Phuoc
+ * @license     http://formvalidation.io/license/
+ */
+/**
+ * This class supports validating Foundation form (http://foundation.zurb.com/)
+ */
+/* global Foundation: false */
+(function($) {
+    FormValidation.Framework.Foundation = function(element, options) {
+        options = $.extend(true, {
+            button: {
+                selector: '[type="submit"]:not([formnovalidate])',
+                // The class for disabled button
+                // http://foundation.zurb.com/docs/components/buttons.html#button-colors
+                disabled: 'disabled'
+            },
+            err: {
+                // http://foundation.zurb.com/docs/components/forms.html#error-states
+                clazz: 'error',
+                parent: '^.*((small|medium|large)-[0-9]+)\\s.*(columns).*$'
+            },
+            // Foundation doesn't support feedback icon
+            icon: {
+                valid: null,
+                invalid: null,
+                validating: null,
+                feedback: 'fv-control-feedback'
+            },
+            row: {
+                // http://foundation.zurb.com/docs/components/forms.html
+                selector: '.row',
+                valid: 'fv-has-success',
+                invalid: 'error',
+                feedback: 'fv-has-feedback'
+            }
+        }, options);
+
+        FormValidation.Base.apply(this, [element, options]);
+    };
+
+    FormValidation.Framework.Foundation.prototype = $.extend({}, FormValidation.Base.prototype, {
+        /**
+         * Specific framework might need to adjust the icon position
+         *
+         * @param {jQuery} $field The field element
+         * @param {jQuery} $icon The icon element
+         */
+        _fixIcon: function($field, $icon) {
+            var ns      = this._namespace,
+                type    = $field.attr('type'),
+                field   = $field.attr('data-' + ns + '-field'),
+                row     = this.options.fields[field].row || this.options.row.selector,
+                $parent = $field.closest(row);
+
+            if ('checkbox' === type || 'radio' === type) {
+                var $next = $icon.next();
+                if ($next.is('label')) {
+                    $icon.insertAfter($next);
+                }
+            }
+
+            if ($parent.find('label').length === 0) {
+                $icon.addClass('fv-icon-no-label');
+            }
+        },
+
+        /**
+         * Create a tooltip or popover
+         * It will be shown when focusing on the field
+         *
+         * @param {jQuery} $field The field element
+         * @param {String} message The message
+         * @param {String} type Can be 'tooltip' or 'popover'
+         */
+        _createTooltip: function($field, message, type) {
+            var that  = this,
+                $icon = $field.data('fv.icon');
+            if ($icon) {
+                $icon
+                    .attr('title', message)
+                    .css({
+                        'cursor': 'pointer'
+                    })
+                    .off('mouseenter.container.fv focusin.container.fv')
+                    .on('mouseenter.container.fv', function() {
+                        that._showTooltip($field, type);
+                    })
+                    .off('mouseleave.container.fv focusout.container.fv')
+                    .on('mouseleave.container.fv focusout.container.fv', function() {
+                        that._hideTooltip($field, type);
+                    });
+                Foundation.libs.tooltip.create($icon);
+                $icon.data('fv.foundation.tooltip', $icon);
+            }
+        },
+
+        /**
+         * Destroy the tooltip or popover
+         *
+         * @param {jQuery} $field The field element
+         * @param {String} type Can be 'tooltip' or 'popover'
+         */
+        _destroyTooltip: function($field, type) {
+            var $icon = $field.data('fv.icon');
+            if ($icon) {
+                $icon.css({
+                    'cursor': ''
+                });
+                var $tooltip = $icon.data('fv.foundation.tooltip');
+                if ($tooltip) {
+                    // Foundation doesn't provide method to destroy particular tooltip instance
+                    $tooltip.off('.fndtn.tooltip');
+                    Foundation.libs.tooltip.hide($tooltip);
+                    $icon.removeData('fv.foundation.tooltip');
+                }
+            }
+        },
+
+        /**
+         * Hide a tooltip or popover
+         *
+         * @param {jQuery} $field The field element
+         * @param {String} type Can be 'tooltip' or 'popover'
+         */
+        _hideTooltip: function($field, type) {
+            var $icon = $field.data('fv.icon');
+            if ($icon) {
+                $icon.css({
+                    'cursor': ''
+                });
+                var $tooltip = $icon.data('fv.foundation.tooltip');
+                if ($tooltip) {
+                    Foundation.libs.tooltip.hide($tooltip);
+                }
+            }
+        },
+
+        /**
+         * Show a tooltip or popover
+         *
+         * @param {jQuery} $field The field element
+         * @param {String} type Can be 'tooltip' or 'popover'
+         */
+        _showTooltip: function($field, type) {
+            var $icon = $field.data('fv.icon');
+            if ($icon) {
+                var $tooltip = $icon.data('fv.foundation.tooltip');
+                if ($tooltip) {
+                    $icon.css({
+                        'cursor': 'pointer'
+                    });
+                    Foundation.libs.tooltip.show($tooltip);
+                }
+            }
+        }
+    });
+}(jQuery));
+
+},{}],21:[function(require,module,exports){
+/*!
+ * FormValidation (http://formvalidation.io)
+ * The best jQuery plugin to validate form fields. Support Bootstrap, Foundation, Pure, SemanticUI, UIKit and custom frameworks
+ * 
+ * This is a custom build that does NOT consist of all validators. Only popular validators are included:
+ * - between
+ * - callback
+ * - choice
+ * - color
+ * - creditCard
+ * - date
+ * - different
+ * - digits
+ * - emailAddress
+ * - file
+ * - greaterThan
+ * - identical
+ * - integer
+ * - lessThan
+ * - notEmpty
+ * - numeric
+ * - promise
+ * - regexp
+ * - remote
+ * - stringLength
+ * - uri
+ *
+ * Use formValidation(.min).js file if you want to have all validators.
+ *
+ * @version     v0.7.1, built on 2016-02-01 12:00:57 AM
+ * @author      https://twitter.com/formvalidation
+ * @copyright   (c) 2013 - 2016 Nguyen Huu Phuoc
+ * @license     http://formvalidation.io/license/
+ */
+// Register the namespace
+window.FormValidation = {
+    AddOn:     {},  // Add-ons
+    Framework: {},  // Supported frameworks
+    I18n:      {},  // i18n
+    Validator: {}   // Available validators
+};
+
+if (typeof jQuery === 'undefined') {
+    throw new Error('FormValidation requires jQuery');
+}
+
+(function($) {
+    var version = $.fn.jquery.split(' ')[0].split('.');
+    if ((+version[0] < 2 && +version[1] < 9) || (+version[0] === 1 && +version[1] === 9 && +version[2] < 1)) {
+        throw new Error('FormValidation requires jQuery version 1.9.1 or higher');
+    }
+}(jQuery));
+
+(function($) {
+    // TODO: Remove backward compatibility
+    /**
+     * Constructor
+     *
+     * @param {jQuery|String} form The form element or selector
+     * @param {Object} options The options
+     * @param {String} [namespace] The optional namespace which is used for data-{namespace}-xxx attributes and internal data.
+     * Currently, it's used to support backward version
+     * @constructor
+     */
+    FormValidation.Base = function(form, options, namespace) {
+        this.$form      = $(form);
+        this.options    = $.extend({}, $.fn.formValidation.DEFAULT_OPTIONS, options);
+        this._namespace = namespace || 'fv';
+
+        this.$invalidFields = $([]);    // Array of invalid fields
+        this.$submitButton  = null;     // The submit button which is clicked to submit form
+        this.$hiddenButton  = null;
+
+        // Validating status
+        this.STATUS_NOT_VALIDATED = 'NOT_VALIDATED';
+        this.STATUS_VALIDATING    = 'VALIDATING';
+        this.STATUS_INVALID       = 'INVALID';
+        this.STATUS_VALID         = 'VALID';
+        this.STATUS_IGNORED       = 'IGNORED';
+
+        // Default message
+        this.DEFAULT_MESSAGE      = $.fn.formValidation.DEFAULT_MESSAGE;
+
+        // Determine the event that is fired when user change the field value
+        // Most modern browsers supports input event except IE 7, 8.
+        // IE 9 supports input event but the event is still not fired if I press the backspace key.
+        // Get IE version
+        // https://gist.github.com/padolsey/527683/#comment-7595
+        this._ieVersion = (function() {
+            var v = 3, div = document.createElement('div'), a = div.all || [];
+            while (div.innerHTML = '<!--[if gt IE '+(++v)+']><br><![endif]-->', a[0]) {}
+            return v > 4 ? v : document.documentMode;
+        }());
+
+        var el = document.createElement('div');
+        this._changeEvent = (this._ieVersion === 9 || !('oninput' in el)) ? 'keyup' : 'input';
+
+        // The flag to indicate that the form is ready to submit when a remote/callback validator returns
+        this._submitIfValid = null;
+
+        // Field elements
+        this._cacheFields = {};
+
+        this._init();
+    };
+
+    FormValidation.Base.prototype = {
+        constructor: FormValidation.Base,
+
+        /**
+         * Check if the number of characters of field value exceed the threshold or not
+         *
+         * @param {jQuery} $field The field element
+         * @returns {Boolean}
+         */
+        _exceedThreshold: function($field) {
+            var ns        = this._namespace,
+                field     = $field.attr('data-' + ns + '-field'),
+                threshold = this.options.fields[field].threshold || this.options.threshold;
+            if (!threshold) {
+                return true;
+            }
+            var cannotType = $.inArray($field.attr('type'), ['button', 'checkbox', 'file', 'hidden', 'image', 'radio', 'reset', 'submit']) !== -1;
+            return (cannotType || $field.val().length >= threshold);
+        },
+
+        /**
+         * Init form
+         */
+        _init: function() {
+            var that    = this,
+                ns      = this._namespace,
+                options = {
+                    addOns:         {},
+                    autoFocus:      this.$form.attr('data-' + ns + '-autofocus'),
+                    button: {
+                        selector: this.$form.attr('data-' + ns + '-button-selector') || this.$form.attr('data-' + ns + '-submitbuttons'), // Support backward
+                        disabled: this.$form.attr('data-' + ns + '-button-disabled')
+                    },
+                    control: {
+                        valid:   this.$form.attr('data-' + ns + '-control-valid'),
+                        invalid: this.$form.attr('data-' + ns + '-control-invalid')
+                    },
+                    err: {
+                        clazz:     this.$form.attr('data-' + ns + '-err-clazz'),
+                        container: this.$form.attr('data-' + ns + '-err-container') || this.$form.attr('data-' + ns + '-container'), // Support backward
+                        parent:    this.$form.attr('data-' + ns + '-err-parent')
+                    },
+                    events: {
+                        formInit:         this.$form.attr('data-' + ns + '-events-form-init'),
+                        formPreValidate:  this.$form.attr('data-' + ns + '-events-form-prevalidate'),
+                        formError:        this.$form.attr('data-' + ns + '-events-form-error'),
+                        formReset:        this.$form.attr('data-' + ns + '-events-form-reset'),
+                        formSuccess:      this.$form.attr('data-' + ns + '-events-form-success'),
+                        fieldAdded:       this.$form.attr('data-' + ns + '-events-field-added'),
+                        fieldRemoved:     this.$form.attr('data-' + ns + '-events-field-removed'),
+                        fieldInit:        this.$form.attr('data-' + ns + '-events-field-init'),
+                        fieldError:       this.$form.attr('data-' + ns + '-events-field-error'),
+                        fieldReset:       this.$form.attr('data-' + ns + '-events-field-reset'),
+                        fieldSuccess:     this.$form.attr('data-' + ns + '-events-field-success'),
+                        fieldStatus:      this.$form.attr('data-' + ns + '-events-field-status'),
+                        localeChanged:    this.$form.attr('data-' + ns + '-events-locale-changed'),
+                        validatorError:   this.$form.attr('data-' + ns + '-events-validator-error'),
+                        validatorSuccess: this.$form.attr('data-' + ns + '-events-validator-success'),
+                        validatorIgnored: this.$form.attr('data-' + ns + '-events-validator-ignored')
+                    },
+                    excluded:      this.$form.attr('data-' + ns + '-excluded'),
+                    icon: {
+                        valid:      this.$form.attr('data-' + ns + '-icon-valid')      || this.$form.attr('data-' + ns + '-feedbackicons-valid'),      // Support backward
+                        invalid:    this.$form.attr('data-' + ns + '-icon-invalid')    || this.$form.attr('data-' + ns + '-feedbackicons-invalid'),    // Support backward
+                        validating: this.$form.attr('data-' + ns + '-icon-validating') || this.$form.attr('data-' + ns + '-feedbackicons-validating'), // Support backward
+                        feedback:   this.$form.attr('data-' + ns + '-icon-feedback')
+                    },
+                    live:          this.$form.attr('data-' + ns + '-live'),
+                    locale:        this.$form.attr('data-' + ns + '-locale'),
+                    message:       this.$form.attr('data-' + ns + '-message'),
+                    onPreValidate: this.$form.attr('data-' + ns + '-onprevalidate'),
+                    onError:       this.$form.attr('data-' + ns + '-onerror'),
+                    onReset:       this.$form.attr('data-' + ns + '-onreset'),
+                    onSuccess:     this.$form.attr('data-' + ns + '-onsuccess'),
+                    row: {
+                        selector: this.$form.attr('data-' + ns + '-row-selector') || this.$form.attr('data-' + ns + '-group'), // Support backward
+                        valid:    this.$form.attr('data-' + ns + '-row-valid'),
+                        invalid:  this.$form.attr('data-' + ns + '-row-invalid'),
+                        feedback: this.$form.attr('data-' + ns + '-row-feedback')
+                    },
+                    threshold:     this.$form.attr('data-' + ns + '-threshold'),
+                    trigger:       this.$form.attr('data-' + ns + '-trigger'),
+                    verbose:       this.$form.attr('data-' + ns + '-verbose'),
+                    fields:        {}
+                };
+
+            this.$form
+                // Disable client side validation in HTML 5
+                .attr('novalidate', 'novalidate')
+                .addClass(this.options.elementClass)
+                // Disable the default submission first
+                .on('submit.' + ns, function(e) {
+                    e.preventDefault();
+                    that.validate();
+                })
+                .on('click.' + ns, this.options.button.selector, function() {
+                    that.$submitButton  = $(this);
+                    // The user just click the submit button
+                    that._submitIfValid = true;
+                });
+
+            if (this.options.declarative === true || this.options.declarative === 'true') {
+                // Find all fields which have either "name" or "data-{namespace}-field" attribute
+                this.$form
+                    .find('[name], [data-' + ns + '-field]')
+                    .each(function() {
+                        var $field = $(this),
+                            field  = $field.attr('name') || $field.attr('data-' + ns + '-field'),
+                            opts   = that._parseOptions($field);
+                        if (opts) {
+                            $field.attr('data-' + ns + '-field', field);
+                            options.fields[field] = $.extend({}, opts, options.fields[field]);
+                        }
+                    });
+            }
+
+            this.options = $.extend(true, this.options, options);
+
+            // Normalize the err.parent option
+            if ('string' === typeof this.options.err.parent) {
+                this.options.err.parent = new RegExp(this.options.err.parent);
+            }
+
+            // Support backward
+            if (this.options.container) {
+                this.options.err.container = this.options.container;
+                delete this.options.container;
+            }
+            if (this.options.feedbackIcons) {
+                this.options.icon = $.extend(true, this.options.icon, this.options.feedbackIcons);
+                delete this.options.feedbackIcons;
+            }
+            if (this.options.group) {
+                this.options.row.selector = this.options.group;
+                delete this.options.group;
+            }
+            if (this.options.submitButtons) {
+                this.options.button.selector = this.options.submitButtons;
+                delete this.options.submitButtons;
+            }
+
+            // If the locale is not found, reset it to default one
+            if (!FormValidation.I18n[this.options.locale]) {
+                this.options.locale = $.fn.formValidation.DEFAULT_OPTIONS.locale;
+            }
+
+            // Parse the add-on options from HTML attributes
+            if (this.options.declarative === true || this.options.declarative === 'true') {
+                this.options = $.extend(true, this.options, { addOns: this._parseAddOnOptions() });
+            }
+
+            // When pressing Enter on any field in the form, the first submit button will do its job.
+            // The form then will be submitted.
+            // I create a first hidden submit button
+            this.$hiddenButton = $('<button/>')
+                                    .attr('type', 'submit')
+                                    .prependTo(this.$form)
+                                    .addClass('fv-hidden-submit')
+                                    .css({ display: 'none', width: 0, height: 0 });
+
+            this.$form
+                .on('click.' +  this._namespace, '[type="submit"]', function(e) {
+                    // #746: Check if the button click handler returns false
+                    if (!e.isDefaultPrevented()) {
+                        var $target = $(e.target),
+                            // The button might contain HTML tag
+                            $button = $target.is('[type="submit"]') ? $target.eq(0) : $target.parent('[type="submit"]').eq(0);
+
+                        // Don't perform validation when clicking on the submit button/input which
+                        // aren't defined by the 'button.selector' option
+                        if (that.options.button.selector && !$button.is(that.options.button.selector) && !$button.is(that.$hiddenButton)) {
+                            that.$form.off('submit.' + that._namespace).submit();
+                        }
+                    }
+                });
+
+            for (var field in this.options.fields) {
+                this._initField(field);
+            }
+
+            // Init the add-ons
+            for (var addOn in this.options.addOns) {
+                if ('function' === typeof FormValidation.AddOn[addOn].init) {
+                    FormValidation.AddOn[addOn].init(this, this.options.addOns[addOn]);
+                }
+            }
+
+            this.$form.trigger($.Event(this.options.events.formInit), {
+                bv: this,   // Support backward
+                fv: this,
+                options: this.options
+            });
+
+            // Prepare the events
+            if (this.options.onPreValidate) {
+                this.$form.on(this.options.events.formPreValidate, function(e) {
+                    FormValidation.Helper.call(that.options.onPreValidate, [e]);
+                });
+            }
+            if (this.options.onSuccess) {
+                this.$form.on(this.options.events.formSuccess, function(e) {
+                    FormValidation.Helper.call(that.options.onSuccess, [e]);
+                });
+            }
+            if (this.options.onError) {
+                this.$form.on(this.options.events.formError, function(e) {
+                    FormValidation.Helper.call(that.options.onError, [e]);
+                });
+            }
+            if (this.options.onReset) {
+                this.$form.on(this.options.events.formReset, function(e) {
+                    FormValidation.Helper.call(that.options.onReset, [e]);
+                });
+            }
+        },
+
+        /**
+         * Init field
+         *
+         * @param {String|jQuery} field The field name or field element
+         */
+        _initField: function(field) {
+            var ns     = this._namespace,
+                fields = $([]);
+            switch (typeof field) {
+                case 'object':
+                    fields = field;
+                    field  = field.attr('data-' + ns + '-field');
+                    break;
+                case 'string':
+                    fields = this.getFieldElements(field);
+                    fields.attr('data-' + ns + '-field', field);
+                    break;
+                default:
+                    break;
+            }
+
+            // We don't need to validate non-existing fields
+            if (fields.length === 0) {
+                return;
+            }
+
+            if (this.options.fields[field] === null || this.options.fields[field].validators === null) {
+                return;
+            }
+
+            var validators = this.options.fields[field].validators,
+                validatorName,
+                alias;
+            for (validatorName in validators) {
+                alias = validators[validatorName].alias || validatorName;
+                if (!FormValidation.Validator[alias]) {
+                    delete this.options.fields[field].validators[validatorName];
+                }
+            }
+            if (this.options.fields[field].enabled === null) {
+                this.options.fields[field].enabled = true;
+            }
+
+            var that      = this,
+                total     = fields.length,
+                type      = fields.attr('type'),
+                updateAll = (total === 1) || ('radio' === type) || ('checkbox' === type),
+                trigger   = this._getFieldTrigger(fields.eq(0)),
+                clazz     = this.options.err.clazz.split(' ').join('.'),
+                events    = $.map(trigger, function(item) {
+                    return item + '.update.' + ns;
+                }).join(' ');
+
+            for (var i = 0; i < total; i++) {
+                var $field    = fields.eq(i),
+                    row       = this.options.fields[field].row || this.options.row.selector,
+                    $parent   = $field.closest(row),
+                    // Allow user to indicate where the error messages are shown
+                    // Support backward
+                    container = ('function' === typeof (this.options.fields[field].container || this.options.fields[field].err || this.options.err.container))
+                                ? (this.options.fields[field].container || this.options.fields[field].err || this.options.err.container).call(this, $field, this)
+                                : (this.options.fields[field].container || this.options.fields[field].err || this.options.err.container),
+                    $message  = (container && container !== 'tooltip' && container !== 'popover') ? $(container) : this._getMessageContainer($field, row);
+
+                if (container && container !== 'tooltip' && container !== 'popover') {
+                    $message.addClass(this.options.err.clazz);
+                }
+
+                // Remove all error messages and feedback icons
+                $message.find('.' + clazz + '[data-' + ns + '-validator][data-' + ns + '-for="' + field + '"]').remove();
+                $parent.find('i[data-' + ns + '-icon-for="' + field + '"]').remove();
+
+                // Whenever the user change the field value, mark it as not validated yet
+                $field.off(events).on(events, function() {
+                    that.updateStatus($(this), that.STATUS_NOT_VALIDATED);
+                });
+
+                // Create help block elements for showing the error messages
+                $field.data(ns + '.messages', $message);
+                for (validatorName in validators) {
+                    $field.data(ns + '.result.' + validatorName, this.STATUS_NOT_VALIDATED);
+
+                    if (!updateAll || i === total - 1) {
+                        $('<small/>')
+                            .css('display', 'none')
+                            .addClass(this.options.err.clazz)
+                            .attr('data-' + ns + '-validator', validatorName)
+                            .attr('data-' + ns + '-for', field)
+                            .attr('data-' + ns + '-result', this.STATUS_NOT_VALIDATED)
+                            .html(this._getMessage(field, validatorName))
+                            .appendTo($message);
+                    }
+
+                    // Init the validator
+                    alias = validators[validatorName].alias || validatorName;
+                    if ('function' === typeof FormValidation.Validator[alias].init) {
+                        FormValidation.Validator[alias].init(this, $field, this.options.fields[field].validators[validatorName], validatorName);
+                    }
+                }
+
+                // Prepare the feedback icons
+                if (this.options.fields[field].icon !== false && this.options.fields[field].icon !== 'false'
+                    && this.options.icon
+                    && this.options.icon.valid && this.options.icon.invalid && this.options.icon.validating
+                    && (!updateAll || i === total - 1))
+                {
+                    // $parent.removeClass(this.options.row.valid).removeClass(this.options.row.invalid).addClass(this.options.row.feedback);
+                    // Keep error messages which are populated from back-end
+                    $parent.addClass(this.options.row.feedback);
+                    var $icon = $('<i/>')
+                                    .css('display', 'none')
+                                    .addClass(this.options.icon.feedback)
+                                    .attr('data-' + ns + '-icon-for', field)
+                                    .insertAfter($field);
+
+                    // Store the icon as a data of field element
+                    (!updateAll ? $field : fields).data(ns + '.icon', $icon);
+
+                    if ('tooltip' === container || 'popover' === container) {
+                        (!updateAll ? $field : fields)
+                            .on(this.options.events.fieldError, function() {
+                                $parent.addClass('fv-has-tooltip');
+                            })
+                            .on(this.options.events.fieldSuccess, function() {
+                                $parent.removeClass('fv-has-tooltip');
+                            });
+
+                        $field
+                            // Show tooltip/popover message when field gets focus
+                            .off('focus.container.' + ns)
+                            .on('focus.container.' + ns, function() {
+                                that._showTooltip($(this), container);
+                            })
+                            // and hide them when losing focus
+                            .off('blur.container.' + ns)
+                            .on('blur.container.' + ns, function() {
+                                that._hideTooltip($(this), container);
+                            });
+                    }
+
+                    if ('string' === typeof this.options.fields[field].icon && this.options.fields[field].icon !== 'true') {
+                        $icon.appendTo($(this.options.fields[field].icon));
+                    } else {
+                        this._fixIcon($field, $icon);
+                    }
+                }
+            }
+
+            // Sort the validators by priority
+            var sortedByPriority = [];
+            for (validatorName in validators) {
+                alias = validators[validatorName].alias || validatorName;
+
+                // Determine the priority
+                validators[validatorName].priority = parseInt(validators[validatorName].priority
+                                                            || FormValidation.Validator[alias].priority
+                                                            || 1, 10);
+                sortedByPriority.push({
+                    validator: validatorName,
+                    priority: validators[validatorName].priority
+                });
+            }
+            sortedByPriority = sortedByPriority.sort(function(a, b) {
+                return a.priority - b.priority;
+            });
+
+            // Prepare the events
+            fields
+                .data(ns + '.validators', sortedByPriority)
+                .on(this.options.events.fieldSuccess, function(e, data) {
+                    var onSuccess = that.getOptions(data.field, null, 'onSuccess');
+                    if (onSuccess) {
+                        FormValidation.Helper.call(onSuccess, [e, data]);
+                    }
+                })
+                .on(this.options.events.fieldError, function(e, data) {
+                    var onError = that.getOptions(data.field, null, 'onError');
+                    if (onError) {
+                        FormValidation.Helper.call(onError, [e, data]);
+                    }
+                })
+                .on(this.options.events.fieldReset, function(e, data) {
+                    var onReset = that.getOptions(data.field, null, 'onReset');
+                    if (onReset) {
+                        FormValidation.Helper.call(onReset, [e, data]);
+                    }
+                })
+                .on(this.options.events.fieldStatus, function(e, data) {
+                    var onStatus = that.getOptions(data.field, null, 'onStatus');
+                    if (onStatus) {
+                        FormValidation.Helper.call(onStatus, [e, data]);
+                    }
+                })
+                .on(this.options.events.validatorError, function(e, data) {
+                    var onError = that.getOptions(data.field, data.validator, 'onError');
+                    if (onError) {
+                        FormValidation.Helper.call(onError, [e, data]);
+                    }
+                })
+                .on(this.options.events.validatorIgnored, function(e, data) {
+                    var onIgnored = that.getOptions(data.field, data.validator, 'onIgnored');
+                    if (onIgnored) {
+                        FormValidation.Helper.call(onIgnored, [e, data]);
+                    }
+                })
+                .on(this.options.events.validatorSuccess, function(e, data) {
+                    var onSuccess = that.getOptions(data.field, data.validator, 'onSuccess');
+                    if (onSuccess) {
+                        FormValidation.Helper.call(onSuccess, [e, data]);
+                    }
+                });
+
+            // Set live mode
+            this.onLiveChange(fields, 'live', function() {
+                if (that._exceedThreshold($(this))) {
+                    that.validateField($(this));
+                }
+            });
+
+            fields.trigger($.Event(this.options.events.fieldInit), {
+                bv: this,   // Support backward
+                fv: this,
+                field: field,
+                element: fields
+            });
+        },
+
+        /**
+         * Check if the field is excluded.
+         * Returning true means that the field will not be validated
+         *
+         * @param {jQuery} $field The field element
+         * @returns {Boolean}
+         */
+        _isExcluded: function($field) {
+            var ns           = this._namespace,
+                excludedAttr = $field.attr('data-' + ns + '-excluded'),
+                // I still need to check the 'name' attribute while initializing the field
+                field        = $field.attr('data-' + ns + '-field') || $field.attr('name');
+
+            switch (true) {
+                case (!!field && this.options.fields && this.options.fields[field] && (this.options.fields[field].excluded === 'true' || this.options.fields[field].excluded === true)):
+                case (excludedAttr === 'true'):
+                case (excludedAttr === ''):
+                    return true;
+
+                case (!!field && this.options.fields && this.options.fields[field] && (this.options.fields[field].excluded === 'false' || this.options.fields[field].excluded === false)):
+                case (excludedAttr === 'false'):
+                    return false;
+
+                case (!!field && this.options.fields && this.options.fields[field] && 'function' === typeof this.options.fields[field].excluded):
+                    return this.options.fields[field].excluded.call(this, $field, this);
+
+                case (!!field && this.options.fields && this.options.fields[field] && 'string' === typeof this.options.fields[field].excluded):
+                case (excludedAttr):
+                    return FormValidation.Helper.call(this.options.fields[field].excluded, [$field, this]);
+
+                default:
+                    if (this.options.excluded) {
+                        // Convert to array first
+                        if ('string' === typeof this.options.excluded) {
+                            this.options.excluded = $.map(this.options.excluded.split(','), function(item) {
+                                // Trim the spaces
+                                return $.trim(item);
+                            });
+                        }
+
+                        var length = this.options.excluded.length;
+                        for (var i = 0; i < length; i++) {
+                            if (('string' === typeof this.options.excluded[i] && $field.is(this.options.excluded[i]))
+                                || ('function' === typeof this.options.excluded[i] && this.options.excluded[i].call(this, $field, this) === true))
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                    return false;
+            }
+        },
+
+        /**
+         * Get a field changed trigger event
+         *
+         * @param {jQuery} $field The field element
+         * @returns {String[]} The event names triggered on field change
+         */
+        _getFieldTrigger: function($field) {
+            var ns      = this._namespace,
+                trigger = $field.data(ns + '.trigger');
+            if (trigger) {
+                return trigger;
+            }
+
+            // IE10/11 auto fires input event of elements using the placeholder attribute
+            // https://connect.microsoft.com/IE/feedback/details/856700/
+            var type  = $field.attr('type'),
+                name  = $field.attr('data-' + ns + '-field'),
+                event = ('radio' === type || 'checkbox' === type || 'file' === type || 'SELECT' === $field.get(0).tagName)
+                        ? 'change'
+                        : (this._ieVersion >= 10 && $field.attr('placeholder') ? 'keyup' : this._changeEvent);
+            trigger   = ((this.options.fields[name] ? this.options.fields[name].trigger : null) || this.options.trigger || event).split(' ');
+
+            // Since the trigger data is used many times, I need to cache it to use later
+            $field.data(ns + '.trigger', trigger);
+
+            return trigger;
+        },
+
+        /**
+         * Get the error message for given field and validator
+         *
+         * @param {String} field The field name
+         * @param {String} validatorName The validator name
+         * @returns {String}
+         */
+        _getMessage: function(field, validatorName) {
+            if (!this.options.fields[field] || !this.options.fields[field].validators) {
+                return '';
+            }
+            var validators = this.options.fields[field].validators,
+                alias      = (validators[validatorName] && validators[validatorName].alias) ? validators[validatorName].alias : validatorName;
+            if (!FormValidation.Validator[alias]) {
+                return '';
+            }
+
+            switch (true) {
+                case !!validators[validatorName].message:
+                    return validators[validatorName].message;
+                case !!this.options.fields[field].message:
+                    return this.options.fields[field].message;
+                case !!this.options.message:
+                    return this.options.message;
+                case (!!FormValidation.I18n[this.options.locale] && !!FormValidation.I18n[this.options.locale][alias] && !!FormValidation.I18n[this.options.locale][alias]['default']):
+                    return FormValidation.I18n[this.options.locale][alias]['default'];
+                default:
+                    return this.DEFAULT_MESSAGE;
+            }
+        },
+
+        /**
+         * Get the element to place the error messages
+         *
+         * @param {jQuery} $field The field element
+         * @param {String} row
+         * @returns {jQuery}
+         */
+        _getMessageContainer: function($field, row) {
+            if (!this.options.err.parent) {
+                throw new Error('The err.parent option is not defined');
+            }
+
+            var $parent = $field.parent();
+            if ($parent.is(row)) {
+                return $parent;
+            }
+
+            var cssClasses = $parent.attr('class');
+            if (!cssClasses) {
+                return this._getMessageContainer($parent, row);
+            }
+
+            if (this.options.err.parent.test(cssClasses)) {
+                return $parent;
+            }
+
+            return this._getMessageContainer($parent, row);
+        },
+
+        /**
+         * Parse the add-on options from HTML attributes
+         *
+         * @returns {Object}
+         */
+        _parseAddOnOptions: function() {
+            var ns     = this._namespace,
+                names  = this.$form.attr('data-' + ns + '-addons'),
+                addOns = this.options.addOns || {};
+
+            if (names) {
+                names = names.replace(/\s/g, '').split(',');
+                for (var i = 0; i < names.length; i++) {
+                    if (!addOns[names[i]]) {
+                        addOns[names[i]] = {};
+                    }
+                }
+            }
+
+            // Try to parse each add-on options
+            var addOn, attrMap, attr, option;
+            for (addOn in addOns) {
+                if (!FormValidation.AddOn[addOn]) {
+                    // Add-on is not found
+                    delete addOns[addOn];
+                    continue;
+                }
+
+                attrMap = FormValidation.AddOn[addOn].html5Attributes;
+                if (attrMap) {
+                    for (attr in attrMap) {
+                        option = this.$form.attr('data-' + ns + '-addons-' + addOn.toLowerCase() + '-' + attr.toLowerCase());
+                        if (option) {
+                            addOns[addOn][attrMap[attr]] = option;
+                        }
+                    }
+                }
+            }
+
+            return addOns;
+        },
+
+        /**
+         * Parse the validator options from HTML attributes
+         *
+         * @param {jQuery} $field The field element
+         * @returns {Object}
+         */
+        _parseOptions: function($field) {
+            var ns           = this._namespace,
+                field        = $field.attr('name') || $field.attr('data-' + ns + '-field'),
+                validators   = {},
+                aliasAttr    = new RegExp('^data-' + ns + '-([a-z]+)-alias$'),
+                validatorSet = $.extend({}, FormValidation.Validator),
+                validator,
+                v,          // Validator name
+                attrName,
+                enabled,
+                optionName,
+                optionAttrName,
+                optionValue,
+                html5AttrName,
+                html5AttrMap;
+
+            // Determine whether the alias validator is used by checking the data-fv-validator-alias attribute
+            $.each($field.get(0).attributes, function(i, attribute) {
+                if (attribute.value && aliasAttr.test(attribute.name)) {
+                    v = attribute.name.split('-')[2];
+                    if (validatorSet[attribute.value]) {
+                        validatorSet[v]       = validatorSet[attribute.value];
+                        validatorSet[v].alias = attribute.value;
+                    }
+                }
+            });
+
+            for (v in validatorSet) {
+                validator    = validatorSet[v];
+                attrName     = 'data-' + ns + '-' + v.toLowerCase(),
+                enabled      = $field.attr(attrName) + '';
+                html5AttrMap = ('function' === typeof validator.enableByHtml5) ? validator.enableByHtml5($field) : null;
+
+                if ((html5AttrMap && enabled !== 'false')
+                    || (html5AttrMap !== true && ('' === enabled || 'true' === enabled || attrName === enabled.toLowerCase())))
+                {
+                    // Try to parse the options via attributes
+                    validator.html5Attributes = $.extend({}, {
+                                                    message: 'message',
+                                                    onerror: 'onError',
+                                                    onreset: 'onReset',
+                                                    onsuccess: 'onSuccess',
+                                                    priority: 'priority',
+                                                    transformer: 'transformer'
+                                                }, validator.html5Attributes);
+                    validators[v] = $.extend({}, html5AttrMap === true ? {} : html5AttrMap, validators[v]);
+                    if (validator.alias) {
+                        validators[v].alias = validator.alias;
+                    }
+
+                    for (html5AttrName in validator.html5Attributes) {
+                        optionName     = validator.html5Attributes[html5AttrName];
+                        optionAttrName = 'data-' + ns + '-' + v.toLowerCase() + '-' + html5AttrName;
+                        optionValue    = $field.attr(optionAttrName);
+                        if (optionValue) {
+                            if ('true' === optionValue || optionAttrName === optionValue.toLowerCase()) {
+                                optionValue = true;
+                            } else if ('false' === optionValue) {
+                                optionValue = false;
+                            }
+                            validators[v][optionName] = optionValue;
+                        }
+                    }
+                }
+            }
+
+            var opts = {
+                    autoFocus:   $field.attr('data-' + ns + '-autofocus'),
+                    err:         $field.attr('data-' + ns + '-err-container') || $field.attr('data-' + ns + '-container'), // Support backward
+                    enabled:     $field.attr('data-' + ns + '-enabled'),
+                    excluded:    $field.attr('data-' + ns + '-excluded'),
+                    icon:        $field.attr('data-' + ns + '-icon') || $field.attr('data-' + ns + '-feedbackicons') || (this.options.fields && this.options.fields[field] ? this.options.fields[field].feedbackIcons : null), // Support backward
+                    message:     $field.attr('data-' + ns + '-message'),
+                    onError:     $field.attr('data-' + ns + '-onerror'),
+                    onReset:     $field.attr('data-' + ns + '-onreset'),
+                    onStatus:    $field.attr('data-' + ns + '-onstatus'),
+                    onSuccess:   $field.attr('data-' + ns + '-onsuccess'),
+                    row:         $field.attr('data-' + ns + '-row') || $field.attr('data-' + ns + '-group') || (this.options.fields && this.options.fields[field] ? this.options.fields[field].group : null), // Support backward
+                    selector:    $field.attr('data-' + ns + '-selector'),
+                    threshold:   $field.attr('data-' + ns + '-threshold'),
+                    transformer: $field.attr('data-' + ns + '-transformer'),
+                    trigger:     $field.attr('data-' + ns + '-trigger'),
+                    verbose:     $field.attr('data-' + ns + '-verbose'),
+                    validators:  validators
+                },
+                emptyOptions    = $.isEmptyObject(opts),        // Check if the field options are set using HTML attributes
+                emptyValidators = $.isEmptyObject(validators);  // Check if the field validators are set using HTML attributes
+
+            if (!emptyValidators || (!emptyOptions && this.options.fields && this.options.fields[field])) {
+                //opts.validators = validators;
+                return opts;
+            } else {
+                return null;
+            }
+        },
+
+        /**
+         * Called when all validations are completed
+         */
+        _submit: function() {
+            var isValid = this.isValid();
+            if (isValid === null) {
+                return;
+            }
+
+            var eventType = isValid ? this.options.events.formSuccess : this.options.events.formError,
+                e         = $.Event(eventType);
+
+            this.$form.trigger(e);
+
+            // Call default handler
+            // Check if whether the submit button is clicked
+            if (this.$submitButton) {
+                isValid ? this._onSuccess(e) : this._onError(e);
+            }
+        },
+
+        // ~~~~~~
+        // Events
+        // ~~~~~~
+
+        /**
+         * The default handler of error.form.fv event.
+         * It will be called when there is a invalid field
+         *
+         * @param {jQuery.Event} e The jQuery event object
+         */
+        _onError: function(e) {
+            if (e.isDefaultPrevented()) {
+                return;
+            }
+
+            if ('submitted' === this.options.live) {
+                // Enable live mode
+                this.options.live = 'enabled';
+
+                var that = this;
+                for (var field in this.options.fields) {
+                    (function(f) {
+                        var fields  = that.getFieldElements(f);
+                        if (fields.length) {
+                            that.onLiveChange(fields, 'live', function() {
+                                if (that._exceedThreshold($(this))) {
+                                    that.validateField($(this));
+                                }
+                            });
+                        }
+                    })(field);
+                }
+            }
+
+            // Determined the first invalid field which will be focused on automatically
+            var ns = this._namespace;
+            for (var i = 0; i < this.$invalidFields.length; i++) {
+                var $field    = this.$invalidFields.eq(i),
+                    autoFocus = this.isOptionEnabled($field.attr('data-' + ns + '-field'), 'autoFocus');
+                if (autoFocus) {
+                    // Focus the field
+                    $field.focus();
+                    break;
+                }
+            }
+        },
+
+        /**
+         * Called after validating a field element
+         *
+         * @param {jQuery} $field The field element
+         * @param {String} [validatorName] The validator name
+         */
+        _onFieldValidated: function($field, validatorName) {
+            var ns            = this._namespace,
+                field         = $field.attr('data-' + ns + '-field'),
+                validators    = this.options.fields[field].validators,
+                counter       = {},
+                numValidators = 0,
+                data          = {
+                    bv: this,   // Support backward
+                    fv: this,
+                    field: field,
+                    element: $field,
+                    validator: validatorName,
+                    result: $field.data(ns + '.response.' + validatorName)
+                };
+
+            // Trigger an event after given validator completes
+            if (validatorName) {
+                switch ($field.data(ns + '.result.' + validatorName)) {
+                    case this.STATUS_INVALID:
+                        $field.trigger($.Event(this.options.events.validatorError), data);
+                        break;
+                    case this.STATUS_VALID:
+                        $field.trigger($.Event(this.options.events.validatorSuccess), data);
+                        break;
+                    case this.STATUS_IGNORED:
+                        $field.trigger($.Event(this.options.events.validatorIgnored), data);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            counter[this.STATUS_NOT_VALIDATED] = 0;
+            counter[this.STATUS_VALIDATING]    = 0;
+            counter[this.STATUS_INVALID]       = 0;
+            counter[this.STATUS_VALID]         = 0;
+            counter[this.STATUS_IGNORED]       = 0;
+
+            for (var v in validators) {
+                if (validators[v].enabled === false) {
+                    continue;
+                }
+
+                numValidators++;
+                var result = $field.data(ns + '.result.' + v);
+                if (result) {
+                    counter[result]++;
+                }
+            }
+
+            // The sum of valid fields now also include ignored fields
+            if (counter[this.STATUS_VALID] + counter[this.STATUS_IGNORED] === numValidators) {
+                // Remove from the list of invalid fields
+                this.$invalidFields = this.$invalidFields.not($field);
+
+                $field.trigger($.Event(this.options.events.fieldSuccess), data);
+            }
+            // If all validators are completed and there is at least one validator which doesn't pass
+            else if ((counter[this.STATUS_NOT_VALIDATED] === 0 || !this.isOptionEnabled(field, 'verbose')) && counter[this.STATUS_VALIDATING] === 0 && counter[this.STATUS_INVALID] > 0) {
+                // Add to the list of invalid fields
+                this.$invalidFields = this.$invalidFields.add($field);
+
+                $field.trigger($.Event(this.options.events.fieldError), data);
+            }
+        },
+
+        /**
+         * The default handler of success.form.fv event.
+         * It will be called when all the fields are valid
+         *
+         * @param {jQuery.Event} e The jQuery event object
+         */
+        _onSuccess: function(e) {
+            if (e.isDefaultPrevented()) {
+                return;
+            }
+
+            // Submit the form
+            this.disableSubmitButtons(true).defaultSubmit();
+        },
+
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // Abstract methods
+        // Need to be implemented by sub-class that supports specific framework
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        /**
+         * Specific framework might need to adjust the icon position
+         *
+         * @param {jQuery} $field The field element
+         * @param {jQuery} $icon The icon element
+         */
+        _fixIcon: function($field, $icon) {
+        },
+
+        /**
+         * Create a tooltip or popover
+         * It will be shown when focusing on the field
+         *
+         * @param {jQuery} $field The field element
+         * @param {String} message The message
+         * @param {String} type Can be 'tooltip' or 'popover'
+         */
+        _createTooltip: function($field, message, type) {
+        },
+
+        /**
+         * Destroy the tooltip or popover
+         *
+         * @param {jQuery} $field The field element
+         * @param {String} type Can be 'tooltip' or 'popover'
+         */
+        _destroyTooltip: function($field, type) {
+        },
+
+        /**
+         * Hide a tooltip or popover
+         *
+         * @param {jQuery} $field The field element
+         * @param {String} type Can be 'tooltip' or 'popover'
+         */
+        _hideTooltip: function($field, type) {
+        },
+
+        /**
+         * Show a tooltip or popover
+         *
+         * @param {jQuery} $field The field element
+         * @param {String} type Can be 'tooltip' or 'popover'
+         */
+        _showTooltip: function($field, type) {
+        },
+
+        // ~~~~~~~~~~~~~~
+        // Public methods
+        // ~~~~~~~~~~~~~~
+
+        /**
+         * Submit the form using default submission.
+         * It also does not perform any validations when submitting the form
+         */
+        defaultSubmit: function() {
+            var ns = this._namespace;
+            if (this.$submitButton) {
+                // Create hidden input to send the submit buttons
+                $('<input/>')
+                    .attr({
+                        'type': 'hidden',
+                        name: this.$submitButton.attr('name')
+                    })
+                    .attr('data-' + ns + '-submit-hidden', '')
+                    .val(this.$submitButton.val())
+                    .appendTo(this.$form);
+            }
+
+            // Submit form
+            this.$form.off('submit.' + ns).submit();
+        },
+
+        /**
+         * Disable/enable submit buttons
+         *
+         * @param {Boolean} disabled Can be true or false
+         * @returns {FormValidation.Base}
+         */
+        disableSubmitButtons: function(disabled) {
+            if (!disabled) {
+                this.$form
+                    .find(this.options.button.selector)
+                        .removeAttr('disabled')
+                        .removeClass(this.options.button.disabled);
+            } else if (this.options.live !== 'disabled') {
+                // Don't disable if the live validating mode is disabled
+                this.$form
+                    .find(this.options.button.selector)
+                        .attr('disabled', 'disabled')
+                        .addClass(this.options.button.disabled);
+            }
+
+            return this;
+        },
+
+        /**
+         * Retrieve the field elements by given name
+         *
+         * @param {String} field The field name
+         * @returns {null|jQuery[]}
+         */
+        getFieldElements: function(field) {
+            if (!this._cacheFields[field]) {
+                if (this.options.fields[field] && this.options.fields[field].selector) {
+                    // Look for the field inside the form first
+                    var f = this.$form.find(this.options.fields[field].selector);
+                    // If not found, search in entire document
+                    this._cacheFields[field] = f.length ? f : $(this.options.fields[field].selector);
+                } else {
+                    this._cacheFields[field] = this.$form.find('[name="' + field + '"]');
+                }
+            }
+
+            return this._cacheFields[field];
+        },
+
+        /**
+         * Get the field value after applying transformer
+         *
+         * @param {String|jQuery} field The field name or field element
+         * @param {String} validatorName The validator name
+         * @returns {String}
+         */
+        getFieldValue: function(field, validatorName) {
+            var $field, ns = this._namespace;
+            if ('string' === typeof field) {
+                $field = this.getFieldElements(field);
+                if ($field.length === 0) {
+                    return null;
+                }
+            } else {
+                $field = field;
+                field  = $field.attr('data-' + ns + '-field');
+            }
+
+            if (!field || !this.options.fields[field]) {
+                return $field.val();
+            }
+
+            var transformer = (this.options.fields[field].validators && this.options.fields[field].validators[validatorName]
+                                ? this.options.fields[field].validators[validatorName].transformer : null)
+                                || this.options.fields[field].transformer;
+            return transformer ? FormValidation.Helper.call(transformer, [$field, validatorName, this]) : $field.val();
+        },
+
+        /**
+         * Get the namespace
+         *
+         * @returns {String}
+         */
+        getNamespace: function() {
+            return this._namespace;
+        },
+
+        /**
+         * Get the field options
+         *
+         * @param {String|jQuery} [field] The field name or field element. If it is not set, the method returns the form options
+         * @param {String} [validator] The name of validator. It null, the method returns form options
+         * @param {String} [option] The option name
+         * @return {String|Object}
+         */
+        getOptions: function(field, validator, option) {
+            var ns = this._namespace;
+            if (!field) {
+                return option ? this.options[option] : this.options;
+            }
+            if ('object' === typeof field) {
+                field = field.attr('data-' + ns + '-field');
+            }
+            if (!this.options.fields[field]) {
+                return null;
+            }
+
+            var options = this.options.fields[field];
+            if (!validator) {
+                return option ? options[option] : options;
+            }
+            if (!options.validators || !options.validators[validator]) {
+                return null;
+            }
+
+            return option ? options.validators[validator][option] : options.validators[validator];
+        },
+
+        /**
+         * Get the validating result of field
+         *
+         * @param {String|jQuery} field The field name or field element
+         * @param {String} validatorName The validator name
+         * @returns {String} The status. Can be 'NOT_VALIDATED', 'VALIDATING', 'INVALID', 'VALID' or 'IGNORED'
+         */
+        getStatus: function(field, validatorName) {
+            var ns = this._namespace;
+            switch (typeof field) {
+                case 'object':
+                    return field.data(ns + '.result.' + validatorName);
+                case 'string':
+                /* falls through */
+                default:
+                    return this.getFieldElements(field).eq(0).data(ns + '.result.' + validatorName);
+            }
+        },
+
+        /**
+         * Check whether or not a field option is enabled
+         *
+         * @param {String} field The field name
+         * @param {String} option The option name, "verbose", "autoFocus", for example
+         * @returns {Boolean}
+         */
+        isOptionEnabled: function(field, option) {
+            if (this.options.fields[field] && (this.options.fields[field][option] === 'true' || this.options.fields[field][option] === true)) {
+                return true;
+            }
+            if (this.options.fields[field] && (this.options.fields[field][option] === 'false' || this.options.fields[field][option] === false)) {
+                return false;
+            }
+            return this.options[option] === 'true' || this.options[option] === true;
+        },
+
+        /**
+         * Check the form validity
+         *
+         * @returns {Boolean|null} Returns one of three values
+         * - true, if all fields are valid
+         * - false, if there is one invalid field
+         * - null, if there is at least one field which is not validated yet or being validated
+         */
+        isValid: function() {
+            for (var field in this.options.fields) {
+                var isValidField = this.isValidField(field);
+                if (isValidField === null) {
+                    return null;
+                }
+                if (isValidField === false) {
+                    return false;
+                }
+            }
+
+            return true;
+        },
+
+        /**
+         * Check if all fields inside a given container are valid.
+         * It's useful when working with a wizard-like such as tab, collapse
+         *
+         * @param {String|jQuery} container The container selector or element
+         * @returns {Boolean|null} Returns one of three values
+         * - true, if all fields inside the container are valid
+         * - false, if there is one invalid field inside the container
+         * - null, if the container consists of at least one field which is not validated yet or being validated
+         */
+        isValidContainer: function(container) {
+            var that       = this,
+                ns         = this._namespace,
+                fields     = [],
+                $container = ('string' === typeof container) ? $(container) : container;
+            if ($container.length === 0) {
+                return true;
+            }
+
+            $container.find('[data-' + ns + '-field]').each(function() {
+                var $field = $(this);
+                if (!that._isExcluded($field)) {
+                    fields.push($field);
+                }
+            });
+
+            var total = fields.length,
+                clazz = this.options.err.clazz.split(' ').join('.');
+            for (var i = 0; i < total; i++) {
+                var $f      = fields[i],
+                    field   = $f.attr('data-' + ns + '-field'),
+                    $errors = $f.data(ns + '.messages')
+                                .find('.' + clazz + '[data-' + ns + '-validator][data-' + ns + '-for="' + field + '"]');
+
+                if (this.options.fields && this.options.fields[field]
+                    && (this.options.fields[field].enabled === 'false' || this.options.fields[field].enabled === false))
+                {
+                    continue;
+                }
+
+                if ($errors.filter('[data-' + ns + '-result="' + this.STATUS_INVALID + '"]').length > 0) {
+                    return false;
+                }
+
+                // If the field is not validated
+                if ($errors.filter('[data-' + ns + '-result="' + this.STATUS_NOT_VALIDATED + '"]').length > 0
+                    || $errors.filter('[data-' + ns + '-result="' + this.STATUS_VALIDATING + '"]').length > 0)
+                {
+                    return null;
+                }
+            }
+
+            return true;
+        },
+
+        /**
+         * Check if the field is valid or not
+         *
+         * @param {String|jQuery} field The field name or field element
+         * @returns {Boolean|null} Returns one of three values
+         * - true, if the field passes all validators
+         * - false, if the field doesn't pass any validator
+         * - null, if there is at least one validator which isn't validated yet or being validated
+         */
+        isValidField: function(field) {
+            var ns     = this._namespace,
+                fields = $([]);
+            switch (typeof field) {
+                case 'object':
+                    fields = field;
+                    field  = field.attr('data-' + ns + '-field');
+                    break;
+                case 'string':
+                    fields = this.getFieldElements(field);
+                    break;
+                default:
+                    break;
+            }
+            if (fields.length === 0 || !this.options.fields[field]
+                || this.options.fields[field].enabled === 'false' || this.options.fields[field].enabled === false)
+            {
+                return true;
+            }
+
+            var type  = fields.attr('type'),
+                total = ('radio' === type || 'checkbox' === type) ? 1 : fields.length,
+                $field, validatorName, status;
+            for (var i = 0; i < total; i++) {
+                $field = fields.eq(i);
+                if (this._isExcluded($field)) {
+                    continue;
+                }
+
+                for (validatorName in this.options.fields[field].validators) {
+                    if (this.options.fields[field].validators[validatorName].enabled === false) {
+                        continue;
+                    }
+
+                    status = $field.data(ns + '.result.' + validatorName);
+                    if (status === this.STATUS_VALIDATING || status === this.STATUS_NOT_VALIDATED) {
+                        return null;
+                    } else if (status === this.STATUS_INVALID) {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        },
+
+        /**
+         * Detach a handler function for a field live change event
+         *
+         * @param {jQuery[]} $fields The field elements
+         * @param {String} namespace The event namespace
+         * @returns {FormValidation.Base}
+         */
+        offLiveChange: function($fields, namespace) {
+            if ($fields === null || $fields.length === 0) {
+                return this;
+            }
+
+            var ns      = this._namespace,
+                trigger = this._getFieldTrigger($fields.eq(0)),
+                events  = $.map(trigger, function(item) {
+                    return item + '.' + namespace + '.' + ns;
+                }).join(' ');
+
+            $fields.off(events);
+            return this;
+        },
+
+        /**
+         * Attach a handler function for a field live change event
+         *
+         * @param {jQuery[]} $fields The field elements
+         * @param {String} namespace The event namespace
+         * @param {Function} handler The handler function
+         * @returns {FormValidation.Base}
+         */
+        onLiveChange: function($fields, namespace, handler) {
+            if ($fields === null || $fields.length === 0) {
+                return this;
+            }
+
+            var ns      = this._namespace,
+                trigger = this._getFieldTrigger($fields.eq(0)),
+                events  = $.map(trigger, function(item) {
+                    return item + '.' + namespace + '.' + ns;
+                }).join(' ');
+
+            switch (this.options.live) {
+                case 'submitted':
+                    break;
+                case 'disabled':
+                    $fields.off(events);
+                    break;
+                case 'enabled':
+                /* falls through */
+                default:
+                    $fields.off(events).on(events, function(e) {
+                        handler.apply(this, arguments);
+                    });
+                    break;
+            }
+
+            return this;
+        },
+
+        /**
+         * Update the error message
+         *
+         * @param {String|jQuery} field The field name or field element
+         * @param {String} validator The validator name
+         * @param {String} message The message
+         * @returns {FormValidation.Base}
+         */
+        updateMessage: function(field, validator, message) {
+            var ns      = this._namespace,
+                $fields = $([]);
+            switch (typeof field) {
+                case 'object':
+                    $fields = field;
+                    field   = field.attr('data-' + ns + '-field');
+                    break;
+                case 'string':
+                    $fields = this.getFieldElements(field);
+                    break;
+                default:
+                    break;
+            }
+
+            var clazz = this.options.err.clazz.split(' ').join('.');
+            $fields.each(function() {
+                $(this)
+                    .data(ns + '.messages')
+                    .find('.' + clazz + '[data-' + ns + '-validator="' + validator + '"][data-' + ns + '-for="' + field + '"]').html(message);
+            });
+
+            return this;
+        },
+
+        /**
+         * Update all validating results of field
+         *
+         * @param {String|jQuery} field The field name or field element
+         * @param {String} status The status. Can be 'NOT_VALIDATED', 'VALIDATING', 'INVALID', 'VALID' or 'IGNORED'
+         * @param {String} [validatorName] The validator name. If null, the method updates validity result for all validators
+         * @returns {FormValidation.Base}
+         */
+        updateStatus: function(field, status, validatorName) {
+            var ns     = this._namespace,
+                fields = $([]);
+            switch (typeof field) {
+                case 'object':
+                    fields = field;
+                    field  = field.attr('data-' + ns + '-field');
+                    break;
+                case 'string':
+                    fields = this.getFieldElements(field);
+                    break;
+                default:
+                    break;
+            }
+
+            if (!field || !this.options.fields[field]) {
+                return this;
+            }
+
+            if (status === this.STATUS_NOT_VALIDATED) {
+                // Reset the flag
+                // To prevent the form from doing submit when a deferred validator returns true while typing
+                this._submitIfValid = false;
+            }
+
+            var that  = this,
+                type  = fields.attr('type'),
+                row   = this.options.fields[field].row || this.options.row.selector,
+                total = ('radio' === type || 'checkbox' === type) ? 1 : fields.length,
+                clazz = this.options.err.clazz.split(' ').join('.');
+
+            for (var i = 0; i < total; i++) {
+                var $field       = fields.eq(i);
+                if (this._isExcluded($field)) {
+                    continue;
+                }
+
+                var $parent      = $field.closest(row),
+                    $message     = $field.data(ns + '.messages'),
+                    $allErrors   = $message.find('.' + clazz + '[data-' + ns + '-validator][data-' + ns + '-for="' + field + '"]'),
+                    $errors      = validatorName ? $allErrors.filter('[data-' + ns + '-validator="' + validatorName + '"]') : $allErrors,
+                    $icon        = $field.data(ns + '.icon'),
+                    // Support backward
+                    container    = ('function' === typeof (this.options.fields[field].container || this.options.fields[field].err || this.options.err.container))
+                                    ? (this.options.fields[field].container || this.options.fields[field].err || this.options.err.container).call(this, $field, this)
+                                    : (this.options.fields[field].container || this.options.fields[field].err || this.options.err.container),
+                    isValidField = null,
+                    isValidating,
+                    isNotValidated;
+
+                // Update status
+                if (validatorName) {
+                    $field.data(ns + '.result.' + validatorName, status);
+                } else {
+                    for (var v in this.options.fields[field].validators) {
+                        $field.data(ns + '.result.' + v, status);
+                    }
+                }
+
+                // Show/hide error elements and feedback icons
+                $errors.attr('data-' + ns + '-result', status);
+
+                switch (status) {
+                    case this.STATUS_VALIDATING:
+                        isValidField = null;
+                        this.disableSubmitButtons(true);
+                        $field.removeClass(this.options.control.valid).removeClass(this.options.control.invalid);
+                        $parent.removeClass(this.options.row.valid).removeClass(this.options.row.invalid);
+                        if ($icon) {
+                            $icon.removeClass(this.options.icon.valid).removeClass(this.options.icon.invalid).addClass(this.options.icon.validating).show();
+                        }
+                        break;
+
+                    case this.STATUS_INVALID:
+                        isValidField = false;
+                        this.disableSubmitButtons(true);
+                        $field.removeClass(this.options.control.valid).addClass(this.options.control.invalid);
+                        $parent.removeClass(this.options.row.valid).addClass(this.options.row.invalid);
+                        if ($icon) {
+                            $icon.removeClass(this.options.icon.valid).removeClass(this.options.icon.validating).addClass(this.options.icon.invalid).show();
+                        }
+                        break;
+
+                    case this.STATUS_IGNORED:       // Treat ignored fields like they are valid with some specialties
+                    case this.STATUS_VALID:
+                        isValidating   = ($allErrors.filter('[data-' + ns + '-result="' + this.STATUS_VALIDATING +'"]').length > 0);
+                        isNotValidated = ($allErrors.filter('[data-' + ns + '-result="' + this.STATUS_NOT_VALIDATED +'"]').length > 0);
+
+                        var numIgnored = $allErrors.filter('[data-' + ns + '-result="' + this.STATUS_IGNORED +'"]').length;
+
+                        // If the field is valid (passes all validators)
+                        isValidField   = (isValidating || isNotValidated)     // There are some validators that have not done
+                                        ? null
+                                        // All validators are completed
+                                        : ($allErrors.filter('[data-' + ns + '-result="' + this.STATUS_VALID +'"]').length + numIgnored === $allErrors.length);
+
+                        $field.removeClass(this.options.control.valid).removeClass(this.options.control.invalid);
+
+                        if (isValidField === true) {
+                            this.disableSubmitButtons(this.isValid() === false);
+                            if (status === this.STATUS_VALID) {
+                                $field.addClass(this.options.control.valid);
+                            }
+                        } else if (isValidField === false) {
+                            this.disableSubmitButtons(true);
+                            if (status === this.STATUS_VALID) {
+                                $field.addClass(this.options.control.invalid);
+                            }
+                        }
+
+                        if ($icon) {
+                            $icon.removeClass(this.options.icon.invalid).removeClass(this.options.icon.validating).removeClass(this.options.icon.valid);
+                            if (status === this.STATUS_VALID || numIgnored !== $allErrors.length) {
+                                $icon.addClass(isValidating
+                                                ? this.options.icon.validating
+                                                : (isValidField === null ? '' : (isValidField ? this.options.icon.valid : this.options.icon.invalid)))
+                                     .show();
+                            }
+                        }
+
+                        var isValidContainer = this.isValidContainer($parent);
+                        if (isValidContainer !== null) {
+                            $parent.removeClass(this.options.row.valid).removeClass(this.options.row.invalid);
+                            if (status === this.STATUS_VALID || numIgnored !== $allErrors.length) {
+                                $parent.addClass(isValidContainer ? this.options.row.valid : this.options.row.invalid);
+                            }
+                        }
+                        break;
+
+                    case this.STATUS_NOT_VALIDATED:
+                    /* falls through */
+                    default:
+                        isValidField = null;
+                        this.disableSubmitButtons(false);
+                        $field.removeClass(this.options.control.valid).removeClass(this.options.control.invalid);
+                        $parent.removeClass(this.options.row.valid).removeClass(this.options.row.invalid);
+                        if ($icon) {
+                            $icon.removeClass(this.options.icon.valid).removeClass(this.options.icon.invalid).removeClass(this.options.icon.validating).hide();
+                        }
+                        break;
+                }
+
+                if ($icon && ('tooltip' === container || 'popover' === container)) {
+                    (isValidField === false)
+                        // Only show the first error message
+                        ? this._createTooltip($field, $allErrors.filter('[data-' + ns + '-result="' + that.STATUS_INVALID + '"]').eq(0).html(), container)
+                        : this._destroyTooltip($field, container);
+                } else {
+                    (status === this.STATUS_INVALID) ? $errors.show() : $errors.hide();
+                }
+
+                // Trigger an event
+                $field.trigger($.Event(this.options.events.fieldStatus), {
+                    bv: this,   // Support backward
+                    fv: this,
+                    field: field,
+                    element: $field,
+                    status: status
+                });
+                this._onFieldValidated($field, validatorName);
+            }
+
+            return this;
+        },
+
+        /**
+         * Validate the form
+         *
+         * @returns {FormValidation.Base}
+         */
+        validate: function() {
+            if ($.isEmptyObject(this.options.fields)) {
+                this._submit();
+                return this;
+            }
+            this.$form.trigger($.Event(this.options.events.formPreValidate));
+
+            this.disableSubmitButtons(true);
+            this._submitIfValid = false;
+            for (var field in this.options.fields) {
+                this.validateField(field);
+            }
+
+            this._submit();
+            this._submitIfValid = true;
+
+            return this;
+        },
+
+        /**
+         * Validate given field
+         *
+         * @param {String|jQuery} field The field name or field element
+         * @returns {FormValidation.Base}
+         */
+        validateField: function(field) {
+            var ns     = this._namespace,
+                fields = $([]);
+            switch (typeof field) {
+                case 'object':
+                    fields = field;
+                    field  = field.attr('data-' + ns + '-field');
+                    break;
+                case 'string':
+                    fields = this.getFieldElements(field);
+                    break;
+                default:
+                    break;
+            }
+
+            if (fields.length === 0 || !this.options.fields[field]
+                || this.options.fields[field].enabled === 'false' || this.options.fields[field].enabled === false)
+            {
+                return this;
+            }
+
+            var that       = this,
+                type       = fields.attr('type'),
+                total      = ('radio' === type || 'checkbox' === type) ? 1 : fields.length,
+                updateAll  = ('radio' === type || 'checkbox' === type),
+                validators = this.options.fields[field].validators,
+                verbose    = this.isOptionEnabled(field, 'verbose'),
+                validatorName,
+                alias,
+                validateResult;
+
+            for (var i = 0; i < total; i++) {
+                var $field = fields.eq(i);
+                if (this._isExcluded($field)) {
+                    continue;
+                }
+
+                var stop             = false,
+                    sortedByPriority = $field.data(ns + '.validators'),
+                    numValidators    = sortedByPriority.length;
+
+                for (var j = 0; j < numValidators; j++) {
+                    validatorName = sortedByPriority[j].validator;
+                    if ($field.data(ns + '.dfs.' + validatorName)) {
+                        $field.data(ns + '.dfs.' + validatorName).reject();
+                    }
+                    if (stop) {
+                        break;
+                    }
+
+                    // Don't validate field if it is already done
+                    var result = $field.data(ns + '.result.' + validatorName);
+                    if (result === this.STATUS_VALID || result === this.STATUS_INVALID) {
+                        this._onFieldValidated($field, validatorName);
+                        continue;
+                    } else if (validators[validatorName].enabled === false) {
+                        // Changed in v0.6.2:
+                        // When the field validator is disabled, it should be treated as STATUS_IGNORED instead of STATUS_VALID
+                        // By doing that, the field with only disabled and ignored validators will not have success/error class
+                        this.updateStatus(updateAll ? field : $field, this.STATUS_IGNORED, validatorName);
+                        continue;
+                    }
+
+                    $field.data(ns + '.result.' + validatorName, this.STATUS_VALIDATING);
+
+                    // Check whether or not the validator is just an alias of another
+                    alias          = validators[validatorName].alias || validatorName;
+                    validateResult = FormValidation.Validator[alias].validate(this, $field, validators[validatorName], validatorName);
+
+                    // validateResult can be a $.Deferred object ...
+                    if ('object' === typeof validateResult && validateResult.resolve) {
+                        this.updateStatus(updateAll ? field : $field, this.STATUS_VALIDATING, validatorName);
+                        $field.data(ns + '.dfs.' + validatorName, validateResult);
+
+                        validateResult.done(function($f, v, response) {
+                            // v is validator name
+                            $f.removeData(ns + '.dfs.' + v).data(ns + '.response.' + v, response);
+                            if (response.message) {
+                                that.updateMessage($f, v, response.message);
+                            }
+
+                            that.updateStatus(updateAll ? $f.attr('data-' + ns + '-field') : $f,
+                                              response.valid === true ? that.STATUS_VALID : (response.valid === false ? that.STATUS_INVALID : that.STATUS_IGNORED),
+                                              v);
+
+                            if (response.valid && that._submitIfValid === true) {
+                                // If a remote validator returns true and the form is ready to submit, then do it
+                                that._submit();
+                            } else if (response.valid === false && !verbose) {
+                                stop = true;
+                            }
+                        });
+                    }
+                    // ... or object { valid: true/false/null, message: 'dynamic message', otherKey: value, ... }
+                    else if ('object' === typeof validateResult && validateResult.valid !== undefined) {
+                        $field.data(ns + '.response.' + validatorName, validateResult);
+                        if (validateResult.message) {
+                            this.updateMessage(updateAll ? field : $field, validatorName, validateResult.message);
+                        }
+                        this.updateStatus(updateAll ? field : $field,
+                                          validateResult.valid === true ? this.STATUS_VALID : (validateResult.valid === false ? this.STATUS_INVALID : this.STATUS_IGNORED),
+                                          validatorName);
+                        if (validateResult.valid === false && !verbose) {
+                            break;
+                        }
+                    }
+                    // ... or a boolean value
+                    else if ('boolean' === typeof validateResult) {
+                        $field.data(ns + '.response.' + validatorName, validateResult);
+                        this.updateStatus(updateAll ? field : $field, validateResult ? this.STATUS_VALID : this.STATUS_INVALID, validatorName);
+                        if (!validateResult && !verbose) {
+                            break;
+                        }
+                    }
+                    // ... or null
+                    // to indicate that the field should be ignored for current validator
+                    else if (null === validateResult) {
+                        $field.data(ns + '.response.' + validatorName, validateResult);
+                        this.updateStatus(updateAll ? field : $field, this.STATUS_IGNORED, validatorName);
+                    }
+                }
+            }
+
+            return this;
+        },
+
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // Useful APIs which aren't used internally
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        /**
+         * Add a new field
+         *
+         * @param {String|jQuery} field The field name or field element
+         * @param {Object} [options] The validator rules
+         * @returns {FormValidation.Base}
+         */
+        addField: function(field, options) {
+            var ns     = this._namespace,
+                fields = $([]);
+            switch (typeof field) {
+                case 'object':
+                    fields = field;
+                    field  = field.attr('data-' + ns + '-field') || field.attr('name');
+                    break;
+                case 'string':
+                    delete this._cacheFields[field];
+                    fields = this.getFieldElements(field);
+                    break;
+                default:
+                    break;
+            }
+
+            fields.attr('data-' + ns + '-field', field);
+
+            var type  = fields.attr('type'),
+                total = ('radio' === type || 'checkbox' === type) ? 1 : fields.length;
+
+            for (var i = 0; i < total; i++) {
+                var $field = fields.eq(i);
+
+                // Try to parse the options from HTML attributes
+                var opts = this._parseOptions($field);
+                opts = (opts === null) ? options : $.extend(true, opts, options);
+
+                this.options.fields[field] = $.extend(true, this.options.fields[field], opts);
+
+                // Update the cache
+                this._cacheFields[field] = this._cacheFields[field] ? this._cacheFields[field].add($field) : $field;
+
+                // Init the element
+                this._initField(('checkbox' === type || 'radio' === type) ? field : $field);
+            }
+
+            this.disableSubmitButtons(false);
+            // Trigger an event
+            this.$form.trigger($.Event(this.options.events.fieldAdded), {
+                field: field,
+                element: fields,
+                options: this.options.fields[field]
+            });
+
+            return this;
+        },
+
+        /**
+         * Destroy the plugin
+         * It will remove all error messages, feedback icons and turn off the events
+         */
+        destroy: function() {
+            var ns = this._namespace, i, field, fields, $field, validator, $icon, row, alias;
+
+            // Destroy the validators first
+            for (field in this.options.fields) {
+                fields = this.getFieldElements(field);
+                for (i = 0; i < fields.length; i++) {
+                    $field = fields.eq(i);
+                    for (validator in this.options.fields[field].validators) {
+                        if ($field.data(ns + '.dfs.' + validator)) {
+                            $field.data(ns + '.dfs.' + validator).reject();
+                        }
+                        $field.removeData(ns + '.result.' + validator)
+                              .removeData(ns + '.response.' + validator)
+                              .removeData(ns + '.dfs.' + validator);
+
+                        // Destroy the validator
+                        alias = this.options.fields[field].validators[validator].alias || validator;
+                        if ('function' === typeof FormValidation.Validator[alias].destroy) {
+                            FormValidation.Validator[alias].destroy(this, $field, this.options.fields[field].validators[validator], validator);
+                        }
+                    }
+                }
+            }
+
+            // Remove messages and icons
+            var clazz = this.options.err.clazz.split(' ').join('.');
+            for (field in this.options.fields) {
+                fields = this.getFieldElements(field);
+                row    = this.options.fields[field].row || this.options.row.selector;
+                for (i = 0; i < fields.length; i++) {
+                    $field = fields.eq(i);
+                    $field
+                        // Remove all error messages
+                        .data(ns + '.messages')
+                            .find('.' + clazz + '[data-' + ns + '-validator][data-' + ns + '-for="' + field + '"]').remove().end()
+                            .end()
+                        .removeData(ns + '.messages')
+                        .removeData(ns + '.validators')
+                        // Remove feedback classes
+                        .closest(row)
+                            .removeClass(this.options.row.valid)
+                            .removeClass(this.options.row.invalid)
+                            .removeClass(this.options.row.feedback)
+                            .end()
+                        // Turn off events
+                        .off('.' + ns)
+                        .removeAttr('data-' + ns + '-field');
+
+                    // Remove feedback icons, tooltip/popover container
+                    // Support backward
+                    var container = ('function' === typeof (this.options.fields[field].container || this.options.fields[field].err || this.options.err.container))
+                                    ? (this.options.fields[field].container || this.options.fields[field].err || this.options.err.container).call(this, $field, this)
+                                    : (this.options.fields[field].container || this.options.fields[field].err || this.options.err.container);
+                    if ('tooltip' === container || 'popover' === container) {
+                        this._destroyTooltip($field, container);
+                    }
+
+                    $icon = $field.data(ns + '.icon');
+                    if ($icon) {
+                        $icon.remove();
+                    }
+                    $field.removeData(ns + '.icon')
+                          // It's safe to remove trigger data here, because it might be used when destroying the validator
+                          .removeData(ns + '.trigger');
+                }
+            }
+
+            // Destroy the add-ons
+            for (var addOn in this.options.addOns) {
+                if ('function' === typeof FormValidation.AddOn[addOn].destroy) {
+                    FormValidation.AddOn[addOn].destroy(this, this.options.addOns[addOn]);
+                }
+            }
+
+            this.disableSubmitButtons(false);   // Enable submit buttons
+            this.$hiddenButton.remove();        // Remove the hidden button
+
+            this.$form
+                .removeClass(this.options.elementClass)
+                .off('.' + ns)
+                .removeData('bootstrapValidator')   // Support backward
+                .removeData('formValidation')
+                // Remove generated hidden elements
+                .find('[data-' + ns + '-submit-hidden]').remove().end()
+                .find('[type="submit"]')
+                    .off('click.' + ns);
+        },
+
+        /**
+         * Enable/Disable all validators to given field
+         *
+         * @param {String} field The field name
+         * @param {Boolean} enabled Enable/Disable field validators
+         * @param {String} [validatorName] The validator name. If null, all validators will be enabled/disabled
+         * @returns {FormValidation.Base}
+         */
+        enableFieldValidators: function(field, enabled, validatorName) {
+            var validators = this.options.fields[field].validators;
+
+            // Enable/disable particular validator
+            if (validatorName
+                && validators
+                && validators[validatorName] && validators[validatorName].enabled !== enabled)
+            {
+                this.options.fields[field].validators[validatorName].enabled = enabled;
+                this.updateStatus(field, this.STATUS_NOT_VALIDATED, validatorName);
+            }
+            // Enable/disable all validators
+            else if (!validatorName && this.options.fields[field].enabled !== enabled) {
+                this.options.fields[field].enabled = enabled;
+                for (var v in validators) {
+                    this.enableFieldValidators(field, enabled, v);
+                }
+            }
+
+            return this;
+        },
+
+        /**
+         * Some validators have option which its value is dynamic.
+         * For example, the zipCode validator has the country option which might be changed dynamically by a select element.
+         *
+         * @param {jQuery|String} field The field name or element
+         * @param {String|Function} option The option which can be determined by:
+         * - a string
+         * - name of field which defines the value
+         * - name of function which returns the value
+         * - a function returns the value
+         *
+         * The callback function has the format of
+         *      callback: function(value, validator, $field) {
+         *          // value is the value of field
+         *          // validator is the BootstrapValidator instance
+         *          // $field is the field element
+         *      }
+         *
+         * @returns {String}
+         */
+        getDynamicOption: function(field, option) {
+            var $field = ('string' === typeof field) ? this.getFieldElements(field) : field,
+                value  = $field.val();
+
+            // Option can be determined by
+            // ... a function
+            if ('function' === typeof option) {
+                return FormValidation.Helper.call(option, [value, this, $field]);
+            }
+            // ... value of other field
+            else if ('string' === typeof option) {
+                var $f = this.getFieldElements(option);
+                if ($f.length) {
+                    return $f.val();
+                }
+                // ... return value of callback
+                else {
+                    return FormValidation.Helper.call(option, [value, this, $field]) || option;
+                }
+            }
+
+            return null;
+        },
+
+        /**
+         * Get the form element
+         *
+         * @returns {jQuery}
+         */
+        getForm: function() {
+            return this.$form;
+        },
+
+        /**
+         * Get the list of invalid fields
+         *
+         * @returns {jQuery[]}
+         */
+        getInvalidFields: function() {
+            return this.$invalidFields;
+        },
+
+        /**
+         * Get the current locale
+         *
+         * @return {String}
+         */
+        getLocale: function() {
+            return this.options.locale;
+        },
+
+        /**
+         * Get the error messages
+         *
+         * @param {String|jQuery} [field] The field name or field element
+         * If the field is not defined, the method returns all error messages of all fields
+         * @param {String} [validator] The name of validator
+         * If the validator is not defined, the method returns error messages of all validators
+         * @returns {String[]}
+         */
+        getMessages: function(field, validator) {
+            var that     = this,
+                ns       = this._namespace,
+                messages = [],
+                $fields  = $([]);
+
+            switch (true) {
+                case (field && 'object' === typeof field):
+                    $fields = field;
+                    break;
+                case (field && 'string' === typeof field):
+                    var f = this.getFieldElements(field);
+                    if (f.length > 0) {
+                        var type = f.attr('type');
+                        $fields = ('radio' === type || 'checkbox' === type) ? f.eq(0) : f;
+                    }
+                    break;
+                default:
+                    $fields = this.$invalidFields;
+                    break;
+            }
+
+            var filter = validator ? '[data-' + ns + '-validator="' + validator + '"]' : '',
+                clazz  = this.options.err.clazz.split(' ').join('.');
+            $fields.each(function() {
+                messages = messages.concat(
+                    $(this)
+                        .data(ns + '.messages')
+                        .find('.' + clazz + '[data-' + ns + '-for="' + $(this).attr('data-' + ns + '-field') + '"][data-' + ns + '-result="' + that.STATUS_INVALID + '"]' + filter)
+                        .map(function() {
+                            var v = $(this).attr('data-' + ns + '-validator'),
+                                f = $(this).attr('data-' + ns + '-for');
+                            return (that.options.fields[f].validators[v].enabled === false) ? '' : $(this).html();
+                        })
+                        .get()
+                );
+            });
+
+            return messages;
+        },
+
+        /**
+         * Returns the clicked submit button
+         *
+         * @returns {jQuery}
+         */
+        getSubmitButton: function() {
+            return this.$submitButton;
+        },
+
+        /**
+         * Remove a given field
+         *
+         * @param {String|jQuery} field The field name or field element
+         * @returns {FormValidation.Base}
+         */
+        removeField: function(field) {
+            var ns     = this._namespace,
+                fields = $([]);
+            switch (typeof field) {
+                case 'object':
+                    fields = field;
+                    field  = field.attr('data-' + ns + '-field') || field.attr('name');
+                    fields.attr('data-' + ns + '-field', field);
+                    break;
+                case 'string':
+                    fields = this.getFieldElements(field);
+                    break;
+                default:
+                    break;
+            }
+
+            if (fields.length === 0) {
+                return this;
+            }
+
+            var type  = fields.attr('type'),
+                total = ('radio' === type || 'checkbox' === type) ? 1 : fields.length;
+
+            for (var i = 0; i < total; i++) {
+                var $field = fields.eq(i);
+
+                // Remove from the list of invalid fields
+                this.$invalidFields = this.$invalidFields.not($field);
+
+                // Update the cache
+                this._cacheFields[field] = this._cacheFields[field].not($field);
+            }
+
+            if (!this._cacheFields[field] || this._cacheFields[field].length === 0) {
+                delete this.options.fields[field];
+            }
+            if ('checkbox' === type || 'radio' === type) {
+                this._initField(field);
+            }
+
+            this.disableSubmitButtons(false);
+            // Trigger an event
+            this.$form.trigger($.Event(this.options.events.fieldRemoved), {
+                field: field,
+                element: fields
+            });
+
+            return this;
+        },
+
+        /**
+         * Reset given field
+         *
+         * @param {String|jQuery} field The field name or field element
+         * @param {Boolean} [resetValue] If true, the method resets field value to empty or remove checked/selected attribute (for radio/checkbox)
+         * @returns {FormValidation.Base}
+         */
+        resetField: function(field, resetValue) {
+            var ns      = this._namespace,
+                $fields = $([]);
+            switch (typeof field) {
+                case 'object':
+                    $fields = field;
+                    field   = field.attr('data-' + ns + '-field');
+                    break;
+                case 'string':
+                    $fields = this.getFieldElements(field);
+                    break;
+                default:
+                    break;
+            }
+
+            var i     = 0,
+                total = $fields.length;
+            if (this.options.fields[field]) {
+                for (i = 0; i < total; i++) {
+                    for (var validator in this.options.fields[field].validators) {
+                        $fields.eq(i).removeData(ns + '.dfs.' + validator);
+                    }
+                }
+            }
+
+            if (resetValue) {
+                var type = $fields.attr('type');
+                ('radio' === type || 'checkbox' === type) ? $fields.prop('checked', false).removeAttr('selected') : $fields.val('');
+            }
+
+            // Mark field as not validated yet
+            this.updateStatus(field, this.STATUS_NOT_VALIDATED);
+
+            for (i = 0; i < total; i++) {
+                $fields.eq(i).trigger($.Event(this.options.events.fieldReset), {
+                    fv: this,
+                    field: field,
+                    element: $fields.eq(i),
+                    resetValue: resetValue
+                });
+            }
+
+            return this;
+        },
+
+        /**
+         * Reset the form
+         *
+         * @param {Boolean} [resetValue] If true, the method resets field value to empty or remove checked/selected attribute (for radio/checkbox)
+         * @returns {FormValidation.Base}
+         */
+        resetForm: function(resetValue) {
+            for (var field in this.options.fields) {
+                this.resetField(field, resetValue);
+            }
+
+            this.$invalidFields = $([]);
+            this.$submitButton  = null;
+
+            // Enable submit buttons
+            this.disableSubmitButtons(false);
+
+            this.$form.trigger($.Event(this.options.events.formReset), {
+                fv: this,
+                resetValue: resetValue
+            });
+
+            return this;
+        },
+
+        /**
+         * Revalidate given field
+         * It's used when you need to revalidate the field which its value is updated by other plugin
+         *
+         * @param {String|jQuery} field The field name of field element
+         * @returns {FormValidation.Base}
+         */
+        revalidateField: function(field) {
+            this.updateStatus(field, this.STATUS_NOT_VALIDATED)
+                .validateField(field);
+
+            return this;
+        },
+
+        /**
+         * Set the locale
+         *
+         * @param {String} locale The locale in format of countrycode_LANGUAGECODE
+         * @returns {FormValidation.Base}
+         */
+        setLocale: function(locale) {
+            this.options.locale = locale;
+            this.$form.trigger($.Event(this.options.events.localeChanged), {
+                locale: locale,
+                bv: this,   // Support backward
+                fv: this
+            });
+
+            return this;
+        },
+
+        /**
+         * Update the option of a specific validator
+         *
+         * @param {String|jQuery} field The field name or field element
+         * @param {String} validator The validator name
+         * @param {String} option The option name
+         * @param {String} value The value to set
+         * @returns {FormValidation.Base}
+         */
+        updateOption: function(field, validator, option, value) {
+            var ns = this._namespace;
+            if ('object' === typeof field) {
+                field = field.attr('data-' + ns + '-field');
+            }
+            if (this.options.fields[field] && this.options.fields[field].validators[validator]) {
+                this.options.fields[field].validators[validator][option] = value;
+                this.updateStatus(field, this.STATUS_NOT_VALIDATED, validator);
+            }
+
+            return this;
+        },
+
+        /**
+         * Validate given container
+         * It can be used with isValidContainer() when you want to work with wizard form
+         *
+         * @param {String|jQuery} container The container selector or element
+         * @returns {FormValidation.Base}
+         */
+        validateContainer: function(container) {
+            var that       = this,
+                ns         = this._namespace,
+                fields     = [],
+                $container = ('string' === typeof container) ? $(container) : container;
+            if ($container.length === 0) {
+                return this;
+            }
+
+            $container.find('[data-' + ns + '-field]').each(function() {
+                var $field = $(this);
+                if (!that._isExcluded($field)) {
+                    fields.push($field);
+                }
+            });
+
+            var total = fields.length;
+            for (var i = 0; i < total; i++) {
+                this.validateField(fields[i]);
+            }
+
+            return this;
+        }
+    };
+
+    // Plugin definition
+    $.fn.formValidation = function(option) {
+        var params = arguments;
+        return this.each(function() {
+            var $this   = $(this),
+                data    = $this.data('formValidation'),
+                options = 'object' === typeof option && option;
+            if (!data) {
+                var framework = (options.framework || $this.attr('data-fv-framework') || 'bootstrap').toLowerCase(),
+                    clazz     = framework.substr(0, 1).toUpperCase() + framework.substr(1);
+
+                if (typeof FormValidation.Framework[clazz] === 'undefined') {
+                    throw new Error('The class FormValidation.Framework.' + clazz + ' is not implemented');
+                }
+
+                data = new FormValidation.Framework[clazz](this, options);
+                $this.addClass('fv-form-' + framework)
+                     .data('formValidation', data);
+            }
+
+            // Allow to call plugin method
+            if ('string' === typeof option) {
+                data[option].apply(data, Array.prototype.slice.call(params, 1));
+            }
+        });
+    };
+
+    $.fn.formValidation.Constructor = FormValidation.Base;
+
+    // Default message
+    $.fn.formValidation.DEFAULT_MESSAGE = 'This value is not valid';
+
+    // The default options sorted in alphabetical order
+    $.fn.formValidation.DEFAULT_OPTIONS = {
+        // The first invalid field will be focused automatically
+        autoFocus: true,
+
+        // Support declarative usage (setting options via HTML 5 attributes)
+        // Setting to false can improve the performance
+        declarative: true,
+
+        // The form CSS class
+        elementClass: 'fv-form',
+
+        // Use custom event name to avoid window.onerror being invoked by jQuery
+        // See #630
+        events: {
+            // Support backward
+            formInit: 'init.form.fv',
+            formPreValidate: 'prevalidate.form.fv',
+            formError: 'err.form.fv',
+            formReset: 'rst.form.fv',
+            formSuccess: 'success.form.fv',
+            fieldAdded: 'added.field.fv',
+            fieldRemoved: 'removed.field.fv',
+            fieldInit: 'init.field.fv',
+            fieldError: 'err.field.fv',
+            fieldReset: 'rst.field.fv',
+            fieldSuccess: 'success.field.fv',
+            fieldStatus: 'status.field.fv',
+            localeChanged: 'changed.locale.fv',
+            validatorError: 'err.validator.fv',
+            validatorSuccess: 'success.validator.fv',
+            validatorIgnored: 'ignored.validator.fv'
+        },
+
+        // Indicate fields which won't be validated
+        // By default, the plugin will not validate the following kind of fields:
+        // - disabled
+        // - hidden
+        // - invisible
+        //
+        // The setting consists of jQuery filters. Accept 3 formats:
+        // - A string. Use a comma to separate filter
+        // - An array. Each element is a filter
+        // - An array. Each element can be a callback function
+        //      function($field, validator) {
+        //          $field is jQuery object representing the field element
+        //          validator is the BootstrapValidator instance
+        //          return true or false;
+        //      }
+        //
+        // The 3 following settings are equivalent:
+        //
+        // 1) ':disabled, :hidden, :not(:visible)'
+        // 2) [':disabled', ':hidden', ':not(:visible)']
+        // 3) [':disabled', ':hidden', function($field) {
+        //        return !$field.is(':visible');
+        //    }]
+        excluded: [':disabled', ':hidden', ':not(:visible)'],
+
+        // Map the field name with validator rules
+        fields: null,
+
+        // Live validating option
+        // Can be one of 3 values:
+        // - enabled: The plugin validates fields as soon as they are changed
+        // - disabled: Disable the live validating. The error messages are only shown after the form is submitted
+        // - submitted: The live validating is enabled after the form is submitted
+        live: 'enabled',
+
+        // Locale in the format of languagecode_COUNTRYCODE
+        locale: 'en_US',
+
+        // Default invalid message
+        message: null,
+
+        // The field will not be live validated if its length is less than this number of characters
+        threshold: null,
+
+        // Whether to be verbose when validating a field or not.
+        // Possible values:
+        // - true:  when a field has multiple validators, all of them will be checked, and respectively - if errors occur in
+        //          multiple validators, all of them will be displayed to the user
+        // - false: when a field has multiple validators, validation for this field will be terminated upon the first encountered error.
+        //          Thus, only the very first error message related to this field will be displayed to the user
+        verbose: true,
+
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // These options mostly are overridden by specific framework
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        button: {
+            // The submit buttons selector
+            // These buttons will be disabled to prevent the valid form from multiple submissions
+            // Don't perform validation when clicking on the submit button/input which have formnovalidate attribute
+            selector: '[type="submit"]:not([formnovalidate])',
+
+            // The disabled class
+            disabled: ''
+        },
+
+        control: {
+            // The CSS class for valid control
+            valid: '',
+
+            // The CSS class for invalid control
+            invalid: ''
+        },
+
+        err: {
+            // The CSS class of each message element
+            clazz: '',
+
+            // The error messages container. It can be:
+            // - 'tooltip' if you want to use Bootstrap tooltip to show error messages
+            // - 'popover' if you want to use Bootstrap popover to show error messages
+            // - a CSS selector indicating the container
+            // In the first two cases, since the tooltip/popover should be small enough, the plugin only shows only one error message
+            // You also can define the message container for particular field
+            container: null,
+
+            // Used to determine where the messages are placed
+            parent: null
+        },
+
+        // Shows ok/error/loading icons based on the field validity.
+        icon: {
+            valid: null,
+            invalid: null,
+            validating: null,
+            feedback: ''
+        },
+
+        row: {
+            // The CSS selector for indicating the element consists of the field
+            // You should adjust this option if your form group consists of many fields which not all of them need to be validated
+            selector: null,
+            valid: '',
+            invalid: '',
+            feedback: ''
+        }
+    };
+}(jQuery));
+;(function($) {
+    // Helper methods, which can be used in validator class
+    FormValidation.Helper = {
+        /**
+         * Execute a callback function
+         *
+         * @param {String|Function} functionName Can be
+         * - name of global function
+         * - name of namespace function (such as A.B.C)
+         * - a function
+         * @param {Array} args The callback arguments
+         */
+        call: function(functionName, args) {
+            if ('function' === typeof functionName) {
+                return functionName.apply(this, args);
+            } else if ('string' === typeof functionName) {
+                if ('()' === functionName.substring(functionName.length - 2)) {
+                    functionName = functionName.substring(0, functionName.length - 2);
+                }
+                var ns      = functionName.split('.'),
+                    func    = ns.pop(),
+                    context = window;
+                for (var i = 0; i < ns.length; i++) {
+                    context = context[ns[i]];
+                }
+
+                return (typeof context[func] === 'undefined') ? null : context[func].apply(this, args);
+            }
+        },
+
+        /**
+         * Validate a date
+         *
+         * @param {Number} year The full year in 4 digits
+         * @param {Number} month The month number
+         * @param {Number} day The day number
+         * @param {Boolean} [notInFuture] If true, the date must not be in the future
+         * @returns {Boolean}
+         */
+        date: function(year, month, day, notInFuture) {
+            if (isNaN(year) || isNaN(month) || isNaN(day)) {
+                return false;
+            }
+            if (day.length > 2 || month.length > 2 || year.length > 4) {
+                return false;
+            }
+
+            day   = parseInt(day, 10);
+            month = parseInt(month, 10);
+            year  = parseInt(year, 10);
+
+            if (year < 1000 || year > 9999 || month <= 0 || month > 12) {
+                return false;
+            }
+            var numDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+            // Update the number of days in Feb of leap year
+            if (year % 400 === 0 || (year % 100 !== 0 && year % 4 === 0)) {
+                numDays[1] = 29;
+            }
+
+            // Check the day
+            if (day <= 0 || day > numDays[month - 1]) {
+                return false;
+            }
+
+            if (notInFuture === true) {
+                var currentDate  = new Date(),
+                    currentYear  = currentDate.getFullYear(),
+                    currentMonth = currentDate.getMonth(),
+                    currentDay   = currentDate.getDate();
+                return (year < currentYear
+                || (year === currentYear && month - 1 < currentMonth)
+                || (year === currentYear && month - 1 === currentMonth && day < currentDay));
+            }
+
+            return true;
+        },
+
+        /**
+         * Format a string
+         * It's used to format the error message
+         * format('The field must between %s and %s', [10, 20]) = 'The field must between 10 and 20'
+         *
+         * @param {String} message
+         * @param {Array} parameters
+         * @returns {String}
+         */
+        format: function(message, parameters) {
+            if (!$.isArray(parameters)) {
+                parameters = [parameters];
+            }
+
+            for (var i in parameters) {
+                message = message.replace('%s', parameters[i]);
+            }
+
+            return message;
+        },
+
+        /**
+         * Implement Luhn validation algorithm
+         * Credit to https://gist.github.com/ShirtlessKirk/2134376
+         *
+         * @see http://en.wikipedia.org/wiki/Luhn
+         * @param {String} value
+         * @returns {Boolean}
+         */
+        luhn: function(value) {
+            var length  = value.length,
+                mul     = 0,
+                prodArr = [[0, 1, 2, 3, 4, 5, 6, 7, 8, 9], [0, 2, 4, 6, 8, 1, 3, 5, 7, 9]],
+                sum     = 0;
+
+            while (length--) {
+                sum += prodArr[mul][parseInt(value.charAt(length), 10)];
+                mul ^= 1;
+            }
+
+            return (sum % 10 === 0 && sum > 0);
+        },
+
+        /**
+         * Implement modulus 11, 10 (ISO 7064) algorithm
+         *
+         * @param {String} value
+         * @returns {Boolean}
+         */
+        mod11And10: function(value) {
+            var check  = 5,
+                length = value.length;
+            for (var i = 0; i < length; i++) {
+                check = (((check || 10) * 2) % 11 + parseInt(value.charAt(i), 10)) % 10;
+            }
+            return (check === 1);
+        },
+
+        /**
+         * Implements Mod 37, 36 (ISO 7064) algorithm
+         * Usages:
+         * mod37And36('A12425GABC1234002M')
+         * mod37And36('002006673085', '0123456789')
+         *
+         * @param {String} value
+         * @param {String} [alphabet]
+         * @returns {Boolean}
+         */
+        mod37And36: function(value, alphabet) {
+            alphabet = alphabet || '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            var modulus = alphabet.length,
+                length  = value.length,
+                check   = Math.floor(modulus / 2);
+            for (var i = 0; i < length; i++) {
+                check = (((check || modulus) * 2) % (modulus + 1) + alphabet.indexOf(value.charAt(i))) % modulus;
+            }
+            return (check === 1);
+        }
+    };
+}(jQuery));
+;(function($) {
+    FormValidation.I18n = $.extend(true, FormValidation.I18n || {}, {
+        'en_US': {
+            between: {
+                'default': 'Please enter a value between %s and %s',
+                notInclusive: 'Please enter a value between %s and %s strictly'
+            }
+        }
+    });
+
+    FormValidation.Validator.between = {
+        html5Attributes: {
+            message: 'message',
+            min: 'min',
+            max: 'max',
+            inclusive: 'inclusive'
+        },
+
+        enableByHtml5: function($field) {
+            if ('range' === $field.attr('type')) {
+                return {
+                    min: $field.attr('min'),
+                    max: $field.attr('max')
+                };
+            }
+
+            return false;
+        },
+
+        /**
+         * Return true if the input value is between (strictly or not) two given numbers
+         *
+         * @param {FormValidation.Base} validator The validator plugin instance
+         * @param {jQuery} $field Field element
+         * @param {Object} options Can consist of the following keys:
+         * - min
+         * - max
+         *
+         * The min, max keys define the number which the field value compares to. min, max can be
+         *      - A number
+         *      - Name of field which its value defines the number
+         *      - Name of callback function that returns the number
+         *      - A callback function that returns the number
+         *
+         * - inclusive [optional]: Can be true or false. Default is true
+         * - message: The invalid message
+         * @returns {Boolean|Object}
+         */
+        validate: function(validator, $field, options, validatorName) {
+            var value = validator.getFieldValue($field, validatorName);
+            if (value === '') {
+                return true;
+            }
+
+			value = this._format(value);
+
+            var locale   = validator.getLocale(),
+                min      = $.isNumeric(options.min) ? options.min : validator.getDynamicOption($field, options.min),
+                max      = $.isNumeric(options.max) ? options.max : validator.getDynamicOption($field, options.max),
+                minValue = this._format(min),
+                maxValue = this._format(max);
+
+			return (options.inclusive === true || options.inclusive === undefined)
+                    ? {
+                        valid: $.isNumeric(value) && parseFloat(value) >= minValue && parseFloat(value) <= maxValue,
+                        message: FormValidation.Helper.format(options.message || FormValidation.I18n[locale].between['default'], [min, max])
+                    }
+                    : {
+                        valid: $.isNumeric(value) && parseFloat(value) > minValue && parseFloat(value) < maxValue,
+                        message: FormValidation.Helper.format(options.message || FormValidation.I18n[locale].between.notInclusive, [min, max])
+                    };
+        },
+
+        _format: function(value) {
+            return (value + '').replace(',', '.');
+        }
+    };
+}(jQuery));
+;(function($) {
+    FormValidation.I18n = $.extend(true, FormValidation.I18n || {}, {
+        'en_US': {
+            callback: {
+                'default': 'Please enter a valid value'
+            }
+        }
+    });
+
+    FormValidation.Validator.callback = {
+        priority: 999,
+
+        html5Attributes: {
+            message: 'message',
+            callback: 'callback'
+        },
+
+        /**
+         * Return result from the callback method
+         *
+         * @param {FormValidation.Base} validator The validator plugin instance
+         * @param {jQuery} $field Field element
+         * @param {Object} options Can consist of the following keys:
+         * - callback: The callback method that passes parameters:
+         *      callback: function(fieldValue, validator, $field) {
+         *          // fieldValue is the value of field
+         *          // validator is instance of FormValidation.Base
+         *          // $field is the field element
+         *      }
+         * - message: The invalid message
+         * @returns {Deferred}
+         */
+        validate: function(validator, $field, options, validatorName) {
+            var value  = validator.getFieldValue($field, validatorName),
+                dfd    = new $.Deferred(),
+                result = { valid: true };
+
+            if (options.callback) {
+                var response = FormValidation.Helper.call(options.callback, [value, validator, $field]);
+                result = ('boolean' === typeof response || null === response) ? { valid: response } : response;
+            }
+
+            dfd.resolve($field, validatorName, result);
+            return dfd;
+        }
+    };
+}(jQuery));
+;(function($) {
+    FormValidation.I18n = $.extend(true, FormValidation.I18n || {}, {
+        'en_US': {
+            choice: {
+                'default': 'Please enter a valid value',
+                less: 'Please choose %s options at minimum',
+                more: 'Please choose %s options at maximum',
+                between: 'Please choose %s - %s options'
+            }
+        }
+    });
+
+    FormValidation.Validator.choice = {
+        html5Attributes: {
+            message: 'message',
+            min: 'min',
+            max: 'max'
+        },
+
+        /**
+         * Check if the number of checked boxes are less or more than a given number
+         *
+         * @param {FormValidation.Base} validator The validator plugin instance
+         * @param {jQuery} $field Field element
+         * @param {Object} options Consists of following keys:
+         * - min
+         * - max
+         *
+         * At least one of two keys is required
+         * The min, max keys define the number which the field value compares to. min, max can be
+         *      - A number
+         *      - Name of field which its value defines the number
+         *      - Name of callback function that returns the number
+         *      - A callback function that returns the number
+         *
+         * - message: The invalid message
+         * @returns {Object}
+         */
+        validate: function(validator, $field, options, validatorName) {
+            var locale     = validator.getLocale(),
+                ns         = validator.getNamespace(),
+                numChoices = $field.is('select')
+                            ? validator.getFieldElements($field.attr('data-' + ns + '-field')).find('option').filter(':selected').length
+                            : validator.getFieldElements($field.attr('data-' + ns + '-field')).filter(':checked').length,
+                min        = options.min ? ($.isNumeric(options.min) ? options.min : validator.getDynamicOption($field, options.min)) : null,
+                max        = options.max ? ($.isNumeric(options.max) ? options.max : validator.getDynamicOption($field, options.max)) : null,
+                isValid    = true,
+                message    = options.message || FormValidation.I18n[locale].choice['default'];
+
+            if ((min && numChoices < parseInt(min, 10)) || (max && numChoices > parseInt(max, 10))) {
+                isValid = false;
+            }
+
+            switch (true) {
+                case (!!min && !!max):
+                    message = FormValidation.Helper.format(options.message || FormValidation.I18n[locale].choice.between, [parseInt(min, 10), parseInt(max, 10)]);
+                    break;
+
+                case (!!min):
+                    message = FormValidation.Helper.format(options.message || FormValidation.I18n[locale].choice.less, parseInt(min, 10));
+                    break;
+
+                case (!!max):
+                    message = FormValidation.Helper.format(options.message || FormValidation.I18n[locale].choice.more, parseInt(max, 10));
+                    break;
+
+                default:
+                    break;
+            }
+
+            return { valid: isValid, message: message };
+        }
+    };
+}(jQuery));
+;(function($) {
+    FormValidation.I18n = $.extend(true, FormValidation.I18n || {}, {
+        'en_US': {
+            color: {
+                'default': 'Please enter a valid color'
+            }
+        }
+    });
+
+    FormValidation.Validator.color = {
+        html5Attributes: {
+            message: 'message',
+            type: 'type'
+        },
+
+        enableByHtml5: function($field) {
+            return ('color' === $field.attr('type'));
+        },
+
+        SUPPORTED_TYPES: [
+            'hex', 'rgb', 'rgba', 'hsl', 'hsla', 'keyword'
+        ],
+
+        KEYWORD_COLORS: [
+            // Colors start with A
+            'aliceblue', 'antiquewhite', 'aqua', 'aquamarine', 'azure',
+            // B
+            'beige', 'bisque', 'black', 'blanchedalmond', 'blue', 'blueviolet', 'brown', 'burlywood',
+            // C
+            'cadetblue', 'chartreuse', 'chocolate', 'coral', 'cornflowerblue', 'cornsilk', 'crimson', 'cyan',
+            // D
+            'darkblue', 'darkcyan', 'darkgoldenrod', 'darkgray', 'darkgreen', 'darkgrey', 'darkkhaki', 'darkmagenta',
+            'darkolivegreen', 'darkorange', 'darkorchid', 'darkred', 'darksalmon', 'darkseagreen', 'darkslateblue',
+            'darkslategray', 'darkslategrey', 'darkturquoise', 'darkviolet', 'deeppink', 'deepskyblue', 'dimgray',
+            'dimgrey', 'dodgerblue',
+            // F
+            'firebrick', 'floralwhite', 'forestgreen', 'fuchsia',
+            // G
+            'gainsboro', 'ghostwhite', 'gold', 'goldenrod', 'gray', 'green', 'greenyellow', 'grey',
+            // H
+            'honeydew', 'hotpink',
+            // I
+            'indianred', 'indigo', 'ivory',
+            // K
+            'khaki',
+            // L
+            'lavender', 'lavenderblush', 'lawngreen', 'lemonchiffon', 'lightblue', 'lightcoral', 'lightcyan',
+            'lightgoldenrodyellow', 'lightgray', 'lightgreen', 'lightgrey', 'lightpink', 'lightsalmon', 'lightseagreen',
+            'lightskyblue', 'lightslategray', 'lightslategrey', 'lightsteelblue', 'lightyellow', 'lime', 'limegreen',
+            'linen',
+            // M
+            'magenta', 'maroon', 'mediumaquamarine', 'mediumblue', 'mediumorchid', 'mediumpurple', 'mediumseagreen',
+            'mediumslateblue', 'mediumspringgreen', 'mediumturquoise', 'mediumvioletred', 'midnightblue', 'mintcream',
+            'mistyrose', 'moccasin',
+            // N
+            'navajowhite', 'navy',
+            // O
+            'oldlace', 'olive', 'olivedrab', 'orange', 'orangered', 'orchid',
+            // P
+            'palegoldenrod', 'palegreen', 'paleturquoise', 'palevioletred', 'papayawhip', 'peachpuff', 'peru', 'pink',
+            'plum', 'powderblue', 'purple',
+            // R
+            'red', 'rosybrown', 'royalblue',
+            // S
+            'saddlebrown', 'salmon', 'sandybrown', 'seagreen', 'seashell', 'sienna', 'silver', 'skyblue', 'slateblue',
+            'slategray', 'slategrey', 'snow', 'springgreen', 'steelblue',
+            // T
+            'tan', 'teal', 'thistle', 'tomato', 'transparent', 'turquoise',
+            // V
+            'violet',
+            // W
+            'wheat', 'white', 'whitesmoke',
+            // Y
+            'yellow', 'yellowgreen'
+        ],
+
+        /**
+         * Return true if the input value is a valid color
+         *
+         * @param {FormValidation.Base} validator The validator plugin instance
+         * @param {jQuery} $field Field element
+         * @param {Object} options Can consist of the following keys:
+         * - message: The invalid message
+         * - type: The array of valid color types
+         * @returns {Boolean}
+         */
+        validate: function(validator, $field, options, validatorName) {
+            var value = validator.getFieldValue($field, validatorName);
+            if (value === '') {
+                return true;
+            }
+
+            // Only accept 6 hex character values due to the HTML 5 spec
+            // See http://www.w3.org/TR/html-markup/input.color.html#input.color.attrs.value
+            if (this.enableByHtml5($field)) {
+                return /^#[0-9A-F]{6}$/i.test(value);
+            }
+
+            var types = options.type || this.SUPPORTED_TYPES;
+            if (!$.isArray(types)) {
+                types = types.replace(/s/g, '').split(',');
+            }
+
+            var method,
+                type,
+                isValid = false;
+
+            for (var i = 0; i < types.length; i++) {
+                type    = types[i];
+                method  = '_' + type.toLowerCase();
+                isValid = isValid || this[method](value);
+                if (isValid) {
+                    return true;
+                }
+            }
+
+            return false;
+        },
+
+        _hex: function(value) {
+            return /(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(value);
+        },
+
+        _hsl: function(value) {
+            return /^hsl\((\s*(-?\d+)\s*,)(\s*(\b(0?\d{1,2}|100)\b%)\s*,)(\s*(\b(0?\d{1,2}|100)\b%)\s*)\)$/.test(value);
+        },
+
+        _hsla: function(value) {
+            return /^hsla\((\s*(-?\d+)\s*,)(\s*(\b(0?\d{1,2}|100)\b%)\s*,){2}(\s*(0?(\.\d+)?|1(\.0+)?)\s*)\)$/.test(value);
+        },
+
+        _keyword: function(value) {
+            return $.inArray(value, this.KEYWORD_COLORS) >= 0;
+        },
+
+        _rgb: function(value) {
+            var regexInteger = /^rgb\((\s*(\b([01]?\d{1,2}|2[0-4]\d|25[0-5])\b)\s*,){2}(\s*(\b([01]?\d{1,2}|2[0-4]\d|25[0-5])\b)\s*)\)$/,
+                regexPercent = /^rgb\((\s*(\b(0?\d{1,2}|100)\b%)\s*,){2}(\s*(\b(0?\d{1,2}|100)\b%)\s*)\)$/;
+            return regexInteger.test(value) || regexPercent.test(value);
+        },
+
+        _rgba: function(value) {
+            var regexInteger = /^rgba\((\s*(\b([01]?\d{1,2}|2[0-4]\d|25[0-5])\b)\s*,){3}(\s*(0?(\.\d+)?|1(\.0+)?)\s*)\)$/,
+                regexPercent = /^rgba\((\s*(\b(0?\d{1,2}|100)\b%)\s*,){3}(\s*(0?(\.\d+)?|1(\.0+)?)\s*)\)$/;
+            return regexInteger.test(value) || regexPercent.test(value);
+        }
+    };
+}(jQuery));
+;(function($) {
+    FormValidation.I18n = $.extend(true, FormValidation.I18n || {}, {
+        'en_US': {
+            creditCard: {
+                'default': 'Please enter a valid credit card number'
+            }
+        }
+    });
+
+    FormValidation.Validator.creditCard = {
+        /**
+         * Return true if the input value is valid credit card number
+         * Based on https://gist.github.com/DiegoSalazar/4075533
+         *
+         * @param {FormValidation.Base} validator The validator plugin instance
+         * @param {jQuery} $field Field element
+         * @param {Object} [options] Can consist of the following key:
+         * - message: The invalid message
+         * @returns {Boolean|Object}
+         */
+        validate: function(validator, $field, options, validatorName) {
+            var value = validator.getFieldValue($field, validatorName);
+            if (value === '') {
+                return true;
+            }
+
+            // Accept only digits, dashes or spaces
+            if (/[^0-9-\s]+/.test(value)) {
+                return false;
+            }
+            value = value.replace(/\D/g, '');
+
+            if (!FormValidation.Helper.luhn(value)) {
+                return false;
+            }
+
+            // Validate the card number based on prefix (IIN ranges) and length
+            var cards = {
+                AMERICAN_EXPRESS: {
+                    length: [15],
+                    prefix: ['34', '37']
+                },
+                DINERS_CLUB: {
+                    length: [14],
+                    prefix: ['300', '301', '302', '303', '304', '305', '36']
+                },
+                DINERS_CLUB_US: {
+                    length: [16],
+                    prefix: ['54', '55']
+                },
+                DISCOVER: {
+                    length: [16],
+                    prefix: ['6011', '622126', '622127', '622128', '622129', '62213',
+                             '62214', '62215', '62216', '62217', '62218', '62219',
+                             '6222', '6223', '6224', '6225', '6226', '6227', '6228',
+                             '62290', '62291', '622920', '622921', '622922', '622923',
+                             '622924', '622925', '644', '645', '646', '647', '648',
+                             '649', '65']
+                },
+                JCB: {
+                    length: [16],
+                    prefix: ['3528', '3529', '353', '354', '355', '356', '357', '358']
+                },
+                LASER: {
+                    length: [16, 17, 18, 19],
+                    prefix: ['6304', '6706', '6771', '6709']
+                },
+                MAESTRO: {
+                    length: [12, 13, 14, 15, 16, 17, 18, 19],
+                    prefix: ['5018', '5020', '5038', '6304', '6759', '6761', '6762', '6763', '6764', '6765', '6766']
+                },
+                MASTERCARD: {
+                    length: [16],
+                    prefix: ['51', '52', '53', '54', '55']
+                },
+                SOLO: {
+                    length: [16, 18, 19],
+                    prefix: ['6334', '6767']
+                },
+                UNIONPAY: {
+                    length: [16, 17, 18, 19],
+                    prefix: ['622126', '622127', '622128', '622129', '62213', '62214',
+                             '62215', '62216', '62217', '62218', '62219', '6222', '6223',
+                             '6224', '6225', '6226', '6227', '6228', '62290', '62291',
+                             '622920', '622921', '622922', '622923', '622924', '622925']
+                },
+                VISA: {
+                    length: [16],
+                    prefix: ['4']
+                }
+            };
+
+            var type, i;
+            for (type in cards) {
+                for (i in cards[type].prefix) {
+                    if (value.substr(0, cards[type].prefix[i].length) === cards[type].prefix[i]     // Check the prefix
+                        && $.inArray(value.length, cards[type].length) !== -1)                      // and length
+                    {
+                        return {
+                            valid: true,
+                            type: type
+                        };
+                    }
+                }
+            }
+
+            return false;
+        }
+    };
+}(jQuery));
+;(function($) {
+    FormValidation.I18n = $.extend(true, FormValidation.I18n || {}, {
+        'en_US': {
+            date: {
+                'default': 'Please enter a valid date',
+                min: 'Please enter a date after %s',
+                max: 'Please enter a date before %s',
+                range: 'Please enter a date in the range %s - %s'
+            }
+        }
+    });
+
+    FormValidation.Validator.date = {
+        html5Attributes: {
+            message: 'message',
+            format: 'format',
+            min: 'min',
+            max: 'max',
+            separator: 'separator'
+        },
+
+        /**
+         * Return true if the input value is valid date
+         *
+         * @param {FormValidation.Base} validator The validator plugin instance
+         * @param {jQuery} $field Field element
+         * @param {Object} options Can consist of the following keys:
+         * - message: The invalid message
+         * - min: the minimum date
+         * - max: the maximum date
+         * - separator: Use to separate the date, month, and year.
+         * By default, it is /
+         * - format: The date format. Default is MM/DD/YYYY
+         * The format can be:
+         *
+         * i) date: Consist of DD, MM, YYYY parts which are separated by the separator option
+         * ii) date and time:
+         * The time can consist of h, m, s parts which are separated by :
+         * ii) date, time and A (indicating AM or PM)
+         * @returns {Boolean|Object}
+         */
+        validate: function(validator, $field, options, validatorName) {
+            var value = validator.getFieldValue($field, validatorName);
+            if (value === '') {
+                return true;
+            }
+
+            options.format = options.format || 'MM/DD/YYYY';
+
+            // #683: Force the format to YYYY-MM-DD as the default browser behaviour when using type="date" attribute
+            if ($field.attr('type') === 'date') {
+                options.format = 'YYYY-MM-DD';
+            }
+
+            var locale     = validator.getLocale(),
+                message    = options.message || FormValidation.I18n[locale].date['default'],
+                formats    = options.format.split(' '),
+                dateFormat = formats[0],
+                timeFormat = (formats.length > 1) ? formats[1] : null,
+                amOrPm     = (formats.length > 2) ? formats[2] : null,
+                sections   = value.split(' '),
+                date       = sections[0],
+                time       = (sections.length > 1) ? sections[1] : null;
+
+            if (formats.length !== sections.length) {
+                return {
+                    valid: false,
+                    message: message
+                };
+            }
+
+            // Determine the separator
+            var separator = options.separator;
+            if (!separator) {
+                separator = (date.indexOf('/') !== -1)
+                            ? '/'
+                            : ((date.indexOf('-') !== -1) ? '-' : ((date.indexOf('.') !== -1) ? '.' : null));
+            }
+            if (separator === null || date.indexOf(separator) === -1) {
+                return {
+                    valid: false,
+                    message: message
+                };
+            }
+
+            // Determine the date
+            date       = date.split(separator);
+            dateFormat = dateFormat.split(separator);
+            if (date.length !== dateFormat.length) {
+                return {
+                    valid: false,
+                    message: message
+                };
+            }
+
+            var year  = date[$.inArray('YYYY', dateFormat)],
+                month = date[$.inArray('MM', dateFormat)],
+                day   = date[$.inArray('DD', dateFormat)];
+
+            if (!year || !month || !day || year.length !== 4) {
+                return {
+                    valid: false,
+                    message: message
+                };
+            }
+
+            // Determine the time
+            var minutes = null, hours = null, seconds = null;
+            if (timeFormat) {
+                timeFormat = timeFormat.split(':');
+                time       = time.split(':');
+
+                if (timeFormat.length !== time.length) {
+                    return {
+                        valid: false,
+                        message: message
+                    };
+                }
+
+                hours   = time.length > 0 ? time[0] : null;
+                minutes = time.length > 1 ? time[1] : null;
+                seconds = time.length > 2 ? time[2] : null;
+
+                if (hours === '' || minutes === '' || seconds === '') {
+                    return {
+                        valid: false,
+                        message: message
+                    };
+                }
+
+                // Validate seconds
+                if (seconds) {
+                    if (isNaN(seconds) || seconds.length > 2) {
+                        return {
+                            valid: false,
+                            message: message
+                        };
+                    }
+                    seconds = parseInt(seconds, 10);
+                    if (seconds < 0 || seconds > 60) {
+                        return {
+                            valid: false,
+                            message: message
+                        };
+                    }
+                }
+
+                // Validate hours
+                if (hours) {
+                    if (isNaN(hours) || hours.length > 2) {
+                        return {
+                            valid: false,
+                            message: message
+                        };
+                    }
+                    hours = parseInt(hours, 10);
+                    if (hours < 0 || hours >= 24 || (amOrPm && hours > 12)) {
+                        return {
+                            valid: false,
+                            message: message
+                        };
+                    }
+                }
+
+                // Validate minutes
+                if (minutes) {
+                    if (isNaN(minutes) || minutes.length > 2) {
+                        return {
+                            valid: false,
+                            message: message
+                        };
+                    }
+                    minutes = parseInt(minutes, 10);
+                    if (minutes < 0 || minutes > 59) {
+                        return {
+                            valid: false,
+                            message: message
+                        };
+                    }
+                }
+            }
+
+            // Validate day, month, and year
+            var valid     = FormValidation.Helper.date(year, month, day),
+                min       = null,
+                max       = null,
+                minOption = options.min,
+                maxOption = options.max;
+
+            if (minOption) {
+                min = (minOption instanceof Date)
+                    ? minOption
+                    : (this._parseDate(minOption, dateFormat, separator) ||
+                       this._parseDate(validator.getDynamicOption($field, minOption), dateFormat, separator));
+
+                // In order to avoid displaying a date string like "Mon Dec 08 2014 19:14:12 GMT+0000 (WET)"
+                minOption = this._formatDate(min, options.format);
+            }
+
+            if (maxOption) {
+                max = (maxOption instanceof Date)
+                    ? maxOption
+                    : (this._parseDate(maxOption, dateFormat, separator) ||
+                       this._parseDate(validator.getDynamicOption($field, maxOption), dateFormat, separator));
+
+                // In order to avoid displaying a date string like "Mon Dec 08 2014 19:14:12 GMT+0000 (WET)"
+                maxOption = this._formatDate(max, options.format);
+            }
+
+            date = new Date(year, month -1, day, hours, minutes, seconds);
+
+            switch (true) {
+                case (minOption && !maxOption && valid):
+                    valid   = date.getTime() >= min.getTime();
+                    message = options.message || FormValidation.Helper.format(FormValidation.I18n[locale].date.min, minOption);
+                    break;
+
+                case (maxOption && !minOption && valid):
+                    valid   = date.getTime() <= max.getTime();
+                    message = options.message || FormValidation.Helper.format(FormValidation.I18n[locale].date.max, maxOption);
+                    break;
+
+                case (maxOption && minOption && valid):
+                    valid   = date.getTime() <= max.getTime() && date.getTime() >= min.getTime();
+                    message = options.message || FormValidation.Helper.format(FormValidation.I18n[locale].date.range, [minOption, maxOption]);
+                    break;
+
+                default:
+                    break;
+            }
+
+            return {
+                valid: valid,
+                date: date,
+                message: message
+            };
+        },
+
+        /**
+         * Return a date object after parsing the date string
+         *
+         * @param {Date|String} date   The date string to parse
+         * @param {String} format The date format
+         * The format can be:
+         *   - date: Consist of DD, MM, YYYY parts which are separated by the separator option
+         *   - date and time:
+         *     The time can consist of h, m, s parts which are separated by :
+         * @param {String} separator The separator used to separate the date, month, and year
+         * @returns {Date}
+         */
+        _parseDate: function(date, format, separator) {
+            if (date instanceof Date) {
+                return date;
+            }
+            if (typeof date !== 'string') {
+                return null;
+            }
+
+            // Ensure that the format must consist of year, month and day patterns
+            var yearIndex   = $.inArray('YYYY', format),
+                monthIndex  = $.inArray('MM', format),
+                dayIndex    = $.inArray('DD', format);
+            if (yearIndex === -1 || monthIndex === -1 || dayIndex === -1) {
+                return null;
+            }
+
+            var minutes     = 0, hours = 0, seconds = 0,
+                sections    = date.split(' '),
+                dateSection = sections[0].split(separator);
+            if (dateSection.length < 3) {
+                return null;
+            }
+
+            if (sections.length > 1) {
+                var timeSection = sections[1].split(':');
+                hours   = timeSection.length > 0 ? timeSection[0] : null;
+                minutes = timeSection.length > 1 ? timeSection[1] : null;
+                seconds = timeSection.length > 2 ? timeSection[2] : null;
+            }
+
+            return new Date(dateSection[yearIndex], dateSection[monthIndex] - 1, dateSection[dayIndex],
+                            hours, minutes, seconds);
+        },
+
+        /**
+         * Format date
+         *
+         * @param {Date} date The date object to format
+         * @param {String} format The date format
+         * The format can consist of the following tokens:
+         *      d       Day of the month without leading zeros (1 through 31)
+         *      dd      Day of the month with leading zeros (01 through 31)
+         *      m       Month without leading zeros (1 through 12)
+         *      mm      Month with leading zeros (01 through 12)
+         *      yy      Last two digits of year (for example: 14)
+         *      yyyy    Full four digits of year (for example: 2014)
+         *      h       Hours without leading zeros (1 through 12)
+         *      hh      Hours with leading zeros (01 through 12)
+         *      H       Hours without leading zeros (0 through 23)
+         *      HH      Hours with leading zeros (00 through 23)
+         *      M       Minutes without leading zeros (0 through 59)
+         *      MM      Minutes with leading zeros (00 through 59)
+         *      s       Seconds without leading zeros (0 through 59)
+         *      ss      Seconds with leading zeros (00 through 59)
+         * @returns {String}
+         */
+        _formatDate: function(date, format) {
+            format = format
+                        .replace(/Y/g, 'y')
+                        .replace(/M/g, 'm')
+                        .replace(/D/g, 'd')
+                        .replace(/:m/g, ':M')
+                        .replace(/:mm/g, ':MM')
+                        .replace(/:S/, ':s')
+                        .replace(/:SS/, ':ss');
+
+            var replacer = {
+                d: function(date) {
+                    return date.getDate();
+                },
+                dd: function(date) {
+                    var d = date.getDate();
+                    return (d < 10) ? '0' + d : d;
+                },
+                m: function(date) {
+                    return date.getMonth() + 1;
+                },
+                mm: function(date) {
+                    var m = date.getMonth() + 1;
+                    return m < 10 ? '0' + m : m;
+                },
+                yy: function(date) {
+                    return ('' + date.getFullYear()).substr(2);
+                },
+                yyyy: function(date) {
+                    return date.getFullYear();
+                },
+                h: function(date) {
+                    return date.getHours() % 12 || 12;
+                },
+                hh: function(date) {
+                    var h = date.getHours() % 12 || 12;
+                    return h < 10 ? '0' + h : h;
+                },
+                H: function(date) {
+                    return date.getHours();
+                },
+                HH: function(date) {
+                    var H = date.getHours();
+                    return H < 10 ? '0' + H : H;
+                },
+                M: function(date) {
+                    return date.getMinutes();
+                },
+                MM: function(date) {
+                    var M = date.getMinutes();
+                    return M < 10 ? '0' + M : M;
+                },
+                s: function(date) {
+                    return date.getSeconds();
+                },
+                ss: function(date) {
+                    var s = date.getSeconds();
+                    return s < 10 ? '0' + s : s;
+                }
+            };
+
+            return format.replace(/d{1,4}|m{1,4}|yy(?:yy)?|([HhMs])\1?|"[^"]*"|'[^']*'/g, function(match) {
+                return replacer[match] ? replacer[match](date) : match.slice(1, match.length - 1);
+            });
+        }
+    };
+}(jQuery));
+;(function($) {
+    FormValidation.I18n = $.extend(true, FormValidation.I18n || {}, {
+        'en_US': {
+            different: {
+                'default': 'Please enter a different value'
+            }
+        }
+    });
+
+    FormValidation.Validator.different = {
+        html5Attributes: {
+            message: 'message',
+            field: 'field'
+        },
+
+        /**
+         * Bind the validator on the live change of the field to compare with current one
+         *
+         * @param {FormValidation.Base} validator The validator plugin instance
+         * @param {jQuery} $field Field element
+         * @param {Object} options Consists of the following key:
+         * - field: The name of field that will be used to compare with current one
+         */
+        init: function(validator, $field, options, validatorName) {
+            var fields = options.field.split(',');
+            for (var i = 0; i < fields.length; i++) {
+                var compareWith = validator.getFieldElements($.trim(fields[i]));
+                validator.onLiveChange(compareWith, 'live_' + validatorName, function() {
+                    var status = validator.getStatus($field, validatorName);
+                    if (status !== validator.STATUS_NOT_VALIDATED) {
+                        validator.revalidateField($field);
+                    }
+                });
+            }
+        },
+
+        /**
+         * Unbind the validator on the live change of the field to compare with current one
+         *
+         * @param {FormValidation.Base} validator The validator plugin instance
+         * @param {jQuery} $field Field element
+         * @param {Object} options Consists of the following key:
+         * - field: The name of field that will be used to compare with current one
+         */
+        destroy: function(validator, $field, options, validatorName) {
+            var fields = options.field.split(',');
+            for (var i = 0; i < fields.length; i++) {
+                var compareWith = validator.getFieldElements($.trim(fields[i]));
+                validator.offLiveChange(compareWith, 'live_' + validatorName);
+            }
+        },
+
+        /**
+         * Return true if the input value is different with given field's value
+         *
+         * @param {FormValidation.Base} validator The validator plugin instance
+         * @param {jQuery} $field Field element
+         * @param {Object} options Consists of the following key:
+         * - field: The name of field that will be used to compare with current one
+         * - message: The invalid message
+         * @returns {Boolean}
+         */
+        validate: function(validator, $field, options, validatorName) {
+            var value = validator.getFieldValue($field, validatorName);
+            if (value === '') {
+                return true;
+            }
+
+            var fields  = options.field.split(','),
+                isValid = true;
+
+            for (var i = 0; i < fields.length; i++) {
+                var compareWith = validator.getFieldElements($.trim(fields[i]));
+                if (compareWith == null || compareWith.length === 0) {
+                    continue;
+                }
+
+                var compareValue = validator.getFieldValue(compareWith, validatorName);
+                if (value === compareValue) {
+                    isValid = false;
+                } else if (compareValue !== '') {
+                    validator.updateStatus(compareWith, validator.STATUS_VALID, validatorName);
+                }
+            }
+
+            return isValid;
+        }
+    };
+}(jQuery));
+;(function($) {
+    FormValidation.I18n = $.extend(true, FormValidation.I18n || {}, {
+        'en_US': {
+            digits: {
+                'default': 'Please enter only digits'
+            }
+        }
+    });
+
+    FormValidation.Validator.digits = {
+        /**
+         * Return true if the input value contains digits only
+         *
+         * @param {FormValidation.Base} validator Validate plugin instance
+         * @param {jQuery} $field Field element
+         * @param {Object} [options]
+         * @returns {Boolean}
+         */
+        validate: function(validator, $field, options, validatorName) {
+            var value = validator.getFieldValue($field, validatorName);
+            if (value === '') {
+                return true;
+            }
+
+            return /^\d+$/.test(value);
+        }
+    };
+}(jQuery));
+;(function($) {
+    FormValidation.I18n = $.extend(true, FormValidation.I18n || {}, {
+        'en_US': {
+            emailAddress: {
+                'default': 'Please enter a valid email address'
+            }
+        }
+    });
+
+    FormValidation.Validator.emailAddress = {
+        html5Attributes: {
+            message: 'message',
+            multiple: 'multiple',
+            separator: 'separator'
+        },
+
+        enableByHtml5: function($field) {
+            return ('email' === $field.attr('type'));
+        },
+
+        /**
+         * Return true if and only if the input value is a valid email address
+         *
+         * @param {FormValidation.Base} validator Validate plugin instance
+         * @param {jQuery} $field Field element
+         * @param {Object} [options]
+         * - multiple: Allow multiple email addresses, separated by a comma or semicolon; default is false.
+         * - separator: Regex for character or characters expected as separator between addresses; default is comma /[,;]/, i.e. comma or semicolon.
+         * @returns {Boolean}
+         */
+        validate: function(validator, $field, options, validatorName) {
+            var value = validator.getFieldValue($field, validatorName);
+            if (value === '') {
+                return true;
+            }
+
+            // Email address regular expression
+            // http://stackoverflow.com/questions/46155/validate-email-address-in-javascript
+            var emailRegExp   = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
+                allowMultiple = options.multiple === true || options.multiple === 'true';
+
+            if (allowMultiple) {
+                var separator = options.separator || /[,;]/,
+                    addresses = this._splitEmailAddresses(value, separator);
+
+                for (var i = 0; i < addresses.length; i++) {
+                    if (!emailRegExp.test(addresses[i])) {
+                        return false;
+                    }
+                }
+
+                return true;
+            } else {
+                return emailRegExp.test(value);
+            }
+        },
+
+        _splitEmailAddresses: function(emailAddresses, separator) {
+            var quotedFragments     = emailAddresses.split(/"/),
+                quotedFragmentCount = quotedFragments.length,
+                emailAddressArray   = [],
+                nextEmailAddress    = '';
+
+            for (var i = 0; i < quotedFragmentCount; i++) {
+                if (i % 2 === 0) {
+                    var splitEmailAddressFragments     = quotedFragments[i].split(separator),
+                        splitEmailAddressFragmentCount = splitEmailAddressFragments.length;
+
+                    if (splitEmailAddressFragmentCount === 1) {
+                        nextEmailAddress += splitEmailAddressFragments[0];
+                    } else {
+                        emailAddressArray.push(nextEmailAddress + splitEmailAddressFragments[0]);
+
+                        for (var j = 1; j < splitEmailAddressFragmentCount - 1; j++) {
+                            emailAddressArray.push(splitEmailAddressFragments[j]);
+                        }
+                        nextEmailAddress = splitEmailAddressFragments[splitEmailAddressFragmentCount - 1];
+                    }
+                } else {
+                    nextEmailAddress += '"' + quotedFragments[i];
+                    if (i < quotedFragmentCount - 1) {
+                        nextEmailAddress += '"';
+                    }
+                }
+            }
+
+            emailAddressArray.push(nextEmailAddress);
+            return emailAddressArray;
+        }
+    };
+}(jQuery));
+;(function($) {
+    FormValidation.I18n = $.extend(true, FormValidation.I18n || {}, {
+        'en_US': {
+            file: {
+                'default': 'Please choose a valid file'
+            }
+        }
+    });
+
+    FormValidation.Validator.file = {
+        html5Attributes: {
+            extension: 'extension',
+            maxfiles: 'maxFiles',
+            minfiles: 'minFiles',
+            maxsize: 'maxSize',
+            minsize: 'minSize',
+            maxtotalsize: 'maxTotalSize',
+            mintotalsize: 'minTotalSize',
+            message: 'message',
+            type: 'type'
+        },
+
+        /**
+         * Validate upload file. Use HTML 5 API if the browser supports
+         *
+         * @param {FormValidation.Base} validator The validator plugin instance
+         * @param {jQuery} $field Field element
+         * @param {Object} options Can consist of the following keys:
+         * - extension: The allowed extensions, separated by a comma
+         * - maxFiles: The maximum number of files
+         * - minFiles: The minimum number of files
+         * - maxSize: The maximum size in bytes
+         * - minSize: The minimum size in bytes
+         * - maxTotalSize: The maximum size in bytes for all files
+         * - minTotalSize: The minimum size in bytes for all files
+         * - message: The invalid message
+         * - type: The allowed MIME type, separated by a comma
+         * @returns {Boolean}
+         */
+        validate: function(validator, $field, options, validatorName) {
+            var value = validator.getFieldValue($field, validatorName);
+            if (value === '') {
+                return true;
+            }
+
+            var ext,
+                extensions = options.extension ? options.extension.toLowerCase().split(',') : null,
+                types      = options.type      ? options.type.toLowerCase().split(',')      : null,
+                html5      = (window.File && window.FileList && window.FileReader);
+
+            if (html5) {
+                // Get FileList instance
+                var files     = $field.get(0).files,
+                    total     = files.length,
+                    totalSize = 0;
+
+                if ((options.maxFiles && total > parseInt(options.maxFiles, 10))        // Check the maxFiles
+                    || (options.minFiles && total < parseInt(options.minFiles, 10)))    // Check the minFiles
+                {
+                    return false;
+                }
+
+                for (var i = 0; i < total; i++) {
+                    totalSize += files[i].size;
+                    ext        = files[i].name.substr(files[i].name.lastIndexOf('.') + 1);
+
+                    if ((options.minSize && files[i].size < parseInt(options.minSize, 10))                      // Check the minSize
+                        || (options.maxSize && files[i].size > parseInt(options.maxSize, 10))                   // Check the maxSize
+                        || (extensions && $.inArray(ext.toLowerCase(), extensions) === -1)                      // Check file extension
+                        || (files[i].type && types && $.inArray(files[i].type.toLowerCase(), types) === -1))    // Check file type
+                    {
+                        return false;
+                    }
+                }
+
+                if ((options.maxTotalSize && totalSize > parseInt(options.maxTotalSize, 10))        // Check the maxTotalSize
+                    || (options.minTotalSize && totalSize < parseInt(options.minTotalSize, 10)))    // Check the minTotalSize
+                {
+                    return false;
+                }
+            } else {
+                // Check file extension
+                ext = value.substr(value.lastIndexOf('.') + 1);
+                if (extensions && $.inArray(ext.toLowerCase(), extensions) === -1) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+    };
+}(jQuery));
+;(function($) {
+    FormValidation.I18n = $.extend(true, FormValidation.I18n || {}, {
+        'en_US': {
+            greaterThan: {
+                'default': 'Please enter a value greater than or equal to %s',
+                notInclusive: 'Please enter a value greater than %s'
+            }
+        }
+    });
+
+    FormValidation.Validator.greaterThan = {
+        html5Attributes: {
+            message: 'message',
+            value: 'value',
+            inclusive: 'inclusive'
+        },
+
+        enableByHtml5: function($field) {
+            var type = $field.attr('type'),
+                min  = $field.attr('min');
+            if (min && type !== 'date') {
+                return {
+                    value: min
+                };
+            }
+
+            return false;
+        },
+
+        /**
+         * Return true if the input value is greater than or equals to given number
+         *
+         * @param {FormValidation.Base} validator Validate plugin instance
+         * @param {jQuery} $field Field element
+         * @param {Object} options Can consist of the following keys:
+         * - value: Define the number to compare with. It can be
+         *      - A number
+         *      - Name of field which its value defines the number
+         *      - Name of callback function that returns the number
+         *      - A callback function that returns the number
+         *
+         * - inclusive [optional]: Can be true or false. Default is true
+         * - message: The invalid message
+         * @returns {Boolean|Object}
+         */
+        validate: function(validator, $field, options, validatorName) {
+            var value = validator.getFieldValue($field, validatorName);
+            if (value === '') {
+                return true;
+            }
+            
+            value = this._format(value);
+
+            var locale         = validator.getLocale(),
+                compareTo      = $.isNumeric(options.value) ? options.value : validator.getDynamicOption($field, options.value),
+                compareToValue = this._format(compareTo);
+
+			return (options.inclusive === true || options.inclusive === undefined)
+                    ? {
+                        valid: $.isNumeric(value) && parseFloat(value) >= compareToValue,
+                        message: FormValidation.Helper.format(options.message || FormValidation.I18n[locale].greaterThan['default'], compareTo)
+                    }
+                    : {
+                        valid: $.isNumeric(value) && parseFloat(value) > compareToValue,
+                        message: FormValidation.Helper.format(options.message || FormValidation.I18n[locale].greaterThan.notInclusive, compareTo)
+                    };
+        },
+
+        _format: function(value) {
+            return (value + '').replace(',', '.');
+        }
+    };
+}(jQuery));
+;(function($) {
+    FormValidation.I18n = $.extend(true, FormValidation.I18n || {}, {
+        'en_US': {
+            identical: {
+                'default': 'Please enter the same value'
+            }
+        }
+    });
+
+    FormValidation.Validator.identical = {
+        html5Attributes: {
+            message: 'message',
+            field: 'field'
+        },
+
+        /**
+         * Bind the validator on the live change of the field to compare with current one
+         *
+         * @param {FormValidation.Base} validator The validator plugin instance
+         * @param {jQuery} $field Field element
+         * @param {Object} options Consists of the following key:
+         * - field: The name of field that will be used to compare with current one
+         */
+        init: function(validator, $field, options, validatorName) {
+            var compareWith = validator.getFieldElements(options.field);
+            validator.onLiveChange(compareWith, 'live_' + validatorName, function() {
+                var status = validator.getStatus($field, validatorName);
+                if (status !== validator.STATUS_NOT_VALIDATED) {
+                    validator.revalidateField($field);
+                }
+            });
+        },
+
+        /**
+         * Unbind the validator on the live change of the field to compare with current one
+         *
+         * @param {FormValidation.Base} validator The validator plugin instance
+         * @param {jQuery} $field Field element
+         * @param {Object} options Consists of the following key:
+         * - field: The name of field that will be used to compare with current one
+         */
+        destroy: function(validator, $field, options, validatorName) {
+            var compareWith = validator.getFieldElements(options.field);
+            validator.offLiveChange(compareWith, 'live_' + validatorName);
+        },
+
+        /**
+         * Check if input value equals to value of particular one
+         *
+         * @param {FormValidation.Base} validator The validator plugin instance
+         * @param {jQuery} $field Field element
+         * @param {Object} options Consists of the following key:
+         * - field: The name of field that will be used to compare with current one
+         * @returns {Boolean}
+         */
+        validate: function(validator, $field, options, validatorName) {
+            var value       = validator.getFieldValue($field, validatorName),
+                compareWith = validator.getFieldElements(options.field);
+            if (compareWith === null || compareWith.length === 0) {
+                return true;
+            }
+
+            var compareValue = validator.getFieldValue(compareWith, validatorName);
+            if (value === compareValue) {
+                validator.updateStatus(compareWith, validator.STATUS_VALID, validatorName);
+                return true;
+            }
+
+            return false;
+        }
+    };
+}(jQuery));
+;(function($) {
+    FormValidation.I18n = $.extend(true, FormValidation.I18n || {}, {
+        'en_US': {
+            integer: {
+                'default': 'Please enter a valid number'
+            }
+        }
+    });
+
+    FormValidation.Validator.integer = {
+        html5Attributes: {
+            message: 'message',
+            thousandsseparator: 'thousandsSeparator',
+            decimalseparator: 'decimalSeparator'
+        },
+
+        enableByHtml5: function($field) {
+            return ('number' === $field.attr('type')) && ($field.attr('step') === undefined || $field.attr('step') % 1 === 0);
+        },
+
+        /**
+         * Return true if the input value is an integer
+         *
+         * @param {FormValidation.Base} validator The validator plugin instance
+         * @param {jQuery} $field Field element
+         * @param {Object} options Can consist of the following key:
+         * - message: The invalid message
+         * - thousandsSeparator: The thousands separator. It's empty by default
+         * - decimalSeparator: The decimal separator. It's '.' by default
+         * @returns {Boolean}
+         */
+        validate: function(validator, $field, options, validatorName) {
+            if (this.enableByHtml5($field) && $field.get(0).validity && $field.get(0).validity.badInput === true) {
+                return false;
+            }
+
+            var value = validator.getFieldValue($field, validatorName);
+            if (value === '') {
+                return true;
+            }
+
+            var decimalSeparator   = options.decimalSeparator   || '.',
+                thousandsSeparator = options.thousandsSeparator || '';
+            decimalSeparator       = (decimalSeparator   === '.') ? '\\.' : decimalSeparator;
+            thousandsSeparator     = (thousandsSeparator === '.') ? '\\.' : thousandsSeparator;
+
+            var testRegexp         = new RegExp('^-?[0-9]{1,3}(' + thousandsSeparator + '[0-9]{3})*(' + decimalSeparator + '[0-9]+)?$'),
+                thousandsReplacer  = new RegExp(thousandsSeparator, 'g');
+
+            if (!testRegexp.test(value)) {
+                return false;
+            }
+
+            // Replace thousands separator with blank
+            if (thousandsSeparator) {
+                value = value.replace(thousandsReplacer, '');
+            }
+            // Replace decimal separator with a dot
+            if (decimalSeparator) {
+                value = value.replace(decimalSeparator, '.');
+            }
+
+            if (isNaN(value) || !isFinite(value)) {
+                return false;
+            }
+            // TODO: Use Number.isInteger() if available
+            value = parseFloat(value);
+            return Math.floor(value) === value;
+        }
+    };
+}(jQuery));
+;(function($) {
+    FormValidation.I18n = $.extend(true, FormValidation.I18n || {}, {
+        'en_US': {
+            lessThan: {
+                'default': 'Please enter a value less than or equal to %s',
+                notInclusive: 'Please enter a value less than %s'
+            }
+        }
+    });
+
+    FormValidation.Validator.lessThan = {
+        html5Attributes: {
+            message: 'message',
+            value: 'value',
+            inclusive: 'inclusive'
+        },
+
+        enableByHtml5: function($field) {
+            var type = $field.attr('type'),
+                max  = $field.attr('max');
+            if (max && type !== 'date') {
+                return {
+                    value: max
+                };
+            }
+
+            return false;
+        },
+
+        /**
+         * Return true if the input value is less than or equal to given number
+         *
+         * @param {FormValidation.Base} validator The validator plugin instance
+         * @param {jQuery} $field Field element
+         * @param {Object} options Can consist of the following keys:
+         * - value: The number used to compare to. It can be
+         *      - A number
+         *      - Name of field which its value defines the number
+         *      - Name of callback function that returns the number
+         *      - A callback function that returns the number
+         *
+         * - inclusive [optional]: Can be true or false. Default is true
+         * - message: The invalid message
+         * @returns {Boolean|Object}
+         */
+        validate: function(validator, $field, options, validatorName) {
+            var value = validator.getFieldValue($field, validatorName);
+            if (value === '') {
+                return true;
+            }
+            
+			value = this._format(value);
+
+            var locale         = validator.getLocale(),
+                compareTo      = $.isNumeric(options.value) ? options.value : validator.getDynamicOption($field, options.value),
+                compareToValue = this._format(compareTo);
+
+            return (options.inclusive === true || options.inclusive === undefined)
+                    ? {
+                        valid: $.isNumeric(value) && parseFloat(value) <= compareToValue,
+                        message: FormValidation.Helper.format(options.message || FormValidation.I18n[locale].lessThan['default'], compareTo)
+                    }
+                    : {
+                        valid: $.isNumeric(value) && parseFloat(value) < compareToValue,
+                        message: FormValidation.Helper.format(options.message || FormValidation.I18n[locale].lessThan.notInclusive, compareTo)
+                    };
+        },
+
+        _format: function(value) {
+            return (value + '').replace(',', '.');
+        }
+    };
+}(jQuery));
+;(function($) {
+    FormValidation.I18n = $.extend(true, FormValidation.I18n || {}, {
+        'en_US': {
+            notEmpty: {
+                'default': 'Please enter a value'
+            }
+        }
+    });
+
+    FormValidation.Validator.notEmpty = {
+        enableByHtml5: function($field) {
+            var required = $field.attr('required') + '';
+            return ('required' === required || 'true' === required);
+        },
+
+        /**
+         * Check if input value is empty or not
+         *
+         * @param {FormValidation.Base} validator The validator plugin instance
+         * @param {jQuery} $field Field element
+         * @param {Object} options
+         * @returns {Boolean}
+         */
+        validate: function(validator, $field, options, validatorName) {
+            var type = $field.attr('type');
+            if ('radio' === type || 'checkbox' === type) {
+                var ns = validator.getNamespace();
+                return validator
+                            .getFieldElements($field.attr('data-' + ns + '-field'))
+                            .filter(':checked')
+                            .length > 0;
+            }
+
+            if ('number' === type && $field.get(0).validity && $field.get(0).validity.badInput === true) {
+                return true;
+            }
+
+            var value = validator.getFieldValue($field, validatorName);
+            return $.trim(value) !== '';
+        }
+    };
+}(jQuery));
+;(function($) {
+    FormValidation.I18n = $.extend(true, FormValidation.I18n || {}, {
+        'en_US': {
+            numeric: {
+                'default': 'Please enter a valid float number'
+            }
+        }
+    });
+
+    FormValidation.Validator.numeric = {
+        html5Attributes: {
+            message: 'message',
+            separator: 'separator',     // deprecated
+            thousandsseparator: 'thousandsSeparator',
+            decimalseparator: 'decimalSeparator'
+        },
+
+        enableByHtml5: function($field) {
+            return ('number' === $field.attr('type')) && ($field.attr('step') !== undefined) && ($field.attr('step') % 1 !== 0);
+        },
+
+        /**
+         * Validate decimal number
+         *
+         * @param {FormValidation.Base} validator The validator plugin instance
+         * @param {jQuery} $field Field element
+         * @param {Object} options Consist of key:
+         * - message: The invalid message
+         * - thousandsSeparator: The thousands separator. It's empty by default
+         * - separator, decimalSeparator: The decimal separator. It's '.' by default
+         * The separator option is deprecated and should be replaced with decimalSeparator
+         * @returns {Boolean}
+         */
+        validate: function(validator, $field, options, validatorName) {
+            if (this.enableByHtml5($field) && $field.get(0).validity && $field.get(0).validity.badInput === true) {
+                return false;
+            }
+
+            var value = validator.getFieldValue($field, validatorName);
+            if (value === '') {
+                return true;
+            }
+
+            var decimalSeparator   = options.separator || options.decimalSeparator || '.',
+                thousandsSeparator = options.thousandsSeparator || '';
+
+            // Support preceding zero numbers such as .5, -.5
+            if (value.substr(0, 1) === decimalSeparator) {
+                value = '0' + decimalSeparator + value.substr(1);
+            } else if (value.substr(0, 2) === '-' + decimalSeparator) {
+                value = '-0' + decimalSeparator + value.substr(2);
+            }
+
+            decimalSeparator   = (decimalSeparator   === '.') ? '\\.' : decimalSeparator;
+            thousandsSeparator = (thousandsSeparator === '.') ? '\\.' : thousandsSeparator;
+
+            var testRegexp         = new RegExp('^-?[0-9]{1,3}(' + thousandsSeparator + '[0-9]{3})*(' + decimalSeparator + '[0-9]+)?$'),
+                thousandsReplacer  = new RegExp(thousandsSeparator, 'g');
+
+            if (!testRegexp.test(value)) {
+                return false;
+            }
+
+            // Replace thousands separator with blank
+            if (thousandsSeparator) {
+                value = value.replace(thousandsReplacer, '');
+            }
+            // Replace decimal separator with a dot
+            if (decimalSeparator) {
+                value = value.replace(decimalSeparator, '.');
+            }
+
+            return !isNaN(parseFloat(value)) && isFinite(value);
+        }
+    };
+}(jQuery));
+;(function($) {
+    FormValidation.I18n = $.extend(true, FormValidation.I18n || {}, {
+        'en_US': {
+            promise: {
+                'default': 'Please enter a valid value'
+            }
+        }
+    });
+
+    FormValidation.Validator.promise = {
+        priority: 999,
+
+        html5Attributes: {
+            message: 'message',
+            promise: 'promise'
+        },
+
+        /**
+         * Return result from a jQuery's Deferred object
+         *
+         * @param {FormValidation.Base} validator The validator plugin instance
+         * @param {jQuery} $field Field element
+         * @param {Object} options Can consist of the following keys:
+         * - promise: The method that passes parameters:
+         *      promise: function(fieldValue, validator, $field) {
+         *          // fieldValue is the value of field
+         *          // validator is instance of FormValidation.Base
+         *          // $field is the field element
+         *
+         *          var dfd = new $.Deferred();
+         *
+         *          // Do something ...
+         *
+         *          // Resolve when particular task is done
+         *          dfd.resolve({
+         *              valid: true or false,       // Required
+         *              message: 'Other message',   // Optional
+         *              key: value                  // You can attach more data to reuse later
+         *          });
+         *
+         *          // You can reject if there's error
+         *          dfd.reject({
+         *              message: 'Other message',   // Optional
+         *              key: value                  // You can attach more data to reuse later
+         *          });
+         *
+         *          return dfd.promise();
+         *      }
+         * - message: The invalid message
+         * @returns {Deferred}
+         */
+        validate: function(validator, $field, options, validatorName) {
+            var value   = validator.getFieldValue($field, validatorName),
+                dfd     = new $.Deferred(),
+                promise = FormValidation.Helper.call(options.promise, [value, validator, $field]);
+
+            promise
+                .done(function(result) {
+                    dfd.resolve($field, validatorName, result);
+                })
+                .fail(function(result) {
+                    result = result || {};
+                    result.valid = false;
+                    dfd.resolve($field, validatorName, result);
+                });
+
+            return dfd;
+        }
+    };
+}(jQuery));
+;(function($) {
+    FormValidation.I18n = $.extend(true, FormValidation.I18n || {}, {
+        'en_US': {
+            regexp: {
+                'default': 'Please enter a value matching the pattern'
+            }
+        }
+    });
+
+    FormValidation.Validator.regexp = {
+        html5Attributes: {
+            message: 'message',
+            flags: 'flags',
+            regexp: 'regexp'
+        },
+
+        enableByHtml5: function($field) {
+            var pattern = $field.attr('pattern');
+            if (pattern) {
+                return {
+                    regexp: pattern
+                };
+            }
+
+            return false;
+        },
+
+        /**
+         * Check if the element value matches given regular expression
+         *
+         * @param {FormValidation.Base} validator The validator plugin instance
+         * @param {jQuery} $field Field element
+         * @param {Object} options Consists of the following key:
+         * - regexp: The regular expression you need to check
+         * - flags: If specified, flags can have any combination of Javascript regular expression flags such as:
+         *      g: global match
+         *      i: ignore case
+         *      m: multiple line
+         * @returns {Boolean}
+         */
+        validate: function(validator, $field, options, validatorName) {
+            var value = validator.getFieldValue($field, validatorName);
+            if (value === '') {
+                return true;
+            }
+
+            var regexp = ('string' === typeof options.regexp)
+                        ? (options.flags ? new RegExp(options.regexp, options.flags) : new RegExp(options.regexp))
+                        : options.regexp;
+            return regexp.test(value);
+        }
+    };
+}(jQuery));
+;(function($) {
+    FormValidation.I18n = $.extend(true, FormValidation.I18n || {}, {
+        'en_US': {
+            remote: {
+                'default': 'Please enter a valid value'
+            }
+        }
+    });
+
+    FormValidation.Validator.remote = {
+        priority: 1000,
+
+        html5Attributes: {
+            async: 'async',
+            crossdomain: 'crossDomain',
+            data: 'data',
+            datatype: 'dataType',
+            delay: 'delay',
+            message: 'message',
+            name: 'name',
+            type: 'type',
+            url: 'url',
+            validkey: 'validKey'
+        },
+
+        /**
+         * Destroy the timer when destroying the FormValidation (using validator.destroy() method)
+         */
+        destroy: function(validator, $field, options, validatorName) {
+            var ns    = validator.getNamespace(),
+                timer = $field.data(ns + '.' + validatorName + '.timer');
+            if (timer) {
+                clearTimeout(timer);
+                $field.removeData(ns + '.' + validatorName + '.timer');
+            }
+        },
+
+        /**
+         * Request a remote server to check the input value
+         *
+         * @param {FormValidation.Base} validator Plugin instance
+         * @param {jQuery} $field Field element
+         * @param {Object} options Can consist of the following keys:
+         * - async {Boolean} [optional] Indicate the Ajax request will be asynchronous or not. It's true by default
+         * - crossDomain {Boolean} [optional]
+         * - data {Object|Function} [optional]: By default, it will take the value
+         *  {
+         *      <fieldName>: <fieldValue>
+         *  }
+         * - dataType {String} [optional]: The type of data which is returned by remote server.
+         * It can be json (default), text, script
+         * - delay {Number} [optional]
+         * - headers {String[]} [optional]: Additional headers
+         * - message {String} [optional]: The invalid message
+         * - name {String} [optional]: Override the field name for the request.
+         * - type {String} [optional] Can be GET or POST (default)
+         * - url {String|Function}
+         * - validKey {String} [optional]: The valid key. It's "valid" by default
+         * This is useful when connecting to external remote server or APIs provided by 3rd parties
+         * @returns {Deferred}
+         */
+        validate: function(validator, $field, options, validatorName) {
+            var ns    = validator.getNamespace(),
+                value = validator.getFieldValue($field, validatorName),
+                dfd   = new $.Deferred();
+            if (value === '') {
+                dfd.resolve($field, validatorName, { valid: true });
+                return dfd;
+            }
+            var name     = $field.attr('data-' + ns + '-field'),
+                data     = options.data || {},
+                url      = options.url,
+                validKey = options.validKey || 'valid';
+
+            // Support dynamic data
+            if ('function' === typeof data) {
+                data = data.call(this, validator, $field, value);
+            }
+
+            // Parse string data from HTML5 attribute
+            if ('string' === typeof data) {
+                data = JSON.parse(data);
+            }
+
+            // Support dynamic url
+            if ('function' === typeof url) {
+                url = url.call(this, validator, $field, value);
+            }
+
+            data[options.name || name] = value;
+
+            var ajaxOptions = {
+                async: options.async === null || options.async === true || options.async === 'true',
+                data: data,
+                dataType: options.dataType || 'json',
+                headers: options.headers || {},
+                type: options.type || 'GET',
+                url: url
+            };
+            if (options.crossDomain !== null) {
+                ajaxOptions.crossDomain = (options.crossDomain === true || options.crossDomain === 'true');
+            }
+
+            function runCallback() {
+                var xhr = $.ajax(ajaxOptions);
+
+                xhr
+                    .success(function(response) {
+                        response.valid = (response[validKey] === true || response[validKey] === 'true')
+                                        ? true
+                                        : (response[validKey] === false || response[validKey] === 'false' ? false : null);
+                        dfd.resolve($field, validatorName, response);
+                    })
+                    .error(function(response) {
+                        dfd.resolve($field, validatorName, {
+                            valid: false
+                        });
+                    });
+
+                dfd.fail(function() {
+                    xhr.abort();
+                });
+
+                return dfd;
+            }
+            
+            if (options.delay) {
+                // Since the form might have multiple fields with the same name
+                // I have to attach the timer to the field element
+                if ($field.data(ns + '.' + validatorName + '.timer')) {
+                    clearTimeout($field.data(ns + '.' + validatorName + '.timer'));
+                }
+
+                $field.data(ns + '.' + validatorName + '.timer', setTimeout(runCallback, options.delay));
+                return dfd;
+            } else {
+                return runCallback();
+            }
+        }
+    };
+}(jQuery));
+;(function($) {
+    FormValidation.I18n = $.extend(true, FormValidation.I18n || {}, {
+        'en_US': {
+            stringLength: {
+                'default': 'Please enter a value with valid length',
+                less: 'Please enter less than %s characters',
+                more: 'Please enter more than %s characters',
+                between: 'Please enter value between %s and %s characters long'
+            }
+        }
+    });
+
+    FormValidation.Validator.stringLength = {
+        html5Attributes: {
+            message: 'message',
+            min: 'min',
+            max: 'max',
+            trim: 'trim',
+            utf8bytes: 'utf8Bytes'
+        },
+
+        enableByHtml5: function($field) {
+            var options   = {},
+                maxLength = $field.attr('maxlength'),
+                minLength = $field.attr('minlength');
+            if (maxLength) {
+                options.max = parseInt(maxLength, 10);
+            }
+            if (minLength) {
+                options.min = parseInt(minLength, 10);
+            }
+
+            return $.isEmptyObject(options) ? false : options;
+        },
+
+        /**
+         * Check if the length of element value is less or more than given number
+         *
+         * @param {FormValidation.Base} validator The validator plugin instance
+         * @param {jQuery} $field Field element
+         * @param {Object} options Consists of following keys:
+         * - min
+         * - max
+         * At least one of two keys is required
+         * The min, max keys define the number which the field value compares to. min, max can be
+         *      - A number
+         *      - Name of field which its value defines the number
+         *      - Name of callback function that returns the number
+         *      - A callback function that returns the number
+         *
+         * - message: The invalid message
+         * - trim: Indicate the length will be calculated after trimming the value or not. It is false, by default
+         * - utf8bytes: Evaluate string length in UTF-8 bytes, default to false
+         * @returns {Object}
+         */
+        validate: function(validator, $field, options, validatorName) {
+            var value = validator.getFieldValue($field, validatorName);
+            if (options.trim === true || options.trim === 'true') {
+                value = $.trim(value);
+            }
+
+            if (value === '') {
+                return true;
+            }
+
+            var locale     = validator.getLocale(),
+                min        = $.isNumeric(options.min) ? options.min : validator.getDynamicOption($field, options.min),
+                max        = $.isNumeric(options.max) ? options.max : validator.getDynamicOption($field, options.max),
+                // Credit to http://stackoverflow.com/a/23329386 (@lovasoa) for UTF-8 byte length code
+                utf8Length = function(str) {
+                                 var s = str.length;
+                                 for (var i = str.length - 1; i >= 0; i--) {
+                                     var code = str.charCodeAt(i);
+                                     if (code > 0x7f && code <= 0x7ff) {
+                                         s++;
+                                     } else if (code > 0x7ff && code <= 0xffff) {
+                                         s += 2;
+                                     }
+                                     if (code >= 0xDC00 && code <= 0xDFFF) {
+                                         i--;
+                                     }
+                                 }
+                                 return s;
+                             },
+                length     = options.utf8Bytes ? utf8Length(value) : value.length,
+                isValid    = true,
+                message    = options.message || FormValidation.I18n[locale].stringLength['default'];
+
+            if ((min && length < parseInt(min, 10)) || (max && length > parseInt(max, 10))) {
+                isValid = false;
+            }
+
+            switch (true) {
+                case (!!min && !!max):
+                    message = FormValidation.Helper.format(options.message || FormValidation.I18n[locale].stringLength.between, [parseInt(min, 10), parseInt(max, 10)]);
+                    break;
+
+                case (!!min):
+                    message = FormValidation.Helper.format(options.message || FormValidation.I18n[locale].stringLength.more, parseInt(min, 10) - 1);
+                    break;
+
+                case (!!max):
+                    message = FormValidation.Helper.format(options.message || FormValidation.I18n[locale].stringLength.less, parseInt(max, 10) + 1);
+                    break;
+
+                default:
+                    break;
+            }
+
+            return {
+                valid: isValid,
+                message: message
+            };
+        }
+    };
+}(jQuery));
+;(function($) {
+    FormValidation.I18n = $.extend(true, FormValidation.I18n || {}, {
+        'en_US': {
+            uri: {
+                'default': 'Please enter a valid URI'
+            }
+        }
+    });
+
+    FormValidation.Validator.uri = {
+        html5Attributes: {
+            message: 'message',
+            allowlocal: 'allowLocal',
+            allowemptyprotocol: 'allowEmptyProtocol',
+            protocol: 'protocol'
+        },
+
+        enableByHtml5: function($field) {
+            return ('url' === $field.attr('type'));
+        },
+
+        /**
+         * Return true if the input value is a valid URL
+         *
+         * @param {FormValidation.Base} validator The validator plugin instance
+         * @param {jQuery} $field Field element
+         * @param {Object} options
+         * - message: The error message
+         * - allowLocal: Allow the private and local network IP. Default to false
+         * - allowEmptyProtocol: Allow the URI without protocol. Default to false
+         * - protocol: The protocols, separated by a comma. Default to "http, https, ftp"
+         * @returns {Boolean}
+         */
+        validate: function(validator, $field, options, validatorName) {
+            var value = validator.getFieldValue($field, validatorName);
+            if (value === '') {
+                return true;
+            }
+
+            // Credit to https://gist.github.com/dperini/729294
+            //
+            // Regular Expression for URL validation
+            //
+            // Author: Diego Perini
+            // Updated: 2010/12/05
+            //
+            // the regular expression composed & commented
+            // could be easily tweaked for RFC compliance,
+            // it was expressly modified to fit & satisfy
+            // these test for an URL shortener:
+            //
+            //   http://mathiasbynens.be/demo/url-regex
+            //
+            // Notes on possible differences from a standard/generic validation:
+            //
+            // - utf-8 char class take in consideration the full Unicode range
+            // - TLDs are mandatory unless `allowLocal` is true
+            // - protocols have been restricted to ftp, http and https only as requested
+            //
+            // Changes:
+            //
+            // - IP address dotted notation validation, range: 1.0.0.0 - 223.255.255.255
+            //   first and last IP address of each class is considered invalid
+            //   (since they are broadcast/network addresses)
+            //
+            // - Added exclusion of private, reserved and/or local networks ranges
+            //   unless `allowLocal` is true
+            //
+            // - Added possibility of choosing a custom protocol
+            //
+            // - Add option to validate without protocol
+            //
+            var allowLocal         = options.allowLocal === true || options.allowLocal === 'true',
+                allowEmptyProtocol = options.allowEmptyProtocol === true || options.allowEmptyProtocol === 'true',
+                protocol           = (options.protocol || 'http, https, ftp').split(',').join('|').replace(/\s/g, ''),
+                urlExp             = new RegExp(
+                    "^" +
+                    // protocol identifier
+                    "(?:(?:" + protocol + ")://)" +
+                    // allow empty protocol
+                    (allowEmptyProtocol ? '?' : '') +
+                    // user:pass authentication
+                    "(?:\\S+(?::\\S*)?@)?" +
+                    "(?:" +
+                    // IP address exclusion
+                    // private & local networks
+                    (allowLocal
+                        ? ''
+                        : ("(?!(?:10|127)(?:\\.\\d{1,3}){3})" +
+                           "(?!(?:169\\.254|192\\.168)(?:\\.\\d{1,3}){2})" +
+                           "(?!172\\.(?:1[6-9]|2\\d|3[0-1])(?:\\.\\d{1,3}){2})")) +
+                    // IP address dotted notation octets
+                    // excludes loopback network 0.0.0.0
+                    // excludes reserved space >= 224.0.0.0
+                    // excludes network & broadcast addresses
+                    // (first & last IP address of each class)
+                    "(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])" +
+                    "(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}" +
+                    "(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))" +
+                    "|" +
+                    // host name
+                    "(?:(?:[a-z\\u00a1-\\uffff0-9]-?)*[a-z\\u00a1-\\uffff0-9]+)" +
+                    // domain name
+                    "(?:\\.(?:[a-z\\u00a1-\\uffff0-9]-?)*[a-z\\u00a1-\\uffff0-9])*" +
+                    // TLD identifier
+                    "(?:\\.(?:[a-z\\u00a1-\\uffff]{2,}))" +
+                    // Allow intranet sites (no TLD) if `allowLocal` is true
+                    (allowLocal ? '?' : '') +
+                    ")" +
+                    // port number
+                    "(?::\\d{2,5})?" +
+                    // resource path
+                    "(?:/[^\\s]*)?" +
+                    "$", "i"
+                );
+
+            return urlExp.test(value);
+        }
+    };
+}(jQuery));
+
+},{}],22:[function(require,module,exports){
+/**
+ * Modality Dialog jQuery plugin v 1.0
+ * Requires jQuery 1.7.x or superior, and Modality plugin
+ * Supports mayor browsers including IE8
+ * @author Nicolas Pulido M.
+ * Usage: 
+ * $(element).modalityDialog({
+	title       : (stirng) the dialog title
+	content     : (string) The dialog content, can be an HTML input
+	width       : (int) width size in pixels or a string with an int + measure unit
+	fixed       : (boolean) set if dialog has fixed or absolute position
+	buttons     : (array) array of buttons with the following object struct:
+					{ label : (string), click : (function) }
+	onClose     : (function) event onClose dialog
+	escape      : (boolean) Allows user to escape the modal with ESC key or a Click outside the element. Defaults is true.
+	zindex      : (int) css z-index value, default value is 100.
+	smallScreen : (int) small screen width Threshold, defaults value is 640.
+});
+ */
+
+(function($)
+{
+	if(typeof $.modality !== "function")
+		throw new Error('Modality Dialogs -> jQuery modality plugin is required');
+
+	/** ------------------------------------------------------------------------------------------------
+		Modality public methods
+	------------------------------------------------------------------------------------------------ **/
+	$.modalityDialog = function(options) {
+
+		if(typeof options == "undefined")
+			options = {};
+
+		//returns the core object
+		return $.modalityDialog.core.init(options);
+	};
+
+	/**
+	 * Closes Modality
+	 */
+	$.modalityDialog.close = function() { 
+		$.modality.close();
+	};
+
+	/** ------------------------------------------------------------------------------------------------
+		Modality element
+	------------------------------------------------------------------------------------------------ **/
+
+	//DEFAULT VALUES
+	$.modalityDialog.defaults = {
+		title        : "",
+		content      : "",
+		width        : "60%",
+		fixed        : false,
+		overlay      : true,
+		overlayAlpha : 70,
+		overlayColor : "#000",
+		buttons      : [],
+		onClose      : null,
+		escape       : true,
+		zindex       : 100,
+		smallScreen  : 640
+	};
+
+	//CORE
+	$.modalityDialog.core = {
+
+		init: function(options) {
+			//extend options
+			this.opts = $.extend({}, $.modalityDialog.defaults, options);
+			//drop a previously created dialog
+			this.drop();
+			this.create(this.opts);
+			this.show(this.opts);
+
+			return this;
+		},
+		create: function(options) {
+
+			var self = this;
+			//wrappers
+			var div_wrapper = $("<div>").addClass("modality-dialog").css("display", "none");
+			var div_box     = $("<div>").addClass("box");
+
+			//contents
+			var div_title  = $("<div>").addClass("header").html(options.title);
+			var div_body   = $("<div>").addClass("body").html(options.content);
+			var div_footer = $("<div>").addClass("footer");
+						
+			//appends
+			div_wrapper.appendTo("body");
+			div_box.appendTo(div_wrapper);
+			div_title.appendTo(div_box);
+			div_body.appendTo(div_box);
+
+			//width
+			div_wrapper.width(options.width);
+
+			//fix width for small screens
+			if($(window).width() <= options.smallScreen && parseInt(options.width) < 80)
+				div_wrapper.width("90%");
+
+			//check if dialog must have buttons
+			if(typeof options.buttons !== 'object')
+				return;
+
+			//append buttons?
+			var show_footer = false;
+			//loop through buttons
+			var index = 0;
+			for(var key in options.buttons) {
+
+				var btn = options.buttons[key];
+
+				if(typeof btn !== 'object' || typeof btn.label == 'undefined')
+					continue;
+
+				var button_element = $("<button>")
+										.attr("name", 'button-'+index)
+										.addClass('button-'+index)
+										.html(btn.label);
+
+				if(typeof btn.click === 'function')
+					button_element.click(btn.click);
+				else
+					button_element.click(self.close);
+
+				button_element.appendTo(div_footer);
+
+				show_footer = true;
+				index++;
+			}
+
+			//footer append
+			if(show_footer)
+				div_footer.appendTo(div_box);
+		},
+		drop: function() {
+			//removes an existing dialog
+			if($("div.modality-dialog").length)
+				$("div.modality-dialog").remove();
+		},
+		show: function(options) {
+
+			var fn_onclose = null;
+			//check onClose function
+			if(typeof options.onClose === 'function')
+				fn_onclose = options.onClose;
+
+			//show modal
+			$("div.modality-dialog").modality({
+				fixed           : options.fixed,
+				overlay         : options.overlay,
+				overlayAlpha    : options.overlayAlpha,
+				overlayColor    : options.overlayColor,
+				escape          : options.escape,
+				zindex          : options.zindex,
+				onClose         : fn_onclose
+			});
+		},
+		close: function() { 
+			//simpleModal - close
+			$.modality.close();
+		}
+	};
+	/** ------------------------------------------------------------------------------------------------
+		jQuery setup
+	------------------------------------------------------------------------------------------------ **/
+	//creating an event "destroyed"
+	jQuery.event.special.destroyed = {
+		remove: function(o) {
+		  if(o.handler)
+			o.handler();
+		}
+	};
+
+})(jQuery);
+
+},{}],23:[function(require,module,exports){
+/**
+ * Modality jQuery plugin v 1.1
+ * Requires jQuery 1.7.x or superior
+ * Supports mayor browsers including IE8
+ * @author Nicolas Pulido M.
+ * Usage: 
+ * $(element).modality({
+		fixed        : (boolean) present a fixed element?
+		overlay      : (boolean) set an overlay?
+		overlayAlpha : (int) overlay opacity
+		overlayColor : (string) overlay bg color
+		top          : (int) css top value set as percentage
+		bottom       : (int) css bottom value set as percentage (optional)
+		left         : (int) css left value set as percentage
+		right        : (int) css right value set as percentage (optional)
+		onShow       : (function) event onShow
+		onClose      : (function) event onClose
+		onShowAnim   : (function) event onShowAnim, custom Show animation
+		onCloseAnim  : (function) event onCloseAnim, custom Close animation
+		zindex       : (int) css z-index value, default value is 100.
+		escape 		 : (boolean) Allows user to escape the modal with ESC key or a Click outside the element. Defaults is true.
+	});
+ */
+
+(function($) {
+	/** ------------------------------------------------------------------------------------------------
+		Modality public methods
+	------------------------------------------------------------------------------------------------ **/
+	$.modality = function() {};
+
+	/**
+	 * Closes Modality
+	 */
+	$.modality.close = function() {
+
+		if(!$("div.modality-overlay").length)
+			return;
+
+		$("div.modality-overlay").trigger("click");
+		return;
+	};
+
+	/**
+	 * Returns boolean if modality is active or not
+	 */
+	$.modality.isActive = function() {
+		return $("div.modality-overlay").length ? true : false;
+	};
+
+	/** ------------------------------------------------------------------------------------------------
+		Modality element
+	------------------------------------------------------------------------------------------------ **/
+	$.fn.modality = function(options) {
+		//get context
+		var self = $(this);
+		return $.fn.modality.core.init(options, self);
+	};
+
+	//DEFAULT VALUES
+	$.fn.modality.defaults = {
+		fixed        : false,
+		overlay      : true,
+		overlayAlpha : 80,
+		overlayColor : "#000",
+		top          : 50,
+		left         : 50,
+		bottom       : null,
+		right        : null,
+		onShow       : null,
+		onClose      : null,
+		onShowAnim   : null,
+		onCloseAnim  : null,
+		zindex       : 100,
+		escape       : true
+	};
+
+	//CORE
+	$.fn.modality.core = {
+
+		init: function(options, obj) {
+			//extend options
+			this.opts = $.extend({}, $.fn.modality.defaults, options);
+			//check if modality was already invoked
+			if($("div.modality-overlay").length || obj.is(":visible"))
+				return;
+
+			//make and show
+			this.make(this.opts, obj);
+			this.show(this.opts, obj);
+
+			return this;
+		},
+		make: function(options, obj) {
+
+			var self = this;
+			//drop any overlay created before
+			self.drop();
+
+			//overlay div
+			var div_overlay = $("<div>").addClass("modality-overlay");
+
+			//OVERLAY CSS
+			if(options.overlay) {
+				//set opacity
+				var opacity = options.overlayAlpha;
+
+				var doc_height = $(document).height();
+
+				if(doc_height < $(window).height())
+					doc_height = "100%";
+				else
+					doc_height += "px";
+
+				div_overlay.css({
+					"display"    : "none",
+					"position"   : "fixed",
+					"top"        : "0",
+					"left"       : "0",
+					"width"      : "100%",
+					"height"     : doc_height,
+					"background" : options.overlayColor,
+					"opacity"    : opacity / 100,
+					"filter"     : "alpha(opacity="+opacity+")",
+					"z-index"    : options.zindex
+				});
+			}
+
+			//positioning element to display
+			var css_pos  	 = "absolute";
+			var css_x 	 	 = "0";
+			var css_y 	     = "0";
+			var css_margin_x = 0;
+			var css_margin_y = 0;
+
+			var x     = options.left;
+			var xRule = "left";
+
+			if(options.right !== null) {
+				x     = options.right;
+				xRule = "right";
+			}
+
+			var y     = options.top;
+			var yRule = "top";
+
+			if(options.bottom !== null) {
+				y     = options.bottom;
+				yRule = "bottom";
+			}
+
+			//get element width & height
+			var elem_width  = obj.width();
+			var elem_height = obj.height();
+
+			//FIXED position
+			if(options.fixed) { 
+				css_pos = "fixed";
+				//set css position props
+				css_x = x + "%";
+				css_y = y + "%";
+
+				css_margin_x = -(elem_width / (100/x)) + "px";
+				css_margin_y = -(elem_height / (100/y)) + "px";
+			}
+			//ABSOLUTE position
+			else {
+				//set css position props
+				css_x = (Math.max($(window).width() - elem_width, 0)/(100/x)) + $(window).scrollLeft();
+				css_y = (Math.max($(window).height() - elem_height, 0)/(100/y)) + $(window).scrollTop();
+			}
+
+			//set css props
+			obj.css({
+				"position" : css_pos,
+				"z-index"  : (options.zindex + 1)
+			});
+			//set margins
+			obj.css(xRule, css_x);
+			obj.css(yRule, css_y);
+			obj.css("margin-"+xRule, css_margin_x);
+			obj.css("margin-"+yRule, css_margin_y);
+
+			/** -- EVENTS -- **/
+			//force escape?
+			if(options.escape) {
+				//onClick event
+				div_overlay.one("click", function() { 
+					//close action
+					self.close(options, obj);
+				});
+
+				//onKeyUp event for ESC key
+				$(document).one("keyup", function(e) {
+					//prevent any binding action
+					e.preventDefault();
+					e.stopPropagation();
+
+					//ENTER or ESC key
+					if(e.keyCode == 27) {
+						self.close(options, obj);
+					}
+				});
+			}
+			else {
+				div_overlay.unbind("click");
+			}
+
+			//add "destroyed" event handler for "onClose" param
+			if(typeof options.onClose === 'function')               
+				div_overlay.bind('destroyed', options.onClose);
+
+			//append to body
+			div_overlay.appendTo("body");
+		},
+		drop: function() {
+			//removes an existing dialog
+			if($("div.modality-overlay").length)
+				$("div.modality-overlay").remove();
+		},
+		show: function(options, obj) {
+
+			//if fixed, disable html,body scroll
+			if(options.fixed) {
+				$("html").css("overflow","hidden");
+				$("body").css("position","relative");
+			}
+
+			//show overlay and element
+			$("div.modality-overlay").fadeIn("fast");
+
+			//blur focus on anchors, inputs & buttons
+			$("a").blur();
+			$("input").blur();
+			$("button").blur();
+
+			//show with defined animation?
+			if(typeof options.onShowAnim == "function")
+				options.onShowAnim.call();
+			else
+				obj.fadeIn("fast");
+
+			//call onShow function if set
+			if(typeof options.onShow === 'function')
+				options.onShow.call();
+		},
+		close: function(options, obj) {
+			
+			//close with defined animation?
+			if(typeof options.onCloseAnim == "function")
+				options.onCloseAnim.call();
+			else
+				obj.hide();
+
+			//modal close
+			$("div.modality-overlay").fadeOut();
+
+			//enable back scroll
+			if(options.fixed) {
+				$("html").css("overflow","visible");
+				$("body").css("position","static");				
+			}
+
+			//delete the overlay
+			this.drop();
+		}
+	};
+	/** ------------------------------------------------------------------------------------------------
+		jQuery setup
+	------------------------------------------------------------------------------------------------ **/
+	//creating an event "destroyed"
+	jQuery.event.special.destroyed = {
+		remove: function(o) {
+		  if(o.handler)
+			o.handler();
+		}
+	};
+
+})(jQuery);
+
 },{}],"webpack_core":[function(require,module,exports){
 /**
  * Core WebPack
@@ -45350,13 +50482,16 @@ require('js-cookie');
 require('jquery');
 require('velocity');
 require('velocity.ui');
+require('jquery.scrollTo');
 
 //plugins
-require('jquery.extended');
-require('jquery.modality');
-require('jquery.modality.dialog');
-require('jquery.scrollTo');
-require('jquery.formValidation');
+require('./plugins/jquery.extended');
+require('./plugins/jquery.modality');
+require('./plugins/jquery.modality.dialog');
+require('./plugins/jquery.flowType');
+require('./plugins/jquery.formValidation');
+require('./plugins/jquery.formValidation.bootstrap');
+require('./plugins/jquery.formValidation.foundation');
 
 /* Load modules */
 
@@ -45375,4 +50510,4 @@ var modules = [
 //set modules
 core.setModules(modules);
 
-},{"./modules/auth.js":16,"./modules/core.js":17,"./modules/facebook.js":18,"./modules/forms.js":19,"./modules/passRecovery.js":20,"fastclick":1,"html5shiv":2,"jquery":4,"jquery.extended":13,"jquery.formValidation":12,"jquery.modality":15,"jquery.modality.dialog":14,"jquery.scrollTo":3,"js-cookie":5,"lodash":6,"q":8,"velocity":9,"velocity.ui":10,"vue":11}]},{},["webpack_core"]);
+},{"./modules/auth.js":12,"./modules/core.js":13,"./modules/facebook.js":14,"./modules/forms.js":15,"./modules/passRecovery.js":16,"./plugins/jquery.extended":17,"./plugins/jquery.flowType":18,"./plugins/jquery.formValidation":21,"./plugins/jquery.formValidation.bootstrap":19,"./plugins/jquery.formValidation.foundation":20,"./plugins/jquery.modality":23,"./plugins/jquery.modality.dialog":22,"fastclick":1,"html5shiv":2,"jquery":4,"jquery.scrollTo":3,"js-cookie":5,"lodash":6,"q":8,"velocity":9,"velocity.ui":10,"vue":11}]},{},["webpack_core"]);
