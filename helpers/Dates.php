@@ -159,7 +159,7 @@ class Dates
 
         //format with year, month & day
         if(empty($time)) {
-            return $trans->_("%day% de %month% del %year%", [
+            return $trans->_("%day% de %month% %year%", [
                 "day"   => $day,
                 "month" => $month,
                 "year"  => $year
