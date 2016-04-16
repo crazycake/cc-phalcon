@@ -119,16 +119,11 @@ abstract class AppCore extends Controller
      */
     public static function getModuleClass($key = "", $prefix = true)
     {
-        //get 'classMap' module property
-        $classMap = AppLoader::getModuleConfigProp("classMap");
-
-        if(!$classMap)
-            $classMap = [];
+        //auto prefixes
+        $classPrefix = MODULE_NAME == "api" ? "ws_" : "";
 
         //check for prefix in module settings
-        $className = isset($classMap[$key]) ? $classMap[$key] : $key;
-
-        $camelizedClassName = \Phalcon\Text::camelize($className);
+        $camelizedClassName = \Phalcon\Text::camelize($classPrefix."".$key);
 
         return $prefix ? "\\$camelizedClassName" : $camelizedClassName;
     }
