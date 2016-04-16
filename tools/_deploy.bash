@@ -129,6 +129,8 @@ if [ "$1" = "-t" ] || [ "$1" = "-s" ] || [ "$1" = "-p" ]; then
 		# checkout to testing
 		echo -e "\033[95mMerging to testing... \033[0m"
 		git checkout $TESTING_BRANCH
+		# make a pull for colaborative deploys
+		git pull
 
 	elif [ "$1" = "-s" ]; then
 		#commit
@@ -136,6 +138,8 @@ if [ "$1" = "-t" ] || [ "$1" = "-s" ] || [ "$1" = "-p" ]; then
 		# checkout to staging
 		echo -e "\033[95mMerging to staging... \033[0m"
 		git checkout $STAGING_BRANCH
+		# make a pull for colaborative deploys
+		git pull
 
 	else
 		#commit
