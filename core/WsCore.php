@@ -30,12 +30,20 @@ abstract class WsCore extends AppCore
     use Guzzle;
 
     /**
+     * API version
+     */
+    public $version;
+
+    /**
      * on Construct event
      */
     protected function onConstruct()
     {
         parent::onConstruct();
 
+        //set API version
+        $this->version = AppLoader::getModuleConfigProp("version");
+        var_dump($this->version);exit;
         // API Key Validation
         $this->_validateApiKey();
     }
