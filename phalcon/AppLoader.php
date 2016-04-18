@@ -103,9 +103,9 @@ abstract class AppLoader
 
         if(MODULE_NAME == "cli") {
             //new cli app
-            $application = new \Phalcon\CLI\Console($this->di);
+            $app = new \Phalcon\CLI\Console($this->di);
             //loop through args
-            $arguments = array();
+            $arguments = [];
 
             if(is_null($argv))
                 die("Phalcon Console -> no args supplied\n");
@@ -122,7 +122,7 @@ abstract class AppLoader
 
             //checks that array param was set
             if(!isset($arguments['params']))
-                $arguments['params'] = array();
+                $arguments['params'] = [];
 
             //order params
             if(count($arguments['params']) > 0) {
@@ -135,18 +135,18 @@ abstract class AppLoader
             define('CLI_ACTION', isset($argv[2]) ? $argv[2] : null);
 
             //handle incoming arguments
-            $application->handle($arguments);
+            $app->handle($arguments);
         }
         else if(MODULE_NAME == "api") {
 
             //new micro app
-            $application = new \Phalcon\Mvc\Micro($this->di);
+            $app = new \Phalcon\Mvc\Micro($this->di);
             //apply a routes function if param given (must be done before object instance)
             if(is_callable($routes_fn))
-                $routes_fn($application);
+                $routes_fn($app);
 
             //Handle the request
-            echo $application->handle();
+            echo $app->handle();
         }
         else {
 
@@ -165,8 +165,9 @@ abstract class AppLoader
             }
 
             //new mvc app
-            $application = new \Phalcon\Mvc\Application($this->di);
-            $output      = $application->handle()->getContent();
+            $app = new \Phalcon\Mvc\Application($this->di);
+            //set output
+            $output = $app->handle()->getContent();
 
             //return output if argv is true
             if($argv)

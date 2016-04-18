@@ -35,7 +35,7 @@ abstract class WsCore extends AppCore
     protected function onConstruct()
     {
         parent::onConstruct();
-        
+
         // API Key Validation
         $this->_validateApiKey();
     }
