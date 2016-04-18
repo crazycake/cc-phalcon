@@ -43,7 +43,6 @@ abstract class WsCore extends AppCore
 
         //set API version
         $this->version = AppLoader::getModuleConfigProp("version");
-        var_dump($this->version);exit;
         // API Key Validation
         $this->_validateApiKey();
     }

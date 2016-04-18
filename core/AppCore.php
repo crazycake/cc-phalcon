@@ -119,13 +119,22 @@ abstract class AppCore extends Controller
      */
     public static function getModuleClass($key = "", $prefix = true)
     {
-        //auto prefixes
-        $classPrefix = MODULE_NAME == "api" ? "ws_" : "";
-
         //check for prefix in module settings
-        $camelizedClassName = \Phalcon\Text::camelize($classPrefix."".$key);
+        $class_name = \Phalcon\Text::camelize($key);
 
-        return $prefix ? "\\$camelizedClassName" : $camelizedClassName;
+        //auto prefixes: si la clase no exite, se define un prefijo
+        if(!class_exists($class_name)) {
+
+            switch (MODULE_NAME) {
+                case 'api':
+                    $class_name = "Ws$class_name";
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        return $prefix ? "\\$class_name" : $class_name;
     }
 
     /**
