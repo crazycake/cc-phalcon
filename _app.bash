@@ -104,7 +104,7 @@ elif [ $1 = "-docs" ]; then
 	#JS
 	cd $WEBPACKS_PATH
 	echo -e "\033[35mGenerating JS Docs...\033[0m"
-	yuidoc "src/"
+	yuidoc "src/modules/"
 
 elif [ $1 = "-release" ]; then
 
