@@ -120,5 +120,43 @@ class BaseResultset extends Resultset
         return $unique ? array_unique($ids) : $ids;
     }
 
+    /**
+     * Merge all arbitray props
+     * @static
+     * @param array $result - The resultSet array or a simple array
+     * @param array - A simple array
+     */
+    public static function mergeArbitraryProps(&$result = null)
+    {
+        if(empty($result))
+            return [];
+
+        if($result instanceof Resultset)
+            $result = $this->toArray();
+
+        if(is_object($result))
+            $result = get_object_vars($result);
+
+        //anonymous function, merge _ext prop
+        $mergeProps = function(&$object) {
+
+            if(isset($object["_ext"]))
+                $props = $object["_ext"];
+
+            if(!is_null($props))
+                $object = array_merge($props, $object);
+
+            //unset unwanted props
+            unset($object["_ext"]);
+        };
+
+        //loop
+        foreach ($result as &$obj) {
+
+            //merge props
+            $mergeProps($obj);
+        }
+    }
+
     /* --------------------------------------------------- § -------------------------------------------------------- */
 }

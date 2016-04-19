@@ -12,6 +12,7 @@ use Phalcon\Mvc\Controller;
 use Phalcon\Exception;
 //core
 use CrazyCake\Phalcon\AppLoader;
+use CrazyCake\Models\BaseResultset;
 
 /**
  * Web Security Interface
@@ -250,11 +251,18 @@ abstract class AppCore extends Controller
                 $payload = get_object_vars($payload);
 
             //check redirection action
-            if(is_array($payload) && isset($payload["redirect"]))
+            if(is_array($payload) && isset($payload["redirect"])) {
                 $response["redirect"] = $payload["redirect"];
+            }
             //append payload
-            else
+            else {
+
+                //merge _ext properties for API
+                if(MODULE_NAME === "api")
+                    BaseResultset::mergeArbitraryProps($payload);
+
                 $response["payload"] = $payload;
+            }
         }
         //error data
         else {
