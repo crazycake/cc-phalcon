@@ -140,6 +140,11 @@ class BaseResultset extends Resultset
         //anonymous function, merge _ext prop
         $mergeProps = function(&$object) {
 
+            if(!is_array($object))
+                return;
+
+            $props = [];
+
             if(isset($object["_ext"]))
                 $props = $object["_ext"];
 
