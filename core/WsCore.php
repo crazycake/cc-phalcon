@@ -21,6 +21,8 @@ abstract class WsCore extends AppCore
     /* consts */
     const HEADER_API_KEY = 'X_API_KEY'; //HTTP header keys uses '_' for '-' in Phalcon
 
+    const WS_RESPONSE_CACHE_PATH = APP_PATH.'cache/response/';
+
     /**
      * Welcome message for API server status
      */
@@ -67,7 +69,7 @@ abstract class WsCore extends AppCore
     protected function _handleObjectIdRequestParam($prop = "object_id", $optional = false, $method = 'GET')
     {
         $props      = explode("_", strtolower($prop), 2);
-        $class_name = ucfirst($props[0])."s"; //plural
+        $class_name = ucfirst($props[0])."s"; //NOTE: set singular or plural?
 
         $s = $optional ? "@" : "";
         //get request param
@@ -83,6 +85,55 @@ abstract class WsCore extends AppCore
         else
             return $object;
     }
+
+    /**
+     * Handles a cache response
+     * @param string $key - The key for saving cached data
+     * @param mixed $data - The data to be cached or served
+     * @param boolean $bust - Forces a cache update
+     */
+    protected function _handleCacheResponse($key = "response", $data = null, $bust = false)
+    {
+        //prepare input data
+        $hash = sha1($key);
+
+        if(empty($hash) || empty($data))
+            $this->_sendJsonResponse(800);
+
+        $json_file = self::WS_RESPONSE_CACHE_PATH."$hash.json";
+
+        //get data for API struct
+        if(!$bust && is_file($json_file)) {
+            $this->_sendFileToBuffer(file_get_contents($json_file));
+            return;
+        }
+
+        //check dir
+        if(!is_dir(self::WS_RESPONSE_CACHE_PATH))
+            mkdir(self::WS_RESPONSE_CACHE_PATH, 0775);
+
+        //save file to disk
+        file_put_contents($json_file, json_encode($data, JSON_UNESCAPED_SLASHES));
+
+        //send response
+        $this->_sendJsonResponse(200, $data);
+    }
+
+    /**
+     * Cleans json cache files
+     */
+    protected function _cleanCacheResponse()
+    {
+        if(!is_dir(self::WS_RESPONSE_CACHE_PATH))
+            return;
+
+        foreach (glob(self::WS_RESPONSE_CACHE_PATH."/*.json") as $filename) {
+
+            if (is_file($filename))
+                unlink($filename);
+        }
+    }
+
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**

@@ -70,7 +70,7 @@ abstract class AppCore extends Controller
             "500" => "Internal Server Error",
             "501" => "Unknown error",
             //db related
-            "800" => "No records found",
+            "800" => "Empty result data",
             //resources related
             "900" => "Resource not found",
             "901" => "No files attached",

@@ -128,14 +128,14 @@ class BaseResultset extends Resultset
      */
     public static function mergeArbitraryProps(&$result = null)
     {
-        if(empty($result))
-            return [];
-
         if($result instanceof Resultset)
             $result = $this->toArray();
 
         if(is_object($result))
             $result = get_object_vars($result);
+
+        if(empty($result) || !is_array($result))
+            return;
 
         //anonymous function, merge _ext prop
         $mergeProps = function(&$object) {
@@ -155,12 +155,9 @@ class BaseResultset extends Resultset
             unset($object["_ext"]);
         };
 
-        //loop
-        foreach ($result as &$obj) {
-
-            //merge props
+        //loop & merge props
+        foreach ($result as &$obj)
             $mergeProps($obj);
-        }
     }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
