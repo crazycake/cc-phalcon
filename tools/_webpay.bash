@@ -25,8 +25,8 @@ fi
 # help output
 scriptHelp() {
 	echo -e "\033[93mWebpay KCC helper script\nValid commands:\033[0m"
-	echo -e "\033[95m -kcc: App environment set up for KCC cgi-bin folder, sets owner group & perms for apache.\033[0m"
-	echo -e "\033[95m -clean: Cleans KCC logs files in log subfolder.\033[0m"
+	echo -e "\033[95m env: App environment set up for KCC cgi-bin folder, sets owner group & perms for apache.\033[0m"
+	echo -e "\033[95m clean: Cleans KCC logs files in log subfolder.\033[0m"
 	exit
 }
 
@@ -35,7 +35,7 @@ if [ "$*" = "" ]; then
 	scriptHelp
 fi
 
-if [ $1 = "-kcc" ]; then
+if [ $1 = "env" ]; then
 	# print project dir
 	echo -e "\033[96mProject Dir: "$PROJECT_PATH" \033[0m"
 	# set default perms for folders & files (use 'xargs -I {} -0 sudo chmod xxxx {}' if args is to long)
@@ -76,7 +76,7 @@ if [ $1 = "-kcc" ]; then
 	#task done!
 	echo -e "\033[92mScript successfully executed! \033[0m"
 
-elif [ $1 = "-clean" ]; then
+elif [ $1 = "clean" ]; then
 
 	echo -e "\033[95mCleaning KCC log files... \033[0m"
 	find $KIT_FOLDER -type f -name "*.log" -print0 | xargs -0 sudo rm

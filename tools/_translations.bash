@@ -26,9 +26,9 @@ fi
 
 # help output
 scriptHelp() {
-	echo -e "\033[93m WebApp Translations Script\nValid commands:\033[0m"
-	echo -e "\033[95m -c <module> : compile po files in app folder. \033[0m"
-    echo -e "\033[95m -s <module> : search for new translations in app folder. \033[0m"
+	echo -e "\033[93m WebApp Translations Script\nValid actions:\033[0m"
+	echo -e "\033[95m build <module> : build po files in app folder. \033[0m"
+    echo -e "\033[95m find <module> : Find for new translations in app folder. \033[0m"
 	echo -e "\033[93m * Module option can be '-b' or '-f' (backend or frontend). \033[0m"
 	exit
 }
@@ -57,7 +57,7 @@ if [ ! -d $MODULE_PATH ] || [ ! -d $APP_LANGS_PATH ]; then
 fi
 
 # compile and generate mo files
-if [ "$1" = "-c" ]; then
+if [ "$1" = "build" ]; then
 
 	echo -e "\033[94mSearching for .po files in ($APP_NAMESPACE) $APP_LANGS_PATH \033[0m"
 
@@ -77,7 +77,7 @@ if [ "$1" = "-c" ]; then
 	echo -e "\033[92mScript successfully executed! \033[0m"
 
 # search and generate pot files
-elif [ "$1" = "-s" ]; then
+elif [ "$1" = "find" ]; then
 
 	echo -e "\033[94mSearching for .php files in $APP_PATH  \033[0m"
 

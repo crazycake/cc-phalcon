@@ -37,6 +37,6 @@ buildTask() {
 
 	# translations for backend & frontend
 	cd $PROJECT_PATH
-	bash $TOOLS_PATH"_translations.bash" -c -b
-	bash $TOOLS_PATH"_translations.bash" -c -f
+	bash $TOOLS_PATH"_translations.bash" build -b
+	bash $TOOLS_PATH"_translations.bash" build -f
 }

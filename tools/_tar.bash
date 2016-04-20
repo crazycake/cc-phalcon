@@ -11,7 +11,7 @@ PROJECT_PATH="$(dirname "$PROJECT_PATH")"
 # help output
 scriptHelp() {
     echo -e "\033[93mWebapp Tar helper script\nValid commands:\033[0m"
-    echo -e "\033[95m -compress <path>: Compress an input folder (tar file).\033[0m"
+    echo -e "\033[95m compress <path>: Compress an input folder (tar file).\033[0m"
     exit
 }
 
@@ -20,7 +20,7 @@ if [ "$*" = "" ]; then
     scriptHelp
 fi
 
-if [ $1 = "-compress" ]; then
+if [ $1 = "compress" ]; then
 
     if [ ! -d "$2" ]; then
         echo -e "\033[31mInput directory not found.\033[0m"

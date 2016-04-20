@@ -40,7 +40,7 @@ fi
 
 # help output
 scriptHelp() {
-	echo -e "\033[93mWebapp deploy script [$APP_ENV].\nValid commands:\033[0m"
+	echo -e "\033[93mWebapp deploy script [$APP_ENV].\nValid options:\033[0m"
 	echo -e "\033[95m -t <option>: deploy to testing environment. \033[0m"
     echo -e "\033[95m -s <option>: deploy to staging environment (branch staging requried). \033[0m"
     echo -e "\033[95m -p <option>: deploy to production environment (branch production requried). \033[0m"
@@ -93,13 +93,13 @@ if [ $MACHINE_USER_NAME = "ubuntu" ]; then
 	#database migrations
 	if [ "$2" = "-m" ] || [ "$2" = "-mc" ]; then
 		echo -e "\033[31mExecuting DB migration...\033[0m"
-		bash _app.bash -phinx migrate
+		bash _app.bash phinx migrate
 	fi
 
 	#composer update
 	if [ "$2" = "-c" ] || [ "$2" = "-mc" ]; then
 		echo -e "\033[31mUpdating composer dependencies...\033[0m"
-		bash _app.bash -composer
+		bash _app.bash composer
 	fi
 
 	echo -e "\033[92mDeploy successfully executed! \033[0m"
@@ -175,11 +175,11 @@ if [ "$1" = "-t" ] || [ "$1" = "-s" ] || [ "$1" = "-p" ]; then
 		cd $PROJECT_PATH
 
 		if [ "$DEPLOY_CDN_FRONTEND" = "1" ]; then
-			bash _app.bash -aws-cdn -f
+			bash _app.bash aws-cdn -f
 		fi
 
 		if [ "$DEPLOY_CDN_BACKEND" = "1" ]; then
-			bash _app.bash -aws-cdn -b
+			bash _app.bash aws-cdn -b
 		fi
 	fi
 

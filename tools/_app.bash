@@ -45,20 +45,20 @@ fi
 # help output
 scriptHelp() {
 	echo -e "\033[93m"$APP_NAME" webapp CLI [$APP_ENV]\033[0m"
-	echo -e "\033[94mApp:\033[0m"
-	echo -e "\033[95m -env: App environment set up, sets owner group & perms for apache folders.\033[0m"
-	echo -e "\033[95m -composer <option>: Installs/Updates composer libraries with autoload-class dump. Use -s to composer self-update. Use -o for optimized dump.\033[0m"
-	echo -e "\033[95m -phinx: Executes phinx db migrations. Run -phinx to display commands.\033[0m"
-	echo -e "\033[95m -wkhtmltopdf: Installs wkhtmltopdf library, required for webapps that uses PDF-maker engine.\033[0m"
-	echo -e "\033[95m -clean: Cleans cached view files and logs.\033[0m"
-	echo -e "\033[96mDev tools:\033[0m"
-	echo -e "\033[95m -deploy <env> <option>: Deploy a phalcon app. env: -t, -s or -p. option: -m [migration], -c [composer], -mc [both]. \033[0m"
-	echo -e "\033[95m -watch <module>: Runs watcher daemon for backend or frontend. Modules: -b or -f.\033[0m"
-	echo -e "\033[95m -core: Installs/Updates core package (Requires cc-phalcon project). \033[0m"
-	echo -e "\033[95m -npm-global: Installs/Updates global required NPM dependencies.\033[0m"
-	echo -e "\033[95m -npm: Update NPM project dependencies. Use -u for package updates. \033[0m"
-	echo -e "\033[95m -aws-cli <option>: Install AWS CLI (Pip is required). Use -u for self-update, -c for configuration.\033[0m"
-	echo -e "\033[95m -aws-cdn <module>: Syncs S3 CDN bucket with app assets. Modules: -b or -f.\033[0m"
+	echo -e "\033[94mApp actions:\033[0m"
+	echo -e "\033[95m env: App environment set up, sets owner group & perms for apache folders.\033[0m"
+	echo -e "\033[95m composer <option>: Installs/Updates composer libraries with autoload-class dump. Use -s to composer self-update. Use -o for optimized dump.\033[0m"
+	echo -e "\033[95m phinx: Executes phinx db migrations. Run phinx to display commands.\033[0m"
+	echo -e "\033[95m wkhtmltopdf: Installs wkhtmltopdf library, required for webapps that uses PDF-maker engine.\033[0m"
+	echo -e "\033[95m clean: Cleans cached view files and logs.\033[0m"
+	echo -e "\033[96mDev actions:\033[0m"
+	echo -e "\033[95m deploy <env> <option>: Deploy a phalcon app. env: -t, -s or -p. option: -m [migration], -c [composer], -mc [both]. \033[0m"
+	echo -e "\033[95m watch <module>: Runs watcher daemon for backend or frontend. Modules: -b or -f.\033[0m"
+	echo -e "\033[95m core: Installs/Updates core package (Requires cc-phalcon project). \033[0m"
+	echo -e "\033[95m npm-global: Installs/Updates global required NPM dependencies.\033[0m"
+	echo -e "\033[95m npm: Update NPM project dependencies. Use -u for package updates. \033[0m"
+	echo -e "\033[95m aws-cli <option>: Install AWS CLI (Pip is required). Use -u for self-update, -c for configuration.\033[0m"
+	echo -e "\033[95m aws-cdn <module>: Syncs S3 CDN bucket with app assets. Modules: -b or -f.\033[0m"
 	exit
 }
 
@@ -126,7 +126,7 @@ if [ "$*" = "" ]; then
 	scriptHelp
 fi
 
-if [ $1 = "-env" ]; then
+if [ $1 = "env" ]; then
 	# print project dir
 	echo -e "\033[96mProject Dir: "$PROJECT_PATH" \033[0m"
 
@@ -199,7 +199,7 @@ if [ $1 = "-env" ]; then
 	#task done!
 	echo -e "\033[92mScript successfully executed! \033[0m"
 
-elif [ $1 = "-composer" ]; then
+elif [ $1 = "composer" ]; then
 
 	if [ ! -d $COMPOSER_PATH ]; then
 		echo -e "\033[95mComposer folder not found in packages directory.\033[0m"
@@ -235,13 +235,13 @@ elif [ $1 = "-composer" ]; then
 	echo -e "\033[95mComposer optimized autoload dump created! \033[0m"
 	echo -e "\033[92mScript successfully executed! \033[0m"
 
-elif [ $1 = "-phinx" ]; then
+elif [ $1 = "phinx" ]; then
 
 	echo -e "\033[95mRunning phinx command... \033[0m"
 
 	php $COMPOSER_PATH"vendor/bin/phinx" "${@:2}"
 
-elif [ $1 = "-wkhtmltopdf" ]; then
+elif [ $1 = "wkhtmltopdf" ]; then
 
 	echo -e "\033[95mInstalling wkhtmltopdf... \033[0m"
 	#call script
@@ -250,7 +250,7 @@ elif [ $1 = "-wkhtmltopdf" ]; then
 	# task done!
 	echo -e "\033[92mScript successfully executed! \033[0m"
 
-elif [ $1 = "-clean" ]; then
+elif [ $1 = "clean" ]; then
 
 	# clean cache & log files for present modules
 	for MOD_NAME in "${MODULES_NAME[@]}"
@@ -270,18 +270,18 @@ elif [ $1 = "-clean" ]; then
 	git checkout "*/app/*/index.html"
 
 	# update environment file and folders
-	bash _app.bash -env
+	bash _app.bash env
 
 	# task done!
 	echo -e "\033[92mScript successfully executed! \033[0m"
 
-elif [ $1 = "-deploy" ]; then
+elif [ $1 = "deploy" ]; then
 
 	excludeDeployMachine
 
 	appDeploy "$2" "$3"
 
-elif [ $1 = "-watch" ]; then
+elif [ $1 = "watch" ]; then
 
 	excludeDeployMachine
 
@@ -290,20 +290,20 @@ elif [ $1 = "-watch" ]; then
 	echo -e "\033[95mRunning gulp watch task... \033[0m"
 	gulp watch -m $MOD_NAME
 
-elif [ $1 = "-core" ]; then
+elif [ $1 = "core" ]; then
 
 	excludeDeployMachine
 
 	bash $TOOLS_PATH"_core.bash"
 
-elif [ $1 = "-npm-global" ]; then
+elif [ $1 = "npm-global" ]; then
 
 	excludeDeployMachine
 
 	#modules instalation
 	sudo npm install -g $NPM_GLOBAL_DEPENDENCIES
 
-elif [ $1 = "-npm" ]; then
+elif [ $1 = "npm" ]; then
 
 	excludeDeployMachine
 
@@ -323,7 +323,7 @@ elif [ $1 = "-npm" ]; then
 		sudo npm prune
 	fi
 
-elif [ $1 = "-aws-cli" ]; then
+elif [ $1 = "aws-cli" ]; then
 
 	excludeDeployMachine
 
@@ -351,7 +351,7 @@ elif [ $1 = "-aws-cli" ]; then
 	echo -e "\033[95mChecking AWS CLI version... \033[0m"
 	aws --version
 
-elif [ $1 = "-aws-cdn" ]; then
+elif [ $1 = "aws-cdn" ]; then
 
 	excludeDeployMachine
 
