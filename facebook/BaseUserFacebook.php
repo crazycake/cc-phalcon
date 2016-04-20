@@ -41,7 +41,7 @@ class BaseUserFacebook extends \CrazyCake\Models\Base
     public function initialize()
     {
         //get class
-        $users_class = \CrazyCake\Core\AppCore::getModuleClass("users", false);
+        $users_class = \CrazyCake\Core\AppCore::getModuleClass("user", false);
         //model relations
         $this->hasOne("user_id", $users_class, "id");
     }
@@ -56,14 +56,4 @@ class BaseUserFacebook extends \CrazyCake\Models\Base
 
     /** ------------------------------------------- § ------------------------------------------------ **/
 
-    /**
-     * Gets facebook data by user_id
-     * @static
-     * @param int $user_id - The user ID
-     * @return UsersFacebook
-     */
-    public static function getFacebookDataByUserId($user_id)
-    {
-        return self::findFirst(["user_id = ?1", "bind" => [1 => $user_id]]);
-    }
 }

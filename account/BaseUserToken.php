@@ -149,7 +149,7 @@ class BaseUserToken extends \CrazyCake\Models\Base
 
         //append encrypted data
         $di = \Phalcon\DI::getDefault();
-        $token->encrypted = $di->getShared('cryptify')->encryptForGetRequest($token->user_id."#".$token->type."#".$token->token);
+        $token->encrypted = $di->getShared('cryptify')->encryptData($token->user_id."#".$token->type."#".$token->token);
 
         return $token;
     }
@@ -168,7 +168,7 @@ class BaseUserToken extends \CrazyCake\Models\Base
             throw new Exception("sent input null encrypted_data");
 
         $di   = \Phalcon\DI::getDefault();
-        $data = $di->getShared('cryptify')->decryptForGetResponse($encrypted_data, "#");
+        $data = $di->getShared('cryptify')->decryptData($encrypted_data, "#");
 
         //validate data (user_id, token_type and token)
         if (count($data) < 3)

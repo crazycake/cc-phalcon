@@ -59,11 +59,11 @@ class Cryptify
     }
 
     /**
-     * Encrypts data to be passed in a GET request
+     * Encrypts data, example: to be passed in a GET request
      * @param mixed [string|array] $data - The input data to encrypt
-     * @return string - The encrypted string
+     * @return string - The encrypted string hash
      */
-    public function encryptForGetRequest($data = null)
+    public function encryptData($data = null)
     {
         if(empty($data) && $data != 0)
             return false;
@@ -75,25 +75,25 @@ class Cryptify
         $encrypted = $this->crypt->encrypt($data);
 
         //encrypt string
-        $encrypted_string = str_replace('%', '-', rawurlencode(base64_encode($encrypted)));
+        $hash = str_replace('%', '-', rawurlencode(base64_encode($encrypted)));
 
-        return $encrypted_string;
+        return $hash;
     }
 
     /**
-     * Decrypts data received in a GET request
-     * @param string $encrypted_text - The encrypted text
+     * Decrypts hashed data
+     * @param string $hash - The encrypted text
      * @param mixed [boolean|string] $parse - Parses the string from a token (explode) or parses a json (optional)
      * @return mixed string|array - The decrypted string
      */
-    public function decryptForGetResponse($encrypted_text = "", $parse = false)
+    public function decryptData($hash = "", $parse = false)
     {
         try {
-            if(empty($encrypted_text) || !is_string($encrypted_text))
+            if(empty($hash) || !is_string($hash))
                 return false;
 
             //decrypt string
-            $decrypted_string = $this->crypt->decrypt(base64_decode(rawurldecode(str_replace('-', '%', $encrypted_text))));
+            $decrypted_string = $this->crypt->decrypt(base64_decode(rawurldecode(str_replace('-', '%', $hash))));
             //remove null bytes in string
             $data = str_replace(chr(0), '', $decrypted_string);
 
@@ -110,7 +110,7 @@ class Cryptify
 
             if($di->getShared("logger")) {
                 $logger = $di->getShared("logger");
-                $logger->error("Cryptify -> Failed decryptForGetResponse: ".$encrypted_text.". Err: ".$e->getMessage());
+                $logger->error("Cryptify -> Failed decryptData: ".$hash.". Err: ".$e->getMessage());
             }
 
             return null;
@@ -150,7 +150,7 @@ class Cryptify
      * @param int $length - The code length
      * @return string
      */
-    public function generateAlphanumericCode($length = 8)
+    public function newAlphanumeric($length = 8)
     {
         $code = "";
 

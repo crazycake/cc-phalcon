@@ -85,7 +85,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
     public function initialize()
     {
         //get class
-        $user_class = \CrazyCake\Core\AppCore::getModuleClass("users", false);
+        $user_class = \CrazyCake\Core\AppCore::getModuleClass("user", false);
         //model relations
         $this->hasOne("user_id", $user_class, "id");
     }
@@ -129,24 +129,11 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
     /** ------------------------------------------- § ------------------------------------------------ **/
 
     /**
-     * Get a checkout object by buy Order
-     * @param  string $buy_order - The buy order
-     * @return mixed [string|boolean]
-     */
-    public static function getCheckout($buy_order = "")
-    {
-        $conditions = "buy_order = ?1";
-        $binding    = [1 => $buy_order];
-
-        return self::findFirst([$conditions, "bind" => $binding]);
-    }
-
-    /**
      * Get the last user checkout
      * @param  int $user_id - The User ID
      * @return mixed [string|object]
      */
-    public static function getLastUserCheckout($user_id = 0, $state = 'pending')
+    public static function getLast($user_id = 0, $state = 'pending')
     {
         $conditions = "user_id = ?1 AND state = ?2";
         $binding    = [1 => $user_id, 2 => $state];
@@ -159,14 +146,14 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
      * @param int $length - The buy order string length
      * @return string
      */
-    public static function generateBuyOrder($length)
+    public static function newBuyOrderCode($length)
     {
         $di   = \Phalcon\DI::getDefault();
-        $code = $di->getShared('cryptify')->generateAlphanumericCode($length);
+        $code = $di->getShared('cryptify')->newAlphanumeric($length);
         //unique constrait
         $exists = self::findFirst(["buy_order = '$code'"]);
 
-        return $exists ? $this->generateBuyOrder($length) : $code;
+        return $exists ? $this->newBuyOrderCode($length) : $code;
     }
 
     /**
@@ -185,10 +172,10 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
         //get classes
         $checkoutModel = static::who();
         //get checkouts objects class
-        $objectsModel = \CrazyCake\Core\AppCore::getModuleClass("users_checkouts_objects");
+        $objectsModel = \CrazyCake\Core\AppCore::getModuleClass("user_checkout_object");
 
         //generates buy order
-        $buy_order = self::generateBuyOrder(static::$BUY_ORDER_CODE_LENGTH);
+        $buy_order = self::newBuyOrderCode(static::$BUY_ORDER_CODE_LENGTH);
 
         //creates object with some checkout object props
         $checkout = new $checkoutModel();
@@ -245,7 +232,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
      */
     public static function updateState($buy_order, $state)
     {
-        $checkout = self::getCheckout($buy_order);
+        $checkout = self::findFirstByBuyOrder($buy_order);
 
         //check object and default state
         if(!$checkout || $checkout->state != self::$STATES[0])
@@ -261,7 +248,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
      * Requires Carbon library
      * @return int
      */
-    public static function deleteExpiredCheckouts()
+    public static function deleteExpired()
     {
         try {
 
@@ -290,7 +277,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
             return $count;
         }
         catch(Exception $e) {
-            //throw new Exception("BaseUsersCheckouts::deleteExpiredCheckouts -> error: ".$e->getMessage());
+            //throw new Exception("BaseUsersCheckouts::deleteExpired -> error: ".$e->getMessage());
             return 0;
         }
     }

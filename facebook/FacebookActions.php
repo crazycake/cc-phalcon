@@ -108,7 +108,7 @@ trait FacebookActions
 
         //for fallback, switch to user page data
         if($fallbackAction)
-            $user_fb = $this->_getFacebookPageUser();
+            $user_fb = $this->_getPageUser();
 
         //print_r($user_fb->toArray());exit; //debug
 
@@ -221,7 +221,7 @@ trait FacebookActions
         $place_id = !is_null($fb_object->place_id) ? $fb_object->place_id : $this->facebook_actions_conf["og_default_place_id"];
 
         //new facebook story object
-        $object = $this->_getNewFacebookStoryObject($object);
+        $object = $this->_newStoryObject($object);
 
         $story_object = $this->facebook_actions_conf["og_namespace"].":".$this->facebook_actions_conf["og_story_object"];
         //push open graph object
@@ -315,7 +315,7 @@ trait FacebookActions
     /**
      * Get Facebook Page as Fallback
      */
-    private function _getFacebookPageUser()
+    private function _getPageUser()
     {
         //get a facebook admin
         if(!class_exists($this->_getModuleClass('user_facebook_page')))
@@ -337,7 +337,7 @@ trait FacebookActions
      * @param object $object - The open graph object
      * @return string
      */
-    private function _getNewFacebookStoryObject($object)
+    private function _newStoryObject($object)
     {
         $data = $this->setStoryData($object);
 

@@ -187,7 +187,7 @@ abstract class AppCore extends Controller
     {
         //encode data
         if(!empty($options["payload"]))
-            $options["payload"] = $this->cryptify->encryptForGetRequest($options["payload"]);
+            $options["payload"] = $this->cryptify->encryptData($options["payload"]);
 
         //set base url
         if(empty($options["base_url"]))

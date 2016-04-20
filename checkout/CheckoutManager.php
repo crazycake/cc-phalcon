@@ -150,7 +150,7 @@ trait CheckoutManager
 
         try {
             //decrypt data
-            $data = $this->cryptify->decryptForGetResponse($data["payload"], true);
+            $data = $this->cryptify->decryptData($data["payload"], true);
 
             if(is_null($data) || !isset($data->buy_order))
                 throw new Exception("Invalid decrypted data: ".json_encode($data));
@@ -162,7 +162,7 @@ trait CheckoutManager
             $checkout_trx_class            = $this->_getModuleClass('user_checkout_trx');
 
             //get checkout, user and event
-            $checkout = $users_checkouts_class::getCheckout($data->buy_order);
+            $checkout = $users_checkouts_class::findFirstByBuyOrder($data->buy_order);
             $user     = $users_class::getById($checkout->user_id);
 
             //check if data is OK
@@ -175,7 +175,7 @@ trait CheckoutManager
             //extended properties
             $checkout->type            = "payment";
             $checkout->amountFormatted = Forms::formatPrice($checkout->amount, $checkout->currency);
-            $checkout->objects         = $users_checkouts_objects_class::getCheckoutObjects($checkout->buy_order);
+            $checkout->objects         = $users_checkouts_objects_class::getCollection($checkout->buy_order);
             $checkout->categories      = explode(",", $checkout->categories); //set categories as array
 
             //1) update status of checkout
@@ -237,7 +237,7 @@ trait CheckoutManager
             return false;
 
         //get ORM object and update status of checkout
-        $checkoutOrm = $users_checkouts_class::getCheckout($checkout->buy_order);
+        $checkoutOrm = $users_checkouts_class::findFirstByBuyOrder($checkout->buy_order);
 
         if(!$checkoutOrm)
             return false;
@@ -261,7 +261,7 @@ trait CheckoutManager
         $users_checkouts_class = $this->_getModuleClass('user_checkout');
 
         //instance cache lib and get data
-        $checkout = $users_checkouts_class::getLastUserCheckout($this->user_session["id"]);
+        $checkout = $users_checkouts_class::getLast($this->user_session["id"]);
 
         if(!$checkout || $checkout->state != "pending")
             die("No pending checkout found for user id:".$this->user_session["id"]);
@@ -332,7 +332,7 @@ trait CheckoutManager
             //var_dump($class_name, $object_id, $object->toArray());exit;
 
             //check that object is in stock (also validates object exists)
-            if(!$users_checkouts_objects_class::validateObjectStock($class_name, $object_id, $q)) {
+            if(!$users_checkouts_objects_class::validateStock($class_name, $object_id, $q)) {
 
                 $this->logger->error("CheckoutManager::_parseCheckoutObjects -> No stock for object '$class_name' ID: $object_id, q: $q.");
                 throw new Exception(str_replace("{name}", $object->name, $this->checkout_manager_conf["trans"]["error_no_stock"]));

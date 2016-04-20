@@ -93,7 +93,7 @@ class KccEndPoint extends AppCore
         //get users checkouts class
         $users_checkouts_class = $this->_getModuleClass('user_checkout');
         //get checkout obejct
-        $checkout = $users_checkouts_class::getCheckout($TBK_ORDEN_COMPRA);
+        $checkout = $users_checkouts_class::findFirstByBuyOrder($TBK_ORDEN_COMPRA);
 
         //2) buyOrder validation
         if(!$checkout || $TBK_ORDEN_COMPRA != $checkout->buy_order)

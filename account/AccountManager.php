@@ -86,9 +86,11 @@ trait AccountManager
         //validate and filter request params data, second params are the required fields
         $data = $this->_handleRequestParams(array_merge($default_params, $setting_params));
 
-        //check if profile changed and save new data
-        $updating_data = array();
         try {
+
+            //check if profile changed and save new data
+            $updating_data = [];
+
             //check for password
             if(!empty($data['pass']) && empty($data['current_pass']))
                 throw new Exception($this->account_manager_conf['trans']['current_pass_empty']);
@@ -146,21 +148,20 @@ trait AccountManager
                $this->_updateUserSessionData($updating_data);
                //update full name
                $updating_data['name'] = $user->first_name." ".$user->last_name;
+
                //check if pass set
                if(isset($updating_data["pass"]))
                     $updating_data["pass"] = true;
             }
+            
+            //send response
+            $this->_sendJsonResponse(200, [
+                "user" => $updating_data,
+                "msg"  => $this->account_manager_conf['trans']['profile_saved']
+            ]);
         }
         catch (Exception $e) {
             $this->_sendJsonResponse(200, $e->getMessage(), "warning");
         }
-
-        //set paylaod
-        $payload = [
-            "user" => $updating_data,
-            "msg"  => $this->account_manager_conf['trans']['profile_saved']
-        ];
-        //send response
-        $this->_sendJsonResponse(200, $payload);
     }
 }

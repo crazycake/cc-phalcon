@@ -130,7 +130,7 @@ trait AccountAuth
         }
         catch (Exception $e) {
 
-            $data = $encrypted_data ? $this->cryptify->decryptForGetResponse($encrypted_data) : "invalid hash";
+            $data = $encrypted_data ? $this->cryptify->decryptData($encrypted_data) : "invalid hash";
 
             $this->logger->error('AccountAuth::activationAction -> Error in account activation, decrypted data ('.$data."). Msg: ".$e->getMessage());
             $this->dispatcher->forward(["controller" => "errors", "action" => "expired"]);

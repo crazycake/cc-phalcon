@@ -44,22 +44,15 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
      * @param  boolean $ids - Flag optional to get an array of object IDs
      * @return array
      */
-    public static function getCheckoutObjects($buy_order, $ids = false)
+    public static function getCollection($buy_order, $ids = false)
     {
-        $objectsModel = static::who();
+       $objects = self::find([
+           "columns"    => "object_class, object_id, quantity",
+           "conditions" => "buy_order = ?1",
+           "bind"       => [1 => $buy_order]
+       ]);
 
-        //get checkout objects
-        $objects = self::getByPhql(
-           //phql
-           "SELECT object_class, object_id, quantity
-            FROM $objectsModel
-            WHERE buy_order = :buy_order:
-            ",
-           //bindings
-           ['buy_order' => $buy_order]
-       );
-
-       $result = array();
+       $result = [];
 
        //loop through objects
        foreach ($objects as $obj) {
@@ -73,7 +66,7 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
             }
 
             //create a new object and clone common props
-            $new_object = self::newCheckoutObject($obj->object_id, $object_class, $obj->quantity);
+            $new_object = self::_newCheckoutObject($obj->object_id, $object_class, $obj->quantity);
 
             //get object local props
             $props = $object_class::findFirst(["id = ?1", "bind" => [1 => $obj->object_id]]);
@@ -104,7 +97,7 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
      * @param int $quantity - The object quantity
      * @return object
      */
-    public static function newCheckoutObject($id = 0, $className = "CheckoutObject", $quantity = 1)
+    private static function _newCheckoutObject($id = 0, $className = "CheckoutObject", $quantity = 1)
     {
         return (object)[
             "id"        => $id,
@@ -121,7 +114,7 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
      * @param int $q - The quantity to validate
      * @return boolean
      */
-    public static function validateObjectStock($object_class = "", $object_id = 0, $q = 0)
+    public static function validateStock($object_class = "", $object_id = 0, $q = 0)
     {
         if(!class_exists($object_class))
             throw new Exception("BaseUsersCheckoutsObjects -> Object class not found ($object_class)");
@@ -132,7 +125,7 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
             return false;
 
         //get classes
-        $checkoutModel = \CrazyCake\Core\AppCore::getModuleClass("users_checkouts");
+        $checkoutModel = \CrazyCake\Core\AppCore::getModuleClass("user_checkout");
         //get checkouts objects class
         $objectsModel = static::who();
 
@@ -167,9 +160,9 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
 
     /**
      * Substract Checkout objects quantity for processed checkouts
-     * @param array $objects - The checkout objects array (getCheckoutObjects returned array)
+     * @param array $objects - The checkout objects array (getCollection returned array)
      */
-    public static function substractObjectsStock($objects)
+    public static function substractStock($objects)
     {
         //loop throught items and substract Q
         foreach ($objects as $obj) {
@@ -220,7 +213,7 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
             return array();
 
         //get classes
-        $checkoutModel = \CrazyCake\Core\AppCore::getModuleClass("users_checkouts");
+        $checkoutModel = \CrazyCake\Core\AppCore::getModuleClass("user_checkout");
         //get checkouts objects class
         $objectsModel = static::who();
 

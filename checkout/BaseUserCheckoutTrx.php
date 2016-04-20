@@ -71,7 +71,7 @@ class BaseUserCheckoutTrx extends \CrazyCake\Models\Base
         $this->skipAttributes(['_ext']);
 
         //get class
-        $users_checkouts_class = \CrazyCake\Core\AppCore::getModuleClass("users_checkouts", false);
+        $users_checkouts_class = \CrazyCake\Core\AppCore::getModuleClass("user_checkout", false);
         //model relations
         $this->hasOne("buy_order", $users_checkouts_class, "buy_order");
     }

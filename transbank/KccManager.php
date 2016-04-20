@@ -117,9 +117,9 @@ trait KccManager
             $checkout_trx_class = $this->_getModuleClass('user_checkout_trx');
 
             //decrypt data
-            $buy_order = $this->cryptify->decryptForGetResponse($encrypted_data);
+            $buy_order = $this->cryptify->decryptData($encrypted_data);
             //get checkout obejct
-            $checkout = $users_checkouts_class::getCheckout($buy_order);
+            $checkout = $users_checkouts_class::findFirstByBuyOrder($buy_order);
 
             //checks session id
             if(!$checkout)
@@ -197,7 +197,7 @@ trait KccManager
             $checkout_trx_class            = $this->_getModuleClass('user_checkout_trx');
 
             //get checkout
-            $checkout = $users_checkouts_class::getCheckout($data["TBK_ORDEN_COMPRA"]);
+            $checkout = $users_checkouts_class::findFirstByBuyOrder($data["TBK_ORDEN_COMPRA"]);
 
             if(!$checkout)
                 throw new Exception("Checkout not found. TBK_ORDEN_COMPRA: ".$data["TBK_ORDEN_COMPRA"]);
@@ -218,7 +218,7 @@ trait KccManager
                 throw new Exception("No processed TRX found for Buy Order: ".$checkout->buy_order);
 
             //get checkout objects
-            $checkout->objects = $users_checkouts_objects_class::getCheckoutObjects($checkout->buy_order);
+            $checkout->objects = $users_checkouts_objects_class::getCollection($checkout->buy_order);
 
             //before render success page listener
             $this->onBeforeRenderSuccessPage($checkout);
@@ -256,7 +256,7 @@ trait KccManager
         $checkout_controller   = $this->_getModuleClass('checkout_controller');
 
         //get checkout
-        $checkout = $users_checkouts_class::getCheckout($data["TBK_ORDEN_COMPRA"]);
+        $checkout = $users_checkouts_class::findFirstByBuyOrder($data["TBK_ORDEN_COMPRA"]);
 
         //set checkout uri
         if($checkout) {
@@ -292,7 +292,7 @@ trait KccManager
         $users_checkouts_objects_class = $this->_getModuleClass('user_checkout_object');
 
         //get last checkout
-        $checkout = $users_checkouts_class::getLastUserCheckout($this->user_session["id"], 'success');
+        $checkout = $users_checkouts_class::getLast($this->user_session["id"], 'success');
 
         if(!$checkout)
             die("Render: No buy order to process for userID:".$this->user_session["id"]);
@@ -304,7 +304,7 @@ trait KccManager
         $params = $this->_parseMacFile($checkout->buy_order);
 
         //set checkout objects
-        $checkout->objects = $users_checkouts_objects_class::getCheckoutObjects($checkout->buy_order);
+        $checkout->objects = $users_checkouts_objects_class::getCollection($checkout->buy_order);
 
         //call listener
         $this->onBeforeRenderSuccessPage($checkout);

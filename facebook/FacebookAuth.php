@@ -159,7 +159,7 @@ trait FacebookAuth
             $response = $this->__loginUserFacebook($fac);
 
             //get decrypted params
-            $route = (array)$this->cryptify->decryptForGetResponse($encrypted_data, true);
+            $route = (array)$this->cryptify->decryptData($encrypted_data, true);
 
             //check perms
             if(!empty($route["check_perms"]))
@@ -213,7 +213,7 @@ trait FacebookAuth
         ];
 
         //encrypt data
-        $route = $this->cryptify->encryptForGetRequest($route);
+        $route = $this->cryptify->encryptData($route);
         //set callback
         $callback = $this->_baseUrl("facebook/loginByRedirect/".$route);
         //set helper
@@ -237,7 +237,7 @@ trait FacebookAuth
 
         try {
             //get encrypted facebook user id and short live access token
-            $data = $this->cryptify->decryptForGetResponse($encrypted_data, "#");
+            $data = $this->cryptify->decryptData($encrypted_data, "#");
             //set vars
             list($fb_id, $short_live_fac) = $data;
 
@@ -476,7 +476,7 @@ trait FacebookAuth
         $users_facebook_class = $this->_getModuleClass('user_facebook');
 
         //the data response
-        $login_data = array();
+        $login_data = [];
         $exception  = false;
 
         try {
@@ -669,7 +669,7 @@ trait FacebookAuth
         //get stored fac if its null
         if(is_null($fac)) {
             //get user
-            $user_fb = $users_facebook_class::getFacebookDataByUserId($user_id);
+            $user_fb = $users_facebook_class::findFirstByUserId($user_id);
             //validates data
             if(!$user_fb)
                 throw new Exception("invalid user id");
@@ -759,6 +759,7 @@ trait FacebookAuth
 
         //parse data to avoid var mistakes
         if(isset($data["user_id"])) {
+            
             $data["fb_id"] = $data["user_id"];
             unset($data["user_id"]);
         }

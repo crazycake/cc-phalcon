@@ -55,7 +55,7 @@ class BaseUserTicket extends \CrazyCake\Models\Base
     public function initialize()
     {
         //get class
-        $users_class = \CrazyCake\Core\AppCore::getModuleClass("users", false);
+        $users_class = \CrazyCake\Core\AppCore::getModuleClass("user", false);
         //model relations
         $this->hasOne("user_id", $users_class, "id");
 
@@ -70,11 +70,11 @@ class BaseUserTicket extends \CrazyCake\Models\Base
     {
         //set qr hash
         if(is_null($this->qr_hash))
-            $this->qr_hash = $this->generateRandomHash(uniqid()); //param is like a seed
+            $this->qr_hash = $this->newHash(uniqid()); //param is like a seed
 
         //set alphanumeric code
         if(is_null($this->code))
-            $this->code = $this->generateRandomCode();
+            $this->code = $this->newCode();
 
         //set created at
         $this->created_at = date("Y-m-d H:i:s");
@@ -100,7 +100,7 @@ class BaseUserTicket extends \CrazyCake\Models\Base
      * @param boolean $as_array - Flag to return resultset as array
      * @return mixed [boolean|array]
      */
-    public static function getTicketsByIds($record_ids = array(), $as_array = false)
+    public static function getByIds($record_ids = array(), $as_array = false)
     {
         if(empty($record_ids))
             return false;
@@ -127,7 +127,7 @@ class BaseUserTicket extends \CrazyCake\Models\Base
      * @param int $user_id - The user ID (optional)
      * @return object UserTicket
      */
-    public static function getTicketByCode($code = "", $user_id = 0)
+    public static function getByCodeAndUserId($code = "", $user_id = 0)
     {
         if(empty($user_id)) {
             $conditions = "code = ?1";
@@ -138,7 +138,7 @@ class BaseUserTicket extends \CrazyCake\Models\Base
             $parameters = [1 => $user_id, 2 => $code];
         }
 
-        return self::findFirst(array($conditions, "bind" => $parameters));
+        return self::findFirst([$conditions, "bind" => $parameters]);
     }
 
     /**
@@ -154,7 +154,7 @@ class BaseUserTicket extends \CrazyCake\Models\Base
             return false;
 
         //return user object
-        $users_class = \CrazyCake\Core\AppCore::getModuleClass("users", false);
+        $users_class = \CrazyCake\Core\AppCore::getModuleClass("user", false);
 
         return $users_class::getById($ticket->user_id);
     }
@@ -165,7 +165,7 @@ class BaseUserTicket extends \CrazyCake\Models\Base
      * @param  string $phrase - A text phrase
      * @return string
      */
-    protected function generateRandomHash($phrase = "")
+    protected function newHash($phrase = "")
     {
         $length = static::$QR_CODE_LEGTH;
         $code   = "";
@@ -186,7 +186,7 @@ class BaseUserTicket extends \CrazyCake\Models\Base
         //unique constrait
         $exists = self::findFirst(["qr_hash = '$hash'"]);
 
-        return $exists ? $this->generateRandomHash($phrase) : $hash;
+        return $exists ? $this->newHash($phrase) : $hash;
     }
 
     /**
@@ -194,14 +194,14 @@ class BaseUserTicket extends \CrazyCake\Models\Base
      * @access protected
      * @return string
      */
-    protected function generateRandomCode()
+    protected function newCode()
     {
         $code = $this->getDI()->getShared('cryptify')
-                              ->generateAlphanumericCode(static::$TICKET_CODE_LEGTH);
+                              ->newAlphanumeric(static::$TICKET_CODE_LEGTH);
         //unique constrait
         $user_id = isset($this->user_id) ? $this->user_id : 0;
-        $exists  = self::getTicketByCode($code, $user_id);
+        $exists  = self::getByCodeAndUserId($code, $user_id);
 
-        return $exists ? $this->generateRandomCode() : $code;
+        return $exists ? $this->newCode() : $code;
     }
 }
