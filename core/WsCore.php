@@ -77,10 +77,12 @@ abstract class WsCore extends AppCore
             "$s$prop"  => "int"
         ], $method);
 
-        //get model data
-        $object = $class_name::findFirst(["id = ?1", "bind" => [1 => $data[$prop]]]);
+        $value = isset($data[$prop]) ? $data[$prop] : null;
 
-        if(!$object)
+        //get model data
+        $object = empty($value) ? null : $class_name::findFirst(["id = ?1", "bind" => [1 => $value]]);
+
+        if(!$optional && !$object)
             $this->_sendJsonResponse(400);
         else
             return $object;
