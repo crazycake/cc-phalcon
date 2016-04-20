@@ -112,9 +112,9 @@ trait KccManager
 
         try {
             //get users checkouts class
-            $users_checkouts_class = $this->_getModuleClass('users_checkouts');
+            $users_checkouts_class = $this->_getModuleClass('user_checkout');
             //trx model class
-            $checkout_trx_class = $this->_getModuleClass('users_checkouts_trx');
+            $checkout_trx_class = $this->_getModuleClass('user_checkout_trx');
 
             //decrypt data
             $buy_order = $this->cryptify->decryptForGetResponse($encrypted_data);
@@ -192,9 +192,9 @@ trait KccManager
 
         try {
             //model classes
-            $users_checkouts_class         = $this->_getModuleClass('users_checkouts');
-            $users_checkouts_objects_class = $this->_getModuleClass('users_checkouts_objects');
-            $checkout_trx_class            = $this->_getModuleClass('users_checkouts_trx');
+            $users_checkouts_class         = $this->_getModuleClass('user_checkout');
+            $users_checkouts_objects_class = $this->_getModuleClass('user_checkout_object');
+            $checkout_trx_class            = $this->_getModuleClass('user_checkout_trx');
 
             //get checkout
             $checkout = $users_checkouts_class::getCheckout($data["TBK_ORDEN_COMPRA"]);
@@ -252,7 +252,7 @@ trait KccManager
         ], 'MIXED', false);
 
         //model classes
-        $users_checkouts_class = $this->_getModuleClass('users_checkouts');
+        $users_checkouts_class = $this->_getModuleClass('user_checkout');
         $checkout_controller   = $this->_getModuleClass('checkout_controller');
 
         //get checkout
@@ -288,8 +288,8 @@ trait KccManager
         $this->_checkUserIsLoggedIn(true);
 
         //get classes name
-        $users_checkouts_class         = $this->_getModuleClass('users_checkouts');
-        $users_checkouts_objects_class = $this->_getModuleClass('users_checkouts_objects');
+        $users_checkouts_class         = $this->_getModuleClass('user_checkout');
+        $users_checkouts_objects_class = $this->_getModuleClass('user_checkout_object');
 
         //get last checkout
         $checkout = $users_checkouts_class::getLastUserCheckout($this->user_session["id"], 'success');

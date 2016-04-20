@@ -9,7 +9,7 @@ namespace CrazyCake\Facebook;
 /**
  * Base Model Users Facebook
  */
-class BaseUsersFacebook extends \CrazyCake\Models\Base
+class BaseUserFacebook extends \CrazyCake\Models\Base
 {
     /* properties */
 
@@ -64,6 +64,6 @@ class BaseUsersFacebook extends \CrazyCake\Models\Base
      */
     public static function getFacebookDataByUserId($user_id)
     {
-        return self::findFirst(["user_id = ?1", "bind" => [1 => $user_id]]);        
+        return self::findFirst(["user_id = ?1", "bind" => [1 => $user_id]]);
     }
 }

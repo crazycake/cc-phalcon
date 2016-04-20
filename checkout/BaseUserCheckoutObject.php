@@ -12,7 +12,7 @@ use CrazyCake\Helpers\Forms;
 /**
  * Base User Checkouts objects
  */
-class BaseUsersCheckoutsObjects extends \CrazyCake\Models\Base
+class BaseUserCheckoutObject extends \CrazyCake\Models\Base
 {
     /* properties */
 
@@ -49,7 +49,7 @@ class BaseUsersCheckoutsObjects extends \CrazyCake\Models\Base
         $objectsModel = static::who();
 
         //get checkout objects
-        $objects = self::getObjectsByPhql(
+        $objects = self::getByPhql(
            //phql
            "SELECT object_class, object_id, quantity
             FROM $objectsModel
@@ -126,7 +126,7 @@ class BaseUsersCheckoutsObjects extends \CrazyCake\Models\Base
         if(!class_exists($object_class))
             throw new Exception("BaseUsersCheckoutsObjects -> Object class not found ($object_class)");
 
-        $object = $object_class::getObjectById($object_id);
+        $object = $object_class::getById($object_id);
 
         if(!$object)
             return false;
@@ -137,7 +137,7 @@ class BaseUsersCheckoutsObjects extends \CrazyCake\Models\Base
         $objectsModel = static::who();
 
         //get pending checkouts items quantity
-        $objects = $checkoutModel::getObjectsByPhql(
+        $objects = $checkoutModel::getByPhql(
            //phql
            "SELECT SUM(quantity) AS q
             FROM $objectsModel AS objects
@@ -233,7 +233,7 @@ class BaseUsersCheckoutsObjects extends \CrazyCake\Models\Base
         $conditions .= " AND (".$ids_filter.") ";
 
         //result
-        $result = $checkoutModel::getObjectsByPhql(
+        $result = $checkoutModel::getByPhql(
            //phql
            "SELECT objects.buy_order
             FROM $objectsModel AS objects

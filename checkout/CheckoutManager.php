@@ -97,7 +97,7 @@ trait CheckoutManager
             $this->onBeforeBuyOrderCreation($checkout);
 
             //get class
-            $users_checkouts_class = $this->_getModuleClass('users_checkouts');
+            $users_checkouts_class = $this->_getModuleClass('user_checkout');
             //save checkout detail in DB
             $checkoutOrm = $users_checkouts_class::newBuyOrder($this->user_session["id"], $checkout);
 
@@ -156,14 +156,14 @@ trait CheckoutManager
                 throw new Exception("Invalid decrypted data: ".json_encode($data));
 
             //set classes
-            $users_class                   = $this->_getModuleClass('users');
-            $users_checkouts_class         = $this->_getModuleClass('users_checkouts');
-            $users_checkouts_objects_class = $this->_getModuleClass('users_checkouts_objects');
-            $checkout_trx_class            = $this->_getModuleClass('users_checkouts_trx');
+            $users_class                   = $this->_getModuleClass('user');
+            $users_checkouts_class         = $this->_getModuleClass('user_checkout');
+            $users_checkouts_objects_class = $this->_getModuleClass('user_checkout_object');
+            $checkout_trx_class            = $this->_getModuleClass('user_checkout_trx');
 
             //get checkout, user and event
             $checkout = $users_checkouts_class::getCheckout($data->buy_order);
-            $user     = $users_class::getObjectById($checkout->user_id);
+            $user     = $users_class::getById($checkout->user_id);
 
             //check if data is OK
             if(!$checkout || !$user)
@@ -231,7 +231,7 @@ trait CheckoutManager
     public function failedCheckout($checkout = false)
     {
         //get module class name
-        $users_checkouts_class = $this->_getModuleClass('users_checkouts');
+        $users_checkouts_class = $this->_getModuleClass('user_checkout');
 
         if(!$checkout || !isset($checkout->buy_order))
             return false;
@@ -258,7 +258,7 @@ trait CheckoutManager
     public function skipPaymentAction($code = "")
     {
         //get module class name
-        $users_checkouts_class = $this->_getModuleClass('users_checkouts');
+        $users_checkouts_class = $this->_getModuleClass('user_checkout');
 
         //instance cache lib and get data
         $checkout = $users_checkouts_class::getLastUserCheckout($this->user_session["id"]);
@@ -307,7 +307,7 @@ trait CheckoutManager
             $checkout->amount = 0;
 
         //get module class name
-        $users_checkouts_objects_class = $this->_getModuleClass('users_checkouts_objects');
+        $users_checkouts_objects_class = $this->_getModuleClass('user_checkout_object');
 
         //computed vars
         $classes = empty($checkout->objectsClasses) ? [] : $checkout->objectsClasses;
@@ -328,7 +328,7 @@ trait CheckoutManager
             $object_id  = $this->cryptify->decryptHashId($props[2]);
 
             $preffixed_object_class = "\\$class_name";
-            $object = $preffixed_object_class::getObjectById($object_id);
+            $object = $preffixed_object_class::getById($object_id);
             //var_dump($class_name, $object_id, $object->toArray());exit;
 
             //check that object is in stock (also validates object exists)
@@ -378,7 +378,7 @@ trait CheckoutManager
         ];
 
         //get module class name
-        $users_checkouts_class = $this->_getModuleClass('users_checkouts');
+        $users_checkouts_class = $this->_getModuleClass('user_checkout');
 
         //set default max checkout number
         $checkoutMax = 1;

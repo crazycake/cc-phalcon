@@ -91,7 +91,7 @@ class KccEndPoint extends AppCore
         );
 
         //get users checkouts class
-        $users_checkouts_class = $this->_getModuleClass('users_checkouts');
+        $users_checkouts_class = $this->_getModuleClass('user_checkout');
         //get checkout obejct
         $checkout = $users_checkouts_class::getCheckout($TBK_ORDEN_COMPRA);
 

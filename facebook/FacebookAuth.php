@@ -242,8 +242,8 @@ trait FacebookAuth
             list($fb_id, $short_live_fac) = $data;
 
             //find user on db
-            $users_facebook_class = $this->_getModuleClass('users_facebook');
-            $user_fb = $users_facebook_class::getObjectById($fb_id);
+            $users_facebook_class = $this->_getModuleClass('user_facebook');
+            $user_fb = $users_facebook_class::getById($fb_id);
 
             if(!$user_fb || empty($short_live_fac))
                 $this->_sendJsonResponse(400); //bad request
@@ -472,8 +472,8 @@ trait FacebookAuth
     private function __loginUserFacebook($fac = null)
     {
         //get model classmap names
-        $users_class          = $this->_getModuleClass('users');
-        $users_facebook_class = $this->_getModuleClass('users_facebook');
+        $users_class          = $this->_getModuleClass('user');
+        $users_facebook_class = $this->_getModuleClass('user_facebook');
 
         //the data response
         $login_data = array();
@@ -495,7 +495,7 @@ trait FacebookAuth
             }
 
             //OK, check if user exists in Users Facebook table & get session data
-            $user_fb      = $users_facebook_class::getObjectById($properties["fb_id"]);
+            $user_fb      = $users_facebook_class::getById($properties["fb_id"]);
             $user_session = $this->_getUserSessionData(); //get app session
 
             //check if user is logged, have a FB user, and he is attempting to login facebook with another account
@@ -585,9 +585,9 @@ trait FacebookAuth
     protected function _deleteFacebookUser($fb_id = 0)
     {
         //get object class
-        $users_facebook_class = $this->_getModuleClass('users_facebook');
+        $users_facebook_class = $this->_getModuleClass('user_facebook');
         //get user & update properties
-        $user_fb = $users_facebook_class::getObjectById($fb_id);
+        $user_fb = $users_facebook_class::getById($fb_id);
 
         if(!$user_fb)
             return false;
@@ -664,7 +664,7 @@ trait FacebookAuth
      */
     private function __setUserAccessToken($fac = null, $user_id = 0)
     {
-        $users_facebook_class = $this->_getModuleClass('users_facebook');
+        $users_facebook_class = $this->_getModuleClass('user_facebook');
 
         //get stored fac if its null
         if(is_null($fac)) {
@@ -695,8 +695,8 @@ trait FacebookAuth
      */
     private function __saveNewUserFacebook($user_id = null, $fb_id = null, $fac = null)
     {
-        $users_class          = $this->_getModuleClass('users');
-        $users_facebook_class = $this->_getModuleClass('users_facebook');
+        $users_class          = $this->_getModuleClass('user');
+        $users_facebook_class = $this->_getModuleClass('user_facebook');
 
         //Creates a Facebook User
         $user_fb             = new $users_facebook_class();
@@ -710,7 +710,7 @@ trait FacebookAuth
             $this->logger->error("Facebook::__saveNewUserFacebook() -> Error Insertion User Facebook data. userId -> ".$user_id.",
                                   FBUserId -> ".$fb_id.", trace: ".$user_fb->filterMessages(true));
 
-            $user = $users_class::getObjectById($user_id);
+            $user = $users_class::getById($user_id);
             $user->delete();
             //raise an error
             throw new Exception($this->facebook_auth_conf['trans']['session_error']);

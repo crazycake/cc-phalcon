@@ -13,7 +13,7 @@ use Phalcon\Exception;
 /**
  * Base Push Notification Model
  */
-class BasePushNotifications extends \CrazyCake\Models\Base
+class BasePushNotification extends \CrazyCake\Models\Base
 {
 
     /* properties */

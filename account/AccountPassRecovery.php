@@ -68,7 +68,7 @@ trait AccountPassRecovery
         //get decrypted data
         try {
             //handle the encrypted data with parent controller
-            $tokens_class = $this->_getModuleClass('users_tokens');
+            $tokens_class = $this->_getModuleClass('user_token');
             $tokens_class::handleUserTokenValidation($encrypted_data);
 
             //view vars
@@ -105,7 +105,7 @@ trait AccountPassRecovery
         }
 
         //check if user exists is a active account
-        $users_class = $this->_getModuleClass('users');
+        $users_class = $this->_getModuleClass('user');
         $user = $users_class::getUserByEmail($data['email'], 'enabled');
 
         //if user not exists, send message
@@ -137,14 +137,14 @@ trait AccountPassRecovery
         $payload = false;
         try {
             //get model classes
-            $users_class  = $this->_getModuleClass('users');
-            $tokens_class = $this->_getModuleClass('users_tokens');
+            $users_class  = $this->_getModuleClass('user');
+            $tokens_class = $this->_getModuleClass('user_token');
 
             $edata = $tokens_class::handleUserTokenValidation($data['edata']);
             list($user_id, $token_type, $token) = $edata;
 
             //get user
-            $user = $users_class::getObjectById($user_id);
+            $user = $users_class::getById($user_id);
 
             if (!$user)
                 throw new Exception("got an invalid user (id:" . $user_id . ") when validating encrypted data.");

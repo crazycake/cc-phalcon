@@ -14,7 +14,7 @@ use CrazyCake\Helpers\Forms;
 /**
  * Base Tickets Model
  */
-class BaseTickets extends \CrazyCake\Models\Base
+class BaseTicket extends \CrazyCake\Models\Base
 {
     /* properties */
 

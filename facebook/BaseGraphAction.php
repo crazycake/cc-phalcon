@@ -12,7 +12,7 @@ use CrazyCake\Helpers\Dates;
 /**
  * Base Facebook Graph API Actions
  */
-class BaseGraphActions extends \CrazyCake\Models\Base
+class BaseGraphAction extends \CrazyCake\Models\Base
 {
     /* properties */
 

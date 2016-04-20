@@ -15,7 +15,7 @@ use CrazyCake\Helpers\Dates;
 /**
  * Base User Tokens Model
  */
-class BaseUsersTokens extends \CrazyCake\Models\Base
+class BaseUserToken extends \CrazyCake\Models\Base
 {
     //this static method can be 'overrided' as late binding
     public static $TOKEN_EXPIRES_THRESHOLD = 3; //days

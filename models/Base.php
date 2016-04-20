@@ -53,7 +53,7 @@ class Base extends \Phalcon\Mvc\Model
      * @param int $id - The object ID
      * @return Object
      */
-    public static function getObjectById($id)
+    public static function getById($id)
     {
         $object = self::findFirst(["id = ?1", "bind" => [1 => $id]]);
         return $object;
@@ -67,7 +67,7 @@ class Base extends \Phalcon\Mvc\Model
      * @param string $className - A different class name than self (optional)
      * @return mixed
      */
-    public static function getObjectsByQuery($sql = "SELECT 1", $binds = array(), $className = null)
+    public static function getByQuery($sql = "SELECT 1", $binds = array(), $className = null)
     {
         if(is_null($binds))
             $binds = [];
@@ -90,7 +90,7 @@ class Base extends \Phalcon\Mvc\Model
      * @param string $className - A different class name than self (optional)
      * @return object
      */
-    public static function getObjectPropertyByQuery($sql = "SELECT 1", $prop = "id", $binds = array(), $className = null)
+    public static function getPropertyByQuery($sql = "SELECT 1", $prop = "id", $binds = array(), $className = null)
     {
         if(is_null($binds))
             $binds = [];
@@ -112,7 +112,7 @@ class Base extends \Phalcon\Mvc\Model
      * @param array $binds - The binding params array
      * @return array
      */
-    public static function getObjectsByPhql($phql = "SELECT 1", $binds = array())
+    public static function getByPhql($phql = "SELECT 1", $binds = array())
     {
         if(is_null($binds))
             $binds = [];

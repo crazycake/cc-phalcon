@@ -13,7 +13,7 @@ use CrazyCake\Helpers\Forms;
 /**
  * Base Tickets Model
  */
-class BaseUsersCheckoutsTrx extends \CrazyCake\Models\Base
+class BaseUserCheckoutTrx extends \CrazyCake\Models\Base
 {
     /* properties */
 

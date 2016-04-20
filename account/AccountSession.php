@@ -105,8 +105,8 @@ trait AccountSession
             if (!is_array($user_session) || !isset($user_session['id']) || !isset($user_session['auth']))
                 return false;
 
-            $users_class = $this->_getModuleClass('users');
-            if ($users_class::getObjectById($user_session['id']) == false)
+            $users_class = $this->_getModuleClass('user');
+            if ($users_class::getById($user_session['id']) == false)
                 return false;
 
             return $user_session['auth'] ? true : false;
@@ -137,8 +137,8 @@ trait AccountSession
     protected function _setUserSessionAsLoggedIn($user_id)
     {
         //get user data from DB
-        $users_class = $this->_getModuleClass('users');
-        $user = $users_class::getObjectById($user_id);
+        $users_class = $this->_getModuleClass('user');
+        $user = $users_class::getById($user_id);
 
         if (!$user)
             return;
@@ -247,9 +247,9 @@ trait AccountSession
     {
         //get user session
         $user_session = $this->session->get("user");
-        $users_class  = $this->_getModuleClass('users');
+        $users_class  = $this->_getModuleClass('user');
         //get user
-        $user = $users_class::getObjectById($user_session['id']);
+        $user = $users_class::getById($user_session['id']);
 
         if (!$user)
             return false;

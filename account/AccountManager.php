@@ -74,9 +74,9 @@ trait AccountManager
         ];
 
         //get model class name
-        $users_class = $this->_getModuleClass('users');
+        $users_class = $this->_getModuleClass('user');
         //get user
-        $user = $users_class::getObjectById($this->user_session['id']);
+        $user = $users_class::getById($this->user_session['id']);
         //validate user
         if(!$user)
             $this->_sendJsonResponse(404);

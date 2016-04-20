@@ -100,15 +100,15 @@ trait AccountAuth
         //get decrypted data
         try {
             //get model classes
-            $users_class  = $this->_getModuleClass('users');
-            $tokens_class = $this->_getModuleClass('users_tokens');
+            $users_class  = $this->_getModuleClass('user');
+            $tokens_class = $this->_getModuleClass('user_token');
             //handle the encrypted data with parent controller
             $data = $tokens_class::handleUserTokenValidation($encrypted_data);
             //assign values
             list($user_id, $token_type, $token) = $data;
 
             //check user-flag if is really pending
-            $user = $users_class::getObjectById($user_id);
+            $user = $users_class::getById($user_id);
 
             if (!$user || $user->account_flag != 'pending')
                 throw new Exception("user (id: ".$user->id.") don't have a pending account flag.");
@@ -157,7 +157,7 @@ trait AccountAuth
         ]);
 
         //get model classes
-        $users_class = $this->_getModuleClass('users');
+        $users_class = $this->_getModuleClass('user');
         //find this user
         $user = $users_class::getUserByEmail($data['email']);
 
@@ -217,7 +217,7 @@ trait AccountAuth
         $data["last_name"]  = mb_convert_case($data["last_name"], MB_CASE_TITLE, 'UTF-8');
 
         //get model classes
-        $users_class = $this->_getModuleClass('users');
+        $users_class = $this->_getModuleClass('user');
         //set pending email confirmation status
         $data['account_flag'] = 'pending';
 
@@ -256,7 +256,7 @@ trait AccountAuth
         }
 
         //get model classes
-        $users_class = $this->_getModuleClass('users');
+        $users_class = $this->_getModuleClass('user');
         $user = $users_class::getUserByEmail($data['email'], 'pending');
 
         //check if user exists is a pending account

@@ -9,7 +9,7 @@ namespace CrazyCake\Tickets;
 /**
  * Base User Tickets Model
  */
-class BaseUsersTickets extends \CrazyCake\Models\Base
+class BaseUserTicket extends \CrazyCake\Models\Base
 {
     /* static vars */
 
@@ -156,7 +156,7 @@ class BaseUsersTickets extends \CrazyCake\Models\Base
         //return user object
         $users_class = \CrazyCake\Core\AppCore::getModuleClass("users", false);
 
-        return $users_class::getObjectById($ticket->user_id);
+        return $users_class::getById($ticket->user_id);
     }
 
     /**

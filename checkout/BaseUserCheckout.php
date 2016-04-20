@@ -14,7 +14,7 @@ use Phalcon\Mvc\Model\Validator\InclusionIn;
 /**
  * Base User Checkouts
  */
-class BaseUsersCheckouts extends \CrazyCake\Models\Base
+class BaseUserCheckout extends \CrazyCake\Models\Base
 {
     /* static vars */
     public static $CHECKOUT_EXPIRES_THRESHOLD = 10;  //minutes
