@@ -41,9 +41,9 @@ class BaseUserFacebook extends \CrazyCake\Models\Base
     public function initialize()
     {
         //get class
-        $users_class = \CrazyCake\Core\AppCore::getModuleClass("user", false);
+        $user_class = \CrazyCake\Core\AppCore::getModuleClass("user", false);
         //model relations
-        $this->hasOne("user_id", $users_class, "id");
+        $this->hasOne("user_id", $user_class, "id");
     }
 
     /**

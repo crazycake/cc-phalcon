@@ -125,16 +125,16 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
             return false;
 
         //get classes
-        $checkoutModel = \CrazyCake\Core\AppCore::getModuleClass("user_checkout");
+        $user_checkout_class = \CrazyCake\Core\AppCore::getModuleClass("user_checkout");
         //get checkouts objects class
         $objectsModel = static::who();
 
         //get pending checkouts items quantity
-        $objects = $checkoutModel::getByPhql(
+        $objects = $user_checkout_class::getByPhql(
            //phql
            "SELECT SUM(quantity) AS q
             FROM $objectsModel AS objects
-            INNER JOIN $checkoutModel AS checkout ON checkout.buy_order = objects.buy_order
+            INNER JOIN $user_checkout_class AS checkout ON checkout.buy_order = objects.buy_order
             WHERE objects.object_id = :object_id:
                 AND objects.object_class = :object_class:
                 AND checkout.state = 'pending'

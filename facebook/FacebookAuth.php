@@ -191,7 +191,7 @@ trait FacebookAuth
         //set message
         $msg = $this->facebook_auth_conf['trans']['oauth_redirected']."\n".$e->getMessage();
         $this->view->setVar("error_message", $msg);
-        $this->dispatcher->forward(["controller" => "errors", "action" => "internal"]);
+        $this->dispatcher->forward(["controller" => "error", "action" => "internal"]);
     }
 
     /**
@@ -242,8 +242,8 @@ trait FacebookAuth
             list($fb_id, $short_live_fac) = $data;
 
             //find user on db
-            $users_facebook_class = $this->_getModuleClass('user_facebook');
-            $user_fb = $users_facebook_class::getById($fb_id);
+            $user_facebook_class = $this->_getModuleClass('user_facebook');
+            $user_fb = $user_facebook_class::getById($fb_id);
 
             if(!$user_fb || empty($short_live_fac))
                 $this->_sendJsonResponse(400); //bad request
@@ -472,8 +472,8 @@ trait FacebookAuth
     private function __loginUserFacebook($fac = null)
     {
         //get model classmap names
-        $users_class          = $this->_getModuleClass('user');
-        $users_facebook_class = $this->_getModuleClass('user_facebook');
+        $user_class          = $this->_getModuleClass('user');
+        $user_facebook_class = $this->_getModuleClass('user_facebook');
 
         //the data response
         $login_data = [];
@@ -495,7 +495,7 @@ trait FacebookAuth
             }
 
             //OK, check if user exists in Users Facebook table & get session data
-            $user_fb      = $users_facebook_class::getById($properties["fb_id"]);
+            $user_fb      = $user_facebook_class::getById($properties["fb_id"]);
             $user_session = $this->_getUserSessionData(); //get app session
 
             //check if user is logged, have a FB user, and he is attempting to login facebook with another account
@@ -511,7 +511,7 @@ trait FacebookAuth
             }
 
             //check if user has already a account registered by email
-            $user = $users_class::getUserByEmail($properties['email']);
+            $user = $user_class::getUserByEmail($properties['email']);
 
             //skip user insertion?
             if ($user) {
@@ -534,7 +534,7 @@ trait FacebookAuth
             }
             else {
 
-                $user = new $users_class();
+                $user = new $user_class();
 
                 //set account flag as active
                 $properties['account_flag'] = 'enabled';
@@ -585,9 +585,9 @@ trait FacebookAuth
     protected function _deleteFacebookUser($fb_id = 0)
     {
         //get object class
-        $users_facebook_class = $this->_getModuleClass('user_facebook');
+        $user_facebook_class = $this->_getModuleClass('user_facebook');
         //get user & update properties
-        $user_fb = $users_facebook_class::getById($fb_id);
+        $user_fb = $user_facebook_class::getById($fb_id);
 
         if(!$user_fb)
             return false;
@@ -664,12 +664,12 @@ trait FacebookAuth
      */
     private function __setUserAccessToken($fac = null, $user_id = 0)
     {
-        $users_facebook_class = $this->_getModuleClass('user_facebook');
+        $user_facebook_class = $this->_getModuleClass('user_facebook');
 
         //get stored fac if its null
         if(is_null($fac)) {
             //get user
-            $user_fb = $users_facebook_class::findFirstByUserId($user_id);
+            $user_fb = $user_facebook_class::findFirstByUserId($user_id);
             //validates data
             if(!$user_fb)
                 throw new Exception("invalid user id");
@@ -695,11 +695,11 @@ trait FacebookAuth
      */
     private function __saveNewUserFacebook($user_id = null, $fb_id = null, $fac = null)
     {
-        $users_class          = $this->_getModuleClass('user');
-        $users_facebook_class = $this->_getModuleClass('user_facebook');
+        $user_class          = $this->_getModuleClass('user');
+        $user_facebook_class = $this->_getModuleClass('user_facebook');
 
         //Creates a Facebook User
-        $user_fb             = new $users_facebook_class();
+        $user_fb             = new $user_facebook_class();
         $user_fb->user_id    = $user_id;
         $user_fb->id         = $fb_id;
         $user_fb->fac        = $fac->getValue();
@@ -710,7 +710,7 @@ trait FacebookAuth
             $this->logger->error("Facebook::__saveNewUserFacebook() -> Error Insertion User Facebook data. userId -> ".$user_id.",
                                   FBUserId -> ".$fb_id.", trace: ".$user_fb->filterMessages(true));
 
-            $user = $users_class::getById($user_id);
+            $user = $user_class::getById($user_id);
             $user->delete();
             //raise an error
             throw new Exception($this->facebook_auth_conf['trans']['session_error']);
@@ -759,7 +759,7 @@ trait FacebookAuth
 
         //parse data to avoid var mistakes
         if(isset($data["user_id"])) {
-            
+
             $data["fb_id"] = $data["user_id"];
             unset($data["user_id"]);
         }

@@ -97,9 +97,9 @@ trait CheckoutManager
             $this->onBeforeBuyOrderCreation($checkout);
 
             //get class
-            $users_checkouts_class = $this->_getModuleClass('user_checkout');
+            $user_checkout_class = $this->_getModuleClass('user_checkout');
             //save checkout detail in DB
-            $checkoutOrm = $users_checkouts_class::newBuyOrder($this->user_session["id"], $checkout);
+            $checkoutOrm = $user_checkout_class::newBuyOrder($this->user_session["id"], $checkout);
 
             //check if an error occurred
             if(!$checkoutOrm)
@@ -156,14 +156,14 @@ trait CheckoutManager
                 throw new Exception("Invalid decrypted data: ".json_encode($data));
 
             //set classes
-            $users_class                   = $this->_getModuleClass('user');
-            $users_checkouts_class         = $this->_getModuleClass('user_checkout');
-            $users_checkouts_objects_class = $this->_getModuleClass('user_checkout_object');
-            $checkout_trx_class            = $this->_getModuleClass('user_checkout_trx');
+            $user_class                 = $this->_getModuleClass('user');
+            $user_checkout_class        = $this->_getModuleClass('user_checkout');
+            $user_checkout_object_class = $this->_getModuleClass('user_checkout_object');
+            $checkout_trx_class         = $this->_getModuleClass('user_checkout_trx');
 
             //get checkout, user and event
-            $checkout = $users_checkouts_class::findFirstByBuyOrder($data->buy_order);
-            $user     = $users_class::getById($checkout->user_id);
+            $checkout = $user_checkout_class::findFirstByBuyOrder($data->buy_order);
+            $user     = $user_class::getById($checkout->user_id);
 
             //check if data is OK
             if(!$checkout || !$user)
@@ -175,11 +175,11 @@ trait CheckoutManager
             //extended properties
             $checkout->type            = "payment";
             $checkout->amountFormatted = Forms::formatPrice($checkout->amount, $checkout->currency);
-            $checkout->objects         = $users_checkouts_objects_class::getCollection($checkout->buy_order);
+            $checkout->objects         = $user_checkout_object_class::getCollection($checkout->buy_order);
             $checkout->categories      = explode(",", $checkout->categories); //set categories as array
 
             //1) update status of checkout
-            $users_checkouts_class::updateState($checkout->buy_order, 'success');
+            $user_checkout_class::updateState($checkout->buy_order, 'success');
 
             //2) set checkout object classes
             $checkout->objectsClasses = [];
@@ -231,19 +231,19 @@ trait CheckoutManager
     public function failedCheckout($checkout = false)
     {
         //get module class name
-        $users_checkouts_class = $this->_getModuleClass('user_checkout');
+        $user_checkout_class = $this->_getModuleClass('user_checkout');
 
         if(!$checkout || !isset($checkout->buy_order))
             return false;
 
         //get ORM object and update status of checkout
-        $checkoutOrm = $users_checkouts_class::findFirstByBuyOrder($checkout->buy_order);
+        $checkoutOrm = $user_checkout_class::findFirstByBuyOrder($checkout->buy_order);
 
         if(!$checkoutOrm)
             return false;
 
         if($checkoutOrm->state == "pending")
-            $users_checkouts_class::updateState($checkout->buy_order, 'failed');
+            $user_checkout_class::updateState($checkout->buy_order, 'failed');
 
         return true;
     }
@@ -258,10 +258,10 @@ trait CheckoutManager
     public function skipPaymentAction($code = "")
     {
         //get module class name
-        $users_checkouts_class = $this->_getModuleClass('user_checkout');
+        $user_checkout_class = $this->_getModuleClass('user_checkout');
 
         //instance cache lib and get data
-        $checkout = $users_checkouts_class::getLast($this->user_session["id"]);
+        $checkout = $user_checkout_class::getLast($this->user_session["id"]);
 
         if(!$checkout || $checkout->state != "pending")
             die("No pending checkout found for user id:".$this->user_session["id"]);
@@ -307,7 +307,7 @@ trait CheckoutManager
             $checkout->amount = 0;
 
         //get module class name
-        $users_checkouts_objects_class = $this->_getModuleClass('user_checkout_object');
+        $user_checkout_object_class = $this->_getModuleClass('user_checkout_object');
 
         //computed vars
         $classes = empty($checkout->objectsClasses) ? [] : $checkout->objectsClasses;
@@ -332,7 +332,7 @@ trait CheckoutManager
             //var_dump($class_name, $object_id, $object->toArray());exit;
 
             //check that object is in stock (also validates object exists)
-            if(!$users_checkouts_objects_class::validateStock($class_name, $object_id, $q)) {
+            if(!$user_checkout_object_class::validateStock($class_name, $object_id, $q)) {
 
                 $this->logger->error("CheckoutManager::_parseCheckoutObjects -> No stock for object '$class_name' ID: $object_id, q: $q.");
                 throw new Exception(str_replace("{name}", $object->name, $this->checkout_manager_conf["trans"]["error_no_stock"]));
@@ -349,7 +349,7 @@ trait CheckoutManager
             $checkout->amount += $q * $object->price;
 
             //set item in array as string or plain object
-            $checkout->objects[] = $users_checkouts_objects_class::newCheckoutObject($object_id, $class_name, $q);
+            $checkout->objects[] = $user_checkout_object_class::newCheckoutObject($object_id, $class_name, $q);
         }
 
         //set objectsClassName
@@ -378,7 +378,7 @@ trait CheckoutManager
         ];
 
         //get module class name
-        $users_checkouts_class = $this->_getModuleClass('user_checkout');
+        $user_checkout_class = $this->_getModuleClass('user_checkout');
 
         //set default max checkout number
         $checkoutMax = 1;
@@ -389,7 +389,7 @@ trait CheckoutManager
         }
 
         //check for last used invoice email
-        $lastCheckout = $users_checkouts_class::findFirst([
+        $lastCheckout = $user_checkout_class::findFirst([
             "user_id = ?0",
             "order" => "local_time DESC",
             "bind"  => [$user->id]

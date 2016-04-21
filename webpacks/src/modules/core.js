@@ -477,7 +477,7 @@ module.exports = function() {
     self.redirectTo = function(uri) {
 
         var uri_map = {
-           notFound : "errors/notFound"
+           notFound : "error/notFound"
         };
 
         //check if has a uri map

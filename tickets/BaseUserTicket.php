@@ -55,9 +55,9 @@ class BaseUserTicket extends \CrazyCake\Models\Base
     public function initialize()
     {
         //get class
-        $users_class = \CrazyCake\Core\AppCore::getModuleClass("user", false);
+        $user_class = \CrazyCake\Core\AppCore::getModuleClass("user", false);
         //model relations
-        $this->hasOne("user_id", $users_class, "id");
+        $this->hasOne("user_id", $user_class, "id");
 
         //Skips fields/columns on both INSERT/UPDATE operations
         $this->skipAttributes(['_ext']);
@@ -154,9 +154,9 @@ class BaseUserTicket extends \CrazyCake\Models\Base
             return false;
 
         //return user object
-        $users_class = \CrazyCake\Core\AppCore::getModuleClass("user", false);
+        $user_class = \CrazyCake\Core\AppCore::getModuleClass("user", false);
 
-        return $users_class::getById($ticket->user_id);
+        return $user_class::getById($ticket->user_id);
     }
 
     /**

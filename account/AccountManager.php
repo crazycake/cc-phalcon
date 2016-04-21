@@ -74,9 +74,9 @@ trait AccountManager
         ];
 
         //get model class name
-        $users_class = $this->_getModuleClass('user');
+        $user_class = $this->_getModuleClass('user');
         //get user
-        $user = $users_class::getById($this->user_session['id']);
+        $user = $user_class::getById($this->user_session['id']);
         //validate user
         if(!$user)
             $this->_sendJsonResponse(404);
@@ -153,7 +153,7 @@ trait AccountManager
                if(isset($updating_data["pass"]))
                     $updating_data["pass"] = true;
             }
-            
+
             //send response
             $this->_sendJsonResponse(200, [
                 "user" => $updating_data,

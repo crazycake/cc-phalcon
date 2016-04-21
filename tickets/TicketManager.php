@@ -274,7 +274,7 @@ trait TicketManager
     private function _buildInvoice($user_id, $checkout)
     {
         //get user model class
-        $users_class = $this->_getModuleClass('user');
+        $user_class = $this->_getModuleClass('user');
         //get model class
         $getObjectsForInvoice = $this->ticket_manager_conf["getObjectsForInvoiceFunction"];
 
@@ -282,7 +282,7 @@ trait TicketManager
             throw new Exception("Invalid getObjectsForInvoice function");
 
         //get user by session
-        $user = $users_class::getById($user_id);
+        $user = $user_class::getById($user_id);
 
         //get ticket objects with UI properties
         $objects = $getObjectsForInvoice($user_id, $checkout);

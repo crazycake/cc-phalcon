@@ -352,7 +352,7 @@ abstract class AppCore extends Controller
         else {
             $sendResponse = function($code) {
                 //otherwise redirect to 400 page
-                $this->dispatcher->forward(["controller" => "errors", "action" => "badRequest"]);
+                $this->dispatcher->forward(["controller" => "error", "action" => "badRequest"]);
                 $this->dispatcher->dispatch();
             };
         }

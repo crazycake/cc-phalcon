@@ -68,13 +68,16 @@ abstract class WsCore extends AppCore
      */
     protected function _handleObjectIdRequestParam($prop = "object_id", $optional = false, $method = 'GET')
     {
-        $props      = explode("_", strtolower($prop), 2);
-        $class_name = ucfirst($props[0])."s"; //NOTE: set singular or plural?
+        $scheme = explode("_", strtolower($prop));
+        //unset last prop
+        array_pop($scheme);
+        //get class name
+        $class_name = \Phalcon\Text::camelize(implode($scheme, "_"));
 
-        $s = $optional ? "@" : "";
+        $p = $optional ? "@" : "";
         //get request param
         $data = $this->_handleRequestParams([
-            "$s$prop"  => "int"
+            "$p$prop"  => "int"
         ], $method);
 
         $value = isset($data[$prop]) ? $data[$prop] : null;

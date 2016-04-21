@@ -55,8 +55,8 @@ trait AccountPassRecovery
         $this->view->setVar("html_title", $this->account_pass_recovery_conf['trans']['title_recovery']);
         $this->view->setVar("js_recaptcha", true); //load reCaptcha
 
-        //load javascript
-        $this->_loadJsModules($this->account_pass_recovery_conf['javascript_modules']);
+        //load javascript modules
+        $this->_loadJsModules($this->account_pass_recovery_conf['js_modules']);
     }
 
     /**
@@ -76,11 +76,11 @@ trait AccountPassRecovery
             $this->view->setVar("edata", $encrypted_data); //pass to view the encrypted data
 
             //load javascript
-            $this->_loadJsModules($this->account_pass_recovery_conf['javascript_modules']);
+            $this->_loadJsModules($this->account_pass_recovery_conf['js_modules']);
         }
         catch (Exception $e) {
             $this->logger->error('AccountPass::newAction -> Error in account activation, encrypted data (' . $encrypted_data . "). Trace: " . $e->getMessage());
-            $this->dispatcher->forward(["controller" => "errors", "action" => "expired"]);
+            $this->dispatcher->forward(["controller" => "error", "action" => "expired"]);
         }
     }
 
@@ -105,8 +105,8 @@ trait AccountPassRecovery
         }
 
         //check if user exists is a active account
-        $users_class = $this->_getModuleClass('user');
-        $user = $users_class::getUserByEmail($data['email'], 'enabled');
+        $user_class = $this->_getModuleClass('user');
+        $user = $user_class::getUserByEmail($data['email'], 'enabled');
 
         //if user not exists, send message
         if (!$user)
@@ -137,14 +137,14 @@ trait AccountPassRecovery
         $payload = false;
         try {
             //get model classes
-            $users_class  = $this->_getModuleClass('user');
+            $user_class   = $this->_getModuleClass('user');
             $tokens_class = $this->_getModuleClass('user_token');
 
             $edata = $tokens_class::handleUserTokenValidation($data['edata']);
             list($user_id, $token_type, $token) = $edata;
 
             //get user
-            $user = $users_class::getById($user_id);
+            $user = $user_class::getById($user_id);
 
             if (!$user)
                 throw new Exception("got an invalid user (id:" . $user_id . ") when validating encrypted data.");

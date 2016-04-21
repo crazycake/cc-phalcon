@@ -7,14 +7,14 @@ return array (
     1 => 'AccountManager.php',
     2 => 'AccountPassRecovery.php',
     3 => 'AccountSession.php',
-    4 => 'BaseUsers.php',
-    5 => 'BaseUsersTokens.php',
+    4 => 'BaseUser.php',
+    5 => 'BaseUserToken.php',
   ),
   'checkout' => 
   array (
-    0 => 'BaseUsersCheckouts.php',
-    1 => 'BaseUsersCheckoutsObjects.php',
-    2 => 'BaseUsersCheckoutsTrx.php',
+    0 => 'BaseUserCheckout.php',
+    1 => 'BaseUserCheckoutObject.php',
+    2 => 'BaseUserCheckoutTrx.php',
     3 => 'CheckoutManager.php',
   ),
   'core' => 
@@ -27,8 +27,8 @@ return array (
   ),
   'facebook' => 
   array (
-    0 => 'BaseGraphActions.php',
-    1 => 'BaseUsersFacebook.php',
+    0 => 'BaseGraphAction.php',
+    1 => 'BaseUserFacebook.php',
     2 => 'FacebookActions.php',
     3 => 'FacebookAuth.php',
   ),
@@ -46,7 +46,7 @@ return array (
   'mobile' => 
   array (
     0 => 'Apn.php',
-    1 => 'BasePushNotifications.php',
+    1 => 'BasePushNotification.php',
     2 => 'Gcm.php',
     3 => 'PushManager.php',
     4 => 'PushWebServices.php',
@@ -81,9 +81,9 @@ return array (
   ),
   'tickets' => 
   array (
-    0 => 'BaseTickets.php',
-    1 => 'BaseTicketsAssets.php',
-    2 => 'BaseUsersTickets.php',
+    0 => 'BaseTicket.php',
+    1 => 'BaseTicketAsset.php',
+    2 => 'BaseUserTicket.php',
     3 => 'TicketManager.php',
   ),
   'transbank' => 

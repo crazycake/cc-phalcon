@@ -57,6 +57,7 @@ scriptHelp() {
 	echo -e "\033[95m core: Installs/Updates core package (Requires cc-phalcon project). \033[0m"
 	echo -e "\033[95m npm-global: Installs/Updates global required NPM dependencies.\033[0m"
 	echo -e "\033[95m npm: Update NPM project dependencies. Use -u for package updates. \033[0m"
+	echo -e "\033[95m trans: Update translations po file. \033[0m"
 	echo -e "\033[95m aws-cli <option>: Install AWS CLI (Pip is required). Use -u for self-update, -c for configuration.\033[0m"
 	echo -e "\033[95m aws-cdn <module>: Syncs S3 CDN bucket with app assets. Modules: -b or -f.\033[0m"
 	exit
@@ -322,6 +323,13 @@ elif [ $1 = "npm" ]; then
 		sudo npm install
 		sudo npm prune
 	fi
+
+elif [ $1 = "trans" ]; then
+
+	excludeDeployMachine
+
+	bash $TOOLS_PATH"_translations.bash" find -b
+	bash $TOOLS_PATH"_translations.bash" find -f
 
 elif [ $1 = "aws-cli" ]; then
 

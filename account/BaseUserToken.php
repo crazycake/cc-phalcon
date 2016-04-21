@@ -1,6 +1,6 @@
 <?php
 /**
- * Base Model Users Tokens
+ * Base Model User Tokens
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
@@ -234,7 +234,7 @@ class BaseUserToken extends \CrazyCake\Models\Base
             return $count;
         }
         catch(Exception $e) {
-            //throw new Exception("BaseUsersTokens::deleteExpiredTokens -> error: ".$e->getMessage());
+            //throw new Exception("BaseUserToken::deleteExpiredTokens -> error: ".$e->getMessage());
             return 0;
         }
     }

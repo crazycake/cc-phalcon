@@ -215,6 +215,10 @@ trait FacebookActions
 
         //get event facebook object
         $fb_object = $object->{$this->facebook_actions_conf["object_fb_relation"]};
+
+        if(!$fb_object)
+            throw new Exception("Facebook Object is not set up (".$this->facebook_actions_conf["object_fb_relation"].").");
+
         //set message
         $msg = !is_null($fb_object->story_text) ? $fb_object->story_text : $this->facebook_actions_conf["og_default_message"];
         //get place facebook id
@@ -270,6 +274,10 @@ trait FacebookActions
 
         //get event facebook object
         $fb_object = $object->{$this->facebook_actions_conf["object_fb_relation"]};
+
+        if(!$fb_object)
+            throw new Exception("Facebook Object is not set up (".$this->facebook_actions_conf["object_fb_relation"].").");
+
         $msg = !is_null($fb_object->photo_text) ? $fb_object->photo_text : $this->facebook_actions_conf["og_default_message"];
 
         //get uploaded files

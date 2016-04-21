@@ -100,7 +100,7 @@ trait AccountAuth
         //get decrypted data
         try {
             //get model classes
-            $users_class  = $this->_getModuleClass('user');
+            $user_class  = $this->_getModuleClass('user');
             $tokens_class = $this->_getModuleClass('user_token');
             //handle the encrypted data with parent controller
             $data = $tokens_class::handleUserTokenValidation($encrypted_data);
@@ -108,7 +108,7 @@ trait AccountAuth
             list($user_id, $token_type, $token) = $data;
 
             //check user-flag if is really pending
-            $user = $users_class::getById($user_id);
+            $user = $user_class::getById($user_id);
 
             if (!$user || $user->account_flag != 'pending')
                 throw new Exception("user (id: ".$user->id.") don't have a pending account flag.");
@@ -133,7 +133,7 @@ trait AccountAuth
             $data = $encrypted_data ? $this->cryptify->decryptData($encrypted_data) : "invalid hash";
 
             $this->logger->error('AccountAuth::activationAction -> Error in account activation, decrypted data ('.$data."). Msg: ".$e->getMessage());
-            $this->dispatcher->forward(["controller" => "errors", "action" => "expired"]);
+            $this->dispatcher->forward(["controller" => "error", "action" => "expired"]);
         }
     }
 
@@ -157,9 +157,9 @@ trait AccountAuth
         ]);
 
         //get model classes
-        $users_class = $this->_getModuleClass('user');
+        $user_class = $this->_getModuleClass('user');
         //find this user
-        $user = $users_class::getUserByEmail($data['email']);
+        $user = $user_class::getUserByEmail($data['email']);
 
         //check user & given hash with the one stored (wrong combination)
         if (!$user || !$this->security->checkHash($data['pass'], $user->pass)) {
@@ -217,12 +217,12 @@ trait AccountAuth
         $data["last_name"]  = mb_convert_case($data["last_name"], MB_CASE_TITLE, 'UTF-8');
 
         //get model classes
-        $users_class = $this->_getModuleClass('user');
+        $user_class = $this->_getModuleClass('user');
         //set pending email confirmation status
         $data['account_flag'] = 'pending';
 
         //Save user, validations are applied in model
-        $user = new $users_class();
+        $user = new $user_class();
 
         //if user dont exists, show error message
         if (!$user->save($data))
@@ -256,8 +256,8 @@ trait AccountAuth
         }
 
         //get model classes
-        $users_class = $this->_getModuleClass('user');
-        $user = $users_class::getUserByEmail($data['email'], 'pending');
+        $user_class = $this->_getModuleClass('user');
+        $user = $user_class::getUserByEmail($data['email'], 'pending');
 
         //check if user exists is a pending account
         if (!$user)

@@ -95,7 +95,7 @@ abstract class WebCore extends AppCore implements WebSecurity
         $supported = $this->checkBrowserSupport($this->client->browser, $this->client->shortVersion);
         //prevents loops
         if(!$supported && !$this->dispatcher->getPreviousControllerName()) {
-            $this->dispatcher->forward(['controller' => 'errors', 'action' => 'oldBrowser']);
+            $this->dispatcher->forward(["controller" => "error", "action" => "oldBrowser"]);
             $this->dispatcher->dispatch();
         }
     }
@@ -130,7 +130,7 @@ abstract class WebCore extends AppCore implements WebSecurity
      */
     protected function _redirectToNotFound()
     {
-        $this->_redirectTo("errors/notFound");
+        $this->_redirectTo("error/notFound");
     }
 
     /**
@@ -163,7 +163,7 @@ abstract class WebCore extends AppCore implements WebSecurity
         if(!is_null($go_back_url))
             $this->view->setVar("go_back", $go_back_url);
 
-        $this->dispatcher->forward(["controller" => "errors", "action" => "internal"]);
+        $this->dispatcher->forward(["controller" => "error", "action" => "internal"]);
         $this->dispatcher->dispatch();
     }
 
@@ -330,8 +330,8 @@ abstract class WebCore extends AppCore implements WebSecurity
         $this->setAppJsProperties($js_app);
 
         //set translations?
-        if(class_exists("TranslationsController"))
-            $js_app->TRANS = \TranslationsController::getJavascriptTranslations();
+        if(class_exists("TranslationController"))
+            $js_app->TRANS = \TranslationController::getJsTranslations();
 
         //send javascript vars to view as JSON enconded
         $this->view->setVars([
