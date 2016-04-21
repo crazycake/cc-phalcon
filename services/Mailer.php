@@ -3,7 +3,7 @@
  * Mailer - Email Service Trait
  * Requires a Frontend or Backend Module with CoreController
  * Requires Emogrifier & Mandrill class (composer)
- * Requires Users & UserTokens models
+ * Requires User & UserToken models
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 

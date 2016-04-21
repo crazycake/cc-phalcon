@@ -327,7 +327,7 @@ trait FacebookActions
     {
         //get a facebook admin
         if(!class_exists($this->_getModuleClass('user_facebook_page')))
-            throw new Exception("Users Facebook class not found [user_facebook_page]");
+            throw new Exception("UserFacebook class not found [user_facebook_page]");
 
         $fb_pages = $this->_getModuleClass('user_facebook_page');
 

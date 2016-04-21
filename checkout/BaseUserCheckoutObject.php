@@ -117,7 +117,7 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
     public static function validateStock($object_class = "", $object_id = 0, $q = 0)
     {
         if(!class_exists($object_class))
-            throw new Exception("BaseUsersCheckoutsObjects -> Object class not found ($object_class)");
+            throw new Exception("BaseUserCheckoutObject -> Object class not found ($object_class)");
 
         $object = $object_class::getById($object_id);
 
@@ -207,7 +207,7 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
     public static function getBuyOrdersByObjectsIds($user_id, $state = "success", $object_ids = array(), $object_class = "")
     {
         if(!class_exists($object_class))
-            throw new Exception("BaseUsersCheckouts -> Object class not found ($object_class)");
+            throw new Exception("BaseUserCheckout -> Object class not found ($object_class)");
 
         if(empty($object_ids))
             return array();

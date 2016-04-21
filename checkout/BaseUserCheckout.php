@@ -189,7 +189,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
         $checkout->client        = $checkoutObj->client;
 
         //log statement
-        $di->getShared('logger')->debug("BaseUsersCheckouts::newBuyOrder -> Saving BuyOrder: $buy_order, for UserID: $user_id, Email: $checkoutObj->invoice_email");
+        $di->getShared('logger')->debug("BaseUserCheckout::newBuyOrder -> Saving BuyOrder: $buy_order, for UserID: $user_id, Email: $checkoutObj->invoice_email");
 
         try {
             //begin trx
@@ -218,7 +218,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
             return $checkout;
         }
         catch(Exception $e) {
-            $di->getShared('logger')->error("BaseUsersCheckouts::newBuyOrder -> An error ocurred: ".$e->getMessage());
+            $di->getShared('logger')->error("BaseUserCheckout::newBuyOrder -> An error ocurred: ".$e->getMessage());
             $di->getShared('db')->rollback();
             return false;
         }
@@ -277,7 +277,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
             return $count;
         }
         catch(Exception $e) {
-            //throw new Exception("BaseUsersCheckouts::deleteExpired -> error: ".$e->getMessage());
+            //throw new Exception("BaseUserCheckout::deleteExpired -> error: ".$e->getMessage());
             return 0;
         }
     }
