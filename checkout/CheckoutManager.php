@@ -178,6 +178,8 @@ trait CheckoutManager
             $checkout->objects         = $user_checkout_object_class::getCollection($checkout->buy_order);
             $checkout->categories      = explode(",", $checkout->categories); //set categories as array
 
+            //$this->logger->debug("successCheckoutTask:: before parsing checkout objects: ".print_r($checkout, true));
+
             //1) update status of checkout
             $user_checkout_class::updateState($checkout->buy_order, 'success');
 
@@ -193,14 +195,16 @@ trait CheckoutManager
                 array_push($checkout->objectsClasses, $obj->object_class);
 
                 //call object class listener
+                $this->logger->debug("CheckoutManager::calling ".$obj->object_class."Controller::onSuccessCheckout");
+
                 if(method_exists($obj->object_class."Controller", "onSuccessCheckout")) {
 
                     $className = $obj->object_class."Controller";
-
-                    if($this->checkout_manager_conf["debug"])
-                        $this->logger->debug("CheckoutManager::calling ".$className."::onSuccessCheckout(), userID: $user->id. buyOrder: $checkout->buy_order");
-
+                    
                     (new $className())->onSuccessCheckout($user->id, $checkout);
+                }
+                else {
+                    $this->logger->debug("CheckoutManager::onSuccessCheckout, missing onSuccessCheckout fn on class: ".$obj->object_class);
                 }
             }
 
@@ -208,7 +212,8 @@ trait CheckoutManager
             $trx = $checkout_trx_class::findFirstByBuyOrder($checkout->buy_order);
             $checkout->trx = $trx ? $trx->reduce() : null;
 
-            //$this->logger->debug("Checkout task complete: ".print_r($checkout, true));
+            if($this->checkout_manager_conf["debug"])
+                $this->logger->debug("Checkout task complete: ".json_encode($checkout));
 
             //3) Call listener
             $this->onSuccessCheckoutTaskComplete($user->id, $checkout);
@@ -280,7 +285,6 @@ trait CheckoutManager
 
         //discard ORM props
         $checkout = $checkout->reduce();
-        //s($checkout);exit;
         //append custom comment
         $this->onSkippedPayment($checkout);
         //log
