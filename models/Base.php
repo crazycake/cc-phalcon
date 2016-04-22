@@ -147,11 +147,12 @@ class Base extends \Phalcon\Mvc\Model
 
     /**
      * Reduces a model object losing ORM properties
+     * array $props - Filter properties. if empty array given filters all.
      * @return object
      */
-    public function reduce() {
+    public function reduce($props = null) {
 
-        return (object)$this->toArray();
+        return (object)$this->toArray($props);
     }
 
     /**

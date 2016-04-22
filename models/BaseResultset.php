@@ -18,16 +18,28 @@ class BaseResultset extends Resultset
     --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
+     * Reduces a Resultset to native objects array
+     * @param array $props - Filter properties, if empty array given filters all.
+     * @return array
+     */
+    public function reduce($props = null) {
+
+        //objects
+        $objects = [];
+        foreach ($this as $obj)
+            $objects[] = $obj->reduce($props);
+
+        return $objects;
+    }
+
+    /**
      * Splits a resultset for object properties
      * Example ticket_id, ticket_name, brand_id, brand_name
      * @return string
      */
     public function split()
     {
-        $result = [];
-
-        if($this instanceof Resultset)
-            $result = $this->toArray();
+        $result = $this->toArray();
 
         $result = self::splitResult($result);
 
@@ -35,7 +47,7 @@ class BaseResultset extends Resultset
     }
 
     /**
-     * Parse an array of objects for Json Struct (webservices)
+     * Parse an array of objects for Json Struct (API WS)
      * @static
      * @param array $result - A result array
      */
