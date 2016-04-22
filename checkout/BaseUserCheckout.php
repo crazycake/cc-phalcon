@@ -170,15 +170,16 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
         //get DI reference (static)
         $di = \Phalcon\DI::getDefault();
         //get classes
-        $checkoutModel = static::who();
+        $checkout_class_name = static::who();
         //get checkouts objects class
-        $objectsModel = \CrazyCake\Core\AppCore::getModuleClass("user_checkout_object");
+        $checkout_object_class_name = \CrazyCake\Core\AppCore::getModuleClass("user_checkout_object");
 
         //generates buy order
         $buy_order = self::newBuyOrderCode(static::$BUY_ORDER_CODE_LENGTH);
 
         //creates object with some checkout object props
-        $checkout = new $checkoutModel();
+        $checkout = new $checkout_class_name();
+        //props
         $checkout->user_id       = $user_id;
         $checkout->buy_order     = $buy_order;
         $checkout->amount        = $checkoutObj->amount;
@@ -202,13 +203,12 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
             foreach ($checkoutObj->objects as $obj) {
 
                 //creates an object
-                $checkoutObj = new $objectsModel();
-                $checkoutObj->buy_order    = $buy_order;
-                $checkoutObj->object_id    = $obj->id;
-                $checkoutObj->object_class = $obj->className;
-                $checkoutObj->quantity     = $obj->quantity;
+                $checkoutObj = new $checkout_object_class_name();
+                //props
+                $props = (array)$obj;
+                $props["buy_order"] = $buy_order;
 
-                if(!$checkoutObj->save())
+                if(!$checkoutObj->save($props))
                     throw new Exception("A DB error ocurred saving in checkoutsObjects model.");
             }
 

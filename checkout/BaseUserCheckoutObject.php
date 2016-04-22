@@ -66,7 +66,7 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
             }
 
             //create a new object and clone common props
-            $new_object = self::_newCheckoutObject($obj->object_id, $object_class, $obj->quantity);
+            $checkout_object = (object)$obj->toArray();
 
             //get object local props
             $props = $object_class::findFirst(["id = ?1", "bind" => [1 => $obj->object_id]]);
@@ -74,36 +74,20 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
             if(!$props) continue;
 
             //extend custom flexible properties
-            $new_object->name = isset($props->name) ? $props->name : $props->_ext["name"];
+            $checkout_object->name = isset($props->name) ? $props->name : $props->_ext["name"];
 
             //extedend common object props
-            $new_object->price = $props->price;
-            $new_object->currency = $props->currency;
+            $checkout_object->price    = $props->price;
+            $checkout_object->currency = $props->currency;
 
             //UI props
-            $new_object->formattedPrice = Forms::formatPrice($props->price, $props->currency);
-            $new_object->formattedTotal = Forms::formatPrice($props->price * $obj->quantity, $props->currency);
+            $checkout_object->formattedPrice = Forms::formatPrice($props->price, $props->currency);
+            $checkout_object->formattedTotal = Forms::formatPrice($props->price * $obj->quantity, $props->currency);
 
-            array_push($result, $new_object);
+            array_push($result, $checkout_object);
        }
 
        return $result;
-    }
-
-    /**
-     * Returns a new instance of a simple checkout object
-     * @param int $id - The object ID
-     * @param string $className - The object class name
-     * @param int $quantity - The object quantity
-     * @return object
-     */
-    private static function _newCheckoutObject($id = 0, $className = "CheckoutObject", $quantity = 1)
-    {
-        return (object)[
-            "id"        => $id,
-            "className" => $className,
-            "quantity"  => $quantity
-        ];
     }
 
     /**
@@ -127,13 +111,13 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
         //get classes
         $user_checkout_class = \CrazyCake\Core\AppCore::getModuleClass("user_checkout");
         //get checkouts objects class
-        $objectsModel = static::who();
+        $class_model = static::who();
 
         //get pending checkouts items quantity
         $objects = $user_checkout_class::getByPhql(
            //phql
            "SELECT SUM(quantity) AS q
-            FROM $objectsModel AS objects
+            FROM $class_model AS objects
             INNER JOIN $user_checkout_class AS checkout ON checkout.buy_order = objects.buy_order
             WHERE objects.object_id = :object_id:
                 AND objects.object_class = :object_class:
@@ -170,9 +154,9 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
             if(empty($obj->quantity))
                 continue;
 
-            $object_class = $obj->className;
+            $object_class = $obj->object_class;
 
-            $orm_object       = $object_class::findFirst(["id = ?1", "bind" => [1 => $obj->id]]);
+            $orm_object       = $object_class::findFirst(["id = ?1", "bind" => [1 => $obj->object_id]]);
             $current_quantity = $orm_object->quantity;
             $updated_quantity = (int)($current_quantity - $obj->quantity);
 
@@ -194,56 +178,5 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
                 [$orm_object->id, $updated_quantity, $state]
             );
         }
-    }
-
-    /**
-     * Get checkout buyOrders by given objects
-     * @param int $user_id - The user ID
-     * @param string $state - The checkout state, default is 'success'
-     * @param array $object_ids - An array with object IDs (required)
-     * @param string $object_class - The object class name (required)
-     * @return array
-     */
-    public static function getBuyOrdersByObjectsIds($user_id, $state = "success", $object_ids = array(), $object_class = "")
-    {
-        if(!class_exists($object_class))
-            throw new Exception("BaseUserCheckout -> Object class not found ($object_class)");
-
-        if(empty($object_ids))
-            return array();
-
-        //get classes
-        $checkoutModel = \CrazyCake\Core\AppCore::getModuleClass("user_checkout");
-        //get checkouts objects class
-        $objectsModel = static::who();
-
-        $conditions = "";
-
-        foreach ($object_ids as $key => $id)
-            $object_ids[$key] = "objects.object_id = '".(int)$id."'"; //prevent string injections
-
-        $ids_filter = implode(" OR ", $object_ids);
-        $conditions .= " AND (".$ids_filter.") ";
-
-        //result
-        $result = $checkoutModel::getByPhql(
-           //phql
-           "SELECT objects.buy_order
-            FROM $objectsModel AS objects
-            INNER JOIN $checkoutModel AS checkout ON checkout.buy_order = objects.buy_order
-            WHERE checkout.user_id IS NOT NULL
-                AND checkout.user_id = :user_id:
-                AND checkout.state = :state:
-                AND objects.object_class = :object_class:
-                $conditions
-            ",
-           //bindings
-           ["user_id" => $user_id, "state" => $state, "object_class" => $object_class]
-       );
-
-        if(!$result)
-            return false;
-
-        return \CrazyCake\Models\BaseResultset::getIdsArray($result, "buy_order");
     }
 }

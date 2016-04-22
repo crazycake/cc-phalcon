@@ -129,7 +129,7 @@ trait CheckoutManager
             "controller" => "checkout",
             "action"     => "successCheckoutTask",
             "method"     => "post",
-            "socket"     => true,
+            "socket"     => !$this->checkout_manager_conf["debug"], //wait for response debugging
             "payload"    => ["buy_order" => $checkout->buy_order]
         ]);
     }
@@ -185,16 +185,22 @@ trait CheckoutManager
             $checkout->objectsClasses = [];
             foreach ($checkout->objects as $obj) {
 
-                if(in_array($obj->className, $checkout->objectsClasses))
+                //only once
+                if(in_array($obj->object_class, $checkout->objectsClasses))
                     continue;
 
                 //save object class
-                array_push($checkout->objectsClasses, $obj->className);
+                array_push($checkout->objectsClasses, $obj->object_class);
 
                 //call object class listener
-                if(method_exists($obj->className."Controller", "onCheckoutSuccess")) {
-                    $className = $obj->className."Controller";
-                    (new $className())->onCheckoutSuccess($user->id, $checkout);
+                if(method_exists($obj->object_class."Controller", "onSuccessCheckout")) {
+
+                    $className = $obj->object_class."Controller";
+
+                    if($this->checkout_manager_conf["debug"])
+                        $this->logger->debug("CheckoutManager::calling ".$className."::onSuccessCheckout(), userID: $user->id. buyOrder: $checkout->buy_order");
+
+                    (new $className())->onSuccessCheckout($user->id, $checkout);
                 }
             }
 
@@ -272,9 +278,11 @@ trait CheckoutManager
         if(APP_ENVIRONMENT != "local" && $code !== $hashed_key)
             return $this->_redirectToNotFound();
 
+        //discard ORM props
+        $checkout = $checkout->reduce();
+        //s($checkout);exit;
         //append custom comment
         $this->onSkippedPayment($checkout);
-
         //log
         $this->logger->debug("CheckoutManager::skipPaymentAction -> Skipped payment for userId: ".$checkout->user_id.", BO: ".$checkout->buy_order);
         //call succes checkout
@@ -287,7 +295,7 @@ trait CheckoutManager
         if(!$this->checkout_manager_conf["debug"])
             $this->_redirectTo("account");
         else
-            echo "CheckoutConfig Debug Mode On...";
+            echo "CheckoutManager::Config Debug Mode is On...";
     }
 
     /**
@@ -324,23 +332,23 @@ trait CheckoutManager
                 continue;
 
             //get object props
-            $class_name = $props[1];
-            $object_id  = $this->cryptify->decryptHashId($props[2]);
+            $object_class = $props[1];
+            $object_id    = $this->cryptify->decryptHashId($props[2]);
 
-            $preffixed_object_class = "\\$class_name";
+            $preffixed_object_class = "\\$object_class";
             $object = $preffixed_object_class::getById($object_id);
-            //var_dump($class_name, $object_id, $object->toArray());exit;
+            //var_dump($object_class, $object_id, $object->toArray());exit;
 
             //check that object is in stock (also validates object exists)
-            if(!$user_checkout_object_class::validateStock($class_name, $object_id, $q)) {
+            if(!$user_checkout_object_class::validateStock($object_class, $object_id, $q)) {
 
-                $this->logger->error("CheckoutManager::_parseCheckoutObjects -> No stock for object '$class_name' ID: $object_id, q: $q.");
+                $this->logger->error("CheckoutManager::_parseCheckoutObjects -> No stock for object '$object_class' ID: $object_id, q: $q.");
                 throw new Exception(str_replace("{name}", $object->name, $this->checkout_manager_conf["trans"]["error_no_stock"]));
             }
 
             //append object class
-            if(!in_array($class_name, $classes))
-                array_push($classes, $class_name);
+            if(!in_array($object_class, $classes))
+                array_push($classes, $object_class);
 
             //update total Q
             $totalQ += $q;
@@ -348,8 +356,15 @@ trait CheckoutManager
             //update amount
             $checkout->amount += $q * $object->price;
 
+            //create new checkout object without ORM props
+            $checkout_object = (new $user_checkout_object_class())->reduce();
+            //props
+            $checkout_object->object_class = $object_class;
+            $checkout_object->object_id    = $object_id;
+            $checkout_object->quantity     = $q;
+
             //set item in array as string or plain object
-            $checkout->objects[] = $user_checkout_object_class::newCheckoutObject($object_id, $class_name, $q);
+            $checkout->objects[] = $checkout_object;
         }
 
         //set objectsClassName
@@ -362,42 +377,35 @@ trait CheckoutManager
     /**
      * Loads common setup for checkout view.
      * This are used for HTML bindings
+     * @param string $type - The checkout type, example: paid, free, etc.
      * @param array $categories - The categories array
-     * @param string $checkoutType - The checkout type, example: paid, free, etc.
-     * @param object $user - The user object
-     * @param array $objects - The checkout objects array
-     * @param array $objectsClasses - The checkout objects classes name
+     * @param array $collections - The objects collection association array (key is objectType)
      * @param object $view - The checkout view class
      */
-    private function _setupCheckoutView($categories = array(), $checkoutType = "", $user = null, $objects = array(), $objectsClasses = array(), $view = "default")
+    private function _setupCheckoutView($type = "", $categories = array(), $collections = array(), $view = "default")
     {
         //default inputs for checkout
         $inputs = [
-            "gateway"    => "",                       //checkout gateway name
+            "gateway"    => "", //checkout gateway name
             "categories" => implode(",", $categories) //checkout categories as string
         ];
 
+        //set default max checkout number
+        $checkoutMax = ($type != "paid") ? 1 : $this->checkout_manager_conf["max_per_item_allowed"];
+
         //get module class name
         $user_checkout_class = $this->_getModuleClass('user_checkout');
-
-        //set default max checkout number
-        $checkoutMax = 1;
-
-        //increase max item allowed
-        if($checkoutType == "paid") {
-            $checkoutMax = $this->checkout_manager_conf["max_per_item_allowed"];
-        }
 
         //check for last used invoice email
         $lastCheckout = $user_checkout_class::findFirst([
             "user_id = ?0",
             "order" => "local_time DESC",
-            "bind"  => [$user->id]
+            "bind"  => [$this->user_session['id']]
         ]);
 
         //set invoice
         $lastInvoiceEmail = $lastCheckout ? $lastCheckout->invoice_email : "";
-        $invoiceEmail     = empty($lastInvoiceEmail) ? $user->email : $lastInvoiceEmail;
+        $invoiceEmail     = empty($lastInvoiceEmail) ? $this->user_session['email'] : $lastInvoiceEmail;
 
         //pass data to view
         $this->view->setVars([
@@ -405,29 +413,20 @@ trait CheckoutManager
             "html_disallow_robots" => true,
             //checkout vars
             "invoiceEmail"   => $invoiceEmail,
-            "objectsClasses" => $objectsClasses,
-            "checkoutInputs" => $inputs
+            "checkoutInputs" => $inputs,
+            "objectsClasses" => array_keys($collections)
         ]);
-
-        //prepare tickets JS
-        $objectsJs = is_array($objects) ? $objects : [];
-
-        if(empty($objectsJs)) {
-            foreach ($objects as $obj)
-                $objectsJs[] = $obj->toArray($this->checkout_manager_conf["object_properties"]);
-        }
 
         //load JS modules
         $js_modules = $this->checkout_manager_conf["js_modules"];
 
         $this->_loadJsModules(array_merge([
-            "$js_modules[0]" => [
-                "checkoutType"   => $checkoutType,
-                "checkoutMax"    => $checkoutMax,
-                "objects"        => $objectsJs,
-                "objectsClasses" => $objectsClasses
-            ]
-        ],
+                "$js_modules[0]" => [
+                    "checkoutType" => $type,
+                    "checkoutMax"  => $checkoutMax,
+                    "collections"  => $collections,
+                ]
+            ],
             //merge with array
             count($js_modules) > 1 ? array_slice($js_modules, 1) : []
         ));
@@ -458,7 +457,7 @@ trait CheckoutManager
         //set client object extended properties
         $this->client->baseUrl = $this->_baseUrl();
 
-        //set object properties
+        //set object properties. TODO: create a object class
         $checkout = new \stdClass();
 
         $checkout->client        = json_encode($this->client, JSON_UNESCAPED_SLASHES);
