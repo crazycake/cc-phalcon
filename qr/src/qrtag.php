@@ -9,12 +9,12 @@ namespace CrazyCake\QR;
 abstract class QrTagShape {
 
     /**
-     * @var int 
+     * @var int
      */
     public $size = 0;
 
     /**
-     * @var int 
+     * @var int
      */
     public $markerSize = 0;
 
@@ -31,10 +31,10 @@ abstract class QrTagShape {
 
     /**
      *
-     * @param int $size 
+     * @param int $size
      */
     public function __construct() {
-        
+
         //constructor
     }
 
@@ -45,7 +45,7 @@ abstract class QrTagShape {
 
     /**
      * @param string $color
-     * @return array 
+     * @return array
      */
     public static function hex2dec($color) {
         return array(hexdec(substr($color, 0, 2)), hexdec(substr($color, 2, 2)), hexdec(substr($color, 4, 2)));
@@ -152,13 +152,13 @@ abstract class QrTagEffect extends QrTagShape {
     //  |
     public $imTopLeft;
     //   _|
-    //  
+    //
     public $imBottomRight;
     //   |_
-    //  
+    //
     public $imBottomLeft;
     //   o
-    //  
+    //
     public $imAlone;
     public $imSquare;
 
@@ -263,7 +263,7 @@ class QrTag {
         $this->height = $this->rows * $this->dot->size;
         $this->image = imagecreatetruecolor($this->width, $this->height);
 
-        // transparent 
+        // transparent
         imagefilledrectangle($this->image, 0, 0, $this->width, $this->height, imagecolorallocate($this->image, $this->bgColorRGB[0], $this->bgColorRGB[1], $this->bgColorRGB[2]));
     }
 
@@ -305,23 +305,23 @@ class QrTag {
                             QrTagShape::copy($this->image, $this->dot->imTopLeft, $this->dot->size * $y, $this->dot->size * $x, $this->dot->size, $this->dot->size);
                         }
                         //   _|
-                        //  
+                        //
                         else if (!empty($this->data[$x - 1][$y]) && !empty($this->data[$x][$y - 1]) && empty($this->data[$x + 1][$y]) && empty($this->data[$x][$y + 1])) {
                             QrTagShape::copy($this->image, $this->dot->imBottomRight, $this->dot->size * $y, $this->dot->size * $x, $this->dot->size, $this->dot->size);
                         }
                         //   |_
-                        //  
+                        //
                         else if (!empty($this->data[$x - 1][$y]) && !empty($this->data[$x][$y + 1]) && empty($this->data[$x + 1][$y]) && empty($this->data[$x][$y - 1])) {
                             QrTagShape::copy($this->image, $this->dot->imBottomLeft, $this->dot->size * $y, $this->dot->size * $x, $this->dot->size, $this->dot->size);
                         }
                         //   o
-                        //  
+                        //
                         else if (empty($this->data[$x - 1][$y]) && empty($this->data[$x + 1][$y]) && empty($this->data[$x][$y - 1]) && empty($this->data[$x][$y + 1])) {
                             QrTagShape::copy($this->image, $this->dot->imAlone, $this->dot->size * $y, $this->dot->size * $x, $this->dot->size, $this->dot->size);
                         } else {
                             QrTagShape::copy($this->image, $this->dot->imSquare, $this->dot->size * $y, $this->dot->size * $x, $this->dot->size, $this->dot->size);
                         }
-                    } 
+                    }
                     else {
                         QrTagShape::copy($this->image, $this->dotImg, $this->dot->size * $y, $this->dot->size * $x, $this->dot->size, $this->dot->size);
                     }
@@ -339,13 +339,13 @@ class QrTag {
         QrTagShape::copy($this->image, $this->frameImg, 0, 0, $fw, $fh);
         QrTagShape::copy($this->image, $this->frameImg, $qw - $fw, 0, $fw, $fh);
         QrTagShape::copy($this->image, $this->frameImg, 0, $qh - $fh, $fw, $fh);
-        
+
         $w = $this->width + $this->width * 0.05;
         $h = $this->height + $this->height * 0.05;
         $im = imagecreatetruecolor($w, $h);
         imagefill($im, 0, 0, imagecolorallocate($im, $this->bgColorRGB[0], $this->bgColorRGB[1], $this->bgColorRGB[2]));
         imagecopy($im, $this->image, $w/2 - $this->width/2, $h/2 - $this->height/2, 0, 0, $this->width, $this->height);
-        
+
         imagepng($im, $this->file);
     }
 
@@ -834,7 +834,7 @@ if(!class_exists('QrTagFrame5', FALSE)){
 
         public function generate() {
             $color = $this->hex2dec($this->color);
-            
+
             $font = QR_FONT_PATH_FRAMES;
             $letter = 'f';
             $rect = $this->calculateTextBox($letter, $font, ($this->size/1.3)*7, 0);
@@ -860,7 +860,7 @@ if(!class_exists('QrTagFrame3', FALSE)){
 
         public function generate() {
             $color = $this->hex2dec($this->color);
-            
+
             $font = QR_FONT_PATH_FRAMES;
             $letter = 'd';
             $rect = $this->calculateTextBox($letter, $font, ($this->size/1.3)*7, 0);
@@ -1256,7 +1256,7 @@ if(!class_exists('QrTagDot23', FALSE)){
             // left
             $color = $this->hex2dec($this->color);
 
-            $$font = QR_FONT_PATH_EDGES;
+            $font = QR_FONT_PATH_EDGES;
             $letter = 'O';
             $rect = $this->calculateTextBox($letter, $font, $this->size, 0);
             $this->imLeft = imagecreatetruecolor($rect['width'], $rect['width']);
@@ -2099,4 +2099,4 @@ if(!class_exists('QrTagDot1', FALSE)){
             return $im;
         }
     }
-}  
+}
