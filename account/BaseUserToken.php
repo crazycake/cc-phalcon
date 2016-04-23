@@ -205,7 +205,7 @@ class BaseUserToken extends \CrazyCake\Models\Base
      * Requires Carbon library
      * @return int
      */
-    public static function deleteExpiredTokens()
+    public static function deleteExpired()
     {
         //use carbon to manipulate days
         try {
