@@ -128,7 +128,7 @@ class BaseUserToken extends \CrazyCake\Models\Base
      * @param string $type - The token type
      * @return string
      */
-    public static function generateNewTokenIfExpired($user_id, $type)
+    public static function newTokenIfExpired($user_id, $type)
     {
         //search if a token already exists and delete it.
         $token = self::getTokenByUserAndType($user_id, $type);

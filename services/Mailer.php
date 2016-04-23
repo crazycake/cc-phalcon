@@ -123,7 +123,7 @@ trait Mailer
 
         //get user token
         $tokens_class = $this->_getModuleClass('user_token');
-        $token = $tokens_class::generateNewTokenIfExpired($user_id, 'activation');
+        $token = $tokens_class::newTokenIfExpired($user_id, 'activation');
 
         if (!$token)
             $this->_sendJsonResponse(500);
@@ -162,7 +162,7 @@ trait Mailer
 
         //get user token
         $tokens_class = $this->_getModuleClass('user_token');
-        $token = $tokens_class::generateNewTokenIfExpired($user_id, 'pass');
+        $token = $tokens_class::newTokenIfExpired($user_id, 'pass');
 
         if (!$token)
             $this->_sendJsonResponse(500);
