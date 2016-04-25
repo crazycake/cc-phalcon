@@ -198,6 +198,10 @@ abstract class AppLoader
             //production
             $baseUrl   = self::getModuleConfigProp("baseUrl", $module);
             $staticUrl = self::getModuleConfigProp("staticUrl", $module);
+
+            if(!$staticUrl)
+                $staticUrl = $baseUrl;
+
             //set URL
             $url = ($type == "static" && $staticUrl) ? $staticUrl : $baseUrl;
         }
@@ -277,7 +281,7 @@ abstract class AppLoader
         if(isset(self::$modules_conf[$module][$prop]))
             return self::$modules_conf[$module][$prop];
         else
-            return self::$modules_conf[$module];
+            return false;
     }
     /* --------------------------------------------------- § -------------------------------------------------------- */
 

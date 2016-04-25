@@ -5,8 +5,8 @@
 MACHINE_USER_NAME="$(whoami)"
 
 # project paths
-PROJECT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-PROJECT_PATH="$(dirname "$PROJECT_PATH")"
+TOOLS_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+PROJECT_PATH="$(dirname "$TOOLS_PATH")"
 
 # Deploy settings
 SSH_DIR="$HOME/.ssh"
@@ -170,6 +170,7 @@ if [ "$1" = "-t" ] || [ "$1" = "-s" ] || [ "$1" = "-p" ]; then
 	else
 
 		#CDN sync
+		cd $PROJECT_PATH
 
 		if [ "$DEPLOY_CDN_FRONTEND" = "1" ]; then
 			bash _app.bash aws-cdn -f
@@ -179,6 +180,8 @@ if [ "$1" = "-t" ] || [ "$1" = "-s" ] || [ "$1" = "-p" ]; then
 			bash _app.bash aws-cdn -b
 		fi
 
+		cd $TOOLS_PATH
+		
 		echo -e "\033[95mSSH: $PRODUCTION_SSH_CMD \033[0m"
 		ssh -i $PRODUCTION_SSH_CMD 'bash -s' -- < ./_deploy.bash $DEPLOY_REMOTE_PATH "$2"
 	fi
