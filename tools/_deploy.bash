@@ -160,7 +160,7 @@ if [ "$1" = "-t" ] || [ "$1" = "-s" ] || [ "$1" = "-p" ]; then
 
 	echo -e "\033[95mDeploy path: $DEPLOY_REMOTE_PATH $1 $2 \033[0m"
 
-	# exec remote command on machine
+	# conenct to remote machine and execute script
 	if [ "$1" = "-t" ]; then
 		echo -e "\033[95mSSH: $TESTING_SSH_CMD \033[0m"
 		ssh -i $TESTING_SSH_CMD 'bash -s' -- < ./_deploy.bash $DEPLOY_REMOTE_PATH "$2"
@@ -168,11 +168,8 @@ if [ "$1" = "-t" ] || [ "$1" = "-s" ] || [ "$1" = "-p" ]; then
 		echo -e "\033[95mSSH: $STAGING_SSH_CMD \033[0m"
 		ssh -i $STAGING_SSH_CMD 'bash -s' -- < ./_deploy.bash $DEPLOY_REMOTE_PATH "$2"
 	else
-		echo -e "\033[95mSSH: $PRODUCTION_SSH_CMD \033[0m"
-		ssh -i $PRODUCTION_SSH_CMD 'bash -s' -- < ./_deploy.bash $DEPLOY_REMOTE_PATH "$2"
 
-		# cdn push?
-		cd $PROJECT_PATH
+		#CDN sync
 
 		if [ "$DEPLOY_CDN_FRONTEND" = "1" ]; then
 			bash _app.bash aws-cdn -f
@@ -181,6 +178,9 @@ if [ "$1" = "-t" ] || [ "$1" = "-s" ] || [ "$1" = "-p" ]; then
 		if [ "$DEPLOY_CDN_BACKEND" = "1" ]; then
 			bash _app.bash aws-cdn -b
 		fi
+
+		echo -e "\033[95mSSH: $PRODUCTION_SSH_CMD \033[0m"
+		ssh -i $PRODUCTION_SSH_CMD 'bash -s' -- < ./_deploy.bash $DEPLOY_REMOTE_PATH "$2"
 	fi
 
 	# task done!
