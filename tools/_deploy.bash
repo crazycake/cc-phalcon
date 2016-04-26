@@ -168,20 +168,6 @@ if [ "$1" = "-t" ] || [ "$1" = "-s" ] || [ "$1" = "-p" ]; then
 		echo -e "\033[95mSSH: $STAGING_SSH_CMD \033[0m"
 		ssh -i $STAGING_SSH_CMD 'bash -s' -- < ./_deploy.bash $DEPLOY_REMOTE_PATH "$2"
 	else
-
-		#CDN sync
-		cd $PROJECT_PATH
-
-		if [ "$DEPLOY_CDN_FRONTEND" = "1" ]; then
-			bash _app.bash aws-cdn -f
-		fi
-
-		if [ "$DEPLOY_CDN_BACKEND" = "1" ]; then
-			bash _app.bash aws-cdn -b
-		fi
-
-		cd $TOOLS_PATH
-		
 		echo -e "\033[95mSSH: $PRODUCTION_SSH_CMD \033[0m"
 		ssh -i $PRODUCTION_SSH_CMD 'bash -s' -- < ./_deploy.bash $DEPLOY_REMOTE_PATH "$2"
 	fi

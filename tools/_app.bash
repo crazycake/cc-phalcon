@@ -70,15 +70,8 @@ appDeploy() {
 	#import phalcon builder bash file
 	source $TOOLS_PATH"_builder.bash"
 
-	# GIT properties
-	CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
-
-	# environment protection (prevents env merges)
-	if [ "testing" = "$CURRENT_BRANCH" ] || [ "staging" = "$CURRENT_BRANCH" ] || [ "production" = "$CURRENT_BRANCH" ]; then
-
-		echo -e "\033[31mWarning your current branch is: $CURRENT_BRANCH. \033[0m"
-		exit
-	fi
+	#call build task for deploy
+	buildTask
 
 	# check if deploy file is present
 	if [ ! -f $TOOLS_PATH"/_deploy.bash" ]; then
@@ -86,18 +79,13 @@ appDeploy() {
 		exit
 	fi
 
-	#call build task for deploy
-	buildTask
-
-	# return to tools path
-	cd $TOOLS_PATH
-
 	# making deploy
 	if [ ! "$1" = "-t" ] && [ ! "$1" = "-s" ] && [ ! "$1" = "-p" ]; then
 		echo -e "\033[95mNo environment option given for deploy.\033[0m"
 	fi
 
 	#call deploy bash file
+	cd $TOOLS_PATH
 	bash _deploy.bash "$1" "$2"
 }
 
@@ -378,7 +366,7 @@ elif [ $1 = "aws-cdn" ]; then
 
 	echo -e "\033[95mBucket Syncing $SYNC_LOCAL_PATH -> $SYNC_REMOTE_PATH \033[0m"
 	#sync
-	aws s3 sync $SYNC_LOCAL_PATH $SYNC_REMOTE_PATH --delete --cache-control max-age=7200 --exclude '*' --include '*.min.css' --include '*.min.js'
+	aws s3 sync $SYNC_LOCAL_PATH $SYNC_REMOTE_PATH --delete --cache-control max-age=7200 --exclude '*' --include '*.rev.css' --include '*.rev.js'
 
 	#sync images
 	SYNC_LOCAL_PATH="$PROJECT_PATH/$MOD_NAME/public/images/"
