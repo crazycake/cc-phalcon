@@ -203,7 +203,7 @@ abstract class WebCore extends AppCore implements WebSecurity
             $js_url  .= "?v=".$version;
         }
         //special case for cdn staging or production
-        else if($staticUrl && in_array(APP_ENVIRONMENT, ["staging", "production", "testing"])) {
+        else if($staticUrl && in_array(APP_ENVIRONMENT, ["staging", "production"])) {
 
             $version = str_replace(".", "", $version);
             //set paths

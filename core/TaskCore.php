@@ -107,7 +107,7 @@ class TaskCore extends Task
         //JS
         copy($assets_path."app.min.js", $assets_path."app-".$version_stripped.".rev.js");
 
-
+        //print output
         $this->_colorize("Created revision assets: $version", "OK", true);
     }
 
