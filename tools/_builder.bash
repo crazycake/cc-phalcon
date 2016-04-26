@@ -67,4 +67,7 @@ buildTask() {
 	if [ "$CDN_SYNC_FRONTEND" = "1" ]; then
 		bash _app.bash aws-cdn -f
 	fi
+
+	# task done!
+	echo -e "\033[92mDone! \033[0m"
 }

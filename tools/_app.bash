@@ -245,9 +245,6 @@ elif [ $1 = "wkhtmltopdf" ]; then
 	#call script
 	bash $TOOLS_PATH"/_wkhtmltopdf.bash"
 
-	# task done!
-	echo -e "\033[92mDone! \033[0m"
-
 elif [ $1 = "clean" ]; then
 
 	# clean cache & log files for present modules
