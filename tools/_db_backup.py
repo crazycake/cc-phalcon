@@ -19,6 +19,7 @@ class APP:
 	NAMESPACE     = ''
 	DB_HOST 	  = ''
 	DB_NAME 	  = ''
+	DB_PASS 	  = ''
 	#S3
 	S3_BUCKET	  = ''
 	S3_ACCESS_KEY = ''
@@ -35,14 +36,7 @@ class SCS:
 def main():
 	"""Main Function"""
 
-	args_num = len(sys.argv)
-	#check password argument
-	if args_num < 2:
-		print SCS.RED + "First arg password is required." + SCS.END
-		return
-
-	#set pass
-	db_password = sys.argv[1]
+	#args_num = len(sys.argv)
 
 	#set current path
 	project_dir = os.path.dirname(os.path.realpath(__file__))
@@ -51,6 +45,7 @@ def main():
 	print SCS.CYAN + "Asking app configurations to CLI..." + SCS.END
 
 	#get app config from command line (webapp CLI)
+	#TODO: call env vars
 	command = subprocess.Popen("php "+project_dir+"/cli/cli.php main appConfig", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 	output  = command.stdout.read()
 	#print output
@@ -58,8 +53,11 @@ def main():
 
 	#set properties
 	APP.NAMESPACE = config['app']['namespace']
-	APP.DB_HOST   = config['database']['host']
-	APP.DB_NAME   = config['database']['dbname']
+	APP.DB_HOST   = os.environ.get('DB_HOST')
+	APP.DB_NAME   = os.environ.get('DB_NAME')
+	APP.DB_USER   = os.environ.get('DB_USER')
+	APP.DB_PASS   = os.environ.get('DB_PASS')
+
 	#s3
 	APP.S3_BUCKET	  = config['app']['aws']['s3Bucket']
 	APP.S3_ACCESS_KEY = config['app']['aws']['accessKey']
@@ -74,7 +72,7 @@ def main():
 
 	print SCS.CYAN + "Dumping DB..." + SCS.END
 	#exec commands
-	os.system("mysqldump -h " + APP.DB_HOST + " -u root -p" + db_password + " " + APP.DB_NAME + " > " + output)
+	os.system("mysqldump -h " + APP.DB_HOST + " -u root -p" + APP.DB_PASS + " " + APP.DB_NAME + " > " + output)
 	os.system("gzip -f " + output)
 	#update output
 	output += ".gz"
