@@ -205,6 +205,7 @@ elif [ $1 = "composer" ]; then
 		# directory not exists, install
 		php composer.phar self-update
 		exit
+
 	elif [ "$2" = "-o" ]; then
 
 		echo -e "\033[95mComposer path: $COMPOSER_PATH \033[0m"
@@ -373,7 +374,7 @@ elif [ $1 = "aws-cdn" ]; then
 
 	echo -e "\033[95mBucket Syncing $SYNC_LOCAL_PATH -> $SYNC_REMOTE_PATH \033[0m"
 	#sync
-	aws s3 sync $SYNC_LOCAL_PATH $SYNC_REMOTE_PATH --delete --cache-control max-age=7200 --exclude '*' --include '*.rev.css' --include '*.rev.js'
+	aws s3 sync $SYNC_LOCAL_PATH $SYNC_REMOTE_PATH --delete --cache-control max-age=864000 --exclude '*' --include '*.rev.css' --include '*.rev.js'
 
 	#sync images
 	SYNC_LOCAL_PATH="$PROJECT_PATH/$MOD_NAME/public/images/"
@@ -381,7 +382,7 @@ elif [ $1 = "aws-cdn" ]; then
 
 	echo -e "\033[95mBucket Syncing $SYNC_LOCAL_PATH -> $SYNC_REMOTE_PATH \033[0m"
 	#sync
-	aws s3 sync $SYNC_LOCAL_PATH $SYNC_REMOTE_PATH --delete --cache-control max-age=21600 --exclude '*.htaccess' --exclude '*.DS_Store' --exclude '*.html'
+	aws s3 sync $SYNC_LOCAL_PATH $SYNC_REMOTE_PATH --delete --cache-control max-age=864000 --exclude '*.htaccess' --exclude '*.DS_Store' --exclude '*.html'
 
 	#sync fonts
 	SYNC_LOCAL_PATH="$PROJECT_PATH/$MOD_NAME/public/fonts/"
@@ -389,7 +390,7 @@ elif [ $1 = "aws-cdn" ]; then
 
 	echo -e "\033[95mBucket Syncing $SYNC_LOCAL_PATH -> $SYNC_REMOTE_PATH \033[0m"
 	#sync
-	aws s3 sync $SYNC_LOCAL_PATH $SYNC_REMOTE_PATH --delete --cache-control max-age=86400 --exclude '*.htaccess' --exclude '*.DS_Store' --exclude '*.html'
+	aws s3 sync $SYNC_LOCAL_PATH $SYNC_REMOTE_PATH --delete --cache-control max-age=864000 --exclude '*.htaccess' --exclude '*.DS_Store' --exclude '*.html'
 
 else
 	echo -e "\033[31mInvalid command\033[0m"

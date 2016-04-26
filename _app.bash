@@ -59,21 +59,21 @@ if [ $1 = "env" ]; then
 	find $CURRENT_PATH -type f -print0 | sudo xargs -0 chmod 0644
 
 	#task done!
-	echo -e "\033[92mScript successfully executed! \033[0m"
+	echo -e "\033[92mDone!! \033[0m"
 
 elif [ $1 = "build" ]; then
 
 	cd $CURRENT_PATH
 	php box.phar build -v
 	# task done!
-	echo -e "\033[92mScript successfully executed! \033[0m"
+	echo -e "\033[92mDone!! \033[0m"
 
 elif [ $1 = "tree" ]; then
 
 	cd $CURRENT_PATH
 	php box.phar info -l $APP_NAMESPACE".phar"
 	# task done!
-	echo -e "\033[92mScript successfully executed! \033[0m"
+	echo -e "\033[92mDone!! \033[0m"
 
 elif [ $1 = "npm" ]; then
 
