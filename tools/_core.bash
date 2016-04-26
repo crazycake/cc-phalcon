@@ -87,4 +87,4 @@ php box.phar build
 cp "$CORE_NAMESPACE.phar" "$PACKAGES_PATH$CORE_NAMESPACE.phar"
 
 # task done!
-echo -e "\033[92mScript successfully executed! \033[0m"
+echo -e "\033[92mDone! \033[0m"

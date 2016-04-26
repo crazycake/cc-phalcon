@@ -188,7 +188,7 @@ if [ $1 = "env" ]; then
 	fi
 
 	#task done!
-	echo -e "\033[92mScript successfully executed! \033[0m"
+	echo -e "\033[92mDone! \033[0m"
 
 elif [ $1 = "composer" ]; then
 
@@ -224,7 +224,7 @@ elif [ $1 = "composer" ]; then
 	cd $PROJECT_PATH
 	# task done!
 	echo -e "\033[95mComposer optimized autoload dump created! \033[0m"
-	echo -e "\033[92mScript successfully executed! \033[0m"
+	echo -e "\033[92mDone! \033[0m"
 
 elif [ $1 = "phinx" ]; then
 
@@ -245,7 +245,7 @@ elif [ $1 = "wkhtmltopdf" ]; then
 	bash $TOOLS_PATH"/_wkhtmltopdf.bash"
 
 	# task done!
-	echo -e "\033[92mScript successfully executed! \033[0m"
+	echo -e "\033[92mDone! \033[0m"
 
 elif [ $1 = "clean" ]; then
 
@@ -270,7 +270,7 @@ elif [ $1 = "clean" ]; then
 	bash _app.bash env
 
 	# task done!
-	echo -e "\033[92mScript successfully executed! \033[0m"
+	echo -e "\033[92mDone! \033[0m"
 
 elif [ $1 = "build" ]; then
 

@@ -25,3 +25,4 @@ sudo mv $HOME/wkhtmltopdf.sh /usr/local/bin/wkhtmltopdf.sh
 sudo chmod a+x /usr/local/bin/wkhtmltopdf.sh
 echo -e "\033[93mLibrary installed! Test with:\033[0m"
 echo -e "\033[95m /usr/local/bin/wkhtmltopdf.sh --lowquality http://www.google.com test.pdf \033[0m"
+echo -e "\033[92mDone! \033[0m"

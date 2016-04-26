@@ -74,7 +74,7 @@ if [ "$1" = "build" ]; then
 	done
 
 	# task done!
-	echo -e "\033[92mScript successfully executed! \033[0m"
+	echo -e "\033[92mDone! \033[0m"
 
 # search and generate pot files
 elif [ "$1" = "find" ]; then
@@ -112,7 +112,7 @@ elif [ "$1" = "find" ]; then
 	done
 
 	# task done!
-	echo -e "\033[92mScript successfully executed! \033[0m"
+	echo -e "\033[92mDone! \033[0m"
 
 else
 	echo -e "\033[31mArgument option is missing\033[0m"

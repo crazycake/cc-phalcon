@@ -74,7 +74,7 @@ if [ $1 = "env" ]; then
 	sudo chmod -R 775 $OUTPUTS_FOLDER
 
 	#task done!
-	echo -e "\033[92mScript successfully executed! \033[0m"
+	echo -e "\033[92mDone! \033[0m"
 
 elif [ $1 = "clean" ]; then
 
@@ -82,7 +82,7 @@ elif [ $1 = "clean" ]; then
 	find $KIT_FOLDER -type f -name "*.log" -print0 | xargs -0 sudo rm
 
 	#task done!
-	echo -e "\033[92mScript successfully executed! \033[0m"
+	echo -e "\033[92mDone! \033[0m"
 
 else
 	echo -e "\033[31mInvalid command\033[0m"

@@ -91,7 +91,7 @@ def main():
 	#remove file
 	os.remove(output)
 
-	print SCS.GREEN + "Script successfully executed!" + SCS.END
+	print SCS.GREEN + "Done!" + SCS.END
 
 # -------------------------------------------------------------------------------------------
 def s3_upload_file(file, save_name):

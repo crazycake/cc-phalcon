@@ -102,7 +102,7 @@ if [ $MACHINE_USER_NAME = "ubuntu" ]; then
 		bash _app.bash composer
 	fi
 
-	echo -e "\033[92mDeploy successfully executed! \033[0m"
+	echo -e "\033[92mDeploy done! \033[0m"
 	exit
 fi
 
@@ -173,7 +173,7 @@ if [ "$1" = "-t" ] || [ "$1" = "-s" ] || [ "$1" = "-p" ]; then
 	fi
 
 	# task done!
-	echo -e "\033[92mScript successfully executed! \033[0m"
+	echo -e "\033[92mDone! \033[0m"
 
 else
 	echo -e "\033[31mInvalid command\033[0m"

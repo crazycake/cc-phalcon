@@ -34,7 +34,7 @@ if [ $1 = "compress" ]; then
     tar -zcvf output.tar.gz "$2"
 
     #task done!
-    echo -e "\033[92mScript successfully executed! \033[0m"
+    echo -e "\033[92mDone! \033[0m"
 
 else
     echo -e "\033[31mInvalid command\033[0m"
