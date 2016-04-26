@@ -37,9 +37,9 @@ class TaskCore extends Task
     public function appConfigAction($params = array())
     {
         if(empty($params))
-            echo json_encode($this->config, JSON_UNESCAPED_SLASHES);
+            echo json_encode($this->config, JSON_UNESCAPED_SLASHES).PHP_EOL;
         else
-            echo json_encode($this->config->{$params[0]}, JSON_UNESCAPED_SLASHES);
+            echo json_encode($this->config->{$params[0]}, JSON_UNESCAPED_SLASHES).PHP_EOL;
     }
 
     /**
@@ -59,7 +59,7 @@ class TaskCore extends Task
             $data = $redis->get($params[0], false);
 
             //outputs value
-            echo $data;
+            echo $data.PHP_EOL;
         }
         catch (Exception $e) {
             //outputs error
@@ -101,7 +101,7 @@ class TaskCore extends Task
 
         //echo output
         if($die)
-            die($output);
+            die($output.PHP_EOL);
         else
             echo $output;
     }
@@ -114,19 +114,15 @@ class TaskCore extends Task
      */
     protected function _validatesModuleArg($params = array(), $index = 0, $check_folder = true)
     {
-        if(empty($params) || !isset($params[$index])) {
-            $this->_colorize("The argument [module] is missing", "ERROR") . "\n";
-            exit;
-        }
+        if(empty($params) || !isset($params[$index]))
+            $this->_colorize("The argument [module] is missing", "ERROR", true);
 
         //set module
         $module = PROJECT_PATH.$params[$index];
 
         //check for folder
-        if($check_folder && !is_dir($module)) {
-            $this->_colorize("The input module folder ($module) was not found", "ERROR") . "\n";
-            exit;
-        }
+        if($check_folder && !is_dir($module))
+            $this->_colorize("The input module folder ($module) was not found", "ERROR", true);
 
         return $module;
     }

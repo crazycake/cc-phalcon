@@ -275,13 +275,10 @@ abstract class AppLoader
     {
         $module = empty($mod_name) ? MODULE_NAME : $mod_name;
 
-        if(!isset(self::$modules_conf[$module]))
+        if(!isset(self::$modules_conf[$module]) || !isset(self::$modules_conf[$module][$prop]))
             return false;
 
-        if(isset(self::$modules_conf[$module][$prop]))
-            return self::$modules_conf[$module][$prop];
-        else
-            return false;
+        return self::$modules_conf[$module][$prop];
     }
     /* --------------------------------------------------- § -------------------------------------------------------- */
 

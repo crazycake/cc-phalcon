@@ -190,18 +190,32 @@ abstract class WebCore extends AppCore implements WebSecurity
      */
     protected function _setAppAssets()
     {
-        $version = AppLoader::getModuleConfigProp("version");
-        //set version string
-        $version = $version ? "?v=".$version : "";
+        $version   = AppLoader::getModuleConfigProp("version");
+        $staticUrl = AppLoader::getModuleConfigProp("staticUrl");
 
-        $css_url = $this->_staticUrl(self::ASSETS_MIN_FOLDER_PATH."app.min.css".$version);
-        $js_url  = $this->_staticUrl(self::ASSETS_MIN_FOLDER_PATH."app.min.js".$version);
+        $css_url = $this->_staticUrl(self::ASSETS_MIN_FOLDER_PATH."app.css");
+        $js_url  = $this->_staticUrl(self::ASSETS_MIN_FOLDER_PATH."app.js");
 
         //set no-min assets for local dev
         if(APP_ENVIRONMENT === "local") {
-            $css_url = str_replace(".min.css", ".css", $css_url);
-            $js_url  = str_replace(".min.js", ".js", $js_url);
+
+            $css_url .= "?v=".$version;
+            $js_url  .= "?v=".$version;
         }
+        //special case for cdn staging or production
+        else if($staticUrl && in_array(APP_ENVIRONMENT, ["staging", "production"])) {
+
+            $version = str_replace(".", "", $version);
+            //set paths
+            $css_url = str_replace(".css", "_$version.css", $css_url);
+            $js_url  = str_replace(".js", "_$version.js", $js_url);
+        }
+        else {
+
+            $css_url = str_replace(".css", ".min.css", $css_url)."?v=".$version;
+            $js_url  = str_replace(".js", ".min.js", $js_url)."?v=".$version;
+        }
+        //s($css_url, $js_url);exit;
 
         //set vars
         $this->view->setVars([
