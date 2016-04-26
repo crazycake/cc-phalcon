@@ -78,7 +78,7 @@ class TaskCore extends Task
     }
 
     /**
-     * Generates revision names for module assets
+     * Generates revision assets names inside public assets module folder
      * @param array $args - The input params
      */
     public function revAssetsAction($args = array())
@@ -88,7 +88,7 @@ class TaskCore extends Task
 
         $module_name = $args[0];
 
-
+        //set paths
         $assets_path = WebCore::ASSETS_MIN_FOLDER_PATH;
         $assets_path = PROJECT_PATH.$module_name."/public/".$assets_path."/";
 
@@ -102,10 +102,11 @@ class TaskCore extends Task
 
         $version_stripped = str_replace(".", "", $version);
 
-        //JS
-        copy($assets_path."app.min.js", $assets_path."app_".$version_stripped.".js");
         //CSS
-        copy($assets_path."app.min.css", $assets_path."app_".$version_stripped.".css");
+        copy($assets_path."app.min.css", $assets_path."app-".$version_stripped.".rev.css");
+        //JS
+        copy($assets_path."app.min.js", $assets_path."app-".$version_stripped.".rev.js");
+
 
         $this->_colorize("Created revision assets: $version", "OK", true);
     }
