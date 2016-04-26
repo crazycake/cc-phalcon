@@ -58,6 +58,8 @@ buildTask() {
 
 	cd $PROJECT_PATH
 
+	echo -e "\033[95mChecking CDN_SYNC env var... \033[0m"
+
 	if [ "$CDN_SYNC_BACKEND" = "1" ]; then
 		bash _app.bash aws-cdn -b
 	fi

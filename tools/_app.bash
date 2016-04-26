@@ -53,6 +53,7 @@ scriptHelp() {
 	echo -e "\033[95m wkhtmltopdf: Installs wkhtmltopdf library, required for webapps that uses PDF-maker engine.\033[0m"
 	echo -e "\033[95m clean: Cleans cached view files and logs.\033[0m"
 	echo -e "\033[96mDev actions:\033[0m"
+	echo -e "\033[95m build: Executes build process for entire webapp. \033[0m"
 	echo -e "\033[95m deploy <env> <option>: Deploy a phalcon app. env: -t, -s or -p. option: -m [migration], -c [composer], -mc [both]. \033[0m"
 	echo -e "\033[95m watch <module>: Runs watcher daemon for backend or frontend. Modules: -b or -f.\033[0m"
 	echo -e "\033[95m core: Installs/Updates core package (Requires cc-phalcon project). \033[0m"
@@ -64,25 +65,25 @@ scriptHelp() {
 	exit
 }
 
-# deploy task for Phalcon
-appDeploy() {
+# build process
+appBuild() {
 
 	#import phalcon builder bash file
 	source $TOOLS_PATH"_builder.bash"
-
 	#call build task for deploy
 	buildTask
+}
 
-	# check if deploy file is present
-	if [ ! -f $TOOLS_PATH"/_deploy.bash" ]; then
-		echo -e "\033[31mDeploy tool is required.\033[0m"
-		exit
-	fi
+# deploy task
+appDeploy() {
 
 	# making deploy
 	if [ ! "$1" = "-t" ] && [ ! "$1" = "-s" ] && [ ! "$1" = "-p" ]; then
 		echo -e "\033[95mNo environment option given for deploy.\033[0m"
 	fi
+
+	# build app first
+	appBuild
 
 	#call deploy bash file
 	cd $TOOLS_PATH
@@ -270,6 +271,12 @@ elif [ $1 = "clean" ]; then
 
 	# task done!
 	echo -e "\033[92mScript successfully executed! \033[0m"
+
+elif [ $1 = "build" ]; then
+
+	excludeDeployMachine
+
+	appBuild
 
 elif [ $1 = "deploy" ]; then
 
