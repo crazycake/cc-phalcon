@@ -49,6 +49,7 @@ scriptHelp() {
 	echo -e "\033[95m env: App environment set up, sets owner group & perms for apache folders.\033[0m"
 	echo -e "\033[95m composer <option>: Installs/Updates composer libraries with autoload-class dump. Use -s to composer self-update. Use -o for optimized dump.\033[0m"
 	echo -e "\033[95m phinx: Executes phinx db migrations. Run phinx to display commands.\033[0m"
+	echo -e "\033[95m cli: Executes PHP App CLI.\033[0m"
 	echo -e "\033[95m wkhtmltopdf: Installs wkhtmltopdf library, required for webapps that uses PDF-maker engine.\033[0m"
 	echo -e "\033[95m clean: Cleans cached view files and logs.\033[0m"
 	echo -e "\033[96mDev actions:\033[0m"
@@ -242,6 +243,12 @@ elif [ $1 = "phinx" ]; then
 
 	php $COMPOSER_PATH"vendor/bin/phinx" "${@:2}"
 
+elif [ $1 = "cli" ]; then
+
+	echo -e "\033[95mRunning PHP App CLI... \033[0m"
+
+	php $CLI_PATH"cli.php" "main" "${@:2}"
+
 elif [ $1 = "wkhtmltopdf" ]; then
 
 	echo -e "\033[95mInstalling wkhtmltopdf... \033[0m"
@@ -379,7 +386,7 @@ elif [ $1 = "aws-cdn" ]; then
 
 	echo -e "\033[95mBucket Syncing $SYNC_LOCAL_PATH -> $SYNC_REMOTE_PATH \033[0m"
 	#sync
-	aws s3 sync $SYNC_LOCAL_PATH $SYNC_REMOTE_PATH --delete --cache-control max-age=43200 --exclude '*.htaccess' --exclude '*.DS_Store' --exclude '*.html'
+	aws s3 sync $SYNC_LOCAL_PATH $SYNC_REMOTE_PATH --delete --cache-control max-age=21600 --exclude '*.htaccess' --exclude '*.DS_Store' --exclude '*.html'
 
 	#sync fonts
 	SYNC_LOCAL_PATH="$PROJECT_PATH/$MOD_NAME/public/fonts/"
