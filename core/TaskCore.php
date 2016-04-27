@@ -24,9 +24,9 @@ class TaskCore extends Task
     {
         $this->_colorize($this->config->app->name." CLI App", "NOTE");
         $this->_colorize("Usage: \ncli.php main [param]", "OK");
-        $this->_colorize("Valid params:", "WARNING");
-        $this->_colorize("appConfig -> Outputs app configuration in JSON format", "WARNING");
-        $this->_colorize("getCache [key] -> gets stored data in Cache (Redis)", "WARNING");
+        $this->_colorize("--------------------", "NOTE");
+        $this->_colorize("appConfig: Outputs app configuration in JSON format", "WARNING");
+        $this->_colorize("getCache [key]: Gets stored data in Cache (Redis)", "WARNING");
     }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
