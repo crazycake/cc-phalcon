@@ -54,6 +54,12 @@ trait FacebookActions
      */
     public $redis;
 
+    /**
+     * Upload path
+     * @var [type]
+     */
+    protected $upload_path;
+
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
@@ -64,9 +70,11 @@ trait FacebookActions
         //set confs
         $this->facebook_actions_conf = $conf;
 
+        $this->upload_path = PUBLIC_PATH."uploads/temp/";
+
         //upload path
-        if(!is_dir($this->facebook_actions_conf["upload_path"]))
-            mkdir($this->facebook_actions_conf["upload_path"], 0755);
+        if(!is_dir($this->upload_path))
+            mkdir($this->upload_path, 0755);
 
         //set redis service
         $this->redis = new Redis();
@@ -121,6 +129,7 @@ trait FacebookActions
                 //create a unique day key for user, qr_hash & time
                 $key   = sha1($payload["action"].$payload["qr_hash"].date('Y-m-d'));
                 $count = $this->redis->get($key);
+
                 //increment action
                 $this->redis->set($key, is_null($count) ? 1 : $count+1);
             }
@@ -269,9 +278,6 @@ trait FacebookActions
      */
     private function _photoAction($user_fb, $object, $fallbackAction = false, $count = 0)
     {
-        if (!$this->request->hasFiles())
-           throw new Exception("No files attached to request");
-
         //get event facebook object
         $fb_object = $object->{$this->facebook_actions_conf["object_fb_relation"]};
 
@@ -281,11 +287,28 @@ trait FacebookActions
         $msg = !is_null($fb_object->photo_text) ? $fb_object->photo_text : $this->facebook_actions_conf["og_default_message"];
 
         //get uploaded files
-        $uploaded_files = $this->request->getUploadedFiles();
-        //get uploaded file
-        $file      = current($uploaded_files);
-        $file_path = $this->facebook_actions_conf["upload_path"].$file->getName();
-        $file->moveTo($file_path);
+        $file_path = $this->upload_path;
+
+        //multipart
+        if ($this->request->hasFiles()) {
+
+            //get uploaded file
+            $file       = current($this->request->getUploadedFiles());
+            $file_path .= $file->getName();
+            //move file
+            $file->moveTo($file_path);
+        }
+        //base64
+        else {
+
+            $base64_string = $this->request->getPost("raw_file");
+
+            if(!$base64_string)
+                throw new Exception("no raw or multipart input file given.");
+
+            $file_name = "social-".$object->namespace."-".uniqid().".jpg";
+            $file_path = $this->_base64ToJpg($base64_string, $file_path.$file_name);
+        }
 
         //set action URI
         if($fallbackAction)
@@ -295,7 +318,6 @@ trait FacebookActions
 
         // Upload to a user's profile. The photo will be in the first album in the profile. You can also upload to
         // a specific album by using /ALBUM_ID as the path
-
         $response  = null;
         $exception = false;
 
@@ -376,5 +398,24 @@ trait FacebookActions
         //var_dump($obj);exit;
 
         return $obj;
+    }
+
+    /**
+     * Converts a base64 string to image file. TODO: MOVE THIS to a helper!
+     * @param  string $base64_string - The input string
+     * @param  string $output_file - The output file
+     */
+    protected function _base64ToJpg($base64_string = "", $output_file = "")
+    {
+        $ifp = fopen($output_file, "wb");
+
+        $data = explode(',', $base64_string);
+
+        $body = isset($data[1]) ? $data[1] : $data[0];
+
+        fwrite($ifp, base64_decode($body));
+        fclose($ifp);
+
+        return $output_file;
     }
 }
