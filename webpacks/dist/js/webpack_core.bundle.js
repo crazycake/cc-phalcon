@@ -44085,7 +44085,7 @@ module.exports = function() {
         dom_class             : "app-btn-fb",                        // jQuery selector
         graph_url             : UA.protocol + "graph.facebook.com/", // openGraph URL
         id                    : APP.facebookAppID,                   // from global app var
-        perms                 : APP.facebookAppScope,                // facebook app permissions
+        scope                 : APP.facebookAppScope,                // facebook app permissions
         login_url             : APP.facebookLoginURL,                // facebook app default login URL
         share_url             : null,                                // facebook dynamic share og URL (set above)
         has_loaded            : false,                               // flag that sets if sdk has loaded
@@ -44232,7 +44232,7 @@ module.exports = function() {
 				self.loginFailed(response);
 		},
 		{ 	//app default permissions
-			scope : self.config.perms
+			scope : self.config.scope
 		});
 	};
 
