@@ -44267,7 +44267,7 @@ module.exports = function() {
 
         //request with promise
         core.ajaxRequest({ method : 'POST', url :  APP.baseUrl + 'facebook/login' }, null, fb_payload)
-        .done();
+		.done();
     };
 
 	/**
@@ -44290,6 +44290,16 @@ module.exports = function() {
 					fn_callback();
 			});
 		});
+	};
+
+    /**
+	 * Deletes app from user facebook account
+	 * @method removeApp
+	 * @param  {Function} fn_callback - The callback function
+	 */
+	self.delete = function(fn_callback) {
+
+		FB.api("/me/permissions", "DELETE", fn_callback);
 	};
 
 	/**

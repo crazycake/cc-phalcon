@@ -141,7 +141,7 @@ trait FacebookAuth
         if($exception instanceof FacebookResponseException)
             $msg = $this->facebook_auth_conf['trans']['oauth_perms'];
 
-        return $this->_sendJsonResponse(200, $msg, true);
+        return $this->_sendJsonResponse(200, $msg);
     }
 
     /**
@@ -538,7 +538,11 @@ trait FacebookAuth
 
                 //email validation
                 if (empty($properties['email']) || !filter_var($properties['email'], FILTER_VALIDATE_EMAIL)) {
+
                     $this->logger->error("Facebook::__loginUser() -> Facebook Session (".$properties["fb_id"].") invalid email: ".$properties['email']);
+                    //invalidate email user
+                    $request = $this->fb->delete('/me/permissions');
+
                     throw new Exception(str_replace("{email}", $properties['email'], $this->facebook_auth_conf['trans']['invalid_email']));
                 }
 
