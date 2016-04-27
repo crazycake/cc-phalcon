@@ -56,7 +56,7 @@ trait FacebookActions
 
     /**
      * Upload path
-     * @var [type]
+     * @var string
      */
     protected $upload_path;
 
@@ -69,7 +69,7 @@ trait FacebookActions
     {
         //set confs
         $this->facebook_actions_conf = $conf;
-
+        //set upload path
         $this->upload_path = PUBLIC_PATH."uploads/temp/";
 
         //upload path
@@ -110,15 +110,10 @@ trait FacebookActions
         //if user dont have a linked FB account.
         if(!is_object($user_fb) || !isset($user_fb->fac))
             $fallbackAction = true;
-        //agent type
-        /*else if(!is_null($payload["type"]) && $payload["type"] != "parent")
-            $fallbackAction = true;*/
 
         //for fallback, switch to user page data
         if($fallbackAction)
             $user_fb = $this->_getPageUser();
-
-        //print_r($user_fb->toArray());exit; //debug
 
         try {
 
@@ -301,6 +296,7 @@ trait FacebookActions
         //base64
         else {
 
+            //get raw file
             $base64_string = $this->request->getPost("raw_file");
 
             if(!$base64_string)

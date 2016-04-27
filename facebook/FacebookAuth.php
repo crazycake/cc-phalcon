@@ -141,7 +141,7 @@ trait FacebookAuth
         if($exception instanceof FacebookResponseException)
             $msg = $this->facebook_auth_conf['trans']['oauth_perms'];
 
-        return $this->_sendJsonResponse(200, $msg);
+        return $this->_sendJsonResponse(200, $msg, "notice");
     }
 
     /**
