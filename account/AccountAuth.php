@@ -169,10 +169,11 @@ trait AccountAuth
         //check user account flag
         if ($user->account_flag != 'enabled') {
             //set message
-            $msg = $this->account_auth_conf['trans']['account_disabled'];
+            $msg       = $this->account_auth_conf['trans']['account_disabled'];
             $namespace = null;
             //check account is pending
             if ($user->account_flag == 'pending') {
+
                 $msg = $this->account_auth_conf['trans']['account_pending'];
                 //set name for javascript view
                 $namespace = 'ACCOUNT_PENDING';
