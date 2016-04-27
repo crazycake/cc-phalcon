@@ -1,6 +1,6 @@
 <?php
 /**
- * App Core Controller (MVC), includes basic and helper methods for web & ws core controllers.
+ * App Core Controller, includes basic and helper methods for web & ws core controllers.
  * Requires a Phalcon DI Factory Services
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
@@ -185,10 +185,6 @@ abstract class AppCore extends Controller
      */
     protected function _asyncRequest($options = array())
     {
-        //encode data
-        if(!empty($options["payload"]))
-            $options["payload"] = $this->cryptify->encryptData($options["payload"]);
-
         //set base url
         if(empty($options["base_url"]))
             $options["base_url"] = empty($options["module"]) ? $this->_baseUrl() : AppLoader::getModuleUrl($options["module"]);
@@ -204,6 +200,16 @@ abstract class AppCore extends Controller
             $api_key_header_name  = str_replace("_", "-", \CrazyCake\Core\WsCore::HEADER_API_KEY);
             $api_key_header_value = AppLoader::getModuleConfigProp("key", "api");
             $options["headers"]   = [$api_key_header_name => $api_key_header_value];
+        }
+
+        //payload
+        if(!empty($options["payload"])) {
+
+            //skip encryption
+            if(isset($options["encrypt"]) && !$options["encrypt"])
+                $options["payload"] = (array)$options["payload"];
+            else
+                $options["payload"] = $this->cryptify->encryptData($options["payload"]);
         }
 
         //log asyn request
