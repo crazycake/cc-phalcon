@@ -8,47 +8,25 @@
 namespace CrazyCake\Phalcon;
 
 use Phalcon\Exception;
+
 //required Files
+require "AppModule.php";
 require "AppServices.php";
 
 /**
  * Phalcon APP Loader [main file]
  */
-abstract class AppLoader
+abstract class App extends AppModule implements AppLoader
 {
     /** const **/
     const APP_CORE_PACKAGE   = "CrazyCake\\";
     const APP_CORE_NAMESPACE = "cc-phalcon";
 
     /**
-     * Set App config (required)
-     * @return array
-     */
-    abstract protected function config();
-
-    /**
      * App Core default packages
      * @var array
      */
     protected static $CORE_DEFAULT_PACKAGES = ['services', 'core', 'helpers', 'models', 'account'];
-
-    /**
-     * App Core default modules
-     * @var array
-     */
-    protected static $CORE_DEFAULT_MODULES = ['cli', 'api', 'backend', 'frontend'];
-
-    /**
-     * Modules Config
-     * @var array
-     */
-    public static $modules_conf;
-
-    /**
-     * The App configuration array
-     * @var array
-     */
-    public $app_conf;
 
     /**
      * The App Dependency injector
@@ -58,37 +36,20 @@ abstract class AppLoader
 
     /**
      * Constructor
-     * @access public
-     * @param string $mod_name - The input module
+     * @access protected
      */
-    public function __construct($mod_name = null)
+    public function load()
     {
-        //set app configurations
-        $config = $this->config();
-        //modules config
-        self::$modules_conf = $config["modules"];
-
-        //validations
-        if(empty($mod_name) || empty($config))
-            throw new Exception("AppLoader::__construct -> invalid input module, check setup.");
-
-        //define APP contants
-        define("PROJECT_PATH", $config["projectPath"]);
-        define("PACKAGES_PATH", PROJECT_PATH."packages/");
-        define("COMPOSER_PATH", PACKAGES_PATH."composer/");
-        define("MODULE_NAME", $mod_name);
-        define("MODULE_PATH", PROJECT_PATH.MODULE_NAME."/");
-        define("APP_PATH", MODULE_PATH."app/" );
-        define("PUBLIC_PATH", MODULE_PATH."public/");
-        define("EXEC_START", microtime(true));  //for debugging render time
-
-        //start webapp loader flux
-        $this->_directoriesSetup(); //required for autoload classes
+        //load webapp directories
+        $this->_directoriesSetup();
+        //load clases
         $this->_autoloadClasses();
-        //set environment setup
-        $this->_environmentSetUp(); //set APP_ENVIRONMENT & APP_BASE_URL (requires composer)
-        //set phalcon DI services
-        $this->_setAppDependencyInjector($config["app"]);
+        //set environment setup (APP_ENVIRONMENT & APP_BASE_URL)
+        $this->_environmentSetUp();
+        //set dabase configs
+        $this->_databaseSetup();
+        //set DI services (requires composer)
+        $this->_setAppDependencyInjector();
     }
 
     /**
@@ -175,46 +136,10 @@ abstract class AppLoader
 
             //Handle the request
             if(APP_ENVIRONMENT !== 'local')
-                ob_start(array($this,"_minifyHTML")); //call function
+                ob_start([$this,"_minifyHTML"]); //call function
 
             echo $output;
         }
-    }
-
-    /**
-     * Get a module URL from current environment
-     * For production use defined URIS, for dev local folders path
-     * and for staging or testing URI replacement
-     * @static
-     * @param  string $module - The module name
-     * @param  string $uri - A uri to be appended
-     * @param  string $type - The url path type: 'base' or 'static'
-     * @return string
-     */
-    public static function getModuleUrl($module = "", $uri = "", $type = "base")
-    {
-        if(APP_ENVIRONMENT === "production") {
-
-            //production
-            $baseUrl   = self::getModuleConfigProp("baseUrl", $module);
-            $staticUrl = self::getModuleConfigProp("staticUrl", $module);
-
-            if(!$staticUrl)
-                $staticUrl = $baseUrl;
-
-            //set URL
-            $url = ($type == "static" && $staticUrl) ? $staticUrl : $baseUrl;
-        }
-        else if(APP_ENVIRONMENT === "local") {
-
-            $url = str_replace(['/api/', '/frontend/', '/backend/'], "/$module/", APP_BASE_URL);
-        }
-        else {
-
-            $url = str_replace(['.api.', '.frontend.', '.backend.'], ".$module.", APP_BASE_URL);
-        }
-
-        return $url.$uri;
     }
 
     /**
@@ -229,10 +154,10 @@ abstract class AppLoader
     {
         //check folders
         if(is_null($assets_uri) || is_null($cache_path))
-            throw new Exception("AppLoader::extractAssetsFromPhar -> assets and cache path must be valid paths.");
+            throw new Exception("App::extractAssetsFromPhar -> assets and cache path must be valid paths.");
 
         if(!is_dir($cache_path))
-            throw new Exception("AppLoader::extractAssetsFromPhar -> cache path directory not found.");
+            throw new Exception("App::extractAssetsFromPhar -> cache path directory not found.");
 
         //check phar is running
         if(!\Phar::running())
@@ -264,44 +189,14 @@ abstract class AppLoader
         return $output_path;
     }
 
-    /**
-     * Gets current Module property value
-     * @static
-     * @param  string $prop - A input property
-     * @param  string $mod_name - The module name
-     * @return mixed
-     */
-    public static function getModuleConfigProp($prop = "", $mod_name = "")
-    {
-        $module = empty($mod_name) ? MODULE_NAME : $mod_name;
-
-        if(!isset(self::$modules_conf[$module]) || !isset(self::$modules_conf[$module][$prop]))
-            return false;
-
-        return self::$modules_conf[$module][$prop];
-    }
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
      * Set App Dependency Injector
      * @access private
-     * @param array $app_di - The DI app properties
      */
-    private function _setAppDependencyInjector($app_di = array())
+    private function _setAppDependencyInjector()
     {
-        //set dabase configs
-        $this->_databaseSetup();
-
-        //langs
-        $app_di['langs'] = self::getModuleConfigProp("langs");
-
-        //set app AWS S3 bucket
-        if(isset($app_di['aws']['s3Bucket']))
-            $app_di['aws']['s3Bucket'] .= (APP_ENVIRONMENT === 'production') ? '-prod' : "-dev";
-
-        //finally, set app properties
-        $this->app_conf["app"] = $app_di;
-
         //get DI preset services for module
         $services = new AppServices($this);
         $this->di = $services->getDI();
@@ -314,7 +209,7 @@ abstract class AppLoader
     private function _databaseSetup()
     {
         if(empty(getenv('DB_HOST')))
-            throw new Exception("AppLoader::_databaseSetup -> DB environment is not set.");
+            throw new Exception("App::_databaseSetup -> DB environment is not set.");
 
         //set database config
         $this->app_conf["database"] = [
@@ -335,7 +230,7 @@ abstract class AppLoader
             "controllers" => APP_PATH.'controllers/'
         ];
 
-        $folders = self::getModuleConfigProp("loader");
+        $folders = self::getProperty("loader");
 
         if($folders) {
 
@@ -366,14 +261,14 @@ abstract class AppLoader
         $loader = new \Phalcon\Loader();
         $loader->registerDirs($this->app_conf["directories"]);
 
-        $core_libs = self::getModuleConfigProp("core");
+        $core_libs = self::getProperty("core");
 
         //2.- Register any static libs (like core)
         $this->_loadStaticLibs($loader, $core_libs);
 
         //3.- Composer libs auto loader
         if (!is_file(COMPOSER_PATH.'vendor/autoload.php'))
-            throw new Exception("AppLoader::_autoloadClasses -> Composer libraries are missing, please run environment script file.");
+            throw new Exception("App::_autoloadClasses -> Composer libraries are missing, please run environment script file.");
 
         //autoload composer file
         require COMPOSER_PATH.'vendor/autoload.php';
@@ -461,7 +356,7 @@ abstract class AppLoader
         if (php_sapi_name() !== 'cli') {
 
             if(!isset($_REQUEST))
-                throw new Exception("AppLoader -> Missing REQUEST data: ".json_encode($_SERVER)." && ".json_encode($_REQUEST));
+                throw new Exception("App -> Missing REQUEST data: ".json_encode($_SERVER)." && ".json_encode($_REQUEST));
 
             //set localhost if host is not set
             if(!isset($_SERVER['HTTP_HOST']))

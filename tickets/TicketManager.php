@@ -11,6 +11,8 @@ namespace CrazyCake\Tickets;
 
 //imports
 use Phalcon\Exception;
+//core
+use CrazyCake\Phalcon\AppModule;
 use CrazyCake\Services\StorageS3; //AWS S3 File Storage helper
 use CrazyCake\Qr\QRMaker;         //CrazyCake QR
 use CrazyCake\Helpers\PDF;        //PDF helper
@@ -274,7 +276,7 @@ trait TicketManager
     private function _buildInvoice($user_id, $checkout)
     {
         //get user model class
-        $user_class = $this->_getModuleClass('user');
+        $user_class = AppModule::getClass('user');
         //get model class
         $getObjectsForInvoice = $this->ticket_manager_conf["getObjectsForInvoiceFunction"];
 

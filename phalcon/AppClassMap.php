@@ -19,11 +19,12 @@ return array (
   ),
   'core' => 
   array (
-    0 => 'AppCore.php',
-    1 => 'TaskCore.php',
-    2 => 'WebCore.php',
-    3 => 'WebErrors.php',
-    4 => 'WsCore.php',
+    0 => 'Core.php',
+    1 => 'MvcCore.php',
+    2 => 'TaskCore.php',
+    3 => 'WebCore.php',
+    4 => 'WebErrors.php',
+    5 => 'WsCore.php',
   ),
   'facebook' => 
   array (
@@ -58,10 +59,11 @@ return array (
   ),
   'phalcon' => 
   array (
-    0 => 'AppClassMap.php',
-    1 => 'AppLoader.php',
-    2 => 'AppPlugins.php',
-    3 => 'AppServices.php',
+    0 => 'App.php',
+    1 => 'AppClassMap.php',
+    2 => 'AppModule.php',
+    3 => 'AppPlugins.php',
+    4 => 'AppServices.php',
   ),
   'qr' => 
   array (

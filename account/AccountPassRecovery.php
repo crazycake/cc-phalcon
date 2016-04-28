@@ -9,6 +9,7 @@
 namespace CrazyCake\Account;
 
 //imports
+use CrazyCake\Phalcon\AppModule;
 use Phalcon\Exception;
 use CrazyCake\Helpers\ReCaptcha;
 
@@ -68,7 +69,7 @@ trait AccountPassRecovery
         //get decrypted data
         try {
             //handle the encrypted data with parent controller
-            $tokens_class = $this->_getModuleClass('user_token');
+            $tokens_class = AppModule::getClass('user_token');
             $tokens_class::handleUserTokenValidation($encrypted_data);
 
             //view vars
@@ -105,7 +106,7 @@ trait AccountPassRecovery
         }
 
         //check if user exists is a active account
-        $user_class = $this->_getModuleClass('user');
+        $user_class = AppModule::getClass('user');
         $user = $user_class::getUserByEmail($data['email'], 'enabled');
 
         //if user not exists, send message
@@ -137,8 +138,8 @@ trait AccountPassRecovery
         $payload = false;
         try {
             //get model classes
-            $user_class   = $this->_getModuleClass('user');
-            $tokens_class = $this->_getModuleClass('user_token');
+            $user_class   = AppModule::getClass('user');
+            $tokens_class = AppModule::getClass('user_token');
 
             $edata = $tokens_class::handleUserTokenValidation($data['edata']);
             list($user_id, $token_type, $token) = $edata;

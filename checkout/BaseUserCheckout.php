@@ -10,6 +10,8 @@ namespace CrazyCake\Checkout;
 //imports
 use Phalcon\Exception;
 use Phalcon\Mvc\Model\Validator\InclusionIn;
+//core
+use CrazyCake\Phalcon\AppModule;
 
 /**
  * Base User Checkouts
@@ -85,7 +87,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
     public function initialize()
     {
         //get class
-        $user_class = \CrazyCake\Core\AppCore::getModuleClass("user", false);
+        $user_class = AppModule::getClass("user", false);
         //model relations
         $this->hasOne("user_id", $user_class, "id");
     }
@@ -172,7 +174,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
         //get classes
         $checkout_class_name = static::who();
         //get checkouts objects class
-        $checkout_object_class_name = \CrazyCake\Core\AppCore::getModuleClass("user_checkout_object");
+        $checkout_object_class_name = AppModule::getClass("user_checkout_object");
 
         //generates buy order
         $buy_order = self::newBuyOrderCode(static::$BUY_ORDER_CODE_LENGTH);

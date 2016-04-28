@@ -10,7 +10,8 @@ namespace CrazyCake\Checkout;
 
 //imports
 use Phalcon\Exception;
-//other imports
+//core
+use CrazyCake\Phalcon\AppModule;
 use CrazyCake\Helpers\Forms;
 
 /**
@@ -97,7 +98,7 @@ trait CheckoutManager
             $this->onBeforeBuyOrderCreation($checkout);
 
             //get class
-            $user_checkout_class = $this->_getModuleClass('user_checkout');
+            $user_checkout_class = AppModule::getClass('user_checkout');
             //save checkout detail in DB
             $checkoutOrm = $user_checkout_class::newBuyOrder($this->user_session["id"], $checkout);
 
@@ -156,10 +157,10 @@ trait CheckoutManager
                 throw new Exception("Invalid decrypted data: ".json_encode($data));
 
             //set classes
-            $user_class                 = $this->_getModuleClass('user');
-            $user_checkout_class        = $this->_getModuleClass('user_checkout');
-            $user_checkout_object_class = $this->_getModuleClass('user_checkout_object');
-            $checkout_trx_class         = $this->_getModuleClass('user_checkout_trx');
+            $user_class                 = AppModule::getClass('user');
+            $user_checkout_class        = AppModule::getClass('user_checkout');
+            $user_checkout_object_class = AppModule::getClass('user_checkout_object');
+            $checkout_trx_class         = AppModule::getClass('user_checkout_trx');
 
             //get checkout, user and event
             $checkout = $user_checkout_class::findFirstByBuyOrder($data->buy_order);
@@ -200,7 +201,7 @@ trait CheckoutManager
                 if(method_exists($obj->object_class."Controller", "onSuccessCheckout")) {
 
                     $className = $obj->object_class."Controller";
-                    
+
                     (new $className())->onSuccessCheckout($user->id, $checkout);
                 }
                 else {
@@ -220,7 +221,7 @@ trait CheckoutManager
         }
         catch(Exception $e) {
             //get mailer controller
-            $mailer = $this->_getModuleClass('mailer_controller');
+            $mailer = AppModule::getClass('mailer_controller');
             //send alert system mail message
             (new $mailer())->sendSystemMailForException($e, [
                 "action"  => "successCheckoutTask",
@@ -242,7 +243,7 @@ trait CheckoutManager
     public function failedCheckout($checkout = false)
     {
         //get module class name
-        $user_checkout_class = $this->_getModuleClass('user_checkout');
+        $user_checkout_class = AppModule::getClass('user_checkout');
 
         if(!$checkout || !isset($checkout->buy_order))
             return false;
@@ -269,7 +270,7 @@ trait CheckoutManager
     public function skipPaymentAction($code = "")
     {
         //get module class name
-        $user_checkout_class = $this->_getModuleClass('user_checkout');
+        $user_checkout_class = AppModule::getClass('user_checkout');
 
         //instance cache lib and get data
         $checkout = $user_checkout_class::getLast($this->user_session["id"]);
@@ -319,7 +320,7 @@ trait CheckoutManager
             $checkout->amount = 0;
 
         //get module class name
-        $user_checkout_object_class = $this->_getModuleClass('user_checkout_object');
+        $user_checkout_object_class = AppModule::getClass('user_checkout_object');
 
         //computed vars
         $classes = empty($checkout->objectsClasses) ? [] : $checkout->objectsClasses;
@@ -398,7 +399,7 @@ trait CheckoutManager
         $checkoutMax = ($type != "paid") ? 1 : $this->checkout_manager_conf["max_per_item_allowed"];
 
         //get module class name
-        $user_checkout_class = $this->_getModuleClass('user_checkout');
+        $user_checkout_class = AppModule::getClass('user_checkout');
 
         //check for last used invoice email
         $lastCheckout = $user_checkout_class::findFirst([

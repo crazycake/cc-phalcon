@@ -9,10 +9,13 @@
 
 namespace CrazyCake\Services;
 
+
 //imports
 use Phalcon\Exception;
 use Pelago\Emogrifier;
 use Mandrill;
+//core
+use CrazyCake\Phalcon\AppModule;
 
 /**
  * Simple Email Service Trait
@@ -115,14 +118,14 @@ trait Mailer
      */
     public function sendMailForAccountActivation($user_id)
     {
-        $user_class = $this->_getModuleClass('user');
+        $user_class = AppModule::getClass('user');
         $user = $user_class::getById($user_id);
 
         if (!$user)
             $this->_sendJsonResponse(403);
 
         //get user token
-        $tokens_class = $this->_getModuleClass('user_token');
+        $tokens_class = AppModule::getClass('user_token');
         $token = $tokens_class::newTokenIfExpired($user_id, 'activation');
 
         if (!$token)
@@ -153,7 +156,7 @@ trait Mailer
      */
     public function sendMailForPasswordRecovery($user_id)
     {
-        $user_class = $this->_getModuleClass('user');
+        $user_class = AppModule::getClass('user');
         $user = $user_class::getById($user_id);
 
         //if invalid user, send permission denied response
@@ -161,7 +164,7 @@ trait Mailer
             $this->_sendJsonResponse(403);
 
         //get user token
-        $tokens_class = $this->_getModuleClass('user_token');
+        $tokens_class = AppModule::getClass('user_token');
         $token = $tokens_class::newTokenIfExpired($user_id, 'pass');
 
         if (!$token)

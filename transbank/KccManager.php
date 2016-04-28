@@ -10,7 +10,8 @@ namespace CrazyCake\Transbank;
 
 //imports
 use Phalcon\Exception;
-//other imports
+//core
+use CrazyCake\Phalcon\AppModule;
 use CrazyCake\Helpers\Dates;
 use CrazyCake\Helpers\Forms;
 
@@ -112,9 +113,9 @@ trait KccManager
 
         try {
             //get users checkouts class
-            $user_checkout_class = $this->_getModuleClass('user_checkout');
+            $user_checkout_class = AppModule::getClass('user_checkout');
             //trx model class
-            $checkout_trx_class = $this->_getModuleClass('user_checkout_trx');
+            $checkout_trx_class = AppModule::getClass('user_checkout_trx');
 
             //decrypt data
             $buy_order = $this->cryptify->decryptData($encrypted_data);
@@ -147,7 +148,7 @@ trait KccManager
             $this->logger->debug("KccManager::successTrxAction -> successCheckout: ".json_encode($checkout));
 
             //call succes checkout and get checkout objects
-            $checkout_controller = $this->_getModuleClass('checkout_controller');
+            $checkout_controller = AppModule::getClass('checkout_controller');
             (new $checkout_controller())->successCheckout($checkout);
 
             //ok response
@@ -160,7 +161,7 @@ trait KccManager
             $buyOrder = isset($checkout) ? $checkout->buy_order : "unknown";
 
             //NOTE: sending a warning to admin users!
-            $mailerController = $this->_getModuleClass('mailer_controller');
+            $mailerController = AppModule::getClass('mailer_controller');
             (new $mailerController())->sendSystemMail([
                 "subject" => "Trx handler error",
                 "to"      => $this->config->app->emails->support,
@@ -192,9 +193,9 @@ trait KccManager
 
         try {
             //model classes
-            $user_checkout_class         = $this->_getModuleClass('user_checkout');
-            $user_checkout_object_class = $this->_getModuleClass('user_checkout_object');
-            $checkout_trx_class            = $this->_getModuleClass('user_checkout_trx');
+            $user_checkout_class        = AppModule::getClass('user_checkout');
+            $user_checkout_object_class = AppModule::getClass('user_checkout_object');
+            $checkout_trx_class         = AppModule::getClass('user_checkout_trx');
 
             //get checkout
             $checkout = $user_checkout_class::findFirstByBuyOrder($data["TBK_ORDEN_COMPRA"]);
@@ -252,8 +253,8 @@ trait KccManager
         ], 'MIXED', false);
 
         //model classes
-        $user_checkout_class = $this->_getModuleClass('user_checkout');
-        $checkout_controller   = $this->_getModuleClass('checkout_controller');
+        $user_checkout_class = AppModule::getClass('user_checkout');
+        $checkout_controller = AppModule::getClass('checkout_controller');
 
         //get checkout
         $checkout = $user_checkout_class::findFirstByBuyOrder($data["TBK_ORDEN_COMPRA"]);
@@ -288,8 +289,8 @@ trait KccManager
         $this->_checkUserIsLoggedIn(true);
 
         //get classes name
-        $user_checkout_class         = $this->_getModuleClass('user_checkout');
-        $user_checkout_object_class = $this->_getModuleClass('user_checkout_object');
+        $user_checkout_class        = AppModule::getClass('user_checkout');
+        $user_checkout_object_class = AppModule::getClass('user_checkout_object');
 
         //get last checkout
         $checkout = $user_checkout_class::getLast($this->user_session["id"], 'success');

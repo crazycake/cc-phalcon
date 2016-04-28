@@ -10,13 +10,13 @@ namespace CrazyCake\Core;
 //imports
 use Phalcon\Exception;
 //core
+use CrazyCake\Phalcon\AppModule;
 use CrazyCake\Helpers\UserAgent;
-use CrazyCake\Services\Guzzle;
 
 /**
  * WebCore for backend or frontend modules
  */
-abstract class WebCore extends AppCore implements WebSecurity
+abstract class WebCore extends MvcCore implements WebSecurity
 {
     /* consts */
     const ASSETS_MIN_FOLDER_PATH = 'assets/';
@@ -35,9 +35,6 @@ abstract class WebCore extends AppCore implements WebSecurity
      *
      */
     abstract protected function checkBrowserSupport($browser, $version);
-
-    /* traits */
-    use Guzzle;
 
     /**
      * User agent properties
@@ -189,8 +186,8 @@ abstract class WebCore extends AppCore implements WebSecurity
      */
     protected function _setAppAssets()
     {
-        $version   = self::getModuleConfigProp("version");
-        $staticUrl = self::getModuleConfigProp("staticUrl");
+        $version   = AppModule::getProperty("version");
+        $staticUrl = AppModule::getProperty("staticUrl");
 
         $css_url = $this->_staticUrl(self::ASSETS_MIN_FOLDER_PATH."app.css");
         $js_url  = $this->_staticUrl(self::ASSETS_MIN_FOLDER_PATH."app.js");
@@ -336,7 +333,7 @@ abstract class WebCore extends AppCore implements WebSecurity
             "baseUrl"   => $this->_baseUrl(),
             "staticUrl" => $this->_staticUrl(),
             "dev"       => (APP_ENVIRONMENT === "production") ? 0 : 1,
-            "version"   => self::getModuleConfigProp("version")
+            "version"   => AppModule::getProperty("version")
         ];
 
         //set custom properties

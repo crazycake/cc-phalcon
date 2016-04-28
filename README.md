@@ -12,7 +12,6 @@ Current Version: `2.0.x`
 ## Box Project
 
 - Used for building PHP phar files.
-- Files are autoloaded with `phalcon/AppLoader.php` class:
 - Documentation [ref](http://box-project.org/)
 
 ### Commands

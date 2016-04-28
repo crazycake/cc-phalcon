@@ -1,6 +1,6 @@
 <?php
 /**
- * App Core Controller, includes basic and helper methods for web & ws core controllers.
+ * Mvc Core Controller, includes basic and helper methods for web & ws core controllers.
  * Requires a Phalcon DI Factory Services
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
@@ -11,6 +11,8 @@ namespace CrazyCake\Core;
 use Phalcon\Mvc\Controller;
 use Phalcon\Exception;
 //core
+use CrazyCake\Phalcon\AppModule;
+use CrazyCake\Services\Guzzle;
 use CrazyCake\Models\BaseResultset;
 
 /**
@@ -24,9 +26,14 @@ interface WebSecurity
 /**
  * App Core for Web and Ws Cores
  */
-abstract class AppCore extends Controller
+abstract class MvcCore extends Controller
 {
+    /* Traits */
+    use Core;
+    use Guzzle;
+
     /* consts */
+    const HEADER_API_KEY       = 'X_API_KEY'; //HTTP header keys uses '_' for '-' in Phalcon
     const JSON_RESPONSE_STRUCT = '{"response":{"code":"200","status":"ok","payload":@payload}}';
 
     /**
@@ -40,12 +47,6 @@ abstract class AppCore extends Controller
      * @var array
      */
     protected $MSGS;
-
-    /**
-     * Sends an async request
-     * @param array $options - Options: controller, action, method, payload, socket, headers
-     */
-    abstract protected function _sendAsyncRequest($options = array());
 
     /**
      * on Construct event
@@ -101,43 +102,6 @@ abstract class AppCore extends Controller
     }
 
     /**
-     * Get Module Model Class Name
-     * A prefix can be set in module options
-     * @param string $key - The class module name uncamelize, example: 'some_class'
-     * @param boolean $prefix - Append prefix
-     */
-    protected function _getModuleClass($key = "", $prefix = true)
-    {
-        return self::getModuleClass($key, $prefix);
-    }
-
-    /**
-     * Get Module Model Class Name
-     * A prefix can be set in module options
-     * @param string $key - The class module name uncamelize, example: 'some_class'
-     * @param boolean $prefix - Append prefix (double slash)
-     */
-    public static function getModuleClass($key = "", $prefix = true)
-    {
-        //check for prefix in module settings
-        $class_name = \Phalcon\Text::camelize($key);
-
-        //auto prefixes: si la clase no exite, se define un prefijo
-        if(!class_exists($class_name)) {
-
-            switch (MODULE_NAME) {
-                case 'api':
-                    $class_name = "Ws$class_name";
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        return $prefix ? "\\$class_name" : $class_name;
-    }
-
-    /**
      * Sends a file to buffer output response
      * @param binary $data - The binary data to send
      * @param string $mime_type - The mime type
@@ -186,7 +150,7 @@ abstract class AppCore extends Controller
     {
         //set base url
         if(empty($options["base_url"]))
-            $options["base_url"] = empty($options["module"]) ? $this->_baseUrl() : self::getModuleUrl($options["module"]);
+            $options["base_url"] = empty($options["module"]) ? $this->_baseUrl() : AppModule::getUrl($options["module"]);
 
         //set uri
         if(empty($options["uri"]))
@@ -196,8 +160,8 @@ abstract class AppCore extends Controller
         if(!empty($options["module"]) && $options["module"] == "api") {
 
             //get API key header name
-            $api_key_header_value = self::getModuleConfigProp("key", "api");
-            $api_key_header_name  = str_replace("_", "-", \CrazyCake\Core\WsCore::HEADER_API_KEY);
+            $api_key_header_value = AppModule::getProperty("key", "api");
+            $api_key_header_name  = str_replace("_", "-", self::HEADER_API_KEY);
             $options["headers"]   = [$api_key_header_name => $api_key_header_value];
         }
 
@@ -212,10 +176,10 @@ abstract class AppCore extends Controller
         }
 
         //log asyn request
-        $this->logger->debug("AppCore::_asyncRequest -> Options: ".json_encode($options, JSON_UNESCAPED_SLASHES));
+        $this->logger->debug("MvcCore::_asyncRequest -> Options: ".json_encode($options, JSON_UNESCAPED_SLASHES));
 
-        //child method
-        $this->_sendAsyncRequest($options);
+        //guzzle method
+        $this->_newRequest($options);
     }
 
     /**
@@ -350,7 +314,7 @@ abstract class AppCore extends Controller
                 if(method_exists($this, '_sendJsonResponse'))
                     $this->_sendJsonResponse($code);
                 else
-                    throw new Exception("AppCore::_handleRequestParams -> _sendJsonResponse() must be implemented.");
+                    throw new Exception("MvcCore::_handleRequestParams -> _sendJsonResponse() must be implemented.");
 
             };
         }
@@ -488,20 +452,20 @@ abstract class AppCore extends Controller
     {
         //simple input validation
         if (empty($method))
-            throw new Exception("AppCore::_sendMailMessage -> method param is required.");
+            throw new Exception("MvcCore::_sendMailMessage -> method param is required.");
 
         //get the mailer controller name
-        $mailer_class = $this->_getModuleClass('mailer_controller');
+        $mailer_class = AppModule::getClass('mailer_controller');
 
         //checks that a MailerController exists
         if(!class_exists($mailer_class))
-            throw new Exception("AppCore::_sendMailMessage -> A Mailer Controller is required.");
+            throw new Exception("MvcCore::_sendMailMessage -> A Mailer Controller is required.");
 
         $mailer = new $mailer_class();
 
         //checks that a MailerController exists
         if(!method_exists($mailer, $method))
-            throw new Exception("AppCore::_sendMailMessage -> Method $method is not defined in Mailer Controller.");
+            throw new Exception("MvcCore::_sendMailMessage -> Method $method is not defined in Mailer Controller.");
 
         //call mailer class method (reflection)
         $response = $mailer->{$method}($data);
@@ -511,46 +475,8 @@ abstract class AppCore extends Controller
 
         //save response only for non production-environment
         if(APP_ENVIRONMENT !== "production")
-            $this->logger->debug('AppCore::_sendMailMessage -> Got response from MailerController:\n' . $response);
+            $this->logger->debug('MvcCore::_sendMailMessage -> Got response from MailerController:\n' . $response);
 
         return $response;
-    }
-
-    /**
-     * Logs database query & statements with phalcon event manager
-     * @param string $logFile - The log file name
-     */
-    protected function _logDatabaseStatements($logFile = "db.log")
-    {
-        //Listen all the database events
-        $eventsManager = new \Phalcon\Events\Manager();
-        $logger        = new \Phalcon\Logger\Adapter\File(APP_PATH."logs/".$logFile);
-
-        $eventsManager->attach('db', function ($event, $connection) use ($logger) {
-            //log SQL
-            if ($event->getType() == 'beforeQuery')
-                $logger->debug("AppCore:_logDatabaseStatements -> SQL:\n".$connection->getSQLStatement());
-        });
-        // Assign the eventsManager to the db adapter instance
-        $this->db->setEventsManager($eventsManager);
-    }
-
-    /**
-     * Dump a phalcon object for debugging
-     * For printing uses Kint library if available
-     * @param object $object - Any object
-     * @param boolean $exit - Flag for exit script execution
-     * @return mixed
-     */
-    protected function _dump($object, $exit = true)
-    {
-        $object = (new \Phalcon\Debug\Dump())->toJson($object);
-
-        //print output
-        class_exists("\\Kint") ? s($object) : print_r($object);
-
-        if($exit) exit;
-
-        return $object;
     }
 }

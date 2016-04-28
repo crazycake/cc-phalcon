@@ -10,25 +10,19 @@ namespace CrazyCake\Core;
 //imports
 use Phalcon\Exception;
 //core
-use CrazyCake\Services\Guzzle;
+use CrazyCake\Phalcon\AppModule;
 
 /**
  * Common functions for API WS
  */
-abstract class WsCore extends AppCore
+abstract class WsCore extends MvcCore
 {
-    /* consts */
-    const HEADER_API_KEY = 'X_API_KEY'; //HTTP header keys uses '_' for '-' in Phalcon
-
     const WS_RESPONSE_CACHE_PATH = APP_PATH.'cache/response/';
 
     /**
      * Welcome message for API server status
      */
     abstract protected function welcome();
-
-    /* traits */
-    use Guzzle;
 
     /**
      * API version
@@ -43,7 +37,7 @@ abstract class WsCore extends AppCore
         parent::onConstruct();
 
         //set API version
-        $this->version = self::getModuleConfigProp("version");
+        $this->version = AppModule::getProperty("version");
         // API Key Validation
         $this->_validateApiKey();
     }
@@ -145,8 +139,8 @@ abstract class WsCore extends AppCore
      */
     private function _validateApiKey()
     {
-        $apiKey     = self::getModuleConfigProp("key");
-        $keyEnabled = self::getModuleConfigProp("keyEnabled");
+        $apiKey     = AppModule::getProperty("key");
+        $keyEnabled = AppModule::getProperty("keyEnabled");
 
         if (!$keyEnabled)
             return;

@@ -9,12 +9,17 @@ namespace CrazyCake\Core;
 //phalcon imports
 use Phalcon\CLI\Task;
 use Phalcon\Exception;
+//core
+use CrazyCake\Phalcon\AppModule;
 
 /**
  * Common functions for CLI tasks
  */
 class TaskCore extends Task
 {
+    /* traits */
+    use Core;
+
     /**
      * Main Action Executer
      * @return void
@@ -94,7 +99,7 @@ class TaskCore extends Task
         if(!is_dir($assets_path))
             $this->_colorize("Assets path not found: $assets_path", "ERROR", true);
 
-        $version = self::getModuleConfigProp("version", $module_name);
+        $version = AppModule::getProperty("version", $module_name);
 
         if(!$version)
             $this->_colorize("Invalid version for $module_name", "ERROR", true);

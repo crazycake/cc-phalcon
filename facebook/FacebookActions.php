@@ -22,6 +22,7 @@ use Facebook\FacebookRequest;
 use Facebook\Helpers\FacebookJavaScriptHelper;
 use Facebook\Exceptions\FacebookSDKException;
 //CrazyCake Libs
+use CrazyCake\Phalcon\AppModule;
 use CrazyCake\Services\Redis;
 use CrazyCake\Helpers\Dates;
 
@@ -102,7 +103,7 @@ trait FacebookActions
     public function publish($user_fb, $object, $payload = array(), $attempt = 0)
     {
         //get user facebook data
-        $user_fb_class = $this->_getModuleClass('user_facebook_page');
+        $user_fb_class = AppModule::getClass('user_facebook_page');
 
         $fallbackAction = false;
         $exception      = false;
@@ -344,10 +345,10 @@ trait FacebookActions
     private function _getPageUser()
     {
         //get a facebook admin
-        if(!class_exists($this->_getModuleClass('user_facebook_page')))
+        if(!class_exists(AppModule::getClass('user_facebook_page')))
             throw new Exception("UserFacebook class not found [user_facebook_page]");
 
-        $fb_pages = $this->_getModuleClass('user_facebook_page');
+        $fb_pages = AppModule::getClass('user_facebook_page');
 
         $page = $fb_pages::findFirst("app_id = '".$this->config->app->facebook->appID."'");
 

@@ -59,7 +59,7 @@ def main():
 	APP.DB_PASS   = os.environ.get('DB_PASS')
 
 	#s3
-	APP.S3_BUCKET	  = config['app']['aws']['s3Bucket']
+	APP.S3_BUCKET	  = config['app']['aws']['s3Bucket'] + "-prod"
 	APP.S3_ACCESS_KEY = config['app']['aws']['accessKey']
 	APP.S3_SECRET_KEY = config['app']['aws']['secretKey']
 

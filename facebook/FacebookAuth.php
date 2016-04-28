@@ -18,6 +18,7 @@ use Facebook\Helpers\FacebookJavaScriptHelper;
 use Facebook\Exceptions\FacebookSDKException;
 use Facebook\Exceptions\FacebookResponseException;
 //CrazyCake Libs
+use CrazyCake\Phalcon\AppModule;
 use CrazyCake\Helpers\Dates;
 
 /**
@@ -250,7 +251,7 @@ trait FacebookAuth
             list($fb_id, $short_live_fac) = $data;
 
             //find user on db
-            $user_facebook_class = $this->_getModuleClass('user_facebook');
+            $user_facebook_class = AppModule::getClass('user_facebook');
             $user_fb = $user_facebook_class::getById($fb_id);
 
             if(!$user_fb || empty($short_live_fac))
@@ -480,8 +481,8 @@ trait FacebookAuth
     private function __loginUser($fac = null)
     {
         //get model classmap names
-        $user_class          = $this->_getModuleClass('user');
-        $user_facebook_class = $this->_getModuleClass('user_facebook');
+        $user_class          = AppModule::getClass('user');
+        $user_facebook_class = AppModule::getClass('user_facebook');
 
         //the data response
         $login_data = [];
@@ -602,7 +603,7 @@ trait FacebookAuth
     protected function _invalidateUser($fb_id = 0)
     {
         //get object class
-        $user_facebook_class = $this->_getModuleClass('user_facebook');
+        $user_facebook_class = AppModule::getClass('user_facebook');
         //get user & update properties
         $user_fb = $user_facebook_class::getById($fb_id);
 
@@ -685,7 +686,7 @@ trait FacebookAuth
      */
     private function __setUserAccessToken($fac = null, $user_id = 0)
     {
-        $user_facebook_class = $this->_getModuleClass('user_facebook');
+        $user_facebook_class = AppModule::getClass('user_facebook');
 
         //get stored fac if its null
         if(empty($fac)) {
@@ -716,8 +717,8 @@ trait FacebookAuth
      */
     private function __saveUser($user_id = null, $fb_id = null, $fac = null)
     {
-        $user_class          = $this->_getModuleClass('user');
-        $user_facebook_class = $this->_getModuleClass('user_facebook');
+        $user_class          = AppModule::getClass('user');
+        $user_facebook_class = AppModule::getClass('user_facebook');
 
         //Creates a Facebook User
         $user_fb             = new $user_facebook_class();

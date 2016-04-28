@@ -7,6 +7,7 @@
 namespace CrazyCake\Checkout;
 
 //imports
+use CrazyCake\Phalcon\AppModule;
 use CrazyCake\Helpers\Forms;
 
 /**
@@ -109,7 +110,7 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
             return false;
 
         //get classes
-        $user_checkout_class = \CrazyCake\Core\AppCore::getModuleClass("user_checkout");
+        $user_checkout_class = AppModule::getClass("user_checkout");
         //get checkouts objects class
         $class_model = static::who();
 

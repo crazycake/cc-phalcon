@@ -6,6 +6,9 @@
 
 namespace CrazyCake\Tickets;
 
+//core
+use CrazyCake\Phalcon\AppModule;
+
 /**
  * Base User Tickets Model
  */
@@ -55,7 +58,7 @@ class BaseUserTicket extends \CrazyCake\Models\Base
     public function initialize()
     {
         //get class
-        $user_class = \CrazyCake\Core\AppCore::getModuleClass("user", false);
+        $user_class = AppModule::getClass("user", false);
         //model relations
         $this->hasOne("user_id", $user_class, "id");
 
@@ -154,7 +157,7 @@ class BaseUserTicket extends \CrazyCake\Models\Base
             return false;
 
         //return user object
-        $user_class = \CrazyCake\Core\AppCore::getModuleClass("user", false);
+        $user_class = AppModule::getClass("user", false);
 
         return $user_class::getById($ticket->user_id);
     }

@@ -27,17 +27,17 @@ trait Guzzle
 	/**
      * Do a asynchronously request through Guzzle
      * @param array $options - Options:
-     *              +base_url: The request base URL
-     *              +uri: The request URI
-     *              +payload: The encrypted string params data
-     *              +method: The HTTP method (GET, POST)
-     *              +socket: Makes async call as socket connection
+     * +base_url: The request base URL
+     * +uri: The request URI
+     * +payload: The encrypted string params data
+     * +method: The HTTP method (GET, POST)
+     * +socket: Makes async call as socket connection
      */
-    protected function _sendAsyncRequest($options = array())
+    protected function _newRequest($options = array())
     {
         //simple input validation
         if (empty($options["base_url"]) || empty($options["uri"]))
-            throw new Exception("Guzzle::sendAsyncRequest -> base_url & uri method params are required.");
+            throw new Exception("Guzzle::newRequest -> base_url & uri method params are required.");
 
         if(empty($options["payload"]))
             $options["payload"] = "";
@@ -66,7 +66,7 @@ trait Guzzle
 
         //log error
         $di = \Phalcon\DI::getDefault();
-        $di->getShared('logger')->error("Guzzle::sendAsyncRequest -> Options: ".json_encode($options, JSON_UNESCAPED_SLASHES).", Exception: ".$exception->getMessage().
+        $di->getShared('logger')->error("Guzzle::newRequest -> Options: ".json_encode($options, JSON_UNESCAPED_SLASHES).", Exception: ".$exception->getMessage().
                                         "\n".$exception->getLine()." ".$e->getFile());
     }
 

@@ -10,6 +10,9 @@ namespace CrazyCake\Account;
 
 //imports
 use Phalcon\Exception;
+
+//core
+use CrazyCake\Phalcon\AppModule;
 use CrazyCake\Helpers\Forms;
 use CrazyCake\Helpers\ReCaptcha;
 
@@ -100,8 +103,8 @@ trait AccountAuth
         //get decrypted data
         try {
             //get model classes
-            $user_class  = $this->_getModuleClass('user');
-            $tokens_class = $this->_getModuleClass('user_token');
+            $user_class  = AppModule::getClass('user');
+            $tokens_class = AppModule::getClass('user_token');
             //handle the encrypted data with parent controller
             $data = $tokens_class::handleUserTokenValidation($encrypted_data);
             //assign values
@@ -157,7 +160,7 @@ trait AccountAuth
         ]);
 
         //get model classes
-        $user_class = $this->_getModuleClass('user');
+        $user_class = AppModule::getClass('user');
         //find this user
         $user = $user_class::getUserByEmail($data['email']);
 
@@ -218,7 +221,7 @@ trait AccountAuth
         $data["last_name"]  = mb_convert_case($data["last_name"], MB_CASE_TITLE, 'UTF-8');
 
         //get model classes
-        $user_class = $this->_getModuleClass('user');
+        $user_class = AppModule::getClass('user');
         //set pending email confirmation status
         $data['account_flag'] = 'pending';
 
@@ -257,7 +260,7 @@ trait AccountAuth
         }
 
         //get model classes
-        $user_class = $this->_getModuleClass('user');
+        $user_class = AppModule::getClass('user');
         $user = $user_class::getUserByEmail($data['email'], 'pending');
 
         //check if user exists is a pending account

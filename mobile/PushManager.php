@@ -8,6 +8,8 @@ namespace CrazyCake\Mobile;
 
 //imports
 use Phalcon\Exception;
+//core
+use CrazyCake\Phalcon\AppModule;
 
 /**
  * Push Manager
@@ -39,7 +41,7 @@ trait PushManager
             throw new Exception("missing input params");
 
         //get model class
-        $push_class = $this->_getModuleClass('push_notification');
+        $push_class = AppModule::getClass('push_notification');
 
         //check if subscriber exits
         $subscriber = $push_class::getSubscriber($data["service"], $data["uuid"]);
@@ -99,7 +101,7 @@ trait PushManager
             throw new Exception("missing input params");
 
         //get model class
-        $push_class = $this->_getModuleClass('push_notification');
+        $push_class = AppModule::getClass('push_notification');
 
         //check if subscriber exits
         $subscriber = $push_class::getSubscriber($data["service"], $data["uuid"]);
@@ -161,7 +163,7 @@ trait PushManager
         $this->_setClient("apn");
 
         //get model class
-        $push_class = $this->_getModuleClass('push_notification');
+        $push_class = AppModule::getClass('push_notification');
         //set response data
         $successful_delivers = 0;
 		$failed_delivers 	 = 0;
@@ -223,7 +225,7 @@ trait PushManager
         $this->_setClient("gcm");
 
         //get model class
-        $push_class = $this->_getModuleClass('push_notification');
+        $push_class = AppModule::getClass('push_notification');
         //set response data
         $successful_delivers = 0;
 		$failed_delivers 	 = 0;

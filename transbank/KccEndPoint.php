@@ -9,17 +9,14 @@
 
 namespace CrazyCake\Transbank;
 
-use CrazyCake\Core\AppCore;
-use CrazyCake\Services\Guzzle;
+use CrazyCake\Phalcon\AppModule;
+use CrazyCake\Core\MvcCore;
 
 /**
  * KccEndPoint Class
  */
-class KccEndPoint extends AppCore
+class KccEndPoint extends MvcCore
 {
-    /* traits */
-    use Guzzle;
-
     // URI SUCCES TRX Handler
     const SUCCESS_URI_HANDLER = "webpay/successTrx/";
     // MAC file prefix name
@@ -91,7 +88,7 @@ class KccEndPoint extends AppCore
         );
 
         //get users checkouts class
-        $user_checkout_class = $this->_getModuleClass('user_checkout');
+        $user_checkout_class = AppModule::getClass('user_checkout');
         //get checkout obejct
         $checkout = $user_checkout_class::findFirstByBuyOrder($TBK_ORDEN_COMPRA);
 

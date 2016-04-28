@@ -2,4 +2,4 @@
 /**
  * cc-phalcon Autoload file
  */
-require "phalcon/AppLoader.php";
+require "phalcon/App.php";

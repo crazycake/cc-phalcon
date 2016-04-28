@@ -7,6 +7,7 @@
 namespace CrazyCake\Checkout;
 
 //other imports
+use CrazyCake\Phalcon\AppModule;
 use CrazyCake\Helpers\Dates;
 use CrazyCake\Helpers\Forms;
 
@@ -68,7 +69,7 @@ class BaseUserCheckoutTrx extends \CrazyCake\Models\Base
     public function initialize()
     {
         //get class
-        $user_checkout_class = \CrazyCake\Core\AppCore::getModuleClass("user_checkout", false);
+        $user_checkout_class = AppModule::getClass("user_checkout", false);
         //model relations
         $this->hasOne("buy_order", $user_checkout_class, "buy_order");
     }

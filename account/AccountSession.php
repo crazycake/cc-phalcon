@@ -8,6 +8,7 @@
 namespace CrazyCake\Account;
 
 //core
+use CrazyCake\Phalcon\AppModule;
 use CrazyCake\Helpers\Dates;
 
 /**
@@ -52,7 +53,7 @@ trait AccountSession
             return;
 
         //check enable SSL option
-        $enableSSL = self::getModuleConfigProp("enableSSL");
+        $enableSSL = AppModule::getProperty("enableSSL");
 
         //if enabledSSL, force redirect for non-https request
         if( APP_ENVIRONMENT === 'production'
@@ -104,7 +105,7 @@ trait AccountSession
             if (!is_array($user_session) || !isset($user_session['id']) || !isset($user_session['auth']))
                 return false;
 
-            $user_class = $this->_getModuleClass('user');
+            $user_class = AppModule::getClass('user');
             if ($user_class::getById($user_session['id']) == false)
                 return false;
 
@@ -136,7 +137,7 @@ trait AccountSession
     protected function _setUserSessionAsLoggedIn($user_id)
     {
         //get user data from DB
-        $user_class = $this->_getModuleClass('user');
+        $user_class = AppModule::getClass('user');
         $user       = $user_class::getById($user_id);
 
         if (!$user)
@@ -246,7 +247,7 @@ trait AccountSession
     {
         //get user session
         $user_session = $this->session->get("user");
-        $user_class   = $this->_getModuleClass('user');
+        $user_class   = AppModule::getClass('user');
         //get user
         $user = $user_class::getById($user_session['id']);
 

@@ -140,7 +140,7 @@ $js_recaptcha = isset($js_recaptcha) ? $js_recaptcha : false;
        {# debug: output render time #}
         {% if constant("APP_ENVIRONMENT") != "production" %}
             <script>
-                console.log('App Core -> PhalconPHP <?php echo \Phalcon\Version::get(); ?>. Page rendered in <?php echo number_format((float)(microtime(true) - EXEC_START), 3, ".", ""); ?> seconds.');
+                console.log('App Core -> PhalconPHP <?php echo \Phalcon\Version::get(); ?>. Page rendered in <?php echo number_format((float)(microtime(true) - APP_START), 3, ".", ""); ?> seconds.');
             </script>
         {% endif %}
 

@@ -44,8 +44,9 @@ class StorageS3
      * @param string $access - AWS access Key
      * @param string $secret - AWS secret key
      * @param string $bucket - The AWS S3 bucket name
+     * @param boolean $autoenv - Automatically sets a env suffix for dev & production
      */
-    function __construct($access, $secret, $bucket)
+    function __construct($access = "", $secret = "", $bucket = "", $autoenv = true)
     {
         if(empty($access)) {
             throw new Exception("StorageS3::__construct -> param access is required and must be an non-empty value.");
@@ -57,9 +58,15 @@ class StorageS3
             throw new Exception("StorageS3::__construct -> param bucket is required and must be an non-empty value.");
         }
 
+        //set app AWS S3 bucket
+        $suffix = "";
+
+        if($autoenv && defined("APP_ENVIRONMENT"))
+            $suffix = (APP_ENVIRONMENT === 'production') ? '-prod' : "-dev";
+
         $this->accessKey  = $access;
         $this->secretKey  = $secret;
-        $this->bucketName = $bucket;
+        $this->bucketName = $bucket.$suffix;
 
         try {
             $this->s3 = new S3($this->accessKey, $this->secretKey);

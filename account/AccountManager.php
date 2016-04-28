@@ -10,6 +10,8 @@ namespace CrazyCake\Account;
 
 //imports
 use Phalcon\Exception;
+//core
+use CrazyCake\Phalcon\AppModule;
 
 /**
  * Account Manager for already loggedIn users
@@ -74,7 +76,7 @@ trait AccountManager
         ];
 
         //get model class name
-        $user_class = $this->_getModuleClass('user');
+        $user_class = AppModule::getClass('user');
         //get user
         $user = $user_class::getById($this->user_session['id']);
         //validate user
