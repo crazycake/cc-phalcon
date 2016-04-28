@@ -31,11 +31,11 @@ class QRMaker
 	function __construct($log_path, $cache_path = null)
 	{
 		if (empty($log_path))
-			throw new Exception("QRMaker Library -> App Log path parameters are required.");
+			throw new Exception("QRMaker Library -> Log path parameters are required.");
 		else if (!is_dir($log_path))
-			throw new Exception("QRMaker Library -> App Log path (".$log_path.") not found.");
+			throw new Exception("QRMaker Library -> Log path (".$log_path.") not found.");
 		else if (!is_dir($cache_path))
-			throw new Exception("QRMaker Library -> App Cache path (".$cache_path.") not found.");
+			throw new Exception("QRMaker Library -> Cache path (".$cache_path.") not found.");
 
         $this->init($log_path, $cache_path);
 
