@@ -320,7 +320,7 @@ trait FacebookAuth
                     throw new Exception("invalid Facebook Signed Request: ".json_encode($fb_data));
 
                 //invalidate user
-                $this->_invalidateUser($fb_data["fb_id"]);
+                $this->_invalidateAccessToken($fb_data["fb_id"]);
                 //set data Response
                 $data = $fb_data["fb_id"];
             }
@@ -395,6 +395,7 @@ trait FacebookAuth
             $payload = ["status" => true, "fb_id" => $fb_data['fb_id'], "perms" => $perms];
         }
         catch (Exception $e) {
+
             $payload = ["status" => false, "exception" => $e->getMessage()];
         }
 
@@ -418,7 +419,7 @@ trait FacebookAuth
             $this->_sendJsonResponse(404);
 
         //invalidate user
-        $this->_invalidateUser($this->user_session['fb_id']);
+        $this->_invalidateAccessToken($this->user_session['fb_id']);
         //send JSON response
         $this->_sendJsonResponse(200);
     }
@@ -600,7 +601,7 @@ trait FacebookAuth
      * Invalidates a facebook user
      * @param int $fb_id - The Facebook user ID
      */
-    protected function _invalidateUser($fb_id = 0)
+    protected function _invalidateAccessToken($fb_id = 0)
     {
         //get object class
         $user_facebook_class = AppModule::getClass('user_facebook');
