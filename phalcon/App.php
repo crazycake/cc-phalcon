@@ -35,21 +35,25 @@ abstract class App extends AppModule implements AppLoader
     private $di;
 
     /**
-     * Constructor
-     * @access protected
+     * Class loader
      */
-    public function load()
+    public function loadClasses()
     {
         //load webapp directories
         $this->_directoriesSetup();
         //load clases
         $this->_autoloadClasses();
-        //set environment setup (APP_ENVIRONMENT & APP_BASE_URL)
-        $this->_environmentSetUp();
+    }
+
+    /**
+     * DI loader
+     */
+    public function setDI()
+    {
         //set dabase configs
         $this->_databaseSetup();
         //set DI services (requires composer)
-        $this->_setAppDependencyInjector();
+        $this->_setServices();
     }
 
     /**
@@ -62,83 +66,86 @@ abstract class App extends AppModule implements AppLoader
         //set routes function
         $routes_fn = is_file(APP_PATH."config/routes.php") ? include APP_PATH."config/routes.php" : null;
 
-        if(MODULE_NAME == "cli") {
-            //new cli app
-            $app = new \Phalcon\CLI\Console($this->di);
-            //loop through args
-            $arguments = [];
+        switch (MODULE_NAME) {
 
-            if(is_null($argv))
-                die("Phalcon Console -> no args supplied\n");
+            case "cli":
+                //new cli app
+                $app = new \Phalcon\CLI\Console($this->di);
+                //loop through args
+                $arguments = [];
 
-            //set args data
-            foreach ($argv as $k => $arg) {
-                switch ($k) {
-                    case 0: break;
-                    case 1: $arguments['task']        = $arg; break;
-                    case 2: $arguments['action']      = $arg; break;
-                    default: $arguments['params'][$k] = $arg; break;
+                if(is_null($argv))
+                    die("Phalcon Console -> no args supplied\n");
+
+                //set args data
+                foreach ($argv as $k => $arg) {
+                    switch ($k) {
+                        case 0: break;
+                        case 1: $arguments["task"]        = $arg; break;
+                        case 2: $arguments["action"]      = $arg; break;
+                        default: $arguments["params"][$k] = $arg; break;
+                    }
                 }
-            }
 
-            //checks that array param was set
-            if(!isset($arguments['params']))
-                $arguments['params'] = [];
+                //checks that array param was set
+                if(!isset($arguments["params"]))
+                    $arguments["params"] = [];
 
-            //order params
-            if(count($arguments['params']) > 0) {
-                $params = array_values($arguments['params']);
-                $arguments['params'] = $params;
-            }
+                //order params
+                if(count($arguments["params"]) > 0) {
+                    $params = array_values($arguments["params"]);
+                    $arguments["params"] = $params;
+                }
 
-            //define global constants for the current task and action
-            define('CLI_TASK',   isset($argv[1]) ? $argv[1] : null);
-            define('CLI_ACTION', isset($argv[2]) ? $argv[2] : null);
+                //define global constants for the current task and action
+                define("CLI_TASK",   isset($argv[1]) ? $argv[1] : null);
+                define("CLI_ACTION", isset($argv[2]) ? $argv[2] : null);
 
-            //handle incoming arguments
-            $app->handle($arguments);
-        }
-        else if(MODULE_NAME == "api") {
+                //handle incoming arguments
+                $app->handle($arguments);
+                break;
 
-            //new micro app
-            $app = new \Phalcon\Mvc\Micro($this->di);
-            //apply a routes function if param given (must be done before object instance)
-            if(is_callable($routes_fn))
-                $routes_fn($app);
+            case "api":
+                //new micro app
+                $app = new \Phalcon\Mvc\Micro($this->di);
+                //apply a routes function if param given (must be done before object instance)
+                if(is_callable($routes_fn))
+                    $routes_fn($app);
 
-            //Handle the request
-            echo $app->handle();
-        }
-        else {
+                //Handle the request
+                echo $app->handle();
+                break;
 
-            //apply a routes function if param given (must be done after object instance)
-            if(is_callable($routes_fn)) {
-                //creates a router object (for use custom URL behavior use 'false' param)
-                $router = new \Phalcon\Mvc\Router();
-                //Remove trailing slashes automatically
-                $router->removeExtraSlashes(true);
-                //apply a routes function
-                $routes_fn($router);
-                //Register the router in the DI
-                $this->di->set('router', function() use (&$router) {
-                    return $router;
-                });
-            }
+            default:
+                //apply a routes function if param given (must be done after object instance)
+                if(is_callable($routes_fn)) {
+                    //creates a router object (for use custom URL behavior use 'false' param)
+                    $router = new \Phalcon\Mvc\Router();
+                    //Remove trailing slashes automatically
+                    $router->removeExtraSlashes(true);
+                    //apply a routes function
+                    $routes_fn($router);
+                    //Register the router in the DI
+                    $this->di->set('router', function() use (&$router) {
+                        return $router;
+                    });
+                }
 
-            //new mvc app
-            $app = new \Phalcon\Mvc\Application($this->di);
-            //set output
-            $output = $app->handle()->getContent();
+                //new mvc app
+                $app = new \Phalcon\Mvc\Application($this->di);
+                //set output
+                $output = $app->handle()->getContent();
 
-            //return output if argv is true
-            if($argv)
-                return $output;
+                //return output if argv is true
+                if($argv)
+                    return $output;
 
-            //Handle the request
-            if(APP_ENVIRONMENT !== 'local')
-                ob_start([$this,"_minifyOutput"]); //call function
+                //Handle the request
+                if(APP_ENVIRONMENT !== 'local')
+                    ob_start([$this,"_minifyOutput"]); //call function
 
-            echo $output;
+                echo $output;
+                break;
         }
     }
 
@@ -195,7 +202,7 @@ abstract class App extends AppModule implements AppLoader
      * Set App Dependency Injector
      * @access private
      */
-    private function _setAppDependencyInjector()
+    private function _setServices()
     {
         //get DI preset services for module
         $services = new AppServices($this);
@@ -326,60 +333,13 @@ abstract class App extends AppModule implements AppLoader
     }
 
     /**
-     * Set Environment properties
-     * @access private
-     */
-    private function _environmentSetUp()
-    {
-        //load .env file configuration with Dotenv
-        $envfile = PROJECT_PATH.".env";
-        $dotenv  = new \Dotenv\Dotenv(PROJECT_PATH);
-
-        if(is_file($envfile))
-            $dotenv->load();
-
-        //SET APP_ENVIRONMENT
-        if(getenv('APP_DEBUG')) {
-            ini_set('display_errors', 1);
-            error_reporting(E_ALL);
-        }
-        else {
-            ini_set('display_errors', 0);
-            error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
-        }
-
-        //set default environment
-        $app_base_url    = PROJECT_PATH;
-        $app_environment = getenv('APP_ENV');
-
-        //Check for CLI execution & CGI execution
-        if (php_sapi_name() !== 'cli') {
-
-            if(!isset($_REQUEST))
-                throw new Exception("App -> Missing REQUEST data: ".json_encode($_SERVER)." && ".json_encode($_REQUEST));
-
-            //set localhost if host is not set
-            if(!isset($_SERVER['HTTP_HOST']))
-                $_SERVER['HTTP_HOST'] = "127.0.0.1";
-
-            $app_base_url = (isset($_SERVER["HTTPS"]) ? "https://" : "http://").
-                              $_SERVER['HTTP_HOST'].preg_replace('@/+$@', '', dirname($_SERVER['SCRIPT_NAME'])).'/';
-        }
-
-        //set environment consts & self vars
-        define("APP_ENVIRONMENT", $app_environment);
-        define("APP_BASE_URL", $app_base_url);
-        //var_dump(APP_ENVIRONMENT, APP_BASE_URL);exit;
-    }
-
-    /**
      * Minifies HTML output
      * @param string $buffer - The input buffer
      */
      private function _minifyOutput($buffer)
      {
-        $search  = array('/\>[^\S ]+/s', '/[^\S ]+\</s', '/(\s)+/s');
-        $replace = array('>','<','\\1');
+        $search  = ['/\>[^\S ]+/s', '/[^\S ]+\</s', '/(\s)+/s'];
+        $replace = ['>','<','\\1'];
 
         if (preg_match("/\<html/i",$buffer) == 1 && preg_match("/\<\/html\>/i",$buffer) == 1)
             $buffer = preg_replace($search, $replace, $buffer);

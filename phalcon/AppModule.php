@@ -12,10 +12,16 @@ namespace CrazyCake\Phalcon;
 interface AppLoader
 {
     /**
-     * Loads application
+     * Loads app classes
      * @return array
      */
-    public function load();
+    public function loadClasses();
+
+    /**
+     * Sets Dependency Injector
+     * @return array
+     */
+    public function setDI();
 }
 
 /**
@@ -66,7 +72,7 @@ abstract class AppModule
 
         //define APP contants
         define("PROJECT_PATH", $config["projectPath"]);
-        define("MODULE_NAME", $mod_name);
+        define("MODULE_NAME", strtolower($mod_name));
         define("MODULE_PATH", PROJECT_PATH.MODULE_NAME."/");
         define("PACKAGES_PATH", PROJECT_PATH."packages/");
         define("COMPOSER_PATH", PACKAGES_PATH."composer/");
@@ -74,12 +80,14 @@ abstract class AppModule
         define("APP_PATH", MODULE_PATH."app/");
         define("APP_START", microtime(true));  //for debugging render time
 
-        //this setup configurations
+        //call class loader
+        $this->loadClasses();
+        //module setup configurations
+        $this->_environment();
+        //app setup
         $this->_setup($config["app"]);
-
-        //call loader
-        if(method_exists($this, "load"))
-            $this->load();
+        //set DI
+        $this->setDI();
     }
 
     /**
@@ -137,32 +145,107 @@ abstract class AppModule
      */
     public static function getUrl($module = "", $uri = "", $type = "base")
     {
-        if(APP_ENVIRONMENT === "production") {
+        //get module
+        $module = empty($module) ? MODULE_NAME : strtolower($module);
+        //get base uri
+        $app_base_uri = getenv("APP_URI_".strtoupper($module));
+        //set base URL
+        $base_url = empty($app_base_uri) ? null : (isset($_SERVER["HTTPS"]) ? "https://" : "http://").$app_base_uri;
 
-            //production
-            $baseUrl   = self::getProperty("baseUrl", $module);
-            $staticUrl = self::getProperty("staticUrl", $module);
+        //environments
+        switch (APP_ENVIRONMENT) {
 
-            if(!$staticUrl)
-                $staticUrl = $baseUrl;
+            case "staging":
+            case "production":
 
-            //set URL
-            $url = ($type == "static" && $staticUrl) ? $staticUrl : $baseUrl;
+                //check if static url is set
+                $static_url = self::getProperty("staticUrl", $module);
+
+                if(empty($base_url))
+                    $base_url = self::getProperty("baseUrl", $module);
+
+                //set URL
+                $base_url = ($type == "static" && $static_url) ? $static_url : $base_url;
+                break;
+
+            case "local":
+
+                if(empty($base_url))
+                    $base_url = str_replace(['/api/', '/frontend/', '/backend/'], "/$module/", APP_BASE_URL);
+
+                break;
+
+            default:
+
+                if(empty($base_url))
+                    $base_url = str_replace(['.api.', '.frontend.', '.backend.'], ".$module.", APP_BASE_URL);
+
+                break;
         }
-        else if(APP_ENVIRONMENT === "local") {
 
-            $url = str_replace(['/api/', '/frontend/', '/backend/'], "/$module/", APP_BASE_URL);
-        }
-        else {
-
-            $url = str_replace(['.api.', '.frontend.', '.backend.'], ".$module.", APP_BASE_URL);
-        }
-
-        return $url.$uri;
+        return $base_url.$uri;
     }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
+    /**
+     * Set Module Environment properties
+     * @access private
+     */
+    private function _environment()
+    {
+        //load .env file configuration with Dotenv
+        $envfile = PROJECT_PATH.".env";
+        $dotenv  = new \Dotenv\Dotenv(PROJECT_PATH);
+
+        if(is_file($envfile))
+            $dotenv->load();
+
+        //get ENV Vars
+        $app_debug       = getenv("APP_DEBUG");
+        $app_environment = getenv("APP_ENV");
+        $app_base_uri    = getenv("APP_URI_".strtoupper(MODULE_NAME));
+
+        //set APP debug environment
+        if($app_debug) {
+            ini_set("display_errors", 1);
+            error_reporting(E_ALL);
+        }
+        else {
+            ini_set("display_errors", 0);
+            error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
+        }
+
+        //set base URL (project path for CGI & CLI)
+        $app_base_url = empty($app_base_uri) ? PROJECT_PATH : (isset($_SERVER["HTTPS"]) ? "https://" : "http://").$app_base_uri;
+
+        //Check for CLI execution & CGI execution
+        if (php_sapi_name() !== "cli") {
+
+            if(!isset($_REQUEST))
+                throw new Exception("AppModule -> Missing REQUEST data: ".json_encode($_SERVER)." && ".json_encode($_REQUEST));
+
+            //set localhost if host is not set
+            if(!isset($_SERVER['HTTP_HOST']))
+                $_SERVER['HTTP_HOST'] = "127.0.0.1";
+
+            //fallback for missing env var
+            if(empty($app_base_uri)) {
+                $app_base_url = (isset($_SERVER["HTTPS"]) ? "https://" : "http://").
+                                       $_SERVER['HTTP_HOST'].preg_replace('@/+$@', '', dirname($_SERVER['SCRIPT_NAME'])).'/';
+            }
+        }
+
+        //set environment consts & self vars
+        define("APP_ENVIRONMENT", $app_environment);
+        define("APP_BASE_URL", $app_base_url);
+        //var_dump(APP_ENVIRONMENT, APP_BASE_URL);exit;
+    }
+
+    /**
+     * App configs
+     * @param  array $conf - the input configuration
+     */
     private function _setup($conf = array())
     {
         //langs
