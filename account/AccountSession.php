@@ -8,7 +8,6 @@
 namespace CrazyCake\Account;
 
 //core
-use CrazyCake\Phalcon\AppLoader;
 use CrazyCake\Helpers\Dates;
 
 /**
@@ -53,7 +52,7 @@ trait AccountSession
             return;
 
         //check enable SSL option
-        $enableSSL = AppLoader::getModuleConfigProp("enableSSL");
+        $enableSSL = self::getModuleConfigProp("enableSSL");
 
         //if enabledSSL, force redirect for non-https request
         if( APP_ENVIRONMENT === 'production'

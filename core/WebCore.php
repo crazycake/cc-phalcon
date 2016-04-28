@@ -10,7 +10,6 @@ namespace CrazyCake\Core;
 //imports
 use Phalcon\Exception;
 //core
-use CrazyCake\Phalcon\AppLoader;
 use CrazyCake\Helpers\UserAgent;
 use CrazyCake\Services\Guzzle;
 
@@ -190,8 +189,8 @@ abstract class WebCore extends AppCore implements WebSecurity
      */
     protected function _setAppAssets()
     {
-        $version   = AppLoader::getModuleConfigProp("version");
-        $staticUrl = AppLoader::getModuleConfigProp("staticUrl");
+        $version   = self::getModuleConfigProp("version");
+        $staticUrl = self::getModuleConfigProp("staticUrl");
 
         $css_url = $this->_staticUrl(self::ASSETS_MIN_FOLDER_PATH."app.css");
         $js_url  = $this->_staticUrl(self::ASSETS_MIN_FOLDER_PATH."app.js");
@@ -337,7 +336,7 @@ abstract class WebCore extends AppCore implements WebSecurity
             "baseUrl"   => $this->_baseUrl(),
             "staticUrl" => $this->_staticUrl(),
             "dev"       => (APP_ENVIRONMENT === "production") ? 0 : 1,
-            "version"   => AppLoader::getModuleConfigProp("version")
+            "version"   => self::getModuleConfigProp("version")
         ];
 
         //set custom properties

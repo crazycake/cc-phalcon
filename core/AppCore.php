@@ -11,7 +11,6 @@ namespace CrazyCake\Core;
 use Phalcon\Mvc\Controller;
 use Phalcon\Exception;
 //core
-use CrazyCake\Phalcon\AppLoader;
 use CrazyCake\Models\BaseResultset;
 
 /**
@@ -187,7 +186,7 @@ abstract class AppCore extends Controller
     {
         //set base url
         if(empty($options["base_url"]))
-            $options["base_url"] = empty($options["module"]) ? $this->_baseUrl() : AppLoader::getModuleUrl($options["module"]);
+            $options["base_url"] = empty($options["module"]) ? $this->_baseUrl() : self::getModuleUrl($options["module"]);
 
         //set uri
         if(empty($options["uri"]))
@@ -197,8 +196,8 @@ abstract class AppCore extends Controller
         if(!empty($options["module"]) && $options["module"] == "api") {
 
             //get API key header name
+            $api_key_header_value = self::getModuleConfigProp("key", "api");
             $api_key_header_name  = str_replace("_", "-", \CrazyCake\Core\WsCore::HEADER_API_KEY);
-            $api_key_header_value = AppLoader::getModuleConfigProp("key", "api");
             $options["headers"]   = [$api_key_header_name => $api_key_header_value];
         }
 
