@@ -123,7 +123,7 @@ trait FacebookActions
             if(!$fallbackAction) {
 
                 //create a unique day key for user, qr_hash & time
-                $key   = sha1($payload["action"].$payload["qr_hash"].date('Y-m-d'));
+                $key   = sha1($user_fb->id.$payload["action"].date('Y-m-d'));
                 $count = $this->redis->get($key);
 
                 //increment action
@@ -171,10 +171,14 @@ trait FacebookActions
      */
     private function _checkinAction($user_fb, $object, $fallbackAction = false, $count = 0)
     {
-        if($fallbackAction)
+        if($fallbackAction) {
+
             throw new Exception("Checkin publish action failed (fb error).");
-        else if($this->facebook_actions_conf["publish_day_limit"] && $count > 1)
+        }
+        else if($this->facebook_actions_conf["publish_day_limit"] && $count > 1) {
+
             throw new Exception("User reached checkin max post times for today (app restriction)");
+        }
 
         //get event facebook object
         $fb_object = $object->{$this->facebook_actions_conf["object_fb_relation"]};
@@ -213,10 +217,14 @@ trait FacebookActions
      */
     private function _storyAction($user_fb, $object, $fallbackAction = false, $count = 0)
     {
-        if($fallbackAction)
+        if($fallbackAction) {
+
             throw new Exception("Story publish action failed (fb error).");
-        else if($this->facebook_actions_conf["publish_day_limit"] && $count > 1)
+        }
+        else if($this->facebook_actions_conf["publish_day_limit"] && $count > 1) {
+
             throw new Exception("User reached story max post times for today (app restriction)");
+        }
 
         //get event facebook object
         $fb_object = $object->{$this->facebook_actions_conf["object_fb_relation"]};
@@ -277,8 +285,9 @@ trait FacebookActions
         //get event facebook object
         $fb_object = $object->{$this->facebook_actions_conf["object_fb_relation"]};
 
-        if(!$fb_object)
+        if(!$fb_object) {
             throw new Exception("Facebook Object is not set up (".$this->facebook_actions_conf["object_fb_relation"].").");
+        }
 
         $msg = !is_null($fb_object->photo_text) ? $fb_object->photo_text : $this->facebook_actions_conf["og_default_message"];
 
