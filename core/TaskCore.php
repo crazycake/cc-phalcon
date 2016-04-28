@@ -189,4 +189,26 @@ class TaskCore extends Task
 
         return $module;
     }
+
+    /**
+     * API Request
+     * @param  array  $options - The HTTP options
+     */
+    protected function _apiRequest($options = array())
+    {
+        //set base url
+        if(empty($options["base_url"]))
+            $options["base_url"] = AppModule::getProperty("baseUrl", "api");
+
+        //get API key header name
+        $api_key_header_value = AppModule::getProperty("key", "api");
+        $api_key_header_name  = str_replace("_", "-", WsCore::HEADER_API_KEY);
+        $options["headers"]   = [$api_key_header_name => $api_key_header_value];
+
+        //log asyn request
+        $this->logger->debug("TaskCore::_apiRequest -> Options: ".json_encode($options, JSON_UNESCAPED_SLASHES));
+
+        //guzzle method
+        $this->_newRequest($options);
+    }
 }
