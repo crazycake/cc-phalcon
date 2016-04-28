@@ -136,7 +136,7 @@ abstract class App extends AppModule implements AppLoader
 
             //Handle the request
             if(APP_ENVIRONMENT !== 'local')
-                ob_start([$this,"_minifyHTML"]); //call function
+                ob_start([$this,"_minifyOutput"]); //call function
 
             echo $output;
         }
@@ -376,7 +376,7 @@ abstract class App extends AppModule implements AppLoader
      * Minifies HTML output
      * @param string $buffer - The input buffer
      */
-     private function _minifyHTML($buffer)
+     private function _minifyOutput($buffer)
      {
         $search  = array('/\>[^\S ]+/s', '/[^\S ]+\</s', '/(\s)+/s');
         $replace = array('>','<','\\1');
