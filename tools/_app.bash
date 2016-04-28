@@ -85,15 +85,18 @@ appDeploy() {
 	# build app first
 	appBuild
 
-	echo -e "\033[95mChecking CDN_SYNC env var... \033[0m"
-	cd $PROJECT_PATH
+	# only staging or production
+	if [ "$1" = "-s" ] || [ "$1" = "-p" ]; then
+		echo -e "\033[95mChecking CDN_SYNC env var... \033[0m"
+		cd $PROJECT_PATH
 
-	if [ "$CDN_SYNC_BACKEND" = "1" ]; then
-		bash _app.bash aws-cdn -b
-	fi
+		if [ "$CDN_SYNC_BACKEND" = "1" ]; then
+			bash _app.bash aws-cdn -b
+		fi
 
-	if [ "$CDN_SYNC_FRONTEND" = "1" ]; then
-		bash _app.bash aws-cdn -f
+		if [ "$CDN_SYNC_FRONTEND" = "1" ]; then
+			bash _app.bash aws-cdn -f
+		fi
 	fi
 
 	#call deploy bash file
