@@ -547,7 +547,7 @@ trait FacebookAuth
 
                     //user don't have an account, checking facebook email...
                     if(!$this->__filterEmail($properties["email"], $properties["fb_id"]))
-                        throw new Exception(str_replace("{email}", $email, $this->facebook_auth_conf['trans']['invalid_email']));
+                        throw new Exception($this->facebook_auth_conf['trans']['invalid_email']);
 
                     //check existing user with input email
                     $user = $user_class::getUserByEmail($properties['email']);
