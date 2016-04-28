@@ -94,12 +94,13 @@ trait Guzzle
         if(!empty($options["headers"]))
             $guzzle_options["headers"] = $options["headers"];
 
-
         //check params
-        $params = "/".$options["payload"];
-
-        if(isset($options["query-string"]) && $options["query-string"])
+        if(isset($options["query-string"]) && $options["query-string"]) {
             $params = http_build_query($options["payload"]);
+        }
+        else {
+            $params = "/".$options["payload"];
+        }
 
         //set promise
         $promise = $client->requestAsync("GET", $options["uri"].$params, $guzzle_options);
