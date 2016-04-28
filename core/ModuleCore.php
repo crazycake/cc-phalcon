@@ -64,4 +64,40 @@ trait ModuleCore
     {
         return self::getModuleClass($key, $prefix);
     }
+
+    /**
+     * Get a module URL from current environment
+     * For production use defined URIS, for dev local folders path
+     * and for staging or testing URI replacement
+     * @static
+     * @param  string $module - The module name
+     * @param  string $uri - A uri to be appended
+     * @param  string $type - The url path type: 'base' or 'static'
+     * @return string
+     */
+    public static function getModuleUrl($module = "", $uri = "", $type = "base")
+    {
+        if(APP_ENVIRONMENT === "production") {
+
+            //production
+            $baseUrl   = self::getModuleConfigProp("baseUrl", $module);
+            $staticUrl = self::getModuleConfigProp("staticUrl", $module);
+
+            if(!$staticUrl)
+                $staticUrl = $baseUrl;
+
+            //set URL
+            $url = ($type == "static" && $staticUrl) ? $staticUrl : $baseUrl;
+        }
+        else if(APP_ENVIRONMENT === "local") {
+
+            $url = str_replace(['/api/', '/frontend/', '/backend/'], "/$module/", APP_BASE_URL);
+        }
+        else {
+
+            $url = str_replace(['.api.', '.frontend.', '.backend.'], ".$module.", APP_BASE_URL);
+        }
+
+        return $url.$uri;
+    }
 }
