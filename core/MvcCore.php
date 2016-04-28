@@ -33,7 +33,6 @@ abstract class MvcCore extends Controller
     use Guzzle;
 
     /* consts */
-    const HEADER_API_KEY       = 'X_API_KEY'; //HTTP header keys uses '_' for '-' in Phalcon
     const JSON_RESPONSE_STRUCT = '{"response":{"code":"200","status":"ok","payload":@payload}}';
 
     /**
@@ -161,7 +160,7 @@ abstract class MvcCore extends Controller
 
             //get API key header name
             $api_key_header_value = AppModule::getProperty("key", "api");
-            $api_key_header_name  = str_replace("_", "-", self::HEADER_API_KEY);
+            $api_key_header_name  = str_replace("_", "-", WsCore::HEADER_API_KEY);
             $options["headers"]   = [$api_key_header_name => $api_key_header_value];
         }
 

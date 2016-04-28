@@ -11,6 +11,7 @@ use Phalcon\CLI\Task;
 use Phalcon\Exception;
 //core
 use CrazyCake\Phalcon\AppModule;
+use CrazyCake\Services\Guzzle;
 
 /**
  * Common functions for CLI tasks
@@ -19,6 +20,7 @@ class TaskCore extends Task
 {
     /* traits */
     use Core;
+    use Guzzle;
 
     /**
      * Main Action Executer
