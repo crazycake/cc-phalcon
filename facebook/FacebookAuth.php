@@ -500,13 +500,13 @@ trait FacebookAuth
             $user_session = $this->_getUserSessionData(); //get app session
             $user_fb      = $user_facebook_class::getById($properties["fb_id"]);
 
-            //check if user is logged, have a FB user, and he is attempting to login facebook with another account
+            //check if user is already logged In, don't a have a FB, and he is attempting to login facebook with another account
             if ($user_session && $user_session["fb_id"] && $user_session["fb_id"] != $properties["fb_id"]) {
                 $this->logger->error("Facebook::__loginUser() -> App Session fb_id (".$user_session["fb_id"].") & sdk session (".$properties["fb_id"].") data doesn't match.");
                 throw new Exception($this->facebook_auth_conf['trans']['session_switched']);
             }
 
-            //check user is logged in, don't a have a FB user and the logged in user has another user id.
+            //check if user is already logged In, have a FB user and is linked to another user
             if ($user_session && $user_fb && $user_fb->user_id != $user_session["id"]) {
                 $this->logger->error("Facebook::__loginUser() -> App Session fb_id (".$user_session["fb_id"].") & sdk session (".$properties["fb_id"].") data doesn't match.");
                 throw new Exception($this->facebook_auth_conf['trans']['account_switched']);
@@ -516,7 +516,7 @@ trait FacebookAuth
             $user = $user_fb ? $user_fb->user : null;
             //var_dump($properties["fb_id"], $user_fb);exit;
 
-            //skip user insertion?
+            //if user has already a facebook link....
             if ($user) {
 
                 //disabled account
@@ -530,31 +530,33 @@ trait FacebookAuth
                 //set auth state
                 $login_data["auth"] = "existing_user";
             }
+            //user don't have facebook link...
             else {
 
                 //set account flag as active & auth state
                 $properties['account_flag'] = "enabled";
                 $login_data["auth"]         = "new_user";
 
-                //email validation
-                if (empty($properties['email']) || !filter_var($properties['email'], FILTER_VALIDATE_EMAIL)) {
+                //check if user is already logged in
+                if($user_session) {
 
-                    $this->logger->error("Facebook::__loginUser() -> Facebook Session (".$properties["fb_id"].") invalid email: ".$properties['email']);
-                    //invalidate email user
-                    $request = $this->fb->delete('/me/permissions');
-
-                    throw new Exception(str_replace("{email}", $properties['email'], $this->facebook_auth_conf['trans']['invalid_email']));
+                    $user = $user_class::getById($user_session['id']);
                 }
+                //first time logged in
+                else {
 
-                //check existing user with input email
-                $user = $user_class::getUserByEmail($properties['email']);
+                    //user don't have an account, checking facebook email...
+                    if(!$this->__filterEmail($properties["email"], $properties["fb_id"]))
+                        throw new Exception(str_replace("{email}", $email, $this->facebook_auth_conf['trans']['invalid_email']));
 
-                if(!$user) {
+                    //check existing user with input email
+                    if(!$user_class::getUserByEmail($properties['email'])) {
 
-                    //insert user
-                    $user = new $user_class();
-                    if (!$user->save($properties))
-                        $this->_sendJsonResponse(200, $user->filterMessages(), "alert");
+                        //insert user
+                        $user = new $user_class();
+                        if (!$user->save($properties))
+                            $this->_sendJsonResponse(200, $user->filterMessages(), "alert");
+                    }
                 }
             }
 
@@ -574,6 +576,7 @@ trait FacebookAuth
         catch (FacebookSDKException $e)      { $exception = $e; }
         catch (Exception $e)                 { $exception = $e; }
         catch (\Exception $e)                { $exception = $e; }
+
         //throw one exception type
         if ($exception) {
 
@@ -733,6 +736,26 @@ trait FacebookAuth
         }
 
         return $user_fb;
+    }
+
+    /**
+     * Validate Facebook Email
+     * @param string $email - The props email
+     * @param int $fb_id - Facebook Id Optional
+     * @return [type] [description]
+     */
+    private function __filterEmail($email = "", $fb_id = 0)
+    {
+        //email validation
+        if (!empty($email) && filter_var($email, FILTER_VALIDATE_EMAIL))
+            return true;
+
+        $this->logger->error("Facebook::__loginUser() -> Facebook Session (".$fb_id.") invalid email: ".$email);
+
+        //invalidate email user
+        $request = $this->fb->delete('/me/permissions');
+
+        return false;
     }
 
     /**
