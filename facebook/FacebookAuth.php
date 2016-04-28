@@ -550,7 +550,9 @@ trait FacebookAuth
                         throw new Exception(str_replace("{email}", $email, $this->facebook_auth_conf['trans']['invalid_email']));
 
                     //check existing user with input email
-                    if(!$user_class::getUserByEmail($properties['email'])) {
+                    $user = $user_class::getUserByEmail($properties['email']);
+
+                    if(!$user) {
 
                         //insert user
                         $user = new $user_class();
