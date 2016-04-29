@@ -191,14 +191,14 @@ class TaskCore extends Task
     }
 
     /**
-     * API Request
-     * @param  array  $options - The HTTP options
+     * Async Request
+     * @param  array $options - The HTTP options
      */
-    protected function _apiRequest($options = array())
+    protected function _asyncRequest($options = array())
     {
         //set base url
         if(empty($options["base_url"]))
-            $options["base_url"] = AppModule::getProperty("baseUrl", "api");
+            $this->_colorize("Base URL is required", "ERROR", true);
 
         //get API key header name
         $api_key_header_value = AppModule::getProperty("key", "api");

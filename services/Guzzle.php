@@ -119,8 +119,14 @@ trait Guzzle
         $verify_host = (APP_ENVIRONMENT != "production") ? false : 2;
         $verify_peer = (APP_ENVIRONMENT != "production") ? false : true;
 
+        //form params
+        if(is_array($options["payload"]))
+            $form_params = $options["payload"];
+        else
+            $form_params = ["payload" => $options["payload"]];
+
         $guzzle_options = [
-            'form_params' => ["payload" => $options["payload"]],
+            'form_params' => $form_params,
             'curl' => [
                 CURLOPT_SSL_VERIFYHOST => $verify_host,
                 CURLOPT_SSL_VERIFYPEER => $verify_peer
@@ -209,7 +215,16 @@ trait Guzzle
             $length = 0;
         }
         else {
-            $options["payload"] = "payload=".$options["payload"];
+
+            //create a concatenated string
+            if(is_array($options["payload"])) {
+                $options["payload"] = http_build_query($options["payload"], '','&');
+            }
+            //default behavior
+            else {
+                $options["payload"] = "payload=".$options["payload"];
+            }
+
             $length = strlen($options["payload"]);
         }
 
@@ -234,7 +249,7 @@ trait Guzzle
         if ($options["method"] == "POST" && !empty($options["payload"])) {
             $out .= $options["payload"];
         }
-        //$this->logger->debug("Guzzle::_socketAsync -> sending out request ".print_r($out, true));
+        $this->logger->debug("Guzzle::_socketAsync -> sending out request ".print_r($out, true));
 
         fwrite($socket, $out);
         fclose($socket);
