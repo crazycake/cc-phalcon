@@ -43249,10 +43249,10 @@ module.exports = function() {
 
     //set dynamic required props as default values
     if(_.isUndefined(APP.UI.alert))
-        APP.UI.alert = { position : "fixed", top : "5%", topForSmall : "0" };
+        APP.UI.alert = { position : "fixed", top : "5%", top_small : "0" };
 
     if(_.isUndefined(APP.UI.loading))
-        APP.UI.loading = { position : "fixed", top : "25%", topForSmall : "25%" };
+        APP.UI.loading = { position : "fixed", top : "25%", top_small : "25%" };
 
     //++ jQuery setup
 
@@ -43267,7 +43267,7 @@ module.exports = function() {
      * @method init
      * @param {Array} modules - The required modules
      */
-    self.setModules = function (modules) {
+    self.setModules = function(modules) {
 
         if(!modules.length)
             return;
@@ -43356,7 +43356,7 @@ module.exports = function() {
      * @method loadModules
      * @param {Object} modules - The modules oject
      */
-    self.loadModules = function (modules) {
+    self.loadModules = function(modules) {
 
         var mod_name, mod, vm, data;
 
@@ -43606,7 +43606,7 @@ module.exports = function() {
      * @param  {Object} x - The jQuery Response object
      * @param  {String} error - The jQuery error object
      */
-    self.handleAjaxError = function (x, error) {
+    self.handleAjaxError = function(x, error) {
 
         //set message null as default
         var message = null;
@@ -43741,7 +43741,7 @@ module.exports = function() {
 
                 div_alert.addClass("small-screen");
                 //center(x,y)
-                div_alert.center(APP.UI.alert.position, APP.UI.alert.topForSmall);
+                div_alert.center(APP.UI.alert.position, APP.UI.alert.top_small);
                 return;
             }
 
@@ -43862,7 +43862,7 @@ module.exports = function() {
             if(self.checkScreenSize("small"))
                 loading_obj.addClass("small-screen");
 
-            var top = self.checkScreenSize("small") ? APP.UI.loading.topForSmall : APP.UI.loading.top;
+            var top = self.checkScreenSize("small") ? APP.UI.loading.top_small : APP.UI.loading.top;
 
             if(typeof APP.UI.loading.center != "undefined" && APP.UI.loading.center)
                 loading_obj.center(APP.UI.loading.position, top);

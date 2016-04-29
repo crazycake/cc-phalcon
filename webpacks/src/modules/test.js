@@ -20,12 +20,12 @@ var model = function() {
         alert : {
             position    : "fixed",
             top         : "belowHeader",
-            topForSmall : "0"
+            top_small : "0"
         },
         loading : {
             position    : "fixed",
             top         : "14%",
-            topForSmall : "20%",
+            top_small : "20%",
             center      : true
         }
     });
