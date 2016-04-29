@@ -200,6 +200,9 @@ trait Mailer
         //css file
         $css_file = $this->mailer_conf["css_file"];
 
+        //append app var
+        $data["app"] = $this->config->app;
+
         //get the style file
         $html = $this->simpleView->render("mails/$mail", $data);
         $css  = file_get_contents($css_file);
@@ -207,6 +210,7 @@ trait Mailer
         $emogrifier = new Emogrifier($html, $css);
         $emogrifier->addExcludedSelector("head");
         $emogrifier->addExcludedSelector("meta");
+
         $html = $emogrifier->emogrify();
 
         return $html;
