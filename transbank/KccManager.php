@@ -95,7 +95,7 @@ trait KccManager
 
         //pass data to view
         $this->view->setVars([
-            "webpayInputs" => $inputs
+            "webpay_inputs" => $inputs
         ]);
     }
 
@@ -162,7 +162,7 @@ trait KccManager
 
             //NOTE: sending a warning to admin users!
             $mailer = AppModule::getClass("mailer_controller");
-            
+
             (new $mailer())->sendSystemMail([
                 "subject" => "Trx handler error",
                 "to"      => $this->config->app->emails->support,
