@@ -66,7 +66,7 @@ trait FacebookActions
     /**
      * This method must be call in constructor parent class
      */
-    public function initFacebookActions($conf = array())
+    public function initFacebookActions($conf = [])
     {
         //set confs
         $this->facebook_actions_conf = $conf;
@@ -84,10 +84,10 @@ trait FacebookActions
         if(is_null($this->fb)) {
 
             $this->fb = new \Facebook\Facebook([
-                'app_id'     => $this->config->app->facebook->appID,
-                'app_secret' => $this->config->app->facebook->appKey,
+                "app_id"     => $this->config->app->facebook->appID,
+                "app_secret" => $this->config->app->facebook->appKey,
                 //api version
-                'default_graph_version' => "v2.5"
+                "default_graph_version" => "v2.5"
             ]);
         }
     }
@@ -100,30 +100,30 @@ trait FacebookActions
      * @param int $attempt - Fallback exception, retry
      * @return string - The object ID
      */
-    public function publish($user_fb, $object, $payload = array(), $attempt = 0)
+    public function publish($user_fb, $object, $payload = [], $attempt = 0)
     {
         //get user facebook data
-        $user_fb_class = AppModule::getClass('user_facebook_page');
+        $user_fb_class = AppModule::getClass("user_facebook_page");
 
-        $fallbackAction = false;
-        $exception      = false;
+        $is_fallback = false;
+        $exception   = false;
 
         //if user dont have a linked FB account.
         if(!is_object($user_fb) || !isset($user_fb->fac))
-            $fallbackAction = true;
+            $is_fallback = true;
 
         //for fallback, switch to user page data
-        if($fallbackAction)
+        if($is_fallback)
             $user_fb = $this->_getPageUser();
 
         try {
 
             //checkin action only once
             $count = 0;
-            if(!$fallbackAction) {
+            if(!$is_fallback) {
 
                 //create a unique day key for user, qr_hash & time
-                $key   = sha1($user_fb->id.$payload["action"].date('Y-m-d'));
+                $key   = sha1($user_fb->id.$payload["action"].date("Y-m-d"));
                 $count = $this->redis->get($key);
 
                 //increment action
@@ -133,10 +133,10 @@ trait FacebookActions
             //actions
             $method = "_".$payload["action"]."Action";
             //reflection
-            $object_id = $this->$method($user_fb, $object, $fallbackAction, $count+1);
+            $object_id = $this->$method($user_fb, $object, $is_fallback, $count+1);
             //log response
             $this->logger->debug("FacebookActions::publishAction -> FB Object created, facebook UserId: $user_fb->id. Payload: ".$payload["action"].". Data: ".json_encode($object_id));
-            //var_dump($response, $fallbackAction, $object_id);exit;
+            //var_dump($response, $is_fallback, $object_id);exit;
 
             //call listener
             return $object_id;
@@ -166,12 +166,12 @@ trait FacebookActions
      * Checkin action
      * @param object $user_fb - The ORM facebook user
      * @param object $object - The open graph object
-     * @param boolean $fallbackAction - The action is a fallback
+     * @param boolean $is_fallback - The action is a fallback
      * @param int $count - The number of times this action was triggered
      */
-    private function _checkinAction($user_fb, $object, $fallbackAction = false, $count = 0)
+    private function _checkinAction($user_fb, $object, $is_fallback = false, $count = 0)
     {
-        if($fallbackAction) {
+        if($is_fallback) {
 
             throw new Exception("Checkin publish action failed (fb error).");
         }
@@ -202,9 +202,9 @@ trait FacebookActions
         //print_r($data);exit;
 
         //set response
-        $response = $this->fb->post('me/feed', $data, $user_fb->fac)->getGraphNode();
+        $response = $this->fb->post("me/feed", $data, $user_fb->fac)->getGraphNode();
 
-        return is_object($response) ? $response->getField('id') : null;
+        return is_object($response) ? $response->getField("id") : null;
     }
 
     /**
@@ -212,12 +212,12 @@ trait FacebookActions
      * TODO: fix start & end date
      * @param object $user_fb - The ORM facebook user
      * @param object $object - The open graph object
-     * @param boolean $fallbackAction - The action is a fallback
+     * @param boolean $is_fallback - The action is a fallback
      * @param int $count - The number of times this action was triggered
      */
-    private function _storyAction($user_fb, $object, $fallbackAction = false, $count = 0)
+    private function _storyAction($user_fb, $object, $is_fallback = false, $count = 0)
     {
-        if($fallbackAction) {
+        if($is_fallback) {
 
             throw new Exception("Story publish action failed (fb error).");
         }
@@ -242,11 +242,11 @@ trait FacebookActions
 
         $story_object = $this->facebook_actions_conf["og_namespace"].":".$this->facebook_actions_conf["og_story_object"];
         //push open graph object
-        $response = $this->fb->post('me/objects/'.$story_object,
+        $response = $this->fb->post("me/objects/".$story_object,
                              ["object" => $object], $user_fb->fac)
                              ->getGraphNode();
         //get OG object id
-        $object_id = is_object($response) ? $response->getField('id') : false;
+        $object_id = is_object($response) ? $response->getField("id") : false;
 
         if(!$object_id)
             throw new Exception("Invalid facebook open graph: ".(int)$object_id);
@@ -263,24 +263,24 @@ trait FacebookActions
             "no_feed_story" => false,
             //set time to control action verb
             "start_time" => gmdate("Y-m-d\TH:i:s"),    //example "2015-06-18T18:30:30-00:00"
-            "end_time"   => (new \DateTime())->modify('+2 day')->format("Y-m-d\TH:i:s") //end time, HARDCODED
+            "end_time"   => (new \DateTime())->modify("+2 day")->format("Y-m-d\TH:i:s") //end time, HARDCODED
         ];
         //print_r($params);exit;
         $action   = $this->facebook_actions_conf["og_namespace"].":".$this->facebook_actions_conf["og_story_action"];
-        $response = $this->fb->post('/me/'.$action, $data, $user_fb->fac)->getGraphNode();
+        $response = $this->fb->post("/me/".$action, $data, $user_fb->fac)->getGraphNode();
         //print_r($response);exit;
 
-        return is_object($response) ? $response->getField('id') : null;
+        return is_object($response) ? $response->getField("id") : null;
     }
 
     /**
      * Upload a photo
      * @param object $user_fb - The ORM facebook user
      * @param object $object - The open graph object
-     * @param boolean $fallbackAction - The action is a fallback
+     * @param boolean $is_fallback - The action is a fallback
      * @param int $count - The number of times this action was triggered
      */
-    private function _photoAction($user_fb, $object, $fallbackAction = false, $count = 0)
+    private function _photoAction($user_fb, $object, $is_fallback = false, $count = 0)
     {
         //get event facebook object
         $fb_object = $object->{$this->facebook_actions_conf["object_fb_relation"]};
@@ -317,25 +317,25 @@ trait FacebookActions
         }
 
         //set action URI
-        if($fallbackAction)
+        if($is_fallback)
             $action_uri = !is_null($fb_object->album_id) ? $fb_object->album_id."/photos" : $user_fb->id."/photos";
         else
             $action_uri = $user_fb->id."/photos";
 
-        // Upload to a user's profile. The photo will be in the first album in the profile. You can also upload to
+        // Upload to a user"s profile. The photo will be in the first album in the profile. You can also upload to
         // a specific album by using /ALBUM_ID as the path
         $response  = null;
         $exception = false;
 
         try {
             $data = [
-                'source'  => $this->fb->fileToUpload($file_path),
-                'message' => $msg
+                "source"  => $this->fb->fileToUpload($file_path),
+                "message" => $msg
             ];
             //fb request
             $response = $this->fb->post("/$action_uri", $data, $user_fb->fac)->getGraphNode();
 
-            return is_object($response) ? $response->getField('post_id') : null;
+            return is_object($response) ? $response->getField("post_id") : null;
         }
         catch (FacebookSDKException $e) { $response = $e; }
         catch (Exception $e)            { $response = $e; }
@@ -354,12 +354,12 @@ trait FacebookActions
     private function _getPageUser()
     {
         //get a facebook admin
-        if(!class_exists(AppModule::getClass('user_facebook_page')))
+        if(!class_exists(AppModule::getClass("user_facebook_page")))
             throw new Exception("UserFacebook class not found [user_facebook_page]");
 
-        $fb_pages = AppModule::getClass('user_facebook_page');
+        $fb_pages = AppModule::getClass("user_facebook_page");
 
-        $page = $fb_pages::findFirst("app_id = '".$this->config->app->facebook->appID."'");
+        $page = $fb_pages::findFirstByAppId($this->config->app->facebook->appID);
 
         if(!$page)
             throw new Exception("no page found for fb app id: ".$this->config->app->facebook->appID);
@@ -413,10 +413,8 @@ trait FacebookActions
      */
     protected function _base64ToJpg($base64_string = "", $output_file = "")
     {
-        $ifp = fopen($output_file, "wb");
-
-        $data = explode(',', $base64_string);
-
+        $ifp  = fopen($output_file, "wb");
+        $data = explode(",", $base64_string);
         $body = isset($data[1]) ? $data[1] : $data[0];
 
         fwrite($ifp, base64_decode($body));

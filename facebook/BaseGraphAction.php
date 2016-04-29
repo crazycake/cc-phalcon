@@ -62,6 +62,6 @@ class BaseGraphAction extends \CrazyCake\Models\Base
     public function initialize()
     {
         //Skips fields/columns on both INSERT/UPDATE operations
-        $this->skipAttributes(['_ext']);
+        $this->skipAttributes(["_ext"]);
     }
 }

@@ -21,7 +21,7 @@ use Phalcon\Crypt;
 class Cryptify
 {
     /* consts */
-    const DEFAULT_CIPHER = 'blowfish';
+    const DEFAULT_CIPHER = "blowfish";
 
     /**
      * Phalcon Crypt Library Instance
@@ -75,7 +75,7 @@ class Cryptify
         $encrypted = $this->crypt->encrypt($data);
 
         //encrypt string
-        $hash = str_replace('%', '-', rawurlencode(base64_encode($encrypted)));
+        $hash = str_replace("%", "-", rawurlencode(base64_encode($encrypted)));
 
         return $hash;
     }
@@ -93,9 +93,9 @@ class Cryptify
                 return false;
 
             //decrypt string
-            $decrypted_string = $this->crypt->decrypt(base64_decode(rawurldecode(str_replace('-', '%', $hash))));
+            $decrypted_string = $this->crypt->decrypt(base64_decode(rawurldecode(str_replace("-", "%", $hash))));
             //remove null bytes in string
-            $data = str_replace(chr(0), '', $decrypted_string);
+            $data = str_replace(chr(0), "", $decrypted_string);
 
             if($parse) {
                 $data = is_string($parse) ? explode($parse, $data) : json_decode($data);

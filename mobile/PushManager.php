@@ -41,7 +41,7 @@ trait PushManager
             throw new Exception("missing input params");
 
         //get model class
-        $push_class = AppModule::getClass('push_notification');
+        $push_class = AppModule::getClass("push_notification");
 
         //check if subscriber exits
         $subscriber = $push_class::getSubscriber($data["service"], $data["uuid"]);
@@ -101,7 +101,7 @@ trait PushManager
             throw new Exception("missing input params");
 
         //get model class
-        $push_class = AppModule::getClass('push_notification');
+        $push_class = AppModule::getClass("push_notification");
 
         //check if subscriber exits
         $subscriber = $push_class::getSubscriber($data["service"], $data["uuid"]);
@@ -138,16 +138,19 @@ trait PushManager
     {
         //set clients
         switch ($service) {
+
             case "apn":
                 //set sandbox mode
                 $this->config->app->apn->sandbox = APP_ENVIRONMENT != "production" ? true : false;
                 //set apn client
                 $this->apn = new APN((array)$this->config->app->apn);
                 break;
+
             case "gcm":
                 //set gcm client
                 $this->gcm = new GCM((array)$this->config->app->gcm);
                 break;
+
             default:
                 break;
         }
@@ -163,7 +166,7 @@ trait PushManager
         $this->_setClient("apn");
 
         //get model class
-        $push_class = AppModule::getClass('push_notification');
+        $push_class = AppModule::getClass("push_notification");
         //set response data
         $successful_delivers = 0;
 		$failed_delivers 	 = 0;
@@ -179,7 +182,7 @@ trait PushManager
             $subscriber = $push_class::getSubscriber("apn", $uuid);
 
             if(!$subscriber)
-                throw new Exception("APN subscriber '$uuid' not found");
+                throw new Exception("APN subscriber $uuid not found");
 
             //badge & payload logic
             $subscriber->updatePayload($data["payload"]);
@@ -225,7 +228,7 @@ trait PushManager
         $this->_setClient("gcm");
 
         //get model class
-        $push_class = AppModule::getClass('push_notification');
+        $push_class = AppModule::getClass("push_notification");
         //set response data
         $successful_delivers = 0;
 		$failed_delivers 	 = 0;
@@ -245,7 +248,7 @@ trait PushManager
             $subscriber = $push_class::getSubscriber("gcm", $uuid);
 
             if(!$subscriber)
-                throw new Exception("GCM subscriber '$uuid' not found");
+                throw new Exception("GCM subscriber $uuid not found");
 
             //badge & payload logic
             $subscriber->updatePayload($data["payload"]);

@@ -83,8 +83,8 @@ module.exports = function() {
 
             var mod = modules[i];
 
-            if(typeof mod.moduleName !== "undefined")
-                self.modules[mod.moduleName] = mod;
+            if(typeof mod.name !== "undefined")
+                self.modules[mod.name] = mod;
         }
     };
 
@@ -553,15 +553,16 @@ module.exports = function() {
             }
 
             //normal screens
-            var topValue = APP.UI.alert.top;
+            var top_value = APP.UI.alert.top;
             //special cases
-            if(topValue == "belowHeader") {
+            if(top_value == "belowHeader") {
+
                 var header = $(APP.UI.sel_header);
-                topValue = header.length ? header.position().top + header.outerHeight() : "0";
+                top_value  = header.length ? header.position().top + header.outerHeight() : "0";
             }
 
             //set CSS position x,y
-            div_alert.center(APP.UI.alert.position, topValue);
+            div_alert.center(APP.UI.alert.position, top_value);
         };
         //call method
         center_object();
@@ -628,11 +629,11 @@ module.exports = function() {
 
         messages.each(function(index) {
             //set a delay to show once at a time
-            var html_content = $(this).html();
+            var html = $(this).html();
             var type = $(this).attr("class");
             //show message
-            if(html_content.length)
-                self.showAlert(html_content, type);
+            if(html.length)
+                self.showAlert(html, type);
         });
 
         return true;
@@ -755,12 +756,12 @@ module.exports = function() {
         //check if client supports retina
         var isRetina = function() {
 
-            var mediaQuery = '(-webkit-min-device-pixel-ratio: 1.5), (min--moz-device-pixel-ratio: 1.5), (-o-min-device-pixel-ratio: 3/2), (min-resolution: 1.5dppx)';
+            var media_query = '(-webkit-min-device-pixel-ratio: 1.5), (min--moz-device-pixel-ratio: 1.5), (-o-min-device-pixel-ratio: 3/2), (min-resolution: 1.5dppx)';
 
             if (window.devicePixelRatio > 1)
                 return true;
 
-            if (window.matchMedia && window.matchMedia(mediaQuery).matches)
+            if (window.matchMedia && window.matchMedia(media_query).matches)
                 return true;
 
             return false;

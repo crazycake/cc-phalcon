@@ -5,13 +5,13 @@
 module.exports = function() {
 
     //++ Module
-    var self        = this;
-    self.moduleName = "auth";
+    var self  = this;
+    self.name = "auth";
 
     //++ View Model
     self.vm = {
         data : {
-            loginInputEmail : ""
+            email : ""
         },
         methods : {}
     };

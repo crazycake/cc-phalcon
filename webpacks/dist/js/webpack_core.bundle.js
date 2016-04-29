@@ -43104,13 +43104,13 @@ var template = Object.freeze({
 module.exports = function() {
 
     //++ Module
-    var self        = this;
-    self.moduleName = "auth";
+    var self  = this;
+    self.name = "auth";
 
     //++ View Model
     self.vm = {
         data : {
-            loginInputEmail : ""
+            email : ""
         },
         methods : {}
     };
@@ -43276,8 +43276,8 @@ module.exports = function() {
 
             var mod = modules[i];
 
-            if(typeof mod.moduleName !== "undefined")
-                self.modules[mod.moduleName] = mod;
+            if(typeof mod.name !== "undefined")
+                self.modules[mod.name] = mod;
         }
     };
 
@@ -43746,15 +43746,16 @@ module.exports = function() {
             }
 
             //normal screens
-            var topValue = APP.UI.alert.top;
+            var top_value = APP.UI.alert.top;
             //special cases
-            if(topValue == "belowHeader") {
+            if(top_value == "belowHeader") {
+
                 var header = $(APP.UI.sel_header);
-                topValue = header.length ? header.position().top + header.outerHeight() : "0";
+                top_value  = header.length ? header.position().top + header.outerHeight() : "0";
             }
 
             //set CSS position x,y
-            div_alert.center(APP.UI.alert.position, topValue);
+            div_alert.center(APP.UI.alert.position, top_value);
         };
         //call method
         center_object();
@@ -43821,11 +43822,11 @@ module.exports = function() {
 
         messages.each(function(index) {
             //set a delay to show once at a time
-            var html_content = $(this).html();
+            var html = $(this).html();
             var type = $(this).attr("class");
             //show message
-            if(html_content.length)
-                self.showAlert(html_content, type);
+            if(html.length)
+                self.showAlert(html, type);
         });
 
         return true;
@@ -43948,12 +43949,12 @@ module.exports = function() {
         //check if client supports retina
         var isRetina = function() {
 
-            var mediaQuery = '(-webkit-min-device-pixel-ratio: 1.5), (min--moz-device-pixel-ratio: 1.5), (-o-min-device-pixel-ratio: 3/2), (min-resolution: 1.5dppx)';
+            var media_query = '(-webkit-min-device-pixel-ratio: 1.5), (min--moz-device-pixel-ratio: 1.5), (-o-min-device-pixel-ratio: 3/2), (min-resolution: 1.5dppx)';
 
             if (window.devicePixelRatio > 1)
                 return true;
 
-            if (window.matchMedia && window.matchMedia(mediaQuery).matches)
+            if (window.matchMedia && window.matchMedia(media_query).matches)
                 return true;
 
             return false;
@@ -44059,8 +44060,8 @@ module.exports = function() {
 module.exports = function() {
 
 	//++ Module
-    var self        = this;
-    self.moduleName = "facebook";
+    var self  = this;
+    self.name = "facebook";
 
     //Check that facebook conf is set
     if(_.isUndefined(APP.facebookAppID) || _.isUndefined(UA))
@@ -44421,8 +44422,8 @@ module.exports = function() {
 module.exports = function() {
 
     //++ Module
-    var self        = this;
-    self.moduleName = "forms";
+    var self  = this;
+    self.name = "forms";
 
     //++ Components
     Vue.component('birthday-selector', {
@@ -44557,13 +44558,13 @@ module.exports = function() {
             throw new Error("App Core -> form object has no formValidation instance.");
 
         //check for input hidden fields that are required
-        var inputHiddens = form.find('input[type="hidden"][data-fv-excluded="false"]');
+        var inputs_hidden = form.find('input[type="hidden"][data-fv-excluded="false"]');
 
-        if(inputHiddens.length) {
+        if(inputs_hidden.length) {
 
             if(APP.dev) { console.log("App Core -> Revalidating hidden inputs..."); }
             //loop
-            inputHiddens.each(function() {
+            inputs_hidden.each(function() {
                 //revalidate field
                 form.data('formValidation').revalidateField($(this));
             });
@@ -44575,7 +44576,9 @@ module.exports = function() {
         var is_valid = form.data('formValidation').isValid();
 
         if(!is_valid && APP.dev) {
+
             console.log("App Core -> Some form element(s) are not valid:");
+
             form.data('formValidation').getInvalidFields().each(function() {
                 console.log($(this).attr("name"), $(this));
             });
@@ -44635,11 +44638,11 @@ module.exports = function() {
     /**
      * Add a dynamic field to form
      * @method addField
-     * @param  {String} fieldName - The field name
+     * @param  {String} field_name - The field name
      * @param  {Object} context - A jQuery object or native element
-     * @param  {Object} validatorsObj - Validators Object (formValidation)
+     * @param  {Object} validators_obj - Validators Object (formValidation)
      */
-    self.addField = function(fieldName, context, validatorsObj) {
+    self.addField = function(field_name, context, validators_obj) {
 
         if(context instanceof jQuery === false)
             context = $(context);
@@ -44647,16 +44650,16 @@ module.exports = function() {
         //field target
         var field;
         //set object
-        if(fieldName instanceof jQuery === true)
-            field = fieldName;
+        if(field_name instanceof jQuery === true)
+            field = field_name;
         else
-            field = $("[name='"+fieldName+"']", context);
+            field = $("[name='"+field_name+"']", context);
 
         //default validator
         var v = {validators : { notEmpty : {} }};
 
-        if(typeof validatorsObj === "object")
-            v = {validators : validatorsObj};
+        if(typeof validators_obj === "object")
+            v = {validators : validators_obj};
 
         //append required props
         self.assignFieldValidatorPattern(field, v.validators);
@@ -44670,7 +44673,7 @@ module.exports = function() {
 
         var fv = form.data('formValidation');
         //formValidation API
-        fv.addField(fieldName, v);
+        fv.addField(field_name, v);
     };
 
     /**
@@ -44752,8 +44755,8 @@ module.exports = function() {
 module.exports = function() {
 
     //++ Module
-    var self        = this;
-    self.moduleName = "passRecovery";
+    var self  = this;
+    self.name = "passRecovery";
 
     //++ View Model
     self.vm = {

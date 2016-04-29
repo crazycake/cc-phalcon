@@ -64,7 +64,7 @@ class BaseTicket extends \CrazyCake\Models\Base
      * @static
      * @var array
      */
-    static $STATES = ['open', 'closed', 'soldout'];
+    static $STATES = ["open", "closed", "soldout"];
 
     /**
      * Initializer
@@ -72,7 +72,7 @@ class BaseTicket extends \CrazyCake\Models\Base
     public function initialize()
     {
         //Skips fields/columns on both INSERT/UPDATE operations
-        $this->skipAttributes(['created_at, _ext']);
+        $this->skipAttributes(["created_at, _ext"]);
     }
 
     /**
@@ -81,7 +81,7 @@ class BaseTicket extends \CrazyCake\Models\Base
     public function afterFetch()
     {
         //extend properties
-        $id_hashed = $this->getDI()->getShared('cryptify')->encryptHashId($this->id);
+        $id_hashed = $this->getDI()->getShared("cryptify")->encryptHashId($this->id);
 
         $this->_ext = ["id_hashed" => $id_hashed];
 
@@ -98,7 +98,7 @@ class BaseTicket extends \CrazyCake\Models\Base
         $this->validate( new InclusionIn([
             "field"   => "state",
             "domain"  => self::$STATES,
-            "message" => 'Invalid state. States supported: '.implode(", ", self::$STATES)
+            "message" => "Invalid state. States supported: ".implode(", ", self::$STATES)
          ]));
 
         //check validations

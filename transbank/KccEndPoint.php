@@ -88,7 +88,7 @@ class KccEndPoint extends MvcCore
         );
 
         //get users checkouts class
-        $user_checkout_class = AppModule::getClass('user_checkout');
+        $user_checkout_class = AppModule::getClass("user_checkout");
         //get checkout obejct
         $checkout = $user_checkout_class::findFirstByBuyOrder($TBK_ORDEN_COMPRA);
 
@@ -96,14 +96,14 @@ class KccEndPoint extends MvcCore
         if(!$checkout || $TBK_ORDEN_COMPRA != $checkout->buy_order)
             $this->setOutput(false, "Orden de compra es nulo o distinto de TBK_ORDEN_COMPRA ($TBK_ORDEN_COMPRA).");
 
-        $formattedAmount = ((int)$checkout->amount)."00";
+        $amount_formatted = ((int)$checkout->amount)."00";
         //3) amount validation (kcc format is appended)
-        if($TBK_MONTO != $formattedAmount)
-            $this->setOutput(false, "El monto es distinto de TBK_MONTO ($TBK_MONTO != $formattedAmount).");
+        if($TBK_MONTO != $amount_formatted)
+            $this->setOutput(false, "El monto es distinto de TBK_MONTO ($TBK_MONTO != $amount_formatted).");
 
         //4) checks MAC CGI response
         if(empty($output_cgi) || $output_cgi[0] != "CORRECTO")
-            $this->setOutput(false, "CGI MAC entegó un output distinto a 'CORRECTO' -> ".$output_cgi[0]);
+            $this->setOutput(false, "CGI MAC entegó un output distinto a CORRECTO -> ".$output_cgi[0]);
 
         //5) OK, all validations passed process succesful Checkout
         $this->onSuccessTrx($checkout);

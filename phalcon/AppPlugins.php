@@ -17,7 +17,7 @@ class ExceptionsPlugin extends \Phalcon\Mvc\User\Plugin
 	 */
 	public function __construct()
     {
-		if(!defined('APP_ENVIRONMENT'))
+		if(!defined("APP_ENVIRONMENT"))
             throw new Exception("ExceptionsPlugin::__construct -> APP_ENVIRONMENT is not defined.");
     }
 
@@ -64,18 +64,18 @@ class ExceptionsPlugin extends \Phalcon\Mvc\User\Plugin
 
 			//log error?
 			if($logError)
-				$di->getShared('logger')->error("PhalconPHP Error:".$exception->getMessage().". File: ".$exception->getFile().". Line: ".$exception->getLine()."</h1>");
+				$di->getShared("logger")->error("PhalconPHP Error:".$exception->getMessage().". File: ".$exception->getFile().". Line: ".$exception->getLine()."</h1>");
 
 			//forward
 			$dispatcher->forward($forward);
 			return false;
 		}
 
-		if(APP_ENVIRONMENT !== 'production')
+		if(APP_ENVIRONMENT !== "production")
 			die("Hey! PhalconPHP Error:".$exception->getMessage().". File: ".$exception->getFile().". Line: ".$exception->getLine());
 
 		//log error
-		$di->getShared('logger')->error("PhalconPHP Error -> Exception: ".$exception->getMessage());
+		$di->getShared("logger")->error("PhalconPHP Error -> Exception: ".$exception->getMessage());
 
 		//Handle exception and forward to internal error page
 		$dispatcher->forward(["controller" => "error", "action" => "internal"]);

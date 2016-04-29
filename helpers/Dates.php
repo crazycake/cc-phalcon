@@ -74,7 +74,7 @@ class Dates
     public static function getTranslatedMonthName($month = null, $abbr = false)
     {
         if(empty($month))
-            throw new Exception("Dates::getTranslatedMonthName -> 'month' is required");
+            throw new Exception("Dates::getTranslatedMonthName -> month is required");
 
         //get DI instance (static)
         $di = \Phalcon\DI::getDefault();

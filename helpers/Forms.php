@@ -28,7 +28,7 @@ class Forms
         if (!preg_match(self::RUT_EXP, $input_rut))
             return false;
 
-        $rut = explode('-', $input_rut);
+        $rut = explode("-", $input_rut);
 
         //checks if rut is valid
         return strtolower($rut[1]) == self::validateRutVD($rut[0]);
@@ -47,11 +47,11 @@ class Forms
         $formatted = $price;
 
         switch ($currency) {
-            case 'CLP':
+            case "CLP":
                 $formatted = "$".str_replace(".00", "", number_format($formatted));
                 $formatted = str_replace(",", ".", $formatted);
                 break;
-            case 'USD':
+            case "USD":
                 break;
             default:
                 break;
@@ -90,7 +90,7 @@ class Forms
         //loop
         for ($i = 1; $i <= 12; $i++) {
             $prefix = ($i <= 9) ? "0$i" : "$i";
-            $month = strftime('%m', mktime(0, 0, 0, $i, 1));
+            $month = strftime("%m", mktime(0, 0, 0, $i, 1));
 
             //get abbr month
             $month = Dates::getTranslatedMonthName($month, true);
@@ -103,7 +103,7 @@ class Forms
         $years_array = [];
         $years_array[""] = $trans->_("Año");
         //loop
-        for ($i = (int) date('Y'); $i >= 1930; $i--)
+        for ($i = (int) date("Y"); $i >= 1930; $i--)
             $years_array["$i"] = $i;
 
         return [$years_array, $months_array, $days_array];
@@ -124,6 +124,6 @@ class Forms
         for(; $R; $R = floor($R/10))
             $S = ($S + ($R % 10) * (9 - ($M++ % 6))) % 11;
 
-        return $S ? $S - 1 : 'k';
+        return $S ? $S - 1 : "k";
     }
 }

@@ -7,9 +7,9 @@
 
 namespace CrazyCake\Soap;
 
-require_once 'lib/xmlseclibs.php';
-require_once 'lib/soap-wsse.php';
-require_once 'lib/soap-validation.php';
+require_once "lib/xmlseclibs.php";
+require_once "lib/soap-wsse.php";
+require_once "lib/soap-validation.php";
 
 /**
  * SOAP client helper
@@ -48,22 +48,27 @@ class SoapClientHelper extends \SoapClient
      */
     function __doRequest($request, $location, $saction, $version, $one_way = null)
     {
-        $doc = new \DOMDocument('1.0');
+        $doc = new \DOMDocument("1.0");
         $doc->loadXML($request);
 
-        $objWSSE = new \WSSESoap($doc);
-        $objKey  = new \XMLSecurityKey(\XMLSecurityKey::RSA_SHA1,array('type' => 'private'));
-        $objKey->loadKey($this->key_file, TRUE);
+        $wsse = new \WSSESoap($doc);
+        $key  = new \XMLSecurityKey(\XMLSecurityKey::RSA_SHA1,array("type" => "private"));
 
-        $options = array("insertBefore" => TRUE);
-        $objWSSE->signSoapDoc($objKey, $options);
-        $objWSSE->addIssuerSerial($this->cert_file);
-        $objKey = new \XMLSecurityKey(\XMLSecurityKey::AES256_CBC);
-        $objKey->generateSessionKey();
+        $key->loadKey($this->key_file, true);
 
-        $retVal = parent::__doRequest($objWSSE->saveXML(), $location, $saction, $version);
+        $options = array("insertBefore" => true);
+
+        $wsse->signSoapDoc($key, $options);
+        $wsse->addIssuerSerial($this->cert_file);
+
+        $key = new \XMLSecurityKey(\XMLSecurityKey::AES256_CBC);
+        $key->generateSessionKey();
+
+        $retVal = parent::__doRequest($wsse->saveXML(), $location, $saction, $version);
+        
         $doc = new \DOMDocument();
         $doc->loadXML($retVal);
+
         return $doc->saveXML();
     }
 }

@@ -19,16 +19,16 @@ trait Core
     protected function dblog($logFile = "db.log")
     {
         //Listen all the database events
-        $eventsManager = new \Phalcon\Events\Manager();
-        $logger        = new \Phalcon\Logger\Adapter\File(APP_PATH."logs/".$logFile);
+        $manager = new \Phalcon\Events\Manager();
+        $logger  = new \Phalcon\Logger\Adapter\File(APP_PATH."logs/".$logFile);
 
-        $eventsManager->attach('db', function ($event, $connection) use ($logger) {
+        $manager->attach('db', function ($event, $connection) use ($logger) {
             //log SQL
             if ($event->getType() == 'beforeQuery')
                 $logger->debug("Core:dblog -> SQL:\n".$connection->getSQLStatement());
         });
         // Assign the eventsManager to the db adapter instance
-        $this->db->setEventsManager($eventsManager);
+        $this->db->setEventsManager($manager);
     }
 
     /**

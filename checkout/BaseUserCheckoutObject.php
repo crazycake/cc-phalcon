@@ -70,7 +70,7 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
             $checkout_object = (object)$obj->toArray();
 
             //get object local props
-            $props = $object_class::findFirst(["id = ?1", "bind" => [1 => $obj->object_id]]);
+            $props = $object_class::findFirstById($obj->object_id);
 
             if(!$props) continue;
 
@@ -125,7 +125,7 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
                 AND checkout.state = 'pending'
             ",
            //bindings
-           ['object_id' => $object_id, "object_class" => $object_class]
+           ["object_id" => $object_id, "object_class" => $object_class]
        );
        //get sum quantity
        $checkout_q = $objects->getFirst()->q;

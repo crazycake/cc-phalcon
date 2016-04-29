@@ -39,7 +39,7 @@ abstract class AppModule
      * App Core default modules
      * @var array
      */
-    protected static $CORE_DEFAULT_MODULES = ['cli', 'api', 'backend', 'frontend'];
+    protected static $CORE_DEFAULT_MODULES = ["cli", "api", "backend", "frontend"];
 
     /**
      * Modules Config
@@ -110,7 +110,7 @@ abstract class AppModule
     /**
      * Get Module Model Class Name
      * A prefix can be set in module options
-     * @param string $key - The class module name uncamelize, example: 'some_class'
+     * @param string $key - The class module name uncamelize, example: "some_class"
      * @param boolean $prefix - Append prefix (double slash)
      */
     public static function getClass($key = "", $prefix = true)
@@ -122,7 +122,7 @@ abstract class AppModule
         if(!class_exists($class_name)) {
 
             switch (MODULE_NAME) {
-                case 'api':
+                case "api":
                     $class_name = "Ws$class_name";
                     break;
                 default:
@@ -140,7 +140,7 @@ abstract class AppModule
      * @static
      * @param  string $module - The module name
      * @param  string $uri - A uri to be appended
-     * @param  string $type - The url path type: 'base' or 'static'
+     * @param  string $type - The url path type: "base" or "static"
      * @return string
      */
     public static function getUrl($module = "", $uri = "", $type = "base")
@@ -171,14 +171,14 @@ abstract class AppModule
             case "local":
 
                 if(empty($base_url))
-                    $base_url = str_replace(['/api/', '/frontend/', '/backend/'], "/$module/", APP_BASE_URL);
+                    $base_url = str_replace(["/api/", "/frontend/", "/backend/"], "/$module/", APP_BASE_URL);
 
                 break;
 
             default:
 
                 if(empty($base_url))
-                    $base_url = str_replace(['.api.', '.frontend.', '.backend.'], ".$module.", APP_BASE_URL);
+                    $base_url = str_replace([".api.", ".frontend.", ".backend."], ".$module.", APP_BASE_URL);
 
                 break;
         }
@@ -226,13 +226,13 @@ abstract class AppModule
                 throw new Exception("AppModule -> Missing REQUEST data: ".json_encode($_SERVER)." && ".json_encode($_REQUEST));
 
             //set localhost if host is not set
-            if(!isset($_SERVER['HTTP_HOST']))
-                $_SERVER['HTTP_HOST'] = "127.0.0.1";
+            if(!isset($_SERVER["HTTP_HOST"]))
+                $_SERVER["HTTP_HOST"] = "127.0.0.1";
 
             //fallback for missing env var
             if(empty($app_base_uri)) {
                 $app_base_url = (isset($_SERVER["HTTPS"]) ? "https://" : "http://").
-                                       $_SERVER['HTTP_HOST'].preg_replace('@/+$@', '', dirname($_SERVER['SCRIPT_NAME'])).'/';
+                                       $_SERVER["HTTP_HOST"].preg_replace("@/+$@", "", dirname($_SERVER["SCRIPT_NAME"]))."/";
             }
         }
 

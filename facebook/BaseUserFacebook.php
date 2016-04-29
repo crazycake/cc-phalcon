@@ -54,7 +54,7 @@ class BaseUserFacebook extends \CrazyCake\Models\Base
      */
     public function beforeValidation()
     {
-        $this->created_at = date('Y-m-d H:i:s');
+        $this->created_at = date("Y-m-d H:i:s");
     }
 
     /** ------------------------------------------- § ------------------------------------------------ **/

@@ -26,7 +26,7 @@ abstract class App extends AppModule implements AppLoader
      * App Core default packages
      * @var array
      */
-    protected static $CORE_DEFAULT_PACKAGES = ['services', 'core', 'helpers', 'models', 'account'];
+    protected static $CORE_DEFAULT_PACKAGES = ["services", "core", "helpers", "models", "account"];
 
     /**
      * The App Dependency injector
@@ -119,14 +119,14 @@ abstract class App extends AppModule implements AppLoader
             default:
                 //apply a routes function if param given (must be done after object instance)
                 if(is_callable($routes_fn)) {
-                    //creates a router object (for use custom URL behavior use 'false' param)
+                    //creates a router object (for use custom URL behavior use "false" param)
                     $router = new \Phalcon\Mvc\Router();
                     //Remove trailing slashes automatically
                     $router->removeExtraSlashes(true);
                     //apply a routes function
                     $routes_fn($router);
                     //Register the router in the DI
-                    $this->di->set('router', function() use (&$router) {
+                    $this->di->set("router", function() use (&$router) {
                         return $router;
                     });
                 }
@@ -141,7 +141,7 @@ abstract class App extends AppModule implements AppLoader
                     return $output;
 
                 //Handle the request
-                if(APP_ENVIRONMENT !== 'local')
+                if(APP_ENVIRONMENT !== "local")
                     ob_start([$this,"_minifyOutput"]); //call function
 
                 echo $output;
@@ -178,10 +178,10 @@ abstract class App extends AppModule implements AppLoader
         if(!$force_extract && is_dir($output_path))
             return $output_path;
 
-        //get files in directory & exclude '.', '..' directories
+        //get files in directory & exclude ".", ".." directories
         $assets = array();
         $files  = scandir($phar_assets);
-        unset($files['.'], $files['..']);
+        unset($files["."], $files[".."]);
 
         //fill the asset array
         foreach ($files as $file)
@@ -215,15 +215,15 @@ abstract class App extends AppModule implements AppLoader
      */
     private function _databaseSetup()
     {
-        if(empty(getenv('DB_HOST')))
+        if(empty(getenv("DB_HOST")))
             throw new Exception("App::_databaseSetup -> DB environment is not set.");
 
         //set database config
         $this->app_conf["database"] = [
-            'host'      => getenv('DB_HOST'),
-            'username'  => getenv('DB_USER'),
-            'password'  => getenv('DB_PASS'),
-            'dbname'    => getenv('DB_NAME')
+            "host"      => getenv("DB_HOST"),
+            "username"  => getenv("DB_USER"),
+            "password"  => getenv("DB_PASS"),
+            "dbname"    => getenv("DB_NAME")
         ];
     }
 
@@ -234,7 +234,7 @@ abstract class App extends AppModule implements AppLoader
     private function _directoriesSetup()
     {
         $app_dirs = [
-            "controllers" => APP_PATH.'controllers/'
+            "controllers" => APP_PATH."controllers/"
         ];
 
         $folders = self::getProperty("loader");
@@ -274,11 +274,11 @@ abstract class App extends AppModule implements AppLoader
         $this->_loadStaticLibs($loader, $core_libs);
 
         //3.- Composer libs auto loader
-        if (!is_file(COMPOSER_PATH.'vendor/autoload.php'))
+        if (!is_file(COMPOSER_PATH."vendor/autoload.php"))
             throw new Exception("App::_autoloadClasses -> Composer libraries are missing, please run environment script file.");
 
         //autoload composer file
-        require COMPOSER_PATH.'vendor/autoload.php';
+        require COMPOSER_PATH."vendor/autoload.php";
 
         //4.- Register phalcon loader
         $loader->register();
@@ -289,7 +289,7 @@ abstract class App extends AppModule implements AppLoader
      * Loads statics libs from sym-link or phar file.
      * Use Phar::running() to get path of current phar running
      * Use get_included_files() to see all files that has loaded
-     * it seems that phalcon's loader->registerNamespaces don't consider phar inside paths
+     * it seems that phalcon"s loader->registerNamespaces don"t consider phar inside paths
      * @param object $loader - Phalcon loader object
      * @param array $packages - Modules packages list
      */
@@ -338,8 +338,8 @@ abstract class App extends AppModule implements AppLoader
      */
      private function _minifyOutput($buffer)
      {
-        $search  = ['/\>[^\S ]+/s', '/[^\S ]+\</s', '/(\s)+/s'];
-        $replace = ['>','<','\\1'];
+        $search  = ["/\>[^\S ]+/s", "/[^\S ]+\</s", "/(\s)+/s"];
+        $replace = [">","<","\\1"];
 
         if (preg_match("/\<html/i",$buffer) == 1 && preg_match("/\<\/html\>/i",$buffer) == 1)
             $buffer = preg_replace($search, $replace, $buffer);

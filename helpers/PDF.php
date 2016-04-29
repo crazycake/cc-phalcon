@@ -34,12 +34,12 @@ class PDF
     function __construct()
     {
         //OSX or UbuntuServer
-        $this->wkhtmltopdf = (php_uname('s') == "Darwin") ? "/usr/local/bin/wkhtmltopdf" : "/usr/local/bin/wkhtmltopdf.sh";
+        $this->wkhtmltopdf = (php_uname("s") == "Darwin") ? "/usr/local/bin/wkhtmltopdf" : "/usr/local/bin/wkhtmltopdf.sh";
         //instance with binary path
         $this->snappy = new PDFMaker($this->wkhtmltopdf);
         //set options
-        $this->snappy->setOption('lowquality', false);
-        $this->snappy->setOption('page-width', 700);
+        $this->snappy->setOption("lowquality", false);
+        $this->snappy->setOption("page-width", 700);
     }
 
     /**
@@ -80,7 +80,7 @@ class PDF
      * Merge PDF files
      * @param array $files - The file paths array
      * @param string $output - The file paths array
-     * @param string $options - Options: 'file', 'browser', 'download', 'string'
+     * @param string $options - Options: [file, browser, download, string]
      */
     public function mergePdfFiles($files = array(), $output = "pdf_merged.pdf", $option = "browser")
     {

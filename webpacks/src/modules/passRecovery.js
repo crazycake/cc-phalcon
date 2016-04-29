@@ -5,8 +5,8 @@
 module.exports = function() {
 
     //++ Module
-    var self        = this;
-    self.moduleName = "passRecovery";
+    var self  = this;
+    self.name = "passRecovery";
 
     //++ View Model
     self.vm = {

@@ -24,28 +24,28 @@ class OneClickHandler
      * @var array
      */
     private static $classmap = [
-        'removeUser'                      => __NAMESPACE__.'\\removeUser',
-        'oneClickRemoveUserInput'         => __NAMESPACE__.'\\oneClickRemoveUserInput',
-        'baseBean'                        => __NAMESPACE__.'\\baseBean',
-        'removeUserResponse'              => __NAMESPACE__.'\\removeUserResponse',
-        'initInscription'                 => __NAMESPACE__.'\\initInscription',
-        'oneClickInscriptionInput'        => __NAMESPACE__.'\\oneClickInscriptionInput',
-        'initInscriptionResponse'         => __NAMESPACE__.'\\initInscriptionResponse',
-        'oneClickInscriptionOutput'       => __NAMESPACE__.'\\oneClickInscriptionOutput',
-        'finishInscription'               => __NAMESPACE__.'\\finishInscription',
-        'oneClickFinishInscriptionInput'  => __NAMESPACE__.'\\oneClickFinishInscriptionInput',
-        'finishInscriptionResponse'       => __NAMESPACE__.'\\finishInscriptionResponse',
-        'oneClickFinishInscriptionOutput' => __NAMESPACE__.'\\oneClickFinishInscriptionOutput',
-        'codeReverseOneClick'             => __NAMESPACE__.'\\codeReverseOneClick',
-        'oneClickReverseInput'            => __NAMESPACE__.'\\oneClickReverseInput',
-        'codeReverseOneClickResponse'     => __NAMESPACE__.'\\codeReverseOneClickResponse',
-        'oneClickReverseOutput'           => __NAMESPACE__.'\\oneClickReverseOutput',
-        'authorize'                       => __NAMESPACE__.'\\authorize',
-        'oneClickPayInput'                => __NAMESPACE__.'\\oneClickPayInput',
-        'authorizeResponse'               => __NAMESPACE__.'\\authorizeResponse',
-        'oneClickPayOutput'               => __NAMESPACE__.'\\oneClickPayOutput',
-        'reverse'                         => __NAMESPACE__.'\\reverse',
-        'reverseResponse'                 => __NAMESPACE__.'\\reverseResponse'
+        "removeUser"                      => __NAMESPACE__."\\removeUser",
+        "oneClickRemoveUserInput"         => __NAMESPACE__."\\oneClickRemoveUserInput",
+        "baseBean"                        => __NAMESPACE__."\\baseBean",
+        "removeUserResponse"              => __NAMESPACE__."\\removeUserResponse",
+        "initInscription"                 => __NAMESPACE__."\\initInscription",
+        "oneClickInscriptionInput"        => __NAMESPACE__."\\oneClickInscriptionInput",
+        "initInscriptionResponse"         => __NAMESPACE__."\\initInscriptionResponse",
+        "oneClickInscriptionOutput"       => __NAMESPACE__."\\oneClickInscriptionOutput",
+        "finishInscription"               => __NAMESPACE__."\\finishInscription",
+        "oneClickFinishInscriptionInput"  => __NAMESPACE__."\\oneClickFinishInscriptionInput",
+        "finishInscriptionResponse"       => __NAMESPACE__."\\finishInscriptionResponse",
+        "oneClickFinishInscriptionOutput" => __NAMESPACE__."\\oneClickFinishInscriptionOutput",
+        "codeReverseOneClick"             => __NAMESPACE__."\\codeReverseOneClick",
+        "oneClickReverseInput"            => __NAMESPACE__."\\oneClickReverseInput",
+        "codeReverseOneClickResponse"     => __NAMESPACE__."\\codeReverseOneClickResponse",
+        "oneClickReverseOutput"           => __NAMESPACE__."\\oneClickReverseOutput",
+        "authorize"                       => __NAMESPACE__."\\authorize",
+        "oneClickPayInput"                => __NAMESPACE__."\\oneClickPayInput",
+        "authorizeResponse"               => __NAMESPACE__."\\authorizeResponse",
+        "oneClickPayOutput"               => __NAMESPACE__."\\oneClickPayOutput",
+        "reverse"                         => __NAMESPACE__."\\reverse",
+        "reverseResponse"                 => __NAMESPACE__."\\reverseResponse"
     ];
 
     /**
@@ -64,7 +64,7 @@ class OneClickHandler
     {
         //options for SSL configuration
         $opts = array(
-            'ssl' => array('ciphers' => 'RC4-SHA', 'verify_peer' => false, 'verify_peer_name' => false)
+            "ssl" => array("ciphers" => "RC4-SHA", "verify_peer" => false, "verify_peer_name" => false)
         );
 
         try {
@@ -73,7 +73,7 @@ class OneClickHandler
                 "classmap"       => self::$classmap,
                 "trace"          => true,
                 "exceptions"     => true,
-                'stream_context' => stream_context_create($opts)
+                "stream_context" => stream_context_create($opts)
             ]);
             //set security files
             $this->soapClient->setSecurityFiles($key_file_path, $cert_file_path);
@@ -85,38 +85,38 @@ class OneClickHandler
 
     function removeUser($removeUser)
     {
-        $removeUserResponse = $this->soapClient->removeUser($removeUser);
-        return $removeUserResponse;
+        $response = $this->soapClient->removeUser($removeUser);
+        return $response;
     }
 
     function initInscription($initInscription)
     {
-        $initInscriptionResponse = $this->soapClient->initInscription($initInscription);
-        return $initInscriptionResponse;
+        $response = $this->soapClient->initInscription($initInscription);
+        return $response;
     }
 
     function finishInscription($finishInscription)
     {
-        $finishInscriptionResponse = $this->soapClient->finishInscription($finishInscription);
-        return $finishInscriptionResponse;
+        $response = $this->soapClient->finishInscription($finishInscription);
+        return $response;
     }
 
     function authorize($authorize)
     {
-        $authorizeResponse = $this->soapClient->authorize($authorize);
-        return $authorizeResponse;
+        $response = $this->soapClient->authorize($authorize);
+        return $response;
     }
 
     function codeReverseOneClick($codeReverseOneClick)
     {
-        $codeReverseOneClickResponse = $this->soapClient->codeReverseOneClick($codeReverseOneClick);
-        return $codeReverseOneClickResponse;
+        $response = $this->soapClient->codeReverseOneClick($codeReverseOneClick);
+        return $response;
     }
 
     function reverse($reverse)
     {
-        $reverseResponse = $this->soapClient->reverse($reverse);
-        return $reverseResponse;
+        $response = $this->soapClient->reverse($reverse);
+        return $response;
     }
 }
 
@@ -240,7 +240,7 @@ class authorizeResponse {
 }
 
 class oneClickPayOutput {
-    var $authorizationCode;
+    var $authCode;
     //string
     var $creditCardType;
     //creditCardType

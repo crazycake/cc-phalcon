@@ -59,12 +59,12 @@ trait KccManager
 
         //set payment types
         $this->kcc_payment_types = [
-            "VN" => ['credit', $this->trans->_("Crédito"),  $this->trans->_("Sin Cuotas"), "0"],
-            "VC" => ['credit', $this->trans->_("Crédito"),  $this->trans->_("Cuotas normales"), "4-48"],
-            "SI" => ['credit', $this->trans->_("Crédito"),  $this->trans->_("Sin interés"), "3"],
-            "S2" => ['credit', $this->trans->_("Crédito"),  $this->trans->_("Sin interés"), "2"],
-            "CI" => ['credit', $this->trans->_("Crédito"),  $this->trans->_("Cuotas Comercio"), $this->trans->_("Número no definido")],
-            "VD" => ['debit', $this->trans->_("Redcompra"), $this->trans->_("Débito"), "0"]
+            "VN" => ["credit", $this->trans->_("Crédito"),  $this->trans->_("Sin Cuotas"), "0"],
+            "VC" => ["credit", $this->trans->_("Crédito"),  $this->trans->_("Cuotas normales"), "4-48"],
+            "SI" => ["credit", $this->trans->_("Crédito"),  $this->trans->_("Sin interés"), "3"],
+            "S2" => ["credit", $this->trans->_("Crédito"),  $this->trans->_("Sin interés"), "2"],
+            "CI" => ["credit", $this->trans->_("Crédito"),  $this->trans->_("Cuotas Comercio"), $this->trans->_("Número no definido")],
+            "VD" => ["debit", $this->trans->_("Redcompra"), $this->trans->_("Débito"), "0"]
         ];
     }
 
@@ -78,9 +78,9 @@ trait KccManager
         //set post input hiddens
         $inputs = [
             //set kcc params data (empty params will be set later when generating an order_buy)
-            "TBK_URL_PAGO"         => $this->_baseUrl($this->kcc_manager_conf['paymentCgiUri']), //Payment URI location
-            "TBK_URL_EXITO"        => $this->_baseUrl($this->kcc_manager_conf['successUri']),    //Success page
-            "TBK_URL_FRACASO"      => $this->_baseUrl($this->kcc_manager_conf['failedUri']),     //Failure page
+            "TBK_URL_PAGO"         => $this->_baseUrl($this->kcc_manager_conf["paymentCgiUri"]), //Payment URI location
+            "TBK_URL_EXITO"        => $this->_baseUrl($this->kcc_manager_conf["successUri"]),    //Success page
+            "TBK_URL_FRACASO"      => $this->_baseUrl($this->kcc_manager_conf["failedUri"]),     //Failure page
             "TBK_TIPO_TRANSACCION" => "TR_NORMAL",
             //dynamic inputs
             "TBK_ID_SESION"        => sha1(uniqid().microtime()),
@@ -89,7 +89,7 @@ trait KccManager
         ];
 
         //for debugging, redirect to skip payment
-        if(APP_ENVIRONMENT == 'local') {
+        if(APP_ENVIRONMENT == "local") {
             $inputs["TBK_URL_PAGO"] = $this->_baseUrl(self::$HANDLER_DEBUG_URI);
         }
 
@@ -113,9 +113,9 @@ trait KccManager
 
         try {
             //get users checkouts class
-            $user_checkout_class = AppModule::getClass('user_checkout');
+            $user_checkout_class = AppModule::getClass("user_checkout");
             //trx model class
-            $checkout_trx_class = AppModule::getClass('user_checkout_trx');
+            $checkout_trx_class = AppModule::getClass("user_checkout_trx");
 
             //decrypt data
             $buy_order = $this->cryptify->decryptData($encrypted_data);
@@ -148,7 +148,7 @@ trait KccManager
             $this->logger->debug("KccManager::successTrxAction -> successCheckout: ".json_encode($checkout));
 
             //call succes checkout and get checkout objects
-            $checkout_controller = AppModule::getClass('checkout_controller');
+            $checkout_controller = AppModule::getClass("checkout_controller");
             (new $checkout_controller())->successCheckout($checkout);
 
             //ok response
@@ -161,8 +161,9 @@ trait KccManager
             $buyOrder = isset($checkout) ? $checkout->buy_order : "unknown";
 
             //NOTE: sending a warning to admin users!
-            $mailerController = AppModule::getClass('mailer_controller');
-            (new $mailerController())->sendSystemMail([
+            $mailer = AppModule::getClass("mailer_controller");
+            
+            (new $mailer())->sendSystemMail([
                 "subject" => "Trx handler error",
                 "to"      => $this->config->app->emails->support,
                 "email"   => $this->config->app->emails->sender,
@@ -187,15 +188,15 @@ trait KccManager
 
         //get post params
         $data = $this->_handleRequestParams([
-            '@TBK_ID_SESION'    => 'string',
-            '@TBK_ORDEN_COMPRA' => 'string'
-        ], 'POST', false);
+            "@TBK_ID_SESION"    => "string",
+            "@TBK_ORDEN_COMPRA" => "string"
+        ], "POST", false);
 
         try {
             //model classes
-            $user_checkout_class        = AppModule::getClass('user_checkout');
-            $user_checkout_object_class = AppModule::getClass('user_checkout_object');
-            $checkout_trx_class         = AppModule::getClass('user_checkout_trx');
+            $user_checkout_class        = AppModule::getClass("user_checkout");
+            $user_checkout_object_class = AppModule::getClass("user_checkout_object");
+            $checkout_trx_class         = AppModule::getClass("user_checkout_trx");
 
             //get checkout
             $checkout = $user_checkout_class::findFirstByBuyOrder($data["TBK_ORDEN_COMPRA"]);
@@ -236,7 +237,7 @@ trait KccManager
             $this->logger->error("KccManager::onSuccess -> something occurred on Webpay Success page: Data: \n ".print_r($data, true)." \n ".$e->getMessage());
             $data["TBK_ERROR"] = $e;
             //$this->_debug($data);
-            $this->_redirectTo('webpay/failed', $data);
+            $this->_redirectTo("webpay/failed", $data);
         }
     }
 
@@ -248,13 +249,13 @@ trait KccManager
     {
         //get post params (optional params)
         $data = $this->_handleRequestParams([
-            '@TBK_ID_SESION'    => 'string',
-            '@TBK_ORDEN_COMPRA' => 'string'
-        ], 'MIXED', false);
+            "@TBK_ID_SESION"    => "string",
+            "@TBK_ORDEN_COMPRA" => "string"
+        ], "MIXED", false);
 
         //model classes
-        $user_checkout_class = AppModule::getClass('user_checkout');
-        $checkout_controller = AppModule::getClass('checkout_controller');
+        $user_checkout_class = AppModule::getClass("user_checkout");
+        $checkout_controller = AppModule::getClass("checkout_controller");
 
         //get checkout
         $checkout = $user_checkout_class::findFirstByBuyOrder($data["TBK_ORDEN_COMPRA"]);
@@ -282,18 +283,18 @@ trait KccManager
      */
     public function renderSuccessAction()
     {
-        if(APP_ENVIRONMENT == 'production')
+        if(APP_ENVIRONMENT == "production")
             $this->_redirectToNotFound();
 
         //handle response, dispatch to auth/logout
         $this->_checkUserIsLoggedIn(true);
 
         //get classes name
-        $user_checkout_class        = AppModule::getClass('user_checkout');
-        $user_checkout_object_class = AppModule::getClass('user_checkout_object');
+        $user_checkout_class        = AppModule::getClass("user_checkout");
+        $user_checkout_object_class = AppModule::getClass("user_checkout_object");
 
         //get last checkout
-        $checkout = $user_checkout_class::getLast($this->user_session["id"], 'success');
+        $checkout = $user_checkout_class::getLast($this->user_session["id"], "success");
 
         if(!$checkout)
             die("Render: No buy order to process for userID:".$this->user_session["id"]);
@@ -342,7 +343,7 @@ trait KccManager
         //split format
         $date        = str_split($gateway_date[0], 2);
         $time        = str_split($gateway_date[1], 2);
-        $result_date = date('Y')."-".$date[0]."-".$date[1]." ".implode(":", $time);
+        $result_date = date("Y")."-".$date[0]."-".$date[1]." ".implode(":", $time);
 
         return [
             "buy_order"        => $params["TBK_ORDEN_COMPRA"],
@@ -409,7 +410,7 @@ trait KccManager
             //amount
             $params["TBK_MONTO"] = self::formatAmountForKcc($params["TBK_MONTO"], true);
             //amount with format
-            $params["TBK_MONTO_FORMATO"] = Forms::formatPrice($params["TBK_MONTO"], 'CLP')." (CLP)";
+            $params["TBK_MONTO_FORMATO"] = Forms::formatPrice($params["TBK_MONTO"], "CLP")." (CLP)";
 
             //date & time
             $date = str_split($params["TBK_FECHA_TRANSACCION"], 2);

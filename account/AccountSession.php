@@ -30,7 +30,7 @@ trait AccountSession
 
 
     /** const **/
-    protected static $DEFAULT_USER_PROPS_FILTER = ['id', 'account_flag', 'auth'];
+    protected static $DEFAULT_USER_PROPS_FILTER = ["id", "account_flag", "auth"];
 
     /**
      * Stores user session as array for direct access
@@ -47,24 +47,6 @@ trait AccountSession
     {
         //always call parent constructor
         parent::onConstruct();
-
-        //exclude api controller includes
-        if(MODULE_NAME == "api")
-            return;
-
-        //check enable SSL option
-        $enableSSL = AppModule::getProperty("enableSSL");
-
-        //if enabledSSL, force redirect for non-https request
-        if( APP_ENVIRONMENT === 'production'
-            && isset($_SERVER["HTTP_HOST"])
-            && $enableSSL
-            && !$this->request->isSecureRequest()) {
-
-            $url = "https://".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
-            $this->response->redirect($url);
-            return false;
-        }
 
         //set session var
         $this->user_session = $this->_getUserSessionData();
@@ -102,14 +84,14 @@ trait AccountSession
             //get user session
             $user_session = $this->session->get("user");
 
-            if (!is_array($user_session) || !isset($user_session['id']) || !isset($user_session['auth']))
+            if (!is_array($user_session) || !isset($user_session["id"]) || !isset($user_session["auth"]))
                 return false;
 
-            $user_class = AppModule::getClass('user');
-            if ($user_class::getById($user_session['id']) == false)
+            $user_class = AppModule::getClass("user");
+            if ($user_class::getById($user_session["id"]) == false)
                 return false;
 
-            return $user_session['auth'] ? true : false;
+            return $user_session["auth"] ? true : false;
         };
 
         if(!$dispatch_logout) {
@@ -137,7 +119,7 @@ trait AccountSession
     protected function _setUserSessionAsLoggedIn($user_id)
     {
         //get user data from DB
-        $user_class = AppModule::getClass('user');
+        $user_class = AppModule::getClass("user");
         $user       = $user_class::getById($user_id);
 
         if (!$user)
@@ -147,11 +129,11 @@ trait AccountSession
         $user_data = $this->setUserSessionAsLoggedIn($user);
 
         if(empty($user_data))
-            $user_data = array();
+            $user_data = [];
 
         //set default proeprties
-        $user_data['id']   = $user_id;
-        $user_data['auth'] = true;
+        $user_data["id"]   = $user_id;
+        $user_data["auth"] = true;
 
         //save in session
         $this->session->set("user", $user_data);
@@ -247,9 +229,9 @@ trait AccountSession
     {
         //get user session
         $user_session = $this->session->get("user");
-        $user_class   = AppModule::getClass('user');
+        $user_class   = AppModule::getClass("user");
         //get user
-        $user = $user_class::getById($user_session['id']);
+        $user = $user_class::getById($user_session["id"]);
 
         if (!$user)
             return false;
@@ -289,7 +271,7 @@ trait AccountSession
             return false;
 
         //get array stored in session
-        $objects = array();
+        $objects = [];
         if ($this->session->has($key))
             $objects = $this->session->get($key);
 

@@ -16,7 +16,7 @@ class GPS
 {
     /* conts */
     const EARTH_RADIUS = 6371000;
-    const DEFAULT_ZONE = 'CL';
+    const DEFAULT_ZONE = "CL";
 
     /**
      * Calculates the great-circle distance between two points, with the Vincenty formula.
@@ -46,7 +46,7 @@ class GPS
     }
 
     /**
-     * Parse a GPS coordinate with format <degrees.decimal_minutes>, example: -7038.8735 => -70º 38.8735'
+     * Parse a GPS coordinate with format <degrees.decimal_minutes>, example: -7038.8735 => -70º 38.8735"
      * @access public
      * @static
      * @param float $latitude
@@ -65,7 +65,7 @@ class GPS
         //parse coord by zone
         switch ($zone) {
             //Chile, both negative values.
-            case 'CL':
+            case "CL":
                 $latitude  = str_replace("-", "", $latitude);
                 $longitude = str_replace("-", "", $longitude);
 

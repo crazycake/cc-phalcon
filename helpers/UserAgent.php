@@ -45,19 +45,19 @@ class UserAgent
         //parse user agent (loaded library method from composer)
         $data = parse_user_agent($this->user_agent);
         //check if is mobile agent
-        $data['is_mobile'] = $mobile_detect->isMobile();
+        $data["is_mobile"] = $mobile_detect->isMobile();
 
         //get the short version
         $short_version = false;
 
-        if ($data['version']) {
-            $array         = explode(".", $data['version']);
+        if ($data["version"]) {
+            $array         = explode(".", $data["version"]);
             $short_version = current($array);
         }
 
-        $data['short_version'] = $short_version;
+        $data["short_version"] = $short_version;
         //check if user agent is legacy
-        $data['is_legacy'] = $this->_isUserAgentLegacy($data);
+        $data["is_legacy"] = $this->_isUserAgentLegacy($data);
 
         //var_dump($data, $this->user_agent);exit;
         return $data;
@@ -73,11 +73,11 @@ class UserAgent
     private function _isUserAgentLegacy($data = array())
     {
         //mark some browsers as legacy
-        if( ($data['browser'] == "MSIE"    && $data['short_version'] < 9) ||
-            ($data['browser'] == "Chrome"  && $data['short_version'] < 3) ||
-            ($data['browser'] == "Firefox" && $data['short_version'] < 4) ||
-            ($data['browser'] == "Safari"  && $data['short_version'] < 3) ||
-            ($data['browser'] == "Opera"   && $data['short_version'] < 4)
+        if( ($data["browser"] == "MSIE"    && $data["short_version"] < 9) ||
+            ($data["browser"] == "Chrome"  && $data["short_version"] < 3) ||
+            ($data["browser"] == "Firefox" && $data["short_version"] < 4) ||
+            ($data["browser"] == "Safari"  && $data["short_version"] < 3) ||
+            ($data["browser"] == "Opera"   && $data["short_version"] < 4)
         ) {
             return true;
         }

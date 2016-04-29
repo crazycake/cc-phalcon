@@ -48,15 +48,15 @@ trait Mailer
     public function sendContactAction()
     {
         $data = $this->_handleRequestParams([
-            'email'   => 'email',
-            'name'    => 'string',
-            'message' => 'string'
+            "email"   => "email",
+            "name"    => "string",
+            "message" => "string"
         ]);
 
-        $data["subject"] = "Contacto ".$this->mailer_conf['appName'];
+        $data["subject"] = "Contacto ".$this->mailer_conf["appName"];
 
         //send contact email
-        $this->_sendMailMessage('sendSystemMail', $data);
+        $this->_sendMailMessage("sendSystemMail", $data);
 
         //send JSON response
         $this->_sendJsonResponse(200);
@@ -65,7 +65,7 @@ trait Mailer
 
 	/**
      * Async Handler - Sends contact email (always used)
-     * @param array $message_data - Must contains keys 'name', 'email' & 'message'
+     * @param array $message_data - Must contains keys "name", "email" & "message"
      * @return json response
      */
     public function sendSystemMail($message_data)
@@ -74,12 +74,12 @@ trait Mailer
     		return false;
 
         //set message properties
-        $subject = isset($message_data["subject"]) ? $message_data["subject"] : $this->mailer_conf['appName'];
-        $to      = isset($message_data["to"]) ? $message_data["to"] : $this->mailer_conf['contactEmail'];
-        $tags    = array('contact', 'support');
+        $subject = isset($message_data["subject"]) ? $message_data["subject"] : $this->mailer_conf["appName"];
+        $to      = isset($message_data["to"]) ? $message_data["to"] : $this->mailer_conf["contactEmail"];
+        $tags    = array("contact", "support");
 
         //add prefix "data" to each element in array
-        $view_data = array_combine( array_map(function($k) { return 'data_'.$k; }, array_keys($message_data)), $message_data);
+        $view_data = array_combine( array_map(function($k) { return "data_".$k; }, array_keys($message_data)), $message_data);
 
         //get HTML
         $html_raw = $this->_getInlineStyledHtml("contact", $view_data);
@@ -118,15 +118,15 @@ trait Mailer
      */
     public function sendMailForAccountActivation($user_id)
     {
-        $user_class = AppModule::getClass('user');
+        $user_class = AppModule::getClass("user");
         $user = $user_class::getById($user_id);
 
         if (!$user)
             $this->_sendJsonResponse(403);
 
         //get user token
-        $tokens_class = AppModule::getClass('user_token');
-        $token = $tokens_class::newTokenIfExpired($user_id, 'activation');
+        $tokens_class = AppModule::getClass("user_token");
+        $token = $tokens_class::newTokenIfExpired($user_id, "activation");
 
         if (!$token)
             $this->_sendJsonResponse(500);
@@ -141,9 +141,9 @@ trait Mailer
         //get HTML
         $html_raw = $this->_getInlineStyledHtml("activation", $this->mailer_conf);
         //set message properties
-        $subject = $this->mailer_conf['trans']['subject_activation'];
+        $subject = $this->mailer_conf["trans"]["subject_activation"];
         $to      = $this->mailer_conf["data_email"];
-        $tags    = array('account', 'activation');
+        $tags    = array("account", "activation");
         //sends async email
         return $this->_sendMessage($html_raw, $subject, $to, $tags);
     }
@@ -156,7 +156,7 @@ trait Mailer
      */
     public function sendMailForPasswordRecovery($user_id)
     {
-        $user_class = AppModule::getClass('user');
+        $user_class = AppModule::getClass("user");
         $user = $user_class::getById($user_id);
 
         //if invalid user, send permission denied response
@@ -164,8 +164,8 @@ trait Mailer
             $this->_sendJsonResponse(403);
 
         //get user token
-        $tokens_class = AppModule::getClass('user_token');
-        $token = $tokens_class::newTokenIfExpired($user_id, 'pass');
+        $tokens_class = AppModule::getClass("user_token");
+        $token = $tokens_class::newTokenIfExpired($user_id, "pass");
 
         if (!$token)
             $this->_sendJsonResponse(500);
@@ -181,9 +181,9 @@ trait Mailer
         //get HTML
         $html_raw = $this->_getInlineStyledHtml("passwordRecovery", $this->mailer_conf);
         //set message properties
-        $subject = $this->mailer_conf['trans']['subject_password'];
+        $subject = $this->mailer_conf["trans"]["subject_password"];
         $to      = $this->mailer_conf["data_email"];
-        $tags    = array('account', 'password', 'recovery');
+        $tags    = array("account", "password", "recovery");
         //sends async email
         return $this->_sendMessage($html_raw, $subject, $to, $tags);
     }
@@ -198,7 +198,7 @@ trait Mailer
     public function _getInlineStyledHtml($mail, $data)
     {
         //css file
-        $cssFile = $this->mailer_conf['cssFile'];
+        $cssFile = $this->mailer_conf["cssFile"];
 
         //get the style file
         $html = $this->simpleView->render("mails/$mail", $data);
@@ -238,33 +238,33 @@ trait Mailer
         $to = array();
         //create mandrill recipient data struct, push emails to array
         foreach ($recipients as $email)
-            array_push($to, array('email' => $email)); //optional name (display name) & type (defaults 'to').
+            array_push($to, array("email" => $email)); //optional name (display name) & type (defaults "to").
 
         //set default subject
         if (empty($subject))
-            $subject = $this->mailer_conf['appName'];
+            $subject = $this->mailer_conf["appName"];
 
         //Send message email!
         $message = [
-            'html'       => $html_raw,
-            'subject'    => $subject,
-            'from_email' => $this->mailer_conf['senderEmail'],
-            'from_name'  => $this->mailer_conf['appName'],
-            'to'         => $to,
-            'tags'       => $tags
-            //'inline_css' => true //same as __getInlineStyledHtml method. (generates more delay time)
+            "html"       => $html_raw,
+            "subject"    => $subject,
+            "from_email" => $this->mailer_conf["senderEmail"],
+            "from_name"  => $this->mailer_conf["appName"],
+            "to"         => $to,
+            "tags"       => $tags
+            //"inline_css" => true //same as __getInlineStyledHtml method. (generates more delay time)
         ];
 
         //append attachments
         if(!empty($attachments))
-           $message['attachments'] = $attachments;
+           $message["attachments"] = $attachments;
 
         //send email!
         $response = true;
 
         try {
         	//mandrill lib instance
-        	$mandrill = new Mandrill($this->mailer_conf['mandrillKey']);
+        	$mandrill = new Mandrill($this->mailer_conf["mandrillKey"]);
             $response = $mandrill->messages->send($message, $async);
         }
         catch (Mandrill_Error $e) {
@@ -283,10 +283,10 @@ trait Mailer
      */
     private function _handleConfigurations()
     {
-        if (!isset($this->mailer_conf['appName']) || !isset($this->mailer_conf['mandrillKey']) || !isset($this->mailer_conf['cssFile']))
+        if (!isset($this->mailer_conf["appName"]) || !isset($this->mailer_conf["mandrillKey"]) || !isset($this->mailer_conf["cssFile"]))
             throw new Exception("Ses::_handleConfigurations -> SES configuration properties are not defined. (appName, mandrillKey, cssFile)");
 
-        if (!isset($this->mailer_conf['senderEmail']) || !isset($this->mailer_conf['contactEmail']))
+        if (!isset($this->mailer_conf["senderEmail"]) || !isset($this->mailer_conf["contactEmail"]))
         	throw new Exception("Ses::_handleConfigurations -> SES sender & contact emails are not defined.");
     }
 }

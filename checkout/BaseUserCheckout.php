@@ -79,7 +79,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
      * @static
      * @var array
      */
-    static $STATES = ['pending', 'failed', 'overturn', 'success'];
+    static $STATES = ["pending", "failed", "overturn", "success"];
 
     /**
      * Initializer
@@ -121,7 +121,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
         $this->validate(new InclusionIn([
             "field"   => "state",
             "domain"  => self::$STATES,
-            "message" => 'Invalid state. States supported: '.implode(", ", self::$STATES)
+            "message" => "Invalid state. States supported: ".implode(", ", self::$STATES)
          ]));
 
         //check validations
@@ -135,7 +135,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
      * @param  int $user_id - The User ID
      * @return mixed [string|object]
      */
-    public static function getLast($user_id = 0, $state = 'pending')
+    public static function getLast($user_id = 0, $state = "pending")
     {
         $conditions = "user_id = ?1 AND state = ?2";
         $binding    = [1 => $user_id, 2 => $state];
@@ -151,9 +151,9 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
     public static function newBuyOrderCode($length)
     {
         $di   = \Phalcon\DI::getDefault();
-        $code = $di->getShared('cryptify')->newAlphanumeric($length);
+        $code = $di->getShared("cryptify")->newAlphanumeric($length);
         //unique constrait
-        $exists = self::findFirst(["buy_order = '$code'"]);
+        $exists = self::findFirstByBuyOrder($code);
 
         return $exists ? $this->newBuyOrderCode($length) : $code;
     }
@@ -192,11 +192,11 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
         $checkout->client        = $checkoutObj->client;
 
         //log statement
-        $di->getShared('logger')->debug("BaseUserCheckout::newBuyOrder -> Saving BuyOrder: $buy_order, for UserID: $user_id, Email: $checkoutObj->invoice_email");
+        $di->getShared("logger")->debug("BaseUserCheckout::newBuyOrder -> Saving BuyOrder: $buy_order, for UserID: $user_id, Email: $checkoutObj->invoice_email");
 
         try {
             //begin trx
-            $di->getShared('db')->begin();
+            $di->getShared("db")->begin();
 
             if(!$checkout->save())
                 throw new Exception("A DB error ocurred saving in checkouts model.");
@@ -215,13 +215,13 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
             }
 
             //commit transaction
-            $di->getShared('db')->commit();
+            $di->getShared("db")->commit();
 
             return $checkout;
         }
         catch(Exception $e) {
-            $di->getShared('logger')->error("BaseUserCheckout::newBuyOrder -> An error ocurred: ".$e->getMessage());
-            $di->getShared('db')->rollback();
+            $di->getShared("logger")->error("BaseUserCheckout::newBuyOrder -> An error ocurred: ".$e->getMessage());
+            $di->getShared("db")->rollback();
             return false;
         }
     }

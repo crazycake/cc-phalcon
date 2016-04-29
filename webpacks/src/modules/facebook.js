@@ -6,8 +6,8 @@
 module.exports = function() {
 
 	//++ Module
-    var self        = this;
-    self.moduleName = "facebook";
+    var self  = this;
+    self.name = "facebook";
 
     //Check that facebook conf is set
     if(_.isUndefined(APP.facebookAppID) || _.isUndefined(UA))

@@ -56,26 +56,26 @@ class GetText extends Adapter implements AdapterInterface
     public function __construct($options)
     {
         if ( !is_array($options) ) {
-            die('GetText Lib -> Invalid options: "directory, file, domain, supported" settings are required.');
+            die("GetText Lib -> Invalid options: directory, file, domain, supported settings are required.");
         }
 
-        if ( !isset($options['directory']) ) {
-            die('GetText Lib -> Option "directory" is required.');
+        if ( !isset($options["directory"]) ) {
+            die("GetText Lib -> Option directory is required.");
         }
 
-        if ( !isset($options['domain']) ) {
-            die('GetText Lib -> Option "domain" is required, fo example: web_app. (multiple domains are not supported)');
+        if ( !isset($options["domain"]) ) {
+            die("GetText Lib -> Option domain is required, fo example: web_app. (multiple domains are not supported)");
         }
 
-        if ( !is_array($options['supported']) ) {
-            die('GetText Lib > Option "supported" is required and must be an array,  for example: array("en", "es").');
+        if ( !is_array($options["supported"]) ) {
+            die("GetText Lib > Option supported is required and must be an array,  for example: [en,es].");
         }
 
         //set class properties
-        $this->default_locale  = (php_uname('s') == "Darwin") ? "en_US.UTF-8" : "en_US.utf8"; //OSX or Ubuntu
-        $this->directory       = $options['directory'];
-        $this->domain          = $options['domain'];
-        $this->supportedLangs  = $options['supported'];
+        $this->default_locale  = (php_uname("s") == "Darwin") ? "en_US.UTF-8" : "en_US.utf8"; //OSX or Ubuntu
+        $this->directory       = $options["directory"];
+        $this->domain          = $options["domain"];
+        $this->supportedLangs  = $options["supported"];
         //print_r($this->supportedLangs);exit;
         //set language
         $this->setLanguage();
@@ -111,7 +111,7 @@ class GetText extends Adapter implements AdapterInterface
 
         //bind the domain
         bindtextdomain($this->domain, $this->directory);
-        //bind_textdomain_codeset($this->domain, 'UTF-8');
+        //bind_textdomain_codeset($this->domain, "UTF-8");
 
         //set text domain
         textdomain($this->domain);
@@ -135,7 +135,7 @@ class GetText extends Adapter implements AdapterInterface
      */
     public function exists($index)
     {
-        return gettext($index) !== '';
+        return gettext($index) !== "";
     }
 
     /**
@@ -156,7 +156,7 @@ class GetText extends Adapter implements AdapterInterface
         if (is_array($placeholders)) {
 
             foreach ($placeholders as $key => $value) {
-                $translation = str_replace('%' . $key . '%', $value, $translation);
+                $translation = str_replace("%" . $key . "%", $value, $translation);
             }
         }
 
@@ -180,15 +180,15 @@ class GetText extends Adapter implements AdapterInterface
         if (is_null($domain))
             $domain = textdomain(null);
 
-        $contextString = "{$msgctxt}\004{$msgid}";
-        $translation   = dcgettext($domain, $contextString, $category);
+        $ctx_string_ = "{$msgctxt}\004{$msgid}";
+        $translation = dcgettext($domain, $ctx_string_, $category);
 
-        if ($translation == $contextString)
+        if ($translation == $ctx_string_)
             $translation = $msgid;
 
         if (is_array($placeholders)) {
             foreach ($placeholders as $key => $value) {
-                $translation = str_replace('%' . $key . '%', $value, $translation);
+                $translation = str_replace("%" . $key . "%", $value, $translation);
             }
         }
 
@@ -250,7 +250,7 @@ class GetText extends Adapter implements AdapterInterface
 
         if (is_array($placeholders)) {
             foreach ($placeholders as $key => $value) {
-                $translation = str_replace('%' . $key . '%', $value, $translation);
+                $translation = str_replace("%" . $key . "%", $value, $translation);
             }
         }
 
@@ -280,18 +280,19 @@ class GetText extends Adapter implements AdapterInterface
         if (is_null($domain))
             $domain = textdomain(null);
 
-        $contextString1 = "{$msgctxt}\004{$msgid1}";
-        $contextString2 = "{$msgctxt}\004{$msgid2}";
-        $translation    = dcngettext($domain, $contextString1, $contextString2, $count, $category);
+        $ctx_string_1 = "{$msgctxt}\004{$msgid1}";
+        $ctx_string_2 = "{$msgctxt}\004{$msgid2}";
+
+        $translation = dcngettext($domain, $ctx_string_1, $ctx_string_2, $count, $category);
 
         /*
-        if ($translation == $contextString) {
+        if ($translation == $ctx_string_) {
             $translation = $msgid;
         }*/
 
         if (is_array($placeholders)) {
             foreach ($placeholders as $key => $value) {
-                $translation = str_replace('%' . $key . '%', $value, $translation);
+                $translation = str_replace("%" . $key . "%", $value, $translation);
             }
         }
 

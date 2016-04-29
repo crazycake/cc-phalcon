@@ -16,7 +16,7 @@ class BaseUserTicket extends \CrazyCake\Models\Base
 {
     /* static vars */
 
-    //this static methods can be 'overrided' as late binding
+    //this static methods can be "overrided" as late binding
     public static $QR_CODE_LEGTH     = 40;
     public static $TICKET_CODE_LEGTH = 10;
 
@@ -63,7 +63,7 @@ class BaseUserTicket extends \CrazyCake\Models\Base
         $this->hasOne("user_id", $user_class, "id");
 
         //Skips fields/columns on both INSERT/UPDATE operations
-        $this->skipAttributes(['_ext']);
+        $this->skipAttributes(["_ext"]);
     }
 
     /**
@@ -89,7 +89,7 @@ class BaseUserTicket extends \CrazyCake\Models\Base
     public function afterFetch()
     {
         //extend properties
-        $id_hashed = $this->getDI()->getShared('cryptify')->encryptHashId($this->id);
+        $id_hashed = $this->getDI()->getShared("cryptify")->encryptHashId($this->id);
 
         $this->_ext = ["id_hashed" => $id_hashed];
     }
@@ -112,7 +112,7 @@ class BaseUserTicket extends \CrazyCake\Models\Base
         $ids_filter = "";
 
         foreach ($record_ids as $key => $id)
-            $record_ids[$key] = "id = '$id'";
+            $record_ids[$key] = "id = ".(int)$id;
 
         $ids_filter = implode(" OR ", $record_ids);
 
@@ -187,7 +187,7 @@ class BaseUserTicket extends \CrazyCake\Models\Base
         $hash = substr(str_shuffle($hash), 0, $length);
 
         //unique constrait
-        $exists = self::findFirst(["qr_hash = '$hash'"]);
+        $exists = self::findFirstByQrHash($hash);
 
         return $exists ? $this->newHash($phrase) : $hash;
     }
@@ -199,7 +199,7 @@ class BaseUserTicket extends \CrazyCake\Models\Base
      */
     protected function newCode()
     {
-        $code = $this->getDI()->getShared('cryptify')
+        $code = $this->getDI()->getShared("cryptify")
                               ->newAlphanumeric(static::$TICKET_CODE_LEGTH);
         //unique constrait
         $user_id = isset($this->user_id) ? $this->user_id : 0;

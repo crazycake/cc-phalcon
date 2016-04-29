@@ -19,7 +19,7 @@ use CrazyCake\Phalcon\App;
 class QRMaker
 {
 	/* consts */
-	const QR_LIB_NAMESPACE = '\\CrazyCake\\Qr\\'; //lib root path
+	const QR_LIB_NAMESPACE = "\\CrazyCake\\Qr\\"; //lib root path
 	const QR_HIGH_QUALITY  = true;
 	const QR_PNG_MAX_SIZE  = 1024;
 
@@ -50,13 +50,13 @@ class QRMaker
      */
     protected function init($log_path, $cache_path)
     {
-        if (defined('QR_ASSETS_PATH'))
+        if (defined("QR_ASSETS_PATH"))
             return;
 
         //use cache - more disk reads but less CPU power, masks and format templates are stored there
-		define('QR_CACHEABLE', (is_null($cache_path) ? false : true));
-		define('QR_CACHE_DIR', $cache_path."qr/");
-		define('QR_LOG_DIR', $log_path);
+		define("QR_CACHEABLE", (is_null($cache_path) ? false : true));
+		define("QR_CACHE_DIR", $cache_path."qr/");
+		define("QR_LOG_DIR", $log_path);
 
 		//create cache dir if not exists
 		if(!is_dir(QR_CACHE_DIR))
@@ -65,7 +65,7 @@ class QRMaker
 		//Check if library is running from a Phar file, if does, assets must be copied to cache folder.
 		//For reading assets from a phar directly, see: http://php.net/manual/en/phar.webphar.php
 		if(\Phar::running()) {
-			define("QR_ASSETS_PATH", App::extractAssetsFromPhar('qr/assets/', $cache_path));
+			define("QR_ASSETS_PATH", App::extractAssetsFromPhar("qr/assets/", $cache_path));
 		}
 		else {
 			define("QR_ASSETS_PATH", __DIR__."/assets/");
@@ -73,17 +73,17 @@ class QRMaker
 
 		//if true, estimates best mask (spec. default, but extremally slow; set to false to significant performance boost but (propably) worst quality code
 		if (self::QR_HIGH_QUALITY) {
-			define('QR_FIND_BEST_MASK', true);
+			define("QR_FIND_BEST_MASK", true);
 		}
 		else {
-			define('QR_FIND_BEST_MASK', false);
-			define('QR_DEFAULT_MASK', false);
+			define("QR_FIND_BEST_MASK", false);
+			define("QR_DEFAULT_MASK", false);
 		}
 
 		//if false, checks all masks available, otherwise value tells count of masks need to be checked, mask id are got randomly
-		define('QR_FIND_FROM_RANDOM', false);
+		define("QR_FIND_FROM_RANDOM", false);
 		//maximum allowed png image width (in pixels), tune to make sure GD and PHP can handle such big images
-		define('QR_PNG_MAXIMUM_SIZE',  self::QR_PNG_MAX_SIZE);
+		define("QR_PNG_MAXIMUM_SIZE",  self::QR_PNG_MAX_SIZE);
     }
 
 	/**
@@ -96,13 +96,13 @@ class QRMaker
 	{
 		//new QrTag object
 		$qr = new QrTag();
-		$qr->bgColor = isset($params['background_color']) ? $params['background_color'] : "ffffff";
-		$qr->text 	 = isset($params['data']) ? $params['data'] : "CrazyCake QR Code";
-		$qr->file 	 = isset($params['savename']) ? $params['savename'] : die("QR Library -> (generate) must set param 'savename'.");
+		$qr->bgColor = isset($params["background_color"]) ? $params["background_color"] : "ffffff";
+		$qr->text 	 = isset($params["data"]) ? $params["data"] : "CrazyCake QR Code";
+		$qr->file 	 = isset($params["savename"]) ? $params["savename"] : die("QR Library -> (generate) must set param savename");
 
 		//shape dot object
-		if( isset($params['dot_shape_class']) && $this->_class_exists($params['dot_shape_class']) ) {
-			$class    = self::QR_LIB_NAMESPACE.$params['dot_shape_class'];
+		if( isset($params["dot_shape_class"]) && $this->_class_exists($params["dot_shape_class"]) ) {
+			$class    = self::QR_LIB_NAMESPACE.$params["dot_shape_class"];
 			$shapeDot = new $class();
 		}
 		else {
@@ -111,13 +111,13 @@ class QRMaker
 		}
 
 		//set shape dot
-		$shapeDot->color = isset($params['dot_shape_color']) ? $params['dot_shape_color'] : "000000";
-		$shapeDot->size  = isset($params['dot_shape_size']) ? $params['dot_shape_size'] : 14;
+		$shapeDot->color = isset($params["dot_shape_color"]) ? $params["dot_shape_color"] : "000000";
+		$shapeDot->size  = isset($params["dot_shape_size"]) ? $params["dot_shape_size"] : 14;
 		$qr->setDot($shapeDot);
 
 		//frame dot object
-		if( isset($params['dot_frame_class']) && $this->_class_exists($params['dot_frame_class']) ) {
-			$class    = self::QR_LIB_NAMESPACE.$params['dot_frame_class'];
+		if( isset($params["dot_frame_class"]) && $this->_class_exists($params["dot_frame_class"]) ) {
+			$class    = self::QR_LIB_NAMESPACE.$params["dot_frame_class"];
 			$frameDot = new $class();
 		}
 		else {
@@ -126,12 +126,12 @@ class QRMaker
 		}
 
 		//set frame dot
-		$frameDot->color = isset($params['dot_frame_color']) ? $params['dot_frame_color'] : "000000";
+		$frameDot->color = isset($params["dot_frame_color"]) ? $params["dot_frame_color"] : "000000";
 		$qr->frameDot    = $frameDot;
 
 		//main frame object
-		if( isset($params['frame_class']) && $this->_class_exists($params['frame_class']) ) {
-			$class = self::QR_LIB_NAMESPACE.$params['frame_class'];
+		if( isset($params["frame_class"]) && $this->_class_exists($params["frame_class"]) ) {
+			$class = self::QR_LIB_NAMESPACE.$params["frame_class"];
 			$frame = new $class();
 		}
 		else {
@@ -139,7 +139,7 @@ class QRMaker
 			$frame = new QrTagFrameSquare();
 		}
 
-		$frameDot->color = isset($params['frame_color']) ? $params['frame_color'] : "000000";
+		$frameDot->color = isset($params["frame_color"]) ? $params["frame_color"] : "000000";
 		$qr->frame = $frame;
 	   //var_dump($qr);//exit;
 
@@ -147,8 +147,8 @@ class QRMaker
 		$qr->generate();
 
 		//embed image?
-		if( isset($params['embed_logo']) )
-			$this->_embedLogo($params['savename'], $params['embed_logo']);
+		if( isset($params["embed_logo"]) )
+			$this->_embedLogo($params["savename"], $params["embed_logo"]);
 
 		return;
 	}
@@ -170,13 +170,13 @@ class QRMaker
 
 		//embed image type
 		switch($extension) {
-			case 'png':
+			case "png":
 				$embed_img = imagecreatefrompng($embed_img_path);
 				break;
-			case 'jpg':
+			case "jpg":
 				$embed_img = imagecreatefromjpeg($embed_img_path);
 				break;
-			case 'gif':
+			case "gif":
 				$embed_img = imagecreatefromgif($embed_img_path);
 				break;
 		}

@@ -164,7 +164,7 @@ class Base extends \Phalcon\Mvc\Model
     {
         $data = [];
 
-        if (!method_exists($this, 'getMessages'))
+        if (!method_exists($this, "getMessages"))
             return ($data[0] = "Unknown ORM Error");
 
         foreach ($this->getMessages() as $msg)

@@ -55,7 +55,7 @@ class BasePushNotification extends \CrazyCake\Models\Base
      * Push Services
      * @var array
      */
-    static $SERVICES = ['gcm', 'apn'];
+    static $SERVICES = ["gcm", "apn"];
 
     /**
      * Validation Event
@@ -65,7 +65,7 @@ class BasePushNotification extends \CrazyCake\Models\Base
         $this->validate(new InclusionIn([
             "field"   => "service",
             "domain"  => self::$SERVICES,
-            "message" => 'Invalid service. Services supported: '.implode(", ", self::$SERVICES)
+            "message" => "Invalid service. Services supported: ".implode(", ", self::$SERVICES)
         ]));
 
         //check validations
@@ -105,7 +105,7 @@ class BasePushNotification extends \CrazyCake\Models\Base
      * Gets all subscribed users
      * @static
      * @param string $service - The service.
-     * @param boolean $as_string - If true, result will be uuids concatenated as string with ',' delimeter.
+     * @param boolean $as_string - If true, result will be uuids concatenated as string with "," delimeter.
      * @return mixed resultset|string
      */
     public static function getSubscribers($service, $as_string = false)

@@ -157,6 +157,7 @@ abstract class BaseUser extends \CrazyCake\Models\Base
 
         //filter by account flag?
         if(!is_null($account_flag) && in_array($account_flag, self::$ACCOUNT_FLAGS)) {
+            
             $bind[2] = $account_flag;
             $conditions .= " AND account_flag = ?2";
         }

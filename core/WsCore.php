@@ -17,8 +17,8 @@ use CrazyCake\Phalcon\AppModule;
  */
 abstract class WsCore extends MvcCore
 {
-    const HEADER_API_KEY         = 'X_API_KEY'; //HTTP header keys uses '_' for '-' in Phalcon
-    const WS_RESPONSE_CACHE_PATH = APP_PATH.'cache/response/';
+    const HEADER_API_KEY         = "X_API_KEY"; //Phalcon HTTP header keys replace "_" to "-"
+    const WS_RESPONSE_CACHE_PATH = APP_PATH."cache/response/";
 
     /**
      * Welcome message for API server status
@@ -60,7 +60,7 @@ abstract class WsCore extends MvcCore
      * @param boolean $method - HTTP method, default is GET
      * @return mixed [object|boolean]
      */
-    protected function _handleObjectIdRequestParam($prop = "object_id", $optional = false, $method = 'GET')
+    protected function _handleObjectIdRequestParam($prop = "object_id", $optional = false, $method = "GET")
     {
         $scheme = explode("_", strtolower($prop));
         //unset last prop
@@ -140,18 +140,17 @@ abstract class WsCore extends MvcCore
      */
     private function _validateApiKey()
     {
-        $apiKey     = AppModule::getProperty("key");
-        $keyEnabled = AppModule::getProperty("keyEnabled");
+        $api_key = AppModule::getProperty("key");
+        $enabled = AppModule::getProperty("keyEnabled");
 
-        if (!$keyEnabled)
+        if(!$enabled)
             return;
 
         //get API key from request headers
-        $headerApiKey = $this->request->getHeader(self::HEADER_API_KEY);
-        //print_r($this->request->getHeaders());exit;
+        $header_api_key = $this->request->getHeader(self::HEADER_API_KEY);
 
         //check if keys are equal
-        if ($apiKey !== $headerApiKey)
+        if($api_key !== $header_api_key)
             $this->_sendJsonResponse(498);
     }
 }

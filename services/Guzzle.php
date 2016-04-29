@@ -51,8 +51,8 @@ trait Guzzle
                 return $this->_socketAsync($options);
 
             $guzzle_options = [
-                'base_uri' => $options["base_url"],
-                'timeout'  => self::$REQUEST_TIMEOUT
+                "base_uri" => $options["base_url"],
+                "timeout"  => self::$REQUEST_TIMEOUT
             ];
 
             $client = new GuzzleClient($guzzle_options);
@@ -66,7 +66,7 @@ trait Guzzle
 
         //log error
         $di = \Phalcon\DI::getDefault();
-        $di->getShared('logger')->error("Guzzle::newRequest -> Options: ".json_encode($options, JSON_UNESCAPED_SLASHES).", Exception: ".$exception->getMessage().
+        $di->getShared("logger")->error("Guzzle::newRequest -> Options: ".json_encode($options, JSON_UNESCAPED_SLASHES).", Exception: ".$exception->getMessage().
                                         "\n".$exception->getLine()." ".$e->getFile());
     }
 
@@ -84,7 +84,7 @@ trait Guzzle
         $verify_peer = (APP_ENVIRONMENT != "production") ? false : true; //prod_recommended: true
 
         $guzzle_options = [
-            'curl' => [
+            "curl" => [
                 CURLOPT_SSL_VERIFYHOST => $verify_host,
                 CURLOPT_SSL_VERIFYPEER => $verify_peer
             ]
@@ -126,8 +126,8 @@ trait Guzzle
             $form_params = ["payload" => $options["payload"]];
 
         $guzzle_options = [
-            'form_params' => $form_params,
-            'curl' => [
+            "form_params" => $form_params,
+            "curl" => [
                 CURLOPT_SSL_VERIFYHOST => $verify_host,
                 CURLOPT_SSL_VERIFYPEER => $verify_peer
             ]
@@ -155,7 +155,7 @@ trait Guzzle
 
             //set logger
             $di = \Phalcon\DI::getDefault();
-            $logger = $di->getShared('logger');
+            $logger = $di->getShared("logger");
 
             $body = $response->getBody();
 
@@ -202,8 +202,8 @@ trait Guzzle
 
         // set socket to be opened
         $socket = fsockopen(
-            $parts['host'],
-            isset($parts['port']) ? $parts['port'] : self::$SOCKET_DEFAULT_PORT,
+            $parts["host"],
+            isset($parts["port"]) ? $parts["port"] : self::$SOCKET_DEFAULT_PORT,
             $errno,
             $errstr,
             self::$REQUEST_TIMEOUT
@@ -211,14 +211,14 @@ trait Guzzle
 
         // Data goes in the path for a GET request
         if($options["method"] == "GET") {
-            $parts['path'] .= $options["payload"]; //normal would be a ? symbol with & delimeter
+            $parts["path"] .= $options["payload"]; //normal would be a ? symbol with & delimeter
             $length = 0;
         }
         else {
 
             //create a concatenated string
             if(is_array($options["payload"])) {
-                $options["payload"] = http_build_query($options["payload"], '','&');
+                $options["payload"] = http_build_query($options["payload"], "","&");
             }
             //default behavior
             else {
@@ -229,8 +229,8 @@ trait Guzzle
         }
 
         //set output
-        $out = $options["method"]." ".$parts['path']." HTTP/1.1\r\n";
-        $out .= "Host: ".$parts['host']."\r\n";
+        $out = $options["method"]." ".$parts["path"]." HTTP/1.1\r\n";
+        $out .= "Host: ".$parts["host"]."\r\n";
         $out .= "User-Agent: AppLocalServer\r\n";
         $out .= "Content-Type: application/x-www-form-urlencoded\r\n";
         $out .= "Content-Length: ".$length."\r\n";

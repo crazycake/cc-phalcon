@@ -59,9 +59,9 @@ trait AccountAuth
         $this->_redirectToAccount(true);
 
         //view vars
-        $this->view->setVar("html_title", $this->account_auth_conf['trans']['title_sign_in']);
+        $this->view->setVar("html_title", $this->account_auth_conf["trans"]["title_sign_in"]);
         //load js reCaptcha?
-        $this->view->setVar("js_recaptcha", $this->account_auth_conf['js_recaptcha']);
+        $this->view->setVar("js_recaptcha", $this->account_auth_conf["js_recaptcha"]);
 
         //call abstract method
         $this->beforeRenderSignInView();
@@ -76,15 +76,16 @@ trait AccountAuth
         $this->_redirectToAccount(true);
 
         //view vars
-        $this->view->setVar("html_title", $this->account_auth_conf['trans']['title_sign_up']);
+        $this->view->setVar("html_title", $this->account_auth_conf["trans"]["title_sign_up"]);
 
         //check sign_up session data for auto completion field
         $signup_session = $this->_getSessionObjects("signup_session");
+
         $this->_destroySessionObjects("signup_session");
         $this->view->setVar("signup_session", $signup_session);
 
         //send birthday data for form
-        if(isset($this->account_auth_conf['profile_request_params']['birthday']))
+        if(isset($this->account_auth_conf["profile_request_params"]["birthday"]))
             $this->view->setVar("birthday_elements", Forms::getBirthdaySelectors());
 
         //call abstract method
@@ -103,8 +104,9 @@ trait AccountAuth
         //get decrypted data
         try {
             //get model classes
-            $user_class  = AppModule::getClass('user');
-            $tokens_class = AppModule::getClass('user_token');
+            $user_class   = AppModule::getClass("user");
+            $tokens_class = AppModule::getClass("user_token");
+
             //handle the encrypted data with parent controller
             $data = $tokens_class::handleUserTokenValidation($encrypted_data);
             //assign values
@@ -113,11 +115,11 @@ trait AccountAuth
             //check user-flag if is really pending
             $user = $user_class::getById($user_id);
 
-            if (!$user || $user->account_flag != 'pending')
-                throw new Exception("user (id: ".$user->id.") don't have a pending account flag.");
+            if (!$user || $user->account_flag != "pending")
+                throw new Exception("user (id: ".$user->id.") dont have a pending account flag.");
 
             //save new account flag state
-            $user->update(["account_flag" => 'enabled']);
+            $user->update(["account_flag" => "enabled"]);
 
             //get token object and remove it
             $token = $tokens_class::getTokenByUserAndValue($user_id, $token_type, $token);
@@ -125,7 +127,7 @@ trait AccountAuth
             $token->delete();
 
             //set a flash message to show on account controller
-            $this->flash->success($this->account_auth_conf['trans']['activation_success']);
+            $this->flash->success($this->account_auth_conf["trans"]["activation_success"]);
 
             //success login
             $this->_setUserSessionAsLoggedIn($user_id);
@@ -135,7 +137,7 @@ trait AccountAuth
 
             $data = $encrypted_data ? $this->cryptify->decryptData($encrypted_data) : "invalid hash";
 
-            $this->logger->error('AccountAuth::activationAction -> Error in account activation, decrypted data ('.$data."). Msg: ".$e->getMessage());
+            $this->logger->error("AccountAuth::activationAction -> Error in account activation, decrypted data (".$data."). Msg: ".$e->getMessage());
             $this->dispatcher->forward(["controller" => "error", "action" => "expired"]);
         }
     }
@@ -155,31 +157,31 @@ trait AccountAuth
     {
         //validate and filter request params data, second params are the required fields
         $data = $this->_handleRequestParams([
-            'email' => 'email',
-            'pass'  => 'string'
+            "email" => "email",
+            "pass"  => "string"
         ]);
 
         //get model classes
-        $user_class = AppModule::getClass('user');
+        $user_class = AppModule::getClass("user");
         //find this user
-        $user = $user_class::getUserByEmail($data['email']);
+        $user = $user_class::getUserByEmail($data["email"]);
 
         //check user & given hash with the one stored (wrong combination)
-        if (!$user || !$this->security->checkHash($data['pass'], $user->pass)) {
-            $this->_sendJsonResponse(200, $this->account_auth_conf['trans']['auth_failed'], "alert");
+        if (!$user || !$this->security->checkHash($data["pass"], $user->pass)) {
+            $this->_sendJsonResponse(200, $this->account_auth_conf["trans"]["auth_failed"], "alert");
         }
 
         //check user account flag
-        if ($user->account_flag != 'enabled') {
+        if ($user->account_flag != "enabled") {
             //set message
-            $msg       = $this->account_auth_conf['trans']['account_disabled'];
+            $msg       = $this->account_auth_conf["trans"]["account_disabled"];
             $namespace = null;
             //check account is pending
-            if ($user->account_flag == 'pending') {
+            if ($user->account_flag == "pending") {
 
-                $msg = $this->account_auth_conf['trans']['account_pending'];
+                $msg = $this->account_auth_conf["trans"]["account_pending"];
                 //set name for javascript view
-                $namespace = 'ACCOUNT_PENDING';
+                $namespace = "ACCOUNT_PENDING";
             }
 
             //show error message with custom handler
@@ -197,33 +199,33 @@ trait AccountAuth
     public function registerAction()
     {
         $default_params = [
-            'email'      => 'email',
-            'pass'       => 'string',
-            'first_name' => 'string',
-            'last_name'  => 'string'
+            "email"      => "email",
+            "pass"       => "string",
+            "first_name" => "string",
+            "last_name"  => "string"
         ];
 
-        $setting_params = isset($this->account_auth_conf['profile_request_params']) ? $this->account_auth_conf['profile_request_params'] : array();
+        $setting_params = isset($this->account_auth_conf["profile_request_params"]) ? $this->account_auth_conf["profile_request_params"] : array();
 
         //validate and filter request params data, second params are the required fields
         $data = $this->_handleRequestParams(array_merge($default_params, $setting_params));
 
         //validate names
-        $nums = '0123456789';
-        if(strcspn($data['first_name'], $nums) != strlen($data['first_name']) ||
-           strcspn($data['last_name'], $nums) != strlen($data['last_name'])) {
+        $nums = "0123456789";
+        if(strcspn($data["first_name"], $nums) != strlen($data["first_name"]) ||
+           strcspn($data["last_name"], $nums) != strlen($data["last_name"])) {
 
-            $this->_sendJsonResponse(200, $this->account_auth_conf['trans']['invalid_names'], "alert");
+            $this->_sendJsonResponse(200, $this->account_auth_conf["trans"]["invalid_names"], "alert");
         }
 
         //format to capitalized name
-        $data["first_name"] = mb_convert_case($data["first_name"], MB_CASE_TITLE, 'UTF-8');
-        $data["last_name"]  = mb_convert_case($data["last_name"], MB_CASE_TITLE, 'UTF-8');
+        $data["first_name"] = mb_convert_case($data["first_name"], MB_CASE_TITLE, "UTF-8");
+        $data["last_name"]  = mb_convert_case($data["last_name"], MB_CASE_TITLE, "UTF-8");
 
         //get model classes
-        $user_class = AppModule::getClass('user');
+        $user_class = AppModule::getClass("user");
         //set pending email confirmation status
-        $data['account_flag'] = 'pending';
+        $data["account_flag"] = "pending";
 
         //Save user, validations are applied in model
         $user = new $user_class();
@@ -233,7 +235,7 @@ trait AccountAuth
             $this->_sendJsonResponse(200, $user->filterMessages(), "alert");
 
         //set a flash message to show on account controller
-        $this->flash->success(str_replace("{email}", $user->email, $this->account_auth_conf['trans']['activation_pending']));
+        $this->flash->success(str_replace("{email}", $user->email, $this->account_auth_conf["trans"]["activation_pending"]));
         //send activation account email
         $this->_sendMailMessage("sendMailForAccountActivation", $user->id);
         //force redirection
@@ -246,32 +248,32 @@ trait AccountAuth
     public function resendActivationMailMessageAction()
     {
         $data = $this->_handleRequestParams([
-            'email'                => 'email',
-            '@g-recaptcha-response' => 'string'
+            "email"                 => "email",
+            "@g-recaptcha-response" => "string"
         ]);
 
         //google reCaptcha helper
         $recaptcha = new ReCaptcha($this->config->app->google->reCaptchaKey);
 
         //check valid reCaptcha
-        if (empty($data['g-recaptcha-response']) || !$recaptcha->isValid($data['g-recaptcha-response'])) {
+        if (empty($data["g-recaptcha-response"]) || !$recaptcha->isValid($data["g-recaptcha-response"])) {
             //show error message
-            return $this->_sendJsonResponse(200, $this->account_auth_conf['trans']['recaptcha_failed'], "alert");
+            return $this->_sendJsonResponse(200, $this->account_auth_conf["trans"]["recaptcha_failed"], "alert");
         }
 
         //get model classes
-        $user_class = AppModule::getClass('user');
-        $user = $user_class::getUserByEmail($data['email'], 'pending');
+        $user_class = AppModule::getClass("user");
+        $user       = $user_class::getUserByEmail($data["email"], "pending");
 
         //check if user exists is a pending account
         if (!$user)
-            $this->_sendJsonResponse(200, $this->account_auth_conf['trans']['account_not_found'], 'alert');
+            $this->_sendJsonResponse(200, $this->account_auth_conf["trans"]["account_not_found"], "alert");
 
         //send email message with password recovery steps
         $this->_sendMailMessage("sendMailForAccountActivation", $user->id);
 
         //set payload
-        $payload = str_replace("{email}", $data['email'], $this->account_auth_conf['trans']['activation_pending']);
+        $payload = str_replace("{email}", $data["email"], $this->account_auth_conf["trans"]["activation_pending"]);
 
         //send JSON response
         $this->_sendJsonResponse(200, $payload);

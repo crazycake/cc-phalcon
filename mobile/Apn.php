@@ -21,41 +21,41 @@ class APN
 	const CONECTION_TIMEOUT   = 60;
 	const NOTIFICATION_EXPIRY = 86400;
 
-	const PUSH_GATEWAY_SANDBOX = 'ssl://gateway.sandbox.push.apple.com:2195';
-	const PUSH_GATEWAY 		   = 'ssl://gateway.push.apple.com:2195';
+	const PUSH_GATEWAY_SANDBOX = "ssl://gateway.sandbox.push.apple.com:2195";
+	const PUSH_GATEWAY 		   = "ssl://gateway.push.apple.com:2195";
 
-	const FEEDBACK_GATEWAY_SANDBOX = 'ssl://feedback.sandbox.push.apple.com:2196';
-	const FEEDBACK_GATEWAY 		   = 'ssl://feedback.push.apple.com:2196';
+	const FEEDBACK_GATEWAY_SANDBOX = "ssl://feedback.sandbox.push.apple.com:2196";
+	const FEEDBACK_GATEWAY 		   = "ssl://feedback.push.apple.com:2196";
 
 	protected $server;
-	protected $keyCertFilePath;
+	protected $key_cert_file;
 	protected $passphrase;
-	protected $caCertFilePath;
-	protected $pushStream;
-	protected $feedbackStream;
+	protected $ca_cert_file;
+	protected $stream;
+	protected $feedback_stream;
 	protected $timeout;
-	protected $idCounter = 0;
+	protected $id_counter = 0;
 	protected $expiry;
-	protected $allowReconnect = true;
-	protected $additionalData = array();
+	protected $reconnect = true;
+	protected $data = [];
 
-	protected $apnResonses = [
-		0   => 'No errors encountered',
-		1   => 'Processing error',
-		2   => 'Missing device token',
-		3   => 'Missing topic',
-		4   => 'Missing payload',
-		5   => 'Invalid token size',
-		6   => 'Invalid topic size',
-		7   => 'Invalid payload size',
-		8   => 'Invalid token',
-		255 => 'None (unknown)',
+	protected $codes = [
+		0   => "No errors encountered",
+		1   => "Processing error",
+		2   => "Missing device token",
+		3   => "Missing topic",
+		4   => "Missing payload",
+		5   => "Invalid token size",
+		6   => "Invalid topic size",
+		7   => "Invalid payload size",
+		8   => "Invalid token",
+		255 => "None (unknown)",
 	];
 
 	private $connection_start;
 
 	public $error;
-	public $payloadMethod = 'simple';
+	public $payload_method = "simple";
 
 	/**
 	 * Connects to the APNS server with a certificate and a passphrase
@@ -64,16 +64,16 @@ class APN
 	protected function __construct($config = array())
 	{
 		//check if file exists
-		if(!file_exists($config['prodPemFile']))
+		if(!file_exists($config["prodPemFile"]))
 			$this->_log("APN Lib -> Failed to connect: APN production PEM file not found");
 
 		//set configs
-		$this->pushServer 	  = $config['sandbox'] ? self::PUSH_GATEWAY_SANDBOX : self::PUSH_GATEWAY;
-		$this->feedbackServer = $config['sandbox'] ? self::FEEDBACK_GATEWAY_SANDBOX : self::FEEDBACK_GATEWAY;
+		$this->push_server 	   = $config["sandbox"] ? self::PUSH_GATEWAY_SANDBOX : self::PUSH_GATEWAY;
+		$this->feedback_server = $config["sandbox"] ? self::FEEDBACK_GATEWAY_SANDBOX : self::FEEDBACK_GATEWAY;
 
-        $this->keyCertFilePath = $config['sandbox'] ? $config['devPemFile'] : $config['prodPemFile'];
-        $this->passphrase      = $config['passphrase'];
-        $this->caCertFilePath  = $config['entrustCaCertFile'];
+        $this->key_cert_file = $config["sandbox"] ? $config["devPemFile"] : $config["prodPemFile"];
+        $this->passphrase    = $config["passphrase"];
+        $this->ca_cert_file  = $config["entrustCaCertFile"];
 
 		$this->timeout = self::CONECTION_TIMEOUT;
 		$this->expiry  = self::NOTIFICATION_EXPIRY;
@@ -90,20 +90,17 @@ class APN
 
 	/**
 	* Connects to the server with the certificate and passphrase
-	*
-	* @return <void>
 	*/
 	protected function connect($server)
 	{
 		//set context
 		$ctx = stream_context_create();
-		stream_context_set_option($ctx, 'ssl', 'local_cert', $this->keyCertFilePath);
-		stream_context_set_option($ctx, 'ssl', 'passphrase', $this->passphrase);
-		stream_context_set_option($ctx, 'ssl', 'cafile', $this->caCertFilePath);
+		stream_context_set_option($ctx, "ssl", "local_cert", $this->key_cert_file);
+		stream_context_set_option($ctx, "ssl", "passphrase", $this->passphrase);
+		stream_context_set_option($ctx, "ssl", "cafile", $this->ca_cert_file);
 
 		$stream = stream_socket_client($server, $err, $errstr, $this->timeout, STREAM_CLIENT_CONNECT|STREAM_CLIENT_PERSISTENT, $ctx);
 		$this->_log("APN: Maybe some errors: $err: $errstr");
-
 
 		if (!$stream) {
 
@@ -131,63 +128,65 @@ class APN
 	/**
 	* Generates the payload
 	*
-	* @param <string> $message
-	* @param <int> $badge
-	* @param <string> $sound
-	* @return <string>
+	* @param string $message
+	* @param int $badge
+	* @param string $sound
+	* @return string
 	*/
 	protected function generatePayload($message, $badge = NULL, $sound = NULL, $newstand = false)
 	{
-	   $body = array();
+	   $body = [];
 
 	    //additional data
-		if (is_array($this->additionalData) && count($this->additionalData))
-			$body = $this->additionalData;
+		if (is_array($this->data) && count($this->data))
+			$body = $this->data;
 
 		//message
-		$body['aps'] = array('alert' => $message);
+		$body["aps"] = ["alert" => $message];
 
 		//badge
 		if ($badge)
-			$body['aps']['badge'] = $badge;
+			$body["aps"]["badge"] = $badge;
 
-		if ($badge == 'clear')
-		$body['aps']['badge'] = 0;
+		if ($badge == "clear")
+		$body["aps"]["badge"] = 0;
 
 		//sound
 		if ($sound)
-			$body['aps']['sound'] = $sound;
+			$body["aps"]["sound"] = $sound;
 
 		//newstand content-available
 		if($newstand)
-			$body['aps']['content-available'] = 1;
+			$body["aps"]["content-available"] = 1;
 
 	   $payload = json_encode($body);
-	   $this->_log("APN: generatePayload '$payload'");
+
+	   $this->_log("APN: generatePayload ".$payload);
+
 	   return $payload;
 	}
 
 	/**
 	 * Writes the contents of payload to the file stream
 	 *
-	 * @param <string> $deviceToken
-	 * @param <string> $payload
+	 * @param string $device_token
+	 * @param string $payload
 	 */
-	protected function sendPayloadSimple($deviceToken, $payload)
+	protected function sendPayloadSimple($device_token, $payload)
 	{
-		$this->idCounter++;
+		$this->id_counter++;
 
-		$this->_log("APN: sendPayloadSimple to '$deviceToken'");
+		$this->_log("APN: sendPayloadSimple to ".$device_token);
 
 		$msg = chr(0) 									// command
-			 . pack('n',32)									// token length
-			 . pack('H*', $deviceToken)						// device token
-			 . pack('n',strlen($payload))					// payload length
+			 . pack("n",32)									// token length
+			 . pack("H*", $device_token)						// device token
+			 . pack("n",strlen($payload))					// payload length
 			 . $payload;										// payload
 
-		$this->_log("APN: payload: '$msg'");
-		$this->_log("APN: payload length: '".strlen($msg)."'");
-		$result = fwrite($this->pushStream, $msg, strlen($msg));
+		$this->_log("APN: payload: ".$msg);
+		$this->_log("APN: payload length: ".strlen($msg));
+		$result = fwrite($this->stream, $msg, strlen($msg));
 
 		return $result ? true : false;
 	}
@@ -195,34 +194,35 @@ class APN
 	/**
 	 * Writes the contents of payload to the file stream with enhanced api (expiry, debug)
 	 *
-	 * @param <string> $deviceToken
-	 * @param <string> $payload
+	 * @param string $device_token
+	 * @param string $payload
 	 */
-	protected function sendPayloadEnhance($deviceToken, $payload, $expiry = 86400)
+	protected function sendPayloadEnhance($device_token, $payload, $expiry = 86400)
 	{
-		if (!is_resource($this->pushStream))
+		if (!is_resource($this->stream))
 			$this->reconnectPush();
 
-		$this->idCounter++;
+		$this->id_counter++;
 
-		$this->_log("APN: sendPayloadEnhance to '$deviceToken'");
+		$this->_log("APN: sendPayloadEnhance to ".$device_token);
 
 		$payload_length = strlen($payload);
 
 		$request = chr(1) 										// command
 					. pack("N", time())		 				// identifier
 					. pack("N", time() + $expiry) // expiry
-					. pack('n', 32)								// token length
-					. pack('H*', $deviceToken) 		// device token
-					. pack('n', $payload_length) 	// payload length
+					. pack("n", 32)								// token length
+					. pack("H*", $device_token) 		// device token
+					. pack("n", $payload_length) 	// payload length
 					. $payload;
 
-		$request_unpacked = @unpack('Ccommand/Nidentifier/Nexpiry/ntoken_length/H64device_token/npayload_length/A*payload', $request); // payload
+		$request_unpacked = @unpack("Ccommand/Nidentifier/Nexpiry/ntoken_length/H64device_token/npayload_length/A*payload", $request); // payload
 
-		$this->_log("APN: request: '$request'");
-		$this->_log("APN: unpacked request: '" . print_r($request_unpacked, true) . "'");
-		$this->_log("APN: payload length: '" . $payload_length . "'");
-		$result = fwrite($this->pushStream, $request, strlen($request));
+		$this->_log("APN: request: ".$request);
+		$this->_log("APN: unpacked request: ".json_encode($request_unpacked));
+		$this->_log("APN: payload length: ".$payload_length);
+
+		$result = fwrite($this->stream, $request, strlen($request));
 
 		return $result ? $this->getPayloadStatuses() : false;
 	}
@@ -242,21 +242,21 @@ class APN
 	 */
 	public function connectToPush()
 	{
-		if (!$this->pushStream or !is_resource($this->pushStream)) {
+		if (!$this->stream or !is_resource($this->stream)) {
 
 			$this->_log("APN: connectToPush");
 			$this->//_lo" "APNLib -> connectToPush successfully!");
 
-			$this->pushStream = $this->connect($this->pushServer);
+			$this->stream = $this->connect($this->push_server);
 
-			if ($this->pushStream) {
+			if ($this->stream) {
 
 				$this->connection_start = microtime(true);
-				//stream_set_blocking($this->pushStream,0);
+				//stream_set_blocking($this->stream,0);
 			}
 		}
 
-		return $this->pushStream;
+		return $this->stream;
 	}
 
 	/**
@@ -265,7 +265,7 @@ class APN
 	public function connectToFeedback()
 	{
 		$this->_log("APN: connectToFeedback");
-		return $this->feedbackStream = $this->connect($this->feedbackServer);
+		return $this->feedback_stream = $this->connect($this->feedback_server);
 	}
 
 	/**
@@ -274,10 +274,10 @@ class APN
 	function disconnectPush()
 	{
 		$this->_log("APN: disconnectPush");
-		if ($this->pushStream && is_resource($this->pushStream)) {
+		if ($this->stream && is_resource($this->stream)) {
 
 			$this->connection_start = 0;
-			return @fclose($this->pushStream);
+			return @fclose($this->stream);
 		}
 		else {
 			return true;
@@ -290,8 +290,8 @@ class APN
 	function disconnectFeedback()
 	{
 		$this->_log("APN: disconnectFeedback");
-		if ($this->feedbackStream && is_resource($this->feedbackStream))
-			return @fclose($this->feedbackStream);
+		if ($this->feedback_stream && is_resource($this->feedback_stream))
+			return @fclose($this->feedback_stream);
 		else
 			return true;
 	}
@@ -313,7 +313,7 @@ class APN
 
 	function tryReconnectPush()
 	{
-		if ($this->allowReconnect) {
+		if ($this->reconnect) {
 
 			if($this->timeoutSoon())
 				return $this->reconnectPush();
@@ -326,42 +326,42 @@ class APN
 	/**
 	 * Sends a message to device
 	 *
-	 * @param <string> $deviceToken
-	 * @param <string> $message
-	 * @param <int> $badge
-	 * @param <string> $sound
+	 * @param string $device_token
+	 * @param string $message
+	 * @param int $badge
+	 * @param string $sound
 	 */
-	public function sendMessage($deviceToken, $message, $badge = NULL, $sound = NULL, $expiry = '', $newstand = false)
+	public function sendMessage($device_token, $message, $badge = NULL, $sound = NULL, $expiry = "", $newstand = false)
 	{
-		$this->error = '';
+		$this->error = "";
 
-		if (!ctype_xdigit($deviceToken)) {
+		if (!ctype_xdigit($device_token)) {
 
-			$this->_log("APN: Error - '$deviceToken' token is invalid. Provided device token contains not hexadecimal chars");
-			$this->error = 'Invalid device token. Provided device token contains not hexadecimal chars';
+			$this->_log("APN: Error - $device_token token is invalid. Provided device token contains not hexadecimal chars");
+			$this->error = "Invalid device token. Provided device token contains not hexadecimal chars";
 			return false;
 		}
 
 		// restart the connection
 		$this->tryReconnectPush();
 
-		$this->_log("APN: sendMessage '$message' to $deviceToken");
+		$this->_log("APN: sendMessage '$message' to $device_token");
 
 		//generate the payload
 		$payload = $this->generatePayload($message, $badge, $sound, $newstand);
 
-		$deviceToken = str_replace(' ', '', $deviceToken);
+		$device_token = str_replace(" ", "", $device_token);
 
 		//send payload to the device.
-		if ($this->payloadMethod == 'simple') {
+		if ($this->payload_method == "simple") {
 
-			$this->sendPayloadSimple($deviceToken, $payload);
+			$this->sendPayloadSimple($device_token, $payload);
 		}
 		else {
 			if (!$expiry)
 				$expiry = $this->expiry;
 
-			return $this->sendPayloadEnhance($deviceToken, $payload, $expiry);
+			return $this->sendPayloadEnhance($device_token, $payload, $expiry);
 		}
 	}
 
@@ -369,54 +369,55 @@ class APN
 	/**
 	 * Writes the contents of payload to the file stream
 	 *
-	 * @param <string> $deviceToken
-	 * @param <string> $payload
-	 * @return <bool>
+	 * @param string $device_token
+	 * @param string $payload
+	 * @return bool
 	 */
 	function getPayloadStatuses()
 	{
 
-		$read = array($this->pushStream);
+		$read = [$this->stream];
 		$null = null;
-		$changedStreams = stream_select($read, $null, $null, 0, 2000000);
 
-		if ($changedStreams === false) {
+		$changed_streams = stream_select($read, $null, $null, 0, 2000000);
+
+		if ($changed_streams === false) {
 
 			$this->_log("APN Error: Unabled to wait for a stream availability");
 		}
-		else if ($changedStreams > 0) {
+		else if ($changed_streams > 0) {
 
-			$responseBinary = fread($this->pushStream, 6);
+			$response_binary = fread($this->stream, 6);
 
-			if ($responseBinary !== false || strlen($responseBinary) == 6) {
+			if ($response_binary !== false || strlen($response_binary) == 6) {
 
-				if (!$responseBinary)
+				if (!$response_binary)
 					return true;
 
-				$response = @unpack('Ccommand/Cstatus_code/Nidentifier', $responseBinary);
+				$response = @unpack("Ccommand/Cstatus_code/Nidentifier", $response_binary);
 
-				$this->_log("APN: debugPayload response - ".print_r($response,true));
+				$this->_log("APN: debugPayload response - ".json_encode($response));
 
-				if ($response && $response['status_code'] > 0) {
+				if ($response && $response["status_code"] > 0) {
 
-					$this->_log("APN: debugPayload response - status_code:".$response['status_code'].' => '.$this->apnResonses[$response['status_code']]);
-					$this->error = $this->apnResonses[$response['status_code']];
+					$this->_log("APN: debugPayload response - status_code:".$response["status_code"]." => ".$this->codes[$response["status_code"]]);
+					$this->error = $this->codes[$response["status_code"]];
 					return false;
 				}
 				else {
 
-					if (isset($response['status_code']))
-						$this->_log("APN: debugPayload response - ".print_r($response['status_code'],true));
+					if (isset($response["status_code"]))
+						$this->_log("APN: debugPayload response - ".json_encode($response["status_code"]));
 				}
 			}
 			else {
 
-				$this->_log("APN: responseBinary = $responseBinary");
+				$this->_log("APN: responseBinary = $response_binary");
 				return false;
 			}
 		}
 		else
-			$this->_log("APN: No streams to change, $changedStreams");
+			$this->_log("APN: No streams to change, $changed_streams");
 
 		return true;
 	}
@@ -426,18 +427,20 @@ class APN
 	/**
 	* Gets an array of feedback tokens
 	*
-	* @return <array>
+	* @return array
 	*/
 	public function getFeedbackTokens() {
 
-		$this->_log("APN: getFeedbackTokens {$this->feedbackStream}");
+		$this->_log("APN: getFeedbackTokens {$this->feedback_stream}");
+
 		$this->connectToFeedback();
 
-	    $feedback_tokens = array();
-	    //and read the data on the connection:
-	    while(!feof($this->feedbackStream)) {
+	    $feedback_tokens = [];
 
-	        $data = fread($this->feedbackStream, 38);
+	    //and read the data on the connection:
+	    while(!feof($this->feedback_stream)) {
+
+	        $data = fread($this->feedback_stream, 38);
 
 	        if(strlen($data)) {
 	        	//echo $data;
@@ -454,8 +457,8 @@ class APN
 	/**
 	* Sets additional data which will be send with main apn message
 	*
-	* @param <array> $data
-	* @return <array>
+	* @param array $data
+	* @return array
 	*/
 	public function setData($data)
 	{
@@ -465,13 +468,13 @@ class APN
 			return false;
 		}
 
-		if (isset($data['apn'])) {
+		if (isset($data["apn"])) {
 
 			$this->_log("APN: cannot add additional data - key 'apn' is reserved");
 			return false;
 		}
 
-		return $this->additionalData = $data;
+		return $this->data = $data;
 	}
 
 	/**

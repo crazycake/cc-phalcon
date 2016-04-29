@@ -6,8 +6,8 @@
 module.exports = function() {
 
     //++ Module
-    var self        = this;
-    self.moduleName = "forms";
+    var self  = this;
+    self.name = "forms";
 
     //++ Components
     Vue.component('birthday-selector', {
@@ -142,13 +142,13 @@ module.exports = function() {
             throw new Error("App Core -> form object has no formValidation instance.");
 
         //check for input hidden fields that are required
-        var inputHiddens = form.find('input[type="hidden"][data-fv-excluded="false"]');
+        var inputs_hidden = form.find('input[type="hidden"][data-fv-excluded="false"]');
 
-        if(inputHiddens.length) {
+        if(inputs_hidden.length) {
 
             if(APP.dev) { console.log("App Core -> Revalidating hidden inputs..."); }
             //loop
-            inputHiddens.each(function() {
+            inputs_hidden.each(function() {
                 //revalidate field
                 form.data('formValidation').revalidateField($(this));
             });
@@ -160,7 +160,9 @@ module.exports = function() {
         var is_valid = form.data('formValidation').isValid();
 
         if(!is_valid && APP.dev) {
+
             console.log("App Core -> Some form element(s) are not valid:");
+
             form.data('formValidation').getInvalidFields().each(function() {
                 console.log($(this).attr("name"), $(this));
             });
@@ -220,11 +222,11 @@ module.exports = function() {
     /**
      * Add a dynamic field to form
      * @method addField
-     * @param  {String} fieldName - The field name
+     * @param  {String} field_name - The field name
      * @param  {Object} context - A jQuery object or native element
-     * @param  {Object} validatorsObj - Validators Object (formValidation)
+     * @param  {Object} validators_obj - Validators Object (formValidation)
      */
-    self.addField = function(fieldName, context, validatorsObj) {
+    self.addField = function(field_name, context, validators_obj) {
 
         if(context instanceof jQuery === false)
             context = $(context);
@@ -232,16 +234,16 @@ module.exports = function() {
         //field target
         var field;
         //set object
-        if(fieldName instanceof jQuery === true)
-            field = fieldName;
+        if(field_name instanceof jQuery === true)
+            field = field_name;
         else
-            field = $("[name='"+fieldName+"']", context);
+            field = $("[name='"+field_name+"']", context);
 
         //default validator
         var v = {validators : { notEmpty : {} }};
 
-        if(typeof validatorsObj === "object")
-            v = {validators : validatorsObj};
+        if(typeof validators_obj === "object")
+            v = {validators : validators_obj};
 
         //append required props
         self.assignFieldValidatorPattern(field, v.validators);
@@ -255,7 +257,7 @@ module.exports = function() {
 
         var fv = form.data('formValidation');
         //formValidation API
-        fv.addField(fieldName, v);
+        fv.addField(field_name, v);
     };
 
     /**

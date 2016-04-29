@@ -17,7 +17,7 @@ use CrazyCake\Helpers\Dates;
  */
 class BaseUserToken extends \CrazyCake\Models\Base
 {
-    //this static method can be 'overrided' as late binding
+    //this static method can be "overrided" as late binding
     public static $TOKEN_EXPIRES_THRESHOLD = 3; //days
 
     /* properties */
@@ -47,7 +47,7 @@ class BaseUserToken extends \CrazyCake\Models\Base
     /**
      * @var array
      */
-    static $TOKEN_TYPES = ['activation', 'pass'];
+    static $TOKEN_TYPES = ["activation", "pass"];
 
     /**
      * Validation Event
@@ -58,7 +58,7 @@ class BaseUserToken extends \CrazyCake\Models\Base
         $this->validate(new InclusionIn([
             "field"   => "type",
             "domain"  => self::$TOKEN_TYPES,
-            "message" => 'Invalid token type. Types supported: '.implode(", ", self::$TOKEN_TYPES)
+            "message" => "Invalid token type. Types supported: ".implode(", ", self::$TOKEN_TYPES)
         ]));
 
         //check validations
@@ -76,7 +76,7 @@ class BaseUserToken extends \CrazyCake\Models\Base
      * @param string $token - The token value
      * @return object
      */
-    public static function getTokenByUserAndValue($user_id, $type = 'activation', $token)
+    public static function getTokenByUserAndValue($user_id, $type = "activation", $token)
     {
         $conditions = "user_id = ?1 AND type = ?2 AND token = ?3";
         $binding    = [1 => $user_id, 2 => $type, 3 => $token];
@@ -91,7 +91,7 @@ class BaseUserToken extends \CrazyCake\Models\Base
      * @param string $type - The token type
      * @return object
      */
-    public static function getTokenByUserAndType($user_id, $type = 'activation')
+    public static function getTokenByUserAndType($user_id, $type = "activation")
     {
         $conditions = "user_id = ?1 AND type = ?2";
         $binding    = [1 => $user_id, 2 => $type];
@@ -103,10 +103,10 @@ class BaseUserToken extends \CrazyCake\Models\Base
      * Saves a new ORM object
      * @static
      * @param int $user_id - The user ID
-     * @param string $type - The token type, default is 'activation'
+     * @param string $type - The token type, default is "activation"
      * @return mixed [string|boolean]
      */
-    public static function saveNewToken($user_id, $type = 'activation')
+    public static function saveNewToken($user_id, $type = "activation")
     {
         //Save a new temporal token
         $class = static::who();
@@ -134,7 +134,7 @@ class BaseUserToken extends \CrazyCake\Models\Base
         $token = self::getTokenByUserAndType($user_id, $type);
 
         if ($token) {
-            //check token 'days passed' (checks if token is expired)
+            //check token "days passed" (checks if token is expired)
             $days_passed = Dates::getTimePassedFromDate($token->created_at);
 
             if ($days_passed > static::$TOKEN_EXPIRES_THRESHOLD) {
@@ -149,7 +149,7 @@ class BaseUserToken extends \CrazyCake\Models\Base
 
         //append encrypted data
         $di = \Phalcon\DI::getDefault();
-        $token->encrypted = $di->getShared('cryptify')->encryptData($token->user_id."#".$token->type."#".$token->token);
+        $token->encrypted = $di->getShared("cryptify")->encryptData($token->user_id."#".$token->type."#".$token->token);
 
         return $token;
     }
@@ -168,7 +168,7 @@ class BaseUserToken extends \CrazyCake\Models\Base
             throw new Exception("sent input null encrypted_data");
 
         $di   = \Phalcon\DI::getDefault();
-        $data = $di->getShared('cryptify')->decryptData($encrypted_data, "#");
+        $data = $di->getShared("cryptify")->decryptData($encrypted_data, "#");
 
         //validate data (user_id, token_type and token)
         if (count($data) < 3)
@@ -185,7 +185,7 @@ class BaseUserToken extends \CrazyCake\Models\Base
         if (!$token)
             throw new Exception("temporal token dont exists.");
 
-        //special case for activation (don't expires)
+        //special case for activation (don"t expires)
         if($token_type == "activation") {
             //success
             return $data;

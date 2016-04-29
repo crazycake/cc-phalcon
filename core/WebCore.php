@@ -50,6 +50,20 @@ abstract class WebCore extends MvcCore implements WebSecurity
     {
         parent::onConstruct();
 
+        //check enable SSL option
+        $enableSSL = AppModule::getProperty("enableSSL");
+
+        //if enabledSSL, force redirect for non-https request
+        if( APP_ENVIRONMENT === "production"
+            && isset($_SERVER["HTTP_HOST"])
+            && $enableSSL
+            && !$this->request->isSecureRequest()) {
+
+            $url = "https://".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
+            $this->response->redirect($url);
+            return;
+        }
+
         //set client object with its properties (User-Agent)
         $this->_setClientObject();
     }

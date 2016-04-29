@@ -37,7 +37,7 @@ class Redis
 
         //set cache prefix with app namespace
         if(!isset($conf["prefix"]))
-            $conf["prefix"] = $di->getShared('config')->app->namespace.":";
+            $conf["prefix"] = $di->getShared("config")->app->namespace.":";
 
         //setup Redis
         $this->_setupRedis($conf);
@@ -153,10 +153,10 @@ class Redis
     private function _setupRedis($conf = array())
     {
         $clientConf = [
-            'scheme'     => "tcp",
-            'host'       => "127.0.0.1",
-            'port'       => self::REDIS_DEFAULT_PORT,
-            'persistent' => false
+            "scheme"     => "tcp",
+            "host"       => "127.0.0.1",
+            "port"       => self::REDIS_DEFAULT_PORT,
+            "persistent" => false
         ];
         // sets up redis connection
         $this->client = new RedisClient(array_merge($clientConf, $conf));

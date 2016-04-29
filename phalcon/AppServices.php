@@ -38,7 +38,7 @@ class AppServices
     public function __construct($loaderObj = null)
     {
         if(is_null($loaderObj))
-            throw new Exception("AppServices::__construct -> 'loader' object is required.");
+            throw new Exception("AppServices::__construct -> loader object is required.");
 
         //set class vars
         $this->config = new \Phalcon\Config($loaderObj->app_conf);
@@ -51,9 +51,9 @@ class AppServices
      */
     public function getDI()
     {
-        if(MODULE_NAME == 'api')
+        if(MODULE_NAME == "api")
             return $this->_getMicroDI();
-        else if(MODULE_NAME == 'cli')
+        else if(MODULE_NAME == "cli")
             return $this->_getCliDI();
 
         //frontend or backend
@@ -113,10 +113,10 @@ class AppServices
     private function _setCommonServices(&$di)
     {
         //Set the config
-        $di->setShared('config', $this->config);
+        $di->setShared("config", $this->config);
 
         //The URL component is used to generate all kind of urls in the application
-        $di->setShared('url', function() {
+        $di->setShared("url", function() {
 
             $url = new \Phalcon\Mvc\Url();
             //Base URL
@@ -135,14 +135,14 @@ class AppServices
         });
 
         //Logger adapter
-        $di->setShared('logger', function() {
+        $di->setShared("logger", function() {
 
             $logger = new \Phalcon\Logger\Adapter\File(APP_PATH."logs/".date("d-m-Y").".log");
             return $logger;
         });
 
         //Basic http security
-        $di->setShared('security', function() {
+        $di->setShared("security", function() {
 
             $security = new \Phalcon\Security();
             //Set the password hashing factor to X rounds
@@ -151,7 +151,7 @@ class AppServices
         });
 
         //Phalcon Crypt service
-        $di->setShared('crypt', function() {
+        $di->setShared("crypt", function() {
 
             $crypt = new \Phalcon\Crypt();
             $crypt->setKey($this->config->app->cryptKey);
@@ -159,9 +159,9 @@ class AppServices
         });
 
         //Extended encryption, Cryptify adapter (cryptography helper)
-        if(class_exists('\CrazyCake\Helpers\Cryptify')) {
+        if(class_exists("\CrazyCake\Helpers\Cryptify")) {
 
-            $di->setShared('cryptify', function() {
+            $di->setShared("cryptify", function() {
                 return new \CrazyCake\Helpers\Cryptify($this->config->app->cryptKey);
             });
         }
@@ -173,20 +173,20 @@ class AppServices
      * @param object $di - The DI object
      * @param string $adapter - The DB adapter
      */
-    private function _setDatabaseService(&$di, $adapter = 'mysql')
+    private function _setDatabaseService(&$di, $adapter = "mysql")
     {
-        if($adapter != 'mysql')
+        if($adapter != "mysql")
             throw new Exception("AppServices::setDatabaseService -> this adapter has not implemented yet :(");
 
         //Database connection is created based in the parameters defined in the configuration file
-        $di->setShared('db', function() {
+        $di->setShared("db", function() {
 
             return new \Phalcon\Db\Adapter\Pdo\Mysql([
                 "host"     => $this->config->database["host"],
                 "username" => $this->config->database["username"],
                 "password" => $this->config->database["password"],
                 "dbname"   => $this->config->database["dbname"],
-                "options"  => [\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'] //force utf8-charset
+                "options"  => [\PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"] //force utf8-charset
             ]);
         });
     }
@@ -203,12 +203,12 @@ class AppServices
         if(empty($this->config->app->langs))
             return;
 
-        $di->setShared('trans', function() {
+        $di->setShared("trans", function() {
 
             return new \CrazyCake\Services\GetText([
-                'domain'    => $this->config->app->name,
-                'supported' => (array)$this->config->app->langs, //config obj to array
-                'directory' => APP_PATH."langs/"
+                "domain"    => $this->config->app->name,
+                "supported" => (array)$this->config->app->langs, //config obj to array
+                "directory" => APP_PATH."langs/"
             ]);
         });
     }
@@ -221,11 +221,11 @@ class AppServices
     private function _setMvcServices(&$di)
     {
         //Events Manager
-        $di->setShared('dispatcher', function() {
+        $di->setShared("dispatcher", function() {
 
             $eventsManager = new \Phalcon\Events\Manager;
             //Handle exceptions and not-found exceptions using ExceptionsPlugin
-            $eventsManager->attach('dispatch:beforeException', new ExceptionsPlugin);
+            $eventsManager->attach("dispatch:beforeException", new ExceptionsPlugin);
 
             $dispatcher = new \Phalcon\Mvc\Dispatcher;
             $dispatcher->setEventsManager($eventsManager);
@@ -233,10 +233,10 @@ class AppServices
         });
 
         //Session Adapter
-        $di->setShared('session', function() {
+        $di->setShared("session", function() {
 
             $session = new \Phalcon\Session\Adapter\Files([
-                'uniqueId' => MODULE_NAME
+                "uniqueId" => MODULE_NAME
             ]);
             //set session name
             $session->setName($this->config->app->namespace);
@@ -249,13 +249,13 @@ class AppServices
 
         //Setting up the view component
         $di_view_engines = [
-            '.volt' => function($view, $di_instance) {
+            ".volt" => function($view, $di_instance) {
                 //instance a new volt engine
                 $volt = new \Phalcon\Mvc\View\Engine\Volt($view, $di_instance);
                 //set volt engine options
                 $volt->setOptions([
-                    'compiledPath'      => APP_PATH."cache/",
-                    'compiledSeparator' => '_',
+                    "compiledPath"      => APP_PATH."cache/",
+                    "compiledSeparator" => "_",
                 ]);
                 //get compiler
                 $compiler = $volt->getCompiler();
@@ -263,16 +263,16 @@ class AppServices
                 //++ Binds some PHP functions to volt
 
                 //++ str_replace
-                $compiler->addFunction('replace', 'str_replace');
+                $compiler->addFunction("replace", "str_replace");
                 //++ in_array
-                $compiler->addFunction('in_array', 'in_array');
+                $compiler->addFunction("in_array", "in_array");
 
                 return $volt;
             },
-            '.phtml' => 'Phalcon\Mvc\View\Engine\Php',
+            ".phtml" => "Phalcon\Mvc\View\Engine\Php",
         ];
 
-        $di->setShared('view', function() use (&$di_view_engines) {
+        $di->setShared("view", function() use (&$di_view_engines) {
 
             $view = new \Phalcon\Mvc\View();
             //set directory views
@@ -284,7 +284,7 @@ class AppServices
         });
 
         //Setting up the simpleView component, same as view
-        $di->setShared('simpleView', function() use (&$di_view_engines) {
+        $di->setShared("simpleView", function() use (&$di_view_engines) {
 
             //simpleView
             $view = new \Phalcon\Mvc\View\Simple();
@@ -297,7 +297,7 @@ class AppServices
         });
 
         //Cookies
-        $di->setShared('cookies', function() {
+        $di->setShared("cookies", function() {
 
             $cookies = new \Phalcon\Http\Response\Cookies();
             //no encryption
@@ -307,13 +307,13 @@ class AppServices
         });
 
         //Flash messages
-        $di->setShared('flash', function() {
+        $di->setShared("flash", function() {
 
             $flash = new \Phalcon\Flash\Session([
-                'success' => 'success',
-                'error'   => 'alert',
-                'notice'  => 'notice',
-                'warning' => 'warning'
+                "success" => "success",
+                "error"   => "alert",
+                "notice"  => "notice",
+                "warning" => "warning"
             ]);
 
             return $flash;

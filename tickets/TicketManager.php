@@ -79,7 +79,7 @@ trait TicketManager
                                   $this->config->app->aws->s3Bucket);
         //set PDF settings
         $this->pdf_settings = [
-            'app' => $this->config->app,
+            "app" => $this->config->app,
         ];
     }
 
@@ -97,7 +97,7 @@ trait TicketManager
             $getUserTicket = $this->ticket_manager_conf["getUserTicketFunction"];
 
             if(!is_callable($getUserTicket))
-                throw new Exception("Invalid 'get user ticket' function");
+                throw new Exception("Invalid getUserTicket function");
 
             $user_ticket = $getUserTicket($code, $user_id);
 
@@ -110,10 +110,10 @@ trait TicketManager
             $binary = $this->s3->getObject($s3_path, true);
 
             if(!$binary)
-                throw new Exception("S3 lib could't find binary file for ticket code: $code (S3 path: $s3_path)");
+                throw new Exception("S3 lib cant find binary file for ticket code: $code (S3 path: $s3_path)");
 
             //sends file to buffer
-            $this->_sendFileToBuffer($binary, self::$MIME_TYPES['png']);
+            $this->_sendFileToBuffer($binary, self::$MIME_TYPES["png"]);
         }
         catch (Exception $e) {
             //fallback for file
@@ -136,7 +136,7 @@ trait TicketManager
             $getUserTicket = $this->ticket_manager_conf["getUserTicketFunction"];
 
             if(!is_callable($getUserTicket))
-                throw new Exception("Invalid 'get user ticket' function");
+                throw new Exception("Invalid getUserTicket function");
 
             $user_ticket = $getUserTicket($src_code, $src_user_id);
 
@@ -150,7 +150,7 @@ trait TicketManager
             $moved = $this->s3->copyObject($src_s3_path, null, $dst_s3_path);
 
             if(!$moved)
-                throw new Exception("S3 lib could't copy ticket code: $src_code (S3 path: $src_s3_path)");
+                throw new Exception("S3 lib cant copy ticket code: $src_code (S3 path: $src_s3_path)");
 
             //delete old one
             //$this->s3->deleteObject($src_s3_path);
@@ -178,7 +178,7 @@ trait TicketManager
     public function generateQRForUserTickets($user_id = 0, $userTickets = array())
     {
         //set qr settings
-        $this->qr_settings = $this->ticket_manager_conf['qr_settings'];
+        $this->qr_settings = $this->ticket_manager_conf["qr_settings"];
 
         //instance qr maker with log & cache paths
         $qr_maker = new QRMaker(APP_PATH."logs/", APP_PATH."cache/");
@@ -197,7 +197,7 @@ trait TicketManager
 
                 //set configs
                 $qr_filename = $ticket->code.".png";
-                $qr_savepath = $this->ticket_manager_conf['local_temp_path'].$qr_filename;
+                $qr_savepath = $this->ticket_manager_conf["local_temp_path"].$qr_filename;
                 $s3_path     = self::$DEFAULT_S3_URI."/".$user_id."/".$qr_filename;
 
                 //set extended qr data
@@ -224,7 +224,7 @@ trait TicketManager
         $result->objects = $objects;
 
         if(isset($result->error))
-            $this->logger->error('TicketStorage::generateQRForUserTicket -> Error while generating and storing QR, err:'.$result->error);
+            $this->logger->error("TicketStorage::generateQRForUserTicket -> Error while generating and storing QR, err:".$result->error);
 
         return $result;
     }
@@ -245,7 +245,7 @@ trait TicketManager
             //set on the fly property
             $this->pdf_settings["otf"] = $otf;
             //set invoice name
-            $this->pdf_settings["invoice_name"] = isset($checkout->buy_order) ? $checkout->buy_order : uniqid()."_".date('d-m-Y');
+            $this->pdf_settings["invoice_name"] = isset($checkout->buy_order) ? $checkout->buy_order : uniqid()."_".date("d-m-Y");
 
             //generate invoice
             $result->binary = $this->_buildInvoice($user_id, $checkout);
@@ -276,7 +276,7 @@ trait TicketManager
     private function _buildInvoice($user_id, $checkout)
     {
         //get user model class
-        $user_class = AppModule::getClass('user');
+        $user_class = AppModule::getClass("user");
         //get model class
         $getObjectsForInvoice = $this->ticket_manager_conf["getObjectsForInvoiceFunction"];
 
@@ -295,17 +295,17 @@ trait TicketManager
 
         //set file paths
         $pdf_filename = $this->pdf_settings["invoice_name"].".pdf";
-        $output_path  = $this->ticket_manager_conf['local_temp_path'].$pdf_filename;
+        $output_path  = $this->ticket_manager_conf["local_temp_path"].$pdf_filename;
 
         //set extended pdf data
         $this->pdf_settings["data_date"]     = Dates::getTranslatedCurrentDate();
         $this->pdf_settings["data_user"]     = $user;
         $this->pdf_settings["data_checkout"] = $checkout;
         $this->pdf_settings["data_objects"]  = $objects;
-        $this->pdf_settings["data_storage"]  = $this->ticket_manager_conf['local_temp_path'];
+        $this->pdf_settings["data_storage"]  = $this->ticket_manager_conf["local_temp_path"];
 
         //get template
-        $html_raw = $this->simpleView->render($this->ticket_manager_conf['ticket_pdf_template_view'], $this->pdf_settings);
+        $html_raw = $this->simpleView->render($this->ticket_manager_conf["ticket_pdf_template_view"], $this->pdf_settings);
 
         //PDF generator (this is a heavy task for quick client response)
         $binary = (new PDF())->generatePdfFileFromHtml($html_raw, $output_path, true);
@@ -344,7 +344,7 @@ trait TicketManager
 
             //set configs
             $qr_filename = $ticket->code.".png";
-            $qr_savepath = $this->ticket_manager_conf['local_temp_path'].$qr_filename;
+            $qr_savepath = $this->ticket_manager_conf["local_temp_path"].$qr_filename;
             $s3_path     = self::$DEFAULT_S3_URI."/".$user_id."/".$qr_filename;
 
             //get image in S3
@@ -366,10 +366,10 @@ trait TicketManager
     private function _deleteTempFiles($path = null, $del_folder = false)
     {
         if(is_null($path))
-            $path = $this->ticket_manager_conf['local_temp_path'];
+            $path = $this->ticket_manager_conf["local_temp_path"];
 
         foreach (self::$MIME_TYPES as $key => $value) {
-            array_map('unlink', glob( "$path*.$key"));
+            array_map("unlink", glob( "$path*.$key"));
         }
 
         if($del_folder)
