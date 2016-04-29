@@ -53,7 +53,7 @@ trait Mailer
             "message" => "string"
         ]);
 
-        $data["subject"] = "Contacto ".$this->mailer_conf["appName"];
+        $data["subject"] = "Contacto ".$this->config->app->name;
 
         //send contact email
         $this->_sendMailMessage("sendSystemMail", $data);
@@ -74,8 +74,8 @@ trait Mailer
     		return false;
 
         //set message properties
-        $subject = isset($message_data["subject"]) ? $message_data["subject"] : $this->mailer_conf["appName"];
-        $to      = isset($message_data["to"]) ? $message_data["to"] : $this->mailer_conf["contactEmail"];
+        $subject = isset($message_data["subject"]) ? $message_data["subject"] : $this->config->app->name;
+        $to      = isset($message_data["to"]) ? $message_data["to"] : $this->config->app->emails->contact;
         $tags    = array("contact", "support");
 
         //add prefix "data" to each element in array
@@ -97,7 +97,7 @@ trait Mailer
     {
         //Error on success checkout task
         if(isset($this->logger))
-            $this->logger->error("Ses::sendExceptionSystemMail -> something ocurred, err: ".$exception->getMessage());
+            $this->logger->error("Mailer::sendExceptionSystemMail -> something ocurred, err: ".$exception->getMessage());
 
         //Sending a warning to admin users!
         $this->sendSystemMail([
@@ -143,7 +143,7 @@ trait Mailer
         //set message properties
         $subject = $this->mailer_conf["trans"]["subject_activation"];
         $to      = $this->mailer_conf["data_email"];
-        $tags    = array("account", "activation");
+        $tags    = ["account", "activation"];
         //sends async email
         return $this->_sendMessage($html_raw, $subject, $to, $tags);
     }
@@ -198,11 +198,11 @@ trait Mailer
     public function _getInlineStyledHtml($mail, $data)
     {
         //css file
-        $cssFile = $this->mailer_conf["cssFile"];
+        $css_file = $this->mailer_conf["css_file"];
 
         //get the style file
         $html = $this->simpleView->render("mails/$mail", $data);
-        $css  = file_get_contents($cssFile);
+        $css  = file_get_contents($css_file);
 
         $emogrifier = new Emogrifier($html, $css);
         $emogrifier->addExcludedSelector("head");
@@ -222,14 +222,11 @@ trait Mailer
      * @param boolean $async - Async flag, defaults to true
      * @return string
      */
-    public function _sendMessage($html_raw, $subject, $recipients, $tags = array(), $attachments = array(), $async = true)
+    public function _sendMessage($html_raw, $subject, $recipients, $tags = [], $attachments = [], $async = true)
     {
-        //handle confs
-    	$this->_handleConfigurations();
-
         //validation
         if (empty($html_raw) || empty($subject) || empty($recipients))
-            throw new Exception("Ses::_sendMessage -> Invalid params data for sending email");
+            throw new Exception("Mailer::_sendMessage -> Invalid params data for sending email");
 
         //parse recipients
         if (is_string($recipients))
@@ -242,14 +239,14 @@ trait Mailer
 
         //set default subject
         if (empty($subject))
-            $subject = $this->mailer_conf["appName"];
+            $subject = $this->config->app->name;
 
         //Send message email!
         $message = [
             "html"       => $html_raw,
             "subject"    => $subject,
-            "from_email" => $this->mailer_conf["senderEmail"],
-            "from_name"  => $this->mailer_conf["appName"],
+            "from_email" => $this->config->app->emails->sender,
+            "from_name"  => $this->config->app->name,
             "to"         => $to,
             "tags"       => $tags
             //"inline_css" => true //same as __getInlineStyledHtml method. (generates more delay time)
@@ -264,13 +261,14 @@ trait Mailer
 
         try {
         	//mandrill lib instance
-        	$mandrill = new Mandrill($this->mailer_conf["mandrillKey"]);
+        	$mandrill = new Mandrill($this->config->app->mandrill->accessKey);
             $response = $mandrill->messages->send($message, $async);
         }
         catch (Mandrill_Error $e) {
+
             $response = false;
             // Mandrill errors are thrown as exceptions
-            $this->logger->error("Ses::_sendMessage -> A mandrill error occurred sending a message (" . get_class($e) . "), trace: " . $e->getMessage());
+            $this->logger->error("Mailer::_sendMessage -> A mandrill error occurred sending a message (".get_class($e)."), trace: ".$e->getMessage());
         }
 
         return $response;
@@ -278,15 +276,4 @@ trait Mailer
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
-    /**
-     * Check configurations properties
-     */
-    private function _handleConfigurations()
-    {
-        if (!isset($this->mailer_conf["appName"]) || !isset($this->mailer_conf["mandrillKey"]) || !isset($this->mailer_conf["cssFile"]))
-            throw new Exception("Ses::_handleConfigurations -> SES configuration properties are not defined. (appName, mandrillKey, cssFile)");
-
-        if (!isset($this->mailer_conf["senderEmail"]) || !isset($this->mailer_conf["contactEmail"]))
-        	throw new Exception("Ses::_handleConfigurations -> SES sender & contact emails are not defined.");
-    }
 }

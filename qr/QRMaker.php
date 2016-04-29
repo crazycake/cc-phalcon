@@ -30,12 +30,15 @@ class QRMaker
 	 */
 	function __construct($log_path, $cache_path = null)
 	{
-		if (empty($log_path))
+		if (empty($log_path)) {
 			throw new Exception("QRMaker Library -> Log path parameters are required.");
-		else if (!is_dir($log_path))
+		}
+		else if (!is_dir($log_path)){
 			throw new Exception("QRMaker Library -> Log path (".$log_path.") not found.");
-		else if (!is_dir($cache_path))
+		}
+		else if (!is_dir($cache_path)) {
 			throw new Exception("QRMaker Library -> Cache path (".$cache_path.") not found.");
+		}
 
         $this->init($log_path, $cache_path);
 
@@ -96,41 +99,46 @@ class QRMaker
 	{
 		//new QrTag object
 		$qr = new QrTag();
+		//props
 		$qr->bgColor = isset($params["background_color"]) ? $params["background_color"] : "ffffff";
 		$qr->text 	 = isset($params["data"]) ? $params["data"] : "CrazyCake QR Code";
 		$qr->file 	 = isset($params["savename"]) ? $params["savename"] : die("QR Library -> (generate) must set param savename");
 
 		//shape dot object
 		if( isset($params["dot_shape_class"]) && $this->_class_exists($params["dot_shape_class"]) ) {
-			$class    = self::QR_LIB_NAMESPACE.$params["dot_shape_class"];
-			$shapeDot = new $class();
+
+			$class     = self::QR_LIB_NAMESPACE.$params["dot_shape_class"];
+			$dot_shape = new $class();
 		}
 		else {
 			 //fallback
-			$shapeDot = new QrTagDotSquare();
+			$dot_shape = new QrTagDotSquare();
 		}
 
 		//set shape dot
-		$shapeDot->color = isset($params["dot_shape_color"]) ? $params["dot_shape_color"] : "000000";
-		$shapeDot->size  = isset($params["dot_shape_size"]) ? $params["dot_shape_size"] : 14;
-		$qr->setDot($shapeDot);
+		$dot_shape->color = isset($params["dot_shape_color"]) ? $params["dot_shape_color"] : "000000";
+		$dot_shape->size  = isset($params["dot_shape_size"]) ? $params["dot_shape_size"] : 14;
+
+		$qr->setDot($dot_shape);
 
 		//frame dot object
 		if( isset($params["dot_frame_class"]) && $this->_class_exists($params["dot_frame_class"]) ) {
-			$class    = self::QR_LIB_NAMESPACE.$params["dot_frame_class"];
-			$frameDot = new $class();
+
+			$class     = self::QR_LIB_NAMESPACE.$params["dot_frame_class"];
+			$dot_frame = new $class();
 		}
 		else {
 			 //fallback
-			$frameDot = new QrTagFrameDotSquare();
+			$dot_frame = new QrTagFrameDotSquare();
 		}
 
 		//set frame dot
-		$frameDot->color = isset($params["dot_frame_color"]) ? $params["dot_frame_color"] : "000000";
-		$qr->frameDot    = $frameDot;
+		$dot_frame->color = isset($params["dot_frame_color"]) ? $params["dot_frame_color"] : "000000";
+		$qr->frameDot     = $dot_frame;
 
 		//main frame object
 		if( isset($params["frame_class"]) && $this->_class_exists($params["frame_class"]) ) {
+
 			$class = self::QR_LIB_NAMESPACE.$params["frame_class"];
 			$frame = new $class();
 		}
@@ -139,7 +147,7 @@ class QRMaker
 			$frame = new QrTagFrameSquare();
 		}
 
-		$frameDot->color = isset($params["frame_color"]) ? $params["frame_color"] : "000000";
+		$dot_frame->color = isset($params["frame_color"]) ? $params["frame_color"] : "000000";
 		$qr->frame = $frame;
 	   //var_dump($qr);//exit;
 

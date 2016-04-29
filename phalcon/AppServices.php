@@ -123,13 +123,13 @@ class AppServices
             $url->setBaseUri(APP_BASE_URL);
 
             //get static url
-            $staticUrl = isset($this->props["staticUrl"]) ? $this->props["staticUrl"] : false;
+            $static_url = isset($this->props["staticUrl"]) ? $this->props["staticUrl"] : false;
 
             //set static uri for assets, cdn only for staging or production
-            if(!$staticUrl || in_array(APP_ENVIRONMENT, ["local", "testing"]))
-                $staticUrl = APP_BASE_URL;
+            if(!$static_url || in_array(APP_ENVIRONMENT, ["local", "testing"]))
+                $static_url = APP_BASE_URL;
 
-            $url->setStaticBaseUri($staticUrl);
+            $url->setStaticBaseUri($static_url);
 
             return $url;
         });

@@ -63,9 +63,9 @@ class OneClickHandler
     function __construct($key_file_path, $cert_file_path, $url = self::WP_ONE_CLICK_DEV_PAYMENT_URL)
     {
         //options for SSL configuration
-        $opts = array(
-            "ssl" => array("ciphers" => "RC4-SHA", "verify_peer" => false, "verify_peer_name" => false)
-        );
+        $opts = [
+            "ssl" => ["ciphers" => "RC4-SHA", "verify_peer" => false, "verify_peer_name" => false]
+        ];
 
         try {
             //new soap client
