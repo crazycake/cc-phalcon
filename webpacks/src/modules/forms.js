@@ -15,16 +15,16 @@ module.exports = function() {
         //data must be a function
         data : function () {
             return {
-                day   : '',
-                month : '',
-                year  : ''
+                day   : "",
+                month : "",
+                year  : ""
             };
         },
         methods : {
             flashBirthdayValues : function () {
-                this.day   = '';
-                this.month = '';
-                this.year  = '';
+                this.day   = "";
+                this.month = "";
+                this.year  = "";
             }
         },
         computed : {

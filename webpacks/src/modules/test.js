@@ -11,8 +11,8 @@ require('jquery.formValidation.foundation');
 var model = function() {
 
     //++ Module
-    var self        = this;
-    self.moduleName = "test";
+    var self  = this;
+    self.name = "test";
 
     //++ UI Selector
     _.assign(APP.UI, {
