@@ -200,6 +200,13 @@ class TaskCore extends Task
         if(empty($options["base_url"]))
             $this->_colorize("Base URL is required", "ERROR", true);
 
+        //add missing slash
+        if(substr($options["base_url"], -1) !== "/")
+            $options["base_url"] .= "/";
+
+        if (filter_var($options["base_url"], FILTER_VALIDATE_URL) === false)
+            $this->_colorize("Argument 'base_url' is not a valid URL", "ERROR", true);
+
         //get API key header name
         $api_key_header_value = AppModule::getProperty("key", "api");
         $api_key_header_name  = str_replace("_", "-", WsCore::HEADER_API_KEY);
