@@ -252,7 +252,7 @@ abstract class AppModule
      * App configs
      * @param  array $conf - the input configuration
      */
-    private function _setup($conf = array())
+    private function _setup($conf = [])
     {
         //langs
         $conf["langs"] = self::getProperty("langs");

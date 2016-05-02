@@ -44,6 +44,8 @@
   i.e.: $canonical = C14NGeneral($domelement, TRUE);
  */
 
+namespace CrazyCake\Soap;
+
 /* helper function */
 function sortAndAddAttrs($element, $arAtts) {
     $newAtts = array();
@@ -145,7 +147,7 @@ function canonical($tree, $element, $withcomments) {
 
 /*
  * @author OrangePeople Software Ltda <soporte@orangepeople.cl>
- * helper function 
+ * helper function
  * Modification by Hermann Alexander Arriagada Méndez
  * for IssuerSerial
  */
@@ -163,7 +165,7 @@ function getIssuerName($X509Cert) {
 
 /*
  * @author OrangePeople Software Ltda <soporte@orangepeople.cl>
- * helper function 
+ * helper function
  * Modification by Hermann Alexander Arriagada Méndez
  * for IssuerSerial
  */
@@ -608,7 +610,7 @@ class XMLSecurityKey {
     }
 
     public function serializeKey($parent) {
-        
+
     }
 
     /**
@@ -1250,7 +1252,7 @@ class XMLSecurityDSig {
     }
 
     public function appendCert() {
-        
+
     }
 
     public function appendKey($objKey, $parent = NULL) {

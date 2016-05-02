@@ -18,18 +18,20 @@ abstract class BaseUser extends \CrazyCake\Models\Base
 {
     /**
      * Gets Model Message
+     * @param string $key - The validation message key
      */
-    abstract protected function getModelMessage($key);
+    abstract protected function getMessage($key);
 
     /* properties */
 
     /**
+     * The user primary email
      * @var string
      */
     public $email;
 
     /**
-     * for social networks auths this field is optional
+     * For social networks auths this field is optional
      * @var string
      */
     public $pass;
@@ -120,13 +122,13 @@ abstract class BaseUser extends \CrazyCake\Models\Base
         $this->validate(new Email([
             "field"    => 'email',
             "required" => true,
-            "message"  => $this->getModelMessage("email_required")
+            "message"  => $this->getMessage("email_required")
         ]));
 
         //email unique
         $this->validate(new Uniqueness([
             "field"   => "email",
-            "message" => $this->getModelMessage("email_uniqueness")
+            "message" => $this->getMessage("email_uniqueness")
         ]));
 
         //account flag
@@ -157,7 +159,7 @@ abstract class BaseUser extends \CrazyCake\Models\Base
 
         //filter by account flag?
         if(!is_null($account_flag) && in_array($account_flag, self::$ACCOUNT_FLAGS)) {
-            
+
             $bind[2] = $account_flag;
             $conditions .= " AND account_flag = ?2";
         }

@@ -133,6 +133,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
     /**
      * Get the last user checkout
      * @param  int $user_id - The User ID
+     * @param  string $state - The checkout state property
      * @return mixed [string|object]
      */
     public static function getLast($user_id = 0, $state = "pending")
