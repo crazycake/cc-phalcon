@@ -392,6 +392,7 @@ trait CheckoutManager
         //default inputs for checkout
         $inputs = [
             "gateway"    => "", //checkout gateway name
+            "buy_order"  => "", //checkout buy order
             "categories" => implode(",", $categories) //checkout categories as string
         ];
 
