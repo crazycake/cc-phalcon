@@ -183,6 +183,9 @@ abstract class AppModule
                 break;
         }
 
+        //add missing slash
+        if(substr($base_url, -1) !== "/") $base_url .= "/";
+
         return $base_url.$uri;
     }
 
@@ -201,13 +204,13 @@ abstract class AppModule
         if(is_file($envfile))
             $dotenv->load();
 
-        //get ENV Vars
-        $app_debug       = getenv("APP_DEBUG");
-        $app_environment = getenv("APP_ENV");
-        $app_base_uri    = getenv("APP_URI_".strtoupper(MODULE_NAME));
+        //get env-vars
+        $debug        = getenv("APP_DEBUG");
+        $environment  = getenv("APP_ENV");
+        $app_base_uri = getenv("APP_URI_".strtoupper(MODULE_NAME));
 
         //set APP debug environment
-        if($app_debug) {
+        if($debug) {
             ini_set("display_errors", 1);
             error_reporting(E_ALL);
         }
@@ -217,7 +220,7 @@ abstract class AppModule
         }
 
         //set base URL (project path for CGI & CLI)
-        $app_base_url = empty($app_base_uri) ? PROJECT_PATH : (isset($_SERVER["HTTPS"]) ? "https://" : "http://").$app_base_uri;
+        $base_url = empty($app_base_uri) ? PROJECT_PATH : (isset($_SERVER["HTTPS"]) ? "https://" : "http://").$app_base_uri;
 
         //Check for CLI execution & CGI execution
         if (php_sapi_name() !== "cli") {
@@ -231,14 +234,17 @@ abstract class AppModule
 
             //fallback for missing env var
             if(empty($app_base_uri)) {
-                $app_base_url = (isset($_SERVER["HTTPS"]) ? "https://" : "http://").
+                $base_url = (isset($_SERVER["HTTPS"]) ? "https://" : "http://").
                                        $_SERVER["HTTP_HOST"].preg_replace("@/+$@", "", dirname($_SERVER["SCRIPT_NAME"]))."/";
             }
         }
 
+        //add missing slash
+        if(substr($base_url, -1) !== "/") $base_url .= "/";
+
         //set environment consts & self vars
-        define("APP_ENVIRONMENT", $app_environment);
-        define("APP_BASE_URL", $app_base_url);
+        define("APP_ENVIRONMENT", $environment);
+        define("APP_BASE_URL", $base_url);
         //var_dump(APP_ENVIRONMENT, APP_BASE_URL);exit;
     }
 

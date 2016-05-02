@@ -166,16 +166,15 @@ class KccEndPoint extends MvcCore
      */
     protected function onSuccessTrx($checkout)
     {
-        //get DI reference (static)
-        $di = \Phalcon\DI::getDefault();
+        $base_url = AppModule::getUrl("frontend");
+        $uri      = self::SUCCESS_URI_HANDLER;
 
-        //Base URL is kept in client data for CGI call.
-        $client = json_decode($checkout->client);
+        $this->logOutput("async request: $base_url$uri");
 
         //async request
         $this->_asyncRequest([
-            "base_url" => $client->baseUrl,
-            "uri"      => self::SUCCESS_URI_HANDLER,
+            "base_url" => $base_url,
+            "uri"      => $uri,
             "payload"  => $checkout->buy_order,
             "socket"   => true
         ]);

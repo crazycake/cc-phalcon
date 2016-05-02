@@ -459,17 +459,15 @@ trait CheckoutManager
 
         //lower case email
         $data["invoice_email"] = strtolower($data["invoice_email"]);
-        //set client object extended properties
-        $this->client->baseUrl = $this->_baseUrl();
 
         //set object properties. TODO: create a object class
-        $checkout = new \stdClass();
-
-        $checkout->client        = json_encode($this->client, JSON_UNESCAPED_SLASHES);
-        $checkout->categories    = explode(",", $data["categories"]);
-        $checkout->gateway       = $data["gateway"];
-        $checkout->invoice_email = $data["invoice_email"];
-        $checkout->currency      = $this->checkout_manager_conf["default_currency"];
+        $checkout = (object)[
+            "client"        => json_encode($this->client, JSON_UNESCAPED_SLASHES),
+            "categories"    => explode(",", $data["categories"]),
+            "gateway"       => $data["gateway"],
+            "invoice_email" => $data["invoice_email"],
+            "currency"      => $this->checkout_manager_conf["default_currency"]
+        ];
 
         //parse checkout objects
         $this->parseCheckoutObjects($checkout, $data);
