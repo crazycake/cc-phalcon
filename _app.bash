@@ -15,11 +15,9 @@ APP_NAMESPACE="$(echo "$APP_NAME" | tr '[:upper:]' '[:lower:]')"
 # Webpacks path
 WEBPACKS_PATH=$CURRENT_PATH"/webpacks/"
 
-# Local documentation path. TODO: json file for input libs
+# Local documentation path.
 # PHP Core
-DOC_PHP_INPUTS="account,checkout,core,facebook,models,phalcon,services,tickets,helpers,mobile"
-DOC_PHP_INPUTS="$DOC_PHP_INPUTS,transbank/OneClickClient.php,transbank/KccEndPoint.php,transbank/KccManager.php"
-DOC_PHP_INPUTS="$DOC_PHP_INPUTS,qr/QRMaker.php,soap/SoapClientHelper.php"
+DOC_PHP_INPUT_PATH="./"
 DOC_PHP_OUTPUT_PATH=$CURRENT_PATH"/../cc-docs/cc-phalcon/php/"
 
 #script help function
@@ -99,7 +97,7 @@ elif [ $1 = "docs" ]; then
 
 	#PHP
 	echo -e "\033[35mGenerating PHP Docs...\033[0m"
-	apigen generate --source $DOC_PHP_INPUTS --destination $DOC_PHP_OUTPUT_PATH --template-theme "bootstrap"
+	phpdoc -d $DOC_PHP_INPUT_PATH -t $DOC_PHP_OUTPUT_PATH
 
 	#JS
 	cd $WEBPACKS_PATH

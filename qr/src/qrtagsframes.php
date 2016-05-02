@@ -5,8 +5,8 @@
  * @contributor Nicolas Pulido <nicolas.pulido@crazycake.cl>
  * @link http://phpqrcode.sourceforge.net/
  */
- 
-namespace CrazyCake\QR;
+
+namespace CrazyCake\Qr;
 
 /**
  * QrTagFrame4 Class
@@ -168,7 +168,7 @@ class QrTagFrame18 extends QrTagShape {
 
         imagettftext($im, ($this->size/1.3)*7, 0, 0, $rect['top'], $color, $font, $letter);
 
-        return $im;        
+        return $im;
     }
 }
 
@@ -188,8 +188,8 @@ class QrTagFrame19 extends QrTagShape {
         $color = imagecolorallocate($im, $color[0], $color[1], $color[2]);
 
         imagettftext($im, ($this->size/1.3)*7, 0, 0, $rect['top'], $color, $font, $letter);
-        
-        return $im;        
+
+        return $im;
     }
 }
 
@@ -210,8 +210,8 @@ class QrTagFrame20 extends QrTagShape {
         $color = imagecolorallocate($im, $color[0], $color[1], $color[2]);
 
         imagettftext($im, ($this->size/1.3)*7, 0, 0, $rect['top'], $color, $font, $letter);
-        
-        return $im;        
+
+        return $im;
     }
 }
 
@@ -242,7 +242,7 @@ class QrTagFrameCircle2 extends QrTagShape {
         $color[] = 0;
         $bgColorRGB = $this->bgColorRGB;
         $bgColorRGB[] = 0;
-        
+
         $tmp = imagecreatetruecolor($this->size*7.5, $this->size*7.5);
         imagefill($tmp, 0, 0, imagecolorallocatealpha($tmp, 0, 0, 0, 127));
         imageSmoothArc($tmp, $this->size*7.5/2, $this->size*7.5/2, $this->size*6.8, $this->size*6.8, $color, 0, M_PI * 2);
@@ -259,7 +259,7 @@ class QrTagFrameDot1 extends QrTagShape {
 
     public function generate() {
         $color = $this->hex2dec($this->color);
-        
+
         $font = QR_FONT_PATH_DOTS;
         $letter = 'a';
         $rect = $this->calculateTextBox($letter, $font, ($this->size/1.4) * 3, 0);
@@ -271,7 +271,7 @@ class QrTagFrameDot1 extends QrTagShape {
         $color = imagecolorallocate($im, $color[0], $color[1], $color[2]);
 
         imagettftext($im, ($this->size/1.4) * 3, 0, 0, $rect['top'] + ($rect['width'] / 2) - ($rect['width'] / 2), $color, $font, $letter);
-        
+
         return $im;
     }
 }
@@ -283,7 +283,7 @@ class QrTagFrameDot4 extends QrTagShape {
 
     public function generate() {
         $color = $this->hex2dec($this->color);
-        
+
         $font = QR_FONT_PATH_DOTS;
         $letter = 'd';
         $rect = $this->calculateTextBox($letter, $font, ($this->size/1.4) * 3, 0);
@@ -296,7 +296,7 @@ class QrTagFrameDot4 extends QrTagShape {
         $color = imagecolorallocate($im, $color[0], $color[1], $color[2]);
 
         imagettftext($im, ($this->size/1.4) * 3, 0, 0, $rect['top'] + ($rect['width'] / 2) - ($rect['width'] / 2), $color, $font, $letter);
-        
+
         //$this->attachMarkerDot($frame, $im);
         return $im;
     }
@@ -309,7 +309,7 @@ class QrTagFrameDot5 extends QrTagShape {
 
     public function generate() {
         $color = $this->hex2dec($this->color);
-        
+
         $font = QR_FONT_PATH_DOTS;
         $letter = 'e';
         $rect = $this->calculateTextBox($letter, $font, ($this->size/1.4) * 3, 0);
@@ -322,7 +322,7 @@ class QrTagFrameDot5 extends QrTagShape {
         $color = imagecolorallocate($im, $color[0], $color[1], $color[2]);
 
         imagettftext($im, ($this->size/1.4) * 3, 0, 0, $rect['top'] + ($rect['width'] / 2) - ($rect['width'] / 2), $color, $font, $letter);
-        
+
         //$this->attachMarkerDot($frame, $im);
         return $im;
     }
@@ -335,7 +335,7 @@ class QrTagFrameDot6 extends QrTagShape {
 
     public function generate() {
         $color = $this->hex2dec($this->color);
-        
+
         $font = QR_FONT_PATH_DOTS;
         $letter = 'f';
         $rect = $this->calculateTextBox($letter, $font, ($this->size/1.4) * 3, 0);
@@ -348,7 +348,7 @@ class QrTagFrameDot6 extends QrTagShape {
         $color = imagecolorallocate($im, $color[0], $color[1], $color[2]);
 
         imagettftext($im, ($this->size/1.4) * 3, 0, 0, $rect['top'] + ($rect['width'] / 2) - ($rect['width'] / 2), $color, $font, $letter);
-        
+
         //$this->attachMarkerDot($frame, $im);
         return $im;
     }
@@ -361,7 +361,7 @@ class QrTagFrameDot8 extends QrTagShape {
 
     public function generate() {
         $color = $this->hex2dec($this->color);
-        
+
         $font = QR_FONT_PATH_DOTS;
         $letter = 'h';
         $rect = $this->calculateTextBox($letter, $font, ($this->size/1.4) * 3, 0);
@@ -374,7 +374,7 @@ class QrTagFrameDot8 extends QrTagShape {
         $color = imagecolorallocate($im, $color[0], $color[1], $color[2]);
 
         imagettftext($im, ($this->size/1.4) * 3, 0, 0, $rect['top'] + ($rect['width'] / 2) - ($rect['width'] / 2), $color, $font, $letter);
-        
+
         //$this->attachMarkerDot($frame, $im);
         return $im;
     }
@@ -387,11 +387,11 @@ class QrTagFrameDot17 extends QrTagShape {
 
     public function generate() {
         $color = $this->hex2dec($this->color);
-        
+
         $font = QR_FONT_PATH_DOTS;
         $letter = 't';
         $rect = $this->calculateTextBox($letter, $font, ($this->size/1.4) * 3, 0);
-        
+
         $im = imagecreatetruecolor($rect['width'], $rect['width']);
         imagesavealpha($im, true);
         $trans_colour = imagecolorallocatealpha($im, 0, 0, 0, 127);
@@ -400,7 +400,7 @@ class QrTagFrameDot17 extends QrTagShape {
         $color = imagecolorallocate($im, $color[0], $color[1], $color[2]);
 
         imagettftext($im, ($this->size/1.4) * 3, 0, 0, $rect['top'] + ($rect['width'] / 2) - ($rect['width'] / 2), $color, $font, $letter);
-        
+
         return $im;
     }
 }
@@ -412,7 +412,7 @@ class QrTagFrameDot19 extends QrTagShape {
 
     public function generate() {
         $color = $this->hex2dec($this->color);
-        
+
         $font = QR_FONT_PATH_DOTS;
         $letter = 'v';
         $rect = $this->calculateTextBox($letter, $font, ($this->size/1.4) * 3, 0);
@@ -424,7 +424,7 @@ class QrTagFrameDot19 extends QrTagShape {
         $color = imagecolorallocate($im, $color[0], $color[1], $color[2]);
 
         imagettftext($im, ($this->size/1.4) * 3, 0, 0, $rect['top'] + ($rect['width'] / 2) - ($rect['width'] / 2), $color, $font, $letter);
-        
+
         return $im;
     }
 }

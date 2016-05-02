@@ -5,8 +5,8 @@
  * @contributor Nicolas Pulido <nicolas.pulido@crazycake.cl>
  * @link http://phpqrcode.sourceforge.net/
  */
- 
-namespace CrazyCake\QR;
+
+namespace CrazyCake\Qr;
 
 /**
  * QrTagDotLineH class
@@ -130,7 +130,7 @@ class QrTagDotSquare5 extends QrTagShape {
             $this->size/2, $this->size,
             0, $this->size/2,
         ), 4, $color);
-        
+
         $this->image = $im;
         $this->markerSize = $this->size/1.01;
         return $im;
@@ -148,7 +148,7 @@ class QrTagDot13 extends QrTagEffect {
         $squareImg->size = $this->size;
         $squareImg->color = $this->color;
         $squareImg->generate();
-        
+
         $this->imSquare = $squareImg->image;
 
         // right
@@ -258,7 +258,7 @@ class QrTagDot13 extends QrTagEffect {
         imagefill($this->imAlone, 0, 0, $trans_colour);
         $color = imagecolorallocate($this->imAlone, $color[0], $color[1], $color[2]);
         imagettftext($this->imAlone, $this->size / 1.33, 0, 0, $rect['top'] + ($rect['width'] / 2) - ($rect['width'] / 1.37), $color, $font, $letter);
-        
+
         $this->markerSize = $rect['width'] / 1.33;
     }
 }
@@ -274,7 +274,7 @@ class QrTagDot15 extends QrTagEffect {
         $squareImg->size = $this->size;
         $squareImg->color = $this->color;
         $squareImg->generate();
-        
+
         $this->imSquare = $squareImg->image;
 
         // right
@@ -384,7 +384,7 @@ class QrTagDot15 extends QrTagEffect {
         imagefill($this->imAlone, 0, 0, $trans_colour);
         $color = imagecolorallocate($this->imAlone, $color[0], $color[1], $color[2]);
         imagettftext($this->imAlone, $this->size / 1.33, 0, 0, $rect['top'] + ($rect['width'] / 2) - ($rect['width'] / 1.37), $color, $font, $letter);
-        
+
         $this->markerSize = $rect['width'] / 1.33;
     }
 }
@@ -400,7 +400,7 @@ class QrTagDot18 extends QrTagEffect {
 	    $squareImg->size = $this->size;
 	    $squareImg->color = $this->color;
 	    $squareImg->generate();
-	    
+
 	    $this->imSquare = $squareImg->image;
 
 	    // right
@@ -472,7 +472,7 @@ class QrTagDot18 extends QrTagEffect {
 	    imagefill($this->imAlone, 0, 0, $trans_colour);
 	    $color = imagecolorallocate($this->imAlone, $color[0], $color[1], $color[2]);
 	    imagettftext($this->imAlone, $this->size / 1.33, 0, 0, $rect['top'] + ($rect['width'] / 2) - ($rect['width'] / 1.37), $color, $font, $letter);
-	    
+
 	    $this->markerSize = $rect['width'] / 1.33;
 	}
 }
@@ -481,14 +481,14 @@ class QrTagDot18 extends QrTagEffect {
  * QrTagDot19 class
  */
 class QrTagDot19 extends QrTagEffect {
-    
+
     public function generate() {
 
         $squareImg = new QrTagDotSquare();
         $squareImg->size = $this->size;
         $squareImg->color = $this->color;
         $squareImg->generate();
-        
+
         $this->imSquare = $squareImg->image;
 
         // right
@@ -540,7 +540,7 @@ class QrTagDot19 extends QrTagEffect {
         $color = imagecolorallocate($this->imDown, $color[0], $color[1], $color[2]);
         imagettftext($this->imDown, $this->size / 1.33, 0, 0, $rect['top'] + ($rect['width'] / 2) - ($rect['width'] / 1.37), $color, $font, $letter);
 
-        
+
         // top left
         $this->imTopLeft = $squareImg->image;
         // bottom left
@@ -551,7 +551,7 @@ class QrTagDot19 extends QrTagEffect {
         $this->imTopRight = $squareImg->image;
         // alone
         $this->imAlone = $squareImg->image;
-        
+
         $this->markerSize = $rect['width'] / 1.33;
     }
 }
@@ -560,16 +560,16 @@ class QrTagDot19 extends QrTagEffect {
  * QrTagDot22 class
  */
 class QrTagDot22 extends QrTagEffect {
-    
+
     public function generate() {
 
         $squareImg = new QrTagDotSquare();
         $squareImg->size = $this->size;
         $squareImg->color = $this->color;
         $squareImg->generate();
-        
+
         $this->imSquare = $squareImg->image;
-        
+
         // right
         $color = $this->hex2dec($this->color);
         $font = QR_FONT_PATH_EDGES;
@@ -678,7 +678,7 @@ class QrTagDot22 extends QrTagEffect {
         imagefill($this->imAlone, 0, 0, $trans_colour);
         $color = imagecolorallocate($this->imAlone, $color[0], $color[1], $color[2]);
         imagettftext($this->imAlone, $this->size / 1.33, 0, 0, $rect['top'] + ($rect['width'] / 2) - ($rect['width'] / 1.37), $color, $font, $letter);
-        
+
         $this->markerSize = $rect['width'] / 1.33;
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace CrazyCake\QR;
+namespace CrazyCake\Qr;
 
 /**
  * QrTagShape Abstract Class
