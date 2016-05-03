@@ -293,7 +293,7 @@ abstract class MvcCore extends Controller
      * @param boolean $check_csrf - Checks the form CSRF token
      * @return array
      */
-    protected function _handleRequestParams($req_fields = array(), $method = 'POST', $check_csrf = true)
+    protected function _handleRequestParams($req_fields = [], $method = 'POST', $check_csrf = true)
     {
         //check API module and set special settings
         if(MODULE_NAME === "api") {
