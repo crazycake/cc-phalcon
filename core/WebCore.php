@@ -19,8 +19,8 @@ use CrazyCake\Helpers\UserAgent;
 abstract class WebCore extends MvcCore implements WebSecurity
 {
     /* consts */
-    const ASSETS_MIN_FOLDER_PATH = 'assets/';
-    const JS_LOADER_FUNCTION     = 'core.loadModules';
+    const ASSETS_MIN_FOLDER_PATH = "assets/";
+    const JS_LOADER_FUNCTION     = "core.loadModules";
 
     /**
      * Set App Javascript Properties for global scope
