@@ -1,6 +1,6 @@
 <?php
 /**
- * App Module Trait
+ * App Module Trait. Contains Module Environment Logic.
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 

@@ -37,33 +37,33 @@ class ExceptionsPlugin extends \Phalcon\Mvc\User\Plugin
 		//Handle Phalcon exceptions
 		if ($exception instanceof \Phalcon\Mvc\Dispatcher\Exception) {
 
-			$logError = false;
+			$log_exception = false;
 
 			switch ($exception->getCode()) {
 				//dispatch to not found action
 				case \Phalcon\Dispatcher::EXCEPTION_NO_DI:
 				case \Phalcon\Dispatcher::EXCEPTION_CYCLIC_ROUTING:
 
-					$logError = true;
-					$forward  = ["controller" => "error", "action" => "internal"];
+					$log_exception = true;
+					$forward = ["controller" => "error", "action" => "internal"];
 					break;
 
 				case \Phalcon\Dispatcher::EXCEPTION_INVALID_PARAMS:
 				case \Phalcon\Dispatcher::EXCEPTION_INVALID_HANDLER:
 
-					$logError = true;
-					$forward  = ["controller" => "error", "action" => "badRequest"];
+					$log_exception = true;
+					$forward = ["controller" => "error", "action" => "badRequest"];
 					break;
 
 				case \Phalcon\Dispatcher::EXCEPTION_HANDLER_NOT_FOUND:
 				case \Phalcon\Dispatcher::EXCEPTION_ACTION_NOT_FOUND:
 
-					$forward  = ["controller" => "error", "action" => "notFound"];
+					$forward = ["controller" => "error", "action" => "notFound"];
 					break;
 			}
 
 			//log error?
-			if($logError)
+			if($log_exception)
 				$di->getShared("logger")->error("App Exception: ".$exception->getMessage()." File: ".$exception->getFile().". Line: ".$exception->getLine()."</h1>");
 
 			//forward

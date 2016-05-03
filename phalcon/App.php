@@ -1,7 +1,6 @@
 <?php
 /**
- * Phalcon APP loader
- * Requires PhalconPHP extension
+ * Phalcon APP loader. Contains Loader classes & services wrap logic
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
