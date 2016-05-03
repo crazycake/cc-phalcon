@@ -64,7 +64,7 @@ class ExceptionsPlugin extends \Phalcon\Mvc\User\Plugin
 
 			//log error?
 			if($logError)
-				$di->getShared("logger")->error("PhalconPHP Error:".$exception->getMessage().". File: ".$exception->getFile().". Line: ".$exception->getLine()."</h1>");
+				$di->getShared("logger")->error("App Exception: ".$exception->getMessage()." File: ".$exception->getFile().". Line: ".$exception->getLine()."</h1>");
 
 			//forward
 			$dispatcher->forward($forward);
@@ -72,10 +72,10 @@ class ExceptionsPlugin extends \Phalcon\Mvc\User\Plugin
 		}
 
 		if(APP_ENVIRONMENT !== "production")
-			die("Hey! PhalconPHP Error:".$exception->getMessage().". File: ".$exception->getFile().". Line: ".$exception->getLine());
+			die("App Exception: ".$exception->getMessage()." File: ".$exception->getFile().". Line: ".$exception->getLine());
 
 		//log error
-		$di->getShared("logger")->error("PhalconPHP Error -> Exception: ".$exception->getMessage());
+		$di->getShared("logger")->error("App Exception: ".$exception->getMessage());
 
 		//Handle exception and forward to internal error page
 		$dispatcher->forward(["controller" => "error", "action" => "internal"]);
