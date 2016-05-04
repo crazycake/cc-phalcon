@@ -438,7 +438,7 @@ class APN
 	    $feedback_tokens = [];
 
 	    //and read the data on the connection:
-	    while(!feof($this->feedback_stream)) {
+	    while (!feof($this->feedback_stream)) {
 
 	        $data = fread($this->feedback_stream, 38);
 

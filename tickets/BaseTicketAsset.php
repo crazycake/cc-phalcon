@@ -104,7 +104,7 @@ class BaseTicketAsset extends \CrazyCake\Models\Base
             "field"   => "state",
             "domain"  => self::$STATES,
             "message" => "Invalid state. States supported: ".implode(", ", self::$STATES)
-         ]));
+        ]));
 
         //check validations
         if ($this->validationHasFailed() == true)

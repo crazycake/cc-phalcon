@@ -98,7 +98,7 @@ class QRsplit {
         $ln = QRspec::lengthIndicator(QR_MODE_NUM, $this->input->getVersion());
 
         $p = 0;
-        while(self::isdigitat($this->dataStr, $p)) {
+        while (self::isdigitat($this->dataStr, $p)) {
             $p++;
         }
 
@@ -137,10 +137,10 @@ class QRsplit {
 
         $p = 0;
 
-        while(self::isalnumat($this->dataStr, $p)) {
+        while (self::isalnumat($this->dataStr, $p)) {
             if (self::isdigitat($this->dataStr, $p)) {
                 $q = $p;
-                while(self::isdigitat($this->dataStr, $q)) {
+                while (self::isdigitat($this->dataStr, $q)) {
                     $q++;
                 }
 
@@ -181,7 +181,7 @@ class QRsplit {
     {
         $p = 0;
 
-        while($this->identifyMode($p) == QR_MODE_KANJI) {
+        while ($this->identifyMode($p) == QR_MODE_KANJI) {
             $p += 2;
         }
 
@@ -201,7 +201,7 @@ class QRsplit {
         $p = 1;
         $dataStrLen = strlen($this->dataStr);
 
-        while($p < $dataStrLen) {
+        while ($p < $dataStrLen) {
 
             $mode = $this->identifyMode($p);
             if ($mode == QR_MODE_KANJI) {
@@ -209,7 +209,7 @@ class QRsplit {
             }
             if ($mode == QR_MODE_NUM) {
                 $q = $p;
-                while(self::isdigitat($this->dataStr, $q)) {
+                while (self::isdigitat($this->dataStr, $q)) {
                     $q++;
                 }
                 $dif = QRinput::estimateBitsMode8($p) // + 4 + l8
@@ -222,7 +222,7 @@ class QRsplit {
                 }
             } else if ($mode == QR_MODE_AN) {
                 $q = $p;
-                while(self::isalnumat($this->dataStr, $q)) {
+                while (self::isalnumat($this->dataStr, $q)) {
                     $q++;
                 }
                 $dif = QRinput::estimateBitsMode8($p)  // + 4 + l8
