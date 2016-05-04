@@ -51,9 +51,9 @@ class BaseResultset extends Resultset
      * @static
      * @param array $result - A result array
      */
-    public static function splitResult($result = array())
+    public static function splitResult($result = [])
     {
-        $objects = array();
+        $objects = [];
 
         //loop each object
         foreach ($result as $obj) {

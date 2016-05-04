@@ -31,7 +31,7 @@ trait WebErrors
     public function notFoundAction()
     {
         if ($this->request->isAjax())
-            $this->_sendJsonResponse(404);
+            $this->jsonResponse(404);
     }
 
     /**
@@ -40,7 +40,7 @@ trait WebErrors
     public function internalAction()
     {
         if ($this->request->isAjax())
-            $this->_sendJsonResponse(500);
+            $this->jsonResponse(500);
     }
 
     /**
@@ -49,7 +49,7 @@ trait WebErrors
     public function badRequestAction()
     {
         if ($this->request->isAjax())
-            $this->_sendJsonResponse(400);
+            $this->jsonResponse(400);
     }
 
     /**

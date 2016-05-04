@@ -41,7 +41,7 @@ trait PushWebServices
      */
     public function subscribeAction()
     {
-        $data = $this->_handleRequestParams([
+        $data = $this->handleRequest([
             "service" => "string",
             "uuid"    => "string",
             "token"   => "string"
@@ -51,16 +51,16 @@ trait PushWebServices
 
             //service validation
             if (!in_array($data["service"], self::$SERVICES))
-                $this->_sendJsonResponse(3601);
+                $this->jsonResponse(3601);
 
             //subscribe user
             $this->subscribe($data);
             //send response
-            $this->_sendJsonResponse(200, $data);
+            $this->jsonResponse(200, $data);
         }
         catch (Exception $e) {
 
-            $this->_sendJsonResponse(3600, $e->getMessage());
+            $this->jsonResponse(3600, $e->getMessage());
         }
     }
 
@@ -70,7 +70,7 @@ trait PushWebServices
      */
     public function sendAction()
     {
-        $data = $this->_handleRequestParams([
+        $data = $this->handleRequest([
             "service" => "string",
             "uuids"   => "string",
             "message" => "string",
@@ -81,16 +81,16 @@ trait PushWebServices
 
             //service validation
             if (!in_array($data["service"], self::$SERVICES))
-                $this->_sendJsonResponse(3601);
+                $this->jsonResponse(3601);
 
             //send notification
             $response = $this->sendNotification($data);
             //send response
-            $this->_sendJsonResponse(200, $response);
+            $this->jsonResponse(200, $response);
         }
         catch (Exception $e) {
 
-            $this->_sendJsonResponse(3600, $e->getMessage());
+            $this->jsonResponse(3600, $e->getMessage());
         }
     }
 
@@ -100,7 +100,7 @@ trait PushWebServices
      */
     public function receivedAction()
     {
-        $data = $this->_handleRequestParams([
+        $data = $this->handleRequest([
             "service" => "string",
             "uuid"    => "string"
         ], "POST");
@@ -109,16 +109,16 @@ trait PushWebServices
 
             //service validation
             if (!in_array($data["service"], self::$SERVICES))
-                $this->_sendJsonResponse(3601);
+                $this->jsonResponse(3601);
 
             //Notification received
             $this->notificationReceived($data);
             //send response
-            $this->_sendJsonResponse(200, $data);
+            $this->jsonResponse(200, $data);
         }
         catch (Exception $e) {
 
-            $this->_sendJsonResponse(3600, $e->getMessage());
+            $this->jsonResponse(3600, $e->getMessage());
         }
     }
 }

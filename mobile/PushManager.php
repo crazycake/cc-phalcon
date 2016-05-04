@@ -35,7 +35,7 @@ trait PushManager
      * @param array $data - The input data array[service, uuid, token]
      * @return object
      */
-    protected function subscribe($data = array())
+    protected function subscribe($data = [])
     {
         if (!isset($data["service"]) || !isset($data["uuid"]) || !isset($data["token"]))
             throw new Exception("missing input params");
@@ -95,7 +95,7 @@ trait PushManager
      * @param array $data - The input data array[service, uuid]
      * @return object
      */
-    protected function notificationReceived($data = array())
+    protected function notificationReceived($data = [])
 	{
         if (!isset($data["service"]) || !isset($data["uuid"]))
             throw new Exception("missing input params");
@@ -160,7 +160,7 @@ trait PushManager
      * Sends a push notification through APN Service
      * @param  array $data - The payload data array
      */
-    private function _sendNotificationAPN($data = array())
+    private function _sendNotificationAPN($data = [])
     {
         //set client
         $this->_setClient("apn");
@@ -222,7 +222,7 @@ trait PushManager
      * Sends a push notification through APN Service
      * @param  array $data - The payload data array
      */
-    private function _sendNotificationGCM($data = array())
+    private function _sendNotificationGCM($data = [])
     {
         //set client
         $this->_setClient("gcm");

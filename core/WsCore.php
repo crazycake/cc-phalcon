@@ -48,19 +48,19 @@ abstract class WsCore extends MvcCore
      */
     public function serviceNotFound()
     {
-        $this->_sendJsonResponse(404);
+        $this->jsonResponse(404);
     }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
-     * Handles validation from a given object
+     * Handles id property validation from a given object
      * @param string $prop - The object property name
      * @param boolean $optional - Parameter optional flag
      * @param boolean $method - HTTP method, default is GET
      * @return mixed [object|boolean]
      */
-    protected function _handleObjectIdRequestParam($prop = "object_id", $optional = false, $method = "GET")
+    protected function handleIdInput($prop = "object_id", $optional = false, $method = "GET")
     {
         $scheme = explode("_", strtolower($prop));
         //unset last prop
@@ -70,7 +70,7 @@ abstract class WsCore extends MvcCore
 
         $p = $optional ? "@" : "";
         //get request param
-        $data = $this->_handleRequestParams([
+        $data = $this->handleRequest([
             "$p$prop"  => "int"
         ], $method);
 
@@ -80,7 +80,7 @@ abstract class WsCore extends MvcCore
         $object = empty($value) ? null : $class_name::findFirst(["id = ?1", "bind" => [1 => $value]]);
 
         if (!$optional && !$object)
-            $this->_sendJsonResponse(400);
+            $this->jsonResponse(400);
         else
             return $object;
     }
@@ -91,19 +91,19 @@ abstract class WsCore extends MvcCore
      * @param mixed $data - The data to be cached or served
      * @param boolean $bust - Forces a cache update
      */
-    protected function _handleCacheResponse($key = "response", $data = null, $bust = false)
+    protected function handleCacheResponse($key = "response", $data = null, $bust = false)
     {
         //prepare input data
         $hash = sha1($key);
 
         if (empty($hash) || empty($data))
-            $this->_sendJsonResponse(800);
+            $this->jsonResponse(800);
 
         $json_file = self::WS_RESPONSE_CACHE_PATH."$hash.json";
 
         //get data for API struct
         if (!$bust && is_file($json_file)) {
-            $this->_sendFileToBuffer(file_get_contents($json_file));
+            $this->sendFileToBuffer(file_get_contents($json_file));
             return;
         }
 
@@ -115,13 +115,13 @@ abstract class WsCore extends MvcCore
         file_put_contents($json_file, json_encode($data, JSON_UNESCAPED_SLASHES));
 
         //send response
-        $this->_sendJsonResponse(200, $data);
+        $this->jsonResponse(200, $data);
     }
 
     /**
      * Cleans json cache files
      */
-    protected function _cleanCacheResponse()
+    protected function cleanCacheResponse()
     {
         if (!is_dir(self::WS_RESPONSE_CACHE_PATH))
             return;
@@ -151,6 +151,6 @@ abstract class WsCore extends MvcCore
 
         //check if keys are equal
         if ($api_key !== $header_api_key)
-            $this->_sendJsonResponse(498);
+            $this->jsonResponse(498);
     }
 }

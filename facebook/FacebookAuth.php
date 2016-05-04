@@ -92,7 +92,7 @@ trait FacebookAuth
     public function loginAction()
     {
         //validate and filter request params data, second params are the required fields
-        $data = $this->_handleRequestParams([
+        $data = $this->handleRequest([
             "signed_request" => "string",
             "@user_data"     => "int",
             "@validation"    => "string"
@@ -101,7 +101,7 @@ trait FacebookAuth
         try {
             //check signed request
             if (!$this->__parseSignedRequest($data["signed_request"]))
-                return $this->_sendJsonResponse(405);
+                return $this->jsonResponse(405);
 
             //call js helper
             $helper = $this->fb->getJavaScriptHelper();
@@ -127,9 +127,9 @@ trait FacebookAuth
 
             //handle response, session controller
             if (isset($data["user_data"]) && $data["user_data"])
-                return $this->_handleResponseOnLoggedIn("account", $response, false);
+                return $this->dispatchOnUserLoggedIn("account", $response, false);
             else
-                return $this->_handleResponseOnLoggedIn();
+                return $this->dispatchOnUserLoggedIn();
         }
         catch (FacebookResponseException $e) { $exception = $e; }
         catch (FacebookSDKException $e)      { $exception = $e; }
@@ -142,7 +142,7 @@ trait FacebookAuth
         if ($exception instanceof FacebookResponseException)
             $msg = $this->facebook_auth_conf["trans"]["oauth_perms"];
 
-        return $this->_sendJsonResponse(200, $msg, "notice");
+        return $this->jsonResponse(200, $msg, "notice");
     }
 
     /**
@@ -176,11 +176,11 @@ trait FacebookAuth
 
             //handle response automatically
             if (empty($route["controller"]))
-                return $this->_handleResponseOnLoggedIn();
+                return $this->dispatchOnUserLoggedIn();
 
             //Redirect
             $uri = $route["controller"]."/".$route["action"]."/".(empty($route["payload"]) ? "" : implode("/", $route["payload"]));
-            return $this->_redirectTo($uri);
+            return $this->redirectTo($uri);
         }
         catch (FacebookResponseException $e) { $exception = $e; }
         catch (FacebookSDKException $e)      { $exception = $e; }
@@ -191,7 +191,7 @@ trait FacebookAuth
 
         //debug
         if ($this->request->isAjax())
-            return $this->_sendJsonResponse(200, $exception->getMessage(), "alert");
+            return $this->jsonResponse(200, $exception->getMessage(), "alert");
 
         //set message
         $msg = $this->facebook_auth_conf["trans"]["oauth_redirected"]."\n".$e->getMessage();
@@ -224,7 +224,7 @@ trait FacebookAuth
         //encrypt data
         $route = $this->cryptify->encryptData($route);
         //set callback
-        $callback = $this->_baseUrl("facebook/loginByRedirect/".$route);
+        $callback = $this->baseUrl("facebook/loginByRedirect/".$route);
         //set helper
         $helper = $this->fb->getRedirectLoginHelper();
         //get the url
@@ -242,7 +242,7 @@ trait FacebookAuth
     public function extendAccessTokenAction($encrypted_data = "")
     {
         if (empty($encrypted_data))
-            return $this->_sendJsonResponse(405); //method not allowed
+            return $this->jsonResponse(405); //method not allowed
 
         try {
             //get encrypted facebook user id and short live access token
@@ -255,7 +255,7 @@ trait FacebookAuth
             $user_fb = $user_facebook_class::getById($fb_id);
 
             if (!$user_fb || empty($short_live_fac))
-                $this->_sendJsonResponse(400); //bad request
+                $this->jsonResponse(400); //bad request
 
             //if a session error ocurred, get a new long live access token
             $this->logger->log("Facebook::extendAccessTokenAction -> Requesting a new long live access token for fb_id: $user_fb->id");
@@ -277,7 +277,7 @@ trait FacebookAuth
             }
 
             //send JSON response with payload
-            return $this->_sendJsonResponse(200, ["fb_id" => $user_fb->id]);
+            return $this->jsonResponse(200, ["fb_id" => $user_fb->id]);
         }
         catch (FacebookResponseException $e) { $exception = $e; }
         catch (FacebookSDKException $e)      { $exception = $e; }
@@ -286,7 +286,7 @@ trait FacebookAuth
 
         //exception
         $this->logger->error("Facebook::extendAccessToken -> Exception: ".$exception->getMessage().". fb_id: ".(isset($user_fb->id) ? $user_fb->id : "unknown"));
-        $this->_sendJsonResponse(400);
+        $this->jsonResponse(400);
     }
 
     /**
@@ -298,7 +298,7 @@ trait FacebookAuth
     public function deauthorizeAction()
     {
         //get or post params
-        $data = $this->_handleRequestParams([
+        $data = $this->handleRequest([
             "@signed_request"   => "string",
             "@hub_mode"         => "string",
             "@hub_challenge"    => "string",
@@ -361,7 +361,7 @@ trait FacebookAuth
         }
         finally {
             //send data as text
-            $this->_sendTextResponse($data);
+            $this->textResponse($data);
         }
     }
 
@@ -373,9 +373,9 @@ trait FacebookAuth
     public function checkLinkAppStateAction($scope = null)
     {
         //make sure is ajax request
-        $this->_onlyAjax();
+        $this->onlyAjax();
         //handle response, dispatch to auth/logout
-        $this->_checkUserIsLoggedIn(true);
+        $this->requireLoggedIn();
 
         try {
             //get fb user data
@@ -400,7 +400,7 @@ trait FacebookAuth
         }
 
         //send JSON response
-        $this->_sendJsonResponse(200, $payload);
+        $this->jsonResponse(200, $payload);
     }
 
     /**
@@ -410,18 +410,18 @@ trait FacebookAuth
     public function unlinkUserAction()
     {
         //make sure is ajax request
-        $this->_onlyAjax();
+        $this->onlyAjax();
         //handle response, dispatch to auth/logout
-        $this->_checkUserIsLoggedIn(true);
+        $this->requireLoggedIn();
 
         //validate facebook user
         if (!$this->user_session["fb_id"])
-            $this->_sendJsonResponse(404);
+            $this->jsonResponse(404);
 
         //invalidate user
         $this->_invalidateAccessToken($this->user_session["fb_id"]);
         //send JSON response
-        $this->_sendJsonResponse(200);
+        $this->jsonResponse(200);
     }
 
     /**
@@ -499,7 +499,7 @@ trait FacebookAuth
             //print_r($properties);exit;
 
             //OK, check if user exists in user_facebook table & get session data
-            $user_session = $this->_getUserSessionData(); //get app session
+            $user_session = $this->getUserSession(); //get app session
             $user_fb      = $user_facebook_class::getById($properties["fb_id"]);
 
             //check if user is already logged In, dont a have a FB, and he is attempting to login facebook with another account
@@ -561,7 +561,7 @@ trait FacebookAuth
                         //insert user
                         $user = new $user_class();
                         if (!$user->save($properties))
-                            $this->_sendJsonResponse(200, $user->filterMessages(), "alert");
+                            $this->jsonResponse(200, $user->allMessages(), "alert");
                     }
                 }
             }
@@ -571,7 +571,7 @@ trait FacebookAuth
                 $this->__saveUser($user->id, $properties["fb_id"], $fac);
 
             //queues an async request, extend access token (append fb userID and short live access token)
-            $this->_asyncRequest([
+            $this->asyncRequest([
                 "controller" => "facebook",
                 "action"     => "extendAccessToken",
                 "socket"     => true,
@@ -594,7 +594,7 @@ trait FacebookAuth
         //SAVES session if none error ocurred
         $login_data["properties"] = $properties;
         //set php session as logged in
-        $this->_setUserSessionAsLoggedIn($user->id);
+        $this->userHasLoggedIn($user->id);
 
         return $login_data;
     }
@@ -733,7 +733,7 @@ trait FacebookAuth
         if (!$user_fb->save()) {
 
             $this->logger->error("Facebook::__saveUser() -> Error Insertion User Facebook data. userId -> ".$user_id.",
-                                  FBUserId -> ".$fb_id.", trace: ".$user_fb->filterMessages(true));
+                                  FBUserId -> ".$fb_id.", trace: ".$user_fb->allMessages(true));
 
             $user = $user_class::getById($user_id);
             $user->delete();

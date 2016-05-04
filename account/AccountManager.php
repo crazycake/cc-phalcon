@@ -50,11 +50,11 @@ trait AccountManager
         parent::initialize();
 
         //if not logged In, set this URI to redirected after logIn
-        if (!$this->_checkUserIsLoggedIn())
-            $this->_setSessionRedirectionOnLoggedIn();
+        if (!$this->isLoggedIn())
+            $this->setRedirectionOnUserLoggedIn();
 
         //check if user is logged in, if not dispatch to auth/logout
-        $this->_checkUserIsLoggedIn(true);
+        $this->requireLoggedIn();
 
         //for auth required pages disable robots
         $this->view->setVar("html_disallow_robots", true);
@@ -81,12 +81,12 @@ trait AccountManager
         $user = $user_class::getById($this->user_session["id"]);
         //validate user
         if (!$user)
-            $this->_sendJsonResponse(404);
+            $this->jsonResponse(404);
 
         //get settings params
-        $setting_params = isset($this->account_manager_conf["profile_request_params"]) ? $this->account_manager_conf["profile_request_params"] : array();
+        $setting_params = isset($this->account_manager_conf["profile_request_params"]) ? $this->account_manager_conf["profile_request_params"] : [];
         //validate and filter request params data, second params are the required fields
-        $data = $this->_handleRequestParams(array_merge($default_params, $setting_params));
+        $data = $this->handleRequest(array_merge($default_params, $setting_params));
 
         try {
 
@@ -147,7 +147,7 @@ trait AccountManager
 
                 $user->update($updating_data);
                 //update session data
-                $this->_updateUserSessionData($updating_data);
+                $this->updateUserSession($updating_data);
                 //update full name
                 $updating_data["name"] = $user->first_name." ".$user->last_name;
 
@@ -157,13 +157,13 @@ trait AccountManager
             }
 
             //send response
-            $this->_sendJsonResponse(200, [
+            $this->jsonResponse(200, [
                 "user" => $updating_data,
                 "msg"  => $this->account_manager_conf["trans"]["profile_saved"]
             ]);
         }
         catch (Exception $e) {
-            $this->_sendJsonResponse(200, $e->getMessage(), "warning");
+            $this->jsonResponse(200, $e->getMessage(), "warning");
         }
     }
 }

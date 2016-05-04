@@ -88,7 +88,7 @@ class GCM {
 	 *
 	 * @param string $data
 	 */
-	public function setData($data = array()) {
+	public function setData($data = []) {
 
 		$this->payload["data"] = $data;
 

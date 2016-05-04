@@ -47,7 +47,7 @@ trait Mailer
      */
     public function sendContactAction()
     {
-        $data = $this->_handleRequestParams([
+        $data = $this->handleRequest([
             "email"   => "email",
             "name"    => "string",
             "message" => "string"
@@ -56,10 +56,10 @@ trait Mailer
         $data["subject"] = "Contacto ".$this->config->app->name;
 
         //send contact email
-        $this->_sendMailMessage("sendSystemMail", $data);
+        $this->sendMailMessage("sendSystemMail", $data);
 
         //send JSON response
-        $this->_sendJsonResponse(200);
+        $this->jsonResponse(200);
         return;
     }
 
@@ -122,21 +122,21 @@ trait Mailer
         $user = $user_class::getById($user_id);
 
         if (!$user)
-            $this->_sendJsonResponse(403);
+            $this->jsonResponse(403);
 
         //get user token
         $tokens_class = AppModule::getClass("user_token");
         $token = $tokens_class::newTokenIfExpired($user_id, "activation");
 
         if (!$token)
-            $this->_sendJsonResponse(500);
+            $this->jsonResponse(500);
 
         //create flux uri
         $uri = "auth/activation/".$token->encrypted;
         //set properties
         $this->mailer_conf["data_user"]  = $user;
         $this->mailer_conf["data_email"] = $user->email;
-        $this->mailer_conf["data_url"]   = $this->_baseUrl($uri);
+        $this->mailer_conf["data_url"]   = $this->baseUrl($uri);
 
         //get HTML
         $html_raw = $this->_getInlineStyledHtml("activation", $this->mailer_conf);
@@ -161,21 +161,21 @@ trait Mailer
 
         //if invalid user, send permission denied response
         if (!$user)
-            $this->_sendJsonResponse(403);
+            $this->jsonResponse(403);
 
         //get user token
         $tokens_class = AppModule::getClass("user_token");
         $token = $tokens_class::newTokenIfExpired($user_id, "pass");
 
         if (!$token)
-            $this->_sendJsonResponse(500);
+            $this->jsonResponse(500);
 
         //create flux uri
         $uri = "password/new/".$token->encrypted;
         //set rendered view
         $this->mailer_conf["data_user"]  = $user;
         $this->mailer_conf["data_email"] = $user->email;
-        $this->mailer_conf["data_url"]   = $this->_baseUrl($uri);
+        $this->mailer_conf["data_url"]   = $this->baseUrl($uri);
         $this->mailer_conf["data_token_expiration"] = $tokens_class::$TOKEN_EXPIRES_THRESHOLD;
 
         //get HTML
@@ -236,7 +236,7 @@ trait Mailer
         if (is_string($recipients))
             $recipients = array($recipients);
 
-        $to = array();
+        $to = [];
         //create mandrill recipient data struct, push emails to array
         foreach ($recipients as $email)
             array_push($to, array("email" => $email)); //optional name (display name) & type (defaults "to").

@@ -74,7 +74,7 @@ trait TicketManager
      * Init S3 Helper library
      * @param array $conf - Configuration array
      */
-    public function initTicketManager($conf = array())
+    public function initTicketManager($conf = [])
     {
         //set manager
         $this->ticket_manager_conf = $conf;
@@ -122,7 +122,7 @@ trait TicketManager
                 throw new Exception("S3 lib cant find binary file for ticket code: $code (S3 path: $s3_path)");
 
             //sends file to buffer
-            $this->_sendFileToBuffer($binary, self::$MIME_TYPES["png"]);
+            $this->sendFileToBuffer($binary, self::$MIME_TYPES["png"]);
         }
         catch (Exception $e) {
             //fallback for file
@@ -184,7 +184,7 @@ trait TicketManager
      * @param mixed [object|array] $userTickets - A user ticket object or an array of objects
      * @return object - The result object
      */
-    public function generateQRForUserTickets($user_id = 0, $userTickets = array())
+    public function generateQRForUserTickets($user_id = 0, $userTickets = [])
     {
         //set qr settings
         $this->qr_settings = $this->ticket_manager_conf["qr_settings"];
@@ -194,7 +194,7 @@ trait TicketManager
 
         //handle exceptions
         $result  = new \stdClass();
-        $objects = array();
+        $objects = [];
 
         try {
 
@@ -340,7 +340,7 @@ trait TicketManager
      * @param int $user_id - The user ID
      * @param array $userTickets - The user tickets array
      */
-    private function _downloadTicketQrs($user_id = 0, $userTickets = array())
+    private function _downloadTicketQrs($user_id = 0, $userTickets = [])
     {
         if (empty($userTickets))
             return;

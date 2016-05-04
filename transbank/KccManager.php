@@ -52,7 +52,7 @@ trait KccManager
      * This method must be call in constructor parent class
      * @param array $conf - The config array
      */
-    protected function initKccManager($conf = array())
+    protected function initKccManager($conf = [])
     {
         //set conf
         $this->kcc_manager_conf = $conf;
@@ -78,9 +78,9 @@ trait KccManager
         //set post input hiddens
         $inputs = [
             //set kcc params data (empty params will be set later when generating an order_buy)
-            "TBK_URL_PAGO"         => $this->_baseUrl($this->kcc_manager_conf["paymentCgiUri"]), //Payment URI location
-            "TBK_URL_EXITO"        => $this->_baseUrl($this->kcc_manager_conf["successUri"]),    //Success page
-            "TBK_URL_FRACASO"      => $this->_baseUrl($this->kcc_manager_conf["failedUri"]),     //Failure page
+            "TBK_URL_PAGO"         => $this->baseUrl($this->kcc_manager_conf["paymentCgiUri"]), //Payment URI location
+            "TBK_URL_EXITO"        => $this->baseUrl($this->kcc_manager_conf["successUri"]),    //Success page
+            "TBK_URL_FRACASO"      => $this->baseUrl($this->kcc_manager_conf["failedUri"]),     //Failure page
             "TBK_TIPO_TRANSACCION" => "TR_NORMAL",
             //dynamic inputs
             "TBK_ID_SESION"        => sha1(uniqid().microtime()),
@@ -90,7 +90,7 @@ trait KccManager
 
         //for debugging, redirect to skip payment
         if (APP_ENVIRONMENT == "local") {
-            $inputs["TBK_URL_PAGO"] = $this->_baseUrl(self::$HANDLER_DEBUG_URI);
+            $inputs["TBK_URL_PAGO"] = $this->baseUrl(self::$HANDLER_DEBUG_URI);
         }
 
         //pass data to view
@@ -109,7 +109,7 @@ trait KccManager
         $this->logger->debug("KccManager::_successTrxAction -> Got  encrypted data: $encrypted_data");
 
         if (empty($encrypted_data))
-            $this->_redirectToNotFound();
+            $this->redirectToNotFound();
 
         try {
             //get users checkouts class
@@ -143,7 +143,7 @@ trait KccManager
             $trx = new $checkout_trx_class();
 
             if (!$trx->save($this->_parseKccTrx($params, $checkout)))
-                throw new Exception("Error saving transaction: ".$trx->filterMessages(true));
+                throw new Exception("Error saving transaction: ".$trx->allMessages(true));
 
             $this->logger->debug("KccManager::successTrxAction -> successCheckout: ".json_encode($checkout));
 
@@ -152,7 +152,7 @@ trait KccManager
             (new $checkout_controller())->successCheckout($checkout);
 
             //ok response
-            $this->_sendJsonResponse(200);
+            $this->jsonResponse(200);
         }
         catch (Exception $e) {
 
@@ -173,7 +173,7 @@ trait KccManager
             ]);
 
             //error server response
-            $this->_sendJsonResponse(500);
+            $this->jsonResponse(500);
         }
     }
 
@@ -184,10 +184,10 @@ trait KccManager
     public function successAction()
     {
         //handle response, dispatch to auth/logout
-        $this->_checkUserIsLoggedIn(true);
+        $this->requireLoggedIn();
 
         //get post params
-        $data = $this->_handleRequestParams([
+        $data = $this->handleRequest([
             "@TBK_ID_SESION"    => "string",
             "@TBK_ORDEN_COMPRA" => "string"
         ], "POST", false);
@@ -237,7 +237,7 @@ trait KccManager
             $this->logger->error("KccManager::onSuccess -> something occurred on Webpay Success page: Data: \n ".print_r($data, true)." \n ".$e->getMessage());
             $data["TBK_ERROR"] = $e;
             //$this->_debug($data);
-            $this->_redirectTo("webpay/failed", $data);
+            $this->redirectTo("webpay/failed", $data);
         }
     }
 
@@ -248,7 +248,7 @@ trait KccManager
     public function failedAction()
     {
         //get post params (optional params)
-        $data = $this->_handleRequestParams([
+        $data = $this->handleRequest([
             "@TBK_ID_SESION"    => "string",
             "@TBK_ORDEN_COMPRA" => "string"
         ], "MIXED", false);
@@ -284,10 +284,10 @@ trait KccManager
     public function renderSuccessAction()
     {
         if (APP_ENVIRONMENT == "production")
-            $this->_redirectToNotFound();
+            $this->redirectToNotFound();
 
         //handle response, dispatch to auth/logout
-        $this->_checkUserIsLoggedIn(true);
+        $this->requireLoggedIn();
 
         //get classes name
         $user_checkout_class        = AppModule::getClass("user_checkout");
@@ -383,10 +383,10 @@ trait KccManager
             $file_content = fgets($file_opened);
             fclose($file_opened);
 
-            $data  = explode("&", $file_content);
-            $delim = "=";
+            $data   = explode("&", $file_content);
+            $delim  = "=";
+            $params = [];
 
-            $params = array();
             foreach ($data as $key => $value) {
 
                 //parse data (key is the index, value an string with format prop=value)

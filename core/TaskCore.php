@@ -160,7 +160,7 @@ class TaskCore extends Task
                 throw new Exception("CoreTask:_colorize -> invalid message type: ".$type);
         }
         //return output, chr(27) -> escape key
-        $output = chr(27) . $open . $text . chr(27) . $close . "\n";
+        $output = chr(27).$open.$text.chr(27).$close."\n";
 
         //echo output
         if ($die)
@@ -194,7 +194,7 @@ class TaskCore extends Task
      * Async Request
      * @param  array $options - The HTTP options
      */
-    protected function _asyncRequest($options = [])
+    protected function asyncRequest($options = [])
     {
         //set base url
         if (empty($options["base_url"]))

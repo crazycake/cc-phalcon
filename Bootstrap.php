@@ -6,7 +6,7 @@
 
 //get modules
 $modules   = scandir(__DIR__);
-$class_map = array();
+$class_map = [];
 
 //grab printed data
 ob_start();
@@ -20,7 +20,7 @@ foreach ($modules as $dir) {
 		continue;
 
 	$files 	 = scandir(__DIR__."/".$dir);
-	$classes = array();
+	$classes = [];
 	//loop though files
 	foreach ($files as $file) {
 

@@ -54,7 +54,7 @@ abstract class WebCore extends MvcCore implements WebSecurity
         $enableSSL = AppModule::getProperty("enableSSL");
 
         //set client object with its properties (User-Agent)
-        $this->_setClientObject();
+        $this->_setClient();
 
         //if enabledSSL, force redirect for non-https request
         if ( APP_ENVIRONMENT === "production"
@@ -95,11 +95,11 @@ abstract class WebCore extends MvcCore implements WebSecurity
             return;
 
         //set javascript vars in view
-        $this->_setAppJsObjectsForView();
+        $this->_setAppJsViewVars();
         //set app assets
         $this->_setAppAssets();
         //update client object property, request uri afterExecuteRoute event.
-        $this->_updateClientObjectProp('requestedUri', $this->_getRequestedUri());
+        $this->_updateClientProp('requestedUri', $this->getRequestedUri());
 
         //check browser is supported (child method)
         $supported = $this->checkBrowserSupport($this->client->browser, $this->client->shortVersion);
@@ -109,6 +109,7 @@ abstract class WebCore extends MvcCore implements WebSecurity
             $this->dispatcher->dispatch();
         }
     }
+    
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
@@ -116,7 +117,7 @@ abstract class WebCore extends MvcCore implements WebSecurity
      * @param string $uri - The URI to redirect
      * @param array $params - The GET params (optional)
      */
-    protected function _redirectTo($uri = "", $params = [])
+    protected function redirectTo($uri = "", $params = [])
     {
         //parse get params & append them to the URL
         if (!empty($params)) {
@@ -130,7 +131,7 @@ abstract class WebCore extends MvcCore implements WebSecurity
             $uri .= "?".implode("&", $params);
         }
 
-        $this->response->redirect($this->_baseUrl($uri), true);
+        $this->response->redirect($this->baseUrl($uri), true);
         $this->response->send();
         die();
     }
@@ -138,18 +139,18 @@ abstract class WebCore extends MvcCore implements WebSecurity
     /**
      * Redirect to notFound error page
      */
-    protected function _redirectToNotFound()
+    protected function redirectToNotFound()
     {
-        $this->_redirectTo("error/notFound");
+        $this->redirectTo("error/notFound");
     }
 
     /**
      * Check for non Ajax request, redirects to notFound error page
      */
-    protected function _onlyAjax()
+    protected function onlyAjax()
     {
         if (!$this->request->isAjax())
-            $this->_redirectToNotFound();
+            $this->redirectToNotFound();
 
         return true;
     }
@@ -161,10 +162,10 @@ abstract class WebCore extends MvcCore implements WebSecurity
      * @param string $log_error - The debug message to log
      *
      */
-    protected function _dispatchInternalError($message = null, $go_back_url = null, $log_error = "n/a")
+    protected function internalError($message = null, $go_back_url = null, $log_error = "n/a")
     {
         //dispatch to internal
-        $this->logger->info("WebCore::_dispatchInternalError -> Something ocurred (message: ".$message."). Error: ".$log_error);
+        $this->logger->info("WebCore::internalError -> Something ocurred (message: ".$message."). Error: ".$log_error);
 
         //set message
         if (!is_null($message))
@@ -181,7 +182,7 @@ abstract class WebCore extends MvcCore implements WebSecurity
      * Validate CSRF token. One client token per session.
      * @access private
      */
-    public function _checkCsrfToken()
+    public function checkCsrfToken()
     {
         if (!$this->request->isPost())
             return true;
@@ -195,16 +196,35 @@ abstract class WebCore extends MvcCore implements WebSecurity
     }
 
     /**
+     * Loads javascript modules. This method must be called once.
+     * @param array $modules - An array of modules => args
+     * @param string $fn - The loader function name
+     */
+    protected function loadJsModules($modules = [], $fn = self::JS_LOADER_FUNCTION)
+    {
+        //skip for legacy browsers
+        if ($this->client->isLegacy || empty($modules))
+            return;
+
+        $param  = json_encode($modules, JSON_UNESCAPED_SLASHES);
+        $script = "$fn($param);";
+        //send javascript vars to view as JSON enconded
+        $this->view->setVar("js_loader", $script);
+    }
+
+    /* --------------------------------------------------- § -------------------------------------------------------- */
+
+    /**
      * Set app assets (app.css & app.js)
      * @access protected
      */
-    protected function _setAppAssets()
+    private function _setAppAssets()
     {
         $version   = AppModule::getProperty("version");
         $staticUrl = AppModule::getProperty("staticUrl");
 
-        $css_url = $this->_staticUrl(self::ASSETS_MIN_FOLDER_PATH."app.css");
-        $js_url  = $this->_staticUrl(self::ASSETS_MIN_FOLDER_PATH."app.js");
+        $css_url = $this->staticUrl(self::ASSETS_MIN_FOLDER_PATH."app.css");
+        $js_url  = $this->staticUrl(self::ASSETS_MIN_FOLDER_PATH."app.js");
 
         //set no-min assets for local dev
         if (APP_ENVIRONMENT === "local") {
@@ -235,29 +255,10 @@ abstract class WebCore extends MvcCore implements WebSecurity
     }
 
     /**
-     * Loads javascript modules. This method must be called once.
-     * @param array $modules - An array of modules => args
-     * @param string $fn - The loader function name
-     */
-    protected function _loadJsModules($modules = [], $fn = self::JS_LOADER_FUNCTION)
-    {
-        //skip for legacy browsers
-        if ($this->client->isLegacy || empty($modules))
-            return;
-
-        $param  = json_encode($modules, JSON_UNESCAPED_SLASHES);
-        $script = "$fn($param);";
-        //send javascript vars to view as JSON enconded
-        $this->view->setVar("js_loader", $script);
-    }
-
-    /* --------------------------------------------------- § -------------------------------------------------------- */
-
-    /**
      * Set the client (user agent) object with its properties
      * @access private
      */
-    private function _setClientObject()
+    private function _setClient()
     {
         //for API make a API simple client object
         if (MODULE_NAME == "api") {
@@ -324,7 +325,7 @@ abstract class WebCore extends MvcCore implements WebSecurity
      * @param string $prop - The property name
      * @param string $value - The property value
      */
-    private function _updateClientObjectProp($prop = "", $value = "")
+    private function _updateClientProp($prop = "", $value = "")
     {
         if (empty($prop))
             return false;
@@ -339,13 +340,13 @@ abstract class WebCore extends MvcCore implements WebSecurity
      * Set javascript vars for rendering view, call child method for customization.
      * @access private
      */
-    private function _setAppJsObjectsForView()
+    private function _setAppJsViewVars()
     {
         //set javascript global objects
         $js_app = (object)[
             "name"      => $this->config->app->name,
-            "baseUrl"   => $this->_baseUrl(),
-            "staticUrl" => $this->_staticUrl(),
+            "baseUrl"   => $this->baseUrl(),
+            "staticUrl" => $this->staticUrl(),
             "dev"       => (APP_ENVIRONMENT === "production") ? 0 : 1,
             "version"   => AppModule::getProperty("version")
         ];

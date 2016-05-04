@@ -28,7 +28,7 @@ class OneClickClient
 	/**
 	 * Constructor
 	 */
-    public function __construct($setup = array())
+    public function __construct($setup = [])
     {
 		//check required files
     	if (!isset($setup["oneClickKey"]) || !isset($setup["oneClickCert"]) || !isset($setup["oneClickTransbankCert"]))

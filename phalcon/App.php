@@ -178,7 +178,7 @@ abstract class App extends AppModule implements AppLoader
             return $output_path;
 
         //get files in directory & exclude ".", ".." directories
-        $assets = array();
+        $assets = [];
         $files  = scandir($phar_assets);
         unset($files["."], $files[".."]);
 
@@ -292,7 +292,7 @@ abstract class App extends AppModule implements AppLoader
      * @param object $loader - Phalcon loader object
      * @param array $packages - Modules packages list
      */
-    private function _loadStaticLibs($loader = null, $packages = array())
+    private function _loadStaticLibs($loader = null, $packages = [])
     {
         if (is_null($loader))
             return;
@@ -320,7 +320,7 @@ abstract class App extends AppModule implements AppLoader
         }
 
         //load classes from symlink
-        $namespaces = array();
+        $namespaces = [];
         foreach ($packages as $lib) {
             $namespaces[self::APP_CORE_PACKAGE.ucfirst($lib)] = "$class_path/$lib/";
         }

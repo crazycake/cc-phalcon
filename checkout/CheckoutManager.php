@@ -67,16 +67,16 @@ trait CheckoutManager
             return;
 
         //if not logged in
-        if (!$this->_checkUserIsLoggedIn()) {
+        if (!$this->isLoggedIn()) {
 
             //set a flash message for non authenticated users
             $this->flash->notice($this->checkout_manager_conf["trans"]["notice_auth"]);
             //if not logged In, set this URI to redirected after logIn
-            $this->_setSessionRedirectionOnLoggedIn();
+            $this->setRedirectionOnUserLoggedIn();
         }
 
         //handle response, dispatch to auth/logout
-        $this->_checkUserIsLoggedIn(true);
+        $this->requireLoggedIn();
     }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
@@ -87,7 +87,7 @@ trait CheckoutManager
     public function buyOrderAction()
     {
         //make sure is ajax request
-        $this->_onlyAjax();
+        $this->onlyAjax();
 
         try {
 
@@ -110,12 +110,12 @@ trait CheckoutManager
             $checkout->buy_order = $checkout_orm->buy_order;
 
             //send JSON response
-            return $this->_sendJsonResponse(200, $checkout);
+            return $this->jsonResponse(200, $checkout);
         }
         catch (Exception $e)  { $exception = $e->getMessage(); }
         catch (\Exception $e) { $exception = $e->getMessage(); }
         //sends an error message
-        $this->_sendJsonResponse(200, $exception, "alert");
+        $this->jsonResponse(200, $exception, "alert");
     }
 
     /**
@@ -126,7 +126,7 @@ trait CheckoutManager
     public function successCheckout($checkout)
     {
         //executes another async self request, this time as socket (connection is closed before waiting for response)
-        $this->_asyncRequest([
+        $this->asyncRequest([
             "controller" => "checkout",
             "action"     => "successCheckoutTask",
             "method"     => "post",
@@ -145,7 +145,7 @@ trait CheckoutManager
      */
     public function successCheckoutTaskAction()
     {
-        $data = $this->_handleRequestParams([
+        $data = $this->handleRequest([
             "payload" => "string",
         ], "POST", false);
 
@@ -231,7 +231,7 @@ trait CheckoutManager
         }
         finally {
             //send OK response
-            $this->_sendJsonResponse(200);
+            $this->jsonResponse(200);
         }
     }
 
@@ -283,7 +283,7 @@ trait CheckoutManager
         $hashed_key = sha1($checkout->buy_order."_".$this->config->app->cryptKey);
 
         if (APP_ENVIRONMENT != "local" && $code !== $hashed_key)
-            return $this->_redirectToNotFound();
+            return $this->redirectToNotFound();
 
         //discard ORM props
         $checkout = $checkout->reduce();
@@ -299,7 +299,7 @@ trait CheckoutManager
 
         //redirect
         if (!$this->checkout_manager_conf["debug"])
-            $this->_redirectTo("account");
+            $this->redirectTo("account");
         else
             echo "CheckoutManager::Config Debug Mode is On...";
     }
@@ -427,7 +427,7 @@ trait CheckoutManager
         //load JS modules
         $js_modules = $this->checkout_manager_conf["js_modules"];
 
-        $this->_loadJsModules(array_merge([
+        $this->loadJsModules(array_merge([
                 "$js_modules[0]" => [
                     "checkout_type" => $type,
                     "checkout_max"  => $checkoutMax,
@@ -449,7 +449,7 @@ trait CheckoutManager
     private function _parseCheckoutData()
     {
         //get form data
-        $data = $this->_handleRequestParams([
+        $data = $this->handleRequest([
             "gateway"        => "string",  //checkout payment gateway
             "categories"     => "array",   //the categories references
             "@invoice_email" => "string"   //optional, custom validation

@@ -33,7 +33,7 @@ trait Guzzle
      * +method: The HTTP method (GET, POST)
      * +socket: Makes async call as socket connection
      */
-    protected function _newRequest($options = array())
+    protected function _newRequest($options = [])
     {
         //simple input validation
         if (empty($options["base_url"]) || empty($options["uri"]))
@@ -77,7 +77,7 @@ trait Guzzle
      * @param object $client - The HTTP Guzzle client
      * @param array $options - The input options
      */
-    private function _getRequest($client, $options = array())
+    private function _getRequest($client, $options = [])
     {
         //curl options
         $verify_host = (APP_ENVIRONMENT != "production") ? false : 2; //prod_recommended: 2
@@ -113,7 +113,7 @@ trait Guzzle
      * @param object $client - The HTTP Guzzle client
      * @param array $options - The input options
      */
-    private function _postRequest($client, $options = array())
+    private function _postRequest($client, $options = [])
     {
         //curl options
         $verify_host = (APP_ENVIRONMENT != "production") ? false : 2;
@@ -148,7 +148,7 @@ trait Guzzle
      * @param object $promise - The promise object
      * @param array $options - The input options
      */
-    private function _sendPromise($promise = null, $options = array())
+    private function _sendPromise($promise = null, $options = [])
     {
         //handle promise
         $promise->then(function ($response) use ($options) {
@@ -192,7 +192,7 @@ trait Guzzle
      * Simulates a socket async request without waiting for response
      * @param array $options - The input options
      */
-    private function _socketAsync($options = array())
+    private function _socketAsync($options = [])
     {
         //full URL
         $parts = parse_url($options["base_url"].$options["uri"]);

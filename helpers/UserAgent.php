@@ -70,7 +70,7 @@ class UserAgent
      * @param array $data - The UA data
      * @return boolean
      */
-    private function _isUserAgentLegacy($data = array())
+    private function _isUserAgentLegacy($data = [])
     {
         //mark some browsers as legacy
         if ( ($data["browser"] == "MSIE"    && $data["short_version"] < 9) ||

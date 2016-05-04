@@ -20,7 +20,7 @@ use CrazyCake\Models\BaseResultset;
  */
 interface WebSecurity
 {
-    public function _checkCsrfToken();
+    public function checkCsrfToken();
 }
 
 /**
@@ -85,7 +85,7 @@ abstract class MvcCore extends Controller
      * @param string $uri - A given URI
      * @return string - The static URL
      */
-    protected function _baseUrl($uri = "")
+    protected function baseUrl($uri = "")
     {
         return APP_BASE_URL.$uri;
     }
@@ -95,7 +95,7 @@ abstract class MvcCore extends Controller
      * @param string $uri - A given URI
      * @return string - The static URL
      */
-    protected function _staticUrl($uri = "")
+    protected function staticUrl($uri = "")
     {
         return $this->url->getStaticBaseUri().$uri;
     }
@@ -105,7 +105,7 @@ abstract class MvcCore extends Controller
      * @param binary $data - The binary data to send
      * @param string $mime_type - The mime type
      */
-    protected function _sendFileToBuffer($data = null, $mime_type = 'application/json')
+    protected function sendFileToBuffer($data = null, $mime_type = 'application/json')
     {
         //append struct as string if data type is JSON
         if ($mime_type == 'application/json')
@@ -130,9 +130,10 @@ abstract class MvcCore extends Controller
     /**
      * Get the requested URI
      */
-    protected function _getRequestedUri()
+    protected function getRequestedUri()
     {
         $uri = $this->request->getUri();
+
         //replaces '*/public/' or first '/'
         $regex = "/^.*\/public\/(?=[^.]*$)|^\//";
         $uri   = preg_replace($regex, "", $uri);
@@ -145,11 +146,11 @@ abstract class MvcCore extends Controller
      * Current implementation is a Guzzle async Request.
      * @param array $options - Options: module, controller, action, method, payload, socket, headers
      */
-    protected function _asyncRequest($options = array())
+    protected function asyncRequest($options = [])
     {
         //set base url
         if (empty($options["base_url"]))
-            $options["base_url"] = empty($options["module"]) ? $this->_baseUrl() : AppModule::getUrl($options["module"]);
+            $options["base_url"] = empty($options["module"]) ? $this->baseUrl() : AppModule::getUrl($options["module"]);
 
         //set uri
         if (empty($options["uri"]))
@@ -175,7 +176,7 @@ abstract class MvcCore extends Controller
         }
 
         //log asyn request
-        $this->logger->debug("MvcCore::_asyncRequest -> Options: ".json_encode($options, JSON_UNESCAPED_SLASHES));
+        $this->logger->debug("MvcCore::asyncRequest -> Options: ".json_encode($options, JSON_UNESCAPED_SLASHES));
 
         //guzzle method
         $this->_newRequest($options);
@@ -191,7 +192,7 @@ abstract class MvcCore extends Controller
      * @param string $namespace - (optional) Append a type namespace to the response.
      * @return string - The response
      */
-    protected function _sendJsonResponse($code = 200, $payload = null, $type = "", $namespace = "")
+    protected function jsonResponse($code = 200, $payload = null, $type = "", $namespace = "")
     {
         //if code is not identified, mark as unknown error
         if (!isset($this->CODES[$code]))
@@ -264,7 +265,7 @@ abstract class MvcCore extends Controller
      * Sends a simple text response
      * @param  mixed [string|array] $text - Any text string
      */
-    protected function _sendTextResponse($text = "OK"){
+    protected function textResponse($text = "OK"){
 
         if (is_array($text) || is_object($text))
             $text = json_encode($text, JSON_UNESCAPED_SLASHES);
@@ -293,64 +294,50 @@ abstract class MvcCore extends Controller
      * @param boolean $check_csrf - Checks the form CSRF token
      * @return array
      */
-    protected function _handleRequestParams($req_fields = [], $method = 'POST', $check_csrf = true)
+    protected function handleRequest($req_fields = [], $method = 'POST', $check_csrf = true)
     {
         //check API module and set special settings
-        if (MODULE_NAME === "api") {
+        if (MODULE_NAME === "api")
             $check_csrf = false;
-            $send_json  = true;
-        }
-        //frontend or backend module
-        else {
-            $send_json = $this->request->isAjax();
-        }
 
         //set anoymous function for send response
-        if ($send_json) {
-            $sendResponse = function($code) {
+        $sendResponse = function($code) {
 
-                //call send json response
-                if (method_exists($this, '_sendJsonResponse'))
-                    $this->_sendJsonResponse($code);
-                else
-                    throw new Exception("MvcCore::_handleRequestParams -> _sendJsonResponse() must be implemented.");
+            if(MODULE_NAME === "api" || $this->request->isAjax())
+                $this->jsonResponse($code);
 
-            };
-        }
-        else {
-            $sendResponse = function($code) {
-                //otherwise redirect to 400 page
-                $this->dispatcher->forward(["controller" => "error", "action" => "badRequest"]);
-                $this->dispatcher->dispatch();
-            };
-        }
+            //otherwise redirect to 400 page
+            $this->dispatcher->forward(["controller" => "error", "action" => "badRequest"]);
+            $this->dispatcher->dispatch();
+            return;
+        };
 
         //is post request? (method now allowed)
-        if ($method == 'POST' && !$this->request->isPost())
+        if ($method == "POST" && !$this->request->isPost())
             return $sendResponse(405);
 
         //is get request? (method now allowed)
-        if ($method == 'GET' && !$this->request->isGet())
+        if ($method == "GET" && !$this->request->isGet())
             return $sendResponse(405);
 
         //validate always CSRF Token (prevents also headless browsers, POST only and API module excluded)
         if ($check_csrf) {
             //check if method exists
-            if (method_exists($this, '_checkCsrfToken') && !$this->_checkCsrfToken())
+            if (method_exists($this, 'checkCsrfToken') && !$this->checkCsrfToken())
                 return $sendResponse(498);
         }
 
         //get params data: POST, GET, or mixed
-        if ($method == 'POST')
+        if ($method == "POST")
             $data = $this->request->getPost();
-        else if ($method == 'GET')
+        else if ($method == "GET")
             $data = $this->request->get();
         else
             $data = array_merge($this->request->get(), $this->request->getPost());
 
         //clean phalcon data for GET or MIXED method
-        if ($method != 'POST')
-            unset($data['_url']);
+        if ($method != "POST")
+            unset($data["_url"]);
 
         //if no required fields given, return all POST or GET vars as array
         if (empty($req_fields))
@@ -381,10 +368,10 @@ abstract class MvcCore extends Controller
             }
 
             //get value from data array
-            if (empty($data_type) || $data_type == 'array') {
+            if (empty($data_type) || $data_type == "array") {
                 $value = $data[$field];
             }
-            else if ($data_type == 'json') {
+            else if ($data_type == "json") {
                 $value = json_decode($data[$field]); //NULL if cannot be decoded
             }
             else {
@@ -396,9 +383,9 @@ abstract class MvcCore extends Controller
             }
 
             //check data (empty fn considers zero value )
-            if ($is_optional_field && (is_null($value) || $value == ''))
+            if ($is_optional_field && (is_null($value) || $value == ""))
                 $data[$field] = null;
-            elseif (is_null($value) || $value == '')
+            elseif (is_null($value) || $value == "")
                 $invalid_data = true;
             else
                 $data[$field] = $value;
@@ -418,7 +405,7 @@ abstract class MvcCore extends Controller
      * @param int $max_num - Maximum number
      * @return array
      */
-    protected function _handleNumberAndOffsetParams($input_num = null, $input_off = null, $max_num = null)
+    protected function handleLimitInput($input_num = null, $input_off = null, $max_num = null)
     {
         if (!is_null($input_num)) {
             $number = $input_num;
@@ -447,24 +434,24 @@ abstract class MvcCore extends Controller
      * @param object $data - The data to be passed as args
      * @return object response
      */
-    protected function _sendMailMessage($method = null, $data = null)
+    protected function sendMailMessage($method = null, $data = null)
     {
         //simple input validation
         if (empty($method))
-            throw new Exception("MvcCore::_sendMailMessage -> method param is required.");
+            throw new Exception("MvcCore::sendMailMessage -> method param is required.");
 
         //get the mailer controller name
-        $mailer_class = AppModule::getClass('mailer_controller');
+        $mailer_class = AppModule::getClass("mailer_controller");
 
         //checks that a MailerController exists
         if (!class_exists($mailer_class))
-            throw new Exception("MvcCore::_sendMailMessage -> A Mailer Controller is required.");
+            throw new Exception("MvcCore::sendMailMessage -> A Mailer Controller is required.");
 
         $mailer = new $mailer_class();
 
         //checks that a MailerController exists
         if (!method_exists($mailer, $method))
-            throw new Exception("MvcCore::_sendMailMessage -> Method $method is not defined in Mailer Controller.");
+            throw new Exception("MvcCore::sendMailMessage -> Method $method is not defined in Mailer Controller.");
 
         //call mailer class method (reflection)
         $response = $mailer->{$method}($data);
@@ -474,7 +461,7 @@ abstract class MvcCore extends Controller
 
         //save response only for non production-environment
         if (APP_ENVIRONMENT !== "production")
-            $this->logger->debug('MvcCore::_sendMailMessage -> Got response from MailerController:\n' . $response);
+            $this->logger->debug("MvcCore::sendMailMessage -> Got response from MailerController:\n".$response);
 
         return $response;
     }

@@ -160,7 +160,7 @@ class Base extends \Phalcon\Mvc\Model
      * @param boolean $json_encode - Returns a json string
      * @return mixed [array|string]
      */
-    public function filterMessages($json_encode = false)
+    public function allMessages($json_encode = false)
     {
         $data = [];
 

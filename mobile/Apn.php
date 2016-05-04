@@ -149,7 +149,7 @@ class APN
 			$body["aps"]["badge"] = $badge;
 
 		if ($badge == "clear")
-		$body["aps"]["badge"] = 0;
+			$body["aps"]["badge"] = 0;
 
 		//sound
 		if ($sound)
@@ -178,11 +178,11 @@ class APN
 
 		$this->_log("APN: sendPayloadSimple to ".$device_token);
 
-		$msg = chr(0) 									// command
-			 . pack("n",32)									// token length
-			 . pack("H*", $device_token)						// device token
-			 . pack("n",strlen($payload))					// payload length
-			 . $payload;										// payload
+		$msg = chr(0) 							// command
+			 	. pack("n",32)					// token length
+			 	. pack("H*", $device_token)		// device token
+			 	. pack("n",strlen($payload))	// payload length
+			 	. $payload;						// payload
 
 		$this->_log("APN: payload: ".$msg);
 		$this->_log("APN: payload length: ".strlen($msg));
@@ -208,11 +208,11 @@ class APN
 
 		$payload_length = strlen($payload);
 
-		$request = chr(1) 										// command
-					. pack("N", time())		 				// identifier
-					. pack("N", time() + $expiry) // expiry
-					. pack("n", 32)								// token length
-					. pack("H*", $device_token) 		// device token
+		$request = chr(1) 							// command
+					. pack("N", time())		 		// identifier
+					. pack("N", time() + $expiry) 	// expiry
+					. pack("n", 32)					// token length
+					. pack("H*", $device_token) 	// device token
 					. pack("n", $payload_length) 	// payload length
 					. $payload;
 
@@ -233,7 +233,7 @@ class APN
 	 */
 	protected function timeoutSoon($left_seconds = 5)
 	{
-		$t = ( (round(microtime(true) - $this->connection_start) >= ($this->timeout - $left_seconds)));
+		$t = ((round(microtime(true) - $this->connection_start) >= ($this->timeout - $left_seconds)));
 		return (bool)$t;
 	}
 
@@ -274,6 +274,7 @@ class APN
 	function disconnectPush()
 	{
 		$this->_log("APN: disconnectPush");
+
 		if ($this->stream && is_resource($this->stream)) {
 
 			$this->connection_start = 0;
@@ -290,6 +291,7 @@ class APN
 	function disconnectFeedback()
 	{
 		$this->_log("APN: disconnectFeedback");
+		
 		if ($this->feedback_stream && is_resource($this->feedback_stream))
 			return @fclose($this->feedback_stream);
 		else

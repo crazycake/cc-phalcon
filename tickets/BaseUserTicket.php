@@ -103,7 +103,7 @@ class BaseUserTicket extends \CrazyCake\Models\Base
      * @param boolean $as_array - Flag to return resultset as array
      * @return mixed [boolean|array]
      */
-    public static function getByIds($record_ids = array(), $as_array = false)
+    public static function getByIds($record_ids = [], $as_array = false)
     {
         if (empty($record_ids))
             return false;

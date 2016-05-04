@@ -95,7 +95,7 @@ class QRMaker
 	 * @param  arrays $params
 	 * @return void
 	 */
-	public function generate($params = array())
+	public function generate($params = [])
 	{
 		//new QrTag object
 		$qr = new QrTag();

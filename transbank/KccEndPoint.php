@@ -143,7 +143,7 @@ class KccEndPoint extends MvcCore
         //log response
         $this->logOutput("response: ".$response);
         //send response
-        $this->_sendTextResponse($response);
+        $this->textResponse($response);
     }
 
     /**
@@ -172,7 +172,7 @@ class KccEndPoint extends MvcCore
         $this->logOutput("async request: $base_url$uri");
 
         //async request
-        $this->_asyncRequest([
+        $this->asyncRequest([
             "base_url" => $base_url,
             "uri"      => $uri,
             "payload"  => $checkout->buy_order,
