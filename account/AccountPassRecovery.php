@@ -136,6 +136,7 @@ trait AccountPassRecovery
 
         //validate encrypted data
         $payload = false;
+        
         try {
             //get model classes
             $user_class   = AppModule::getClass("user");

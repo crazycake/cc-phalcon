@@ -55,19 +55,19 @@ class GetText extends Adapter implements AdapterInterface
      */
     public function __construct($options)
     {
-        if ( !is_array($options) ) {
+        if (!is_array($options)) {
             die("GetText Lib -> Invalid options: directory, file, domain, supported settings are required.");
         }
 
-        if ( !isset($options["directory"]) ) {
+        if (!isset($options["directory"])) {
             die("GetText Lib -> Option directory is required.");
         }
 
-        if ( !isset($options["domain"]) ) {
+        if (!isset($options["domain"])) {
             die("GetText Lib -> Option domain is required, fo example: web_app. (multiple domains are not supported)");
         }
 
-        if ( !is_array($options["supported"]) ) {
+        if (!is_array($options["supported"])) {
             die("GetText Lib > Option supported is required and must be an array,  for example: [en,es].");
         }
 
@@ -89,14 +89,14 @@ class GetText extends Adapter implements AdapterInterface
     public function setLanguage($new_lang = null)
     {
         //validate new language
-        if( is_null($new_lang) ) {
+        if (is_null($new_lang)) {
             $this->currentLang = substr($this->default_locale, 0, 2);
         }
         else {
-            $new_lang = trim( strtolower($new_lang) );
+            $new_lang = trim(strtolower($new_lang));
             $new_lang = substr($new_lang, 0, 2);
 
-            if( !in_array($new_lang, $this->supportedLangs) )
+            if ( !in_array($new_lang, $this->supportedLangs) )
                 $new_lang = substr($this->default_locale, 0, 2);
 
             //set new lang
@@ -187,6 +187,7 @@ class GetText extends Adapter implements AdapterInterface
             $translation = $msgid;
 
         if (is_array($placeholders)) {
+            
             foreach ($placeholders as $key => $value) {
                 $translation = str_replace("%" . $key . "%", $value, $translation);
             }

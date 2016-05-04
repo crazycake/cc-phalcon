@@ -227,7 +227,7 @@ class QrTag {
         $this->data = $data;
 
 
-        if($this->dot instanceof QrTagShape && !($this->dot instanceof QrTagEffect)) {
+        if ($this->dot instanceof QrTagShape && !($this->dot instanceof QrTagEffect)) {
             $this->dot->bgColorRGB = $this->bgColorRGB;
             $this->dotImg = $this->dot->generate();
 
@@ -235,7 +235,7 @@ class QrTag {
                 throw new Exception('Dot must generate a valid image resource.');
             }
         }
-        else if($this->dot instanceof QrTagEffect) {
+        else if ($this->dot instanceof QrTagEffect) {
             $this->dot->bgColorRGB = $this->bgColorRGB;
             $this->dot->generate();
         }
@@ -387,7 +387,7 @@ class QrTag {
 /**
  * QrTagFrameTwoSquare Class
  */
-if(!class_exists('QrTagFrameTwoSquare', FALSE)){
+if (!class_exists('QrTagFrameTwoSquare', FALSE)){
     class QrTagFrameTwoSquare extends QrTagShape {
 
         public function generate() {
@@ -414,7 +414,7 @@ if(!class_exists('QrTagFrameTwoSquare', FALSE)){
 /**
  * QrTagFrameSquare Class
  */
-if(!class_exists('QrTagFrameSquare', FALSE)){
+if (!class_exists('QrTagFrameSquare', FALSE)){
     class QrTagFrameSquare extends QrTagShape {
         public function generate() {
             $color = $this->hex2dec($this->color);
@@ -431,7 +431,7 @@ if(!class_exists('QrTagFrameSquare', FALSE)){
 /**
  * QrTagFrameGrid Class
  */
-if(!class_exists('QrTagFrameGrid', FALSE)){
+if (!class_exists('QrTagFrameGrid', FALSE)){
     class QrTagFrameGrid extends QrTagShape {
 
         public function generate() {
@@ -456,7 +456,7 @@ if(!class_exists('QrTagFrameGrid', FALSE)){
 /**
  * QrTagFrameDotSquare Class
  */
-if(!class_exists('QrTagFrameDotSquare', FALSE)){
+if (!class_exists('QrTagFrameDotSquare', FALSE)){
     class QrTagFrameDotSquare extends QrTagShape {
 
         public function generate() {
@@ -474,7 +474,7 @@ if(!class_exists('QrTagFrameDotSquare', FALSE)){
 /**
  * QrTagFrameDot9 Class
  */
-if(!class_exists('QrTagFrameDot9', FALSE)){
+if (!class_exists('QrTagFrameDot9', FALSE)){
     class QrTagFrameDot9 extends QrTagShape {
 
         public function generate() {
@@ -501,7 +501,7 @@ if(!class_exists('QrTagFrameDot9', FALSE)){
 /**
  * QrTagFrameDot7 Class
  */
-if(!class_exists('QrTagFrameDot7', FALSE)){
+if (!class_exists('QrTagFrameDot7', FALSE)){
     class QrTagFrameDot7 extends QrTagShape {
 
         public function generate() {
@@ -529,7 +529,7 @@ if(!class_exists('QrTagFrameDot7', FALSE)){
 /**
  * QrTagFrameDot3 Class
  */
-if(!class_exists('QrTagFrameDot3', FALSE)){
+if (!class_exists('QrTagFrameDot3', FALSE)){
     class QrTagFrameDot3 extends QrTagShape {
 
         public function generate() {
@@ -557,7 +557,7 @@ if(!class_exists('QrTagFrameDot3', FALSE)){
 /**
  * QrTagFrameDot18 Class
  */
-if(!class_exists('QrTagFrameDot18', FALSE)){
+if (!class_exists('QrTagFrameDot18', FALSE)){
     class QrTagFrameDot18 extends QrTagShape {
 
         public function generate() {
@@ -585,7 +585,7 @@ if(!class_exists('QrTagFrameDot18', FALSE)){
 /**
  * QrTagFrameDot16 Class
  */
-if(!class_exists('QrTagFrameDot16', FALSE)){
+if (!class_exists('QrTagFrameDot16', FALSE)){
     class QrTagFrameDot16 extends QrTagShape {
 
         public function generate() {
@@ -613,7 +613,7 @@ if(!class_exists('QrTagFrameDot16', FALSE)){
 /**
  * QrTagFrameDot15 Class
  */
-if(!class_exists('QrTagFrameDot15', FALSE)){
+if (!class_exists('QrTagFrameDot15', FALSE)){
     class QrTagFrameDot15 extends QrTagShape {
 
         public function generate() {
@@ -641,7 +641,7 @@ if(!class_exists('QrTagFrameDot15', FALSE)){
 /**
  * QrTagFrameDot14 Class
  */
-if(!class_exists('QrTagFrameDot14', FALSE)){
+if (!class_exists('QrTagFrameDot14', FALSE)){
     class QrTagFrameDot14 extends QrTagShape {
 
         public function generate() {
@@ -669,7 +669,7 @@ if(!class_exists('QrTagFrameDot14', FALSE)){
 /**
  * QrTagFrameDot12 Class
  */
-if(!class_exists('QrTagFrameDot12', FALSE)){
+if (!class_exists('QrTagFrameDot12', FALSE)){
     class QrTagFrameDot12 extends QrTagShape {
 
         public function generate() {
@@ -697,7 +697,7 @@ if(!class_exists('QrTagFrameDot12', FALSE)){
 /**
  * QrTagFrameDot11 Class
  */
-if(!class_exists('QrTagFrameDot11', FALSE)){
+if (!class_exists('QrTagFrameDot11', FALSE)){
     class QrTagFrameDot11 extends QrTagShape {
 
         public function generate() {
@@ -725,7 +725,7 @@ if(!class_exists('QrTagFrameDot11', FALSE)){
 /**
  * QrTagFrameAngle Class
  */
-if(!class_exists('QrTagFrameAngle', FALSE)){
+if (!class_exists('QrTagFrameAngle', FALSE)){
     class QrTagFrameAngle extends QrTagShape {
 
         public function generate() {
@@ -751,7 +751,7 @@ if(!class_exists('QrTagFrameAngle', FALSE)){
 /**
  * QrTagFrame9 Class
  */
-if(!class_exists('QrTagFrame9', FALSE)){
+if (!class_exists('QrTagFrame9', FALSE)){
     class QrTagFrame9 extends QrTagShape {
 
         public function generate() {
@@ -777,7 +777,7 @@ if(!class_exists('QrTagFrame9', FALSE)){
 /**
  * QrTagFrame7 Class
  */
-if(!class_exists('QrTagFrame7', FALSE)){
+if (!class_exists('QrTagFrame7', FALSE)){
     class QrTagFrame7 extends QrTagShape {
 
         public function generate() {
@@ -803,7 +803,7 @@ if(!class_exists('QrTagFrame7', FALSE)){
 /**
  * QrTagFrame6 Class
  */
-if(!class_exists('QrTagFrame6', FALSE)){
+if (!class_exists('QrTagFrame6', FALSE)){
     class QrTagFrame6 extends QrTagShape {
 
         public function generate() {
@@ -829,7 +829,7 @@ if(!class_exists('QrTagFrame6', FALSE)){
 /**
  * QrTagFrame5 Class
  */
-if(!class_exists('QrTagFrame5', FALSE)){
+if (!class_exists('QrTagFrame5', FALSE)){
     class QrTagFrame5 extends QrTagShape {
 
         public function generate() {
@@ -855,7 +855,7 @@ if(!class_exists('QrTagFrame5', FALSE)){
 /**
  * QrTagFrame3 Class
  */
-if(!class_exists('QrTagFrame3', FALSE)){
+if (!class_exists('QrTagFrame3', FALSE)){
     class QrTagFrame3 extends QrTagShape {
 
         public function generate() {
@@ -881,7 +881,7 @@ if(!class_exists('QrTagFrame3', FALSE)){
 /**
  * QrTagFrame2 Class
  */
-if(!class_exists('QrTagFrame2', FALSE)){
+if (!class_exists('QrTagFrame2', FALSE)){
     class QrTagFrame2 extends QrTagShape {
 
         public function generate() {
@@ -907,7 +907,7 @@ if(!class_exists('QrTagFrame2', FALSE)){
 /**
  * QrTagFrame16 Class
  */
-if(!class_exists('QrTagFrame16', FALSE)){
+if (!class_exists('QrTagFrame16', FALSE)){
     class QrTagFrame16 extends QrTagShape {
 
         public function generate() {
@@ -933,7 +933,7 @@ if(!class_exists('QrTagFrame16', FALSE)){
 /**
  * QrTagFrame13 Class
  */
-if(!class_exists('QrTagFrame13', FALSE)){
+if (!class_exists('QrTagFrame13', FALSE)){
     class QrTagFrame13 extends QrTagShape {
 
         public function generate() {
@@ -959,7 +959,7 @@ if(!class_exists('QrTagFrame13', FALSE)){
 /**
  * QrTagFrame12 Class
  */
-if(!class_exists('QrTagFrame12', FALSE)){
+if (!class_exists('QrTagFrame12', FALSE)){
     class QrTagFrame12 extends QrTagShape {
 
         public function generate() {
@@ -985,7 +985,7 @@ if(!class_exists('QrTagFrame12', FALSE)){
 /**
  * QrTagDotSquare Class
  */
-if(!class_exists('QrTagDotSquare', FALSE)){
+if (!class_exists('QrTagDotSquare', FALSE)){
     class QrTagDotSquare extends QrTagShape {
 
         public function generate() {
@@ -1003,7 +1003,7 @@ if(!class_exists('QrTagDotSquare', FALSE)){
 /**
  * QrTagDotButterfly Class
  */
-if(!class_exists('QrTagDotButterfly', FALSE)){
+if (!class_exists('QrTagDotButterfly', FALSE)){
     class QrTagDotButterfly extends QrTagShape {
 
         public function generate() {
@@ -1031,7 +1031,7 @@ if(!class_exists('QrTagDotButterfly', FALSE)){
 /**
  * QrTagDot9 Class
  */
-if(!class_exists('QrTagDot9', FALSE)){
+if (!class_exists('QrTagDot9', FALSE)){
     class QrTagDot9 extends QrTagShape {
 
         public function generate() {
@@ -1058,7 +1058,7 @@ if(!class_exists('QrTagDot9', FALSE)){
 /**
  * QrTagDot8 Class
  */
-if(!class_exists('QrTagDot8', FALSE)){
+if (!class_exists('QrTagDot8', FALSE)){
     class QrTagDot8 extends QrTagShape {
 
         public function generate() {
@@ -1085,7 +1085,7 @@ if(!class_exists('QrTagDot8', FALSE)){
 /**
  * QrTagDot7 Class
  */
-if(!class_exists('QrTagDot7', FALSE)){
+if (!class_exists('QrTagDot7', FALSE)){
     class QrTagDot7 extends QrTagShape {
 
         public function generate() {
@@ -1113,7 +1113,7 @@ if(!class_exists('QrTagDot7', FALSE)){
 /**
  * QrTagDot6 Class
  */
-if(!class_exists('QrTagDot6', FALSE)){
+if (!class_exists('QrTagDot6', FALSE)){
     class QrTagDot6 extends QrTagShape {
 
         public function generate() {
@@ -1140,7 +1140,7 @@ if(!class_exists('QrTagDot6', FALSE)){
 /**
  * QrTagDot5 Class
  */
-if(!class_exists('QrTagDot5', FALSE)){
+if (!class_exists('QrTagDot5', FALSE)){
     class QrTagDot5 extends QrTagShape {
 
         public function generate() {
@@ -1167,7 +1167,7 @@ if(!class_exists('QrTagDot5', FALSE)){
 /**
  * QrTagDot4 Class
  */
-if(!class_exists('QrTagDot4', FALSE)){
+if (!class_exists('QrTagDot4', FALSE)){
     class QrTagDot4 extends QrTagShape {
 
         public function generate() {
@@ -1194,7 +1194,7 @@ if(!class_exists('QrTagDot4', FALSE)){
 /**
  * QrTagDot3 Class
  */
-if(!class_exists('QrTagDot3', FALSE)){
+if (!class_exists('QrTagDot3', FALSE)){
     class QrTagDot3 extends QrTagShape {
 
         public function generate() {
@@ -1221,7 +1221,7 @@ if(!class_exists('QrTagDot3', FALSE)){
 /**
  * QrTagDot23 Class
  */
-if(!class_exists('QrTagDot23', FALSE)){
+if (!class_exists('QrTagDot23', FALSE)){
     class QrTagDot23 extends QrTagEffect {
 
         public function generate() {
@@ -1356,7 +1356,7 @@ if(!class_exists('QrTagDot23', FALSE)){
 /**
  * QrTagDot21 Class
  */
-if(!class_exists('QrTagDot21', FALSE)){
+if (!class_exists('QrTagDot21', FALSE)){
     class QrTagDot21 extends QrTagEffect {
 
         public function generate() {
@@ -1495,7 +1495,7 @@ if(!class_exists('QrTagDot21', FALSE)){
 /**
  * QrTagDot20 Class
  */
-if(!class_exists('QrTagDot20', FALSE)){
+if (!class_exists('QrTagDot20', FALSE)){
     class QrTagDot20 extends QrTagEffect {
 
         public function generate() {
@@ -1635,7 +1635,7 @@ if(!class_exists('QrTagDot20', FALSE)){
 /**
  * QrTagDot2 Class
  */
-if(!class_exists('QrTagDot2', FALSE)){
+if (!class_exists('QrTagDot2', FALSE)){
     class QrTagDot2 extends QrTagShape {
 
         public function generate() {
@@ -1662,7 +1662,7 @@ if(!class_exists('QrTagDot2', FALSE)){
 /**
  * QrTagDot17 Class
  */
-if(!class_exists('QrTagDot17', FALSE)){
+if (!class_exists('QrTagDot17', FALSE)){
     class QrTagDot17 extends QrTagEffect {
 
         public function generate() {
@@ -1799,7 +1799,7 @@ if(!class_exists('QrTagDot17', FALSE)){
 /**
  * QrTagDot14 Class
  */
-if(!class_exists('QrTagDot14', FALSE)){
+if (!class_exists('QrTagDot14', FALSE)){
     class QrTagDot14 extends QrTagEffect {
 
         public function generate() {
@@ -1886,7 +1886,7 @@ if(!class_exists('QrTagDot14', FALSE)){
 /**
  * QrTagDot12 Class
  */
-if(!class_exists('QrTagDot12', FALSE)){
+if (!class_exists('QrTagDot12', FALSE)){
     class QrTagDot12 extends QrTagEffect {
 
         public function generate() {
@@ -2023,7 +2023,7 @@ if(!class_exists('QrTagDot12', FALSE)){
 /**
  * QrTagDot11 Class
  */
-if(!class_exists('QrTagDot11', FALSE)){
+if (!class_exists('QrTagDot11', FALSE)){
     class QrTagDot11 extends QrTagShape {
 
         public function generate() {
@@ -2050,7 +2050,7 @@ if(!class_exists('QrTagDot11', FALSE)){
 /**
  * QrTagDot10 Class
  */
-if(!class_exists('QrTagDot10', FALSE)){
+if (!class_exists('QrTagDot10', FALSE)){
     class QrTagDot10 extends QrTagShape {
 
         public function generate() {
@@ -2077,7 +2077,7 @@ if(!class_exists('QrTagDot10', FALSE)){
 /**
  * QrTagDot1 Class
  */
-if(!class_exists('QrTagDot1', FALSE)){
+if (!class_exists('QrTagDot1', FALSE)){
     class QrTagDot1 extends QrTagShape {
 
         public function generate() {

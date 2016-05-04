@@ -61,10 +61,10 @@ class APN
 	 * Connects to the APNS server with a certificate and a passphrase
 	 * @param array $config - The configuration data
 	 */
-	protected function __construct($config = array())
+	protected function __construct($config = [])
 	{
 		//check if file exists
-		if(!file_exists($config["prodPemFile"]))
+		if (!file_exists($config["prodPemFile"]))
 			$this->_log("APN Lib -> Failed to connect: APN production PEM file not found");
 
 		//set configs
@@ -156,7 +156,7 @@ class APN
 			$body["aps"]["sound"] = $sound;
 
 		//newstand content-available
-		if($newstand)
+		if ($newstand)
 			$body["aps"]["content-available"] = 1;
 
 	   $payload = json_encode($body);
@@ -315,7 +315,7 @@ class APN
 	{
 		if ($this->reconnect) {
 
-			if($this->timeoutSoon())
+			if ($this->timeoutSoon())
 				return $this->reconnectPush();
 		}
 
@@ -442,7 +442,7 @@ class APN
 
 	        $data = fread($this->feedback_stream, 38);
 
-	        if(strlen($data)) {
+	        if (strlen($data)) {
 	        	//echo $data;
 	            $feedback_tokens[] = unpack("N1timestamp/n1length/H*devtoken", $data);
 	        }
@@ -488,7 +488,7 @@ class APN
 		$di = DI::getDefault();
 		$log = $di->getShared("logger");
 
-		if($log)
+		if ($log)
 			$log->{$type}("Apn Lib -> ".$text);
 	}
 }

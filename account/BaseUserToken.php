@@ -186,7 +186,7 @@ class BaseUserToken extends \CrazyCake\Models\Base
             throw new Exception("temporal token dont exists.");
 
         //special case for activation (don"t expires)
-        if($token_type == "activation") {
+        if ($token_type == "activation") {
             //success
             return $data;
         }
@@ -223,7 +223,7 @@ class BaseUserToken extends \CrazyCake\Models\Base
 
             $count = 0;
 
-            if($objects) {
+            if ($objects) {
                 //set count
                 $count = $objects->count();
                 //delete action
@@ -233,7 +233,7 @@ class BaseUserToken extends \CrazyCake\Models\Base
             //delete expired objects
             return $count;
         }
-        catch(Exception $e) {
+        catch (Exception $e) {
             //throw new Exception("BaseUserToken::deleteExpiredTokens -> error: ".$e->getMessage());
             return 0;
         }

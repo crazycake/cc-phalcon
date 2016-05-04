@@ -62,12 +62,12 @@ class QRMaker
 		define("QR_LOG_DIR", $log_path);
 
 		//create cache dir if not exists
-		if(!is_dir(QR_CACHE_DIR))
+		if (!is_dir(QR_CACHE_DIR))
 			mkdir(QR_CACHE_DIR, 0775);
 
 		//Check if library is running from a Phar file, if does, assets must be copied to cache folder.
 		//For reading assets from a phar directly, see: http://php.net/manual/en/phar.webphar.php
-		if(\Phar::running()) {
+		if (\Phar::running()) {
 			define("QR_ASSETS_PATH", App::extractAssetsFromPhar("qr/assets/", $cache_path));
 		}
 		else {
@@ -105,7 +105,7 @@ class QRMaker
 		$qr->file 	 = isset($params["savename"]) ? $params["savename"] : die("QR Library -> (generate) must set param savename");
 
 		//shape dot object
-		if( isset($params["dot_shape_class"]) && $this->_class_exists($params["dot_shape_class"]) ) {
+		if (isset($params["dot_shape_class"]) && $this->_class_exists($params["dot_shape_class"])) {
 
 			$class     = self::QR_LIB_NAMESPACE.$params["dot_shape_class"];
 			$dot_shape = new $class();
@@ -122,7 +122,7 @@ class QRMaker
 		$qr->setDot($dot_shape);
 
 		//frame dot object
-		if( isset($params["dot_frame_class"]) && $this->_class_exists($params["dot_frame_class"]) ) {
+		if (isset($params["dot_frame_class"]) && $this->_class_exists($params["dot_frame_class"])) {
 
 			$class     = self::QR_LIB_NAMESPACE.$params["dot_frame_class"];
 			$dot_frame = new $class();
@@ -137,7 +137,7 @@ class QRMaker
 		$qr->frameDot     = $dot_frame;
 
 		//main frame object
-		if( isset($params["frame_class"]) && $this->_class_exists($params["frame_class"]) ) {
+		if (isset($params["frame_class"]) && $this->_class_exists($params["frame_class"])) {
 
 			$class = self::QR_LIB_NAMESPACE.$params["frame_class"];
 			$frame = new $class();
@@ -155,7 +155,7 @@ class QRMaker
 		$qr->generate();
 
 		//embed image?
-		if( isset($params["embed_logo"]) )
+		if ( isset($params["embed_logo"]) )
 			$this->_embedLogo($params["savename"], $params["embed_logo"]);
 
 		return;
@@ -177,7 +177,7 @@ class QRMaker
 		$extension = strtolower(pathinfo($embed_img_path, PATHINFO_EXTENSION));
 
 		//embed image type
-		switch($extension) {
+		switch ($extension) {
 			case "png":
 				$embed_img = imagecreatefrompng($embed_img_path);
 				break;
@@ -185,7 +185,7 @@ class QRMaker
 				$embed_img = imagecreatefromjpeg($embed_img_path);
 				break;
 			case "gif":
-				$embed_img = imagecreatefromgif($embed_img_path);
+				$embed_img = imagecreatefromgif ($embed_img_path);
 				break;
 		}
 

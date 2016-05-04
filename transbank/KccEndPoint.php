@@ -47,7 +47,7 @@ class KccEndPoint extends MvcCore
     public function handleResponse()
     {
         //make sure post params are const
-        if(!isset($_POST["TBK_RESPUESTA"]) || !isset($_POST["TBK_ID_SESION"]) || !isset($_POST["TBK_ORDEN_COMPRA"]))
+        if (!isset($_POST["TBK_RESPUESTA"]) || !isset($_POST["TBK_ID_SESION"]) || !isset($_POST["TBK_ORDEN_COMPRA"]))
             $this->setOutput(false, "post data invalida: ".isset($_POST) ? json_encode($_POST) : "null");
 
         //get TBK post data
@@ -75,7 +75,7 @@ class KccEndPoint extends MvcCore
         if ($TBK_RESPUESTA >= -8 && $TBK_RESPUESTA <= -1)
             $this->setOutput(true);
 
-        if($TBK_RESPUESTA != 0)
+        if ($TBK_RESPUESTA != 0)
             $this->setOutput(false, "TBK_RESPUESTA es distinto de 0");
 
         //execs MAC cgi
@@ -93,16 +93,16 @@ class KccEndPoint extends MvcCore
         $checkout = $user_checkout_class::findFirstByBuyOrder($TBK_ORDEN_COMPRA);
 
         //2) buyOrder validation
-        if(!$checkout || $TBK_ORDEN_COMPRA != $checkout->buy_order)
+        if (!$checkout || $TBK_ORDEN_COMPRA != $checkout->buy_order)
             $this->setOutput(false, "Orden de compra es nulo o distinto de TBK_ORDEN_COMPRA ($TBK_ORDEN_COMPRA).");
 
         $amount_formatted = ((int)$checkout->amount)."00";
         //3) amount validation (kcc format is appended)
-        if($TBK_MONTO != $amount_formatted)
+        if ($TBK_MONTO != $amount_formatted)
             $this->setOutput(false, "El monto es distinto de TBK_MONTO ($TBK_MONTO != $amount_formatted).");
 
         //4) checks MAC CGI response
-        if(empty($output_cgi) || $output_cgi[0] != "CORRECTO")
+        if (empty($output_cgi) || $output_cgi[0] != "CORRECTO")
             $this->setOutput(false, "CGI MAC entegó un output distinto a CORRECTO -> ".$output_cgi[0]);
 
         //5) OK, all validations passed process succesful Checkout
@@ -135,7 +135,7 @@ class KccEndPoint extends MvcCore
     protected function setOutput($success = true, $log = "")
     {
         //logs rejected reason?
-        if(!empty($log))
+        if (!empty($log))
             $this->logOutput($log);
 
         //outputs response

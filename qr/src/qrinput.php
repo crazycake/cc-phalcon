@@ -45,7 +45,7 @@ class QRinputItem {
             $setData = array_merge($setData, array_fill(0,$size-count($setData),0));
         }
 
-        if(!QRinput::check($mode, $size, $setData)) {
+        if (!QRinput::check($mode, $size, $setData)) {
             throw new Exception('Error m:'.$mode.',s:'.$size.',d:'.join(',',$setData));
             return null;
         }
@@ -68,17 +68,17 @@ class QRinputItem {
             $bs->appendNum(4, $val);
             $bs->appendNum(QRspec::lengthIndicator(QR_MODE_NUM, $version), $this->size);
 
-            for($i=0; $i<$words; $i++) {
+            for ($i=0; $i<$words; $i++) {
                 $val  = (ord($this->data[$i*3  ]) - ord('0')) * 100;
                 $val += (ord($this->data[$i*3+1]) - ord('0')) * 10;
                 $val += (ord($this->data[$i*3+2]) - ord('0'));
                 $bs->appendNum(10, $val);
             }
 
-            if($this->size - $words * 3 == 1) {
+            if ($this->size - $words * 3 == 1) {
                 $val = ord($this->data[$words*3]) - ord('0');
                 $bs->appendNum(4, $val);
-            } else if($this->size - $words * 3 == 2) {
+            } else if ($this->size - $words * 3 == 2) {
                 $val  = (ord($this->data[$words*3  ]) - ord('0')) * 10;
                 $val += (ord($this->data[$words*3+1]) - ord('0'));
                 $bs->appendNum(7, $val);
@@ -102,14 +102,14 @@ class QRinputItem {
             $bs->appendNum(4, 0x02);
             $bs->appendNum(QRspec::lengthIndicator(QR_MODE_AN, $version), $this->size);
 
-            for($i=0; $i<$words; $i++) {
+            for ($i=0; $i<$words; $i++) {
                 $val  = (int)QRinput::lookAnTable(ord($this->data[$i*2  ])) * 45;
                 $val += (int)QRinput::lookAnTable(ord($this->data[$i*2+1]));
 
                 $bs->appendNum(11, $val);
             }
 
-            if($this->size & 1) {
+            if ($this->size & 1) {
                 $val = QRinput::lookAnTable(ord($this->data[$words * 2]));
                 $bs->appendNum(6, $val);
             }
@@ -131,7 +131,7 @@ class QRinputItem {
             $bs->appendNum(4, 0x4);
             $bs->appendNum(QRspec::lengthIndicator(QR_MODE_8, $version), $this->size);
 
-            for($i=0; $i<$this->size; $i++) {
+            for ($i=0; $i<$this->size; $i++) {
                 $bs->appendNum(8, ord($this->data[$i]));
             }
 
@@ -153,9 +153,9 @@ class QRinputItem {
             $bs->appendNum(4, 0x8);
             $bs->appendNum(QRspec::lengthIndicator(QR_MODE_KANJI, $version), (int)($this->size / 2));
 
-            for($i=0; $i<$this->size; $i+=2) {
+            for ($i=0; $i<$this->size; $i+=2) {
                 $val = (ord($this->data[$i]) << 8) | ord($this->data[$i+1]);
-                if($val <= 0x9ffc) {
+                if ($val <= 0x9ffc) {
                     $val -= 0x8140;
                 } else {
                     $val -= 0xc140;
@@ -199,10 +199,10 @@ class QRinputItem {
     {
         $bits = 0;
 
-        if($version == 0)
+        if ($version == 0)
             $version = 1;
 
-        switch($this->mode) {
+        switch ($this->mode) {
             case QR_MODE_NUM:        $bits = QRinput::estimateBitsModeNum($this->size);    break;
             case QR_MODE_AN:        $bits = QRinput::estimateBitsModeAn($this->size);    break;
             case QR_MODE_8:            $bits = QRinput::estimateBitsMode8($this->size);    break;
@@ -229,7 +229,7 @@ class QRinputItem {
             unset($this->bstream);
             $words = QRspec::maximumWords($this->mode, $version);
 
-            if($this->size > $words) {
+            if ($this->size > $words) {
 
                 $st1 = new QRinputItem($this->mode, $words, $this->data);
                 $st2 = new QRinputItem($this->mode, $this->size - $words, array_slice($this->data, $words));
@@ -248,7 +248,7 @@ class QRinputItem {
 
                 $ret = 0;
 
-                switch($this->mode) {
+                switch ($this->mode) {
                     case QR_MODE_NUM:        $ret = $this->encodeModeNum($version);    break;
                     case QR_MODE_AN:        $ret = $this->encodeModeAn($version);    break;
                     case QR_MODE_8:            $ret = $this->encodeMode8($version);    break;
@@ -259,7 +259,7 @@ class QRinputItem {
                         break;
                 }
 
-                if($ret < 0)
+                if ($ret < 0)
                     return -1;
             }
 
@@ -301,7 +301,7 @@ class QRinput {
     //----------------------------------------------------------------------
     public function setVersion($version)
     {
-        if($version < 0 || $version > QRSPEC_VERSION_MAX) {
+        if ($version < 0 || $version > QRSPEC_VERSION_MAX) {
             throw new Exception('Invalid version no');
             return -1;
         }
@@ -320,7 +320,7 @@ class QRinput {
     //----------------------------------------------------------------------
     public function setErrorCorrectionLevel($level)
     {
-        if($level > QR_ECLEVEL_H) {
+        if ($level > QR_ECLEVEL_H) {
             throw new Exception('Invalid ECLEVEL');
             return -1;
         }
@@ -352,11 +352,11 @@ class QRinput {
 
     public function insertStructuredAppendHeader($size, $index, $parity)
     {
-        if( $size > MAX_STRUCTURED_SYMBOLS ) {
+        if ( $size > MAX_STRUCTURED_SYMBOLS ) {
             throw new Exception('insertStructuredAppendHeader wrong size');
         }
 
-        if( $index <= 0 || $index > MAX_STRUCTURED_SYMBOLS ) {
+        if ( $index <= 0 || $index > MAX_STRUCTURED_SYMBOLS ) {
             throw new Exception('insertStructuredAppendHeader wrong index');
         }
 
@@ -376,9 +376,9 @@ class QRinput {
     {
         $parity = 0;
 
-        foreach($this->items as $item) {
-            if($item->mode != QR_MODE_STRUCTURE) {
-                for($i=$item->size-1; $i>=0; $i--) {
+        foreach ($this->items as $item) {
+            if ($item->mode != QR_MODE_STRUCTURE) {
+                for ($i=$item->size-1; $i>=0; $i--) {
                     $parity ^= $item->data[$i];
                 }
             }
@@ -390,8 +390,8 @@ class QRinput {
     //----------------------------------------------------------------------
     public static function checkModeNum($size, $data)
     {
-        for($i=0; $i<$size; $i++) {
-            if((ord($data[$i]) < ord('0')) || (ord($data[$i]) > ord('9'))){
+        for ($i=0; $i<$size; $i++) {
+            if ((ord($data[$i]) < ord('0')) || (ord($data[$i]) > ord('9'))){
                 return false;
             }
         }
@@ -405,7 +405,7 @@ class QRinput {
         $w = (int)$size / 3;
         $bits = $w * 10;
 
-        switch($size - $w * 3) {
+        switch ($size - $w * 3) {
             case 1:
                 $bits += 4;
                 break;
@@ -440,7 +440,7 @@ class QRinput {
     //----------------------------------------------------------------------
     public static function checkModeAn($size, $data)
     {
-        for($i=0; $i<$size; $i++) {
+        for ($i=0; $i<$size; $i++) {
             if (self::lookAnTable(ord($data[$i])) == -1) {
                 return false;
             }
@@ -455,7 +455,7 @@ class QRinput {
         $w = (int)($size / 2);
         $bits = $w * 11;
 
-        if($size & 1) {
+        if ($size & 1) {
             $bits += 6;
         }
 
@@ -477,12 +477,12 @@ class QRinput {
     //----------------------------------------------------------------------
     public static function checkModeKanji($size, $data)
     {
-        if($size & 1)
+        if ($size & 1)
             return false;
 
-        for($i=0; $i<$size; $i+=2) {
+        for ($i=0; $i<$size; $i+=2) {
             $val = (ord($data[$i]) << 8) | ord($data[$i+1]);
-            if( $val < 0x8140
+            if ( $val < 0x8140
             || ($val > 0x9ffc && $val < 0xe040)
             || $val > 0xebbf) {
                 return false;
@@ -498,10 +498,10 @@ class QRinput {
 
     public static function check($mode, $size, $data)
     {
-        if($size <= 0)
+        if ($size <= 0)
             return false;
 
-        switch($mode) {
+        switch ($mode) {
             case QR_MODE_NUM:       return self::checkModeNum($size, $data);   break;
             case QR_MODE_AN:        return self::checkModeAn($size, $data);    break;
             case QR_MODE_KANJI:     return self::checkModeKanji($size, $data); break;
@@ -521,7 +521,7 @@ class QRinput {
     {
         $bits = 0;
 
-        foreach($this->items as $item) {
+        foreach ($this->items as $item) {
             $bits += $item->estimateBitStreamSizeOfEntry($version);
         }
 
@@ -549,14 +549,14 @@ class QRinput {
     public static function lengthOfCode($mode, $version, $bits)
     {
         $payload = $bits - 4 - QRspec::lengthIndicator($mode, $version);
-        switch($mode) {
+        switch ($mode) {
             case QR_MODE_NUM:
                 $chunks = (int)($payload / 10);
                 $remain = $payload - $chunks * 10;
                 $size = $chunks * 3;
-                if($remain >= 7) {
+                if ($remain >= 7) {
                     $size += 2;
-                } else if($remain >= 4) {
+                } else if ($remain >= 4) {
                     $size += 1;
                 }
                 break;
@@ -564,7 +564,7 @@ class QRinput {
                 $chunks = (int)($payload / 11);
                 $remain = $payload - $chunks * 11;
                 $size = $chunks * 2;
-                if($remain >= 6)
+                if ($remain >= 6)
                     $size++;
                 break;
             case QR_MODE_8:
@@ -582,8 +582,8 @@ class QRinput {
         }
 
         $maxsize = QRspec::maximumWords($mode, $version);
-        if($size < 0) $size = 0;
-        if($size > $maxsize) $size = $maxsize;
+        if ($size < 0) $size = 0;
+        if ($size > $maxsize) $size = $maxsize;
 
         return $size;
     }
@@ -593,10 +593,10 @@ class QRinput {
     {
         $total = 0;
 
-        foreach($this->items as $item) {
+        foreach ($this->items as $item) {
             $bits = $item->encodeBitStream($this->version);
 
-            if($bits < 0)
+            if ($bits < 0)
                 return -1;
 
             $total += $bits;
@@ -609,21 +609,21 @@ class QRinput {
     public function convertData()
     {
         $ver = $this->estimateVersion();
-        if($ver > $this->getVersion()) {
+        if ($ver > $this->getVersion()) {
             $this->setVersion($ver);
         }
 
-        for(;;) {
+        for (;;) {
             $bits = $this->createBitStream();
 
-            if($bits < 0)
+            if ($bits < 0)
                 return -1;
 
             $ver = QRspec::getMinimumVersion((int)(($bits + 7) / 8), $this->level);
-            if($ver < 0) {
+            if ($ver < 0) {
                 throw new Exception('WRONG VERSION');
                 return -1;
-            } else if($ver > $this->getVersion()) {
+            } else if ($ver > $this->getVersion()) {
                 $this->setVersion($ver);
             } else {
                 break;
@@ -654,21 +654,21 @@ class QRinput {
         $padding = new QRbitstream();
         $ret = $padding->appendNum($words * 8 - $bits + 4, 0);
 
-        if($ret < 0)
+        if ($ret < 0)
             return $ret;
 
         $padlen = $maxwords - $words;
 
-        if($padlen > 0) {
+        if ($padlen > 0) {
 
             $padbuf = array();
-            for($i=0; $i<$padlen; $i++) {
+            for ($i=0; $i<$padlen; $i++) {
                 $padbuf[$i] = ($i&1)?0x11:0xec;
             }
 
             $ret = $padding->appendBytes($padlen, $padbuf);
 
-            if($ret < 0)
+            if ($ret < 0)
                 return $ret;
 
         }
@@ -681,15 +681,15 @@ class QRinput {
     //----------------------------------------------------------------------
     public function mergeBitStream()
     {
-        if($this->convertData() < 0) {
+        if ($this->convertData() < 0) {
             return null;
         }
 
         $bstream = new QRbitstream();
 
-        foreach($this->items as $item) {
+        foreach ($this->items as $item) {
             $ret = $bstream->append($item->bstream);
-            if($ret < 0) {
+            if ($ret < 0) {
                 return null;
             }
         }
@@ -703,12 +703,12 @@ class QRinput {
 
         $bstream = $this->mergeBitStream();
 
-        if($bstream == null) {
+        if ($bstream == null) {
             return null;
         }
 
         $ret = $this->appendPaddingBit($bstream);
-        if($ret < 0) {
+        if ($ret < 0) {
             return null;
         }
 
@@ -719,7 +719,7 @@ class QRinput {
     public function getByteStream()
     {
         $bstream = $this->getBitStream();
-        if($bstream == null) {
+        if ($bstream == null) {
             return null;
         }
 

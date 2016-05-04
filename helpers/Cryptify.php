@@ -65,7 +65,7 @@ class Cryptify
      */
     public function encryptData($data = null)
     {
-        if(empty($data) && $data != 0)
+        if (empty($data) && $data != 0)
             return false;
 
         //encode arrays as json
@@ -89,7 +89,7 @@ class Cryptify
     public function decryptData($hash = "", $parse = false)
     {
         try {
-            if(empty($hash) || !is_string($hash))
+            if (empty($hash) || !is_string($hash))
                 return false;
 
             //decrypt string
@@ -97,7 +97,7 @@ class Cryptify
             //remove null bytes in string
             $data = str_replace(chr(0), "", $decrypted_string);
 
-            if($parse) {
+            if ($parse) {
                 $data = is_string($parse) ? explode($parse, $data) : json_decode($data);
             }
 
@@ -108,7 +108,7 @@ class Cryptify
             //get DI instance (static)
             $di = \Phalcon\DI::getDefault();
 
-            if($di->getShared("logger")) {
+            if ($di->getShared("logger")) {
                 $logger = $di->getShared("logger");
                 $logger->error("Cryptify -> Failed decryptData: ".$hash.". Err: ".$e->getMessage());
             }
@@ -124,7 +124,7 @@ class Cryptify
      */
     public function encryptHashId($id)
     {
-        if(empty($id) && $id != 0)
+        if (empty($id) && $id != 0)
             return false;
 
         return $this->hashids->encode($id);
@@ -137,7 +137,7 @@ class Cryptify
      */
     public function decryptHashId($hash)
     {
-        if(empty($hash))
+        if (empty($hash))
             return false;
 
         $data = $this->hashids->decode($hash);
@@ -154,7 +154,7 @@ class Cryptify
     {
         $code = "";
 
-        for($k = 0; $k < $length; $k++) {
+        for ($k = 0; $k < $length; $k++) {
 
             $num  = chr(rand(48,57));
             $char = strtoupper(chr(rand(97,122)));

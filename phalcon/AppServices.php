@@ -37,7 +37,7 @@ class AppServices
      */
     public function __construct($loaderObj = null)
     {
-        if(is_null($loaderObj))
+        if (is_null($loaderObj))
             throw new Exception("AppServices::__construct -> loader object is required.");
 
         //set class vars
@@ -51,9 +51,9 @@ class AppServices
      */
     public function getDI()
     {
-        if(MODULE_NAME == "api")
+        if (MODULE_NAME == "api")
             return $this->_getMicroDI();
-        else if(MODULE_NAME == "cli")
+        else if (MODULE_NAME == "cli")
             return $this->_getCliDI();
 
         //frontend or backend
@@ -126,7 +126,7 @@ class AppServices
             $static_url = isset($this->props["staticUrl"]) ? $this->props["staticUrl"] : false;
 
             //set static uri for assets, cdn only for staging or production
-            if(!$static_url || in_array(APP_ENVIRONMENT, ["local", "testing"]))
+            if (!$static_url || in_array(APP_ENVIRONMENT, ["local", "testing"]))
                 $static_url = APP_BASE_URL;
 
             $url->setStaticBaseUri($static_url);
@@ -159,7 +159,7 @@ class AppServices
         });
 
         //Extended encryption, Cryptify adapter (cryptography helper)
-        if(class_exists("\CrazyCake\Helpers\Cryptify")) {
+        if (class_exists("\CrazyCake\Helpers\Cryptify")) {
 
             $di->setShared("cryptify", function() {
                 return new \CrazyCake\Helpers\Cryptify($this->config->app->cryptKey);
@@ -175,7 +175,7 @@ class AppServices
      */
     private function _setDatabaseService(&$di, $adapter = "mysql")
     {
-        if($adapter != "mysql")
+        if ($adapter != "mysql")
             throw new Exception("AppServices::setDatabaseService -> this adapter has not implemented yet :(");
 
         //Database connection is created based in the parameters defined in the configuration file
@@ -200,7 +200,7 @@ class AppServices
     private function _setTranslationService(&$di)
     {
         //check if langs are set
-        if(empty($this->config->app->langs))
+        if (empty($this->config->app->langs))
             return;
 
         $di->setShared("trans", function() {
@@ -241,7 +241,7 @@ class AppServices
             //set session name
             $session->setName($this->config->app->namespace);
             //start session
-            if(!$session->isStarted())
+            if (!$session->isStarted())
                 $session->start();
 
             return $session;

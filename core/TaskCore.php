@@ -41,18 +41,18 @@ class TaskCore extends Task
      * Outputs app configuration in JSON format
      * @param array $args - The args array, the 1st arg is the filter config property
      */
-    public function appConfigAction($args = array())
+    public function appConfigAction($args = [])
     {
         $conf = $this->config;
 
         //protect env vars
-        if(isset($conf->database))
+        if (isset($conf->database))
             unset($conf->database);
 
-        if(empty($args))
+        if (empty($args))
             $this->_output($conf, true);
 
-        if(!isset($conf->{$args[0]}))
+        if (!isset($conf->{$args[0]}))
             $this->_colorize("No value found for argument.", "ERROR", true);
 
         $this->_output($conf->{$args[0]}, true);
@@ -62,9 +62,9 @@ class TaskCore extends Task
      * Gets cached data set by Cacher library.
      * @param array $args - The input params
      */
-    public function getCacheAction($args = array())
+    public function getCacheAction($args = [])
     {
-        if(empty($args))
+        if (empty($args))
             $this->_colorize("Empty key argument", "ERROR", true);
 
         try {
@@ -87,9 +87,9 @@ class TaskCore extends Task
      * Generates revision assets names inside public assets module folder
      * @param array $args - The input params
      */
-    public function revAssetsAction($args = array())
+    public function revAssetsAction($args = [])
     {
-        if(empty($args) || !in_array($args[0], ["frontend", "backend"]))
+        if (empty($args) || !in_array($args[0], ["frontend", "backend"]))
             $this->_colorize("Invalid module argument", "ERROR", true);
 
         $module_name = $args[0];
@@ -98,12 +98,12 @@ class TaskCore extends Task
         $assets_path = WebCore::ASSETS_MIN_FOLDER_PATH;
         $assets_path = PROJECT_PATH.$module_name."/public/".$assets_path."/";
 
-        if(!is_dir($assets_path))
+        if (!is_dir($assets_path))
             $this->_colorize("Assets path not found: $assets_path", "ERROR", true);
 
         $version = AppModule::getProperty("version", $module_name);
 
-        if(!$version)
+        if (!$version)
             $this->_colorize("Invalid version for $module_name", "ERROR", true);
 
         $version_stripped = str_replace(".", "", $version);
@@ -126,7 +126,7 @@ class TaskCore extends Task
      */
     protected function _output($output = "OK", $json_encode = false)
     {
-        if($json_encode)
+        if ($json_encode)
             $output = json_encode($output, JSON_UNESCAPED_SLASHES);
 
         die($output.PHP_EOL);
@@ -163,7 +163,7 @@ class TaskCore extends Task
         $output = chr(27) . $open . $text . chr(27) . $close . "\n";
 
         //echo output
-        if($die)
+        if ($die)
             $this->_output($output);
         else
             echo $output;
@@ -175,16 +175,16 @@ class TaskCore extends Task
      * @param int $index - The arg index to validate
      * @param boolean $check_folder - Checks if module folder exists
      */
-    protected function _validatesModuleArg($args = array(), $index = 0, $check_folder = true)
+    protected function _validatesModuleArg($args = [], $index = 0, $check_folder = true)
     {
-        if(empty($args) || !isset($args[$index]))
+        if (empty($args) || !isset($args[$index]))
             $this->_colorize("The argument [module] is missing", "ERROR", true);
 
         //set module
         $module = PROJECT_PATH.$args[$index];
 
         //check for folder
-        if($check_folder && !is_dir($module))
+        if ($check_folder && !is_dir($module))
             $this->_colorize("The input module folder ($module) was not found", "ERROR", true);
 
         return $module;
@@ -194,14 +194,14 @@ class TaskCore extends Task
      * Async Request
      * @param  array $options - The HTTP options
      */
-    protected function _asyncRequest($options = array())
+    protected function _asyncRequest($options = [])
     {
         //set base url
-        if(empty($options["base_url"]))
+        if (empty($options["base_url"]))
             $this->_colorize("Base URL is required", "ERROR", true);
 
         //add missing slash
-        if(substr($options["base_url"], -1) !== "/")
+        if (substr($options["base_url"], -1) !== "/")
             $options["base_url"] .= "/";
 
         if (filter_var($options["base_url"], FILTER_VALIDATE_URL) === false)

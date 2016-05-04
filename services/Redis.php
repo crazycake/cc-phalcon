@@ -30,20 +30,20 @@ class Redis
      * Constructor
      * @param array $conf - Redis configs
      */
-    function __construct($conf = array())
+    function __construct($conf = [])
     {
         //get DI reference (static)
         $di = \Phalcon\DI::getDefault();
 
         //set cache prefix with app namespace
-        if(!isset($conf["prefix"]))
+        if (!isset($conf["prefix"]))
             $conf["prefix"] = $di->getShared("config")->app->namespace.":";
 
         //setup Redis
         $this->_setupRedis($conf);
 
         //check client was set
-        if(is_null($this->client))
+        if (is_null($this->client))
             throw new Exception("Redis -> Missing client configuration.");
     }
 
@@ -57,20 +57,20 @@ class Redis
     {
          try {
 
-             if(empty($key))
+             if (empty($key))
                  throw new Exception("Key parameter is empty");
 
-             if(is_null($value))
+             if (is_null($value))
                  throw new Exception("Attempting to set null value for key $key.");
 
              //set data
              $value  = json_encode($value, JSON_UNESCAPED_SLASHES);
              $result = $this->client->set($key, $value);
 
-             if(!$result)
+             if (!$result)
                 throw new Exception("Error setting key");
 
-            if(APP_ENVIRONMENT === "local") {
+            if (APP_ENVIRONMENT === "local") {
                 $di = \Phalcon\DI::getDefault();
                 $logger = $di->getShared("logger");
                 $logger->debug("Redis:set -> set key: $key => ".$value);
@@ -78,7 +78,7 @@ class Redis
 
              return true;
          }
-         catch(Exception $e) {
+         catch (Exception $e) {
              return false;
          }
      }
@@ -93,18 +93,18 @@ class Redis
      {
          try {
 
-             if(empty($key))
+             if (empty($key))
                  throw new Exception("Empty key given");
 
              //get cached data
              $result = $this->client->get($key);
 
-             if(!$result)
+             if (!$result)
                 throw new Exception("Key not found");
 
             return $decode ? json_decode($result) : $result;
          }
-         catch(Exception $e) {
+         catch (Exception $e) {
              return null;
          }
      }
@@ -118,13 +118,13 @@ class Redis
      {
          try {
 
-             if(empty($key))
+             if (empty($key))
                  throw new Exception("Empty key given");
 
              //get cached data
              $result = $this->client->get($key);
 
-             if(!$result)
+             if (!$result)
                 return false;
 
             //delete key
@@ -132,7 +132,7 @@ class Redis
 
             return true;
          }
-         catch(Exception $e) {
+         catch (Exception $e) {
              return null;
          }
      }
@@ -150,7 +150,7 @@ class Redis
      * password : Auth password server key.
      * persistent : Specifies if the underlying connection resource should be left open when a script ends its lifecycle.
      */
-    private function _setupRedis($conf = array())
+    private function _setupRedis($conf = [])
     {
         $clientConf = [
             "scheme"     => "tcp",

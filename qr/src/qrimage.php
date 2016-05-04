@@ -40,7 +40,7 @@ class QRimage {
             Header("Content-type: image/png");
             ImagePng($image);
         } else {
-            if($saveandprint===TRUE){
+            if ($saveandprint===TRUE){
                 ImagePng($image, $filename);
                 header("Content-type: image/png");
                 ImagePng($image);
@@ -83,8 +83,8 @@ class QRimage {
 
         imagefill($base_image, 0, 0, $col[0]);
 
-        for($y=0; $y<$h; $y++) {
-            for($x=0; $x<$w; $x++) {
+        for ($y=0; $y<$h; $y++) {
+            for ($x=0; $x<$w; $x++) {
                 if ($frame[$y][$x] == '1') {
                     ImageSetPixel($base_image,$x+$outerFrame,$y+$outerFrame,$col[1]);
                 }

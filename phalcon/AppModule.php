@@ -64,7 +64,7 @@ abstract class AppModule
         $config = $this->config();
 
         //validations
-        if(empty($mod_name) || empty($config))
+        if (empty($mod_name) || empty($config))
             throw new Exception("AppModule::constructor -> invalid input module, check setup.");
 
         //modules config
@@ -101,7 +101,7 @@ abstract class AppModule
     {
         $module = empty($mod_name) ? MODULE_NAME : $mod_name;
 
-        if(!isset(self::$modules_conf[$module]) || !isset(self::$modules_conf[$module][$prop]))
+        if (!isset(self::$modules_conf[$module]) || !isset(self::$modules_conf[$module][$prop]))
             return false;
 
         return self::$modules_conf[$module][$prop];
@@ -119,7 +119,7 @@ abstract class AppModule
         $class_name = \Phalcon\Text::camelize($key);
 
         //auto prefixes: si la clase no exite, se define un prefijo
-        if(!class_exists($class_name)) {
+        if (!class_exists($class_name)) {
 
             switch (MODULE_NAME) {
                 case "api":
@@ -161,7 +161,7 @@ abstract class AppModule
                 //check if static url is set
                 $static_url = self::getProperty("staticUrl", $module);
 
-                if(empty($base_url))
+                if (empty($base_url))
                     $base_url = self::getProperty("baseUrl", $module);
 
                 //set URL
@@ -170,21 +170,21 @@ abstract class AppModule
 
             case "local":
 
-                if(empty($base_url))
+                if (empty($base_url))
                     $base_url = str_replace(["/api/", "/frontend/", "/backend/"], "/$module/", APP_BASE_URL);
 
                 break;
 
             default:
 
-                if(empty($base_url))
+                if (empty($base_url))
                     $base_url = str_replace([".api.", ".frontend.", ".backend."], ".$module.", APP_BASE_URL);
 
                 break;
         }
 
         //add missing slash
-        if(substr($base_url, -1) !== "/") $base_url .= "/";
+        if (substr($base_url, -1) !== "/") $base_url .= "/";
 
         return $base_url.$uri;
     }
@@ -201,7 +201,7 @@ abstract class AppModule
         $envfile = PROJECT_PATH.".env";
         $dotenv  = new \Dotenv\Dotenv(PROJECT_PATH);
 
-        if(is_file($envfile))
+        if (is_file($envfile))
             $dotenv->load();
 
         //get env-vars
@@ -210,7 +210,7 @@ abstract class AppModule
         $app_base_uri = getenv("APP_URI_".strtoupper(MODULE_NAME));
 
         //set APP debug environment
-        if($debug) {
+        if ($debug) {
             ini_set("display_errors", 1);
             error_reporting(E_ALL);
         }
@@ -225,22 +225,22 @@ abstract class AppModule
         //Check for CLI execution & CGI execution
         if (php_sapi_name() !== "cli") {
 
-            if(!isset($_REQUEST))
+            if (!isset($_REQUEST))
                 throw new Exception("AppModule -> Missing REQUEST data: ".json_encode($_SERVER)." && ".json_encode($_REQUEST));
 
             //set localhost if host is not set
-            if(!isset($_SERVER["HTTP_HOST"]))
+            if (!isset($_SERVER["HTTP_HOST"]))
                 $_SERVER["HTTP_HOST"] = "127.0.0.1";
 
             //fallback for missing env var
-            if(empty($app_base_uri)) {
+            if (empty($app_base_uri)) {
                 $base_url = (isset($_SERVER["HTTPS"]) ? "https://" : "http://").
                                        $_SERVER["HTTP_HOST"].preg_replace("@/+$@", "", dirname($_SERVER["SCRIPT_NAME"]))."/";
             }
         }
 
         //add missing slash
-        if(substr($base_url, -1) !== "/") $base_url .= "/";
+        if (substr($base_url, -1) !== "/") $base_url .= "/";
 
         //set environment consts & self vars
         define("APP_ENVIRONMENT", $environment);

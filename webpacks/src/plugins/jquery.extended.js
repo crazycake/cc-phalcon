@@ -14,7 +14,7 @@
  */
 jQuery.fn.center = function(position, top, left) {
 	//set CSS position (fixed, absolute, static)
-	if(typeof position === "undefined")
+	if (typeof position === "undefined")
 		this.css("position", "absolute");
 	else
 		this.css("position", position);
@@ -22,7 +22,7 @@ jQuery.fn.center = function(position, top, left) {
 	var px_value = 0;
 
 	//set x position
-	if(typeof left === "undefined") {
+	if (typeof left === "undefined") {
 
 		px_value = Math.max(0, (($(window).width() - $(this).outerWidth()) / 2) + $(window).scrollLeft());
 		this.css("left", px_value + "px");
@@ -32,7 +32,7 @@ jQuery.fn.center = function(position, top, left) {
 	}
 
 	//set y position
-	if(typeof top === "undefined") {
+	if (typeof top === "undefined") {
 
 		px_value = Math.max(0, (($(window).height() - $(this).outerHeight()) / 2) + $(window).scrollTop());
 		this.css("top", px_value + "px");
@@ -51,7 +51,7 @@ jQuery.fn.center = function(position, top, left) {
  */
 jQuery.fn.padding = function(direction) {
 
-	if(typeof direction === "undefined")
+	if (typeof direction === "undefined")
 		direction = "left";
 
 	//returns int value

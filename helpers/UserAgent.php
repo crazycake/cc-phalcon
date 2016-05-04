@@ -73,7 +73,7 @@ class UserAgent
     private function _isUserAgentLegacy($data = array())
     {
         //mark some browsers as legacy
-        if( ($data["browser"] == "MSIE"    && $data["short_version"] < 9) ||
+        if ( ($data["browser"] == "MSIE"    && $data["short_version"] < 9) ||
             ($data["browser"] == "Chrome"  && $data["short_version"] < 3) ||
             ($data["browser"] == "Firefox" && $data["short_version"] < 4) ||
             ($data["browser"] == "Safari"  && $data["short_version"] < 3) ||

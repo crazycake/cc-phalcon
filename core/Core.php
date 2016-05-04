@@ -45,7 +45,7 @@ trait Core
         //print output
         class_exists("\\Kint") ? s($object) : print_r($object);
 
-        if($exit) exit;
+        if ($exit) exit;
 
         return $object;
     }

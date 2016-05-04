@@ -119,9 +119,9 @@ class QRspec {
     public static function getMinimumVersion($size, $level)
     {
 
-        for($i=1; $i<= QRSPEC_VERSION_MAX; $i++) {
+        for ($i=1; $i<= QRSPEC_VERSION_MAX; $i++) {
             $words  = self::$capacity[$i][QRCAP_WORDS] - self::$capacity[$i][QRCAP_EC][$level];
-            if($words >= $size)
+            if ($words >= $size)
                 return $i;
         }
 
@@ -157,12 +157,12 @@ class QRspec {
     //----------------------------------------------------------------------
     public static function maximumWords($mode, $version)
     {
-        if($mode == QR_MODE_STRUCTURE)
+        if ($mode == QR_MODE_STRUCTURE)
             return 3;
 
-        if($version <= 9) {
+        if ($version <= 9) {
             $l = 0;
-        } else if($version <= 26) {
+        } else if ($version <= 26) {
             $l = 1;
         } else {
             $l = 2;
@@ -171,7 +171,7 @@ class QRspec {
         $bits = self::$lengthTableBits[$mode][$l];
         $words = (1 << $bits) - 1;
 
-        if($mode == QR_MODE_KANJI) {
+        if ($mode == QR_MODE_KANJI) {
             $words *= 2; // the number of bytes is required
         }
 
@@ -240,7 +240,7 @@ class QRspec {
         $data = self::getDataLength($version, $level);
         $ecc  = self::getECCLength($version, $level);
 
-        if($b2 == 0) {
+        if ($b2 == 0) {
             $spec[0] = $b1;
             $spec[1] = (int)($data / $b1);
             $spec[2] = (int)($ecc / $b1);
@@ -296,7 +296,7 @@ class QRspec {
         $yStart = $oy-2;
         $xStart = $ox-2;
 
-        for($y=0; $y<5; $y++) {
+        for ($y=0; $y<5; $y++) {
             QRstr::set($frame, $xStart, $yStart+$y, $finder[$y]);
         }
     }
@@ -304,17 +304,17 @@ class QRspec {
     //----------------------------------------------------------------------
     public static function putAlignmentPattern($version, &$frame, $width)
     {
-        if($version < 2)
+        if ($version < 2)
             return;
 
         $d = self::$alignmentPattern[$version][1] - self::$alignmentPattern[$version][0];
-        if($d < 0) {
+        if ($d < 0) {
             $w = 2;
         } else {
             $w = (int)(($width - self::$alignmentPattern[$version][0]) / $d + 2);
         }
 
-        if($w * $w - 3 == 1) {
+        if ($w * $w - 3 == 1) {
             $x = self::$alignmentPattern[$version][0];
             $y = self::$alignmentPattern[$version][0];
             self::putAlignmentMarker($frame, $x, $y);
@@ -322,16 +322,16 @@ class QRspec {
         }
 
         $cx = self::$alignmentPattern[$version][0];
-        for($x=1; $x<$w - 1; $x++) {
+        for ($x=1; $x<$w - 1; $x++) {
             self::putAlignmentMarker($frame, 6, $cx);
             self::putAlignmentMarker($frame, $cx,  6);
             $cx += $d;
         }
 
         $cy = self::$alignmentPattern[$version][0];
-        for($y=0; $y<$w-1; $y++) {
+        for ($y=0; $y<$w-1; $y++) {
             $cx = self::$alignmentPattern[$version][0];
-            for($x=0; $x<$w-1; $x++) {
+            for ($x=0; $x<$w-1; $x++) {
                 self::putAlignmentMarker($frame, $cx, $cy);
                 $cx += $d;
             }
@@ -357,7 +357,7 @@ class QRspec {
     //----------------------------------------------------------------------
     public static function getVersionPattern($version)
     {
-        if($version < 7 || $version > QRSPEC_VERSION_MAX)
+        if ($version < 7 || $version > QRSPEC_VERSION_MAX)
             return 0;
 
         return self::$versionPattern[$version -7];
@@ -375,10 +375,10 @@ class QRspec {
 
     public static function getFormatInfo($mask, $level)
     {
-        if($mask < 0 || $mask > 7)
+        if ($mask < 0 || $mask > 7)
             return 0;
 
-        if($level < 0 || $level > 3)
+        if ($level < 0 || $level > 3)
             return 0;
 
         return self::$formatInfo[$level][$mask];
@@ -407,7 +407,7 @@ class QRspec {
             "\xc1\xc1\xc1\xc1\xc1\xc1\xc1"
         );
 
-        for($y=0; $y<7; $y++) {
+        for ($y=0; $y<7; $y++) {
             QRstr::set($frame, $ox, $oy+$y, $finder[$y]);
         }
     }
@@ -427,7 +427,7 @@ class QRspec {
         // Separator
         $yOffset = $width - 7;
 
-        for($y=0; $y<7; $y++) {
+        for ($y=0; $y<7; $y++) {
             $frame[$y][7] = "\xc0";
             $frame[$y][$width - 8] = "\xc0";
             $frame[$yOffset][7] = "\xc0";
@@ -447,14 +447,14 @@ class QRspec {
 
         $yOffset = $width - 8;
 
-        for($y=0; $y<8; $y++,$yOffset++) {
+        for ($y=0; $y<8; $y++,$yOffset++) {
             $frame[$y][8] = "\x84";
             $frame[$yOffset][8] = "\x84";
         }
 
         // Timing pattern
 
-        for($i=1; $i<$width-15; $i++) {
+        for ($i=1; $i<$width-15; $i++) {
             $frame[6][7+$i] = chr(0x90 | ($i & 1));
             $frame[7+$i][6] = chr(0x90 | ($i & 1));
         }
@@ -463,21 +463,21 @@ class QRspec {
         self::putAlignmentPattern($version, $frame, $width);
 
         // Version information
-        if($version >= 7) {
+        if ($version >= 7) {
             $vinf = self::getVersionPattern($version);
 
             $v = $vinf;
 
-            for($x=0; $x<6; $x++) {
-                for($y=0; $y<3; $y++) {
+            for ($x=0; $x<6; $x++) {
+                for ($y=0; $y<3; $y++) {
                     $frame[($width - 11)+$y][$x] = chr(0x88 | ($v & 1));
                     $v = $v >> 1;
                 }
             }
 
             $v = $vinf;
-            for($y=0; $y<6; $y++) {
-                for($x=0; $x<3; $x++) {
+            for ($y=0; $y<6; $y++) {
+                for ($x=0; $x<3; $x++) {
                     $frame[$y][$x+($width - 11)] = chr(0x88 | ($v & 1));
                     $v = $v >> 1;
                 }
@@ -559,10 +559,10 @@ class QRspec {
     //----------------------------------------------------------------------
     public static function newFrame($version)
     {
-        if($version < 1 || $version > QRSPEC_VERSION_MAX)
+        if ($version < 1 || $version > QRSPEC_VERSION_MAX)
             return null;
 
-        if(!isset(self::$frames[$version])) {
+        if (!isset(self::$frames[$version])) {
 
             $fileName = QR_CACHE_DIR.'frame_'.$version.'.dat';
 
@@ -578,7 +578,7 @@ class QRspec {
             }
         }
 
-        if(is_null(self::$frames[$version]))
+        if (is_null(self::$frames[$version]))
             return null;
 
         return self::$frames[$version];

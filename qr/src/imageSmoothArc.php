@@ -36,7 +36,7 @@
 
 namespace CrazyCake\Qr;
 
-if(!class_exists('imageSmoothArcDrawSegment', false)) {
+if (!class_exists('imageSmoothArcDrawSegment', false)) {
     function imageSmoothArcDrawSegment (&$img, $cx, $cy, $a, $b, $aaAngleX, $aaAngleY, $color, $start, $stop, $seg)
     {
         // Originally written from scratch by Ulrich Mierendorff, 06/2006
@@ -253,7 +253,7 @@ if(!class_exists('imageSmoothArcDrawSegment', false)) {
     }
 }
 
-if(!class_exists('imageSmoothArc', false)) {
+if (!class_exists('imageSmoothArc', false)) {
     function imageSmoothArc ( &$img, $cx, $cy, $w, $h, $color, $start, $stop)
     {
         // Originally written from scratch by Ulrich Mierendorff, 06/2006

@@ -108,10 +108,10 @@ abstract class MvcCore extends Controller
     protected function _sendFileToBuffer($data = null, $mime_type = 'application/json')
     {
         //append struct as string if data type is JSON
-        if($mime_type == 'application/json')
+        if ($mime_type == 'application/json')
             $data = str_replace("@payload", $data, self::JSON_RESPONSE_STRUCT);
 
-        if(isset($this->view)) {
+        if (isset($this->view)) {
             $this->view->disable();
             //return false;
         }
@@ -120,7 +120,7 @@ abstract class MvcCore extends Controller
         $this->response->setContentType($mime_type);
 
         //content must be set after content type
-        if(!is_null($data))
+        if (!is_null($data))
             $this->response->setContent($data);
 
         $this->response->send();
@@ -135,7 +135,7 @@ abstract class MvcCore extends Controller
         $uri = $this->request->getUri();
         //replaces '*/public/' or first '/'
         $regex = "/^.*\/public\/(?=[^.]*$)|^\//";
-        $uri = preg_replace($regex, "", $uri);
+        $uri   = preg_replace($regex, "", $uri);
 
         return $uri;
     }
@@ -148,15 +148,15 @@ abstract class MvcCore extends Controller
     protected function _asyncRequest($options = array())
     {
         //set base url
-        if(empty($options["base_url"]))
+        if (empty($options["base_url"]))
             $options["base_url"] = empty($options["module"]) ? $this->_baseUrl() : AppModule::getUrl($options["module"]);
 
         //set uri
-        if(empty($options["uri"]))
+        if (empty($options["uri"]))
             $options["uri"] = $options["controller"]."/".$options["action"]."/";
 
         //special case for module cross requests
-        if(!empty($options["module"]) && $options["module"] == "api") {
+        if (!empty($options["module"]) && $options["module"] == "api") {
 
             //get API key header name
             $api_key_header_value = AppModule::getProperty("key", "api");
@@ -165,10 +165,10 @@ abstract class MvcCore extends Controller
         }
 
         //payload
-        if(!empty($options["payload"])) {
+        if (!empty($options["payload"])) {
 
             //skip encryption
-            if(isset($options["encrypt"]) && !$options["encrypt"])
+            if (isset($options["encrypt"]) && !$options["encrypt"])
                 $options["payload"] = (array)$options["payload"];
             else
                 $options["payload"] = $this->cryptify->encryptData($options["payload"]);
@@ -204,29 +204,29 @@ abstract class MvcCore extends Controller
         ];
 
         //type
-        if(!empty($type))
+        if (!empty($type))
             $response["type"] = $type;
 
         //namespace
-        if(!empty($namespace))
+        if (!empty($namespace))
             $response["namespace"] = $namespace;
 
         //success data
-        if($code == 200) {
+        if ($code == 200) {
 
             //if data is an object convert to array
             if (is_object($payload))
                 $payload = get_object_vars($payload);
 
             //check redirection action
-            if(is_array($payload) && isset($payload["redirect"])) {
+            if (is_array($payload) && isset($payload["redirect"])) {
                 $response["redirect"] = $payload["redirect"];
             }
             //append payload
             else {
 
                 //merge _ext properties for API
-                if(MODULE_NAME === "api")
+                if (MODULE_NAME === "api")
                     BaseResultset::mergeArbitraryProps($payload);
 
                 $response["payload"] = $payload;
@@ -246,7 +246,7 @@ abstract class MvcCore extends Controller
         }
 
         //if a view service is set, disable rendering
-        if(isset($this->view))
+        if (isset($this->view))
             $this->view->disable(); //disable view output
 
         //encode JSON
@@ -266,11 +266,11 @@ abstract class MvcCore extends Controller
      */
     protected function _sendTextResponse($text = "OK"){
 
-        if(is_array($text) || is_object($text))
+        if (is_array($text) || is_object($text))
             $text = json_encode($text, JSON_UNESCAPED_SLASHES);
 
         //if a view service is set, disable rendering
-        if(isset($this->view))
+        if (isset($this->view))
             $this->view->disable(); //disable view output
 
         //output the response
@@ -296,7 +296,7 @@ abstract class MvcCore extends Controller
     protected function _handleRequestParams($req_fields = [], $method = 'POST', $check_csrf = true)
     {
         //check API module and set special settings
-        if(MODULE_NAME === "api") {
+        if (MODULE_NAME === "api") {
             $check_csrf = false;
             $send_json  = true;
         }
@@ -306,11 +306,11 @@ abstract class MvcCore extends Controller
         }
 
         //set anoymous function for send response
-        if($send_json) {
+        if ($send_json) {
             $sendResponse = function($code) {
 
                 //call send json response
-                if(method_exists($this, '_sendJsonResponse'))
+                if (method_exists($this, '_sendJsonResponse'))
                     $this->_sendJsonResponse($code);
                 else
                     throw new Exception("MvcCore::_handleRequestParams -> _sendJsonResponse() must be implemented.");
@@ -336,14 +336,14 @@ abstract class MvcCore extends Controller
         //validate always CSRF Token (prevents also headless browsers, POST only and API module excluded)
         if ($check_csrf) {
             //check if method exists
-            if(method_exists($this, '_checkCsrfToken') && !$this->_checkCsrfToken())
+            if (method_exists($this, '_checkCsrfToken') && !$this->_checkCsrfToken())
                 return $sendResponse(498);
         }
 
         //get params data: POST, GET, or mixed
-        if($method == 'POST')
+        if ($method == 'POST')
             $data = $this->request->getPost();
-        else if($method == 'GET')
+        else if ($method == 'GET')
             $data = $this->request->get();
         else
             $data = array_merge($this->request->get(), $this->request->getPost());
@@ -381,17 +381,17 @@ abstract class MvcCore extends Controller
             }
 
             //get value from data array
-            if(empty($data_type) || $data_type == 'array') {
+            if (empty($data_type) || $data_type == 'array') {
                 $value = $data[$field];
             }
-            else if($data_type == 'json') {
+            else if ($data_type == 'json') {
                 $value = json_decode($data[$field]); //NULL if cannot be decoded
             }
             else {
                 //sanitize
                 $value = $this->filter->sanitize($data[$field], $data_type);
                 //lower case for email
-                if($data_type == "email")
+                if ($data_type == "email")
                     $value = strtolower($value);
             }
 
@@ -457,23 +457,23 @@ abstract class MvcCore extends Controller
         $mailer_class = AppModule::getClass('mailer_controller');
 
         //checks that a MailerController exists
-        if(!class_exists($mailer_class))
+        if (!class_exists($mailer_class))
             throw new Exception("MvcCore::_sendMailMessage -> A Mailer Controller is required.");
 
         $mailer = new $mailer_class();
 
         //checks that a MailerController exists
-        if(!method_exists($mailer, $method))
+        if (!method_exists($mailer, $method))
             throw new Exception("MvcCore::_sendMailMessage -> Method $method is not defined in Mailer Controller.");
 
         //call mailer class method (reflection)
         $response = $mailer->{$method}($data);
 
-        if(is_array($response))
+        if (is_array($response))
             $response = json_encode($response);
 
         //save response only for non production-environment
-        if(APP_ENVIRONMENT !== "production")
+        if (APP_ENVIRONMENT !== "production")
             $this->logger->debug('MvcCore::_sendMailMessage -> Got response from MailerController:\n' . $response);
 
         return $response;

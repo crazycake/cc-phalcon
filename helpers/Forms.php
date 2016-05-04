@@ -70,7 +70,7 @@ class Forms
         //get DI instance (static)
         $di = \Phalcon\DI::getDefault();
 
-        if(!$di->has("trans"))
+        if (!$di->has("trans"))
             throw new Exception("Forms -> no translate service adapter found.");
 
         $trans = $di->getShared("trans");
@@ -121,7 +121,7 @@ class Forms
         $M = 0;
         $S = 1;
 
-        for(; $R; $R = floor($R/10))
+        for (; $R; $R = floor($R/10))
             $S = ($S + ($R % 10) * (9 - ($M++ % 6))) % 11;
 
         return $S ? $S - 1 : "k";

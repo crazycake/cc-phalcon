@@ -105,12 +105,12 @@ trait TicketManager
             //validates that ticket belongs to user, get anonymous function from settings
             $getUserTicket = $this->ticket_manager_conf["getUserTicketFunction"];
 
-            if(!is_callable($getUserTicket))
+            if (!is_callable($getUserTicket))
                 throw new Exception("Invalid getUserTicket function");
 
             $user_ticket = $getUserTicket($code, $user_id);
 
-            if(!$user_ticket)
+            if (!$user_ticket)
                 throw new Exception("Invalid ticket: $code for userId: $user_id.");
 
             $ticket_filename = $user_ticket->code.".png";
@@ -118,7 +118,7 @@ trait TicketManager
             //get image in S3
             $binary = $this->s3->getObject($s3_path, true);
 
-            if(!$binary)
+            if (!$binary)
                 throw new Exception("S3 lib cant find binary file for ticket code: $code (S3 path: $s3_path)");
 
             //sends file to buffer
@@ -144,12 +144,12 @@ trait TicketManager
             //validates that ticket belongs to user, get anonymous function from settings
             $getUserTicket = $this->ticket_manager_conf["getUserTicketFunction"];
 
-            if(!is_callable($getUserTicket))
+            if (!is_callable($getUserTicket))
                 throw new Exception("Invalid getUserTicket function");
 
             $user_ticket = $getUserTicket($src_code, $src_user_id);
 
-            if(!$user_ticket)
+            if (!$user_ticket)
                 throw new Exception("Invalid ticket: $src_code for userId: $src_user_id.");
 
             $ticket_filename = $user_ticket->code.".png";
@@ -158,7 +158,7 @@ trait TicketManager
             //get image in S3
             $moved = $this->s3->copyObject($src_s3_path, null, $dst_s3_path);
 
-            if(!$moved)
+            if (!$moved)
                 throw new Exception("S3 lib cant copy ticket code: $src_code (S3 path: $src_s3_path)");
 
             //delete old one
@@ -201,7 +201,7 @@ trait TicketManager
             //loop through each ticket
             foreach ($userTickets as $ticket) {
 
-                if(!isset($ticket->code))
+                if (!isset($ticket->code))
                     throw new Exception("Invalid ticket");
 
                 //set configs
@@ -232,7 +232,7 @@ trait TicketManager
         //append Objects
         $result->objects = $objects;
 
-        if(isset($result->error))
+        if (isset($result->error))
             $this->logger->error("TicketStorage::generateQRForUserTicket -> Error while generating and storing QR, err:".$result->error);
 
         return $result;
@@ -266,7 +266,7 @@ trait TicketManager
             $result->error = $e->getMessage();
         }
 
-        if(isset($result->error)) {
+        if (isset($result->error)) {
             $this->logger->error("TicketStorage::generateInvoice (userId: $user_id) -> Error while generating and storing PDF: $result->error");
             return $result;
         }
@@ -289,7 +289,7 @@ trait TicketManager
         //get model class
         $getObjectsForInvoice = $this->ticket_manager_conf["getObjectsForInvoiceFunction"];
 
-        if(!is_callable($getObjectsForInvoice))
+        if (!is_callable($getObjectsForInvoice))
             throw new Exception("Invalid getObjectsForInvoice function");
 
         //get user by session
@@ -299,7 +299,7 @@ trait TicketManager
         $objects = $getObjectsForInvoice($user_id, $checkout);
 
         //download qr tickets if invoice is for OTF actions
-        if($objects && $this->pdf_settings["otf"])
+        if ($objects && $this->pdf_settings["otf"])
             $this->_downloadTicketQrs($user_id, $objects);
 
         //set file paths
@@ -320,14 +320,14 @@ trait TicketManager
         $binary = (new PDF())->generatePdfFileFromHtml($html_raw, $output_path, true);
 
         //upload pdf file to S3
-        if($this->pdf_settings["otf"]) {
+        if ($this->pdf_settings["otf"]) {
 
             $s3_path = self::$DEFAULT_S3_URI."/".$user_id."/".$pdf_filename;
             $this->s3->putObject($output_path, $s3_path, true);
         }
 
         //delete generated local files
-        if(APP_ENVIRONMENT !== "local")
+        if (APP_ENVIRONMENT !== "local")
             $this->_deleteTempFiles();
 
         return $binary;
@@ -342,13 +342,13 @@ trait TicketManager
      */
     private function _downloadTicketQrs($user_id = 0, $userTickets = array())
     {
-        if(empty($userTickets))
+        if (empty($userTickets))
             return;
 
         //loop through each ticket
         foreach ($userTickets as $ticket) {
 
-            if(!isset($ticket->code))
+            if (!isset($ticket->code))
                 continue;
 
             //set configs
@@ -359,7 +359,7 @@ trait TicketManager
             //get image in S3
             $binary = $this->s3->getObject($s3_path, true);
 
-            if(!$binary)
+            if (!$binary)
                 continue;
 
             //save to disk
@@ -374,14 +374,14 @@ trait TicketManager
      */
     private function _deleteTempFiles($path = null, $del_folder = false)
     {
-        if(is_null($path))
+        if (is_null($path))
             $path = $this->temp_path;
 
         foreach (self::$MIME_TYPES as $key => $value) {
             array_map("unlink", glob( "$path*.$key"));
         }
 
-        if($del_folder)
+        if ($del_folder)
             rmdir($path);
     }
 }

@@ -55,7 +55,7 @@ class GPS
      */
     public static function parseDegreesMinutesCoordinate($latitude = null, $longitude = null, $zone = self::DEFAULT_ZONE)
     {
-        if(empty($latitude) || empty($longitude))
+        if (empty($latitude) || empty($longitude))
             throw new Exception("GPS::parseDegreesMinutesCoordinate -> latitude and longitude params are required");
 
         //trim both values

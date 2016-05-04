@@ -65,7 +65,7 @@ module.exports = function() {
         core.ajaxRequest({ method : 'POST', url :  APP.baseUrl + 'auth/resendActivationMailMessage' }, e.target)
         .then(function(payload) {
 
-            if(!payload) return;
+            if (!payload) return;
 
             //modal closer
             core.closeModal($(APP.UI.sel_account_modal));

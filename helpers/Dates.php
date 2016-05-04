@@ -73,13 +73,13 @@ class Dates
      */
     public static function getTranslatedMonthName($month = null, $abbr = false)
     {
-        if(empty($month))
+        if (empty($month))
             throw new Exception("Dates::getTranslatedMonthName -> month is required");
 
         //get DI instance (static)
         $di = \Phalcon\DI::getDefault();
 
-        if(!$di->has("trans"))
+        if (!$di->has("trans"))
             return $month;
 
         $trans = $di->getShared("trans");
@@ -118,13 +118,13 @@ class Dates
      */
     public static function getTranslatedDateTime($year = "", $month = "", $day = "", $time = "")
     {
-        if(empty($month))
+        if (empty($month))
             throw new Exception("Dates::getTranslatedDateTime -> month is required.");
 
         //get DI instance (static)
         $di = \Phalcon\DI::getDefault();
 
-        if(!$di->has("trans"))
+        if (!$di->has("trans"))
             return $day."-".$month."-".$year;
 
         $trans = $di->getShared("trans");
@@ -133,7 +133,7 @@ class Dates
         $month = self::getTranslatedMonthName($month, false);
 
         //format with year & month
-        if(empty($day)) {
+        if (empty($day)) {
             return $trans->_("%month% del %year%", [
                 "month" => $month,
                 "year"  => $year
@@ -141,7 +141,7 @@ class Dates
         }
 
         //format with day & month & time
-        if(empty($year) && !empty($day) && !empty($time)) {
+        if (empty($year) && !empty($day) && !empty($time)) {
             return $trans->_("%day% de %month%, a las %time% hrs.", [
                 "day"   => $day,
                 "month" => $month,
@@ -150,7 +150,7 @@ class Dates
         }
 
         //format with month & day
-        if(empty($year)) {
+        if (empty($year)) {
             return $trans->_("%day% %month%", [
                 "day"   => $day,
                 "month" => $month
@@ -158,7 +158,7 @@ class Dates
         }
 
         //format with year, month & day
-        if(empty($time)) {
+        if (empty($time)) {
             return $trans->_("%day% de %month% %year%", [
                 "day"   => $day,
                 "month" => $month,

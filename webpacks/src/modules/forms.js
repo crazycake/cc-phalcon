@@ -51,7 +51,7 @@ module.exports = function() {
 
         var forms = (typeof context === "undefined") ? $("form[data-validate]") : $("form[data-validate]", context);
 
-        if(!forms.length) return;
+        if (!forms.length) return;
 
         //loop through each form
         forms.each(function() {
@@ -69,7 +69,7 @@ module.exports = function() {
                 var name = $(this).attr("name");
 
                 //skip undefined names
-                if(typeof name === "undefined") return;
+                if (typeof name === "undefined") return;
 
                 //set validators
                 options.fields[name] = {
@@ -96,10 +96,10 @@ module.exports = function() {
     self.newFormValidation = function(form, options) {
 
         //default selector
-        if(typeof form == "undefined" || _.isNull(form))
+        if (typeof form == "undefined" || _.isNull(form))
             throw new Error("App Forms -> newFormValidation: A Form object is required!");
 
-        if(form instanceof jQuery === false)
+        if (form instanceof jQuery === false)
             form = $(form);
 
          //set settings
@@ -122,7 +122,7 @@ module.exports = function() {
         _.assign(opts, options);
 
         //init plugin
-        if(APP.dev) { console.log("App Forms -> loading form with options:", opts); }
+        if (APP.dev) { console.log("App Forms -> loading form with options:", opts); }
 
         form.formValidation(opts);
     };
@@ -135,18 +135,18 @@ module.exports = function() {
      */
     self.isFormValid = function(form) {
 
-        if(form instanceof jQuery === false)
+        if (form instanceof jQuery === false)
             form = $(form);
 
-        if(typeof form.data === "undefined" || typeof form.data('formValidation') === "undefined")
+        if (typeof form.data === "undefined" || typeof form.data('formValidation') === "undefined")
             throw new Error("App Core -> form object has no formValidation instance.");
 
         //check for input hidden fields that are required
         var inputs_hidden = form.find('input[type="hidden"][data-fv-excluded="false"]');
 
-        if(inputs_hidden.length) {
+        if (inputs_hidden.length) {
 
-            if(APP.dev) { console.log("App Core -> Revalidating hidden inputs..."); }
+            if (APP.dev) { console.log("App Core -> Revalidating hidden inputs..."); }
             //loop
             inputs_hidden.each(function() {
                 //revalidate field
@@ -159,7 +159,7 @@ module.exports = function() {
         //check result
         var is_valid = form.data('formValidation').isValid();
 
-        if(!is_valid && APP.dev) {
+        if (!is_valid && APP.dev) {
 
             console.log("App Core -> Some form element(s) are not valid:");
 
@@ -179,7 +179,7 @@ module.exports = function() {
      */
     self.revalidateFormField = function(form, field) {
 
-        if(form instanceof jQuery === false)
+        if (form instanceof jQuery === false)
             form = $(form);
 
         var fv = form.data('formValidation');
@@ -193,10 +193,10 @@ module.exports = function() {
      */
     self.enableFormSubmitButtons = function(form, flag) {
 
-        if(form instanceof jQuery === false)
+        if (form instanceof jQuery === false)
             form = $(form);
 
-        if(typeof flag === "undefined")
+        if (typeof flag === "undefined")
             flag = true;
 
         var fv = form.data('formValidation');
@@ -210,7 +210,7 @@ module.exports = function() {
      */
     self.resetForm = function(form) {
 
-        if(form instanceof jQuery === false)
+        if (form instanceof jQuery === false)
             form = $(form);
 
         //clean form
@@ -228,13 +228,13 @@ module.exports = function() {
      */
     self.addField = function(field_name, context, validators_obj) {
 
-        if(context instanceof jQuery === false)
+        if (context instanceof jQuery === false)
             context = $(context);
 
         //field target
         var field;
         //set object
-        if(field_name instanceof jQuery === true)
+        if (field_name instanceof jQuery === true)
             field = field_name;
         else
             field = $("[name='"+field_name+"']", context);
@@ -242,7 +242,7 @@ module.exports = function() {
         //default validator
         var v = {validators : { notEmpty : {} }};
 
-        if(typeof validators_obj === "object")
+        if (typeof validators_obj === "object")
             v = {validators : validators_obj};
 
         //append required props
@@ -250,9 +250,9 @@ module.exports = function() {
 
         var form = field.closest("form");
 
-        if(typeof form === "undefined")
+        if (typeof form === "undefined")
             return console.warn("App Forms [addField] -> Can't find closest element form for field:", field);
-        else if(typeof form.data('formValidation') === "undefined")
+        else if (typeof form.data('formValidation') === "undefined")
             return;
 
         var fv = form.data('formValidation');
@@ -271,14 +271,14 @@ module.exports = function() {
 
             var pattern = field.attr("data-fv-required");
 
-            if(!pattern.length)
+            if (!pattern.length)
                 return;
 
             var obj = eval('({' + pattern + '})');
             //append required props
             _.assign(validators, obj);
         }
-        catch(e) {}
+        catch (e) {}
     };
 
     /**
@@ -289,12 +289,12 @@ module.exports = function() {
     */
     self.recaptchaOnLoad = function() {
 
-        if(APP.dev) { console.log("App Core -> reCaptcha loaded! Main Selector: " + APP.UI.sel_recaptcha); }
+        if (APP.dev) { console.log("App Core -> reCaptcha loaded! Main Selector: " + APP.UI.sel_recaptcha); }
 
         //calback function when user entered valid data
         var callback_fn = function(value) {
 
-            if(APP.dev) { console.log("App Core -> reCaptcha validation OK!"); }
+            if (APP.dev) { console.log("App Core -> reCaptcha validation OK!"); }
 
             //set valid option on sibling input hidden
             $(APP.UI.sel_recaptcha).siblings('input').eq(0).val("1");
@@ -320,10 +320,10 @@ module.exports = function() {
      */
     self.recaptchaReload = function() {
 
-        if(APP.dev) { console.log("App Core -> reloading reCaptcha..."); }
+        if (APP.dev) { console.log("App Core -> reloading reCaptcha..."); }
 
         //reset reCaptcha
-        if(typeof grecaptcha != "undefined")
+        if (typeof grecaptcha != "undefined")
             grecaptcha.reset();
 
         //clean hidden input for validation

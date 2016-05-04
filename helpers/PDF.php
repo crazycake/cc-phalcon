@@ -51,26 +51,26 @@ class PDF
      */
     public function generatePdfFileFromHtml($html, $output_path, $binary = true)
     {
-        if(empty($html))
+        if (empty($html))
             throw new Exception("PDF::generatePdfFileFromHtml -> The html input string is required.");
 
-        if(empty($output_path))
+        if (empty($output_path))
             throw new Exception("PDF::generatePdfFileFromHtml -> The output_path input string is required.");
 
         //remove file?
-        if(is_file($output_path))
+        if (is_file($output_path))
             unlink($output_path);
 
         //generate the PDF file!
         try {
             $this->snappy->generateFromHtml($html, $output_path);
         }
-        catch(\Exception $e) {
+        catch (\Exception $e) {
             throw new Exception("PDF::generatePdfFileFromHtml -> Snappy library error: ".$e->getMessage());
         }
 
         //get binary file?
-        if($binary)
+        if ($binary)
             return file_get_contents($output_path);
         else
             return $output_path;
@@ -84,7 +84,7 @@ class PDF
      */
     public function mergePdfFiles($files = array(), $output = "pdf_merged.pdf", $option = "browser")
     {
-        if(empty($files))
+        if (empty($files))
             throw new Exception("PDF::mergePdfFiles -> Input files is empty");
 
         //Merge PDFs

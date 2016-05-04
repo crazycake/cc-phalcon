@@ -79,7 +79,7 @@ abstract class WsCore extends MvcCore
         //get model data
         $object = empty($value) ? null : $class_name::findFirst(["id = ?1", "bind" => [1 => $value]]);
 
-        if(!$optional && !$object)
+        if (!$optional && !$object)
             $this->_sendJsonResponse(400);
         else
             return $object;
@@ -96,19 +96,19 @@ abstract class WsCore extends MvcCore
         //prepare input data
         $hash = sha1($key);
 
-        if(empty($hash) || empty($data))
+        if (empty($hash) || empty($data))
             $this->_sendJsonResponse(800);
 
         $json_file = self::WS_RESPONSE_CACHE_PATH."$hash.json";
 
         //get data for API struct
-        if(!$bust && is_file($json_file)) {
+        if (!$bust && is_file($json_file)) {
             $this->_sendFileToBuffer(file_get_contents($json_file));
             return;
         }
 
         //check dir
-        if(!is_dir(self::WS_RESPONSE_CACHE_PATH))
+        if (!is_dir(self::WS_RESPONSE_CACHE_PATH))
             mkdir(self::WS_RESPONSE_CACHE_PATH, 0775);
 
         //save file to disk
@@ -123,7 +123,7 @@ abstract class WsCore extends MvcCore
      */
     protected function _cleanCacheResponse()
     {
-        if(!is_dir(self::WS_RESPONSE_CACHE_PATH))
+        if (!is_dir(self::WS_RESPONSE_CACHE_PATH))
             return;
 
         foreach (glob(self::WS_RESPONSE_CACHE_PATH."/*.json") as $filename) {
@@ -143,14 +143,14 @@ abstract class WsCore extends MvcCore
         $api_key = AppModule::getProperty("key");
         $enabled = AppModule::getProperty("keyEnabled");
 
-        if(!$enabled)
+        if (!$enabled)
             return;
 
         //get API key from request headers
         $header_api_key = $this->request->getHeader(self::HEADER_API_KEY);
 
         //check if keys are equal
-        if($api_key !== $header_api_key)
+        if ($api_key !== $header_api_key)
             $this->_sendJsonResponse(498);
     }
 }

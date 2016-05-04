@@ -72,11 +72,11 @@ class BaseUserTicket extends \CrazyCake\Models\Base
     public function beforeValidationOnCreate()
     {
         //set qr hash
-        if(is_null($this->qr_hash))
+        if (is_null($this->qr_hash))
             $this->qr_hash = $this->newHash(uniqid()); //param is like a seed
 
         //set alphanumeric code
-        if(is_null($this->code))
+        if (is_null($this->code))
             $this->code = $this->newCode();
 
         //set created at
@@ -105,7 +105,7 @@ class BaseUserTicket extends \CrazyCake\Models\Base
      */
     public static function getByIds($record_ids = array(), $as_array = false)
     {
-        if(empty($record_ids))
+        if (empty($record_ids))
             return false;
 
         //filter by ids
@@ -118,7 +118,7 @@ class BaseUserTicket extends \CrazyCake\Models\Base
 
         $objects = self::find($ids_filter);
 
-        if(!$objects)
+        if (!$objects)
             return false;
 
         return $as_array ? $objects->toArray() : $objects;
@@ -132,7 +132,7 @@ class BaseUserTicket extends \CrazyCake\Models\Base
      */
     public static function getByCodeAndUserId($code = "", $user_id = 0)
     {
-        if(empty($user_id)) {
+        if (empty($user_id)) {
             $conditions = "code = ?1";
             $parameters = [1 => $code];
         }
@@ -153,7 +153,7 @@ class BaseUserTicket extends \CrazyCake\Models\Base
     {
         $ticket = self::findFirstByQrHash($qr_hash);
 
-        if(!$ticket || !isset($ticket->user_id))
+        if (!$ticket || !isset($ticket->user_id))
             return false;
 
         //return user object

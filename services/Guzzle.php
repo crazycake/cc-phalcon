@@ -39,7 +39,7 @@ trait Guzzle
         if (empty($options["base_url"]) || empty($options["uri"]))
             throw new Exception("Guzzle::newRequest -> base_url & uri method params are required.");
 
-        if(empty($options["payload"]))
+        if (empty($options["payload"]))
             $options["payload"] = "";
 
         //set method, default is GET, value is uppercased
@@ -47,7 +47,7 @@ trait Guzzle
 
         try {
             //socket async call?
-            if(!empty($options["socket"]) && $options["socket"] === true)
+            if (!empty($options["socket"]) && $options["socket"] === true)
                 return $this->_socketAsync($options);
 
             $guzzle_options = [
@@ -61,8 +61,8 @@ trait Guzzle
             $action = "_".strtolower($options["method"])."Request";
             return $this->$action($client, $options);
         }
-        catch(Exception $e)  { $exception = $e; }
-        catch(\Exception $e) { $exception = $e; }
+        catch (Exception $e)  { $exception = $e; }
+        catch (\Exception $e) { $exception = $e; }
 
         //log error
         $di = \Phalcon\DI::getDefault();
@@ -91,11 +91,11 @@ trait Guzzle
         ];
 
         //set headers?
-        if(!empty($options["headers"]))
+        if (!empty($options["headers"]))
             $guzzle_options["headers"] = $options["headers"];
 
         //check params
-        if(isset($options["query-string"]) && $options["query-string"]) {
+        if (isset($options["query-string"]) && $options["query-string"]) {
             $params = http_build_query($options["payload"]);
         }
         else {
@@ -120,7 +120,7 @@ trait Guzzle
         $verify_peer = (APP_ENVIRONMENT != "production") ? false : true;
 
         //form params
-        if(is_array($options["payload"]))
+        if (is_array($options["payload"]))
             $form_params = $options["payload"];
         else
             $form_params = ["payload" => $options["payload"]];
@@ -134,7 +134,7 @@ trait Guzzle
         ];
 
         //set headers?
-        if(!empty($options["headers"]))
+        if (!empty($options["headers"]))
             $guzzle_options["headers"] = $options["headers"];
 
         //set promise
@@ -159,7 +159,7 @@ trait Guzzle
 
             $body = $response->getBody();
 
-            if(method_exists($body, "getContents"))
+            if (method_exists($body, "getContents"))
                 $body = $body->getContents();
 
             //handle response (OK status)
@@ -168,7 +168,7 @@ trait Guzzle
             }
             else {
 
-                if(isset($this->router)) {
+                if (isset($this->router)) {
                     $controllerName = $this->router->getControllerName();
                     $actionName     = $this->router->getActionName();
                     $logger->error("Guzzle::_sendPromise -> Error on request (".$options["uri"]."): $controllerName -> $actionName");
@@ -197,7 +197,7 @@ trait Guzzle
         //full URL
         $parts = parse_url($options["base_url"].$options["uri"]);
 
-        /*if($parts["sheme"] == "https")
+        /*if ($parts["sheme"] == "https")
             $default_port = 443; //SSL*/
 
         // set socket to be opened
@@ -210,14 +210,14 @@ trait Guzzle
         );
 
         // Data goes in the path for a GET request
-        if($options["method"] == "GET") {
+        if ($options["method"] == "GET") {
             $parts["path"] .= $options["payload"]; //normal would be a ? symbol with & delimeter
             $length = 0;
         }
         else {
 
             //create a concatenated string
-            if(is_array($options["payload"])) {
+            if (is_array($options["payload"])) {
                 $options["payload"] = http_build_query($options["payload"], "","&");
             }
             //default behavior
@@ -236,7 +236,7 @@ trait Guzzle
         $out .= "Content-Length: ".$length."\r\n";
 
         //set headers
-        if(!empty($options["headers"])) {
+        if (!empty($options["headers"])) {
 
             foreach ($options["headers"] as $header => $value)
                 $out .= $header.": ".$value."\r\n";

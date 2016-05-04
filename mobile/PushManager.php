@@ -37,7 +37,7 @@ trait PushManager
      */
     protected function subscribe($data = array())
     {
-        if(!isset($data["service"]) || !isset($data["uuid"]) || !isset($data["token"]))
+        if (!isset($data["service"]) || !isset($data["uuid"]) || !isset($data["token"]))
             throw new Exception("missing input params");
 
         //get model class
@@ -47,13 +47,13 @@ trait PushManager
         $subscriber = $push_class::getSubscriber($data["service"], $data["uuid"]);
 
         //if exists update data
-        if($subscriber) {
+        if ($subscriber) {
 
             //update object
             $subscriber->update($data);
 
             //check for pending push notification
-            if(!empty($subscriber->payload)) {
+            if (!empty($subscriber->payload)) {
 
                 $this->sendNotification([
                     "uuids"   => $data["uuid"],
@@ -77,11 +77,11 @@ trait PushManager
      */
     protected function sendNotification($data)
     {
-        if(empty($data["uuids"]) || empty($data["service"]) || empty($data["message"]) || empty($data["payload"]) )
+        if (empty($data["uuids"]) || empty($data["service"]) || empty($data["message"]) || empty($data["payload"]) )
             throw new Exception("missing input params: uuid, service, message, payload.");
 
         //set uuids
-        if(is_string($data["uuids"]))
+        if (is_string($data["uuids"]))
             $data["uuids"] = explode(",", trim($data["uuids"]));
 
         //set method
@@ -97,7 +97,7 @@ trait PushManager
      */
     protected function notificationReceived($data = array())
 	{
-        if(!isset($data["service"]) || !isset($data["uuid"]))
+        if (!isset($data["service"]) || !isset($data["uuid"]))
             throw new Exception("missing input params");
 
         //get model class
@@ -106,7 +106,7 @@ trait PushManager
         //check if subscriber exits
         $subscriber = $push_class::getSubscriber($data["service"], $data["uuid"]);
 
-		if(!$subscriber)
+		if (!$subscriber)
             throw new Exception("subscriber not found");
 
 		//update ORM
@@ -181,7 +181,7 @@ trait PushManager
             //get subscriber
             $subscriber = $push_class::getSubscriber("apn", $uuid);
 
-            if(!$subscriber)
+            if (!$subscriber)
                 throw new Exception("APN subscriber $uuid not found");
 
             //badge & payload logic
@@ -197,11 +197,11 @@ trait PushManager
 												);
 
             //log action
-            if(APP_ENVIRONMENT != "production")
+            if (APP_ENVIRONMENT != "production")
                 $this->logger->debug("PushManager::_sendNotificationAPN -> new push to $uuid: ".$subscriber->payload);
 
             //handle response
-            if($response) {
+            if ($response) {
                 $successful_delivers++;
 			}
 			else {
@@ -247,7 +247,7 @@ trait PushManager
             //get subscriber
             $subscriber = $push_class::getSubscriber("gcm", $uuid);
 
-            if(!$subscriber)
+            if (!$subscriber)
                 throw new Exception("GCM subscriber $uuid not found");
 
             //badge & payload logic
@@ -262,11 +262,11 @@ trait PushManager
 			$response = $this->gcm->send();
 
             //log action
-            if(APP_ENVIRONMENT != "production")
+            if (APP_ENVIRONMENT != "production")
                 $this->logger->debug("PushManager::_sendNotificationGCM -> new push to $uuid: ".$subscriber->payload);
 
             //handle response
-            if($response) {
+            if ($response) {
                 $successful_delivers++;
 			}
 			else {
@@ -275,7 +275,7 @@ trait PushManager
 				$gcm_send_status = $this->gcm->status;
 				//$gcm_msg_status  = $this->gcm->messagesStatuses;
 				//set data to print as as string
-				if(is_array($gcm_send_status))
+				if (is_array($gcm_send_status))
 					$gcm_send_status = implode(";", $gcm_send_status);
 
 				$this->logger->error("PushManager -> GCM onNotificationSent error: $gcm_send_status, token: ".$subscriber->token.", uuid: ".$uuid);

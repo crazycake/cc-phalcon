@@ -65,7 +65,7 @@ class QRrawcode {
         $spec = array(0,0,0,0,0);
 
         $this->datacode = $input->getByteStream();
-        if(is_null($this->datacode)) {
+        if (is_null($this->datacode)) {
             throw new Exception('null imput string');
         }
 
@@ -79,7 +79,7 @@ class QRrawcode {
         $this->blocks = QRspec::rsBlockNum($spec);
 
         $ret = $this->init($spec);
-        if($ret < 0) {
+        if ($ret < 0) {
             throw new Exception('block alloc error');
             return null;
         }
@@ -98,7 +98,7 @@ class QRrawcode {
         $blockNo = 0;
         $dataPos = 0;
         $eccPos = 0;
-        for($i=0; $i<QRspec::rsBlockNum1($spec); $i++) {
+        for ($i=0; $i<QRspec::rsBlockNum1($spec); $i++) {
             $ecc = array_slice($this->ecccode,$eccPos);
             $this->rsblocks[$blockNo] = new QRrsblock($dl, array_slice($this->datacode, $dataPos), $el,  $ecc, $rs);
             $this->ecccode = array_merge(array_slice($this->ecccode,0, $eccPos), $ecc);
@@ -108,16 +108,16 @@ class QRrawcode {
             $blockNo++;
         }
 
-        if(QRspec::rsBlockNum2($spec) == 0)
+        if (QRspec::rsBlockNum2($spec) == 0)
             return 0;
 
         $dl = QRspec::rsDataCodes2($spec);
         $el = QRspec::rsEccCodes2($spec);
         $rs = QRrs::init_rs(8, 0x11d, 0, 1, $el, 255 - $dl - $el);
 
-        if($rs == NULL) return -1;
+        if ($rs == NULL) return -1;
 
-        for($i=0; $i<QRspec::rsBlockNum2($spec); $i++) {
+        for ($i=0; $i<QRspec::rsBlockNum2($spec); $i++) {
             $ecc = array_slice($this->ecccode,$eccPos);
             $this->rsblocks[$blockNo] = new QRrsblock($dl, array_slice($this->datacode, $dataPos), $el, $ecc, $rs);
             $this->ecccode = array_merge(array_slice($this->ecccode,0, $eccPos), $ecc);
@@ -135,14 +135,14 @@ class QRrawcode {
     {
         $ret;
 
-        if($this->count < $this->dataLength) {
+        if ($this->count < $this->dataLength) {
             $row = $this->count % $this->blocks;
             $col = $this->count / $this->blocks;
-            if($col >= $this->rsblocks[0]->dataLength) {
+            if ($col >= $this->rsblocks[0]->dataLength) {
                 $row += $this->b1;
             }
             $ret = $this->rsblocks[$row]->data[$col];
-        } else if($this->count < $this->dataLength + $this->eccLength) {
+        } else if ($this->count < $this->dataLength + $this->eccLength) {
             $row = ($this->count - $this->dataLength) % $this->blocks;
             $col = ($this->count - $this->dataLength) / $this->blocks;
             $ret = $this->rsblocks[$row]->ecc[$col];
@@ -166,10 +166,10 @@ class QRcode {
     //----------------------------------------------------------------------
     public function encodeMask(QRinput $input, $mask)
     {
-        if($input->getVersion() < 0 || $input->getVersion() > QRSPEC_VERSION_MAX) {
+        if ($input->getVersion() < 0 || $input->getVersion() > QRSPEC_VERSION_MAX) {
             throw new Exception('wrong version');
         }
-        if($input->getErrorCorrectionLevel() > QR_ECLEVEL_H) {
+        if ($input->getErrorCorrectionLevel() > QR_ECLEVEL_H) {
             throw new Exception('wrong level');
         }
 
@@ -182,15 +182,15 @@ class QRcode {
         $frame = QRspec::newFrame($version);
 
         $filler = new FrameFiller($width, $frame);
-        if(is_null($filler)) {
+        if (is_null($filler)) {
             return NULL;
         }
 
         // inteleaved data and ecc codes
-        for($i=0; $i<$raw->dataLength + $raw->eccLength; $i++) {
+        for ($i=0; $i<$raw->dataLength + $raw->eccLength; $i++) {
             $code = $raw->getCode();
             $bit = 0x80;
-            for($j=0; $j<8; $j++) {
+            for ($j=0; $j<8; $j++) {
                 $addr = $filler->next();
                 $filler->setFrameAt($addr, 0x02 | (($bit & $code) != 0));
                 $bit = $bit >> 1;
@@ -203,7 +203,7 @@ class QRcode {
 
         // remainder bits
         $j = QRspec::getRemainder($version);
-        for($i=0; $i<$j; $i++) {
+        for ($i=0; $i<$j; $i++) {
             $addr = $filler->next();
             $filler->setFrameAt($addr, 0x02);
         }
@@ -214,7 +214,7 @@ class QRcode {
 
         // masking
         $maskObj = new QRmask();
-        if($mask < 0) {
+        if ($mask < 0) {
 
             if (QR_FIND_BEST_MASK) {
                 $masked = $maskObj->mask($width, $frame, $input->getErrorCorrectionLevel());
@@ -225,7 +225,7 @@ class QRcode {
             $masked = $maskObj->makeMask($width, $frame, $mask, $input->getErrorCorrectionLevel());
         }
 
-        if($masked == NULL) {
+        if ($masked == NULL) {
             return NULL;
         }
 
@@ -247,16 +247,16 @@ class QRcode {
     //----------------------------------------------------------------------
     public function encodeString8bit($string, $version, $level)
     {
-        if(string == NULL) {
+        if (string == NULL) {
             throw new Exception('empty string!');
             return NULL;
         }
 
         $input = new QRinput($version, $level);
-        if($input == NULL) return NULL;
+        if ($input == NULL) return NULL;
 
         $ret = $input->append($input, QR_MODE_8, strlen($string), str_split($string));
-        if($ret < 0) {
+        if ($ret < 0) {
             unset($input);
             return NULL;
         }
@@ -267,16 +267,16 @@ class QRcode {
     public function encodeString($string, $version, $level, $hint, $casesensitive)
     {
 
-        if($hint != QR_MODE_8 && $hint != QR_MODE_KANJI) {
+        if ($hint != QR_MODE_8 && $hint != QR_MODE_KANJI) {
             throw new Exception('bad hint');
             return NULL;
         }
 
         $input = new QRinput($version, $level);
-        if($input == NULL) return NULL;
+        if ($input == NULL) return NULL;
 
         $ret = QRsplit::splitStringToQRinput($string, $input, $hint, $casesensitive);
-        if($ret < 0) {
+        if ($ret < 0) {
             return NULL;
         }
 
@@ -344,7 +344,7 @@ class FrameFiller {
     {
         do {
 
-            if($this->bit == -1) {
+            if ($this->bit == -1) {
                 $this->bit = 0;
                 return array('x'=>$this->x, 'y'=>$this->y);
             }
@@ -353,7 +353,7 @@ class FrameFiller {
             $y = $this->y;
             $w = $this->width;
 
-            if($this->bit == 0) {
+            if ($this->bit == 0) {
                 $x--;
                 $this->bit++;
             } else {
@@ -362,28 +362,28 @@ class FrameFiller {
                 $this->bit--;
             }
 
-            if($this->dir < 0) {
-                if($y < 0) {
+            if ($this->dir < 0) {
+                if ($y < 0) {
                     $y = 0;
                     $x -= 2;
                     $this->dir = 1;
-                    if($x == 6) {
+                    if ($x == 6) {
                         $x--;
                         $y = 9;
                     }
                 }
             } else {
-                if($y == $w) {
+                if ($y == $w) {
                     $y = $w - 1;
                     $x -= 2;
                     $this->dir = -1;
-                    if($x == 6) {
+                    if ($x == 6) {
                         $x--;
                         $y -= 8;
                     }
                 }
             }
-            if($x < 0 || $y < 0) return null;
+            if ($x < 0 || $y < 0) return null;
 
             $this->x = $x;
             $this->y = $y;
@@ -451,7 +451,7 @@ class QRencode {
     {
         $code = new QRcode();
 
-        if($this->eightbit) {
+        if ($this->eightbit) {
             $code->encodeString8bit($intext, $this->version, $this->level);
         } else {
             $code->encodeString($intext, $this->version, $this->level, $this->hint, $this->casesensitive);
@@ -465,7 +465,7 @@ class QRencode {
     {
         $code = new QRcode();
 
-        if($this->eightbit) {
+        if ($this->eightbit) {
             $code->encodeString8bit($intext, $this->version, $this->level);
         } else {
             $code->encodeString($intext, $this->version, $this->level, $this->hint, $this->casesensitive);

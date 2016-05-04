@@ -60,7 +60,7 @@ class BaseResultset extends Resultset
             //get object properties
             $props = is_array($obj) ? get_object_vars((object)$obj) : get_object_vars($obj);
 
-            if(empty($props))
+            if (empty($props))
                 continue;
 
             $new_obj = new \stdClass();
@@ -71,9 +71,9 @@ class BaseResultset extends Resultset
                 $namespace = explode("_", $k);
 
                 //check property namespace, check if class exists in models (append plural noun)
-                if(empty($namespace) || !class_exists(ucfirst($namespace[0]."s"))) {
+                if (empty($namespace) || !class_exists(ucfirst($namespace[0]."s"))) {
 
-                    if(is_null($v)) continue;
+                    if (is_null($v)) continue;
 
                     $type = "global";
                     $prop = $k;
@@ -84,7 +84,7 @@ class BaseResultset extends Resultset
                 }
 
                 //creates the object struct
-                if(!isset($new_obj->{$type}))
+                if (!isset($new_obj->{$type}))
                     $new_obj->{$type} = new \stdClass();
 
                 //set props
@@ -92,7 +92,7 @@ class BaseResultset extends Resultset
             }
 
             //check for a non-props object
-            if(empty(get_object_vars($new_obj)))
+            if (empty(get_object_vars($new_obj)))
                 continue;
 
             array_push($objects, $new_obj);
@@ -121,12 +121,12 @@ class BaseResultset extends Resultset
      */
     public static function getIdsArray($result, $field = "id", $unique = true)
     {
-        $ids = array();
+        $ids = [];
 
         foreach ($result as $object)
             array_push($ids, $object->{$field});
 
-        if(empty($ids))
+        if (empty($ids))
             return false;
 
         return $unique ? array_unique($ids) : $ids;
@@ -140,27 +140,27 @@ class BaseResultset extends Resultset
      */
     public static function mergeArbitraryProps(&$result = null)
     {
-        if($result instanceof Resultset)
+        if ($result instanceof Resultset)
             $result = $this->toArray();
 
-        if(is_object($result))
+        if (is_object($result))
             $result = get_object_vars($result);
 
-        if(empty($result) || !is_array($result))
+        if (empty($result) || !is_array($result))
             return;
 
         //anonymous function, merge _ext prop
         $mergeProps = function(&$object) {
 
-            if(!is_array($object))
+            if (!is_array($object))
                 return;
 
             $props = [];
 
-            if(isset($object["_ext"]))
+            if (isset($object["_ext"]))
                 $props = $object["_ext"];
 
-            if(!is_null($props))
+            if (!is_null($props))
                 $object = array_merge($props, $object);
 
             //unset unwanted props

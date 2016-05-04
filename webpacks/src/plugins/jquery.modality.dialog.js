@@ -20,7 +20,7 @@
 
 (function($)
 {
-	if(typeof $.modality !== "function")
+	if (typeof $.modality !== "function")
 		throw new Error('Modality Dialogs -> jQuery modality plugin is required');
 
 	/** ------------------------------------------------------------------------------------------------
@@ -28,7 +28,7 @@
 	------------------------------------------------------------------------------------------------ **/
 	$.modalityDialog = function(options) {
 
-		if(typeof options == "undefined")
+		if (typeof options == "undefined")
 			options = {};
 
 		//returns the core object
@@ -97,22 +97,22 @@
 			div_wrapper.width(options.width);
 
 			//fix width for small screens
-			if($(window).width() <= options.smallScreen && parseInt(options.width) < 80)
+			if ($(window).width() <= options.smallScreen && parseInt(options.width) < 80)
 				div_wrapper.width("90%");
 
 			//check if dialog must have buttons
-			if(typeof options.buttons !== 'object')
+			if (typeof options.buttons !== 'object')
 				return;
 
 			//append buttons?
 			var show_footer = false;
 			//loop through buttons
 			var index = 0;
-			for(var key in options.buttons) {
+			for (var key in options.buttons) {
 
 				var btn = options.buttons[key];
 
-				if(typeof btn !== 'object' || typeof btn.label == 'undefined')
+				if (typeof btn !== 'object' || typeof btn.label == 'undefined')
 					continue;
 
 				var button_element = $("<button>")
@@ -120,7 +120,7 @@
 										.addClass('button-'+index)
 										.html(btn.label);
 
-				if(typeof btn.click === 'function')
+				if (typeof btn.click === 'function')
 					button_element.click(btn.click);
 				else
 					button_element.click(self.close);
@@ -132,19 +132,19 @@
 			}
 
 			//footer append
-			if(show_footer)
+			if (show_footer)
 				div_footer.appendTo(div_box);
 		},
 		drop: function() {
 			//removes an existing dialog
-			if($("div.modality-dialog").length)
+			if ($("div.modality-dialog").length)
 				$("div.modality-dialog").remove();
 		},
 		show: function(options) {
 
 			var fn_onclose = null;
 			//check onClose function
-			if(typeof options.onClose === 'function')
+			if (typeof options.onClose === 'function')
 				fn_onclose = options.onClose;
 
 			//show modal
@@ -169,7 +169,7 @@
 	//creating an event "destroyed"
 	jQuery.event.special.destroyed = {
 		remove: function(o) {
-		  if(o.handler)
+		  if (o.handler)
 			o.handler();
 		}
 	};

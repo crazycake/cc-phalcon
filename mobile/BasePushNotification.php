@@ -115,7 +115,7 @@ class BasePushNotification extends \CrazyCake\Models\Base
 
         $subscribers = self::find([$conditions, "bind" => $parameters]);
 
-        if(!$as_string)
+        if (!$as_string)
             return $subscribers;
 
         $uuids = \CrazyCake\Models\BaseResultset::getIdsArray($subscribers, "uuid");
@@ -136,11 +136,11 @@ class BasePushNotification extends \CrazyCake\Models\Base
         $current_payload = is_string($this->payload) ? json_decode($this->payload, true) : [];
 
         //validate inputs
-        if(empty($payload))
+        if (empty($payload))
 			throw new Exception("Payload input is required");
 
         //update payload
-        if(is_array($current_payload)) {
+        if (is_array($current_payload)) {
             array_push($current_payload, $payload);
         }
         else {

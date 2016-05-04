@@ -216,7 +216,7 @@ class GCM {
 
 			$this->message_status = [];
 
-			foreach($body->results as $key => $result) {
+			foreach ($body->results as $key => $result) {
 
 				if (isset($result->error) && $result->error) {
 

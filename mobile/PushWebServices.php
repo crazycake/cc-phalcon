@@ -50,7 +50,7 @@ trait PushWebServices
         try {
 
             //service validation
-            if(!in_array($data["service"], self::$SERVICES))
+            if (!in_array($data["service"], self::$SERVICES))
                 $this->_sendJsonResponse(3601);
 
             //subscribe user
@@ -80,7 +80,7 @@ trait PushWebServices
         try {
 
             //service validation
-            if(!in_array($data["service"], self::$SERVICES))
+            if (!in_array($data["service"], self::$SERVICES))
                 $this->_sendJsonResponse(3601);
 
             //send notification
@@ -108,7 +108,7 @@ trait PushWebServices
         try {
 
             //service validation
-            if(!in_array($data["service"], self::$SERVICES))
+            if (!in_array($data["service"], self::$SERVICES))
                 $this->_sendJsonResponse(3601);
 
             //Notification received

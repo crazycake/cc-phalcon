@@ -63,11 +63,11 @@ trait CheckoutManager
         parent::initialize();
 
         //handle loggedIn exception
-        if($this->router->getActionName() == "successCheckoutTask")
+        if ($this->router->getActionName() == "successCheckoutTask")
             return;
 
         //if not logged in
-        if(!$this->_checkUserIsLoggedIn()) {
+        if (!$this->_checkUserIsLoggedIn()) {
 
             //set a flash message for non authenticated users
             $this->flash->notice($this->checkout_manager_conf["trans"]["notice_auth"]);
@@ -103,7 +103,7 @@ trait CheckoutManager
             $checkout_orm = $user_checkout_class::newBuyOrder($this->user_session["id"], $checkout);
 
             //check if an error occurred
-            if(!$checkout_orm)
+            if (!$checkout_orm)
                 throw new Exception($this->checkout_manager_conf["trans"]["error_unexpected"]);
 
             //set buy order
@@ -153,7 +153,7 @@ trait CheckoutManager
             //decrypt data
             $data = $this->cryptify->decryptData($data["payload"], true);
 
-            if(is_null($data) || !isset($data->buy_order))
+            if (is_null($data) || !isset($data->buy_order))
                 throw new Exception("Invalid decrypted data: ".json_encode($data));
 
             //set classes
@@ -167,7 +167,7 @@ trait CheckoutManager
             $user     = $user_class::getById($checkout->user_id);
 
             //check if data is OK
-            if(!$checkout || !$user)
+            if (!$checkout || !$user)
                 throw new Exception("Invalid decrypted data, user or checkout not found: ".json_encode($data));
 
             //reduce object
@@ -186,10 +186,11 @@ trait CheckoutManager
 
             //2) set checkout object classes
             $checkout->objects_classes = [];
+
             foreach ($checkout->objects as $obj) {
 
                 //only once
-                if(in_array($obj->object_class, $checkout->objects_classes))
+                if (in_array($obj->object_class, $checkout->objects_classes))
                     continue;
 
                 //save object class
@@ -198,7 +199,7 @@ trait CheckoutManager
                 //call object class listener
                 $this->logger->debug("CheckoutManager::calling ".$obj->object_class."Controller::onSuccessCheckout");
 
-                if(method_exists($obj->object_class."Controller", "onSuccessCheckout")) {
+                if (method_exists($obj->object_class."Controller", "onSuccessCheckout")) {
 
                     $class_name = $obj->object_class."Controller";
 
@@ -213,13 +214,13 @@ trait CheckoutManager
             $trx = $checkout_trx_class::findFirstByBuyOrder($checkout->buy_order);
             $checkout->trx = $trx ? $trx->reduce() : null;
 
-            if($this->checkout_manager_conf["debug"])
+            if ($this->checkout_manager_conf["debug"])
                 $this->logger->debug("Checkout task complete: ".json_encode($checkout));
 
             //3) Call listener
             $this->onSuccessCheckoutTaskComplete($user->id, $checkout);
         }
-        catch(Exception $e) {
+        catch (Exception $e) {
             //get mailer controller
             $mailer = AppModule::getClass("mailer_controller");
             //send alert system mail message
@@ -245,16 +246,16 @@ trait CheckoutManager
         //get module class name
         $user_checkout_class = AppModule::getClass("user_checkout");
 
-        if(!$checkout || !isset($checkout->buy_order))
+        if (!$checkout || !isset($checkout->buy_order))
             return false;
 
         //get ORM object and update status of checkout
         $checkout_orm = $user_checkout_class::findFirstByBuyOrder($checkout->buy_order);
 
-        if(!$checkout_orm)
+        if (!$checkout_orm)
             return false;
 
-        if($checkout_orm->state == "pending")
+        if ($checkout_orm->state == "pending")
             $user_checkout_class::updateState($checkout->buy_order, "failed");
 
         return true;
@@ -275,13 +276,13 @@ trait CheckoutManager
         //instance cache lib and get data
         $checkout = $user_checkout_class::getLast($this->user_session["id"]);
 
-        if(!$checkout || $checkout->state != "pending")
+        if (!$checkout || $checkout->state != "pending")
             die("No pending checkout found for user id:".$this->user_session["id"]);
 
         //basic security
         $hashed_key = sha1($checkout->buy_order."_".$this->config->app->cryptKey);
 
-        if(APP_ENVIRONMENT != "local" && $code !== $hashed_key)
+        if (APP_ENVIRONMENT != "local" && $code !== $hashed_key)
             return $this->_redirectToNotFound();
 
         //discard ORM props
@@ -297,7 +298,7 @@ trait CheckoutManager
         $this->flash->success($this->checkout_manager_conf["trans"]["success_checkout"]);
 
         //redirect
-        if(!$this->checkout_manager_conf["debug"])
+        if (!$this->checkout_manager_conf["debug"])
             $this->_redirectTo("account");
         else
             echo "CheckoutManager::Config Debug Mode is On...";
@@ -310,13 +311,13 @@ trait CheckoutManager
      */
     public function parseCheckoutObjects(&$checkout = null, $data = [])
     {
-        if(empty($checkout) || empty($data))
+        if (empty($checkout) || empty($data))
             return;
 
-        if(empty($checkout->objects));
+        if (empty($checkout->objects));
             $checkout->objects = [];
 
-        if(empty($checkout->amount))
+        if (empty($checkout->amount))
             $checkout->amount = 0;
 
         //get module class name
@@ -333,7 +334,7 @@ trait CheckoutManager
             $props = explode("_", $key);
 
             //validates checkout data has defined prefix
-            if(strpos($key, "checkout_") === false || count($props) != 3 || empty($q))
+            if (strpos($key, "checkout_") === false || count($props) != 3 || empty($q))
                 continue;
 
             //get object props
@@ -345,14 +346,14 @@ trait CheckoutManager
             //var_dump($object_class, $object_id, $object->toArray());exit;
 
             //check that object is in stock (also validates object exists)
-            if(!$user_checkout_object_class::validateStock($object_class, $object_id, $q)) {
+            if (!$user_checkout_object_class::validateStock($object_class, $object_id, $q)) {
 
                 $this->logger->error("CheckoutManager::_parseCheckoutObjects -> No stock for object $object_class, ID: $object_id, Q: $q.");
                 throw new Exception(str_replace("{name}", $object->name, $this->checkout_manager_conf["trans"]["error_no_stock"]));
             }
 
             //append object class
-            if(!in_array($object_class, $classes))
+            if (!in_array($object_class, $classes))
                 array_push($classes, $object_class);
 
             //update total Q
@@ -455,7 +456,7 @@ trait CheckoutManager
         ]);
 
         //check invoice email if set
-        if(!isset($data["invoice_email"]) || !filter_var($data["invoice_email"], FILTER_VALIDATE_EMAIL))
+        if (!isset($data["invoice_email"]) || !filter_var($data["invoice_email"], FILTER_VALIDATE_EMAIL))
             throw new Exception($this->MSGS["ERROR_INVOICE_EMAIL"]);
 
         //lower case email
@@ -475,11 +476,11 @@ trait CheckoutManager
         //print_r($checkout);exit;
 
         //weird error, no checkout objects
-        if(empty($checkout->objects))
+        if (empty($checkout->objects))
             throw new Exception($this->checkout_manager_conf["trans"]["error_unexpected"]);
 
         //check max objects allowed
-        if($checkout->total_q > $this->checkout_manager_conf["max_user_acquisition"]) {
+        if ($checkout->total_q > $this->checkout_manager_conf["max_user_acquisition"]) {
 
             throw new Exception(str_replace("{num}", $this->checkout_manager_conf["max_user_acquisition"],
                                                      $this->checkout_manager_conf["trans"]["error_max_total"]));

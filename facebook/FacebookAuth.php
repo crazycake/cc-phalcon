@@ -75,7 +75,7 @@ trait FacebookAuth
         $this->facebook_auth_conf = $conf;
 
         //set Facebook Object
-        if(is_null($this->fb)) {
+        if (is_null($this->fb)) {
 
             $this->fb = new \Facebook\Facebook([
                 "app_id"     => $this->config->app->facebook->appID,
@@ -100,7 +100,7 @@ trait FacebookAuth
 
         try {
             //check signed request
-            if(!$this->__parseSignedRequest($data["signed_request"]))
+            if (!$this->__parseSignedRequest($data["signed_request"]))
                 return $this->_sendJsonResponse(405);
 
             //call js helper
@@ -112,7 +112,7 @@ trait FacebookAuth
             $response["perms"] = null;
 
             //check perms
-            if(isset($data["validation"]) && $data["validation"])
+            if (isset($data["validation"]) && $data["validation"])
                 $response["perms"] = $this->_getAccesTokenPermissions($fac, 0, $data["validation"]);
 
             //route object
@@ -126,7 +126,7 @@ trait FacebookAuth
             $this->onSuccessAuth($route, $response);
 
             //handle response, session controller
-            if(isset($data["user_data"]) && $data["user_data"])
+            if (isset($data["user_data"]) && $data["user_data"])
                 return $this->_handleResponseOnLoggedIn("account", $response, false);
             else
                 return $this->_handleResponseOnLoggedIn();
@@ -139,7 +139,7 @@ trait FacebookAuth
         //an exception ocurred
         $msg = isset($exception) ? $exception->getMessage() : $this->facebook_auth_conf["trans"]["oauth_redirected"];
 
-        if($exception instanceof FacebookResponseException)
+        if ($exception instanceof FacebookResponseException)
             $msg = $this->facebook_auth_conf["trans"]["oauth_perms"];
 
         return $this->_sendJsonResponse(200, $msg, "notice");
@@ -160,7 +160,7 @@ trait FacebookAuth
             //get decrypted params
             $route = (array)$this->cryptify->decryptData($encrypted_data, true);
 
-            if(empty($route))
+            if (empty($route))
                 throw new Exception($this->facebook_auth_conf["trans"]["oauth_redirected"]);
 
             //handle login
@@ -168,14 +168,14 @@ trait FacebookAuth
             $response["perms"] = null;
 
             //check perms
-            if(!empty($route["validation"]))
+            if (!empty($route["validation"]))
                 $response["perms"] = $this->_getAccesTokenPermissions($fac, 0, $route["validation"]);
 
             //call listener
             $this->onSuccessAuth($route, $response);
 
             //handle response automatically
-            if(empty($route["controller"]))
+            if (empty($route["controller"]))
                 return $this->_handleResponseOnLoggedIn();
 
             //Redirect
@@ -190,7 +190,7 @@ trait FacebookAuth
         $this->logger->error("Facebook::loginByRedirectAction -> An error ocurred: ".$exception->getMessage());
 
         //debug
-        if($this->request->isAjax())
+        if ($this->request->isAjax())
             return $this->_sendJsonResponse(200, $exception->getMessage(), "alert");
 
         //set message
@@ -209,7 +209,7 @@ trait FacebookAuth
     public function loadFacebookLoginURL($route = array(), $scope = null, $validation = false)
     {
         //check link perms
-        if(empty($scope)) {
+        if (empty($scope)) {
             $scope = $this->config->app->facebook->appScope;
         }
 
@@ -254,7 +254,7 @@ trait FacebookAuth
             $user_facebook_class = AppModule::getClass("user_facebook");
             $user_fb = $user_facebook_class::getById($fb_id);
 
-            if(!$user_fb || empty($short_live_fac))
+            if (!$user_fb || empty($short_live_fac))
                 $this->_sendJsonResponse(400); //bad request
 
             //if a session error ocurred, get a new long live access token
@@ -269,7 +269,7 @@ trait FacebookAuth
                 //set new access token
                 $data = ["fac" => $fac->getValue()];
 
-                if(is_object($fac->getExpiresAt()))
+                if (is_object($fac->getExpiresAt()))
                     $data["expires_at"] = $fac->getExpiresAt()->format("Y-m-d H:i:s");
 
                 //update in db
@@ -312,11 +312,11 @@ trait FacebookAuth
 
         try {
             /** 1.- User deleted tha app from his facebook account settings */
-            if(!empty($data["signed_request"])) {
+            if (!empty($data["signed_request"])) {
 
                 $fb_data = $this->__parseSignedRequest($data["signed_request"]);
 
-                if(!$fb_data)
+                if (!$fb_data)
                     throw new Exception("invalid Facebook Signed Request: ".json_encode($fb_data));
 
                 //invalidate user
@@ -325,10 +325,10 @@ trait FacebookAuth
                 $data = $fb_data["fb_id"];
             }
             /** 2.- An app permission field changed in user facebook account app settings */
-            else if(isset($body) && is_array($body->entry) && !is_null($body->entry[0])) {
+            else if (isset($body) && is_array($body->entry) && !is_null($body->entry[0])) {
 
                 //validate signature
-                if(!isset($headers["X-Hub-Signature"]))
+                if (!isset($headers["X-Hub-Signature"]))
                     throw new Exception("Invalid Facebook Hub Signature");
 
                 //parse body
@@ -341,10 +341,10 @@ trait FacebookAuth
                 $this->onAppDeauthorized($data);
             }
             /** 3.- Validates a FB webhook [Handling Verification Requests, DEV only] **/
-            else if(!empty($data["hub_challenge"]) && !empty($data["hub_verify_token"])) {
+            else if (!empty($data["hub_challenge"]) && !empty($data["hub_verify_token"])) {
 
                 //throw Exception for a invalid token
-                if($data["hub_verify_token"] != $this->config->app->facebook->webhookToken)
+                if ($data["hub_verify_token"] != $this->config->app->facebook->webhookToken)
                     throw new Exception("Invalid Facebook Hub Token");
 
                 //send hub_challenge value
@@ -381,14 +381,14 @@ trait FacebookAuth
             //get fb user data
             $fb_data = $this->getUserData(null, $this->user_session["id"]);
 
-            if(!$fb_data)
+            if (!$fb_data)
                 throw new Exception("Invalid Facebook Access Token");
 
             //validate permissions
             $scope = empty($scope) ? $this->config->app->facebook->appScope : $scope;
             $perms = $this->_getAccesTokenPermissions(null, $this->user_session["id"], $scope);
 
-            if(!$perms)
+            if (!$perms)
                 throw new Exception("App permissions not granted");
 
             //set payload
@@ -415,7 +415,7 @@ trait FacebookAuth
         $this->_checkUserIsLoggedIn(true);
 
         //validate facebook user
-        if(!$this->user_session["fb_id"])
+        if (!$this->user_session["fb_id"])
             $this->_sendJsonResponse(404);
 
         //invalidate user
@@ -440,7 +440,7 @@ trait FacebookAuth
             //get the graph-user object for the current user (validation)
             $response = $this->fb->get("/me?fields=email,name,first_name,last_name,birthday,gender");
 
-            if(!$response)
+            if (!$response)
                 throw new Exception("Invalid facebook data from /me?fields= request.");
 
             //parse user fb session properties
@@ -494,7 +494,7 @@ trait FacebookAuth
             $properties = $this->getUserData($fac);
 
             //validate fb session properties
-            if(!$properties)
+            if (!$properties)
                 throw new Exception($this->facebook_auth_conf["trans"]["session_error"]);
             //print_r($properties);exit;
 
@@ -542,7 +542,7 @@ trait FacebookAuth
                 $login_data["auth"]         = "new_user";
 
                 //check if user is already logged in
-                if($user_session) {
+                if ($user_session) {
 
                     $user = $user_class::getById($user_session["id"]);
                 }
@@ -550,13 +550,13 @@ trait FacebookAuth
                 else {
 
                     //user dont have an account, checking facebook email...
-                    if(!$this->__filterEmail($properties["email"], $properties["fb_id"]))
+                    if (!$this->__filterEmail($properties["email"], $properties["fb_id"]))
                         throw new Exception($this->facebook_auth_conf["trans"]["invalid_email"]);
 
                     //check existing user with input email
                     $user = $user_class::getUserByEmail($properties["email"]);
 
-                    if(!$user) {
+                    if (!$user) {
 
                         //insert user
                         $user = new $user_class();
@@ -610,7 +610,7 @@ trait FacebookAuth
         //get user & update properties
         $user_fb = $user_facebook_class::getById($fb_id);
 
-        if(!$user_fb)
+        if (!$user_fb)
             return false;
 
         $user_data = $user_fb->toArray();
@@ -642,13 +642,13 @@ trait FacebookAuth
 
             $response = $this->fb->get("/me/permissions");
 
-            if(!$response)
+            if (!$response)
                 throw new Exception("Invalid facebook data from /me/permissions request.");
 
             //parse user fb session properties
             $fb_data = $response->getDecodedBody();
 
-            if(!isset($fb_data["data"]) || empty($fb_data["data"]))
+            if (!isset($fb_data["data"]) || empty($fb_data["data"]))
                 throw new Exception("Invalid facebook data from /me/permissions request.");
 
             //get perms array
@@ -656,7 +656,7 @@ trait FacebookAuth
             //print_r($fb_data);exit;
 
             //validate scope permissions
-            if($scope) {
+            if ($scope) {
 
                 $scope = is_array($scope) ? $scope : explode(",", $scope);
 
@@ -664,7 +664,7 @@ trait FacebookAuth
                 foreach ($perms as $p) {
 
                     //validates declined permissions
-                    if(in_array($p["permission"], $scope) && (!isset($p["status"]) || $p["status"] != "granted"))
+                    if (in_array($p["permission"], $scope) && (!isset($p["status"]) || $p["status"] != "granted"))
                         throw new Exception("Facebook perm ".$p["permission"]." is not granted");
                 }
             }
@@ -692,18 +692,18 @@ trait FacebookAuth
         $user_facebook_class = AppModule::getClass("user_facebook");
 
         //get stored fac if its null
-        if(empty($fac)) {
+        if (empty($fac)) {
             //get user
             $user_fb = $user_facebook_class::findFirstByUserId($user_id);
             //validates data
-            if(!$user_fb)
+            if (!$user_fb)
                 throw new Exception("invalid user id");
 
             //get access token
             $fac = $user_fb->fac;
         }
         //check for a fac object
-        else if(is_object($fac)) {
+        else if (is_object($fac)) {
             $fac = $fac->getValue();
         }
 
@@ -772,7 +772,7 @@ trait FacebookAuth
      */
     private function __parseSignedRequest($signed_request = null)
     {
-        if(is_null($signed_request))
+        if (is_null($signed_request))
             return false;
 
         //set facebook app secret
@@ -803,7 +803,7 @@ trait FacebookAuth
         }
 
         //parse data to avoid var mistakes
-        if(isset($data["user_id"])) {
+        if (isset($data["user_id"])) {
 
             $data["fb_id"] = $data["user_id"];
             unset($data["user_id"]);

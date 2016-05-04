@@ -17,7 +17,7 @@ class ExceptionsPlugin extends \Phalcon\Mvc\User\Plugin
 	 */
 	public function __construct()
     {
-		if(!defined("APP_ENVIRONMENT"))
+		if (!defined("APP_ENVIRONMENT"))
             throw new Exception("ExceptionsPlugin::__construct -> APP_ENVIRONMENT is not defined.");
     }
 
@@ -63,7 +63,7 @@ class ExceptionsPlugin extends \Phalcon\Mvc\User\Plugin
 			}
 
 			//log error?
-			if($log_exception)
+			if ($log_exception)
 				$di->getShared("logger")->error("App Exception: ".$exception->getMessage()." File: ".$exception->getFile().". Line: ".$exception->getLine()."</h1>");
 
 			//forward
@@ -71,7 +71,7 @@ class ExceptionsPlugin extends \Phalcon\Mvc\User\Plugin
 			return false;
 		}
 
-		if(APP_ENVIRONMENT !== "production")
+		if (APP_ENVIRONMENT !== "production")
 			die("App Exception: ".$exception->getMessage()." File: ".$exception->getFile().". Line: ".$exception->getLine());
 
 		//log error

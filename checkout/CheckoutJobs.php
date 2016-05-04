@@ -45,7 +45,7 @@ trait CheckoutJobs
      */
     public function userCheckoutCleanerAction()
     {
-        if(MODULE_NAME !== "cli")
+        if (MODULE_NAME !== "cli")
             throw new Exception("This action is only for CLI app.");
 
         $user_checkout_class = AppModule::getClass("user_checkout");
@@ -54,7 +54,7 @@ trait CheckoutJobs
         $objs_deleted = $user_checkout_class::deleteExpired();
 
         //rows affected
-        if($objs_deleted) {
+        if ($objs_deleted) {
 
             $output = "[".date("d-m-Y H:i:s")."] userCheckoutCleaner -> Expired Checkouts deleted: ".$objs_deleted."\n";
             $this->_output($output);
@@ -66,7 +66,7 @@ trait CheckoutJobs
      */
     public function storeDollarChileanPesoValueAction()
     {
-        if(MODULE_NAME !== "cli")
+        if (MODULE_NAME !== "cli")
             throw new Exception("This action is only for CLI app.");
 
         try {
@@ -74,7 +74,7 @@ trait CheckoutJobs
             //get value from remote API
             $value = $this->_apiChileanCurrencyRequest();
 
-            if(empty($value))
+            if (empty($value))
                 throw new Exception("Invalid value received from api chilean currency");
 
             //redis service
@@ -106,7 +106,7 @@ trait CheckoutJobs
         $value = $redis->get(self::$CACHE_KEY_USD_CLP_VALUE);
 
         //fallback
-        if(empty($value))
+        if (empty($value))
             throw new Exception("Invalid value stored in cache. Run CLI to store value");
 
         //apply conversion
@@ -142,12 +142,12 @@ trait CheckoutJobs
         $data = json_decode($json);
 
         //check struct
-        if(!$data || !is_array($data->serie) || empty($data->serie))
+        if (!$data || !is_array($data->serie) || empty($data->serie))
             throw new Exception("Missing 'serie' property for parsed JSON object: ".json_encode($data));
 
         $indicator = $data->serie[0];
 
-        if(!isset($indicator->valor))
+        if (!isset($indicator->valor))
             throw new Exception("Missing 'valor' property for parsed JSON object: ".json_encode($data));
 
         return  (float)($indicator->valor);

@@ -122,7 +122,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
             "field"   => "state",
             "domain"  => self::$STATES,
             "message" => "Invalid state. States supported: ".implode(", ", self::$STATES)
-         ]));
+        ]));
 
         //check validations
         if ($this->validationHasFailed() == true)
@@ -167,7 +167,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
      */
     public static function newBuyOrder($user_id = 0, $checkoutObj = null)
     {
-        if(empty($user_id) || is_null($checkoutObj))
+        if (empty($user_id) || is_null($checkoutObj))
             return false;
 
         //get DI reference (static)
@@ -199,7 +199,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
             //begin trx
             $di->getShared("db")->begin();
 
-            if(!$checkout->save())
+            if (!$checkout->save())
                 throw new Exception("A DB error ocurred saving in checkouts model.");
 
             //save each cehckout item
@@ -211,7 +211,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
                 $props = (array)$obj;
                 $props["buy_order"] = $buy_order;
 
-                if(!$checkoutObj->save($props))
+                if (!$checkoutObj->save($props))
                     throw new Exception("A DB error ocurred saving in checkoutsObjects model.");
             }
 
@@ -220,7 +220,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 
             return $checkout;
         }
-        catch(Exception $e) {
+        catch (Exception $e) {
             $di->getShared("logger")->error("BaseUserCheckout::newBuyOrder -> An error ocurred: ".$e->getMessage());
             $di->getShared("db")->rollback();
             return false;
@@ -238,7 +238,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
         $checkout = self::findFirstByBuyOrder($buy_order);
 
         //check object and default state
-        if(!$checkout || $checkout->state != self::$STATES[0])
+        if (!$checkout || $checkout->state != self::$STATES[0])
             return false;
 
         $checkout->update(["state" => $state]);
@@ -269,7 +269,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 
             $count = 0;
 
-            if($objects) {
+            if ($objects) {
                 //set count
                 $count = $objects->count();
                 //delete action
@@ -279,7 +279,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
             //delete expired objects
             return $count;
         }
-        catch(Exception $e) {
+        catch (Exception $e) {
             //throw new Exception("BaseUserCheckout::deleteExpired -> error: ".$e->getMessage());
             return 0;
         }

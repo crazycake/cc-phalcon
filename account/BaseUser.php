@@ -85,7 +85,7 @@ abstract class BaseUser extends \CrazyCake\Models\Base
     public function afterFetch()
     {
         //hashed ticket id?
-        if(isset($this->id))
+        if (isset($this->id))
             $this->id_hashed = $this->getDI()->getShared('cryptify')->encryptHashId($this->id);
     }
 
@@ -95,7 +95,7 @@ abstract class BaseUser extends \CrazyCake\Models\Base
     public function beforeValidationOnCreate()
     {
         //set password hash
-        if(!is_null($this->pass))
+        if (!is_null($this->pass))
             $this->pass = $this->getDI()->getShared('security')->hash( $this->pass );
 
         //set last login
@@ -158,7 +158,7 @@ abstract class BaseUser extends \CrazyCake\Models\Base
         $conditions = "email = ?1"; //default condition
 
         //filter by account flag?
-        if(!is_null($account_flag) && in_array($account_flag, self::$ACCOUNT_FLAGS)) {
+        if (!is_null($account_flag) && in_array($account_flag, self::$ACCOUNT_FLAGS)) {
 
             $bind[2] = $account_flag;
             $conditions .= " AND account_flag = ?2";

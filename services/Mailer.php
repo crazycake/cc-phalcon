@@ -34,7 +34,7 @@ trait Mailer
      * This method must be call in constructor parent class
      * @param array $conf - The config array
      */
-    public function initMailer($conf = array())
+    public function initMailer($conf = [])
     {
         $this->mailer_conf = $conf;
     }
@@ -70,7 +70,7 @@ trait Mailer
      */
     public function sendSystemMail($message_data)
     {
-    	if(empty($message_data))
+    	if (empty($message_data))
     		return false;
 
         //set message properties
@@ -96,7 +96,7 @@ trait Mailer
     public function sendSystemMailForException($exception, $data = null)
     {
         //Error on success checkout task
-        if(isset($this->logger))
+        if (isset($this->logger))
             $this->logger->error("Mailer::sendExceptionSystemMail -> something ocurred, err: ".$exception->getMessage());
 
         //Sending a warning to admin users!
@@ -257,7 +257,7 @@ trait Mailer
         ];
 
         //append attachments
-        if(!empty($attachments))
+        if (!empty($attachments))
            $message["attachments"] = $attachments;
 
         //send email!

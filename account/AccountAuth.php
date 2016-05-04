@@ -43,7 +43,7 @@ trait AccountAuth
      * This method must be call in constructor parent class
      * @param array $conf - The config array
      */
-    public function initAccountAuth($conf = array())
+    public function initAccountAuth($conf = [])
     {
         $this->account_auth_conf = $conf;
     }
@@ -85,7 +85,7 @@ trait AccountAuth
         $this->view->setVar("signup_session", $signup_session);
 
         //send birthday data for form
-        if(isset($this->account_auth_conf["profile_request_params"]["birthday"]))
+        if (isset($this->account_auth_conf["profile_request_params"]["birthday"]))
             $this->view->setVar("birthday_elements", Forms::getBirthdaySelectors());
 
         //call abstract method
@@ -212,7 +212,7 @@ trait AccountAuth
 
         //validate names
         $nums = "0123456789";
-        if(strcspn($data["first_name"], $nums) != strlen($data["first_name"]) ||
+        if (strcspn($data["first_name"], $nums) != strlen($data["first_name"]) ||
            strcspn($data["last_name"], $nums) != strlen($data["last_name"])) {
 
             $this->_sendJsonResponse(200, $this->account_auth_conf["trans"]["invalid_names"], "alert");

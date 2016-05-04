@@ -33,7 +33,7 @@
 	 */
 	$.modality.close = function() {
 
-		if(!$("div.modality-overlay").length)
+		if (!$("div.modality-overlay").length)
 			return;
 
 		$("div.modality-overlay").trigger("click");
@@ -81,7 +81,7 @@
 			//extend options
 			this.opts = $.extend({}, $.fn.modality.defaults, options);
 			//check if modality was already invoked
-			if($("div.modality-overlay").length || obj.is(":visible"))
+			if ($("div.modality-overlay").length || obj.is(":visible"))
 				return;
 
 			//make and show
@@ -100,13 +100,13 @@
 			var div_overlay = $("<div>").addClass("modality-overlay");
 
 			//OVERLAY CSS
-			if(options.overlay) {
+			if (options.overlay) {
 				//set opacity
 				var opacity = options.overlayAlpha;
 
 				var doc_height = $(document).height();
 
-				if(doc_height < $(window).height())
+				if (doc_height < $(window).height())
 					doc_height = "100%";
 				else
 					doc_height += "px";
@@ -135,7 +135,7 @@
 			var x     = options.left;
 			var xRule = "left";
 
-			if(options.right !== null) {
+			if (options.right !== null) {
 				x     = options.right;
 				xRule = "right";
 			}
@@ -143,7 +143,7 @@
 			var y     = options.top;
 			var yRule = "top";
 
-			if(options.bottom !== null) {
+			if (options.bottom !== null) {
 				y     = options.bottom;
 				yRule = "bottom";
 			}
@@ -153,7 +153,7 @@
 			var elem_height = obj.height();
 
 			//FIXED position
-			if(options.fixed) { 
+			if (options.fixed) { 
 				css_pos = "fixed";
 				//set css position props
 				css_x = x + "%";
@@ -182,7 +182,7 @@
 
 			/** -- EVENTS -- **/
 			//force escape?
-			if(options.escape) {
+			if (options.escape) {
 				//onClick event
 				div_overlay.one("click", function() { 
 					//close action
@@ -196,7 +196,7 @@
 					e.stopPropagation();
 
 					//ENTER or ESC key
-					if(e.keyCode == 27) {
+					if (e.keyCode == 27) {
 						self.close(options, obj);
 					}
 				});
@@ -206,7 +206,7 @@
 			}
 
 			//add "destroyed" event handler for "onClose" param
-			if(typeof options.onClose === 'function')               
+			if (typeof options.onClose === 'function')               
 				div_overlay.bind('destroyed', options.onClose);
 
 			//append to body
@@ -214,13 +214,13 @@
 		},
 		drop: function() {
 			//removes an existing dialog
-			if($("div.modality-overlay").length)
+			if ($("div.modality-overlay").length)
 				$("div.modality-overlay").remove();
 		},
 		show: function(options, obj) {
 
 			//if fixed, disable html,body scroll
-			if(options.fixed) {
+			if (options.fixed) {
 				$("html").css("overflow","hidden");
 				$("body").css("position","relative");
 			}
@@ -234,19 +234,19 @@
 			$("button").blur();
 
 			//show with defined animation?
-			if(typeof options.onShowAnim == "function")
+			if (typeof options.onShowAnim == "function")
 				options.onShowAnim.call();
 			else
 				obj.fadeIn("fast");
 
 			//call onShow function if set
-			if(typeof options.onShow === 'function')
+			if (typeof options.onShow === 'function')
 				options.onShow.call();
 		},
 		close: function(options, obj) {
 			
 			//close with defined animation?
-			if(typeof options.onCloseAnim == "function")
+			if (typeof options.onCloseAnim == "function")
 				options.onCloseAnim.call();
 			else
 				obj.hide();
@@ -255,7 +255,7 @@
 			$("div.modality-overlay").fadeOut();
 
 			//enable back scroll
-			if(options.fixed) {
+			if (options.fixed) {
 				$("html").css("overflow","visible");
 				$("body").css("position","static");				
 			}
@@ -270,7 +270,7 @@
 	//creating an event "destroyed"
 	jQuery.event.special.destroyed = {
 		remove: function(o) {
-		  if(o.handler)
+		  if (o.handler)
 			o.handler();
 		}
 	};

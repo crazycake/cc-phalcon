@@ -74,14 +74,14 @@ trait FacebookActions
         $this->upload_path = PUBLIC_PATH."uploads/temp/";
 
         //upload path
-        if(!is_dir($this->upload_path))
+        if (!is_dir($this->upload_path))
             mkdir($this->upload_path, 0755);
 
         //set redis service
         $this->redis = new Redis();
 
         //set Facebook SDK Object
-        if(is_null($this->fb)) {
+        if (is_null($this->fb)) {
 
             $this->fb = new \Facebook\Facebook([
                 "app_id"     => $this->config->app->facebook->appID,
@@ -109,18 +109,18 @@ trait FacebookActions
         $exception   = false;
 
         //if user dont have a linked FB account.
-        if(!is_object($user_fb) || !isset($user_fb->fac))
+        if (!is_object($user_fb) || !isset($user_fb->fac))
             $is_fallback = true;
 
         //for fallback, switch to user page data
-        if($is_fallback)
+        if ($is_fallback)
             $user_fb = $this->_getPageUser();
 
         try {
 
             //checkin action only once
             $count = 0;
-            if(!$is_fallback) {
+            if (!$is_fallback) {
 
                 //create a unique day key for user, qr_hash & time
                 $key   = sha1($user_fb->id.$payload["action"].date("Y-m-d"));
@@ -150,11 +150,11 @@ trait FacebookActions
         $this->logger->error("FacebookActions::publishAction -> Failed action facebook UserId: ".(is_null($user_fb) ? "null" : $user_fb->id).". Exception: ".$exception->getMessage());
 
         //only photo has fallback
-        if($payload["action"] != "photo")
+        if ($payload["action"] != "photo")
             throw $exception;
 
         //if failed more than once, throw exception
-        if(empty($attempt))
+        if (empty($attempt))
             $this->publish(null, $object, $payload, 1);
         else
             throw $exception;
@@ -171,11 +171,11 @@ trait FacebookActions
      */
     private function _checkinAction($user_fb, $object, $is_fallback = false, $count = 0)
     {
-        if($is_fallback) {
+        if ($is_fallback) {
 
             throw new Exception("Checkin publish action failed (fb error).");
         }
-        else if($this->facebook_actions_conf["publish_day_limit"] && $count > 1) {
+        else if ($this->facebook_actions_conf["publish_day_limit"] && $count > 1) {
 
             throw new Exception("User reached checkin max post times for today (app restriction)");
         }
@@ -183,7 +183,7 @@ trait FacebookActions
         //get event facebook object
         $fb_object = $object->{$this->facebook_actions_conf["object_fb_relation"]};
 
-        if(!$fb_object)
+        if (!$fb_object)
             throw new Exception("Facebook Object is not set up (".$this->facebook_actions_conf["object_fb_relation"].").");
 
         //get message
@@ -217,11 +217,11 @@ trait FacebookActions
      */
     private function _storyAction($user_fb, $object, $is_fallback = false, $count = 0)
     {
-        if($is_fallback) {
+        if ($is_fallback) {
 
             throw new Exception("Story publish action failed (fb error).");
         }
-        else if($this->facebook_actions_conf["publish_day_limit"] && $count > 1) {
+        else if ($this->facebook_actions_conf["publish_day_limit"] && $count > 1) {
 
             throw new Exception("User reached story max post times for today (app restriction)");
         }
@@ -229,7 +229,7 @@ trait FacebookActions
         //get event facebook object
         $fb_object = $object->{$this->facebook_actions_conf["object_fb_relation"]};
 
-        if(!$fb_object)
+        if (!$fb_object)
             throw new Exception("Facebook Object is not set up (".$this->facebook_actions_conf["object_fb_relation"].").");
 
         //set message
@@ -248,7 +248,7 @@ trait FacebookActions
         //get OG object id
         $object_id = is_object($response) ? $response->getField("id") : false;
 
-        if(!$object_id)
+        if (!$object_id)
             throw new Exception("Invalid facebook open graph: ".(int)$object_id);
 
         //now post this story
@@ -285,7 +285,7 @@ trait FacebookActions
         //get event facebook object
         $fb_object = $object->{$this->facebook_actions_conf["object_fb_relation"]};
 
-        if(!$fb_object) {
+        if (!$fb_object) {
             throw new Exception("Facebook Object is not set up (".$this->facebook_actions_conf["object_fb_relation"].").");
         }
 
@@ -309,7 +309,7 @@ trait FacebookActions
             //get raw file
             $base64_string = $this->request->getPost("raw_file");
 
-            if(!$base64_string)
+            if (!$base64_string)
                 throw new Exception("no raw or multipart input file given.");
 
             $file_name = "social-".$object->namespace."-".uniqid().".jpg";
@@ -317,7 +317,7 @@ trait FacebookActions
         }
 
         //set action URI
-        if($is_fallback)
+        if ($is_fallback)
             $action_uri = !is_null($fb_object->album_id) ? $fb_object->album_id."/photos" : $user_fb->id."/photos";
         else
             $action_uri = $user_fb->id."/photos";
@@ -341,8 +341,8 @@ trait FacebookActions
         catch (Exception $e)            { $response = $e; }
         catch (\Exception $e)           { $response = $e; }
 
-         //remove temp file
-         if(is_file($file_path))
+        //remove temp file
+        if (is_file($file_path))
             unlink($file_path);
 
         throw $response;
@@ -354,14 +354,14 @@ trait FacebookActions
     private function _getPageUser()
     {
         //get a facebook admin
-        if(!class_exists(AppModule::getClass("user_facebook_page")))
+        if (!class_exists(AppModule::getClass("user_facebook_page")))
             throw new Exception("UserFacebook class not found [user_facebook_page]");
 
         $fb_pages = AppModule::getClass("user_facebook_page");
 
         $page = $fb_pages::findFirstByAppId($this->config->app->facebook->appID);
 
-        if(!$page)
+        if (!$page)
             throw new Exception("no page found for fb app id: ".$this->config->app->facebook->appID);
 
         return $page;
@@ -391,7 +391,7 @@ trait FacebookActions
         $obj->og__determiner  = isset($data["determiner"]) ? $data["determiner"] : "an";
 
         //set custom props
-        if($obj->og__type == $story_object) {
+        if ($obj->og__type == $story_object) {
 
             //set place caption
             $namespace = $this->facebook_actions_conf["og_namespace"]."__place_caption";

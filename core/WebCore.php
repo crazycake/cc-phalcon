@@ -57,7 +57,7 @@ abstract class WebCore extends MvcCore implements WebSecurity
         $this->_setClientObject();
 
         //if enabledSSL, force redirect for non-https request
-        if( APP_ENVIRONMENT === "production"
+        if ( APP_ENVIRONMENT === "production"
             && isset($_SERVER["HTTP_HOST"])
             && $enableSSL
             && !$this->request->isSecureRequest()) {
@@ -104,7 +104,7 @@ abstract class WebCore extends MvcCore implements WebSecurity
         //check browser is supported (child method)
         $supported = $this->checkBrowserSupport($this->client->browser, $this->client->shortVersion);
         //prevents loops
-        if(!$supported && !$this->dispatcher->getPreviousControllerName()) {
+        if (!$supported && !$this->dispatcher->getPreviousControllerName()) {
             $this->dispatcher->forward(["controller" => "error", "action" => "oldBrowser"]);
             $this->dispatcher->dispatch();
         }
@@ -116,10 +116,10 @@ abstract class WebCore extends MvcCore implements WebSecurity
      * @param string $uri - The URI to redirect
      * @param array $params - The GET params (optional)
      */
-    protected function _redirectTo($uri = "", $params = array())
+    protected function _redirectTo($uri = "", $params = [])
     {
         //parse get params & append them to the URL
-        if(!empty($params)) {
+        if (!empty($params)) {
 
             //anonymous function
             $parser = function (&$item, $key) {
@@ -148,7 +148,7 @@ abstract class WebCore extends MvcCore implements WebSecurity
      */
     protected function _onlyAjax()
     {
-        if(!$this->request->isAjax())
+        if (!$this->request->isAjax())
             $this->_redirectToNotFound();
 
         return true;
@@ -167,10 +167,10 @@ abstract class WebCore extends MvcCore implements WebSecurity
         $this->logger->info("WebCore::_dispatchInternalError -> Something ocurred (message: ".$message."). Error: ".$log_error);
 
         //set message
-        if(!is_null($message))
+        if (!is_null($message))
             $this->view->setVar("error_message", str_replace(".", ".<br/>", $message));
 
-        if(!is_null($go_back_url))
+        if (!is_null($go_back_url))
             $this->view->setVar("go_back", $go_back_url);
 
         $this->dispatcher->forward(["controller" => "error", "action" => "internal"]);
@@ -207,13 +207,13 @@ abstract class WebCore extends MvcCore implements WebSecurity
         $js_url  = $this->_staticUrl(self::ASSETS_MIN_FOLDER_PATH."app.js");
 
         //set no-min assets for local dev
-        if(APP_ENVIRONMENT === "local") {
+        if (APP_ENVIRONMENT === "local") {
 
             $css_url .= "?v=".$version;
             $js_url  .= "?v=".$version;
         }
         //special case for cdn staging or production
-        else if($staticUrl && in_array(APP_ENVIRONMENT, ["staging", "production"])) {
+        else if ($staticUrl && in_array(APP_ENVIRONMENT, ["staging", "production"])) {
 
             $version = str_replace(".", "", $version);
             //set paths
@@ -239,10 +239,10 @@ abstract class WebCore extends MvcCore implements WebSecurity
      * @param array $modules - An array of modules => args
      * @param string $fn - The loader function name
      */
-    protected function _loadJsModules($modules = array(), $fn = self::JS_LOADER_FUNCTION)
+    protected function _loadJsModules($modules = [], $fn = self::JS_LOADER_FUNCTION)
     {
         //skip for legacy browsers
-        if($this->client->isLegacy || empty($modules))
+        if ($this->client->isLegacy || empty($modules))
             return;
 
         $param  = json_encode($modules, JSON_UNESCAPED_SLASHES);
@@ -260,7 +260,7 @@ abstract class WebCore extends MvcCore implements WebSecurity
     private function _setClientObject()
     {
         //for API make a API simple client object
-        if(MODULE_NAME == "api") {
+        if (MODULE_NAME == "api") {
 
             $this->client = (object)[
                 "lang"     => "en",
@@ -283,7 +283,7 @@ abstract class WebCore extends MvcCore implements WebSecurity
 
         //first-time properties. This static properties are saved in session.
         //set language, if only one lang is supported, force it.
-        if(count($this->config->app->langs) > 1)
+        if (count($this->config->app->langs) > 1)
             $this->trans->setLanguage($this->request->getBestLanguage());
         else
             $this->trans->setLanguage($this->config->app->langs[0]);
@@ -300,12 +300,12 @@ abstract class WebCore extends MvcCore implements WebSecurity
             "tokenKey" => $this->security->getTokenKey(),
             "token"    => $this->security->getToken(),
             //UA
-            "platform"      => $userAgent['platform'],
-            "browser"       => $userAgent['browser'],
-            "version"       => $userAgent['version'],
-            "shortVersion"  => $userAgent['short_version'],
-            "isMobile"      => $userAgent['is_mobile'],
-            "isLegacy"      => $userAgent['is_legacy'],
+            "platform"     => $userAgent['platform'],
+            "browser"      => $userAgent['browser'],
+            "version"      => $userAgent['version'],
+            "shortVersion" => $userAgent['short_version'],
+            "isMobile"     => $userAgent['is_mobile'],
+            "isLegacy"     => $userAgent['is_legacy'],
             //set vars to distinguish pecific platforms
             "isIE" => ($userAgent['browser'] == "MSIE") ? true : false,
             //set HTTP protocol
@@ -326,7 +326,7 @@ abstract class WebCore extends MvcCore implements WebSecurity
      */
     private function _updateClientObjectProp($prop = "", $value = "")
     {
-        if(empty($prop))
+        if (empty($prop))
             return false;
 
         //set value
@@ -354,7 +354,7 @@ abstract class WebCore extends MvcCore implements WebSecurity
         $this->setAppJsProperties($js_app);
 
         //set translations?
-        if(class_exists("TranslationController"))
+        if (class_exists("TranslationController"))
             $js_app->TRANS = \TranslationController::getJsTranslations();
 
         //send javascript vars to view as JSON enconded

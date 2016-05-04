@@ -43164,7 +43164,7 @@ module.exports = function() {
         core.ajaxRequest({ method : 'POST', url :  APP.baseUrl + 'auth/resendActivationMailMessage' }, e.target)
         .then(function(payload) {
 
-            if(!payload) return;
+            if (!payload) return;
 
             //modal closer
             core.closeModal($(APP.UI.sel_account_modal));
@@ -43202,7 +43202,7 @@ module.exports = function() {
 module.exports = function() {
 
     //Check that App Global scope vars are defined
-    if(typeof APP == "undefined" || typeof UA == "undefined")
+    if (typeof APP == "undefined" || typeof UA == "undefined")
         throw new Error('App Core -> Error: APP or UA global vars are not defined!');
 
     //self context
@@ -43231,7 +43231,7 @@ module.exports = function() {
     //++ UI vars
 
     //Set App data for selectors
-    if(_.isUndefined(APP.UI)) APP.UI = {};
+    if (_.isUndefined(APP.UI)) APP.UI = {};
 
     //common jQuery selectors
     _.assign(APP.UI, {
@@ -43248,10 +43248,10 @@ module.exports = function() {
     });
 
     //set dynamic required props as default values
-    if(_.isUndefined(APP.UI.alert))
+    if (_.isUndefined(APP.UI.alert))
         APP.UI.alert = { position : "fixed", top : "5%", top_small : "0" };
 
-    if(_.isUndefined(APP.UI.loading))
+    if (_.isUndefined(APP.UI.loading))
         APP.UI.loading = { position : "fixed", top : "25%", top_small : "25%" };
 
     //++ jQuery setup
@@ -43269,14 +43269,14 @@ module.exports = function() {
      */
     self.setModules = function(modules) {
 
-        if(!modules.length)
+        if (!modules.length)
             return;
 
         for (var i = 0; i < modules.length; i++) {
 
             var mod = modules[i];
 
-            if(typeof mod.name !== "undefined")
+            if (typeof mod.name !== "undefined")
                 self.modules[mod.name] = mod;
         }
     };
@@ -43288,22 +43288,22 @@ module.exports = function() {
     self.ready = function() {
 
         //load fast click for mobile
-        if(UA.isMobile && typeof FastClick != "undefined")
+        if (UA.isMobile && typeof FastClick != "undefined")
             FastClick.attach(document.body);
 
         //load Foundation framework
-        if(typeof Foundation != "undefined")
+        if (typeof Foundation != "undefined")
             self.initFoundation();
         //load Bootstrap framework
-        else if(typeof $().emulateTransitionEnd == 'function')
+        else if (typeof $().emulateTransitionEnd == 'function')
             self.initBootstrap();
 
         //load forms module
-        if(typeof core.modules.forms !== "undefined")
+        if (typeof core.modules.forms !== "undefined")
             core.modules.forms.loadForms();
 
         //load UI module
-        if(typeof core.modules.ui !== "undefined")
+        if (typeof core.modules.ui !== "undefined")
             core.modules.ui.init();
 
         //ajax setup
@@ -43314,7 +43314,7 @@ module.exports = function() {
         //check server flash messages
         self.showFlashAlerts();
 
-        if(APP.dev) { console.log("App Core -> Ready!"); }
+        if (APP.dev) { console.log("App Core -> Ready!"); }
     };
 
     /**
@@ -43325,12 +43325,12 @@ module.exports = function() {
      */
     self.initFoundation = function(element) {
 
-        if(APP.dev) { console.log("App Core -> Initializing Foundation..."); }
+        if (APP.dev) { console.log("App Core -> Initializing Foundation..."); }
 
         //check default element
-        if(typeof element == "undefined")
+        if (typeof element == "undefined")
             element = $(document);
-        else if(element instanceof jQuery === false)
+        else if (element instanceof jQuery === false)
             element = $(element);
 
         //set framework
@@ -43345,7 +43345,7 @@ module.exports = function() {
      */
     self.initBootstrap = function() {
 
-        if(APP.dev) { console.log("App Core -> Initializing Bootstrap..."); }
+        if (APP.dev) { console.log("App Core -> Initializing Bootstrap..."); }
 
         //set framework
         self.framework = "bootstrap";
@@ -43364,7 +43364,7 @@ module.exports = function() {
         for (mod_name in modules) {
 
             //check module exists
-            if(_.isUndefined(self.modules[mod_name])) {
+            if (_.isUndefined(self.modules[mod_name])) {
                 console.warn("App Core -> Attempting to load an undefined view module ("+mod_name+").");
                 continue;
             }
@@ -43374,7 +43374,7 @@ module.exports = function() {
             data = modules[mod_name];
 
             //check if module has init method & call it
-            if(_.isFunction(mod.init))
+            if (_.isFunction(mod.init))
                 mod.init(data);
         }
 
@@ -43382,14 +43382,14 @@ module.exports = function() {
         for (mod_name in modules) {
 
             //check module exists
-            if(_.isUndefined(self.modules[mod_name]))
+            if (_.isUndefined(self.modules[mod_name]))
                 continue;
 
             //get module
             mod = self.modules[mod_name];
 
             //bind model to DOM?
-            if(!_.isObject(mod.vm))
+            if (!_.isObject(mod.vm))
                 continue;
 
             vm = _.assign({
@@ -43397,7 +43397,7 @@ module.exports = function() {
                 el : '#vue-' + mod_name
             }, mod.vm);
 
-            if(APP.dev) { console.log("App Core -> Binding " + mod_name + " View Model", vm); }
+            if (APP.dev) { console.log("App Core -> Binding " + mod_name + " View Model", vm); }
 
             //set new Vue instance (object prop updated)
             mod.vm = new Vue(vm);
@@ -43418,11 +43418,11 @@ module.exports = function() {
         var handler = function(options, show_loading) {
 
             //only for POST request
-            if(options.type.toUpperCase() !== "POST") // && options.type.toUpperCase() !== "GET"
+            if (options.type.toUpperCase() !== "POST") // && options.type.toUpperCase() !== "GET"
                 return;
 
             //show loading?
-            if(show_loading) {
+            if (show_loading) {
                 //clear timer
                 clearTimeout(ajax_timer);
                 //waiting time to show loading box
@@ -43455,10 +43455,10 @@ module.exports = function() {
     self.ajaxRequest = function(service, form, extended_data, events) {
 
         //validation, service is required
-        if(typeof service === "undefined")
+        if (typeof service === "undefined")
             throw new Error("App Core -> ajaxRequest invalid inputs!");
 
-        if(typeof form === "undefined")
+        if (typeof form === "undefined")
             form = null;
 
         //define payload
@@ -43466,14 +43466,14 @@ module.exports = function() {
         var submit_btn;
 
         //check for a non jquery object
-        if(!_.isNull(form) && form instanceof jQuery === false)
+        if (!_.isNull(form) && form instanceof jQuery === false)
             form = $(form);
 
         //check form element has a Foundation data-invalid attribute
-        if(!_.isNull(form)) {
+        if (!_.isNull(form)) {
 
             //validate abide form
-            if(!self.modules.forms.isFormValid(form))
+            if (!self.modules.forms.isFormValid(form))
                 return Q();
 
             //serialize data to URL encoding
@@ -43481,25 +43481,25 @@ module.exports = function() {
             //disable submit button
             submit_btn = form.find('button');
 
-            if(submit_btn.length)
+            if (submit_btn.length)
                 submit_btn.attr('disabled','disabled');
         }
 
         //extend more data?
-        if(_.isObject(extended_data)) {
+        if (_.isObject(extended_data)) {
 
             //check if element is null
-            if( _.isNull(form) )
+            if ( _.isNull(form) )
                 _.assign(payload, extended_data); //considerar objetos livianos (selectionDirection error)
             else
                 payload.push({ name : "extended", value : extended_data });  //serialized object struct
         }
 
         //append CSRF token
-        if(service.method == "POST") {
+        if (service.method == "POST") {
 
             //check if element is null
-            if(_.isNull(form))
+            if (_.isNull(form))
                 payload[UA.tokenKey] = UA.token; //object style
             else
                 payload.push({ name : UA.tokenKey, value : UA.token }); //serialized object struct
@@ -43522,7 +43522,7 @@ module.exports = function() {
         .then(function(data) {
 
             //handle ajax response
-            if(!core.handleAjaxResponse(data, events))
+            if (!core.handleAjaxResponse(data, events))
                 return false;
 
             var payload = data.response.payload;
@@ -43533,7 +43533,7 @@ module.exports = function() {
         //promise finisher
         .fin(function() {
 
-            if(_.isObject(submit_btn) && submit_btn.length)
+            if (_.isObject(submit_btn) && submit_btn.length)
                 submit_btn.removeAttr('disabled'); //enable button?
         });
     };
@@ -43548,10 +43548,10 @@ module.exports = function() {
     self.handleAjaxResponse = function(data, events) {
 
         //undefined data?
-        if(_.isUndefined(data) || _.isNull(data))
+        if (_.isUndefined(data) || _.isNull(data))
             return false;
 
-        if(APP.dev) { console.log("App Core [handleAjaxResponse]:", data); }
+        if (APP.dev) { console.log("App Core [handleAjaxResponse]:", data); }
 
         //check for error
         var error    = false;
@@ -43563,12 +43563,12 @@ module.exports = function() {
             var onClickFn = null;
 
             //set the callback function if set in error events functions
-            if(_.isString(response.namespace) && _.isObject(events)) {
+            if (_.isString(response.namespace) && _.isObject(events)) {
 
-                if(_.isObject(events.onClose) && !_.isUndefined(events.onClose[response.namespace]))
+                if (_.isObject(events.onClose) && !_.isUndefined(events.onClose[response.namespace]))
                     onCloseFn = _.isFunction(events.onClose[response.namespace]) ? events.onClose[response.namespace] : null;
 
-                if(_.isObject(events.onClick) && !_.isUndefined(events.onClick[response.namespace]))
+                if (_.isObject(events.onClick) && !_.isUndefined(events.onClick[response.namespace]))
                     onClickFn = _.isFunction(events.onClick[response.namespace]) ? events.onClick[response.namespace] : null;
              }
 
@@ -43577,19 +43577,19 @@ module.exports = function() {
         };
 
         //check for ajax error
-        if(response.status == "error") {
+        if (response.status == "error") {
 
             self.handleAjaxError(response.code, response.error);
             return false;
         }
         //app errors
-        else if(typeof response.type != "undefined") {
+        else if (typeof response.type != "undefined") {
 
             onErrorResponse();
             return false;
         }
         //redirection
-        else if(!_.isUndefined(response.redirect)) {
+        else if (!_.isUndefined(response.redirect)) {
 
             self.redirectTo(response.redirect);
             return true;
@@ -43615,37 +43615,37 @@ module.exports = function() {
         var text    = _.isObject(x) ? x.responseText : code;
 
         //sever parse error
-        if(error == 'parsererror') {
+        if (error == 'parsererror') {
             message = APP.TRANS.ALERTS.INTERNAL_ERROR;
             log     = "App Core -> parsererror: " + text;
         }
         //timeout
-        else if(error == 'timeout' || code == 408) {
+        else if (error == 'timeout' || code == 408) {
             message = APP.TRANS.ALERTS.SERVER_TIMEOUT;
             log     = "App Core -> timeout: " + x;
         }
         //400 bad request
-        else if(code == 400) {
+        else if (code == 400) {
             message = APP.TRANS.ALERTS.BAD_REQUEST;
             log     = "App Core -> bad request: " + code;
         }
         //403 access forbidden
-        else if(code == 403) {
+        else if (code == 403) {
             message = APP.TRANS.ALERTS.ACCESS_FORBIDDEN;
             log     = "App Core -> access forbidden: " + code;
         }
         //404 not found
-        else if(code == 404) {
+        else if (code == 404) {
             message = APP.TRANS.ALERTS.NOT_FOUND;
             log     = "App Core -> not found: " + code;
         }
         //method now allowed (invalid GET or POST method)
-        else if(code == 405) {
+        else if (code == 405) {
             message = APP.TRANS.ALERTS.NOT_FOUND;
             log     = "App Core -> method now allowed: " + code;
         }
         //invalid CSRF token
-        else if(code == 498) {
+        else if (code == 498) {
             message = APP.TRANS.ALERTS.CSRF;
             log     = "App Core -> invalid CSRF token: " + code;
         }
@@ -43655,7 +43655,7 @@ module.exports = function() {
         }
 
         //show log?
-        if(APP.dev && log.length) { console.log(log); }
+        if (APP.dev && log.length) { console.log(log); }
 
         //show the alert message
         self.showAlert(message, 'warning');
@@ -43674,7 +43674,7 @@ module.exports = function() {
         };
 
         //check if has a uri map
-        if(!_.isUndefined(uri_map[uri]))
+        if (!_.isUndefined(uri_map[uri]))
             uri = uri_map[uri];
 
         //redirect to contact
@@ -43695,17 +43695,17 @@ module.exports = function() {
         //set alert types
         var types = ['success', 'warning', 'info', 'alert', 'secondary'];
 
-        if(_.isUndefined(payload))
+        if (_.isUndefined(payload))
             return;
 
         //array filter
-        if(_.isArray(payload) && payload.length > 0)
+        if (_.isArray(payload) && payload.length > 0)
             payload = payload[0];
 
-        if(_.isUndefined(type) || _.indexOf(types, type) == -1)
+        if (_.isUndefined(type) || _.indexOf(types, type) == -1)
             type = 'info';
 
-        if(_.isUndefined(autohide))
+        if (_.isUndefined(autohide))
             autohide = true;
 
         var wrapper_class    = APP.UI.sel_alert_box.replace("div.", "");
@@ -43737,7 +43737,7 @@ module.exports = function() {
         var center_object = function() {
 
             //check if is mobile
-            if(self.checkScreenSize("small")) {
+            if (self.checkScreenSize("small")) {
 
                 div_alert.addClass("small-screen");
                 //center(x,y)
@@ -43748,7 +43748,7 @@ module.exports = function() {
             //normal screens
             var top_value = APP.UI.alert.top;
             //special cases
-            if(top_value == "belowHeader") {
+            if (top_value == "belowHeader") {
 
                 var header = $(APP.UI.sel_header);
                 top_value  = header.length ? header.position().top + header.outerHeight() : "0";
@@ -43767,10 +43767,10 @@ module.exports = function() {
         var hide_alert = function() {
 
             // bind onClose function if defined
-            if(_.isFunction(on_close))
+            if (_.isFunction(on_close))
                 on_close();
 
-            if(!autohide)
+            if (!autohide)
                 return;
 
             div_alert.alive = false;
@@ -43783,7 +43783,7 @@ module.exports = function() {
         anchor_close.click(hide_alert);
 
         // bind onClick function if defined
-        if(_.isFunction(on_click)) {
+        if (_.isFunction(on_click)) {
 
             // add click-able cursor & oneclick event
             div_alert
@@ -43798,7 +43798,7 @@ module.exports = function() {
         //autoclose after x seconds
         _.delay(function() {
             //check if object already exists
-            if(div_alert.alive)
+            if (div_alert.alive)
                 hide_alert();
         }, 8000);
 
@@ -43812,12 +43812,12 @@ module.exports = function() {
     self.showFlashAlerts = function() {
 
         //check for a flash message pending
-        if(!$(APP.UI.sel_flash_messages).length)
+        if (!$(APP.UI.sel_flash_messages).length)
             return;
 
         var messages = $(APP.UI.sel_flash_messages).children('div');
 
-        if(!messages.length)
+        if (!messages.length)
             return;
 
         messages.each(function(index) {
@@ -43825,7 +43825,7 @@ module.exports = function() {
             var html = $(this).html();
             var type = $(this).attr("class");
             //show message
-            if(html.length)
+            if (html.length)
                 self.showAlert(html, type);
         });
 
@@ -43840,14 +43840,14 @@ module.exports = function() {
      */
     self.showLoading = function(hidden) {
 
-        if(_.isUndefined(hidden))
+        if (_.isUndefined(hidden))
             hidden = false;
 
         //set loading object selector
         var loading_obj = $(APP.UI.sel_loading_box);
 
         //create loading object?
-        if(!loading_obj.length) {
+        if (!loading_obj.length) {
 
             //create object and append to body
             var div_loading = $("<div>").attr('id', APP.UI.sel_loading_box.replace("#",""));
@@ -43859,17 +43859,17 @@ module.exports = function() {
             loading_obj = $(APP.UI.sel_loading_box);
 
             //add special behavior for small screen
-            if(self.checkScreenSize("small"))
+            if (self.checkScreenSize("small"))
                 loading_obj.addClass("small-screen");
 
             var top = self.checkScreenSize("small") ? APP.UI.loading.top_small : APP.UI.loading.top;
 
-            if(typeof APP.UI.loading.center != "undefined" && APP.UI.loading.center)
+            if (typeof APP.UI.loading.center != "undefined" && APP.UI.loading.center)
                 loading_obj.center(APP.UI.loading.position, top);
         }
 
         //dont show for hidden flag (debug only)
-        if(!hidden)
+        if (!hidden)
             loading_obj.show("fast");
 
         return loading_obj;
@@ -43883,16 +43883,16 @@ module.exports = function() {
      */
     self.newModal = function(element, options) {
 
-        if(typeof options == "undefined")
+        if (typeof options == "undefined")
             options = {};
 
         //new foundation modal
-        if(core.framework == "foundation") {
+        if (core.framework == "foundation") {
 
             element.foundation('open');
         }
         //new bootstrap modal
-        else if(core.framework == "bootstrap") {
+        else if (core.framework == "bootstrap") {
             element.modal(options);
         }
     };
@@ -43904,9 +43904,9 @@ module.exports = function() {
      */
     self.closeModal = function(element) {
 
-        if(core.framework == "foundation")
+        if (core.framework == "foundation")
             element.foundation('close');
-        else if(core.framework == "bootstrap")
+        else if (core.framework == "bootstrap")
             element.modal('hide');
     };
 
@@ -43920,11 +43920,11 @@ module.exports = function() {
     self.checkScreenSize = function(size) {
 
         //foundation
-        if(self.framework == "foundation")
+        if (self.framework == "foundation")
             return size === Foundation.MediaQuery.current;
 
         //bootstrap
-        if(self.framework == "bootstrap") {
+        if (self.framework == "bootstrap") {
 
             if ($(window).width() < 768)
                 return size === "small";
@@ -43960,7 +43960,7 @@ module.exports = function() {
             return false;
         };
 
-        if(!isRetina()) return;
+        if (!isRetina()) return;
 
         //get elements
         var elements = (typeof context != "undefined") ? $('img[data-retina]', context) : $('img[data-retina]');
@@ -43989,7 +43989,7 @@ module.exports = function() {
 
         $("img").error(function() {
 
-            if(APP.dev) { console.log("App Core -> failed loading image:", $(this).attr("src")); }
+            if (APP.dev) { console.log("App Core -> failed loading image:", $(this).attr("src")); }
 
             $(this).attr("src", APP.UI.url_img_fallback);
         });
@@ -44004,13 +44004,13 @@ module.exports = function() {
      */
     self.preloadImages = function(image_path, indexes) {
 
-        if(_.isUndefined(indexes) || indexes === 0)
+        if (_.isUndefined(indexes) || indexes === 0)
             indexes = 1;
 
         var objects = [];
 
         //preload images
-        for(var i = 0; i < indexes; i++) {
+        for (var i = 0; i < indexes; i++) {
             //create new image object
             objects[i] = new Image();
             //if object has a '$' symbol replace with index
@@ -44031,14 +44031,14 @@ module.exports = function() {
         var assert = true;
 
         //timeout simulator
-        if(option == "timeout") {
+        if (option == "timeout") {
             self.ajaxRequest( { method : 'GET', url : 'http://250.21.0.180:8081/fake/path/' } );
         }
-        else if(option == "loading") {
+        else if (option == "loading") {
             $(APP.UI.sel_loading_box).show();
         }
         //get dom events associated to a given object
-        else if(option == "events") {
+        else if (option == "events") {
             var obj = _.isObject(object) ? object[0] : $(object)[0];
             return $._data(obj, 'events');
         }
@@ -44064,7 +44064,7 @@ module.exports = function() {
     self.name = "facebook";
 
     //Check that facebook conf is set
-    if(_.isUndefined(APP.facebookAppID) || _.isUndefined(UA))
+    if (_.isUndefined(APP.facebookAppID) || _.isUndefined(UA))
         return false;
 
     /**
@@ -44109,7 +44109,7 @@ module.exports = function() {
 	self.init = function() {
 
         //set default login by facebook action
-        if(_.isNull(self.config.login_fn))
+        if (_.isNull(self.config.login_fn))
             self.config.login_fn = self.loginUserByFacebook;
 
 		//append the "fb-root" div required by facebook
@@ -44117,15 +44117,15 @@ module.exports = function() {
 		//set facebook jquery elements
 		var fb_buttons = $('.' + self.config.dom_class);
 		//check if buttons exists
-		if(!fb_buttons.length)
+		if (!fb_buttons.length)
 			return;
 
 		//disable js sdk only for mobile
-		if(!core.modules.facebook.config.disable_js_sdk)
+		if (!core.modules.facebook.config.disable_js_sdk)
 			self.config.disable_js_sdk = UA.isMobile;
 
 		//For mobile use redirections pages, get library request
-		if(!self.config.disable_js_sdk)
+		if (!self.config.disable_js_sdk)
         	return self.getLibraryScript(fb_buttons);
 
 		//click event for redirection strategy
@@ -44135,17 +44135,17 @@ module.exports = function() {
 			var url    = self.config.login_url;
 
 			//share actions
-			if(action == "share-url")
+			if (action == "share-url")
 				url = self.config.share_url.replace("<url>", $(this).attr("data-url"));
 
 			//validates url
-			if(!url.length) {
+			if (!url.length) {
 				console.log("mod_facebook.js -> Invalid redirection URL.");
 				return;
 			}
 
 			//facebook before redirection event
-			if(_.isFunction(self.config.before_redirection_fn))
+			if (_.isFunction(self.config.before_redirection_fn))
 				self.config.before_redirection_fn(url);
 
 			//console.log("mod_facebook.js -> redirecting to: ", url);return;
@@ -44188,7 +44188,7 @@ module.exports = function() {
 	 				var action = $(this).attr("data-action");
 
 	 				//share actions
-					if(action == "share-url") {
+					if (action == "share-url") {
 						self.shareUrl($(this).attr("data-url"));
 						return;
 					}
@@ -44227,7 +44227,7 @@ module.exports = function() {
 			fb_buttons.prop("disabled", false);
 
 			//check auth response, if fail call fallback for login
-			if(response.authResponse)
+			if (response.authResponse)
 				fn_callback(response, action);
 			else
 				self.loginFailed(response);
@@ -44251,11 +44251,11 @@ module.exports = function() {
 	self.loginFailed = function(response, fn_pending) {
 
 		//check response
-		if(_.isUndefined(response.status))
+		if (_.isUndefined(response.status))
 			return;
 
 		//call failed function
-		if(_.isFunction(self.config.login_failed_fn))
+		if (_.isFunction(self.config.login_failed_fn))
 			self.config.login_failed_fn(response.status, fn_pending);
 	};
 
@@ -44281,13 +44281,13 @@ module.exports = function() {
 		//1st check login status
 		FB.getLoginStatus(function(response) {
 			//check response
-			if(!response.authResponse)
+			if (!response.authResponse)
 				return;
 
 			//logout call
 			FB.logout(function(response) {
 				//callback fn is a function?
-				if(_.isFunction(fn_callback))
+				if (_.isFunction(fn_callback))
 					fn_callback();
 			});
 		});
@@ -44335,18 +44335,18 @@ module.exports = function() {
 	self.handleUserData = function(response, action) {
 
 		//check response
-		if(!response.authResponse)
+		if (!response.authResponse)
 			return;
 
 		var data = { "signed_request" : response.authResponse.signedRequest };
 
 		//login / register action
-		if(action == "login") {
+		if (action == "login") {
 			//call logged in function
 			self.config.login_fn(data);
 		}
 		//delete account action
-		else if(action == "deauthorize" && _.isFunction(self.config.deauthorize_fn)) {
+		else if (action == "deauthorize" && _.isFunction(self.config.deauthorize_fn)) {
 			//delete fb app
 			self.config.deauthorize_fn(data);
 		}
@@ -44362,7 +44362,7 @@ module.exports = function() {
 	self.getUserPictureUrl = function(user_id, type) {
 
 		//default type
-		if(!_.isString(type))
+		if (!_.isString(type))
 			type = "square";
 
 		return self.config.graph_url + user_id + "/picture?type=" + type;
@@ -44375,7 +44375,7 @@ module.exports = function() {
 	 */
 	self.shareUrl = function(url) {
 
-		if(!url.length)
+		if (!url.length)
 			return;
 		//console.log(url);
 
@@ -44402,7 +44402,7 @@ module.exports = function() {
 			//check if button has attribute
             var attr = $(this).attr(self.config.loaded_text_attr);
 
-            if(typeof attr === "undefined" || attr === false)
+            if (typeof attr === "undefined" || attr === false)
                 return;
 
 	 		//update text button (search for a one level span)
@@ -44467,7 +44467,7 @@ module.exports = function() {
 
         var forms = (typeof context === "undefined") ? $("form[data-validate]") : $("form[data-validate]", context);
 
-        if(!forms.length) return;
+        if (!forms.length) return;
 
         //loop through each form
         forms.each(function() {
@@ -44485,7 +44485,7 @@ module.exports = function() {
                 var name = $(this).attr("name");
 
                 //skip undefined names
-                if(typeof name === "undefined") return;
+                if (typeof name === "undefined") return;
 
                 //set validators
                 options.fields[name] = {
@@ -44512,10 +44512,10 @@ module.exports = function() {
     self.newFormValidation = function(form, options) {
 
         //default selector
-        if(typeof form == "undefined" || _.isNull(form))
+        if (typeof form == "undefined" || _.isNull(form))
             throw new Error("App Forms -> newFormValidation: A Form object is required!");
 
-        if(form instanceof jQuery === false)
+        if (form instanceof jQuery === false)
             form = $(form);
 
          //set settings
@@ -44538,7 +44538,7 @@ module.exports = function() {
         _.assign(opts, options);
 
         //init plugin
-        if(APP.dev) { console.log("App Forms -> loading form with options:", opts); }
+        if (APP.dev) { console.log("App Forms -> loading form with options:", opts); }
 
         form.formValidation(opts);
     };
@@ -44551,18 +44551,18 @@ module.exports = function() {
      */
     self.isFormValid = function(form) {
 
-        if(form instanceof jQuery === false)
+        if (form instanceof jQuery === false)
             form = $(form);
 
-        if(typeof form.data === "undefined" || typeof form.data('formValidation') === "undefined")
+        if (typeof form.data === "undefined" || typeof form.data('formValidation') === "undefined")
             throw new Error("App Core -> form object has no formValidation instance.");
 
         //check for input hidden fields that are required
         var inputs_hidden = form.find('input[type="hidden"][data-fv-excluded="false"]');
 
-        if(inputs_hidden.length) {
+        if (inputs_hidden.length) {
 
-            if(APP.dev) { console.log("App Core -> Revalidating hidden inputs..."); }
+            if (APP.dev) { console.log("App Core -> Revalidating hidden inputs..."); }
             //loop
             inputs_hidden.each(function() {
                 //revalidate field
@@ -44575,7 +44575,7 @@ module.exports = function() {
         //check result
         var is_valid = form.data('formValidation').isValid();
 
-        if(!is_valid && APP.dev) {
+        if (!is_valid && APP.dev) {
 
             console.log("App Core -> Some form element(s) are not valid:");
 
@@ -44595,7 +44595,7 @@ module.exports = function() {
      */
     self.revalidateFormField = function(form, field) {
 
-        if(form instanceof jQuery === false)
+        if (form instanceof jQuery === false)
             form = $(form);
 
         var fv = form.data('formValidation');
@@ -44609,10 +44609,10 @@ module.exports = function() {
      */
     self.enableFormSubmitButtons = function(form, flag) {
 
-        if(form instanceof jQuery === false)
+        if (form instanceof jQuery === false)
             form = $(form);
 
-        if(typeof flag === "undefined")
+        if (typeof flag === "undefined")
             flag = true;
 
         var fv = form.data('formValidation');
@@ -44626,7 +44626,7 @@ module.exports = function() {
      */
     self.resetForm = function(form) {
 
-        if(form instanceof jQuery === false)
+        if (form instanceof jQuery === false)
             form = $(form);
 
         //clean form
@@ -44644,13 +44644,13 @@ module.exports = function() {
      */
     self.addField = function(field_name, context, validators_obj) {
 
-        if(context instanceof jQuery === false)
+        if (context instanceof jQuery === false)
             context = $(context);
 
         //field target
         var field;
         //set object
-        if(field_name instanceof jQuery === true)
+        if (field_name instanceof jQuery === true)
             field = field_name;
         else
             field = $("[name='"+field_name+"']", context);
@@ -44658,7 +44658,7 @@ module.exports = function() {
         //default validator
         var v = {validators : { notEmpty : {} }};
 
-        if(typeof validators_obj === "object")
+        if (typeof validators_obj === "object")
             v = {validators : validators_obj};
 
         //append required props
@@ -44666,9 +44666,9 @@ module.exports = function() {
 
         var form = field.closest("form");
 
-        if(typeof form === "undefined")
+        if (typeof form === "undefined")
             return console.warn("App Forms [addField] -> Can't find closest element form for field:", field);
-        else if(typeof form.data('formValidation') === "undefined")
+        else if (typeof form.data('formValidation') === "undefined")
             return;
 
         var fv = form.data('formValidation');
@@ -44687,14 +44687,14 @@ module.exports = function() {
 
             var pattern = field.attr("data-fv-required");
 
-            if(!pattern.length)
+            if (!pattern.length)
                 return;
 
             var obj = eval('({' + pattern + '})');
             //append required props
             _.assign(validators, obj);
         }
-        catch(e) {}
+        catch (e) {}
     };
 
     /**
@@ -44705,12 +44705,12 @@ module.exports = function() {
     */
     self.recaptchaOnLoad = function() {
 
-        if(APP.dev) { console.log("App Core -> reCaptcha loaded! Main Selector: " + APP.UI.sel_recaptcha); }
+        if (APP.dev) { console.log("App Core -> reCaptcha loaded! Main Selector: " + APP.UI.sel_recaptcha); }
 
         //calback function when user entered valid data
         var callback_fn = function(value) {
 
-            if(APP.dev) { console.log("App Core -> reCaptcha validation OK!"); }
+            if (APP.dev) { console.log("App Core -> reCaptcha validation OK!"); }
 
             //set valid option on sibling input hidden
             $(APP.UI.sel_recaptcha).siblings('input').eq(0).val("1");
@@ -44736,10 +44736,10 @@ module.exports = function() {
      */
     self.recaptchaReload = function() {
 
-        if(APP.dev) { console.log("App Core -> reloading reCaptcha..."); }
+        if (APP.dev) { console.log("App Core -> reloading reCaptcha..."); }
 
         //reset reCaptcha
-        if(typeof grecaptcha != "undefined")
+        if (typeof grecaptcha != "undefined")
             grecaptcha.reset();
 
         //clean hidden input for validation
@@ -44807,7 +44807,7 @@ module.exports = function() {
  */
 jQuery.fn.center = function(position, top, left) {
 	//set CSS position (fixed, absolute, static)
-	if(typeof position === "undefined")
+	if (typeof position === "undefined")
 		this.css("position", "absolute");
 	else
 		this.css("position", position);
@@ -44815,7 +44815,7 @@ jQuery.fn.center = function(position, top, left) {
 	var px_value = 0;
 
 	//set x position
-	if(typeof left === "undefined") {
+	if (typeof left === "undefined") {
 
 		px_value = Math.max(0, (($(window).width() - $(this).outerWidth()) / 2) + $(window).scrollLeft());
 		this.css("left", px_value + "px");
@@ -44825,7 +44825,7 @@ jQuery.fn.center = function(position, top, left) {
 	}
 
 	//set y position
-	if(typeof top === "undefined") {
+	if (typeof top === "undefined") {
 
 		px_value = Math.max(0, (($(window).height() - $(this).outerHeight()) / 2) + $(window).scrollTop());
 		this.css("top", px_value + "px");
@@ -44844,7 +44844,7 @@ jQuery.fn.center = function(position, top, left) {
  */
 jQuery.fn.padding = function(direction) {
 
-	if(typeof direction === "undefined")
+	if (typeof direction === "undefined")
 		direction = "left";
 
 	//returns int value
@@ -50043,7 +50043,7 @@ if (typeof jQuery === 'undefined') {
 
 (function($)
 {
-	if(typeof $.modality !== "function")
+	if (typeof $.modality !== "function")
 		throw new Error('Modality Dialogs -> jQuery modality plugin is required');
 
 	/** ------------------------------------------------------------------------------------------------
@@ -50051,7 +50051,7 @@ if (typeof jQuery === 'undefined') {
 	------------------------------------------------------------------------------------------------ **/
 	$.modalityDialog = function(options) {
 
-		if(typeof options == "undefined")
+		if (typeof options == "undefined")
 			options = {};
 
 		//returns the core object
@@ -50120,22 +50120,22 @@ if (typeof jQuery === 'undefined') {
 			div_wrapper.width(options.width);
 
 			//fix width for small screens
-			if($(window).width() <= options.smallScreen && parseInt(options.width) < 80)
+			if ($(window).width() <= options.smallScreen && parseInt(options.width) < 80)
 				div_wrapper.width("90%");
 
 			//check if dialog must have buttons
-			if(typeof options.buttons !== 'object')
+			if (typeof options.buttons !== 'object')
 				return;
 
 			//append buttons?
 			var show_footer = false;
 			//loop through buttons
 			var index = 0;
-			for(var key in options.buttons) {
+			for (var key in options.buttons) {
 
 				var btn = options.buttons[key];
 
-				if(typeof btn !== 'object' || typeof btn.label == 'undefined')
+				if (typeof btn !== 'object' || typeof btn.label == 'undefined')
 					continue;
 
 				var button_element = $("<button>")
@@ -50143,7 +50143,7 @@ if (typeof jQuery === 'undefined') {
 										.addClass('button-'+index)
 										.html(btn.label);
 
-				if(typeof btn.click === 'function')
+				if (typeof btn.click === 'function')
 					button_element.click(btn.click);
 				else
 					button_element.click(self.close);
@@ -50155,19 +50155,19 @@ if (typeof jQuery === 'undefined') {
 			}
 
 			//footer append
-			if(show_footer)
+			if (show_footer)
 				div_footer.appendTo(div_box);
 		},
 		drop: function() {
 			//removes an existing dialog
-			if($("div.modality-dialog").length)
+			if ($("div.modality-dialog").length)
 				$("div.modality-dialog").remove();
 		},
 		show: function(options) {
 
 			var fn_onclose = null;
 			//check onClose function
-			if(typeof options.onClose === 'function')
+			if (typeof options.onClose === 'function')
 				fn_onclose = options.onClose;
 
 			//show modal
@@ -50192,7 +50192,7 @@ if (typeof jQuery === 'undefined') {
 	//creating an event "destroyed"
 	jQuery.event.special.destroyed = {
 		remove: function(o) {
-		  if(o.handler)
+		  if (o.handler)
 			o.handler();
 		}
 	};
@@ -50235,7 +50235,7 @@ if (typeof jQuery === 'undefined') {
 	 */
 	$.modality.close = function() {
 
-		if(!$("div.modality-overlay").length)
+		if (!$("div.modality-overlay").length)
 			return;
 
 		$("div.modality-overlay").trigger("click");
@@ -50283,7 +50283,7 @@ if (typeof jQuery === 'undefined') {
 			//extend options
 			this.opts = $.extend({}, $.fn.modality.defaults, options);
 			//check if modality was already invoked
-			if($("div.modality-overlay").length || obj.is(":visible"))
+			if ($("div.modality-overlay").length || obj.is(":visible"))
 				return;
 
 			//make and show
@@ -50302,13 +50302,13 @@ if (typeof jQuery === 'undefined') {
 			var div_overlay = $("<div>").addClass("modality-overlay");
 
 			//OVERLAY CSS
-			if(options.overlay) {
+			if (options.overlay) {
 				//set opacity
 				var opacity = options.overlayAlpha;
 
 				var doc_height = $(document).height();
 
-				if(doc_height < $(window).height())
+				if (doc_height < $(window).height())
 					doc_height = "100%";
 				else
 					doc_height += "px";
@@ -50337,7 +50337,7 @@ if (typeof jQuery === 'undefined') {
 			var x     = options.left;
 			var xRule = "left";
 
-			if(options.right !== null) {
+			if (options.right !== null) {
 				x     = options.right;
 				xRule = "right";
 			}
@@ -50345,7 +50345,7 @@ if (typeof jQuery === 'undefined') {
 			var y     = options.top;
 			var yRule = "top";
 
-			if(options.bottom !== null) {
+			if (options.bottom !== null) {
 				y     = options.bottom;
 				yRule = "bottom";
 			}
@@ -50355,7 +50355,7 @@ if (typeof jQuery === 'undefined') {
 			var elem_height = obj.height();
 
 			//FIXED position
-			if(options.fixed) { 
+			if (options.fixed) { 
 				css_pos = "fixed";
 				//set css position props
 				css_x = x + "%";
@@ -50384,7 +50384,7 @@ if (typeof jQuery === 'undefined') {
 
 			/** -- EVENTS -- **/
 			//force escape?
-			if(options.escape) {
+			if (options.escape) {
 				//onClick event
 				div_overlay.one("click", function() { 
 					//close action
@@ -50398,7 +50398,7 @@ if (typeof jQuery === 'undefined') {
 					e.stopPropagation();
 
 					//ENTER or ESC key
-					if(e.keyCode == 27) {
+					if (e.keyCode == 27) {
 						self.close(options, obj);
 					}
 				});
@@ -50408,7 +50408,7 @@ if (typeof jQuery === 'undefined') {
 			}
 
 			//add "destroyed" event handler for "onClose" param
-			if(typeof options.onClose === 'function')               
+			if (typeof options.onClose === 'function')               
 				div_overlay.bind('destroyed', options.onClose);
 
 			//append to body
@@ -50416,13 +50416,13 @@ if (typeof jQuery === 'undefined') {
 		},
 		drop: function() {
 			//removes an existing dialog
-			if($("div.modality-overlay").length)
+			if ($("div.modality-overlay").length)
 				$("div.modality-overlay").remove();
 		},
 		show: function(options, obj) {
 
 			//if fixed, disable html,body scroll
-			if(options.fixed) {
+			if (options.fixed) {
 				$("html").css("overflow","hidden");
 				$("body").css("position","relative");
 			}
@@ -50436,19 +50436,19 @@ if (typeof jQuery === 'undefined') {
 			$("button").blur();
 
 			//show with defined animation?
-			if(typeof options.onShowAnim == "function")
+			if (typeof options.onShowAnim == "function")
 				options.onShowAnim.call();
 			else
 				obj.fadeIn("fast");
 
 			//call onShow function if set
-			if(typeof options.onShow === 'function')
+			if (typeof options.onShow === 'function')
 				options.onShow.call();
 		},
 		close: function(options, obj) {
 			
 			//close with defined animation?
-			if(typeof options.onCloseAnim == "function")
+			if (typeof options.onCloseAnim == "function")
 				options.onCloseAnim.call();
 			else
 				obj.hide();
@@ -50457,7 +50457,7 @@ if (typeof jQuery === 'undefined') {
 			$("div.modality-overlay").fadeOut();
 
 			//enable back scroll
-			if(options.fixed) {
+			if (options.fixed) {
 				$("html").css("overflow","visible");
 				$("body").css("position","static");				
 			}
@@ -50472,7 +50472,7 @@ if (typeof jQuery === 'undefined') {
 	//creating an event "destroyed"
 	jQuery.event.special.destroyed = {
 		remove: function(o) {
-		  if(o.handler)
+		  if (o.handler)
 			o.handler();
 		}
 	};

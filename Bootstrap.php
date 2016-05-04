@@ -16,7 +16,7 @@ foreach ($modules as $dir) {
 
 	$dir_path = __DIR__."/".$dir;
 	//check for a directory
-	if(!is_dir($dir_path) || strpos($dir, '.') !== false)
+	if (!is_dir($dir_path) || strpos($dir, '.') !== false)
 		continue;
 
 	$files 	 = scandir(__DIR__."/".$dir);
@@ -27,14 +27,14 @@ foreach ($modules as $dir) {
 		$file_path = $dir_path."/".$file;
 
 		//check for a file
-		if(!is_file($file_path) || strpos($file, '.php') === false)
+		if (!is_file($file_path) || strpos($file, '.php') === false)
 			continue;
 
 		//push class to array
 		array_push($classes, $file);
 	}
 
-	if(!empty($classes))
+	if (!empty($classes))
 		$class_map[$dir] = $classes;
 }
 

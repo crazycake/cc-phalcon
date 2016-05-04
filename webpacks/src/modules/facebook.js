@@ -10,7 +10,7 @@ module.exports = function() {
     self.name = "facebook";
 
     //Check that facebook conf is set
-    if(_.isUndefined(APP.facebookAppID) || _.isUndefined(UA))
+    if (_.isUndefined(APP.facebookAppID) || _.isUndefined(UA))
         return false;
 
     /**
@@ -55,7 +55,7 @@ module.exports = function() {
 	self.init = function() {
 
         //set default login by facebook action
-        if(_.isNull(self.config.login_fn))
+        if (_.isNull(self.config.login_fn))
             self.config.login_fn = self.loginUserByFacebook;
 
 		//append the "fb-root" div required by facebook
@@ -63,15 +63,15 @@ module.exports = function() {
 		//set facebook jquery elements
 		var fb_buttons = $('.' + self.config.dom_class);
 		//check if buttons exists
-		if(!fb_buttons.length)
+		if (!fb_buttons.length)
 			return;
 
 		//disable js sdk only for mobile
-		if(!core.modules.facebook.config.disable_js_sdk)
+		if (!core.modules.facebook.config.disable_js_sdk)
 			self.config.disable_js_sdk = UA.isMobile;
 
 		//For mobile use redirections pages, get library request
-		if(!self.config.disable_js_sdk)
+		if (!self.config.disable_js_sdk)
         	return self.getLibraryScript(fb_buttons);
 
 		//click event for redirection strategy
@@ -81,17 +81,17 @@ module.exports = function() {
 			var url    = self.config.login_url;
 
 			//share actions
-			if(action == "share-url")
+			if (action == "share-url")
 				url = self.config.share_url.replace("<url>", $(this).attr("data-url"));
 
 			//validates url
-			if(!url.length) {
+			if (!url.length) {
 				console.log("mod_facebook.js -> Invalid redirection URL.");
 				return;
 			}
 
 			//facebook before redirection event
-			if(_.isFunction(self.config.before_redirection_fn))
+			if (_.isFunction(self.config.before_redirection_fn))
 				self.config.before_redirection_fn(url);
 
 			//console.log("mod_facebook.js -> redirecting to: ", url);return;
@@ -134,7 +134,7 @@ module.exports = function() {
 	 				var action = $(this).attr("data-action");
 
 	 				//share actions
-					if(action == "share-url") {
+					if (action == "share-url") {
 						self.shareUrl($(this).attr("data-url"));
 						return;
 					}
@@ -173,7 +173,7 @@ module.exports = function() {
 			fb_buttons.prop("disabled", false);
 
 			//check auth response, if fail call fallback for login
-			if(response.authResponse)
+			if (response.authResponse)
 				fn_callback(response, action);
 			else
 				self.loginFailed(response);
@@ -197,11 +197,11 @@ module.exports = function() {
 	self.loginFailed = function(response, fn_pending) {
 
 		//check response
-		if(_.isUndefined(response.status))
+		if (_.isUndefined(response.status))
 			return;
 
 		//call failed function
-		if(_.isFunction(self.config.login_failed_fn))
+		if (_.isFunction(self.config.login_failed_fn))
 			self.config.login_failed_fn(response.status, fn_pending);
 	};
 
@@ -227,13 +227,13 @@ module.exports = function() {
 		//1st check login status
 		FB.getLoginStatus(function(response) {
 			//check response
-			if(!response.authResponse)
+			if (!response.authResponse)
 				return;
 
 			//logout call
 			FB.logout(function(response) {
 				//callback fn is a function?
-				if(_.isFunction(fn_callback))
+				if (_.isFunction(fn_callback))
 					fn_callback();
 			});
 		});
@@ -281,18 +281,18 @@ module.exports = function() {
 	self.handleUserData = function(response, action) {
 
 		//check response
-		if(!response.authResponse)
+		if (!response.authResponse)
 			return;
 
 		var data = { "signed_request" : response.authResponse.signedRequest };
 
 		//login / register action
-		if(action == "login") {
+		if (action == "login") {
 			//call logged in function
 			self.config.login_fn(data);
 		}
 		//delete account action
-		else if(action == "deauthorize" && _.isFunction(self.config.deauthorize_fn)) {
+		else if (action == "deauthorize" && _.isFunction(self.config.deauthorize_fn)) {
 			//delete fb app
 			self.config.deauthorize_fn(data);
 		}
@@ -308,7 +308,7 @@ module.exports = function() {
 	self.getUserPictureUrl = function(user_id, type) {
 
 		//default type
-		if(!_.isString(type))
+		if (!_.isString(type))
 			type = "square";
 
 		return self.config.graph_url + user_id + "/picture?type=" + type;
@@ -321,7 +321,7 @@ module.exports = function() {
 	 */
 	self.shareUrl = function(url) {
 
-		if(!url.length)
+		if (!url.length)
 			return;
 		//console.log(url);
 
@@ -348,7 +348,7 @@ module.exports = function() {
 			//check if button has attribute
             var attr = $(this).attr(self.config.loaded_text_attr);
 
-            if(typeof attr === "undefined" || attr === false)
+            if (typeof attr === "undefined" || attr === false)
                 return;
 
 	 		//update text button (search for a one level span)

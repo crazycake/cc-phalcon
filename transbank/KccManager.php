@@ -89,7 +89,7 @@ trait KccManager
         ];
 
         //for debugging, redirect to skip payment
-        if(APP_ENVIRONMENT == "local") {
+        if (APP_ENVIRONMENT == "local") {
             $inputs["TBK_URL_PAGO"] = $this->_baseUrl(self::$HANDLER_DEBUG_URI);
         }
 
@@ -108,7 +108,7 @@ trait KccManager
     {
         $this->logger->debug("KccManager::_successTrxAction -> Got  encrypted data: $encrypted_data");
 
-        if(empty($encrypted_data))
+        if (empty($encrypted_data))
             $this->_redirectToNotFound();
 
         try {
@@ -123,7 +123,7 @@ trait KccManager
             $checkout = $user_checkout_class::findFirstByBuyOrder($buy_order);
 
             //checks session id
-            if(!$checkout)
+            if (!$checkout)
                 throw new Exception("Checkout not found with Buy Order: $buy_order");
 
             //reduce checkout object
@@ -132,17 +132,17 @@ trait KccManager
             $params = $this->_parseMacFile($buy_order);
 
             //check MAC file exists
-            if(!$params || $checkout->buy_order != $params["TBK_ORDEN_COMPRA"])
+            if (!$params || $checkout->buy_order != $params["TBK_ORDEN_COMPRA"])
                 throw new Exception("Invalid MAC file or buyOrders inconsistency. Buy Order: $buy_order");
 
             //check if trx was already processed
-            if($checkout_trx_class::findFirstByBuyOrder($checkout->buy_order))
+            if ($checkout_trx_class::findFirstByBuyOrder($checkout->buy_order))
                 throw new Exception("Transaction already processed for buy order: ".$checkout->buy_order);
 
             //create & save a new transaction
             $trx = new $checkout_trx_class();
 
-            if(!$trx->save($this->_parseKccTrx($params, $checkout)))
+            if (!$trx->save($this->_parseKccTrx($params, $checkout)))
                 throw new Exception("Error saving transaction: ".$trx->filterMessages(true));
 
             $this->logger->debug("KccManager::successTrxAction -> successCheckout: ".json_encode($checkout));
@@ -201,7 +201,7 @@ trait KccManager
             //get checkout
             $checkout = $user_checkout_class::findFirstByBuyOrder($data["TBK_ORDEN_COMPRA"]);
 
-            if(!$checkout)
+            if (!$checkout)
                 throw new Exception("Checkout not found. TBK_ORDEN_COMPRA: ".$data["TBK_ORDEN_COMPRA"]);
 
             //reduce checkout object
@@ -210,13 +210,13 @@ trait KccManager
             //parse transbank MAC file
             $params = $this->_parseMacFile($checkout->buy_order);
 
-            if(!$params)
+            if (!$params)
                 throw new Exception("Invalid checkout params. Input data ".json_encode($data));
 
             //get extend props
             $checkout->trx = $checkout_trx_class::findFirstByBuyOrder($checkout->buy_order);
 
-            if(!$checkout->trx)
+            if (!$checkout->trx)
                 throw new Exception("No processed TRX found for Buy Order: ".$checkout->buy_order);
 
             //get checkout objects
@@ -261,7 +261,7 @@ trait KccManager
         $checkout = $user_checkout_class::findFirstByBuyOrder($data["TBK_ORDEN_COMPRA"]);
 
         //set checkout uri
-        if($checkout) {
+        if ($checkout) {
             //call failed checkout
             (new $checkout_controller())->failedCheckout($checkout);
             //get last requested URI
@@ -283,7 +283,7 @@ trait KccManager
      */
     public function renderSuccessAction()
     {
-        if(APP_ENVIRONMENT == "production")
+        if (APP_ENVIRONMENT == "production")
             $this->_redirectToNotFound();
 
         //handle response, dispatch to auth/logout
@@ -296,7 +296,7 @@ trait KccManager
         //get last checkout
         $checkout = $user_checkout_class::getLast($this->user_session["id"], "success");
 
-        if(!$checkout)
+        if (!$checkout)
             die("Render: No buy order to process for userID:".$this->user_session["id"]);
 
         //reduce checkout object
@@ -365,17 +365,17 @@ trait KccManager
      */
     private function _parseMacFile($buy_order = "", $outputs_path = null, $file_prefix = null)
     {
-        if(is_null($file_prefix))
+        if (is_null($file_prefix))
             $file_prefix = self::$MAC_FILE_PREFIX_NAME;
 
-        if(is_null($outputs_path))
+        if (is_null($outputs_path))
             $outputs_path = self::$OUTPUTS_PATH;
 
         $file = PROJECT_PATH.$outputs_path.$file_prefix.$buy_order.".log";
 
         try {
             //check if file exists
-            if(!is_file($file))
+            if (!is_file($file))
                 throw new Exception("No MAC file found");
 
             //get transbank data from file
@@ -393,7 +393,7 @@ trait KccManager
                 $array = explode($delim, $value);
                 $prop  = $array[0];
 
-                if($prop == "TBK_MAC")
+                if ($prop == "TBK_MAC")
                     continue;
 
                 $params[$prop] = isset($array[1]) ? $array[1] : null;
@@ -401,10 +401,10 @@ trait KccManager
 
             /* validate & format some params */
 
-            if(!isset($params["TBK_MONTO"]))
+            if (!isset($params["TBK_MONTO"]))
                 throw new Exception("Invalid parsed mount ".$params["TBK_MONTO"]);
 
-            if(!isset($params["TBK_FECHA_TRANSACCION"]))
+            if (!isset($params["TBK_FECHA_TRANSACCION"]))
                 throw new Exception("Invalid parsed date".$params["TBK_FECHA_TRANSACCION"]);
 
             //amount
@@ -420,12 +420,12 @@ trait KccManager
             $params["TBK_DATE_FORMATO"] = Dates::getTranslatedDateTime(null, $date[0], $date[1], implode(":", $time));
 
             //payment type
-            if(isset($this->kcc_payment_types[$params["TBK_TIPO_PAGO"]])) {
+            if (isset($this->kcc_payment_types[$params["TBK_TIPO_PAGO"]])) {
 
                 $type = $params["TBK_TIPO_PAGO"];
                 $params["TBK_TIPO_PAGO"] = $this->kcc_payment_types[$type];
                 //caso especial para cuotas VC
-                if($type == "VC")
+                if ($type == "VC")
                     $params["TBK_TIPO_PAGO"][3] = $params["TBK_NUMERO_CUOTAS"];
             }
 

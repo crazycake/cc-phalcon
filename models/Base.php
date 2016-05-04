@@ -41,7 +41,7 @@ class Base extends \Phalcon\Mvc\Model
      */
     public function beforeValidationOnUpdate()
     {
-        if(isset($this->_ext))
+        if (isset($this->_ext))
             $this->_ext = null;
     }
 
@@ -67,12 +67,12 @@ class Base extends \Phalcon\Mvc\Model
      * @param string $className - A different class name than self (optional)
      * @return mixed
      */
-    public static function getByQuery($sql = "SELECT 1", $binds = array(), $className = null)
+    public static function getByQuery($sql = "SELECT 1", $binds = [], $className = null)
     {
-        if(is_null($binds))
+        if (is_null($binds))
             $binds = [];
 
-        if(is_null($className))
+        if (is_null($className))
             $className = static::who();
 
         $objects = new $className();
@@ -90,12 +90,12 @@ class Base extends \Phalcon\Mvc\Model
      * @param string $className - A different class name than self (optional)
      * @return object
      */
-    public static function getPropertyByQuery($sql = "SELECT 1", $prop = "id", $binds = array(), $className = null)
+    public static function getPropertyByQuery($sql = "SELECT 1", $prop = "id", $binds = [], $className = null)
     {
-        if(is_null($binds))
+        if (is_null($binds))
             $binds = [];
 
-        if(is_null($className))
+        if (is_null($className))
             $className = static::who();
 
         $object = new $className();
@@ -112,15 +112,15 @@ class Base extends \Phalcon\Mvc\Model
      * @param array $binds - The binding params array
      * @return array
      */
-    public static function getByPhql($phql = "SELECT 1", $binds = array())
+    public static function getByPhql($phql = "SELECT 1", $binds = [])
     {
-        if(is_null($binds))
+        if (is_null($binds))
             $binds = [];
 
         $query  = new PHQL($phql, \Phalcon\DI::getDefault());
         $result = $query->execute($binds);
 
-        if(empty($result->count()))
+        if (empty($result->count()))
             return false;
 
         return $result;
@@ -133,9 +133,9 @@ class Base extends \Phalcon\Mvc\Model
      * @param array $binds - The binding params array
      * @return boolean
      */
-    public static function executePhql($phql = "SELECT 1", $binds = array())
+    public static function executePhql($phql = "SELECT 1", $binds = [])
     {
-        if(is_null($binds))
+        if (is_null($binds))
             $binds = [];
 
         $query = new PHQL($phql, \Phalcon\DI::getDefault());
@@ -170,7 +170,7 @@ class Base extends \Phalcon\Mvc\Model
         foreach ($this->getMessages() as $msg)
             array_push($data, $msg->getMessage());
 
-        if($json_encode)
+        if ($json_encode)
             $data = json_encode($data);
 
         return $data;

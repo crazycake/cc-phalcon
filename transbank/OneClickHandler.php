@@ -78,7 +78,7 @@ class OneClickHandler
             //set security files
             $this->soapClient->setSecurityFiles($key_file_path, $cert_file_path);
         }
-        catch(Exception $e) {
+        catch (Exception $e) {
             throw new Exception("OneClick -> Soap Client Lib is required");
         }
     }

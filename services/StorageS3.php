@@ -48,20 +48,20 @@ class StorageS3
      */
     function __construct($access = "", $secret = "", $bucket = "", $autoenv = true)
     {
-        if(empty($access)) {
+        if (empty($access)) {
             throw new Exception("StorageS3::__construct -> param access is required and must be an non-empty value.");
         }
-        else if(empty($secret)) {
+        else if (empty($secret)) {
             throw new Exception("StorageS3::__construct -> param secret is required and must be an non-empty value.");
         }
-        else if(empty($bucket)) {
+        else if (empty($bucket)) {
             throw new Exception("StorageS3::__construct -> param bucket is required and must be an non-empty value.");
         }
 
         //set app AWS S3 bucket
         $suffix = "";
 
-        if($autoenv && defined("APP_ENVIRONMENT"))
+        if ($autoenv && defined("APP_ENVIRONMENT"))
             $suffix = (APP_ENVIRONMENT === "production") ? "-prod" : "-dev";
 
         $this->accessKey  = $access;
@@ -104,7 +104,7 @@ class StorageS3
     {
         $object = S3::getObject($this->bucketName, $uploadName);
 
-        if($object && $parseBody)
+        if ($object && $parseBody)
             $object = $object->body;
 
         return $object;
@@ -129,7 +129,7 @@ class StorageS3
       */
      public function copyObject($uploadName, $bucketDest = null, $saveName = null)
      {
-         if(is_null($bucketDest))
+         if (is_null($bucketDest))
             $bucketDest = $this->bucketName;
 
          return S3::copyObject($this->bucketName, $uploadName, $bucketDest, $saveName);

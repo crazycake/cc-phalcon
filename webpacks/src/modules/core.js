@@ -9,7 +9,7 @@
 module.exports = function() {
 
     //Check that App Global scope vars are defined
-    if(typeof APP == "undefined" || typeof UA == "undefined")
+    if (typeof APP == "undefined" || typeof UA == "undefined")
         throw new Error('App Core -> Error: APP or UA global vars are not defined!');
 
     //self context
@@ -38,7 +38,7 @@ module.exports = function() {
     //++ UI vars
 
     //Set App data for selectors
-    if(_.isUndefined(APP.UI)) APP.UI = {};
+    if (_.isUndefined(APP.UI)) APP.UI = {};
 
     //common jQuery selectors
     _.assign(APP.UI, {
@@ -55,10 +55,10 @@ module.exports = function() {
     });
 
     //set dynamic required props as default values
-    if(_.isUndefined(APP.UI.alert))
+    if (_.isUndefined(APP.UI.alert))
         APP.UI.alert = { position : "fixed", top : "5%", top_small : "0" };
 
-    if(_.isUndefined(APP.UI.loading))
+    if (_.isUndefined(APP.UI.loading))
         APP.UI.loading = { position : "fixed", top : "25%", top_small : "25%" };
 
     //++ jQuery setup
@@ -76,14 +76,14 @@ module.exports = function() {
      */
     self.setModules = function(modules) {
 
-        if(!modules.length)
+        if (!modules.length)
             return;
 
         for (var i = 0; i < modules.length; i++) {
 
             var mod = modules[i];
 
-            if(typeof mod.name !== "undefined")
+            if (typeof mod.name !== "undefined")
                 self.modules[mod.name] = mod;
         }
     };
@@ -95,22 +95,22 @@ module.exports = function() {
     self.ready = function() {
 
         //load fast click for mobile
-        if(UA.isMobile && typeof FastClick != "undefined")
+        if (UA.isMobile && typeof FastClick != "undefined")
             FastClick.attach(document.body);
 
         //load Foundation framework
-        if(typeof Foundation != "undefined")
+        if (typeof Foundation != "undefined")
             self.initFoundation();
         //load Bootstrap framework
-        else if(typeof $().emulateTransitionEnd == 'function')
+        else if (typeof $().emulateTransitionEnd == 'function')
             self.initBootstrap();
 
         //load forms module
-        if(typeof core.modules.forms !== "undefined")
+        if (typeof core.modules.forms !== "undefined")
             core.modules.forms.loadForms();
 
         //load UI module
-        if(typeof core.modules.ui !== "undefined")
+        if (typeof core.modules.ui !== "undefined")
             core.modules.ui.init();
 
         //ajax setup
@@ -121,7 +121,7 @@ module.exports = function() {
         //check server flash messages
         self.showFlashAlerts();
 
-        if(APP.dev) { console.log("App Core -> Ready!"); }
+        if (APP.dev) { console.log("App Core -> Ready!"); }
     };
 
     /**
@@ -132,12 +132,12 @@ module.exports = function() {
      */
     self.initFoundation = function(element) {
 
-        if(APP.dev) { console.log("App Core -> Initializing Foundation..."); }
+        if (APP.dev) { console.log("App Core -> Initializing Foundation..."); }
 
         //check default element
-        if(typeof element == "undefined")
+        if (typeof element == "undefined")
             element = $(document);
-        else if(element instanceof jQuery === false)
+        else if (element instanceof jQuery === false)
             element = $(element);
 
         //set framework
@@ -152,7 +152,7 @@ module.exports = function() {
      */
     self.initBootstrap = function() {
 
-        if(APP.dev) { console.log("App Core -> Initializing Bootstrap..."); }
+        if (APP.dev) { console.log("App Core -> Initializing Bootstrap..."); }
 
         //set framework
         self.framework = "bootstrap";
@@ -171,7 +171,7 @@ module.exports = function() {
         for (mod_name in modules) {
 
             //check module exists
-            if(_.isUndefined(self.modules[mod_name])) {
+            if (_.isUndefined(self.modules[mod_name])) {
                 console.warn("App Core -> Attempting to load an undefined view module ("+mod_name+").");
                 continue;
             }
@@ -181,7 +181,7 @@ module.exports = function() {
             data = modules[mod_name];
 
             //check if module has init method & call it
-            if(_.isFunction(mod.init))
+            if (_.isFunction(mod.init))
                 mod.init(data);
         }
 
@@ -189,14 +189,14 @@ module.exports = function() {
         for (mod_name in modules) {
 
             //check module exists
-            if(_.isUndefined(self.modules[mod_name]))
+            if (_.isUndefined(self.modules[mod_name]))
                 continue;
 
             //get module
             mod = self.modules[mod_name];
 
             //bind model to DOM?
-            if(!_.isObject(mod.vm))
+            if (!_.isObject(mod.vm))
                 continue;
 
             vm = _.assign({
@@ -204,7 +204,7 @@ module.exports = function() {
                 el : '#vue-' + mod_name
             }, mod.vm);
 
-            if(APP.dev) { console.log("App Core -> Binding " + mod_name + " View Model", vm); }
+            if (APP.dev) { console.log("App Core -> Binding " + mod_name + " View Model", vm); }
 
             //set new Vue instance (object prop updated)
             mod.vm = new Vue(vm);
@@ -225,11 +225,11 @@ module.exports = function() {
         var handler = function(options, show_loading) {
 
             //only for POST request
-            if(options.type.toUpperCase() !== "POST") // && options.type.toUpperCase() !== "GET"
+            if (options.type.toUpperCase() !== "POST") // && options.type.toUpperCase() !== "GET"
                 return;
 
             //show loading?
-            if(show_loading) {
+            if (show_loading) {
                 //clear timer
                 clearTimeout(ajax_timer);
                 //waiting time to show loading box
@@ -262,10 +262,10 @@ module.exports = function() {
     self.ajaxRequest = function(service, form, extended_data, events) {
 
         //validation, service is required
-        if(typeof service === "undefined")
+        if (typeof service === "undefined")
             throw new Error("App Core -> ajaxRequest invalid inputs!");
 
-        if(typeof form === "undefined")
+        if (typeof form === "undefined")
             form = null;
 
         //define payload
@@ -273,14 +273,14 @@ module.exports = function() {
         var submit_btn;
 
         //check for a non jquery object
-        if(!_.isNull(form) && form instanceof jQuery === false)
+        if (!_.isNull(form) && form instanceof jQuery === false)
             form = $(form);
 
         //check form element has a Foundation data-invalid attribute
-        if(!_.isNull(form)) {
+        if (!_.isNull(form)) {
 
             //validate abide form
-            if(!self.modules.forms.isFormValid(form))
+            if (!self.modules.forms.isFormValid(form))
                 return Q();
 
             //serialize data to URL encoding
@@ -288,25 +288,25 @@ module.exports = function() {
             //disable submit button
             submit_btn = form.find('button');
 
-            if(submit_btn.length)
+            if (submit_btn.length)
                 submit_btn.attr('disabled','disabled');
         }
 
         //extend more data?
-        if(_.isObject(extended_data)) {
+        if (_.isObject(extended_data)) {
 
             //check if element is null
-            if( _.isNull(form) )
+            if ( _.isNull(form) )
                 _.assign(payload, extended_data); //considerar objetos livianos (selectionDirection error)
             else
                 payload.push({ name : "extended", value : extended_data });  //serialized object struct
         }
 
         //append CSRF token
-        if(service.method == "POST") {
+        if (service.method == "POST") {
 
             //check if element is null
-            if(_.isNull(form))
+            if (_.isNull(form))
                 payload[UA.tokenKey] = UA.token; //object style
             else
                 payload.push({ name : UA.tokenKey, value : UA.token }); //serialized object struct
@@ -329,7 +329,7 @@ module.exports = function() {
         .then(function(data) {
 
             //handle ajax response
-            if(!core.handleAjaxResponse(data, events))
+            if (!core.handleAjaxResponse(data, events))
                 return false;
 
             var payload = data.response.payload;
@@ -340,7 +340,7 @@ module.exports = function() {
         //promise finisher
         .fin(function() {
 
-            if(_.isObject(submit_btn) && submit_btn.length)
+            if (_.isObject(submit_btn) && submit_btn.length)
                 submit_btn.removeAttr('disabled'); //enable button?
         });
     };
@@ -355,10 +355,10 @@ module.exports = function() {
     self.handleAjaxResponse = function(data, events) {
 
         //undefined data?
-        if(_.isUndefined(data) || _.isNull(data))
+        if (_.isUndefined(data) || _.isNull(data))
             return false;
 
-        if(APP.dev) { console.log("App Core [handleAjaxResponse]:", data); }
+        if (APP.dev) { console.log("App Core [handleAjaxResponse]:", data); }
 
         //check for error
         var error    = false;
@@ -370,12 +370,12 @@ module.exports = function() {
             var onClickFn = null;
 
             //set the callback function if set in error events functions
-            if(_.isString(response.namespace) && _.isObject(events)) {
+            if (_.isString(response.namespace) && _.isObject(events)) {
 
-                if(_.isObject(events.onClose) && !_.isUndefined(events.onClose[response.namespace]))
+                if (_.isObject(events.onClose) && !_.isUndefined(events.onClose[response.namespace]))
                     onCloseFn = _.isFunction(events.onClose[response.namespace]) ? events.onClose[response.namespace] : null;
 
-                if(_.isObject(events.onClick) && !_.isUndefined(events.onClick[response.namespace]))
+                if (_.isObject(events.onClick) && !_.isUndefined(events.onClick[response.namespace]))
                     onClickFn = _.isFunction(events.onClick[response.namespace]) ? events.onClick[response.namespace] : null;
              }
 
@@ -384,19 +384,19 @@ module.exports = function() {
         };
 
         //check for ajax error
-        if(response.status == "error") {
+        if (response.status == "error") {
 
             self.handleAjaxError(response.code, response.error);
             return false;
         }
         //app errors
-        else if(typeof response.type != "undefined") {
+        else if (typeof response.type != "undefined") {
 
             onErrorResponse();
             return false;
         }
         //redirection
-        else if(!_.isUndefined(response.redirect)) {
+        else if (!_.isUndefined(response.redirect)) {
 
             self.redirectTo(response.redirect);
             return true;
@@ -422,37 +422,37 @@ module.exports = function() {
         var text    = _.isObject(x) ? x.responseText : code;
 
         //sever parse error
-        if(error == 'parsererror') {
+        if (error == 'parsererror') {
             message = APP.TRANS.ALERTS.INTERNAL_ERROR;
             log     = "App Core -> parsererror: " + text;
         }
         //timeout
-        else if(error == 'timeout' || code == 408) {
+        else if (error == 'timeout' || code == 408) {
             message = APP.TRANS.ALERTS.SERVER_TIMEOUT;
             log     = "App Core -> timeout: " + x;
         }
         //400 bad request
-        else if(code == 400) {
+        else if (code == 400) {
             message = APP.TRANS.ALERTS.BAD_REQUEST;
             log     = "App Core -> bad request: " + code;
         }
         //403 access forbidden
-        else if(code == 403) {
+        else if (code == 403) {
             message = APP.TRANS.ALERTS.ACCESS_FORBIDDEN;
             log     = "App Core -> access forbidden: " + code;
         }
         //404 not found
-        else if(code == 404) {
+        else if (code == 404) {
             message = APP.TRANS.ALERTS.NOT_FOUND;
             log     = "App Core -> not found: " + code;
         }
         //method now allowed (invalid GET or POST method)
-        else if(code == 405) {
+        else if (code == 405) {
             message = APP.TRANS.ALERTS.NOT_FOUND;
             log     = "App Core -> method now allowed: " + code;
         }
         //invalid CSRF token
-        else if(code == 498) {
+        else if (code == 498) {
             message = APP.TRANS.ALERTS.CSRF;
             log     = "App Core -> invalid CSRF token: " + code;
         }
@@ -462,7 +462,7 @@ module.exports = function() {
         }
 
         //show log?
-        if(APP.dev && log.length) { console.log(log); }
+        if (APP.dev && log.length) { console.log(log); }
 
         //show the alert message
         self.showAlert(message, 'warning');
@@ -481,7 +481,7 @@ module.exports = function() {
         };
 
         //check if has a uri map
-        if(!_.isUndefined(uri_map[uri]))
+        if (!_.isUndefined(uri_map[uri]))
             uri = uri_map[uri];
 
         //redirect to contact
@@ -502,17 +502,17 @@ module.exports = function() {
         //set alert types
         var types = ['success', 'warning', 'info', 'alert', 'secondary'];
 
-        if(_.isUndefined(payload))
+        if (_.isUndefined(payload))
             return;
 
         //array filter
-        if(_.isArray(payload) && payload.length > 0)
+        if (_.isArray(payload) && payload.length > 0)
             payload = payload[0];
 
-        if(_.isUndefined(type) || _.indexOf(types, type) == -1)
+        if (_.isUndefined(type) || _.indexOf(types, type) == -1)
             type = 'info';
 
-        if(_.isUndefined(autohide))
+        if (_.isUndefined(autohide))
             autohide = true;
 
         var wrapper_class    = APP.UI.sel_alert_box.replace("div.", "");
@@ -544,7 +544,7 @@ module.exports = function() {
         var center_object = function() {
 
             //check if is mobile
-            if(self.checkScreenSize("small")) {
+            if (self.checkScreenSize("small")) {
 
                 div_alert.addClass("small-screen");
                 //center(x,y)
@@ -555,7 +555,7 @@ module.exports = function() {
             //normal screens
             var top_value = APP.UI.alert.top;
             //special cases
-            if(top_value == "belowHeader") {
+            if (top_value == "belowHeader") {
 
                 var header = $(APP.UI.sel_header);
                 top_value  = header.length ? header.position().top + header.outerHeight() : "0";
@@ -574,10 +574,10 @@ module.exports = function() {
         var hide_alert = function() {
 
             // bind onClose function if defined
-            if(_.isFunction(on_close))
+            if (_.isFunction(on_close))
                 on_close();
 
-            if(!autohide)
+            if (!autohide)
                 return;
 
             div_alert.alive = false;
@@ -590,7 +590,7 @@ module.exports = function() {
         anchor_close.click(hide_alert);
 
         // bind onClick function if defined
-        if(_.isFunction(on_click)) {
+        if (_.isFunction(on_click)) {
 
             // add click-able cursor & oneclick event
             div_alert
@@ -605,7 +605,7 @@ module.exports = function() {
         //autoclose after x seconds
         _.delay(function() {
             //check if object already exists
-            if(div_alert.alive)
+            if (div_alert.alive)
                 hide_alert();
         }, 8000);
 
@@ -619,12 +619,12 @@ module.exports = function() {
     self.showFlashAlerts = function() {
 
         //check for a flash message pending
-        if(!$(APP.UI.sel_flash_messages).length)
+        if (!$(APP.UI.sel_flash_messages).length)
             return;
 
         var messages = $(APP.UI.sel_flash_messages).children('div');
 
-        if(!messages.length)
+        if (!messages.length)
             return;
 
         messages.each(function(index) {
@@ -632,7 +632,7 @@ module.exports = function() {
             var html = $(this).html();
             var type = $(this).attr("class");
             //show message
-            if(html.length)
+            if (html.length)
                 self.showAlert(html, type);
         });
 
@@ -647,14 +647,14 @@ module.exports = function() {
      */
     self.showLoading = function(hidden) {
 
-        if(_.isUndefined(hidden))
+        if (_.isUndefined(hidden))
             hidden = false;
 
         //set loading object selector
         var loading_obj = $(APP.UI.sel_loading_box);
 
         //create loading object?
-        if(!loading_obj.length) {
+        if (!loading_obj.length) {
 
             //create object and append to body
             var div_loading = $("<div>").attr('id', APP.UI.sel_loading_box.replace("#",""));
@@ -666,17 +666,17 @@ module.exports = function() {
             loading_obj = $(APP.UI.sel_loading_box);
 
             //add special behavior for small screen
-            if(self.checkScreenSize("small"))
+            if (self.checkScreenSize("small"))
                 loading_obj.addClass("small-screen");
 
             var top = self.checkScreenSize("small") ? APP.UI.loading.top_small : APP.UI.loading.top;
 
-            if(typeof APP.UI.loading.center != "undefined" && APP.UI.loading.center)
+            if (typeof APP.UI.loading.center != "undefined" && APP.UI.loading.center)
                 loading_obj.center(APP.UI.loading.position, top);
         }
 
         //dont show for hidden flag (debug only)
-        if(!hidden)
+        if (!hidden)
             loading_obj.show("fast");
 
         return loading_obj;
@@ -690,16 +690,16 @@ module.exports = function() {
      */
     self.newModal = function(element, options) {
 
-        if(typeof options == "undefined")
+        if (typeof options == "undefined")
             options = {};
 
         //new foundation modal
-        if(core.framework == "foundation") {
+        if (core.framework == "foundation") {
 
             element.foundation('open');
         }
         //new bootstrap modal
-        else if(core.framework == "bootstrap") {
+        else if (core.framework == "bootstrap") {
             element.modal(options);
         }
     };
@@ -711,9 +711,9 @@ module.exports = function() {
      */
     self.closeModal = function(element) {
 
-        if(core.framework == "foundation")
+        if (core.framework == "foundation")
             element.foundation('close');
-        else if(core.framework == "bootstrap")
+        else if (core.framework == "bootstrap")
             element.modal('hide');
     };
 
@@ -727,11 +727,11 @@ module.exports = function() {
     self.checkScreenSize = function(size) {
 
         //foundation
-        if(self.framework == "foundation")
+        if (self.framework == "foundation")
             return size === Foundation.MediaQuery.current;
 
         //bootstrap
-        if(self.framework == "bootstrap") {
+        if (self.framework == "bootstrap") {
 
             if ($(window).width() < 768)
                 return size === "small";
@@ -767,7 +767,7 @@ module.exports = function() {
             return false;
         };
 
-        if(!isRetina()) return;
+        if (!isRetina()) return;
 
         //get elements
         var elements = (typeof context != "undefined") ? $('img[data-retina]', context) : $('img[data-retina]');
@@ -796,7 +796,7 @@ module.exports = function() {
 
         $("img").error(function() {
 
-            if(APP.dev) { console.log("App Core -> failed loading image:", $(this).attr("src")); }
+            if (APP.dev) { console.log("App Core -> failed loading image:", $(this).attr("src")); }
 
             $(this).attr("src", APP.UI.url_img_fallback);
         });
@@ -811,13 +811,13 @@ module.exports = function() {
      */
     self.preloadImages = function(image_path, indexes) {
 
-        if(_.isUndefined(indexes) || indexes === 0)
+        if (_.isUndefined(indexes) || indexes === 0)
             indexes = 1;
 
         var objects = [];
 
         //preload images
-        for(var i = 0; i < indexes; i++) {
+        for (var i = 0; i < indexes; i++) {
             //create new image object
             objects[i] = new Image();
             //if object has a '$' symbol replace with index
@@ -838,14 +838,14 @@ module.exports = function() {
         var assert = true;
 
         //timeout simulator
-        if(option == "timeout") {
+        if (option == "timeout") {
             self.ajaxRequest( { method : 'GET', url : 'http://250.21.0.180:8081/fake/path/' } );
         }
-        else if(option == "loading") {
+        else if (option == "loading") {
             $(APP.UI.sel_loading_box).show();
         }
         //get dom events associated to a given object
-        else if(option == "events") {
+        else if (option == "events") {
             var obj = _.isObject(object) ? object[0] : $(object)[0];
             return $._data(obj, 'events');
         }

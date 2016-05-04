@@ -45,7 +45,7 @@ class ReCaptcha
         //get DI instance (static)
         $di = \Phalcon\DI::getDefault();
 
-        if(empty($gRecaptchaResponse))
+        if (empty($gRecaptchaResponse))
             return false;
 
         //get remote address
@@ -53,12 +53,12 @@ class ReCaptcha
         //verify response
         $response = $this->recaptcha->verify($gRecaptchaResponse, $remoteIp);
 
-        if($response->isSuccess())
+        if ($response->isSuccess())
             return true;
 
         $errors = $response->getErrorCodes();
 
-        if($di->getShared("logger")) {
+        if ($di->getShared("logger")) {
             $logger = $di->getShared("logger");
             $logger->error("ReCaptcha Helper -> Invalid reCaptcha response: ".json_encode($errors));
         }

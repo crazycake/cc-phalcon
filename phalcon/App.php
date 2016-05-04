@@ -73,7 +73,7 @@ abstract class App extends AppModule implements AppLoader
                 //loop through args
                 $arguments = [];
 
-                if(is_null($argv))
+                if (is_null($argv))
                     die("Phalcon Console -> no args supplied\n");
 
                 //set args data
@@ -87,11 +87,11 @@ abstract class App extends AppModule implements AppLoader
                 }
 
                 //checks that array param was set
-                if(!isset($arguments["params"]))
+                if (!isset($arguments["params"]))
                     $arguments["params"] = [];
 
                 //order params
-                if(count($arguments["params"]) > 0) {
+                if (count($arguments["params"]) > 0) {
                     $params = array_values($arguments["params"]);
                     $arguments["params"] = $params;
                 }
@@ -108,7 +108,7 @@ abstract class App extends AppModule implements AppLoader
                 //new micro app
                 $app = new \Phalcon\Mvc\Micro($this->di);
                 //apply a routes function if param given (must be done before object instance)
-                if(is_callable($routes_fn))
+                if (is_callable($routes_fn))
                     $routes_fn($app);
 
                 //Handle the request
@@ -117,7 +117,7 @@ abstract class App extends AppModule implements AppLoader
 
             default:
                 //apply a routes function if param given (must be done after object instance)
-                if(is_callable($routes_fn)) {
+                if (is_callable($routes_fn)) {
                     //creates a router object (for use custom URL behavior use "false" param)
                     $router = new \Phalcon\Mvc\Router();
                     //Remove trailing slashes automatically
@@ -136,11 +136,11 @@ abstract class App extends AppModule implements AppLoader
                 $output = $app->handle()->getContent();
 
                 //return output if argv is true
-                if($argv)
+                if ($argv)
                     return $output;
 
                 //Handle the request
-                if(APP_ENVIRONMENT !== "local")
+                if (APP_ENVIRONMENT !== "local")
                     ob_start([$this,"_minifyOutput"]); //call function
 
                 echo $output;
@@ -159,14 +159,14 @@ abstract class App extends AppModule implements AppLoader
     public static function extractAssetsFromPhar($assets_uri = null, $cache_path = null, $force_extract = false)
     {
         //check folders
-        if(is_null($assets_uri) || is_null($cache_path))
+        if (is_null($assets_uri) || is_null($cache_path))
             throw new Exception("App::extractAssetsFromPhar -> assets and cache path must be valid paths.");
 
-        if(!is_dir($cache_path))
+        if (!is_dir($cache_path))
             throw new Exception("App::extractAssetsFromPhar -> cache path directory not found.");
 
         //check phar is running
-        if(!\Phar::running())
+        if (!\Phar::running())
             return false;
 
         //set phar assets path
@@ -174,7 +174,7 @@ abstract class App extends AppModule implements AppLoader
         $output_path = $cache_path.$assets_uri;
 
         //check if files are already extracted
-        if(!$force_extract && is_dir($output_path))
+        if (!$force_extract && is_dir($output_path))
             return $output_path;
 
         //get files in directory & exclude ".", ".." directories
@@ -214,7 +214,7 @@ abstract class App extends AppModule implements AppLoader
      */
     private function _databaseSetup()
     {
-        if(empty(getenv("DB_HOST")))
+        if (empty(getenv("DB_HOST")))
             throw new Exception("App::_databaseSetup -> DB environment is not set.");
 
         //set database config
@@ -238,14 +238,14 @@ abstract class App extends AppModule implements AppLoader
 
         $folders = self::getProperty("loader");
 
-        if($folders) {
+        if ($folders) {
 
             foreach ($folders as $dir) {
 
                 $paths = explode("/", $dir, 2);
 
                 //set directory path (if first index is a module)
-                if(count($paths) > 1 && in_array($paths[0], self::$CORE_DEFAULT_MODULES))
+                if (count($paths) > 1 && in_array($paths[0], self::$CORE_DEFAULT_MODULES))
                     $app_dirs[$dir] = PROJECT_PATH.$paths[0]."/app/".$paths[1]."/";
                 else
                     $app_dirs[$dir] = APP_PATH.$dir."/";
@@ -294,10 +294,10 @@ abstract class App extends AppModule implements AppLoader
      */
     private function _loadStaticLibs($loader = null, $packages = array())
     {
-        if(is_null($loader))
+        if (is_null($loader))
             return;
 
-        if(!is_array($packages))
+        if (!is_array($packages))
             $packages = [];
 
         //merge packages with defaults
@@ -307,7 +307,7 @@ abstract class App extends AppModule implements AppLoader
         $class_path = is_link(PACKAGES_PATH.self::APP_CORE_NAMESPACE) ? PACKAGES_PATH.self::APP_CORE_NAMESPACE : false;
 
         //load classes directly form phar
-        if(!$class_path) {
+        if (!$class_path) {
             //get class map array
             $class_map = include "AppClassMap.php";
 
@@ -327,7 +327,7 @@ abstract class App extends AppModule implements AppLoader
         //var_dump($class_path, $namespaces);
 
         //register namespaces
-        if(!empty($namespaces))
+        if (!empty($namespaces))
             $loader->registerNamespaces($namespaces);
     }
 

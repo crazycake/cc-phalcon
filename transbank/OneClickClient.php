@@ -31,7 +31,7 @@ class OneClickClient
     public function __construct($setup = array())
     {
 		//check required files
-    	if(!isset($setup["oneClickKey"]) || !isset($setup["oneClickCert"]) || !isset($setup["oneClickTransbankCert"]))
+    	if (!isset($setup["oneClickKey"]) || !isset($setup["oneClickCert"]) || !isset($setup["oneClickTransbankCert"]))
     		throw new Exception("OneClickClient -> Invalid webpay setup input array.");
 
 		//replace base uris
@@ -40,7 +40,7 @@ class OneClickClient
 		$setup["oneClickTransbankCert"] = str_replace("./", PROJECT_PATH, $setup["oneClickTransbankCert"]);
 
 		//validate files
-		if(!is_file($setup["oneClickKey"]) || !is_file($setup["oneClickCert"]) || !is_file($setup["oneClickTransbankCert"]))
+		if (!is_file($setup["oneClickKey"]) || !is_file($setup["oneClickCert"]) || !is_file($setup["oneClickTransbankCert"]))
 			throw new Exception("OneClickClient -> Invalid webpay files, files not found!");
 
 		//set gateway cert file
