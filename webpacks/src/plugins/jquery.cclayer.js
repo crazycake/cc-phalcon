@@ -1,10 +1,10 @@
 /**
- * Modality jQuery plugin v 1.1
+ * cclayer jQuery plugin v 1.1
  * Requires jQuery 1.7.x or superior
  * Supports mayor browsers including IE8
  * @author Nicolas Pulido M.
- * Usage: 
- * $(element).modality({
+ * Usage:
+ * $(element).cclayer({
 		fixed        : (boolean) present a fixed element?
 		overlay      : (boolean) set an overlay?
 		overlayAlpha : (int) overlay opacity
@@ -24,40 +24,40 @@
 
 (function($) {
 	/** ------------------------------------------------------------------------------------------------
-		Modality public methods
+		cclayer public methods
 	------------------------------------------------------------------------------------------------ **/
-	$.modality = function() {};
+	$.cclayer = function() {};
 
 	/**
-	 * Closes Modality
+	 * Closes cclayer
 	 */
-	$.modality.close = function() {
+	$.cclayer.close = function() {
 
-		if (!$("div.modality-overlay").length)
+		if (!$("div.cclayer-overlay").length)
 			return;
 
-		$("div.modality-overlay").trigger("click");
+		$("div.cclayer-overlay").trigger("click");
 		return;
 	};
 
 	/**
-	 * Returns boolean if modality is active or not
+	 * Returns boolean if cclayer is active or not
 	 */
-	$.modality.isActive = function() {
-		return $("div.modality-overlay").length ? true : false;
+	$.cclayer.isVisible = function() {
+		return $("div.cclayer-overlay").length ? true : false;
 	};
 
 	/** ------------------------------------------------------------------------------------------------
-		Modality element
+		cclayer element
 	------------------------------------------------------------------------------------------------ **/
-	$.fn.modality = function(options) {
+	$.fn.cclayer = function(options) {
 		//get context
 		var self = $(this);
-		return $.fn.modality.core.init(options, self);
+		return $.fn.cclayer.core.init(options, self);
 	};
 
 	//DEFAULT VALUES
-	$.fn.modality.defaults = {
+	$.fn.cclayer.defaults = {
 		fixed        : false,
 		overlay      : true,
 		overlayAlpha : 80,
@@ -75,13 +75,13 @@
 	};
 
 	//CORE
-	$.fn.modality.core = {
+	$.fn.cclayer.core = {
 
 		init: function(options, obj) {
 			//extend options
-			this.opts = $.extend({}, $.fn.modality.defaults, options);
-			//check if modality was already invoked
-			if ($("div.modality-overlay").length || obj.is(":visible"))
+			this.opts = $.extend({}, $.fn.cclayer.defaults, options);
+			//check if cclayer was already invoked
+			if ($("div.cclayer-overlay").length || obj.is(":visible"))
 				return;
 
 			//make and show
@@ -97,7 +97,7 @@
 			self.drop();
 
 			//overlay div
-			var div_overlay = $("<div>").addClass("modality-overlay");
+			var div_overlay = $("<div>").addClass("cclayer-overlay");
 
 			//OVERLAY CSS
 			if (options.overlay) {
@@ -153,7 +153,7 @@
 			var elem_height = obj.height();
 
 			//FIXED position
-			if (options.fixed) { 
+			if (options.fixed) {
 				css_pos = "fixed";
 				//set css position props
 				css_x = x + "%";
@@ -184,7 +184,7 @@
 			//force escape?
 			if (options.escape) {
 				//onClick event
-				div_overlay.one("click", function() { 
+				div_overlay.one("click", function() {
 					//close action
 					self.close(options, obj);
 				});
@@ -206,7 +206,7 @@
 			}
 
 			//add "destroyed" event handler for "onClose" param
-			if (typeof options.onClose === 'function')               
+			if (typeof options.onClose === 'function')
 				div_overlay.bind('destroyed', options.onClose);
 
 			//append to body
@@ -214,8 +214,8 @@
 		},
 		drop: function() {
 			//removes an existing dialog
-			if ($("div.modality-overlay").length)
-				$("div.modality-overlay").remove();
+			if ($("div.cclayer-overlay").length)
+				$("div.cclayer-overlay").remove();
 		},
 		show: function(options, obj) {
 
@@ -226,7 +226,7 @@
 			}
 
 			//show overlay and element
-			$("div.modality-overlay").fadeIn("fast");
+			$("div.cclayer-overlay").fadeIn("fast");
 
 			//blur focus on anchors, inputs & buttons
 			$("a").blur();
@@ -244,7 +244,7 @@
 				options.onShow.call();
 		},
 		close: function(options, obj) {
-			
+
 			//close with defined animation?
 			if (typeof options.onCloseAnim == "function")
 				options.onCloseAnim.call();
@@ -252,12 +252,12 @@
 				obj.hide();
 
 			//modal close
-			$("div.modality-overlay").fadeOut();
+			$("div.cclayer-overlay").fadeOut();
 
 			//enable back scroll
 			if (options.fixed) {
 				$("html").css("overflow","visible");
-				$("body").css("position","static");				
+				$("body").css("position","static");
 			}
 
 			//delete the overlay

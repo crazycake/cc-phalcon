@@ -1,11 +1,11 @@
 /**
- * Modality Dialog jQuery plugin v 1.0
- * Requires jQuery 1.7.x or superior, and Modality plugin
+ * ccdialog jQuery plugin v 1.0
+ * Requires jQuery 1.7.x or superior, and cclayer plugin
  * Supports mayor browsers including IE8
  * @author Nicolas Pulido M.
- * Usage: 
- * $(element).modalityDialog({
-	title       : (stirng) the dialog title
+ * Usage:
+ * $.ccdialog({
+	title       : (string) the dialog title
 	content     : (string) The dialog content, can be an HTML input
 	width       : (int) width size in pixels or a string with an int + measure unit
 	fixed       : (boolean) set if dialog has fixed or absolute position
@@ -20,34 +20,34 @@
 
 (function($)
 {
-	if (typeof $.modality !== "function")
-		throw new Error('Modality Dialogs -> jQuery modality plugin is required');
+	if (typeof $.cclayer !== "function")
+		throw new Error('ccdialog -> cclayer jQuery plugin is required');
 
 	/** ------------------------------------------------------------------------------------------------
-		Modality public methods
+		cclayer public methods
 	------------------------------------------------------------------------------------------------ **/
-	$.modalityDialog = function(options) {
+	$.ccdialog = function(options) {
 
 		if (typeof options == "undefined")
 			options = {};
 
 		//returns the core object
-		return $.modalityDialog.core.init(options);
+		return $.ccdialog.core.init(options);
 	};
 
 	/**
-	 * Closes Modality
+	 * Closes cclayer
 	 */
-	$.modalityDialog.close = function() { 
-		$.modality.close();
+	$.ccdialog.close = function() {
+		$.cclayer.close();
 	};
 
 	/** ------------------------------------------------------------------------------------------------
-		Modality element
+		cclayer element
 	------------------------------------------------------------------------------------------------ **/
 
 	//DEFAULT VALUES
-	$.modalityDialog.defaults = {
+	$.ccdialog.defaults = {
 		title        : "",
 		content      : "",
 		width        : "60%",
@@ -63,11 +63,11 @@
 	};
 
 	//CORE
-	$.modalityDialog.core = {
+	$.ccdialog.core = {
 
 		init: function(options) {
 			//extend options
-			this.opts = $.extend({}, $.modalityDialog.defaults, options);
+			this.opts = $.extend({}, $.ccdialog.defaults, options);
 			//drop a previously created dialog
 			this.drop();
 			this.create(this.opts);
@@ -79,14 +79,14 @@
 
 			var self = this;
 			//wrappers
-			var div_wrapper = $("<div>").addClass("modality-dialog").css("display", "none");
+			var div_wrapper = $("<div>").addClass("cclayer-dialog").css("display", "none");
 			var div_box     = $("<div>").addClass("box");
 
 			//contents
 			var div_title  = $("<div>").addClass("header").html(options.title);
 			var div_body   = $("<div>").addClass("body").html(options.content);
 			var div_footer = $("<div>").addClass("footer");
-						
+
 			//appends
 			div_wrapper.appendTo("body");
 			div_box.appendTo(div_wrapper);
@@ -137,8 +137,8 @@
 		},
 		drop: function() {
 			//removes an existing dialog
-			if ($("div.modality-dialog").length)
-				$("div.modality-dialog").remove();
+			if ($("div.cclayer-dialog").length)
+				$("div.cclayer-dialog").remove();
 		},
 		show: function(options) {
 
@@ -148,7 +148,7 @@
 				fn_onclose = options.onClose;
 
 			//show modal
-			$("div.modality-dialog").modality({
+			$("div.cclayer-dialog").cclayer({
 				fixed           : options.fixed,
 				overlay         : options.overlay,
 				overlayAlpha    : options.overlayAlpha,
@@ -158,9 +158,9 @@
 				onClose         : fn_onclose
 			});
 		},
-		close: function() { 
+		close: function() {
 			//simpleModal - close
-			$.modality.close();
+			$.cclayer.close();
 		}
 	};
 	/** ------------------------------------------------------------------------------------------------
