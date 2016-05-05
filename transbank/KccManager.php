@@ -73,7 +73,7 @@ trait KccManager
     /**
      * Handler - load webpay setup for rendering view
      */
-    public function loadSetupForView()
+    public function viewSetup()
     {
         //set post input hiddens
         $inputs = [
