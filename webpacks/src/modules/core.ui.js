@@ -55,8 +55,6 @@ module.exports = function() {
         self.fallbackImages();
         //check server flash messages
         self.showFlashAlerts();
-
-        if (APP.dev) { console.log("App Core -> Ready!"); }
     };
 
     /**

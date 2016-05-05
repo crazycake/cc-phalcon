@@ -93,7 +93,7 @@ module.exports = function() {
         if (typeof core.ui !== "undefined")
             core.ui.init();
 
-        if (APP.dev) { console.log("App Core -> Ready!"); }
+        if (APP.dev) { console.log("App Core Ready!"); }
     };
 
     /**
