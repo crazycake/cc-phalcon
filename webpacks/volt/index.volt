@@ -3,14 +3,6 @@
  * MAIN LAYOUT: Phalcon loads this view first by default
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
-
-//HTML dynamic vars
-$tag_title            = isset($html_title) ? $app->name." - ".$html_title : $app->name;
-$tag_meta_description = isset($html_description) ? $app->name.": ".$html_description : $app->name;
-$tag_meta_robots      = isset($html_disallow_robots) ? 'noindex,nofollow' : 'index,follow';
-
-//JS special libraries
-$js_recaptcha = isset($js_recaptcha) ? $js_recaptcha : false;
 ?>
 <!DOCTYPE html>
 <html>
@@ -34,6 +26,11 @@ $js_recaptcha = isset($js_recaptcha) ? $js_recaptcha : false;
         {% if client.isIE %}
             <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         {% endif %}
+
+        {# define vars #}
+        {% set tag_title            = html_title is defined ? app.name~" - "~html_title : app.name %}
+        {% set tag_meta_description = html_description is defined ? app.name~": "~html_description : app.name %}
+        {% set tag_meta_robots      = html_disallow_robots is defined ? "noindex,nofollow" : "index,follow" %}
 
         {# descriptive metas #}
         <meta name="author" content="{{ app.name }} Team" />
