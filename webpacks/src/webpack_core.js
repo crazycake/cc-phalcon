@@ -17,8 +17,8 @@ require('jquery.scrollTo');
 
 //plugins
 require('./plugins/jquery.extended');
-require('./plugins/jquery.modality');
-require('./plugins/jquery.modality.dialog');
+require('./plugins/jquery.cclayer');
+require('./plugins/jquery.ccdialog');
 require('./plugins/jquery.flowType');
 require('./plugins/jquery.formValidation');
 require('./plugins/jquery.formValidation.bootstrap');
@@ -28,6 +28,7 @@ require('./plugins/jquery.formValidation.foundation');
 
 //Core
 var core = new (require('./modules/core.js'))();
+
 //export core & make it a global var
 module.exports.core = core;
 

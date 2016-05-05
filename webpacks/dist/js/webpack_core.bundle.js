@@ -43211,6 +43211,12 @@ module.exports = function() {
     //++ Properties
 
     /**
+     * @property ui
+     * @type {object}
+     */
+    self.ui = new (require('./core.ui.js'))();
+
+    /**
      * @property modules
      * @type {Boolean}
      */
@@ -43227,32 +43233,6 @@ module.exports = function() {
      * @type {object}
      */
     window.core = self;
-
-    //++ UI vars
-
-    //Set App data for selectors
-    if (_.isUndefined(APP.UI)) APP.UI = {};
-
-    //common jQuery selectors
-    _.assign(APP.UI, {
-        //selectors
-        sel_body_wrapper     : "#wrapper",
-        sel_header           : "#header",
-        sel_footer           : "#footer",
-        sel_loading_box      : "#app-loading",
-        sel_flash_messages   : "#app-flash",
-        sel_alert_box        : "div.app-alert",
-        //setting vars
-        url_img_fallback     : APP.staticUrl + 'images/icons/icon-image-fallback.png',
-        pixel_ratio          : _.isUndefined(window.devicePixelRatio) ? 1 : window.devicePixelRatio
-    });
-
-    //set dynamic required props as default values
-    if (_.isUndefined(APP.UI.alert))
-        APP.UI.alert = { position : "fixed", top : "5%", top_small : "0" };
-
-    if (_.isUndefined(APP.UI.loading))
-        APP.UI.loading = { position : "fixed", top : "25%", top_small : "25%" };
 
     //++ jQuery setup
 
@@ -43303,16 +43283,8 @@ module.exports = function() {
             core.modules.forms.loadForms();
 
         //load UI module
-        if (typeof core.modules.ui !== "undefined")
-            core.modules.ui.init();
-
-        //ajax setup
-        self.setAjaxHandler();
-        //load retina images & fallback
-        self.retinaImages();
-        self.fallbackImages();
-        //check server flash messages
-        self.showFlashAlerts();
+        if (typeof core.ui !== "undefined")
+            core.ui.init();
 
         if (APP.dev) { console.log("App Core -> Ready!"); }
     };
@@ -43573,7 +43545,7 @@ module.exports = function() {
              }
 
             //call the alert message
-            self.showAlert(response.payload, response.type, onCloseFn, onClickFn);
+            self.ui.showAlert(response.payload, response.type, onCloseFn, onClickFn);
         };
 
         //check for ajax error
@@ -43658,7 +43630,7 @@ module.exports = function() {
         if (APP.dev && log.length) { console.log(log); }
 
         //show the alert message
-        self.showAlert(message, 'warning');
+        self.ui.showAlert(message, 'warning');
     };
 
     /**
@@ -43679,6 +43651,133 @@ module.exports = function() {
 
         //redirect to contact
         location.href = APP.baseUrl + uri;
+    };
+
+    /**
+     * App debug methods
+     * @method debug
+     * @param  {String} option - The option string [ajax_timeout, ajax_loading, dom_events]
+     * @param  {Object} object - A jQuery or HTML object element
+     */
+    self.debug = function(option, object) {
+
+        var assert = true;
+
+        //timeout simulator
+        if (option == "timeout") {
+            self.ajaxRequest( { method : 'GET', url : 'http://250.21.0.180:8081/fake/path/' } );
+        }
+        //get dom events associated to a given object
+        else if (option == "events") {
+            var obj = _.isObject(object) ? object[0] : $(object)[0];
+            return $._data(obj, 'events');
+        }
+        else {
+            assert = false;
+        }
+
+        //default return
+        return "Assert ("+assert+")";
+    };
+};
+
+},{"./core.ui.js":14}],14:[function(require,module,exports){
+/**
+ * App Core UI
+ * Dependencies: `jQuery.js`, `VueJs`, `q.js`, `lodash.js`.
+ * Required scope vars: `{APP, UA}`.
+ * @class Core.UI
+ */
+
+module.exports = function() {
+
+    //self context
+    var self = this;
+
+    //++ UI
+
+    //Set App data for selectors
+    if (_.isUndefined(APP.UI)) APP.UI = {};
+
+    //common jQuery selectors
+    _.assign(APP.UI, {
+        //selectors
+        sel_body_wrapper     : "#wrapper",
+        sel_header           : "#header",
+        sel_footer           : "#footer",
+        sel_loading_box      : "#app-loading",
+        sel_flash_messages   : "#app-flash",
+        sel_alert_box        : "div.app-alert",
+        //setting vars
+        url_img_fallback     : APP.staticUrl + 'images/icons/icon-image-fallback.png',
+        pixel_ratio          : _.isUndefined(window.devicePixelRatio) ? 1 : window.devicePixelRatio
+    });
+
+    //set dynamic required props as default values
+    if (_.isUndefined(APP.UI.alert))
+        APP.UI.alert = { position : "fixed", top : "5%", top_small : "0" };
+
+    if (_.isUndefined(APP.UI.loading))
+        APP.UI.loading = { position : "fixed", top : "25%", top_small : "25%" };
+
+    //++ Methods ++
+
+    /**
+     * Core UI Init
+     * @method ready
+     */
+    self.init = function() {
+
+        //load UI module
+        if (typeof core.modules.ui !== "undefined")
+            core.modules.ui.init();
+
+        //ajax setup
+        self.setAjaxLoadingHandler();
+        //load retina images & fallback
+        self.retinaImages();
+        self.fallbackImages();
+        //check server flash messages
+        self.showFlashAlerts();
+
+        if (APP.dev) { console.log("App Core -> Ready!"); }
+    };
+
+    /**
+     * jQuery Ajax Handler, loaded automatically.
+     * @method setAjaxLoadingHandler
+     */
+    self.setAjaxLoadingHandler = function() {
+
+        //this vars must be declared outside ajaxHandler function
+        var ajax_timer;
+        var app_loading = self.showLoading(true); //hide by default
+
+        //ajax handler, show loading if ajax takes more than a X secs, only for POST request
+        var handler = function(options, show_loading) {
+
+            //only for POST request
+            if (options.type.toUpperCase() !== "POST") // && options.type.toUpperCase() !== "GET"
+                return;
+
+            //show loading?
+            if (show_loading) {
+                //clear timer
+                clearTimeout(ajax_timer);
+                //waiting time to show loading box
+                ajax_timer = setTimeout( function() { app_loading.show('fast'); }, 1000);
+                return;
+            }
+            //otherwise clear timer and hide loading
+            clearTimeout(ajax_timer);
+            app_loading.fadeOut('fast');
+        };
+
+        //ajax events
+        $(document)
+         .ajaxSend(function(event, xhr, options)     { handler(options, true);  })
+         .ajaxComplete(function(event, xhr, options) { handler(options, false); })
+         .ajaxError(function(event, xhr, options)    { handler(options, false); });
     };
 
     /**
@@ -43898,16 +43997,61 @@ module.exports = function() {
     };
 
     /**
-     * Close a modal object
-     * @method closeModal
-     * @param  {Object} element - The jQuery element object
+     * Creates a new dialog object
+     * @method newDialog
+     * @param {Object} element - The jQuery element object
+     * @param {Object} options - Widget options
      */
-    self.closeModal = function(element) {
+    self.newDialog = function(options) {
 
-        if (core.framework == "foundation")
-            element.foundation('close');
-        else if (core.framework == "bootstrap")
-            element.modal('hide');
+        $.ccdialog(options);
+    };
+
+    /**
+     * Creates a new layer object
+     * @method newLayer
+     * @param {Object} element - The jQuery element object
+     * @param {Object} options - Widget options
+     */
+    self.newLayer = function(element, options) {
+
+        element.cclayer(options);
+    };
+
+    /**
+     * Closes cclayer dialog
+     * @method isOverlayVisible
+     */
+    self.isOverlayVisible = function() {
+
+        return $.cclayer.isVisible();
+    };
+
+    /**
+     * Hides cclayer
+     * @method hideLayer
+     */
+    self.hideLayer = function() {
+
+        $.cclayer.close();
+    };
+
+    /**
+     * Hides cclayer dialog
+     * @method hideDialog
+     */
+    self.hideDialog = function() {
+
+        self.hideLayer();
+    };
+
+    /**
+     * Closes cclayer dialog
+     * @method closeDialog
+     */
+    self.isOverlayVisible = function() {
+
+        return $.cclayer.isVisible();
     };
 
     /**
@@ -43920,11 +44064,11 @@ module.exports = function() {
     self.checkScreenSize = function(size) {
 
         //foundation
-        if (self.framework == "foundation")
+        if (core.framework == "foundation")
             return size === Foundation.MediaQuery.current;
 
         //bootstrap
-        if (self.framework == "bootstrap") {
+        if (core.framework == "bootstrap") {
 
             if ($(window).width() < 768)
                 return size === "small";
@@ -44019,39 +44163,9 @@ module.exports = function() {
 
         return objects;
     };
-
-    /**
-     * App debug methods
-     * @method debug
-     * @param  {String} option - The option string [ajax_timeout, ajax_loading, dom_events]
-     * @param  {Object} object - A jQuery or HTML object element
-     */
-    self.debug = function(option, object) {
-
-        var assert = true;
-
-        //timeout simulator
-        if (option == "timeout") {
-            self.ajaxRequest( { method : 'GET', url : 'http://250.21.0.180:8081/fake/path/' } );
-        }
-        else if (option == "loading") {
-            $(APP.UI.sel_loading_box).show();
-        }
-        //get dom events associated to a given object
-        else if (option == "events") {
-            var obj = _.isObject(object) ? object[0] : $(object)[0];
-            return $._data(obj, 'events');
-        }
-        else {
-            assert = false;
-        }
-
-        //default return
-        return "Assert ("+assert+")";
-    };
 };
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 /**
  * Facebook View Model - SDK wrapper
  * Required scope vars: `{APP, UA}`.
@@ -44413,7 +44527,7 @@ module.exports = function() {
 	};
 };
 
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 /**
  * Forms View Model - Handle Form Validation & Actions
  * Dependencies: ```formValidation jQuery plugin```, ```google reCaptcha JS SDK```
@@ -44747,7 +44861,7 @@ module.exports = function() {
     };
 };
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 /**
  * Password Recovery View Model
  * @class PassRecovery
@@ -44790,7 +44904,466 @@ module.exports = function() {
     };
 };
 
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
+/**
+ * ccdialog jQuery plugin v 1.0
+ * Requires jQuery 1.7.x or superior, and cclayer plugin
+ * Supports mayor browsers including IE8
+ * @author Nicolas Pulido M.
+ * Usage:
+ * $.ccdialog({
+	title       : (string) the dialog title
+	content     : (string) The dialog content, can be an HTML input
+	width       : (int) width size in pixels or a string with an int + measure unit
+	fixed       : (boolean) set if dialog has fixed or absolute position
+	buttons     : (array) array of buttons with the following object struct:
+					{ label : (string), click : (function) }
+	onClose     : (function) event onClose dialog
+	escape      : (boolean) Allows user to escape the modal with ESC key or a Click outside the element. Defaults is true.
+	zindex      : (int) css z-index value, default value is 100.
+	smallScreen : (int) small screen width Threshold, defaults value is 640.
+});
+ */
+
+(function($)
+{
+	if (typeof $.cclayer !== "function")
+		throw new Error('ccdialog -> cclayer jQuery plugin is required');
+
+	/** ------------------------------------------------------------------------------------------------
+		cclayer public methods
+	------------------------------------------------------------------------------------------------ **/
+	$.ccdialog = function(options) {
+
+		if (typeof options == "undefined")
+			options = {};
+
+		//returns the core object
+		return $.ccdialog.core.init(options);
+	};
+
+	/**
+	 * Closes cclayer
+	 */
+	$.ccdialog.close = function() {
+		$.cclayer.close();
+	};
+
+	/** ------------------------------------------------------------------------------------------------
+		cclayer element
+	------------------------------------------------------------------------------------------------ **/
+
+	//DEFAULT VALUES
+	$.ccdialog.defaults = {
+		title        : "",
+		content      : "",
+		width        : "60%",
+		fixed        : false,
+		overlay      : true,
+		overlayAlpha : 70,
+		overlayColor : "#000",
+		buttons      : [],
+		onClose      : null,
+		escape       : true,
+		zindex       : 100,
+		smallScreen  : 640
+	};
+
+	//CORE
+	$.ccdialog.core = {
+
+		init: function(options) {
+			//extend options
+			this.opts = $.extend({}, $.ccdialog.defaults, options);
+			//drop a previously created dialog
+			this.drop();
+			this.create(this.opts);
+			this.show(this.opts);
+
+			return this;
+		},
+		create: function(options) {
+
+			var self = this;
+			//wrappers
+			var div_wrapper = $("<div>").addClass("cclayer-dialog").css("display", "none");
+			var div_box     = $("<div>").addClass("box");
+
+			//contents
+			var div_title  = $("<div>").addClass("header").html(options.title);
+			var div_body   = $("<div>").addClass("body").html(options.content);
+			var div_footer = $("<div>").addClass("footer");
+
+			//appends
+			div_wrapper.appendTo("body");
+			div_box.appendTo(div_wrapper);
+			div_title.appendTo(div_box);
+			div_body.appendTo(div_box);
+
+			//width
+			div_wrapper.width(options.width);
+
+			//fix width for small screens
+			if ($(window).width() <= options.smallScreen && parseInt(options.width) < 80)
+				div_wrapper.width("90%");
+
+			//check if dialog must have buttons
+			if (typeof options.buttons !== 'object')
+				return;
+
+			//append buttons?
+			var show_footer = false;
+			//loop through buttons
+			var index = 0;
+			for (var key in options.buttons) {
+
+				var btn = options.buttons[key];
+
+				if (typeof btn !== 'object' || typeof btn.label == 'undefined')
+					continue;
+
+				var button_element = $("<button>")
+										.attr("name", 'button-'+index)
+										.addClass('button-'+index)
+										.html(btn.label);
+
+				if (typeof btn.click === 'function')
+					button_element.click(btn.click);
+				else
+					button_element.click(self.close);
+
+				button_element.appendTo(div_footer);
+
+				show_footer = true;
+				index++;
+			}
+
+			//footer append
+			if (show_footer)
+				div_footer.appendTo(div_box);
+		},
+		drop: function() {
+			//removes an existing dialog
+			if ($("div.cclayer-dialog").length)
+				$("div.cclayer-dialog").remove();
+		},
+		show: function(options) {
+
+			var fn_onclose = null;
+			//check onClose function
+			if (typeof options.onClose === 'function')
+				fn_onclose = options.onClose;
+
+			//show modal
+			$("div.cclayer-dialog").cclayer({
+				fixed           : options.fixed,
+				overlay         : options.overlay,
+				overlayAlpha    : options.overlayAlpha,
+				overlayColor    : options.overlayColor,
+				escape          : options.escape,
+				zindex          : options.zindex,
+				onClose         : fn_onclose
+			});
+		},
+		close: function() {
+			//simpleModal - close
+			$.cclayer.close();
+		}
+	};
+	/** ------------------------------------------------------------------------------------------------
+		jQuery setup
+	------------------------------------------------------------------------------------------------ **/
+	//creating an event "destroyed"
+	jQuery.event.special.destroyed = {
+		remove: function(o) {
+		  if (o.handler)
+			o.handler();
+		}
+	};
+
+})(jQuery);
+
+},{}],19:[function(require,module,exports){
+/**
+ * cclayer jQuery plugin v 1.1
+ * Requires jQuery 1.7.x or superior
+ * Supports mayor browsers including IE8
+ * @author Nicolas Pulido M.
+ * Usage:
+ * $(element).cclayer({
+		fixed        : (boolean) present a fixed element?
+		overlay      : (boolean) set an overlay?
+		overlayAlpha : (int) overlay opacity
+		overlayColor : (string) overlay bg color
+		top          : (int) css top value set as percentage
+		bottom       : (int) css bottom value set as percentage (optional)
+		left         : (int) css left value set as percentage
+		right        : (int) css right value set as percentage (optional)
+		onShow       : (function) event onShow
+		onClose      : (function) event onClose
+		onShowAnim   : (function) event onShowAnim, custom Show animation
+		onCloseAnim  : (function) event onCloseAnim, custom Close animation
+		zindex       : (int) css z-index value, default value is 100.
+		escape 		 : (boolean) Allows user to escape the modal with ESC key or a Click outside the element. Defaults is true.
+	});
+ */
+
+(function($) {
+	/** ------------------------------------------------------------------------------------------------
+		cclayer public methods
+	------------------------------------------------------------------------------------------------ **/
+	$.cclayer = function() {};
+
+	/**
+	 * Closes cclayer
+	 */
+	$.cclayer.close = function() {
+
+		if (!$("div.cclayer-overlay").length)
+			return;
+
+		$("div.cclayer-overlay").trigger("click");
+		return;
+	};
+
+	/**
+	 * Returns boolean if cclayer is active or not
+	 */
+	$.cclayer.isVisible = function() {
+		return $("div.cclayer-overlay").length ? true : false;
+	};
+
+	/** ------------------------------------------------------------------------------------------------
+		cclayer element
+	------------------------------------------------------------------------------------------------ **/
+	$.fn.cclayer = function(options) {
+		//get context
+		var self = $(this);
+		return $.fn.cclayer.core.init(options, self);
+	};
+
+	//DEFAULT VALUES
+	$.fn.cclayer.defaults = {
+		fixed        : false,
+		overlay      : true,
+		overlayAlpha : 80,
+		overlayColor : "#000",
+		top          : 50,
+		left         : 50,
+		bottom       : null,
+		right        : null,
+		onShow       : null,
+		onClose      : null,
+		onShowAnim   : null,
+		onCloseAnim  : null,
+		zindex       : 100,
+		escape       : true
+	};
+
+	//CORE
+	$.fn.cclayer.core = {
+
+		init: function(options, obj) {
+			//extend options
+			this.opts = $.extend({}, $.fn.cclayer.defaults, options);
+			//check if cclayer was already invoked
+			if ($("div.cclayer-overlay").length || obj.is(":visible"))
+				return;
+
+			//make and show
+			this.make(this.opts, obj);
+			this.show(this.opts, obj);
+
+			return this;
+		},
+		make: function(options, obj) {
+
+			var self = this;
+			//drop any overlay created before
+			self.drop();
+
+			//overlay div
+			var div_overlay = $("<div>").addClass("cclayer-overlay");
+
+			//OVERLAY CSS
+			if (options.overlay) {
+				//set opacity
+				var opacity = options.overlayAlpha;
+
+				var doc_height = $(document).height();
+
+				if (doc_height < $(window).height())
+					doc_height = "100%";
+				else
+					doc_height += "px";
+
+				div_overlay.css({
+					"display"    : "none",
+					"position"   : "fixed",
+					"top"        : "0",
+					"left"       : "0",
+					"width"      : "100%",
+					"height"     : doc_height,
+					"background" : options.overlayColor,
+					"opacity"    : opacity / 100,
+					"filter"     : "alpha(opacity="+opacity+")",
+					"z-index"    : options.zindex
+				});
+			}
+
+			//positioning element to display
+			var css_pos  	 = "absolute";
+			var css_x 	 	 = "0";
+			var css_y 	     = "0";
+			var css_margin_x = 0;
+			var css_margin_y = 0;
+
+			var x     = options.left;
+			var xRule = "left";
+
+			if (options.right !== null) {
+				x     = options.right;
+				xRule = "right";
+			}
+
+			var y     = options.top;
+			var yRule = "top";
+
+			if (options.bottom !== null) {
+				y     = options.bottom;
+				yRule = "bottom";
+			}
+
+			//get element width & height
+			var elem_width  = obj.width();
+			var elem_height = obj.height();
+
+			//FIXED position
+			if (options.fixed) {
+				css_pos = "fixed";
+				//set css position props
+				css_x = x + "%";
+				css_y = y + "%";
+
+				css_margin_x = -(elem_width / (100/x)) + "px";
+				css_margin_y = -(elem_height / (100/y)) + "px";
+			}
+			//ABSOLUTE position
+			else {
+				//set css position props
+				css_x = (Math.max($(window).width() - elem_width, 0)/(100/x)) + $(window).scrollLeft();
+				css_y = (Math.max($(window).height() - elem_height, 0)/(100/y)) + $(window).scrollTop();
+			}
+
+			//set css props
+			obj.css({
+				"position" : css_pos,
+				"z-index"  : (options.zindex + 1)
+			});
+			//set margins
+			obj.css(xRule, css_x);
+			obj.css(yRule, css_y);
+			obj.css("margin-"+xRule, css_margin_x);
+			obj.css("margin-"+yRule, css_margin_y);
+
+			/** -- EVENTS -- **/
+			//force escape?
+			if (options.escape) {
+				//onClick event
+				div_overlay.one("click", function() {
+					//close action
+					self.close(options, obj);
+				});
+
+				//onKeyUp event for ESC key
+				$(document).one("keyup", function(e) {
+					//prevent any binding action
+					e.preventDefault();
+					e.stopPropagation();
+
+					//ENTER or ESC key
+					if (e.keyCode == 27) {
+						self.close(options, obj);
+					}
+				});
+			}
+			else {
+				div_overlay.unbind("click");
+			}
+
+			//add "destroyed" event handler for "onClose" param
+			if (typeof options.onClose === 'function')
+				div_overlay.bind('destroyed', options.onClose);
+
+			//append to body
+			div_overlay.appendTo("body");
+		},
+		drop: function() {
+			//removes an existing dialog
+			if ($("div.cclayer-overlay").length)
+				$("div.cclayer-overlay").remove();
+		},
+		show: function(options, obj) {
+
+			//if fixed, disable html,body scroll
+			if (options.fixed) {
+				$("html").css("overflow","hidden");
+				$("body").css("position","relative");
+			}
+
+			//show overlay and element
+			$("div.cclayer-overlay").fadeIn("fast");
+
+			//blur focus on anchors, inputs & buttons
+			$("a").blur();
+			$("input").blur();
+			$("button").blur();
+
+			//show with defined animation?
+			if (typeof options.onShowAnim == "function")
+				options.onShowAnim.call();
+			else
+				obj.fadeIn("fast");
+
+			//call onShow function if set
+			if (typeof options.onShow === 'function')
+				options.onShow.call();
+		},
+		close: function(options, obj) {
+
+			//close with defined animation?
+			if (typeof options.onCloseAnim == "function")
+				options.onCloseAnim.call();
+			else
+				obj.hide();
+
+			//modal close
+			$("div.cclayer-overlay").fadeOut();
+
+			//enable back scroll
+			if (options.fixed) {
+				$("html").css("overflow","visible");
+				$("body").css("position","static");
+			}
+
+			//delete the overlay
+			this.drop();
+		}
+	};
+	/** ------------------------------------------------------------------------------------------------
+		jQuery setup
+	------------------------------------------------------------------------------------------------ **/
+	//creating an event "destroyed"
+	jQuery.event.special.destroyed = {
+		remove: function(o) {
+		  if (o.handler)
+			o.handler();
+		}
+	};
+
+})(jQuery);
+
+},{}],20:[function(require,module,exports){
 /**
  * jQuery extended
  * Useful jQuery extensions
@@ -44851,7 +45424,7 @@ jQuery.fn.padding = function(direction) {
 	return parseInt(this.css('padding-' + direction));
 };
 
-},{}],18:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 /*
 * FlowType.JS v1.1
 * Copyright 2013-2014, Simple Focus http://simplefocus.com/
@@ -44902,7 +45475,7 @@ jQuery.fn.padding = function(direction) {
    };
 }(jQuery));
 
-},{}],19:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 /*!
  * FormValidation (http://formvalidation.io)
  * The best jQuery plugin to validate form fields. Support Bootstrap, Foundation, Pure, SemanticUI, UIKit and custom frameworks
@@ -45185,7 +45758,7 @@ jQuery.fn.padding = function(direction) {
     $.fn.bootstrapValidator.Constructor = FormValidation.Framework.Bootstrap;
 }(jQuery));
 
-},{}],20:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 /*!
  * FormValidation (http://formvalidation.io)
  * The best jQuery plugin to validate form fields. Support Bootstrap, Foundation, Pure, SemanticUI, UIKit and custom frameworks
@@ -45350,7 +45923,7 @@ jQuery.fn.padding = function(direction) {
     });
 }(jQuery));
 
-},{}],21:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 /*!
  * FormValidation (http://formvalidation.io)
  * The best jQuery plugin to validate form fields. Support Bootstrap, Foundation, Pure, SemanticUI, UIKit and custom frameworks
@@ -50020,465 +50593,6 @@ if (typeof jQuery === 'undefined') {
     };
 }(jQuery));
 
-},{}],22:[function(require,module,exports){
-/**
- * Modality Dialog jQuery plugin v 1.0
- * Requires jQuery 1.7.x or superior, and Modality plugin
- * Supports mayor browsers including IE8
- * @author Nicolas Pulido M.
- * Usage: 
- * $(element).modalityDialog({
-	title       : (stirng) the dialog title
-	content     : (string) The dialog content, can be an HTML input
-	width       : (int) width size in pixels or a string with an int + measure unit
-	fixed       : (boolean) set if dialog has fixed or absolute position
-	buttons     : (array) array of buttons with the following object struct:
-					{ label : (string), click : (function) }
-	onClose     : (function) event onClose dialog
-	escape      : (boolean) Allows user to escape the modal with ESC key or a Click outside the element. Defaults is true.
-	zindex      : (int) css z-index value, default value is 100.
-	smallScreen : (int) small screen width Threshold, defaults value is 640.
-});
- */
-
-(function($)
-{
-	if (typeof $.modality !== "function")
-		throw new Error('Modality Dialogs -> jQuery modality plugin is required');
-
-	/** ------------------------------------------------------------------------------------------------
-		Modality public methods
-	------------------------------------------------------------------------------------------------ **/
-	$.modalityDialog = function(options) {
-
-		if (typeof options == "undefined")
-			options = {};
-
-		//returns the core object
-		return $.modalityDialog.core.init(options);
-	};
-
-	/**
-	 * Closes Modality
-	 */
-	$.modalityDialog.close = function() { 
-		$.modality.close();
-	};
-
-	/** ------------------------------------------------------------------------------------------------
-		Modality element
-	------------------------------------------------------------------------------------------------ **/
-
-	//DEFAULT VALUES
-	$.modalityDialog.defaults = {
-		title        : "",
-		content      : "",
-		width        : "60%",
-		fixed        : false,
-		overlay      : true,
-		overlayAlpha : 70,
-		overlayColor : "#000",
-		buttons      : [],
-		onClose      : null,
-		escape       : true,
-		zindex       : 100,
-		smallScreen  : 640
-	};
-
-	//CORE
-	$.modalityDialog.core = {
-
-		init: function(options) {
-			//extend options
-			this.opts = $.extend({}, $.modalityDialog.defaults, options);
-			//drop a previously created dialog
-			this.drop();
-			this.create(this.opts);
-			this.show(this.opts);
-
-			return this;
-		},
-		create: function(options) {
-
-			var self = this;
-			//wrappers
-			var div_wrapper = $("<div>").addClass("modality-dialog").css("display", "none");
-			var div_box     = $("<div>").addClass("box");
-
-			//contents
-			var div_title  = $("<div>").addClass("header").html(options.title);
-			var div_body   = $("<div>").addClass("body").html(options.content);
-			var div_footer = $("<div>").addClass("footer");
-						
-			//appends
-			div_wrapper.appendTo("body");
-			div_box.appendTo(div_wrapper);
-			div_title.appendTo(div_box);
-			div_body.appendTo(div_box);
-
-			//width
-			div_wrapper.width(options.width);
-
-			//fix width for small screens
-			if ($(window).width() <= options.smallScreen && parseInt(options.width) < 80)
-				div_wrapper.width("90%");
-
-			//check if dialog must have buttons
-			if (typeof options.buttons !== 'object')
-				return;
-
-			//append buttons?
-			var show_footer = false;
-			//loop through buttons
-			var index = 0;
-			for (var key in options.buttons) {
-
-				var btn = options.buttons[key];
-
-				if (typeof btn !== 'object' || typeof btn.label == 'undefined')
-					continue;
-
-				var button_element = $("<button>")
-										.attr("name", 'button-'+index)
-										.addClass('button-'+index)
-										.html(btn.label);
-
-				if (typeof btn.click === 'function')
-					button_element.click(btn.click);
-				else
-					button_element.click(self.close);
-
-				button_element.appendTo(div_footer);
-
-				show_footer = true;
-				index++;
-			}
-
-			//footer append
-			if (show_footer)
-				div_footer.appendTo(div_box);
-		},
-		drop: function() {
-			//removes an existing dialog
-			if ($("div.modality-dialog").length)
-				$("div.modality-dialog").remove();
-		},
-		show: function(options) {
-
-			var fn_onclose = null;
-			//check onClose function
-			if (typeof options.onClose === 'function')
-				fn_onclose = options.onClose;
-
-			//show modal
-			$("div.modality-dialog").modality({
-				fixed           : options.fixed,
-				overlay         : options.overlay,
-				overlayAlpha    : options.overlayAlpha,
-				overlayColor    : options.overlayColor,
-				escape          : options.escape,
-				zindex          : options.zindex,
-				onClose         : fn_onclose
-			});
-		},
-		close: function() { 
-			//simpleModal - close
-			$.modality.close();
-		}
-	};
-	/** ------------------------------------------------------------------------------------------------
-		jQuery setup
-	------------------------------------------------------------------------------------------------ **/
-	//creating an event "destroyed"
-	jQuery.event.special.destroyed = {
-		remove: function(o) {
-		  if (o.handler)
-			o.handler();
-		}
-	};
-
-})(jQuery);
-
-},{}],23:[function(require,module,exports){
-/**
- * Modality jQuery plugin v 1.1
- * Requires jQuery 1.7.x or superior
- * Supports mayor browsers including IE8
- * @author Nicolas Pulido M.
- * Usage: 
- * $(element).modality({
-		fixed        : (boolean) present a fixed element?
-		overlay      : (boolean) set an overlay?
-		overlayAlpha : (int) overlay opacity
-		overlayColor : (string) overlay bg color
-		top          : (int) css top value set as percentage
-		bottom       : (int) css bottom value set as percentage (optional)
-		left         : (int) css left value set as percentage
-		right        : (int) css right value set as percentage (optional)
-		onShow       : (function) event onShow
-		onClose      : (function) event onClose
-		onShowAnim   : (function) event onShowAnim, custom Show animation
-		onCloseAnim  : (function) event onCloseAnim, custom Close animation
-		zindex       : (int) css z-index value, default value is 100.
-		escape 		 : (boolean) Allows user to escape the modal with ESC key or a Click outside the element. Defaults is true.
-	});
- */
-
-(function($) {
-	/** ------------------------------------------------------------------------------------------------
-		Modality public methods
-	------------------------------------------------------------------------------------------------ **/
-	$.modality = function() {};
-
-	/**
-	 * Closes Modality
-	 */
-	$.modality.close = function() {
-
-		if (!$("div.modality-overlay").length)
-			return;
-
-		$("div.modality-overlay").trigger("click");
-		return;
-	};
-
-	/**
-	 * Returns boolean if modality is active or not
-	 */
-	$.modality.isActive = function() {
-		return $("div.modality-overlay").length ? true : false;
-	};
-
-	/** ------------------------------------------------------------------------------------------------
-		Modality element
-	------------------------------------------------------------------------------------------------ **/
-	$.fn.modality = function(options) {
-		//get context
-		var self = $(this);
-		return $.fn.modality.core.init(options, self);
-	};
-
-	//DEFAULT VALUES
-	$.fn.modality.defaults = {
-		fixed        : false,
-		overlay      : true,
-		overlayAlpha : 80,
-		overlayColor : "#000",
-		top          : 50,
-		left         : 50,
-		bottom       : null,
-		right        : null,
-		onShow       : null,
-		onClose      : null,
-		onShowAnim   : null,
-		onCloseAnim  : null,
-		zindex       : 100,
-		escape       : true
-	};
-
-	//CORE
-	$.fn.modality.core = {
-
-		init: function(options, obj) {
-			//extend options
-			this.opts = $.extend({}, $.fn.modality.defaults, options);
-			//check if modality was already invoked
-			if ($("div.modality-overlay").length || obj.is(":visible"))
-				return;
-
-			//make and show
-			this.make(this.opts, obj);
-			this.show(this.opts, obj);
-
-			return this;
-		},
-		make: function(options, obj) {
-
-			var self = this;
-			//drop any overlay created before
-			self.drop();
-
-			//overlay div
-			var div_overlay = $("<div>").addClass("modality-overlay");
-
-			//OVERLAY CSS
-			if (options.overlay) {
-				//set opacity
-				var opacity = options.overlayAlpha;
-
-				var doc_height = $(document).height();
-
-				if (doc_height < $(window).height())
-					doc_height = "100%";
-				else
-					doc_height += "px";
-
-				div_overlay.css({
-					"display"    : "none",
-					"position"   : "fixed",
-					"top"        : "0",
-					"left"       : "0",
-					"width"      : "100%",
-					"height"     : doc_height,
-					"background" : options.overlayColor,
-					"opacity"    : opacity / 100,
-					"filter"     : "alpha(opacity="+opacity+")",
-					"z-index"    : options.zindex
-				});
-			}
-
-			//positioning element to display
-			var css_pos  	 = "absolute";
-			var css_x 	 	 = "0";
-			var css_y 	     = "0";
-			var css_margin_x = 0;
-			var css_margin_y = 0;
-
-			var x     = options.left;
-			var xRule = "left";
-
-			if (options.right !== null) {
-				x     = options.right;
-				xRule = "right";
-			}
-
-			var y     = options.top;
-			var yRule = "top";
-
-			if (options.bottom !== null) {
-				y     = options.bottom;
-				yRule = "bottom";
-			}
-
-			//get element width & height
-			var elem_width  = obj.width();
-			var elem_height = obj.height();
-
-			//FIXED position
-			if (options.fixed) { 
-				css_pos = "fixed";
-				//set css position props
-				css_x = x + "%";
-				css_y = y + "%";
-
-				css_margin_x = -(elem_width / (100/x)) + "px";
-				css_margin_y = -(elem_height / (100/y)) + "px";
-			}
-			//ABSOLUTE position
-			else {
-				//set css position props
-				css_x = (Math.max($(window).width() - elem_width, 0)/(100/x)) + $(window).scrollLeft();
-				css_y = (Math.max($(window).height() - elem_height, 0)/(100/y)) + $(window).scrollTop();
-			}
-
-			//set css props
-			obj.css({
-				"position" : css_pos,
-				"z-index"  : (options.zindex + 1)
-			});
-			//set margins
-			obj.css(xRule, css_x);
-			obj.css(yRule, css_y);
-			obj.css("margin-"+xRule, css_margin_x);
-			obj.css("margin-"+yRule, css_margin_y);
-
-			/** -- EVENTS -- **/
-			//force escape?
-			if (options.escape) {
-				//onClick event
-				div_overlay.one("click", function() { 
-					//close action
-					self.close(options, obj);
-				});
-
-				//onKeyUp event for ESC key
-				$(document).one("keyup", function(e) {
-					//prevent any binding action
-					e.preventDefault();
-					e.stopPropagation();
-
-					//ENTER or ESC key
-					if (e.keyCode == 27) {
-						self.close(options, obj);
-					}
-				});
-			}
-			else {
-				div_overlay.unbind("click");
-			}
-
-			//add "destroyed" event handler for "onClose" param
-			if (typeof options.onClose === 'function')               
-				div_overlay.bind('destroyed', options.onClose);
-
-			//append to body
-			div_overlay.appendTo("body");
-		},
-		drop: function() {
-			//removes an existing dialog
-			if ($("div.modality-overlay").length)
-				$("div.modality-overlay").remove();
-		},
-		show: function(options, obj) {
-
-			//if fixed, disable html,body scroll
-			if (options.fixed) {
-				$("html").css("overflow","hidden");
-				$("body").css("position","relative");
-			}
-
-			//show overlay and element
-			$("div.modality-overlay").fadeIn("fast");
-
-			//blur focus on anchors, inputs & buttons
-			$("a").blur();
-			$("input").blur();
-			$("button").blur();
-
-			//show with defined animation?
-			if (typeof options.onShowAnim == "function")
-				options.onShowAnim.call();
-			else
-				obj.fadeIn("fast");
-
-			//call onShow function if set
-			if (typeof options.onShow === 'function')
-				options.onShow.call();
-		},
-		close: function(options, obj) {
-			
-			//close with defined animation?
-			if (typeof options.onCloseAnim == "function")
-				options.onCloseAnim.call();
-			else
-				obj.hide();
-
-			//modal close
-			$("div.modality-overlay").fadeOut();
-
-			//enable back scroll
-			if (options.fixed) {
-				$("html").css("overflow","visible");
-				$("body").css("position","static");				
-			}
-
-			//delete the overlay
-			this.drop();
-		}
-	};
-	/** ------------------------------------------------------------------------------------------------
-		jQuery setup
-	------------------------------------------------------------------------------------------------ **/
-	//creating an event "destroyed"
-	jQuery.event.special.destroyed = {
-		remove: function(o) {
-		  if (o.handler)
-			o.handler();
-		}
-	};
-
-})(jQuery);
-
 },{}],"webpack_core":[function(require,module,exports){
 /**
  * Core WebPack
@@ -50499,8 +50613,8 @@ require('jquery.scrollTo');
 
 //plugins
 require('./plugins/jquery.extended');
-require('./plugins/jquery.modality');
-require('./plugins/jquery.modality.dialog');
+require('./plugins/jquery.cclayer');
+require('./plugins/jquery.ccdialog');
 require('./plugins/jquery.flowType');
 require('./plugins/jquery.formValidation');
 require('./plugins/jquery.formValidation.bootstrap');
@@ -50510,6 +50624,7 @@ require('./plugins/jquery.formValidation.foundation');
 
 //Core
 var core = new (require('./modules/core.js'))();
+
 //export core & make it a global var
 module.exports.core = core;
 
@@ -50523,4 +50638,4 @@ var modules = [
 //set modules
 core.setModules(modules);
 
-},{"./modules/auth.js":12,"./modules/core.js":13,"./modules/facebook.js":14,"./modules/forms.js":15,"./modules/passRecovery.js":16,"./plugins/jquery.extended":17,"./plugins/jquery.flowType":18,"./plugins/jquery.formValidation":21,"./plugins/jquery.formValidation.bootstrap":19,"./plugins/jquery.formValidation.foundation":20,"./plugins/jquery.modality":23,"./plugins/jquery.modality.dialog":22,"fastclick":1,"html5shiv":2,"jquery":4,"jquery.scrollTo":3,"js-cookie":5,"lodash":6,"q":8,"velocity":9,"velocity.ui":10,"vue":11}]},{},["webpack_core"]);
+},{"./modules/auth.js":12,"./modules/core.js":13,"./modules/facebook.js":15,"./modules/forms.js":16,"./modules/passRecovery.js":17,"./plugins/jquery.ccdialog":18,"./plugins/jquery.cclayer":19,"./plugins/jquery.extended":20,"./plugins/jquery.flowType":21,"./plugins/jquery.formValidation":24,"./plugins/jquery.formValidation.bootstrap":22,"./plugins/jquery.formValidation.foundation":23,"fastclick":1,"html5shiv":2,"jquery":4,"jquery.scrollTo":3,"js-cookie":5,"lodash":6,"q":8,"velocity":9,"velocity.ui":10,"vue":11}]},{},["webpack_core"]);
