@@ -53,7 +53,7 @@ trait AccountPassRecovery
     public function recoveryAction()
     {
         //view vars
-        $this->view->setVar("html_title", $this->account_pass_recovery_conf["trans"]["title_recovery"]);
+        $this->view->setVar("html_title", $this->account_pass_recovery_conf["trans"]["TITLE_RECOVERY"]);
         $this->view->setVar("js_recaptcha", true); //load reCaptcha
 
         //load javascript modules
@@ -73,7 +73,7 @@ trait AccountPassRecovery
             $tokens_class::handleUserTokenValidation($encrypted_data);
 
             //view vars
-            $this->view->setVar("html_title", $this->account_pass_recovery_conf["trans"]["title_create_pass"]);
+            $this->view->setVar("html_title", $this->account_pass_recovery_conf["trans"]["TITLE_CREATE_PASS"]);
             $this->view->setVar("edata", $encrypted_data); //pass to view the encrypted data
 
             //load javascript
@@ -102,7 +102,7 @@ trait AccountPassRecovery
         //check valid reCaptcha
         if (empty($data["g-recaptcha-response"]) || !$recaptcha->isValid($data["g-recaptcha-response"])) {
             //show error message
-            return $this->jsonResponse(200, $this->account_pass_recovery_conf["trans"]["recaptcha_failed"], "alert");
+            return $this->jsonResponse(200, $this->account_pass_recovery_conf["trans"]["RECAPTCHA_FAILED"], "alert");
         }
 
         //check if user exists is a active account
@@ -111,13 +111,13 @@ trait AccountPassRecovery
 
         //if user not exists, send message
         if (!$user)
-            $this->jsonResponse(200, $this->account_pass_recovery_conf["trans"]["account_not_found"], "alert");
+            $this->jsonResponse(200, $this->account_pass_recovery_conf["trans"]["ACCOUNT_NOT_FOUND"], "alert");
 
         //send email message with password recovery steps
         $this->sendMailMessage("sendMailForPasswordRecovery", $user->id);
 
         //set a flash message to show on account controller
-        $this->flash->success(str_replace("{email}", $data["email"], $this->account_pass_recovery_conf["trans"]["pass_mail_sent"]));
+        $this->flash->success(str_replace("{email}", $data["email"], $this->account_pass_recovery_conf["trans"]["PASS_MAIL_SENT"]));
 
         //send JSON response
         $this->jsonResponse(200, ["redirect" => "signIn"]);
@@ -160,7 +160,7 @@ trait AccountPassRecovery
             $token->delete();
 
             //set a flash message to show on account controller
-            $this->flash->success($this->account_pass_recovery_conf["trans"]["new_pass_saved"]);
+            $this->flash->success($this->account_pass_recovery_conf["trans"]["NEW_PASS_SAVED"]);
 
             //abstract parent controller
             $this->userHasLoggedIn($user->id);

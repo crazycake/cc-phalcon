@@ -141,7 +141,7 @@ trait Mailer
         //get HTML
         $html_raw = $this->_getInlineStyledHtml("activation", $this->mailer_conf);
         //set message properties
-        $subject = $this->mailer_conf["trans"]["subject_activation"];
+        $subject = $this->mailer_conf["trans"]["SUBJECT_ACTIVATION"];
         $to      = $this->mailer_conf["data_email"];
         $tags    = ["account", "activation"];
         //sends async email
@@ -181,7 +181,7 @@ trait Mailer
         //get HTML
         $html_raw = $this->_getInlineStyledHtml("passwordRecovery", $this->mailer_conf);
         //set message properties
-        $subject = $this->mailer_conf["trans"]["subject_password"];
+        $subject = $this->mailer_conf["trans"]["SUBJECT_PASSWORD"];
         $to      = $this->mailer_conf["data_email"];
         $tags    = array("account", "password", "recovery");
         //sends async email

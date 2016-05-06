@@ -29,8 +29,8 @@ trait PushWebServices
         parent::onConstruct();
 
         //extended error codes
-        $this->CODES["3600"] = "push notification error";
-        $this->CODES["3601"] = "invalid service";
+        $this->CODE["3600"] = "push notification error";
+        $this->CODE["3601"] = "invalid service";
     }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */

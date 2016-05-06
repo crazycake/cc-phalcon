@@ -95,21 +95,21 @@ trait AccountManager
 
             //check for password
             if (!empty($data["pass"]) && empty($data["current_pass"]))
-                throw new Exception($this->account_manager_conf["trans"]["current_pass_empty"]);
+                throw new Exception($this->account_manager_conf["trans"]["CURRENT_PASS_EMPTY"]);
 
             //changed pass validation
             if (!empty($data["pass"]) && !empty($data["current_pass"])) {
 
                 if (strlen($data["pass"]) < $this->account_manager_conf["profile_pass_min_length"])
-                    throw new Exception($this->account_manager_conf["trans"]["pass_too_short"]);
+                    throw new Exception($this->account_manager_conf["trans"]["PASS_TOO_SHORT"]);
 
                 //check current pass
                 if (!$this->security->checkHash($data["current_pass"], $user->pass))
-                    throw new Exception($this->account_manager_conf["trans"]["pass_dont_match"]);
+                    throw new Exception($this->account_manager_conf["trans"]["PASS_DONT_MATCH"]);
 
                 //check pass is diffetent to current
                 if ($this->security->checkHash($data["pass"], $user->pass))
-                    throw new Exception($this->account_manager_conf["trans"]["new_pass_equals"]);
+                    throw new Exception($this->account_manager_conf["trans"]["NEW_PASS_EQUALS"]);
 
                 //ok, update pass
                 $updating_data["pass"] = $this->security->hash($data["pass"]);
@@ -120,7 +120,7 @@ trait AccountManager
 
                 //validate name
                 if (strcspn($data["first_name"], "0123456789") != strlen($data["first_name"]))
-                    throw new Exception($this->account_manager_conf["trans"]["invalid_names"]);
+                    throw new Exception($this->account_manager_conf["trans"]["INVALID_NAMES"]);
 
                 //format to capitalized name
                 $updating_data["first_name"] = mb_convert_case($data["first_name"], MB_CASE_TITLE, "UTF-8");
@@ -130,7 +130,7 @@ trait AccountManager
 
                 //validate name
                 if (strcspn($data["last_name"], "0123456789") != strlen($data["last_name"]))
-                    throw new Exception($this->account_manager_conf["trans"]["invalid_names"]);
+                    throw new Exception($this->account_manager_conf["trans"]["INVALID_NAMES"]);
 
                 //format to capitalized name
                 $updating_data["last_name"] = mb_convert_case($data["last_name"], MB_CASE_TITLE, "UTF-8");
@@ -159,7 +159,7 @@ trait AccountManager
             //send response
             $this->jsonResponse(200, [
                 "user" => $updating_data,
-                "msg"  => $this->account_manager_conf["trans"]["profile_saved"]
+                "msg"  => $this->account_manager_conf["trans"]["PROFILE_SAVED"]
             ]);
         }
         catch (Exception $e) {

@@ -59,7 +59,7 @@ trait AccountAuth
         $this->redirectToAccount(true);
 
         //view vars
-        $this->view->setVar("html_title", $this->account_auth_conf["trans"]["title_sign_in"]);
+        $this->view->setVar("html_title", $this->account_auth_conf["trans"]["TITLE_SIGN_IN"]);
         //load js reCaptcha?
         $this->view->setVar("js_recaptcha", $this->account_auth_conf["js_recaptcha"]);
 
@@ -76,7 +76,7 @@ trait AccountAuth
         $this->redirectToAccount(true);
 
         //view vars
-        $this->view->setVar("html_title", $this->account_auth_conf["trans"]["title_sign_up"]);
+        $this->view->setVar("html_title", $this->account_auth_conf["trans"]["TITLE_SIGN_UP"]);
 
         //check sign_up session data for auto completion field
         $signup_session = $this->getSessionObjects("signup_session");
@@ -127,7 +127,7 @@ trait AccountAuth
             $token->delete();
 
             //set a flash message to show on account controller
-            $this->flash->success($this->account_auth_conf["trans"]["activation_success"]);
+            $this->flash->success($this->account_auth_conf["trans"]["ACTIVATION_SUCCESS"]);
 
             //success login
             $this->userHasLoggedIn($user_id);
@@ -168,18 +168,18 @@ trait AccountAuth
 
         //check user & given hash with the one stored (wrong combination)
         if (!$user || !$this->security->checkHash($data["pass"], $user->pass)) {
-            $this->jsonResponse(200, $this->account_auth_conf["trans"]["auth_failed"], "alert");
+            $this->jsonResponse(200, $this->account_auth_conf["trans"]["AUTH_FAILED"], "alert");
         }
 
         //check user account flag
         if ($user->account_flag != "enabled") {
             //set message
-            $msg       = $this->account_auth_conf["trans"]["account_disabled"];
+            $msg       = $this->account_auth_conf["trans"]["ACCOUNT_DISABLED"];
             $namespace = null;
             //check account is pending
             if ($user->account_flag == "pending") {
 
-                $msg = $this->account_auth_conf["trans"]["account_pending"];
+                $msg = $this->account_auth_conf["trans"]["ACCOUNT_PENDING"];
                 //set name for javascript view
                 $namespace = "ACCOUNT_PENDING";
             }
@@ -215,7 +215,7 @@ trait AccountAuth
         if (strcspn($data["first_name"], $nums) != strlen($data["first_name"]) ||
            strcspn($data["last_name"], $nums) != strlen($data["last_name"])) {
 
-            $this->jsonResponse(200, $this->account_auth_conf["trans"]["invalid_names"], "alert");
+            $this->jsonResponse(200, $this->account_auth_conf["trans"]["INVALID_NAMES"], "alert");
         }
 
         //format to capitalized name
@@ -235,7 +235,7 @@ trait AccountAuth
             $this->jsonResponse(200, $user->allMessages(), "alert");
 
         //set a flash message to show on account controller
-        $this->flash->success(str_replace("{email}", $user->email, $this->account_auth_conf["trans"]["activation_pending"]));
+        $this->flash->success(str_replace("{email}", $user->email, $this->account_auth_conf["trans"]["ACTIVATION_PENDING"]));
         //send activation account email
         $this->sendMailMessage("sendMailForAccountActivation", $user->id);
         //force redirection
@@ -258,7 +258,7 @@ trait AccountAuth
         //check valid reCaptcha
         if (empty($data["g-recaptcha-response"]) || !$recaptcha->isValid($data["g-recaptcha-response"])) {
             //show error message
-            return $this->jsonResponse(200, $this->account_auth_conf["trans"]["recaptcha_failed"], "alert");
+            return $this->jsonResponse(200, $this->account_auth_conf["trans"]["RECAPTCHA_FAILED"], "alert");
         }
 
         //get model classes
@@ -267,13 +267,13 @@ trait AccountAuth
 
         //check if user exists is a pending account
         if (!$user)
-            $this->jsonResponse(200, $this->account_auth_conf["trans"]["account_not_found"], "alert");
+            $this->jsonResponse(200, $this->account_auth_conf["trans"]["ACCOUNT_NOT_FOUND"], "alert");
 
         //send email message with password recovery steps
         $this->sendMailMessage("sendMailForAccountActivation", $user->id);
 
         //set payload
-        $payload = str_replace("{email}", $data["email"], $this->account_auth_conf["trans"]["activation_pending"]);
+        $payload = str_replace("{email}", $data["email"], $this->account_auth_conf["trans"]["ACTIVATION_PENDING"]);
 
         //send JSON response
         $this->jsonResponse(200, $payload);

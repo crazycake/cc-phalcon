@@ -36,16 +36,16 @@ abstract class MvcCore extends Controller
     const JSON_RESPONSE_STRUCT = '{"response":{"code":"200","status":"ok","payload":@payload}}';
 
     /**
-     * HTTP API codes
+     * API codes
      * @var array
      */
-    protected $CODES;
+    protected $CODE;
 
     /**
-     * HTTP API messages
+     * Core text messages
      * @var array
      */
-    protected $MSGS;
+    protected $MSG;
 
     /**
      * on Construct event
@@ -53,7 +53,7 @@ abstract class MvcCore extends Controller
     protected function onConstruct()
     {
         //set API Codes
-        $this->CODES = [
+        $this->CODE = [
             //success
             "200" => "ok",
             //client errors
@@ -77,7 +77,7 @@ abstract class MvcCore extends Controller
         ];
 
         //set message keys
-        $this->MSGS = [];
+        $this->MSG = [];
     }
 
     /**
@@ -195,8 +195,8 @@ abstract class MvcCore extends Controller
     protected function jsonResponse($code = 200, $payload = null, $type = "", $namespace = "")
     {
         //if code is not identified, mark as unknown error
-        if (!isset($this->CODES[$code]))
-            $this->CODES[$code] = $this->CODES[501];
+        if (!isset($this->CODE[$code]))
+            $this->CODE[$code] = $this->CODE[501];
 
         //set response
         $response = [
@@ -243,7 +243,7 @@ abstract class MvcCore extends Controller
                 $response["message"] = $payload;
 
             //set error for non array
-            $response["error"] = is_object($payload) ? $payload : $this->CODES[$code];
+            $response["error"] = is_object($payload) ? $payload : $this->CODE[$code];
         }
 
         //if a view service is set, disable rendering

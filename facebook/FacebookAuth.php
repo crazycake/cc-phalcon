@@ -137,10 +137,10 @@ trait FacebookAuth
         catch (\Exception $e)                { $exception = $e; }
 
         //an exception ocurred
-        $msg = isset($exception) ? $exception->getMessage() : $this->facebook_auth_conf["trans"]["oauth_redirected"];
+        $msg = isset($exception) ? $exception->getMessage() : $this->facebook_auth_conf["trans"]["OAUTH_REDIRECTED"];
 
         if ($exception instanceof FacebookResponseException)
-            $msg = $this->facebook_auth_conf["trans"]["oauth_perms"];
+            $msg = $this->facebook_auth_conf["trans"]["OAUTH_PERMS"];
 
         return $this->jsonResponse(200, $msg, "notice");
     }
@@ -161,7 +161,7 @@ trait FacebookAuth
             $route = (array)$this->cryptify->decryptData($encrypted_data, true);
 
             if (empty($route))
-                throw new Exception($this->facebook_auth_conf["trans"]["oauth_redirected"]);
+                throw new Exception($this->facebook_auth_conf["trans"]["OAUTH_REDIRECTED"]);
 
             //handle login
             $response = $this->__loginUser($fac);
@@ -194,7 +194,7 @@ trait FacebookAuth
             return $this->jsonResponse(200, $exception->getMessage(), "alert");
 
         //set message
-        $msg = $this->facebook_auth_conf["trans"]["oauth_redirected"]."\n".$e->getMessage();
+        $msg = $this->facebook_auth_conf["trans"]["OAUTH_REDIRECTED"]."\n".$e->getMessage();
         $this->view->setVar("error_message", $msg);
         $this->dispatcher->forward(["controller" => "error", "action" => "internal"]);
     }
@@ -495,7 +495,7 @@ trait FacebookAuth
 
             //validate fb session properties
             if (!$properties)
-                throw new Exception($this->facebook_auth_conf["trans"]["session_error"]);
+                throw new Exception($this->facebook_auth_conf["trans"]["SESSION_ERROR"]);
             //print_r($properties);exit;
 
             //OK, check if user exists in user_facebook table & get session data
@@ -506,14 +506,14 @@ trait FacebookAuth
             if ($user_session && $user_session["fb_id"] && $user_session["fb_id"] != $properties["fb_id"]) {
 
                 $this->logger->error("Facebook::__loginUser() -> App Session fb_id (".$user_session["fb_id"].") & sdk session (".$properties["fb_id"].") data not match.");
-                throw new Exception($this->facebook_auth_conf["trans"]["session_switched"]);
+                throw new Exception($this->facebook_auth_conf["trans"]["SESSION_SWITCHED"]);
             }
 
             //check if user is already logged In, have a FB user and is linked to another user
             if ($user_session && $user_fb && $user_fb->user_id != $user_session["id"]) {
 
                 $this->logger->error("Facebook::__loginUser() -> App Session fb_id (".$user_session["fb_id"].") & sdk session (".$properties["fb_id"].") data not match.");
-                throw new Exception($this->facebook_auth_conf["trans"]["account_switched"]);
+                throw new Exception($this->facebook_auth_conf["trans"]["ACCOUNT_SWITCHED"]);
             }
 
             //check if user has already a account registered by email
@@ -525,7 +525,7 @@ trait FacebookAuth
 
                 //disabled account
                 if ($user->account_flag == "disabled")
-                    throw new Exception($this->facebook_auth_conf["trans"]["account_disabled"]);
+                    throw new Exception($this->facebook_auth_conf["trans"]["ACCOUNT_DISABLED"]);
 
                 //update user flag if account was pending, or if account is disabled show a warning
                 if ($user->account_flag == "pending")
@@ -551,7 +551,7 @@ trait FacebookAuth
 
                     //user dont have an account, checking facebook email...
                     if (!$this->__filterEmail($properties["email"], $properties["fb_id"]))
-                        throw new Exception($this->facebook_auth_conf["trans"]["invalid_email"]);
+                        throw new Exception($this->facebook_auth_conf["trans"]["INVALID_EMAIL"]);
 
                     //check existing user with input email
                     $user = $user_class::getUserByEmail($properties["email"]);
@@ -738,7 +738,7 @@ trait FacebookAuth
             $user = $user_class::getById($user_id);
             $user->delete();
             //raise an error
-            throw new Exception($this->facebook_auth_conf["trans"]["session_error"]);
+            throw new Exception($this->facebook_auth_conf["trans"]["SESSION_ERROR"]);
         }
 
         return $user_fb;

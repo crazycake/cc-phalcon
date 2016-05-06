@@ -226,7 +226,7 @@ trait KccManager
             $this->onBeforeRenderSuccessPage($checkout);
 
             //set flash message
-            $this->flash->success($this->kcc_manager_conf["trans"]["success_trx"]);
+            $this->flash->success($this->kcc_manager_conf["trans"]["SUCCESS_TRX"]);
 
             //set view vars
             $this->view->setVar("webpay", $params);

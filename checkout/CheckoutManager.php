@@ -70,7 +70,7 @@ trait CheckoutManager
         if (!$this->isLoggedIn()) {
 
             //set a flash message for non authenticated users
-            $this->flash->notice($this->checkout_manager_conf["trans"]["notice_auth"]);
+            $this->flash->notice($this->checkout_manager_conf["trans"]["NOTICE_AUTH"]);
             //if not logged In, set this URI to redirected after logIn
             $this->setRedirectionOnUserLoggedIn();
         }
@@ -104,7 +104,7 @@ trait CheckoutManager
 
             //check if an error occurred
             if (!$checkout_orm)
-                throw new Exception($this->checkout_manager_conf["trans"]["error_unexpected"]);
+                throw new Exception($this->checkout_manager_conf["TRANS"]["ERROR_UNEXPECTED"]);
 
             //set buy order
             $checkout->buy_order = $checkout_orm->buy_order;
@@ -295,7 +295,7 @@ trait CheckoutManager
         $this->successCheckout($checkout);
 
         //set flash message
-        $this->flash->success($this->checkout_manager_conf["trans"]["success_checkout"]);
+        $this->flash->success($this->checkout_manager_conf["trans"]["SUCCESS_CHECKOUT"]);
 
         //redirect
         if (!$this->checkout_manager_conf["debug"])
@@ -349,7 +349,7 @@ trait CheckoutManager
             if (!$user_checkout_object_class::validateStock($object_class, $object_id, $q)) {
 
                 $this->logger->error("CheckoutManager::_parseCheckoutObjects -> No stock for object $object_class, ID: $object_id, Q: $q.");
-                throw new Exception(str_replace("{name}", $object->name, $this->checkout_manager_conf["trans"]["error_no_stock"]));
+                throw new Exception(str_replace("{name}", $object->name, $this->checkout_manager_conf["trans"]["ERROR_NO_STOCK"]));
             }
 
             //append object class
@@ -457,7 +457,7 @@ trait CheckoutManager
 
         //check invoice email if set
         if (!isset($data["invoice_email"]) || !filter_var($data["invoice_email"], FILTER_VALIDATE_EMAIL))
-            throw new Exception($this->MSGS["ERROR_INVOICE_EMAIL"]);
+            throw new Exception($this->checkout_manager_conf["trans"]["ERROR_INVOICE_EMAIL"]);
 
         //lower case email
         $data["invoice_email"] = strtolower($data["invoice_email"]);
@@ -477,13 +477,13 @@ trait CheckoutManager
 
         //weird error, no checkout objects
         if (empty($checkout->objects))
-            throw new Exception($this->checkout_manager_conf["trans"]["error_unexpected"]);
+            throw new Exception($this->checkout_manager_conf["trans"]["ERROR_UNEXPECTED"]);
 
         //check max objects allowed
         if ($checkout->total_q > $this->checkout_manager_conf["max_user_acquisition"]) {
 
             throw new Exception(str_replace("{num}", $this->checkout_manager_conf["max_user_acquisition"],
-                                                     $this->checkout_manager_conf["trans"]["error_max_total"]));
+                                                     $this->checkout_manager_conf["trans"]["ERROR_MAX_TOTAL"]));
         }
 
         return $checkout;
