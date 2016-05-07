@@ -64,7 +64,7 @@ class BaseTicket extends \CrazyCake\Models\Base
      * @static
      * @var array
      */
-    static $STATES = ["open", "closed", "soldout"];
+    static $STATES = ["open", "closed", "soldout", "invisible"];
 
     /**
      * Initializer
