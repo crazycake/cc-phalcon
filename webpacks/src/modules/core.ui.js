@@ -302,7 +302,7 @@ module.exports = function() {
         //new foundation modal
         if (core.framework == "foundation") {
 
-            element.foundation('open');
+            element.foundation("open");
         }
         //new bootstrap modal
         else if (core.framework == "bootstrap") {
