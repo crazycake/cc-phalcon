@@ -106,6 +106,25 @@
 	background-position: center center;
 }
 
+@mixin app-scrollbar($size, $foreground-color, $background-color: mix($foreground-color, white,  50%)) {
+    //Chrome
+    ::-webkit-scrollbar {
+        width:  $size;
+        height: $size;
+    }
+    ::-webkit-scrollbar-thumb {
+        background: $foreground-color;
+    }
+    ::-webkit-scrollbar-track {
+        background: $background-color;
+    }
+    //IE fallback
+    body {
+        scrollbar-face-color: $foreground-color;
+        scrollbar-track-color: $background-color;
+    }
+}
+
 /* Placeholders
 ---------------------------------------------------------------------------------------- */
 
@@ -160,9 +179,19 @@
 .app-no-padding        { padding: 0 !important; }
 .app-no-padding-top    { padding-top: 0 !important; }
 .app-no-padding-bottom { padding-bottom: 0 !important; }
-.app-no-padding-left   { padding-left: 0 !important;  }
-.app-no-padding-right  { padding-right: 0 !important;  }
+.app-no-padding-left   { padding-left: 0 !important; }
+.app-no-padding-right  { padding-right: 0 !important; }
+.app-full-height       { height: 100%; }
 .app-line-spacer       { height: 2px; }
+
+//tables
+.app-table {
+    display: table;
+}
+.app-table-cell {
+    display: table-cell;
+    vertical-align: middle;
+}
 
 //fixed position
 .app-fixed {
