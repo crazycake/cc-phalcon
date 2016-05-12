@@ -163,7 +163,7 @@ trait KccManager
             //NOTE: sending a warning to admin users!
             $mailer = AppModule::getClass("mailer_controller");
 
-            (new $mailer())->sendSystemMail([
+            (new $mailer())->sendAdminMessage([
                 "subject" => "Trx handler error",
                 "to"      => $this->config->app->emails->support,
                 "email"   => $this->config->app->emails->sender,

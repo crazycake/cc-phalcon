@@ -174,7 +174,7 @@ abstract class MvcCore extends Controller
             else
                 $options["payload"] = $this->cryptify->encryptData($options["payload"]);
         }
-
+        
         //log asyn request
         $this->logger->debug("MvcCore::asyncRequest -> Options: ".json_encode($options, JSON_UNESCAPED_SLASHES));
 

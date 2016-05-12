@@ -224,7 +224,7 @@ trait CheckoutManager
             //get mailer controller
             $mailer = AppModule::getClass("mailer_controller");
             //send alert system mail message
-            (new $mailer())->sendSystemMailForException($e, [
+            (new $mailer())->adminException($e, [
                 "action"  => "successCheckoutTask",
                 "user_id" => (isset($user) ? $user->id : "unknown")
             ]);

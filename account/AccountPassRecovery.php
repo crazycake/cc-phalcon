@@ -114,7 +114,7 @@ trait AccountPassRecovery
             $this->jsonResponse(200, $this->account_pass_recovery_conf["trans"]["ACCOUNT_NOT_FOUND"], "alert");
 
         //send email message with password recovery steps
-        $this->sendMailMessage("sendMailForPasswordRecovery", $user->id);
+        $this->sendMailMessage("passwordRecovery", $user->id);
 
         //set a flash message to show on account controller
         $this->flash->success(str_replace("{email}", $data["email"], $this->account_pass_recovery_conf["trans"]["PASS_MAIL_SENT"]));

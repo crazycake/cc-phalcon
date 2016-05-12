@@ -56,59 +56,11 @@ trait Mailer
         $data["subject"] = "Contacto ".$this->config->app->name;
 
         //send contact email
-        $this->sendMailMessage("sendSystemMail", $data);
+        $this->sendMailMessage("sendAdminMessage", $data);
 
         //send JSON response
         $this->jsonResponse(200);
         return;
-    }
-
-	/**
-     * Async Handler - Sends contact email (always used)
-     * @param array $message_data - Must contains keys "name", "email" & "message"
-     * @return json response
-     */
-    public function sendSystemMail($message_data)
-    {
-    	if (empty($message_data))
-    		return false;
-
-        //set message properties
-        $subject = isset($message_data["subject"]) ? $message_data["subject"] : $this->config->app->name;
-        $to      = isset($message_data["to"]) ? $message_data["to"] : $this->config->app->emails->contact;
-        $tags    = array("contact", "support");
-
-        //add prefix "data" to each element in array
-        $view_data = array_combine( array_map(function($k) { return "data_".$k; }, array_keys($message_data)), $message_data);
-
-        //get HTML
-        $html_raw = $this->getInlineStyledHtml("contact", $view_data);
-
-        //sends async email
-        return $this->sendMessage($html_raw, $subject, $to, $tags);
-    }
-
-    /**
-     * Sends a system mail for exception alert
-     * @param object $exception - An exception object
-     * @param object $data - Informative appended data
-     */
-    public function sendSystemMailForException($exception, $data = null)
-    {
-        //Error on success checkout task
-        if (isset($this->logger))
-            $this->logger->error("Mailer::sendExceptionSystemMail -> something ocurred, err: ".$exception->getMessage());
-
-        //Sending a warning to admin users!
-        $this->sendSystemMail([
-            "subject" => "Exception Notification Error",
-            "to"      => $this->config->app->emails->support,
-            "email"   => $this->config->app->emails->sender,
-            "name"    => $this->config->app->name." System",
-            "message" => "A error occurred.".
-                         "\n Data:  ".(is_null($data) ? "empty" : json_encode($data, JSON_UNESCAPED_SLASHES)).
-                         "\n Trace: ".$exception->getMessage()
-        ]);
     }
 
     /**
@@ -116,7 +68,7 @@ trait Mailer
      * @param int $user_id - The user ID
      * @return json response
      */
-    public function sendMailForAccountActivation($user_id)
+    public function accountActivation($user_id)
     {
         $user_class = AppModule::getClass("user");
         $user = $user_class::getById($user_id);
@@ -154,7 +106,7 @@ trait Mailer
      * @param int $user_id - The user ID
      * @return json response
      */
-    public function sendMailForPasswordRecovery($user_id)
+    public function passwordRecovery($user_id)
     {
         $user_class = AppModule::getClass("user");
         $user = $user_class::getById($user_id);
@@ -210,6 +162,54 @@ trait Mailer
         $html = $emogrifier->emogrify();
 
         return $html;
+    }
+
+    /**
+     * Sends a system mail for exception alert
+     * @param object $exception - An exception object
+     * @param object $data - Informative appended data
+     */
+    public function adminException($exception, $data = null)
+    {
+        //Error on success checkout task
+        if (isset($this->logger))
+            $this->logger->error("Mailer::sendExceptionSystemMail -> something ocurred, err: ".$exception->getMessage());
+
+        //Sending a warning to admin users!
+        $this->sendAdminMessage([
+            "subject" => "Exception Notification Error",
+            "to"      => $this->config->app->emails->support,
+            "email"   => $this->config->app->emails->sender,
+            "name"    => $this->config->app->name." System",
+            "message" => "A error occurred.".
+                         "\n Data:  ".(is_null($data) ? "empty" : json_encode($data, JSON_UNESCAPED_SLASHES)).
+                         "\n Trace: ".$exception->getMessage()
+        ]);
+    }
+    
+    /**
+     * Async Handler - Sends contact email (always used)
+     * @param array $message_data - Must contains keys "name", "email" & "message"
+     * @return json response
+     */
+    public function sendAdminMessage($message_data)
+    {
+    	if (empty($message_data))
+    		return false;
+
+        //set message properties
+        $subject = isset($message_data["subject"]) ? $message_data["subject"] : $this->config->app->name;
+        $to      = isset($message_data["to"]) ? $message_data["to"] : $this->config->app->emails->contact;
+        $tags    = array("contact", "support");
+
+        //add prefix "data" to each element in array
+        $view_data = array_combine( array_map(function($k) { return "data_".$k; }, array_keys($message_data)), $message_data);
+
+        //get HTML
+        $html_raw = $this->getInlineStyledHtml("contact", $view_data);
+
+        //sends async email
+        return $this->sendMessage($html_raw, $subject, $to, $tags);
     }
 
     /**
