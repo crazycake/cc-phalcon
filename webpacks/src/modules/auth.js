@@ -68,7 +68,7 @@ module.exports = function() {
             if (!payload) return;
 
             //modal closer
-            core.ui.closeModal($(APP.UI.sel_account_modal));
+            core.ui.hideModal($(APP.UI.sel_account_modal));
             //show succes message
             core.ui.showAlert(payload, "success");
 

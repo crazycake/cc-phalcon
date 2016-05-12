@@ -18,15 +18,15 @@ module.exports = function() {
     //common jQuery selectors
     _.assign(APP.UI, {
         //selectors
-        sel_body_wrapper     : "#wrapper",
-        sel_header           : "#header",
-        sel_footer           : "#footer",
-        sel_loading_box      : "#app-loading",
-        sel_flash_messages   : "#app-flash",
-        sel_alert_box        : "div.app-alert",
+        sel_body_wrapper   : "#wrapper",
+        sel_header         : "#header",
+        sel_footer         : "#footer",
+        sel_loading_box    : "#app-loading",
+        sel_flash_messages : "#app-flash",
+        sel_alert_box      : "div.app-alert",
         //setting vars
-        url_img_fallback     : APP.staticUrl + 'images/icons/icon-image-fallback.png',
-        pixel_ratio          : _.isUndefined(window.devicePixelRatio) ? 1 : window.devicePixelRatio
+        url_img_fallback   : APP.staticUrl + 'images/icons/icon-image-fallback.png',
+        pixel_ratio        : _.isUndefined(window.devicePixelRatio) ? 1 : window.devicePixelRatio
     });
 
     //set dynamic required props as default values
@@ -306,7 +306,26 @@ module.exports = function() {
         }
         //new bootstrap modal
         else if (core.framework == "bootstrap") {
+
             element.modal(options);
+        }
+    };
+
+    /**
+     * Hides a crated modal
+     * @param  {object} element - The jquery element
+     */
+    self.hideModal = function(element) {
+
+        //new foundation modal
+        if (core.framework == "foundation") {
+
+            element.foundation("close");
+        }
+        //new bootstrap modal
+        else if (core.framework == "bootstrap") {
+
+            element.modal("hide");
         }
     };
 
