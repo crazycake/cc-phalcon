@@ -39,7 +39,7 @@ trait PushWebServices
      * (POST) Subscribe action
      * @return json response
      */
-    public function subscribeAction()
+    public function newSubscriber()
     {
         $data = $this->handleRequest([
             "service" => "string",
@@ -68,7 +68,7 @@ trait PushWebServices
      * (POST) Send push notification
      * @return json response
      */
-    public function sendAction()
+    public function newPush()
     {
         $data = $this->handleRequest([
             "service" => "string",
@@ -98,7 +98,7 @@ trait PushWebServices
      * (POST) Notification received action
      * @return json response
      */
-    public function receivedAction()
+    public function received()
     {
         $data = $this->handleRequest([
             "service" => "string",
