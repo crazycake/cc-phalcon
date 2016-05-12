@@ -44336,9 +44336,9 @@ module.exports = function() {
             if (!payload) return;
 
             //modal closer
-            core.closeModal($(APP.UI.sel_account_modal));
+            core.ui.closeModal($(APP.UI.sel_account_modal));
             //show succes message
-            core.showAlert(payload, "success");
+            core.ui.showAlert(payload, "success");
 
         }).done();
     };
@@ -44355,7 +44355,7 @@ module.exports = function() {
         core.modules.forms.revalidateFormField($(APP.UI.sel_recaptcha).parents("form").eq(0), 'reCaptchaValue');
 
         //new modal
-        core.newModal($(APP.UI.sel_account_modal));
+        core.ui.newModal($(APP.UI.sel_account_modal));
     };
 };
 
@@ -44448,12 +44448,12 @@ module.exports = function() {
             self.initBootstrap();
 
         //load forms module
-        if (typeof core.modules.forms !== "undefined")
-            core.modules.forms.loadForms();
+        if (typeof self.modules.forms !== "undefined")
+            self.modules.forms.loadForms();
 
         //load UI module
-        if (typeof core.ui !== "undefined")
-            core.ui.init();
+        if (typeof self.ui !== "undefined")
+            self.ui.init();
 
         if (APP.dev) { console.log("App Core Ready!"); }
     };
@@ -44546,43 +44546,6 @@ module.exports = function() {
     };
 
     /**
-     * jQuery Ajax Handler, loaded automatically.
-     * @method setAjaxHandler
-     */
-    self.setAjaxHandler = function() {
-
-        //this vars must be declared outside ajaxHandler function
-        var ajax_timer;
-        var app_loading = self.showLoading(true); //hide by default
-
-        //ajax handler, show loading if ajax takes more than a X secs, only for POST request
-        var handler = function(options, show_loading) {
-
-            //only for POST request
-            if (options.type.toUpperCase() !== "POST") // && options.type.toUpperCase() !== "GET"
-                return;
-
-            //show loading?
-            if (show_loading) {
-                //clear timer
-                clearTimeout(ajax_timer);
-                //waiting time to show loading box
-                ajax_timer = setTimeout( function() { app_loading.show('fast'); }, 1000);
-                return;
-            }
-            //otherwise clear timer and hide loading
-            clearTimeout(ajax_timer);
-            app_loading.fadeOut('fast');
-        };
-
-        //ajax events
-        $(document)
-         .ajaxSend(function(event, xhr, options)     { handler(options, true);  })
-         .ajaxComplete(function(event, xhr, options) { handler(options, false); })
-         .ajaxError(function(event, xhr, options)    { handler(options, false); });
-    };
-
-    /**
      * Ajax request with form validation.
      * Validates a form, if valid, sends a promise request with Q lib.
      * @link https://github.com/kriskowal/q
@@ -44663,7 +44626,7 @@ module.exports = function() {
         .then(function(data) {
 
             //handle ajax response
-            if (!core.handleAjaxResponse(data, events))
+            if (!self.handleAjaxResponse(data, events))
                 return false;
 
             var payload = data.response.payload;

@@ -68,9 +68,9 @@ module.exports = function() {
             if (!payload) return;
 
             //modal closer
-            core.closeModal($(APP.UI.sel_account_modal));
+            core.ui.closeModal($(APP.UI.sel_account_modal));
             //show succes message
-            core.showAlert(payload, "success");
+            core.ui.showAlert(payload, "success");
 
         }).done();
     };
@@ -87,6 +87,6 @@ module.exports = function() {
         core.modules.forms.revalidateFormField($(APP.UI.sel_recaptcha).parents("form").eq(0), 'reCaptchaValue');
 
         //new modal
-        core.newModal($(APP.UI.sel_account_modal));
+        core.ui.newModal($(APP.UI.sel_account_modal));
     };
 };
