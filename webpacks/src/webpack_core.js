@@ -19,7 +19,6 @@ require('jquery.scrollTo');
 require('./plugins/jquery.extended');
 require('./plugins/jquery.cclayer');
 require('./plugins/jquery.ccdialog');
-require('./plugins/jquery.flowType');
 require('./plugins/jquery.formValidation');
 require('./plugins/jquery.formValidation.bootstrap');
 require('./plugins/jquery.formValidation.foundation');

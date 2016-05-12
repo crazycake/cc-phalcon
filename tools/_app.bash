@@ -25,7 +25,7 @@ PACKAGES_PATH=$PROJECT_PATH"/packages/"
 COMPOSER_PATH=$PACKAGES_PATH"composer/"
 
 # npm global dependencies
-NPM_GLOBAL_DEPENDENCIES="gulp uglify-js npm-check-updates"
+NPM_GLOBAL_DEPENDENCIES="gulp uglify-js npm-check"
 
 # Apache set up
 APACHE_USER_GROUP="$(whoami):www-data"
@@ -324,9 +324,9 @@ elif [ $1 = "npm" ]; then
 
 	echo -e "\033[95mUpdating project npm dependencies... \033[0m"
 
-	if [ "$3" = "-u" ]; then
+	if [ "$2" = "-u" ]; then
 		echo -e "\033[95mChecking for updates... \033[0m"
-		ncu -u
+		npm-check -u
 	fi
 
 	#package instalation
