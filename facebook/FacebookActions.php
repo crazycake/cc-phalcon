@@ -100,7 +100,7 @@ trait FacebookActions
      * @param int $attempt - Fallback exception, retry
      * @return string - The object ID
      */
-    public function publish($user_fb, $object, $payload = [], $attempt = 0)
+    public function publish($user_fb = null, $object = null, $payload = [], $attempt = 0)
     {
         //get user facebook data
         $user_fb_class = AppModule::getClass("user_facebook_page");
