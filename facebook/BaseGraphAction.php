@@ -44,6 +44,11 @@ class BaseGraphAction extends \CrazyCake\Models\Base
     /**
     * @var string
     */
+    public $story_url;
+
+    /**
+    * @var string
+    */
     public $story_text;
 
     /**
