@@ -59,6 +59,7 @@ trait Guzzle
 
             //reflection function
             $action = "_".strtolower($options["method"])."Request";
+
             return $this->$action($client, $options);
         }
         catch (Exception $e)  { $exception = $e; }
@@ -164,22 +165,23 @@ trait Guzzle
 
             //handle response (OK status)
             if ($response->getStatusCode() == 200 && strpos($body, "<!DOCTYPE") === false) {
-                $logger->debug("Guzzle::_sendPromise -> Uri: ".$options["uri"].", response: $body");
+
+                $logger->debug("Guzzle::_sendPromise -> response: $body \nOptions: ".json_encode($options, JSON_UNESCAPED_SLASHES));
             }
             else {
 
                 if (isset($this->router)) {
-                    $controllerName = $this->router->getControllerName();
-                    $actionName     = $this->router->getActionName();
-                    $logger->error("Guzzle::_sendPromise -> Error on request (".$options["uri"]."): $controllerName -> $actionName");
+                    $controller_name = $this->router->getControllerName();
+                    $action_name     = $this->router->getActionName();
+                    $logger->error("Guzzle::_sendPromise -> Error on request: $controller_name -> $action_name. Options: ".json_encode($options, JSON_UNESCAPED_SLASHES));
                 }
                 else {
-                    $logger->error("Guzzle::_sendPromise -> An Error occurred on request, uri: ".$options["uri"]);
+                    $logger->error("Guzzle::_sendPromise -> An Error occurred on request. Options: ".json_encode($options, JSON_UNESCAPED_SLASHES));
                 }
 
                 //catch response for app errors
                 if (strpos($body, "<!DOCTYPE") === false)
-                    $logger->debug("Guzzle::_sendPromise -> Catched response: $body");
+                    $logger->debug("Guzzle::_sendPromise -> Catched response: $body \nOptions: ".json_encode($options, JSON_UNESCAPED_SLASHES));
                 else
                     $logger->debug("Guzzle::_sendPromise -> NOTE: Above response is a redirection webpage, check correct route and redirections.");
             }
@@ -194,8 +196,13 @@ trait Guzzle
      */
     private function _socketAsync($options = [])
     {
+        //check URL
+        $url = $options["base_url"].$options["uri"];
+        //append final slash?
+        if (substr($url, -1) !== "/") $url .= "/";
+
         //full URL
-        $parts = parse_url($options["base_url"].$options["uri"]);
+        $parts = parse_url($url);
 
         /*if ($parts["sheme"] == "https")
             $default_port = 443; //SSL*/
@@ -211,7 +218,7 @@ trait Guzzle
 
         // Data goes in the path for a GET request
         if ($options["method"] == "GET") {
-            $parts["path"] .= $options["payload"]; //normal would be a ? symbol with & delimeter
+            $parts["path"] .= $options["payload"];
             $length = 0;
         }
         else {
