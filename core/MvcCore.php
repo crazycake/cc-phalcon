@@ -159,7 +159,7 @@ abstract class MvcCore extends Controller
         //special case for module cross requests
         if (!empty($options["module"]) && $options["module"] == "api") {
 
-            //get API key header name
+            //set API key header name
             $api_key_header_value = AppModule::getProperty("key", "api");
             $api_key_header_name  = str_replace("_", "-", WsCore::HEADER_API_KEY);
             $options["headers"]   = [$api_key_header_name => $api_key_header_value];

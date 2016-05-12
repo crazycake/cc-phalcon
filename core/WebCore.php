@@ -109,7 +109,7 @@ abstract class WebCore extends MvcCore implements WebSecurity
             $this->dispatcher->dispatch();
         }
     }
-    
+
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**

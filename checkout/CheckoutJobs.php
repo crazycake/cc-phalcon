@@ -36,8 +36,8 @@ trait CheckoutJobs
      */
     protected function initCheckoutJobs()
     {
-        $this->_colorize("userCheckoutCleaner: Cleans expired user checkouts", "WARNING");
-        $this->_colorize("storeDollarChileanPesoValue: API request & stores in cache dollar CLP conversion value", "WARNING");
+        $this->colorize("userCheckoutCleaner: Cleans expired user checkouts", "WARNING");
+        $this->colorize("storeDollarChileanPesoValue: API request & stores in cache dollar CLP conversion value", "WARNING");
     }
 
     /**
@@ -57,7 +57,7 @@ trait CheckoutJobs
         if ($objs_deleted) {
 
             $output = "[".date("d-m-Y H:i:s")."] userCheckoutCleaner -> Expired Checkouts deleted: ".$objs_deleted."\n";
-            $this->_output($output);
+            $this->output($output);
         }
     }
 
@@ -85,7 +85,7 @@ trait CheckoutJobs
 
             $output = "[".date("d-m-Y H:i:s")."] storeDollarChileanPesoValue -> Stored value '$value' in redis cache. \n";
             //print output
-            $this->_output($output);
+            $this->output($output);
         }
         catch (Exception $e) {
 

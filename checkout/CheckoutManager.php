@@ -388,7 +388,7 @@ trait CheckoutManager
      * @param array $collections - The objects collection association array (key is objectType)
      * @param object $view - The checkout view class
      */
-    private function _setupCheckoutView($type = "", $categories = [], $collections = [], $view = "default")
+    protected function setupCheckoutView($type = "", $categories = [], $collections = [], $view = "default")
     {
         //default inputs for checkout
         $inputs = [

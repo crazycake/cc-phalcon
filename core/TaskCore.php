@@ -28,11 +28,11 @@ class TaskCore extends Task
      */
     public function mainAction()
     {
-        $this->_colorize($this->config->app->name." CLI App", "NOTE");
-        $this->_colorize("Usage: \ncli.php main [param]", "OK");
-        $this->_colorize("--------------------", "NOTE");
-        $this->_colorize("appConfig: Outputs app configuration in JSON format", "WARNING");
-        $this->_colorize("getCache [key]: Gets stored data in Cache (Redis)", "WARNING");
+        $this->colorize($this->config->app->name." CLI App", "NOTE");
+        $this->colorize("Usage: \ncli.php main [param]", "OK");
+        $this->colorize("--------------------", "NOTE");
+        $this->colorize("appConfig: Outputs app configuration in JSON format", "WARNING");
+        $this->colorize("getCache [key]: Gets stored data in Cache (Redis)", "WARNING");
     }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
@@ -50,12 +50,12 @@ class TaskCore extends Task
             unset($conf->database);
 
         if (empty($args))
-            $this->_output($conf, true);
+            $this->output($conf, true);
 
         if (!isset($conf->{$args[0]}))
-            $this->_colorize("No value found for argument.", "ERROR", true);
+            $this->colorize("No value found for argument.", "ERROR", true);
 
-        $this->_output($conf->{$args[0]}, true);
+        $this->output($conf->{$args[0]}, true);
     }
 
     /**
@@ -65,7 +65,7 @@ class TaskCore extends Task
     public function getCacheAction($args = [])
     {
         if (empty($args))
-            $this->_colorize("Empty key argument", "ERROR", true);
+            $this->colorize("Empty key argument", "ERROR", true);
 
         try {
 
@@ -75,7 +75,7 @@ class TaskCore extends Task
             $data = $redis->get($args[0], false);
 
             //outputs value
-            $this->_output($data);
+            $this->output($data);
         }
         catch (Exception $e) {
             //outputs error
@@ -90,7 +90,7 @@ class TaskCore extends Task
     public function revAssetsAction($args = [])
     {
         if (empty($args) || !in_array($args[0], ["frontend", "backend"]))
-            $this->_colorize("Invalid module argument", "ERROR", true);
+            $this->colorize("Invalid module argument", "ERROR", true);
 
         $module_name = $args[0];
 
@@ -99,12 +99,12 @@ class TaskCore extends Task
         $assets_path = PROJECT_PATH.$module_name."/public/".$assets_path."/";
 
         if (!is_dir($assets_path))
-            $this->_colorize("Assets path not found: $assets_path", "ERROR", true);
+            $this->colorize("Assets path not found: $assets_path", "ERROR", true);
 
         $version = AppModule::getProperty("version", $module_name);
 
         if (!$version)
-            $this->_colorize("Invalid version for $module_name", "ERROR", true);
+            $this->colorize("Invalid version for $module_name", "ERROR", true);
 
         $version_stripped = str_replace(".", "", $version);
 
@@ -114,17 +114,17 @@ class TaskCore extends Task
         copy($assets_path."app.min.js", $assets_path."app-".$version_stripped.".rev.js");
 
         //print output
-        $this->_colorize("Created revision assets: $version", "OK", true);
+        $this->colorize("Created revision assets: $version", "OK", true);
     }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
-     * Print Output
+     * Print Output and finish script
      * @param string $output - The text message
      * @param boolean $json_encode - Sends json encoded output
      */
-    protected function _output($output = "OK", $json_encode = false)
+    protected function output($output = "OK", $json_encode = false)
     {
         if ($json_encode)
             $output = json_encode($output, JSON_UNESCAPED_SLASHES);
@@ -138,23 +138,23 @@ class TaskCore extends Task
      * @param string $type - Options: ["OK", "ERROR", "WARNING", "NOTE"]
      * @param boolean $die - Flag to stop script execution
      */
-    protected function _colorize($text = "", $type = "OK", $die = false)
+    protected function colorize($text = "", $type = "OK", $die = false)
     {
         $open  = "";
         $close = "\033[0m";
 
         switch ($type) {
             case "OK":
-                $open = "\033[92m";  //Green color
+                $open = "\033[92m"; //Green color
                 break;
             case "ERROR":
-                $open = "\033[91m";  //Red color
+                $open = "\033[91m"; //Red color
                 break;
             case "WARNING":
-                $open = "\033[93m";  //Yellow color
+                $open = "\033[93m"; //Yellow color
                 break;
             case "NOTE":
-                $open = "\033[94m";  //Blue color
+                $open = "\033[94m"; //Blue color
                 break;
             default:
                 throw new Exception("CoreTask:_colorize -> invalid message type: ".$type);
@@ -164,7 +164,7 @@ class TaskCore extends Task
 
         //echo output
         if ($die)
-            $this->_output($output);
+            $this->output($output);
         else
             echo $output;
     }
@@ -175,17 +175,17 @@ class TaskCore extends Task
      * @param int $index - The arg index to validate
      * @param boolean $check_folder - Checks if module folder exists
      */
-    protected function _validatesModuleArg($args = [], $index = 0, $check_folder = true)
+    protected function validateModuleArg($args = [], $index = 0, $check_folder = true)
     {
         if (empty($args) || !isset($args[$index]))
-            $this->_colorize("The argument [module] is missing", "ERROR", true);
+            $this->colorize("The argument [module] is missing", "ERROR", true);
 
         //set module
         $module = PROJECT_PATH.$args[$index];
 
         //check for folder
         if ($check_folder && !is_dir($module))
-            $this->_colorize("The input module folder ($module) was not found", "ERROR", true);
+            $this->colorize("The input module folder ($module) was not found", "ERROR", true);
 
         return $module;
     }
@@ -198,19 +198,23 @@ class TaskCore extends Task
     {
         //set base url
         if (empty($options["base_url"]))
-            $this->_colorize("Base URL is required", "ERROR", true);
+            $this->colorize("Base URL is required", "ERROR", true);
 
         //add missing slash
         if (substr($options["base_url"], -1) !== "/")
             $options["base_url"] .= "/";
 
         if (filter_var($options["base_url"], FILTER_VALIDATE_URL) === false)
-            $this->_colorize("Argument 'base_url' is not a valid URL", "ERROR", true);
+            $this->colorize("Argument 'base_url' is not a valid URL", "ERROR", true);
 
-        //get API key header name
-        $api_key_header_value = AppModule::getProperty("key", "api");
-        $api_key_header_name  = str_replace("_", "-", WsCore::HEADER_API_KEY);
-        $options["headers"]   = [$api_key_header_name => $api_key_header_value];
+        //special case for module cross requests
+        if (!empty($options["module"]) && $options["module"] == "api") {
+
+            //set API key header name
+            $api_key_header_value = AppModule::getProperty("key", "api");
+            $api_key_header_name  = str_replace("_", "-", WsCore::HEADER_API_KEY);
+            $options["headers"]   = [$api_key_header_name => $api_key_header_value];
+        }
 
         //log asyn request
         $this->logger->debug("TaskCore::_apiRequest -> Options: ".json_encode($options, JSON_UNESCAPED_SLASHES));

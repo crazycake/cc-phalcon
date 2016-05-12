@@ -82,10 +82,10 @@ trait Mailer
         $view_data = array_combine( array_map(function($k) { return "data_".$k; }, array_keys($message_data)), $message_data);
 
         //get HTML
-        $html_raw = $this->_getInlineStyledHtml("contact", $view_data);
+        $html_raw = $this->getInlineStyledHtml("contact", $view_data);
 
         //sends async email
-        return $this->_sendMessage($html_raw, $subject, $to, $tags);
+        return $this->sendMessage($html_raw, $subject, $to, $tags);
     }
 
     /**
@@ -139,13 +139,13 @@ trait Mailer
         $this->mailer_conf["data_url"]   = $this->baseUrl($uri);
 
         //get HTML
-        $html_raw = $this->_getInlineStyledHtml("activation", $this->mailer_conf);
+        $html_raw = $this->getInlineStyledHtml("activation", $this->mailer_conf);
         //set message properties
         $subject = $this->mailer_conf["trans"]["SUBJECT_ACTIVATION"];
         $to      = $this->mailer_conf["data_email"];
         $tags    = ["account", "activation"];
         //sends async email
-        return $this->_sendMessage($html_raw, $subject, $to, $tags);
+        return $this->sendMessage($html_raw, $subject, $to, $tags);
     }
 
     /**
@@ -179,33 +179,29 @@ trait Mailer
         $this->mailer_conf["data_token_expiration"] = $tokens_class::$TOKEN_EXPIRES_THRESHOLD;
 
         //get HTML
-        $html_raw = $this->_getInlineStyledHtml("passwordRecovery", $this->mailer_conf);
+        $html_raw = $this->getInlineStyledHtml("passwordRecovery", $this->mailer_conf);
         //set message properties
         $subject = $this->mailer_conf["trans"]["SUBJECT_PASSWORD"];
         $to      = $this->mailer_conf["data_email"];
         $tags    = array("account", "password", "recovery");
         //sends async email
-        return $this->_sendMessage($html_raw, $subject, $to, $tags);
+        return $this->sendMessage($html_raw, $subject, $to, $tags);
     }
 
 	/**
      * Generates a new HTML styled with inline CSS as style attribute
      * DI dependency injector must have simpleView service
-     * @param string $mail - The mail template
-     * @param array $data - The view data
+     * @param string $template - The mail template view
      * @return string
      */
-    public function _getInlineStyledHtml($mail, $data)
+    public function getInlineStyledHtml($template = "")
     {
-        //css file
-        $css_file = $this->mailer_conf["css_file"];
-
-        //append app var
-        $data["app"] = $this->config->app;
+        //set app var
+        $this->mailer_conf["app"] = $this->config->app;
 
         //get the style file
-        $html = $this->simpleView->render("mails/$mail", $data);
-        $css  = file_get_contents($css_file);
+        $html = $this->simpleView->render("mails/$template", $this->mailer_conf);
+        $css  = file_get_contents($this->mailer_conf["css_file"]);
 
         $emogrifier = new Emogrifier($html, $css);
         $emogrifier->addExcludedSelector("head");
@@ -226,11 +222,11 @@ trait Mailer
      * @param boolean $async - Async flag, defaults to true
      * @return string
      */
-    public function _sendMessage($html_raw, $subject, $recipients, $tags = [], $attachments = [], $async = true)
+    public function sendMessage($html_raw, $subject, $recipients, $tags = [], $attachments = [], $async = true)
     {
         //validation
         if (empty($html_raw) || empty($subject) || empty($recipients))
-            throw new Exception("Mailer::_sendMessage -> Invalid params data for sending email");
+            throw new Exception("Mailer::sendMessage -> Invalid params data for sending email");
 
         //parse recipients
         if (is_string($recipients))
@@ -253,7 +249,7 @@ trait Mailer
             "from_name"  => $this->config->app->name,
             "to"         => $to,
             "tags"       => $tags
-            //"inline_css" => true //same as __getInlineStyledHtml method. (generates more delay time)
+            //"inline_css" => true //same as _getInlineStyledHtml method. (generates more delay time)
         ];
 
         //append attachments
@@ -272,7 +268,7 @@ trait Mailer
 
             $response = false;
             // Mandrill errors are thrown as exceptions
-            $this->logger->error("Mailer::_sendMessage -> A mandrill error occurred sending a message (".get_class($e)."), trace: ".$e->getMessage());
+            $this->logger->error("Mailer::sendMessage -> A mandrill error occurred sending a message (".get_class($e)."), trace: ".$e->getMessage());
         }
 
         return $response;
