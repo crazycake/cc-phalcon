@@ -37,20 +37,19 @@
         "html5shiv"       : "./node_modules/html5shiv/dist/html5shiv.js",
         "fastclick"       : "./node_modules/fastclick/lib/fastclick.js",
         "lodash"          : "./node_modules/lodash/lodash.js",
-        "js-cookie"       : "./node_modules/js-cookie/src/js.cookie.js",
         "jquery"          : "./node_modules/jquery/dist/jquery.js",
         "vue"             : "./node_modules/vue/dist/vue.js",
         "q"               : "./node_modules/q/q.js",
         "velocity"        : "./node_modules/velocity-animate/velocity.js",
         "velocity.ui"     : "./node_modules/velocity-animate/velocity.ui.js",
+		"js-cookie"       : "./node_modules/js-cookie/src/js.cookie.js",
         "jquery.scrollTo" : "./node_modules/jquery.scrollto/jquery.scrollTo.js"
 	},
 	"browserify-shim": {
 		"lodash"     : "_",
-		"js-cookie"  : "Cookies",
-		"knockout"   : "ko",
 		"vue"        : "Vue",
 		"q"          : "Q",
-		"jquery"     : "jQuery"
+		"jquery"     : "jQuery",
+		"js-cookie"  : "Cookies"
 	}
 }

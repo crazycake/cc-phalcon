@@ -49,7 +49,6 @@ function bundleApp() {
 gulp.task('js', function() {
 
     gutil.log(gutil.colors.yellow('Watching ' + webpack_file + ' changes...'));
-
     //browserify
     bundleApp();
 });
