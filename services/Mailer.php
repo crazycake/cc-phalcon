@@ -22,6 +22,12 @@ use CrazyCake\Phalcon\AppModule;
  */
 trait Mailer
 {
+    /**
+     * Mailing CSS file
+     * @var string
+     */
+    protected static $MAILING_CSS_FILE =  MODULE_PATH."app/views/mailing/dist/css/app.css";
+
 	/**
 	 * Config var
 	 * @var array
@@ -91,7 +97,7 @@ trait Mailer
         $this->mailer_conf["data_url"]   = $this->baseUrl($uri);
 
         //get HTML
-        $html_raw = $this->getInlineStyledHtml("activation", $this->mailer_conf);
+        $html_raw = $this->inlineHtml("activation", $this->mailer_conf);
         //set message properties
         $subject = $this->mailer_conf["trans"]["SUBJECT_ACTIVATION"];
         $to      = $this->mailer_conf["data_email"];
@@ -131,7 +137,7 @@ trait Mailer
         $this->mailer_conf["data_token_expiration"] = $tokens_class::$TOKEN_EXPIRES_THRESHOLD;
 
         //get HTML
-        $html_raw = $this->getInlineStyledHtml("passwordRecovery", $this->mailer_conf);
+        $html_raw = $this->inlineHtml("passwordRecovery", $this->mailer_conf);
         //set message properties
         $subject = $this->mailer_conf["trans"]["SUBJECT_PASSWORD"];
         $to      = $this->mailer_conf["data_email"];
@@ -146,15 +152,16 @@ trait Mailer
      * @param string $template - The mail template view
      * @return string
      */
-    public function getInlineStyledHtml($template = "")
+    public function inlineHtml($template = "")
     {
         //set app var
         $this->mailer_conf["app"] = $this->config->app;
 
         //get the style file
         $html = $this->simpleView->render("mails/$template", $this->mailer_conf);
-        $css  = file_get_contents($this->mailer_conf["css_file"]);
+        $css  = file_get_contents(self::$MAILING_CSS_FILE);
 
+        //HTML inliner
         $emogrifier = new Emogrifier($html, $css);
         $emogrifier->addExcludedSelector("head");
         $emogrifier->addExcludedSelector("meta");
@@ -186,7 +193,7 @@ trait Mailer
                          "\n Trace: ".$exception->getMessage()
         ]);
     }
-    
+
     /**
      * Async Handler - Sends contact email (always used)
      * @param array $message_data - Must contains keys "name", "email" & "message"
@@ -206,7 +213,7 @@ trait Mailer
         $view_data = array_combine( array_map(function($k) { return "data_".$k; }, array_keys($message_data)), $message_data);
 
         //get HTML
-        $html_raw = $this->getInlineStyledHtml("contact", $view_data);
+        $html_raw = $this->inlineHtml("contact", $view_data);
 
         //sends async email
         return $this->sendMessage($html_raw, $subject, $to, $tags);
@@ -249,7 +256,7 @@ trait Mailer
             "from_name"  => $this->config->app->name,
             "to"         => $to,
             "tags"       => $tags
-            //"inline_css" => true //same as _getInlineStyledHtml method. (generates more delay time)
+            //"inline_css" => true //same as _inlineHtml method. (generates more delay time)
         ];
 
         //append attachments
