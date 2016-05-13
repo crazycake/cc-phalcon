@@ -25,7 +25,7 @@ PACKAGES_PATH=$PROJECT_PATH"/packages/"
 COMPOSER_PATH=$PACKAGES_PATH"composer/"
 
 # npm global dependencies
-NPM_GLOBAL_DEPENDENCIES="gulp uglify-js npm-check"
+NPM_GLOBAL_DEPENDENCIES="gulp uglify-js npm-check eslint"
 
 # Apache set up
 APACHE_USER_GROUP="$(whoami):www-data"
