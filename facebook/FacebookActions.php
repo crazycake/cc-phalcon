@@ -183,19 +183,17 @@ trait FacebookActions
         //get event facebook object
         $fb_object = $object->{$this->facebook_actions_conf["object_fb_relation"]};
 
-        if (!$fb_object)
+        if (!$fb_object || empty($fb_object->checkin_text))
             throw new Exception("Facebook Object is not set up (".$this->facebook_actions_conf["object_fb_relation"].").");
 
-        //get message
-        $msg = !is_null($fb_object->checkin_text) ? $fb_object->checkin_text : $this->facebook_actions_conf["og_default_message"];
         //get place facebook id
         $place_id = !is_null($fb_object->place_id) ? $fb_object->place_id : $this->facebook_actions_conf["og_default_place_id"];
 
         //set params
         $data = [
-            "message"      => $msg,
-            "place"        => $place_id,
             "link"         => $fb_object->checkin_url,
+            "message"      => $fb_object->checkin_text,
+            "place"        => $place_id,
             "tags"         => $user_fb->id,
             "created_time" => gmdate("Y-m-d\TH:i:s")
         ];
@@ -229,11 +227,9 @@ trait FacebookActions
         //get event facebook object
         $fb_object = $object->{$this->facebook_actions_conf["object_fb_relation"]};
 
-        if (!$fb_object)
+        if (!$fb_object || empty($fb_object->story_text))
             throw new Exception("Facebook Object is not set up (".$this->facebook_actions_conf["object_fb_relation"].").");
 
-        //set message
-        $msg = !is_null($fb_object->story_text) ? $fb_object->story_text : $this->facebook_actions_conf["og_default_message"];
         //get place facebook id
         $place_id = !is_null($fb_object->place_id) ? $fb_object->place_id : $this->facebook_actions_conf["og_default_place_id"];
 
@@ -256,7 +252,7 @@ trait FacebookActions
             //object
             $this->facebook_actions_conf["og_story_object"] => $object_id,
             //common props
-            "message"              => $msg,
+            "message"              => $fb_object->story_text,
             "place"                => $place_id,
             "fb:explicitly_shared" => true,
             //aditional props
@@ -285,11 +281,9 @@ trait FacebookActions
         //get event facebook object
         $fb_object = $object->{$this->facebook_actions_conf["object_fb_relation"]};
 
-        if (!$fb_object) {
+        if (!$fb_object || empty($fb_object->photo_text)) {
             throw new Exception("Facebook Object is not set up (".$this->facebook_actions_conf["object_fb_relation"].").");
         }
-
-        $msg = !is_null($fb_object->photo_text) ? $fb_object->photo_text : $this->facebook_actions_conf["og_default_message"];
 
         //get uploaded files
         $file_path = $this->upload_path;
@@ -329,8 +323,8 @@ trait FacebookActions
 
         try {
             $data = [
-                "source"  => $this->fb->fileToUpload($file_path),
-                "message" => $msg
+                "message" => $fb_object->photo_text,
+                "source"  => $this->fb->fileToUpload($file_path)
             ];
             //fb request
             $response = $this->fb->post("/$action_uri", $data, $user_fb->fac)->getGraphNode();
