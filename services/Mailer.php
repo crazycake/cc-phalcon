@@ -26,7 +26,7 @@ trait Mailer
      * Mailing CSS file
      * @var string
      */
-    protected static $MAILING_CSS_FILE =  MODULE_PATH."app/views/mailing/dist/css/app.css";
+    protected static $MAILING_CSS_FILE = MODULE_PATH."app/views/mailing/css/app.css";
 
 	/**
 	 * Config var
@@ -157,8 +157,11 @@ trait Mailer
         //set app var
         $this->mailer_conf["app"] = $this->config->app;
 
+        if(!is_file(self::$MAILING_CSS_FILE))
+            throw new Exception("Mailer cant find mailing CSS file: ".self::$MAILING_CSS_FILE);
+
         //get the style file
-        $html = $this->simpleView->render("mails/$template", $this->mailer_conf);
+        $html = $this->simpleView->render("mailing/$template", $this->mailer_conf);
         $css  = file_get_contents(self::$MAILING_CSS_FILE);
 
         //HTML inliner
