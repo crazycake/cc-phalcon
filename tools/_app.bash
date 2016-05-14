@@ -56,6 +56,7 @@ scriptHelp() {
 	echo -e "\033[95m build: Executes build process for entire webapp. \033[0m"
 	echo -e "\033[95m deploy <env> <option>: Deploy a phalcon app. env: -t, -s or -p. option: -m [migration], -c [composer], -mc [both]. \033[0m"
 	echo -e "\033[95m watch <module>: Runs watcher daemon for backend or frontend. Modules: -b or -f.\033[0m"
+	echo -e "\033[95m watch-mailing <module>: Runs mailing watcher daemon for backend or frontend. Modules: -b or -f.\033[0m"
 	echo -e "\033[95m core: Installs/Updates core package (Requires cc-phalcon project). \033[0m"
 	echo -e "\033[95m npm-global: Installs/Updates global required NPM dependencies.\033[0m"
 	echo -e "\033[95m npm: Update NPM project dependencies. Use -u for package updates. \033[0m"
@@ -302,8 +303,17 @@ elif [ $1 = "watch" ]; then
 
 	handleModuleArgument "$2"
 
-	echo -e "\033[95mRunning gulp watch task... \033[0m"
+	echo -e "\033[95mRunning gulp...\033[0m"
 	gulp watch -m $MOD_NAME
+
+elif [ $1 = "watch-mailing" ]; then
+
+	excludeDeployMachine
+
+	handleModuleArgument "$2"
+
+	echo -e "\033[95mRunning gulp...\033[0m"
+	gulp watch-mailing -m $MOD_NAME
 
 elif [ $1 = "core" ]; then
 
@@ -315,6 +325,8 @@ elif [ $1 = "npm-global" ]; then
 
 	excludeDeployMachine
 
+	echo -e "\033[95mUpdating npm global packages... \033[0m"
+
 	#modules instalation
 	sudo npm install -g $NPM_GLOBAL_DEPENDENCIES
 
@@ -322,7 +334,7 @@ elif [ $1 = "npm" ]; then
 
 	excludeDeployMachine
 
-	echo -e "\033[95mUpdating project npm dependencies... \033[0m"
+	echo -e "\033[95mUpdating npm project packages... \033[0m"
 
 	if [ "$2" = "-u" ]; then
 		echo -e "\033[95mChecking for updates... \033[0m"

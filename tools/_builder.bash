@@ -30,15 +30,16 @@ buildTask() {
 		exit
 	fi
 
+	# msg
+	echo -e "\033[95mGulp build tasks... \033[0m"
+
 	# gulp build tasks backend
 	if [ -d $BACKEND_PATH"dev/" ]; then
-		echo -e "\033[95mExecuting build tasks in backend... \033[0m"
 		gulp build -m backend
 	fi
 
 	# gulp build tasks frontend
 	if [ -d $FRONTEND_PATH"dev/" ]; then
-		echo -e "\033[95mExecuting build tasks in frontend... \033[0m"
 		gulp build -m frontend
 	fi
 
