@@ -71,13 +71,10 @@ fi
 
 # 3) webpacks folder & files
 mkdir -p $WEBPACKS_PATH"dist"
-mkdir -p $WEBPACKS_PATH"private"
 rm -rf $WEBPACKS_PATH"dist"
-rm -rf $WEBPACKS_PATH"private"
 #copy webpack files
 echo -e "\033[94mCopying webpacks files to $PACKAGES_PATH... \033[0m"
 cp -R $CORE_WEBPACKS_PATH"dist" $WEBPACKS_PATH"dist"
-cp -R $CORE_WEBPACKS_PATH"private" $WEBPACKS_PATH"private"
 
 # 4) php phar core builder
 # build the PHP phar file and copy to packages folder
