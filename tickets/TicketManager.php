@@ -166,11 +166,6 @@ trait TicketManager
 
             return true;
         }
-        catch (\S3Exception $e) {
-            //fallback for file
-            $this->logger->error("TicketStorage::getTicket (S3 Exception) -> Error Moving QR code in S3 bucket: $src_code, err: ".$e->getMessage());
-            return false;
-        }
         catch (Exception $e) {
             //fallback for file
             $this->logger->error("TicketStorage::getTicket -> Error Moving QR code in S3 bucket: $src_code, err: ".$e->getMessage());
@@ -222,9 +217,6 @@ trait TicketManager
                 array_push($objects, $ticket);
             }
         }
-        catch (\S3Exception $e) {
-            $result->error = $e->getMessage();
-        }
         catch (Exception $e) {
             $result->error= $e->getMessage();
         }
@@ -258,9 +250,6 @@ trait TicketManager
 
             //generate invoice
             $result->binary = $this->_buildInvoice($user_id, $checkout);
-        }
-        catch (\S3Exception $e) {
-            $result->error = $e->getMessage();
         }
         catch (Exception $e) {
             $result->error = $e->getMessage();

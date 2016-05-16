@@ -71,8 +71,11 @@ class StorageS3
         try {
             $this->s3 = new S3($this->accessKey, $this->secretKey);
         }
+        catch (\S3Exception $e) {
+            throw new Exception("StorageS3::__construct -> An error occurred authenticating S3: ".$e->getMessage());
+        }
         catch (Exception $e) {
-            throw new Exception("StorageS3::__construct -> An error occurred authenticating S3");
+            throw new Exception("StorageS3::__construct -> An error occurred authenticating S3: ".$e->getMessage());
         }
     }
 
@@ -89,6 +92,12 @@ class StorageS3
         try {
             S3::putObject(S3::inputFile($file, false), $this->bucketName, $uploadName, $private);
         }
+        catch (\S3Exception $e) {
+            throw new Exception("StorageS3::putObject -> An error occurred pushing resource (".$file.") to S3. Error: ".$e->getMessage());
+        }
+        catch (\Exception $e) {
+            throw new Exception("StorageS3::putObject -> An error occurred pushing resource (".$file.") to S3. Error: ".$e->getMessage());
+        }
         catch (Exception $e) {
             throw new Exception("StorageS3::putObject -> An error occurred pushing resource (".$file.") to S3. Error: ".$e->getMessage());
         }
@@ -102,7 +111,18 @@ class StorageS3
      */
     public function getObject($uploadName, $parseBody = false)
     {
-        $object = S3::getObject($this->bucketName, $uploadName);
+        try {
+            $object = S3::getObject($this->bucketName, $uploadName);
+        }
+        catch (\S3Exception $e) {
+            throw new Exception("StorageS3::putObject -> An error occurred getting resource (".$file.") at S3. Error: ".$e->getMessage());
+        }
+        catch (\Exception $e) {
+            throw new Exception("StorageS3::putObject -> An error occurred pushing resource (".$file.") to S3. Error: ".$e->getMessage());
+        }
+        catch (Exception $e) {
+            throw new Exception("StorageS3::putObject -> An error occurred getting resource (".$file.") at S3. Error: ".$e->getMessage());
+        }
 
         if ($object && $parseBody)
             $object = $object->body;
@@ -129,9 +149,23 @@ class StorageS3
       */
      public function copyObject($uploadName, $bucketDest = null, $saveName = null)
      {
-         if (is_null($bucketDest))
-            $bucketDest = $this->bucketName;
+         try {
 
-         return S3::copyObject($this->bucketName, $uploadName, $bucketDest, $saveName);
+             if (is_null($bucketDest))
+                $bucketDest = $this->bucketName;
+
+             $action = S3::copyObject($this->bucketName, $uploadName, $bucketDest, $saveName);
+
+             return $action;
+         }
+         catch (\S3Exception $e) {
+             throw new Exception("StorageS3::copyObject -> An error occurred copying resource (".$file.") at S3. Error: ".$e->getMessage());
+         }
+         catch (\Exception $e) {
+             throw new Exception("StorageS3::putObject -> An error occurred pushing resource (".$file.") to S3. Error: ".$e->getMessage());
+         }
+         catch (Exception $e) {
+             throw new Exception("StorageS3::copyObject -> An error occurred copying resource (".$file.") at S3. Error: ".$e->getMessage());
+         }
      }
 }
