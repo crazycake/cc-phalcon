@@ -4,8 +4,10 @@
  * Required scope vars: `{APP, UA}`.
  * @class Core.UI
  */
+ /* global APP $ _ Foundation core */
+ /* eslint no-undef: "error" */
 
-module.exports = function() {
+export default function() {
 
     //self context
     var self = this;
@@ -25,7 +27,7 @@ module.exports = function() {
         sel_flash_messages : "#app-flash",
         sel_alert_box      : "div.app-alert",
         //setting vars
-        url_img_fallback   : APP.staticUrl + 'images/icons/icon-image-fallback.png',
+        url_img_fallback   : APP.staticUrl + "images/icons/icon-image-fallback.png",
         pixel_ratio        : _.isUndefined(window.devicePixelRatio) ? 1 : window.devicePixelRatio
     });
 
@@ -79,12 +81,12 @@ module.exports = function() {
                 //clear timer
                 clearTimeout(ajax_timer);
                 //waiting time to show loading box
-                ajax_timer = setTimeout( function() { app_loading.show('fast'); }, 1000);
+                ajax_timer = setTimeout( function() { app_loading.show("fast"); }, 1000);
                 return;
             }
             //otherwise clear timer and hide loading
             clearTimeout(ajax_timer);
-            app_loading.fadeOut('fast');
+            app_loading.fadeOut("fast");
         };
 
         //ajax events
@@ -106,7 +108,7 @@ module.exports = function() {
     self.showAlert = function(payload, type, on_close, on_click, autohide) {
 
         //set alert types
-        var types = ['success', 'warning', 'info', 'alert', 'secondary'];
+        var types = ["success", "warning", "info", "alert", "secondary"];
 
         if (_.isUndefined(payload))
             return;
@@ -116,7 +118,7 @@ module.exports = function() {
             payload = payload[0];
 
         if (_.isUndefined(type) || _.indexOf(types, type) == -1)
-            type = 'info';
+            type = "info";
 
         if (_.isUndefined(autohide))
             autohide = true;
@@ -125,12 +127,12 @@ module.exports = function() {
         var identifier_class = _.uniqueId(wrapper_class); //unique ID
 
         //create elements and set classes
-        var div_alert    = $("<div data-alert>").addClass(wrapper_class + ' ' + identifier_class + ' alert-box ' + type);
+        var div_alert    = $("<div data-alert>").addClass(wrapper_class + " " + identifier_class + " alert-box " + type);
         var div_holder   = $("<div>").addClass("holder");
         var div_content  = $("<div>").addClass("content");
         var anchor_close = $("<a>").attr("href", "javascript:void(0)").addClass("close").html("&times");
         var span_text    = $("<span>").addClass("text").html(payload);
-        var span_icon    = $("<span>").addClass("icon-wrapper").html('<i class="icon-'+type+'"></i>');
+        var span_icon    = $("<span>").addClass("icon-wrapper").html("<i class='icon-"+type+"'></i>");
          //append elements
         div_alert.append(div_holder);
         div_holder
@@ -145,7 +147,7 @@ module.exports = function() {
         div_alert.alive = true;
 
         //SHOW alert appending to body
-        $('body').append(div_alert);
+        $("body").append(div_alert);
         //center object after appended to body, special case for mobile
         var center_object = function() {
 
@@ -175,7 +177,7 @@ module.exports = function() {
         //set center event on window resize
         $(window).resize(function() { center_object(); });
         //remove presents alerts
-        $(APP.UI.sel_alert_box).not("div."+identifier_class).fadeOut('fast');
+        $(APP.UI.sel_alert_box).not("div."+identifier_class).fadeOut("fast");
 
         var hide_alert = function() {
 
@@ -228,12 +230,12 @@ module.exports = function() {
         if (!$(APP.UI.sel_flash_messages).length)
             return;
 
-        var messages = $(APP.UI.sel_flash_messages).children('div');
+        var messages = $(APP.UI.sel_flash_messages).children("div");
 
         if (!messages.length)
             return;
 
-        messages.each(function(index) {
+        messages.each(function() {
             //set a delay to show once at a time
             var html = $(this).html();
             var type = $(this).attr("class");
@@ -263,11 +265,11 @@ module.exports = function() {
         if (!loading_obj.length) {
 
             //create object and append to body
-            var div_loading = $("<div>").attr('id', APP.UI.sel_loading_box.replace("#",""));
+            var div_loading = $("<div>").attr("id", APP.UI.sel_loading_box.replace("#",""));
             div_loading.html(APP.TRANS.ACTIONS.LOADING);
 
             //append to body
-            $('body').append(div_loading);
+            $("body").append(div_loading);
             //re-asign  var
             loading_obj = $(APP.UI.sel_loading_box);
 
@@ -426,7 +428,7 @@ module.exports = function() {
         //check if client supports retina
         var isRetina = function() {
 
-            var media_query = '(-webkit-min-device-pixel-ratio: 1.5), (min--moz-device-pixel-ratio: 1.5), (-o-min-device-pixel-ratio: 3/2), (min-resolution: 1.5dppx)';
+            var media_query = "(-webkit-min-device-pixel-ratio: 1.5), (min--moz-device-pixel-ratio: 1.5), (-o-min-device-pixel-ratio: 3/2), (min-resolution: 1.5dppx)";
 
             if (window.devicePixelRatio > 1)
                 return true;
@@ -440,7 +442,7 @@ module.exports = function() {
         if (!isRetina()) return;
 
         //get elements
-        var elements = (typeof context != "undefined") ? $('img[data-retina]', context) : $('img[data-retina]');
+        var elements = (typeof context != "undefined") ? $("img[data-retina]", context) : $("img[data-retina]");
 
         //for each image with attr data-retina
         elements.each(function() {
@@ -466,14 +468,14 @@ module.exports = function() {
 
         $("img").error(function() {
 
-            if (APP.dev) { console.log("App Core -> failed loading image:", $(this).attr("src")); }
+            if (APP.dev) { console.log("Core UI -> failed loading image:", $(this).attr("src")); }
 
             $(this).attr("src", APP.UI.url_img_fallback);
         });
     };
 
     /**
-     * Image preloader, returns an array with image paths [token replaced: '$']
+     * Image preloader, returns an array with image paths [token replaced: "$"]
      * @method preloadImages
      * @param  {String} image_path - The source path
      * @param  {Int} indexes - The indexes, example: image1.png, image2.png, ...
@@ -491,9 +493,9 @@ module.exports = function() {
             //create new image object
             objects[i] = new Image();
             //if object has a '$' symbol replace with index
-            objects[i].src = image_path.replace('$', (i+1));
+            objects[i].src = image_path.replace("$", (i+1));
         }
 
         return objects;
     };
-};
+}

@@ -1,16 +1,20 @@
 /**
- * App Core: main app module.
+ * Core: main app module.
  * Dependencies: `jQuery.js`, `VueJs`, `q.js`, `lodash.js`.
  * Required scope vars: `{APP, UA}`.
- * Frontend Framework supported: `Foundation v.6.x`, `Bootstrap v4.x`
+ * Frontend Framework supported: `Foundation v.6.x`, `Bootstrap v3.x`
  * @class Core
  */
+ /* global APP UA $ jQuery _ FastClick Vue Q */
+ /* eslint no-undef: "error" */
 
-module.exports = function() {
+import ui  from "./core.ui.js";
+
+export default function() {
 
     //Check that App Global scope vars are defined
     if (typeof APP == "undefined" || typeof UA == "undefined")
-        throw new Error('App Core -> Error: APP or UA global vars are not defined!');
+        throw new Error("Core -> Error: APP or UA global vars are not defined!");
 
     //self context
     var self = this;
@@ -21,7 +25,7 @@ module.exports = function() {
      * @property ui
      * @type {object}
      */
-    self.ui = new (require('./core.ui.js'))();
+    self.ui = new ui();
 
     /**
      * @property modules
@@ -82,7 +86,7 @@ module.exports = function() {
         if (typeof Foundation != "undefined")
             self.initFoundation();
         //load Bootstrap framework
-        else if (typeof $().emulateTransitionEnd == 'function')
+        else if (typeof $().emulateTransitionEnd == "function")
             self.initBootstrap();
 
         //load forms module
@@ -93,7 +97,7 @@ module.exports = function() {
         if (typeof self.ui !== "undefined")
             self.ui.init();
 
-        if (APP.dev) { console.log("App Core Ready!"); }
+        if (APP.dev) { console.log("Core Ready!"); }
     };
 
     /**
@@ -104,7 +108,7 @@ module.exports = function() {
      */
     self.initFoundation = function(element) {
 
-        if (APP.dev) { console.log("App Core -> Initializing Foundation..."); }
+        if (APP.dev) { console.log("Core -> Initializing Foundation..."); }
 
         //check default element
         if (typeof element == "undefined")
@@ -124,7 +128,7 @@ module.exports = function() {
      */
     self.initBootstrap = function() {
 
-        if (APP.dev) { console.log("App Core -> Initializing Bootstrap..."); }
+        if (APP.dev) { console.log("Core -> Initializing Bootstrap..."); }
 
         //set framework
         self.framework = "bootstrap";
@@ -144,7 +148,7 @@ module.exports = function() {
 
             //check module exists
             if (_.isUndefined(self.modules[mod_name])) {
-                console.warn("App Core -> Attempting to load an undefined view module ("+mod_name+").");
+                console.warn("Core -> Attempting to load an undefined view module (" + mod_name + ").");
                 continue;
             }
 
@@ -173,10 +177,10 @@ module.exports = function() {
 
             vm = _.assign({
                 //vue element selector
-                el : '#vue-' + mod_name
+                el : "#vue-" + mod_name
             }, mod.vm);
 
-            if (APP.dev) { console.log("App Core -> Binding " + mod_name + " View Model", vm); }
+            if (APP.dev) { console.log("Core -> Binding " + mod_name + " View Model", vm); }
 
             //set new Vue instance (object prop updated)
             mod.vm = new Vue(vm);
@@ -198,7 +202,7 @@ module.exports = function() {
 
         //validation, service is required
         if (typeof service === "undefined")
-            throw new Error("App Core -> ajaxRequest invalid inputs!");
+            throw new Error("Core -> ajaxRequest invalid inputs!");
 
         if (typeof form === "undefined")
             form = null;
@@ -221,10 +225,10 @@ module.exports = function() {
             //serialize data to URL encoding
             payload = form.serializeArray();
             //disable submit button
-            submit_btn = form.find('button');
+            submit_btn = form.find("button");
 
             if (submit_btn.length)
-                submit_btn.attr('disabled','disabled');
+                submit_btn.attr("disabled","disabled");
         }
 
         //extend more data?
@@ -276,7 +280,7 @@ module.exports = function() {
         .fin(function() {
 
             if (_.isObject(submit_btn) && submit_btn.length)
-                submit_btn.removeAttr('disabled'); //enable button?
+                submit_btn.removeAttr("disabled"); //enable button?
         });
     };
 
@@ -293,10 +297,9 @@ module.exports = function() {
         if (_.isUndefined(data) || _.isNull(data))
             return false;
 
-        if (APP.dev) { console.log("App Core [handleAjaxResponse]:", data); }
+        if (APP.dev) { console.log("Core -> handleAjaxResponse: ", data); }
 
         //check for error
-        var error    = false;
         var response = data.response;
 
         var onErrorResponse = function() {
@@ -357,50 +360,50 @@ module.exports = function() {
         var text    = _.isObject(x) ? x.responseText : code;
 
         //sever parse error
-        if (error == 'parsererror') {
+        if (error == "parsererror") {
             message = APP.TRANS.ALERTS.INTERNAL_ERROR;
-            log     = "App Core -> parsererror: " + text;
+            log     = "Core -> parsererror: " + text;
         }
         //timeout
-        else if (error == 'timeout' || code == 408) {
+        else if (error == "timeout" || code == 408) {
             message = APP.TRANS.ALERTS.SERVER_TIMEOUT;
-            log     = "App Core -> timeout: " + x;
+            log     = "Core -> timeout: " + x;
         }
         //400 bad request
         else if (code == 400) {
             message = APP.TRANS.ALERTS.BAD_REQUEST;
-            log     = "App Core -> bad request: " + code;
+            log     = "Core -> bad request: " + code;
         }
         //403 access forbidden
         else if (code == 403) {
             message = APP.TRANS.ALERTS.ACCESS_FORBIDDEN;
-            log     = "App Core -> access forbidden: " + code;
+            log     = "Core -> access forbidden: " + code;
         }
         //404 not found
         else if (code == 404) {
             message = APP.TRANS.ALERTS.NOT_FOUND;
-            log     = "App Core -> not found: " + code;
+            log     = "Core -> not found: " + code;
         }
         //method now allowed (invalid GET or POST method)
         else if (code == 405) {
             message = APP.TRANS.ALERTS.NOT_FOUND;
-            log     = "App Core -> method now allowed: " + code;
+            log     = "Core -> method now allowed: " + code;
         }
         //invalid CSRF token
         else if (code == 498) {
             message = APP.TRANS.ALERTS.CSRF;
-            log     = "App Core -> invalid CSRF token: " + code;
+            log     = "Core -> invalid CSRF token: " + code;
         }
         else {
             message = APP.TRANS.ALERTS.INTERNAL_ERROR;
-            log     = "App Core -> unknown error: " + text;
+            log     = "Core -> unknown error: " + text;
         }
 
         //show log?
         if (APP.dev && log.length) { console.log(log); }
 
         //show the alert message
-        self.ui.showAlert(message, 'warning');
+        self.ui.showAlert(message, "warning");
     };
 
     /**
@@ -435,18 +438,18 @@ module.exports = function() {
 
         //timeout simulator
         if (option == "timeout") {
-            self.ajaxRequest( { method : 'GET', url : 'http://250.21.0.180:8081/fake/path/' } );
+            self.ajaxRequest( { method : "GET", url : "http://250.21.0.180:8081/fake/path/" } );
         }
         //get dom events associated to a given object
         else if (option == "events") {
             var obj = _.isObject(object) ? object[0] : $(object)[0];
-            return $._data(obj, 'events');
+            return $._data(obj, "events");
         }
         else {
             assert = false;
         }
 
         //default return
-        return "Assert ("+assert+")";
+        return "Core -> Assert ("+assert+")";
     };
-};
+}

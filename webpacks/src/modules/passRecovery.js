@@ -2,7 +2,11 @@
  * Password Recovery View Model
  * @class PassRecovery
  */
-module.exports = function() {
+ /* global APP core */
+ /* eslint no-undef: "error" */
+
+
+export default function() {
 
     //++ Module
     var self  = this;
@@ -23,7 +27,7 @@ module.exports = function() {
     self.vm.methods.sendRecoveryInstructions = function(e) {
 
         //request with promise
-    	core.ajaxRequest({ method : 'POST', url : APP.baseUrl + 'password/sendRecoveryInstructions' }, e.target)
+        core.ajaxRequest({ method : "POST", url : APP.baseUrl + "password/sendRecoveryInstructions" }, e.target)
 		.done();
     };
 
@@ -35,7 +39,7 @@ module.exports = function() {
     self.vm.methods.saveNewPassword = function(e) {
 
         //request with promise
-        core.ajaxRequest({ method : 'POST', url : APP.baseUrl + 'password/saveNewPassword' }, e.target)
+        core.ajaxRequest({ method : "POST", url : APP.baseUrl + "password/saveNewPassword" }, e.target)
         .done();
     };
-};
+}

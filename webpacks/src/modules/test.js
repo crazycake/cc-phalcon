@@ -1,11 +1,13 @@
 /**
- * Test KO Module with Foundation
+ * Test Module
  */
+ /* global APP _ core */
+ /* eslint no-undef: "error" */
 
 //import foundation
 require("foundation");
 //import form validation
-require('jquery.formValidation.foundation');
+require("jquery.formValidation.foundation");
 
 //creates a KO model
 var model = function() {
@@ -18,15 +20,15 @@ var model = function() {
     _.assign(APP.UI, {
         //settings
         alert : {
-            position    : "fixed",
-            top         : "belowHeader",
+            position  : "fixed",
+            top       : "belowHeader",
             top_small : "0"
         },
         loading : {
-            position    : "fixed",
-            top         : "14%",
+            position  : "fixed",
+            top       : "14%",
             top_small : "20%",
-            center      : true
+            center    : true
         }
     });
 };

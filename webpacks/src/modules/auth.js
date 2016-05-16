@@ -2,7 +2,10 @@
  * Auth View Model - Handles Auth actions
  * @class Auth
  */
-module.exports = function() {
+ /* global APP $ _ core */
+ /* eslint no-undef: "error" */
+
+export default function() {
 
     //++ Module
     var self  = this;
@@ -31,7 +34,7 @@ module.exports = function() {
     self.vm.methods.registerUserByEmail = function(e) {
 
         //request with promise
-        core.ajaxRequest({ method : 'POST', url : APP.baseUrl + 'auth/register' }, e.target)
+        core.ajaxRequest({ method : "POST", url : APP.baseUrl + "auth/register" }, e.target)
         .done();
     };
 
@@ -50,7 +53,7 @@ module.exports = function() {
         };
 
         //request with promise
-        core.ajaxRequest({ method : 'POST', url : APP.baseUrl + 'auth/login' }, e.target, null, events)
+        core.ajaxRequest({ method : "POST", url : APP.baseUrl + "auth/login" }, e.target, null, events)
         .done();
     };
 
@@ -62,7 +65,7 @@ module.exports = function() {
     self.vm.methods.resendActivationMailMessage = function(e) {
 
         //request with promise
-        core.ajaxRequest({ method : 'POST', url :  APP.baseUrl + 'auth/resendActivationMailMessage' }, e.target)
+        core.ajaxRequest({ method : "POST", url :  APP.baseUrl + "auth/resendActivationMailMessage" }, e.target)
         .then(function(payload) {
 
             if (!payload) return;
@@ -84,9 +87,9 @@ module.exports = function() {
         //reset recaptcha
         core.modules.forms.recaptchaReload();
         //reset form field
-        core.modules.forms.revalidateFormField($(APP.UI.sel_recaptcha).parents("form").eq(0), 'reCaptchaValue');
+        core.modules.forms.revalidateFormField($(APP.UI.sel_recaptcha).parents("form").eq(0), "reCaptchaValue");
 
         //new modal
         core.ui.newModal($(APP.UI.sel_account_modal));
     };
-};
+}

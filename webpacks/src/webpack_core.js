@@ -1,42 +1,47 @@
 /**
  * Core WebPack
+ * ES6 required (babel)
  * @module WebpackCore
  */
 
 //load main libraries
-require('html5shiv');
-require('fastclick');
-require('lodash');
-require('vue');
-require('q');
-require('js-cookie');
-require('jquery');
-require('velocity');
-require('velocity.ui');
-require('jquery.scrollTo');
+import "html5shiv";
+import "fastclick";
+import "lodash";
+import "vue";
+import "q";
+import "js-cookie";
+import "jquery";
+import "velocity";
+import "velocity.ui";
+import "jquery.scrollTo";
 
 //plugins
-require('./plugins/jquery.extended');
-require('./plugins/jquery.cclayer');
-require('./plugins/jquery.ccdialog');
-require('./plugins/jquery.formValidation');
-require('./plugins/jquery.formValidation.bootstrap');
-require('./plugins/jquery.formValidation.foundation');
+import "./plugins/jquery.extended";
+import "./plugins/jquery.cclayer";
+import "./plugins/jquery.ccdialog";
+import "./plugins/jquery.formValidation";
+import "./plugins/jquery.formValidation.bootstrap";
+import "./plugins/jquery.formValidation.foundation";
+
+//modules
+import core from "./modules/core.js";
+import auth from "./modules/auth.js";
+import forms from "./modules/forms.js";
+import passRecovery from "./modules/passRecovery.js";
+import facebook from "./modules/facebook.js";
 
 /* Load modules */
 
-//Core
-var core = new (require('./modules/core.js'))();
-
 //export core & make it a global var
-module.exports.core = core;
+let app = new core();
 
-var modules = [
-    new (require('./modules/auth.js'))(),
-    new (require('./modules/forms.js'))(),
-    new (require('./modules/passRecovery.js'))(),
-    new (require('./modules/facebook.js'))()
-];
+module.exports.core = app;
 
 //set modules
-core.setModules(modules);
+app.setModules([
+    new auth(),
+    new forms(),
+    new passRecovery(),
+    new facebook()
+]);

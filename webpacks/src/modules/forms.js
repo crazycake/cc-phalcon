@@ -3,15 +3,18 @@
  * Dependencies: ```formValidation jQuery plugin```, ```google reCaptcha JS SDK```
  * @class Forms
  */
-module.exports = function() {
+ /* global APP $ _ jQuery Vue core grecaptcha */
+ /* eslint no-undef: "error" */
+
+export default function() {
 
     //++ Module
     var self  = this;
     self.name = "forms";
 
     //++ Components
-    Vue.component('birthday-selector', {
-        template: '#vue-template-birthday-selector',
+    Vue.component("birthday-selector", {
+        template: "#vue-template-birthday-selector",
         //data must be a function
         data : function () {
             return {
@@ -97,7 +100,7 @@ module.exports = function() {
 
         //default selector
         if (typeof form == "undefined" || _.isNull(form))
-            throw new Error("App Forms -> newFormValidation: A Form object is required!");
+            throw new Error("Forms -> newFormValidation: A Form object is required!");
 
         if (form instanceof jQuery === false)
             form = $(form);
@@ -105,11 +108,11 @@ module.exports = function() {
          //set settings
          var opts = {
             framework : core.framework,
-            err       : { clazz : 'form-error' },
+            err       : { clazz : "form-error" },
             /*icon : {
-                valid      : 'fa fa-check',
-                invalid    : 'fa fa-times',
-                validating : 'fa fa-refresh'
+                valid      : "fa fa-check",
+                invalid    : "fa fa-times",
+                validating : "fa fa-refresh"
             }*/
             //on success
             onSuccess: function(e) {
@@ -122,7 +125,7 @@ module.exports = function() {
         _.assign(opts, options);
 
         //init plugin
-        if (APP.dev) { console.log("App Forms -> loading form with options:", opts); }
+        if (APP.dev) { console.log("Forms -> loading form with options:", opts); }
 
         form.formValidation(opts);
     };
@@ -138,32 +141,32 @@ module.exports = function() {
         if (form instanceof jQuery === false)
             form = $(form);
 
-        if (typeof form.data === "undefined" || typeof form.data('formValidation') === "undefined")
-            throw new Error("App Core -> form object has no formValidation instance.");
+        if (typeof form.data === "undefined" || typeof form.data("formValidation") === "undefined")
+            throw new Error("Forms -> form object has no formValidation instance.");
 
         //check for input hidden fields that are required
-        var inputs_hidden = form.find('input[type="hidden"][data-fv-excluded="false"]');
+        var inputs_hidden = form.find("input[type='hidden'][data-fv-excluded='false']");
 
         if (inputs_hidden.length) {
 
-            if (APP.dev) { console.log("App Core -> Revalidating hidden inputs..."); }
+            if (APP.dev) { console.log("Forms -> Revalidating hidden inputs..."); }
             //loop
             inputs_hidden.each(function() {
                 //revalidate field
-                form.data('formValidation').revalidateField($(this));
+                form.data("formValidation").revalidateField($(this));
             });
         }
 
         //force validation first (API call)
-        $(form).data('formValidation').validate();
+        $(form).data("formValidation").validate();
         //check result
-        var is_valid = form.data('formValidation').isValid();
+        var is_valid = form.data("formValidation").isValid();
 
         if (!is_valid && APP.dev) {
 
-            console.log("App Core -> Some form element(s) are not valid:");
+            console.log("Forms -> Some form element(s) are not valid:");
 
-            form.data('formValidation').getInvalidFields().each(function() {
+            form.data("formValidation").getInvalidFields().each(function() {
                 console.log($(this).attr("name"), $(this));
             });
         }
@@ -182,8 +185,8 @@ module.exports = function() {
         if (form instanceof jQuery === false)
             form = $(form);
 
-        var fv = form.data('formValidation');
-        fv.updateStatus(field, 'NOT_VALIDATED');
+        var fv = form.data("formValidation");
+        fv.updateStatus(field, "NOT_VALIDATED");
     };
 
     /**
@@ -199,7 +202,7 @@ module.exports = function() {
         if (typeof flag === "undefined")
             flag = true;
 
-        var fv = form.data('formValidation');
+        var fv = form.data("formValidation");
         fv.disableSubmitButtons(!flag);
     };
 
@@ -214,9 +217,9 @@ module.exports = function() {
             form = $(form);
 
         //clean form
-        form.data('formValidation').resetForm();
-        form.find('input, textarea').val("");
-        form.find("select").prop('selectedIndex', 0);
+        form.data("formValidation").resetForm();
+        form.find("input, textarea").val("");
+        form.find("select").prop("selectedIndex", 0);
     };
 
     /**
@@ -251,11 +254,11 @@ module.exports = function() {
         var form = field.closest("form");
 
         if (typeof form === "undefined")
-            return console.warn("App Forms [addField] -> Can't find closest element form for field:", field);
-        else if (typeof form.data('formValidation') === "undefined")
+            return console.warn("Forms -> addField: Cant find closest element form for field.", field);
+        else if (typeof form.data("formValidation") === "undefined")
             return;
 
-        var fv = form.data('formValidation');
+        var fv = form.data("formValidation");
         //formValidation API
         fv.addField(field_name, v);
     };
@@ -274,11 +277,13 @@ module.exports = function() {
             if (!pattern.length)
                 return;
 
-            var obj = eval('({' + pattern + '})');
+            var obj = eval("({" + pattern + "})");
             //append required props
             _.assign(validators, obj);
         }
-        catch (e) {}
+        catch (e) {
+            if (APP.dev) { console.log("Form"); }
+        }
     };
 
     /**
@@ -289,28 +294,28 @@ module.exports = function() {
     */
     self.recaptchaOnLoad = function() {
 
-        if (APP.dev) { console.log("App Core -> reCaptcha loaded! Main Selector: " + APP.UI.sel_recaptcha); }
+        if (APP.dev) { console.log("Forms -> reCaptcha loaded! Main Selector: " + APP.UI.sel_recaptcha); }
 
         //calback function when user entered valid data
-        var callback_fn = function(value) {
+        var callback_fn = function() {
 
-            if (APP.dev) { console.log("App Core -> reCaptcha validation OK!"); }
+            if (APP.dev) { console.log("Forms -> reCaptcha validation OK!"); }
 
             //set valid option on sibling input hidden
-            $(APP.UI.sel_recaptcha).siblings('input').eq(0).val("1");
+            $(APP.UI.sel_recaptcha).siblings("input").eq(0).val("1");
             //reset form field
-            self.revalidateFormField($(APP.UI.sel_recaptcha).parents("form").eq(0), 'reCaptchaValue');
+            self.revalidateFormField($(APP.UI.sel_recaptcha).parents("form").eq(0), "reCaptchaValue");
         };
         //render reCaptcha through API call
         grecaptcha.render(APP.UI.sel_recaptcha.replace("#", ""), {
-            'sitekey'  : APP.googleReCaptchaID,
-            'callback' : callback_fn
+            "sitekey"  : APP.googleReCaptchaID,
+            "callback" : callback_fn
         });
 
         //hide after x secs
         setTimeout(function() {
             //clean any previous error
-            $(APP.UI.sel_recaptcha).siblings('small').eq(0).empty();
+            $(APP.UI.sel_recaptcha).siblings("small").eq(0).empty();
         }, 1500);
     };
 
@@ -320,13 +325,13 @@ module.exports = function() {
      */
     self.recaptchaReload = function() {
 
-        if (APP.dev) { console.log("App Core -> reloading reCaptcha..."); }
+        if (APP.dev) { console.log("Forms -> reloading reCaptcha..."); }
 
         //reset reCaptcha
         if (typeof grecaptcha != "undefined")
             grecaptcha.reset();
 
         //clean hidden input for validation
-        $(APP.UI.sel_recaptcha).siblings('input:hidden').eq(0).val("");
+        $(APP.UI.sel_recaptcha).siblings("input:hidden").eq(0).val("");
     };
-};
+}

@@ -3,24 +3,28 @@
  * Required scope vars: `{APP, UA}`.
  * @class Facebook
  */
-module.exports = function() {
+ /* global APP UA FB $ _ core */
+ /* eslint no-undef: "error" */
+
+export default function() {
 
 	//++ Module
-    var self  = this;
+	var self  = this;
     self.name = "facebook";
 
     //Check that facebook conf is set
-    if (_.isUndefined(APP.facebookAppID) || _.isUndefined(UA))
+    if (_.isUndefined(APP.facebookAppID) || _.isUndefined(UA)) {
         return false;
+	}
 
-    /**
+	/**
      * @property sdkLangs
      * @type {Array}
      */
 	self.sdk_langs = {
-		es : 'es_LA',
-		en : 'en_US'
-  	};
+		es : "es_LA",
+		en : "en_US"
+	};
 
     /**
      * @attribute config
@@ -38,13 +42,13 @@ module.exports = function() {
         has_loaded            : false,                               // flag that sets if sdk has loaded
         disable_js_sdk        : false,                               // disables javascript SDK
         login_fn              : null,                                // callback function when user is already logged in
-        login_failed_fn       : null,                                // callback function when user didn't logged in
+        login_failed_fn       : null,                                // callback function when user didnt logged in
         deauthorize_fn        : null,                                // callback function when app is deleted (set in app model)
         before_redirection_fn : null,                                // callback for before redirection event (for php redirection)
         loaded_text_attr      : "data-fb-loaded"                     // loaded button text for facebook js SDK button
 	};
 	//set share URL
-	self.config.share_url = 'https://www.facebook.com/dialog/share?app_id='+self.config.id+'&display=popup&href=<url>&redirect_uri='+window.location.href;
+	self.config.share_url = "https://www.facebook.com/dialog/share?app_id="+self.config.id+"&display=popup&href=<url>&redirect_uri="+window.location.href;
 
 	//++ Methods
 
@@ -59,9 +63,9 @@ module.exports = function() {
             self.config.login_fn = self.loginUserByFacebook;
 
 		//append the "fb-root" div required by facebook
-		$('body').append('<div id="fb-root"></div>');
+		$("body").append("<div id='fb-root'></div>");
 		//set facebook jquery elements
-		var fb_buttons = $('.' + self.config.dom_class);
+		var fb_buttons = $("." + self.config.dom_class);
 		//check if buttons exists
 		if (!fb_buttons.length)
 			return;
@@ -71,11 +75,12 @@ module.exports = function() {
 			self.config.disable_js_sdk = UA.isMobile;
 
 		//For mobile use redirections pages, get library request
-		if (!self.config.disable_js_sdk)
-        	return self.getLibraryScript(fb_buttons);
+		if (!self.config.disable_js_sdk) {
+			return self.getLibraryScript(fb_buttons);
+		}
 
 		//click event for redirection strategy
-		fb_buttons.click(function(event) {
+		fb_buttons.click(function() {
 			//get action attribute
 			var action = $(this).attr("data-action");
 			var url    = self.config.login_url;
@@ -115,7 +120,7 @@ module.exports = function() {
     self.getLibraryScript = function(fb_buttons) {
 
         //Load Facebook javascript SDK
-		$.getScript('//connect.facebook.net/' + self.config.lang + '/all.js', function() {
+		$.getScript("//connect.facebook.net/" + self.config.lang + "/all.js", function() {
 			//Init facebook SDK
 			FB.init({
                 appId   : self.config.id,          //Facebook app ID
@@ -126,20 +131,20 @@ module.exports = function() {
 			});
 
 			//Get Login Status
-			FB.getLoginStatus(function(response) {
+			FB.getLoginStatus(function() {
 				//click event
-				fb_buttons.click( function(event) {
+				fb_buttons.click(function() {
 
-	 				//get action attribute
-	 				var action = $(this).attr("data-action");
+					//get action attribute
+					var action = $(this).attr("data-action");
 
-	 				//share actions
+					//share actions
 					if (action == "share-url") {
 						self.shareUrl($(this).attr("data-url"));
 						return;
 					}
 
-	 				//login actions
+					//login actions
 					self.login(self.handleUserData, action);
 				});
 
@@ -162,7 +167,7 @@ module.exports = function() {
 	self.login = function(fn_callback, action) {
 
 		//fb buttons
-		var fb_buttons = $('.' + self.config.dom_class);
+		var fb_buttons = $("." + self.config.dom_class);
 		//disable button
 		fb_buttons.prop("disabled", true);
 
@@ -189,7 +194,7 @@ module.exports = function() {
 	 * + __not_authorized__: the user is logged in to Facebook, but has not authenticated your app, or posible error
 	 * 	is the app is in sandbox mode (facebook app config). If error continues maybe app has
 	 * 	country restrictions or age restrictions (facebook app config).
-	 * + __unknown__: user haven't login to facebook or 3rd party cookies are blocked.
+	 * + __unknown__: user havent login to facebook or 3rd party cookies are blocked.
 	 * @method loginFailed
 	 * @param  {Object} response - The response object
 	 * @param  {Function} fn_pending - The pending function
@@ -213,7 +218,7 @@ module.exports = function() {
     self.loginUserByFacebook = function(fb_payload) {
 
         //request with promise
-        core.ajaxRequest({ method : 'POST', url :  APP.baseUrl + 'facebook/login' }, null, fb_payload)
+        core.ajaxRequest({ method : "POST", url :  APP.baseUrl + "facebook/login" }, null, fb_payload)
 		.done();
     };
 
@@ -231,7 +236,7 @@ module.exports = function() {
 				return;
 
 			//logout call
-			FB.logout(function(response) {
+			FB.logout(function() {
 				//callback fn is a function?
 				if (_.isFunction(fn_callback))
 					fn_callback();
@@ -327,10 +332,10 @@ module.exports = function() {
 
 		//call API UI
 		FB.ui({
-			method : 'share',
+			method : "share",
 			href   : url
 		},
-        function(response) {
+        function() {
 			//...
 		});
 	};
@@ -343,18 +348,19 @@ module.exports = function() {
 	self.toggleButtonText = function(buttons) {
 
 		//for each button...
-		buttons.each(function(index) {
+		buttons.each(function() {
 
 			//check if button has attribute
             var attr = $(this).attr(self.config.loaded_text_attr);
 
-            if (typeof attr === "undefined" || attr === false)
+            if (typeof attr === "undefined" || attr === false) {
                 return;
+			}
 
-	 		//update text button (search for a one level span)
-	 		var text_element = $(this).children("span").length ? $(this).children("span") : $(this);
-	 		//toogle texts
-	 		text_element.text(attr);
+			//update text button (search for a one level span)
+			var text_element = $(this).children("span").length ? $(this).children("span") : $(this);
+			//toogle texts
+			text_element.text(attr);
 		});
 	};
-};
+}

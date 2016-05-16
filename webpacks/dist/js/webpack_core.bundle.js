@@ -44266,28 +44266,30 @@ var template = Object.freeze({
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],12:[function(require,module,exports){
-/**
- * Auth View Model - Handles Auth actions
- * @class Auth
- */
-module.exports = function() {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+exports.default = function () {
 
     //++ Module
-    var self  = this;
+    var self = this;
     self.name = "auth";
 
     //++ View Model
     self.vm = {
-        data : {
-            email : ""
+        data: {
+            email: ""
         },
-        methods : {}
+        methods: {}
     };
 
     //++ UI selectors
-	_.assign(APP.UI, {
-		sel_account_modal : "#app-modal-account-activation"
-	});
+    _.assign(APP.UI, {
+        sel_account_modal: "#app-modal-account-activation"
+    });
 
     //++ Methods
 
@@ -44296,11 +44298,10 @@ module.exports = function() {
      * @method registerUserByEmail
      * @param {Object} event - The Event Handler
      */
-    self.vm.methods.registerUserByEmail = function(e) {
+    self.vm.methods.registerUserByEmail = function (e) {
 
         //request with promise
-        core.ajaxRequest({ method : 'POST', url : APP.baseUrl + 'auth/register' }, e.target)
-        .done();
+        core.ajaxRequest({ method: "POST", url: APP.baseUrl + "auth/register" }, e.target).done();
     };
 
     /**
@@ -44308,18 +44309,17 @@ module.exports = function() {
      * @method loginUserByEmail
      * @param {Object} event - The Event Handler
      */
-    self.vm.methods.loginUserByEmail = function(e) {
+    self.vm.methods.loginUserByEmail = function (e) {
 
         //set callback function for specific error message
         var events = {
-            onClick : {
-                ACCOUNT_PENDING : self.vm.openActivationForm //binded method
+            onClick: {
+                ACCOUNT_PENDING: self.vm.openActivationForm //binded method
             }
         };
 
         //request with promise
-        core.ajaxRequest({ method : 'POST', url : APP.baseUrl + 'auth/login' }, e.target, null, events)
-        .done();
+        core.ajaxRequest({ method: "POST", url: APP.baseUrl + "auth/login" }, e.target, null, events).done();
     };
 
     /**
@@ -44327,11 +44327,10 @@ module.exports = function() {
      * @method resendActivationMailMessage
      * @param {Object} event - The Event Handler
      */
-    self.vm.methods.resendActivationMailMessage = function(e) {
+    self.vm.methods.resendActivationMailMessage = function (e) {
 
         //request with promise
-        core.ajaxRequest({ method : 'POST', url :  APP.baseUrl + 'auth/resendActivationMailMessage' }, e.target)
-        .then(function(payload) {
+        core.ajaxRequest({ method: "POST", url: APP.baseUrl + "auth/resendActivationMailMessage" }, e.target).then(function (payload) {
 
             if (!payload) return;
 
@@ -44339,7 +44338,6 @@ module.exports = function() {
             core.ui.hideModal($(APP.UI.sel_account_modal));
             //show succes message
             core.ui.showAlert(payload, "success");
-
         }).done();
     };
 
@@ -44347,12 +44345,12 @@ module.exports = function() {
      * Opens a modal for send activation mail action.
      * @method openActivationForm
      */
-    self.vm.methods.openActivationForm = function() {
+    self.vm.methods.openActivationForm = function () {
 
         //reset recaptcha
         core.modules.forms.recaptchaReload();
         //reset form field
-        core.modules.forms.revalidateFormField($(APP.UI.sel_recaptcha).parents("form").eq(0), 'reCaptchaValue');
+        core.modules.forms.revalidateFormField($(APP.UI.sel_recaptcha).parents("form").eq(0), "reCaptchaValue");
 
         //new modal
         core.ui.newModal($(APP.UI.sel_account_modal));
@@ -44360,19 +44358,16 @@ module.exports = function() {
 };
 
 },{}],13:[function(require,module,exports){
-/**
- * App Core: main app module.
- * Dependencies: `jQuery.js`, `VueJs`, `q.js`, `lodash.js`.
- * Required scope vars: `{APP, UA}`.
- * Frontend Framework supported: `Foundation v.6.x`, `Bootstrap v4.x`
- * @class Core
- */
+"use strict";
 
-module.exports = function() {
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+exports.default = function () {
 
     //Check that App Global scope vars are defined
-    if (typeof APP == "undefined" || typeof UA == "undefined")
-        throw new Error('App Core -> Error: APP or UA global vars are not defined!');
+    if (typeof APP == "undefined" || typeof UA == "undefined") throw new Error("Core -> Error: APP or UA global vars are not defined!");
 
     //self context
     var self = this;
@@ -44383,7 +44378,7 @@ module.exports = function() {
      * @property ui
      * @type {object}
      */
-    self.ui = new (require('./core.ui.js'))();
+    self.ui = new _coreUi2.default();
 
     /**
      * @property modules
@@ -44406,7 +44401,7 @@ module.exports = function() {
     //++ jQuery setup
 
     $.ajaxSetup({
-        cache : true  //improvement for third-party libs like Facebook.
+        cache: true //improvement for third-party libs like Facebook.
     });
 
     //++ Methods ++
@@ -44416,17 +44411,15 @@ module.exports = function() {
      * @method init
      * @param {Array} modules - The required modules
      */
-    self.setModules = function(modules) {
+    self.setModules = function (modules) {
 
-        if (!modules.length)
-            return;
+        if (!modules.length) return;
 
         for (var i = 0; i < modules.length; i++) {
 
             var mod = modules[i];
 
-            if (typeof mod.name !== "undefined")
-                self.modules[mod.name] = mod;
+            if (typeof mod.name !== "undefined") self.modules[mod.name] = mod;
         }
     };
 
@@ -44434,28 +44427,25 @@ module.exports = function() {
      * Core Ready Event, called automatically after loading modules.
      * @method ready
      */
-    self.ready = function() {
+    self.ready = function () {
 
         //load fast click for mobile
-        if (UA.isMobile && typeof FastClick != "undefined")
-            FastClick.attach(document.body);
+        if (UA.isMobile && typeof FastClick != "undefined") FastClick.attach(document.body);
 
         //load Foundation framework
-        if (typeof Foundation != "undefined")
-            self.initFoundation();
+        if (typeof Foundation != "undefined") self.initFoundation();
         //load Bootstrap framework
-        else if (typeof $().emulateTransitionEnd == 'function')
-            self.initBootstrap();
+        else if (typeof $().emulateTransitionEnd == "function") self.initBootstrap();
 
         //load forms module
-        if (typeof self.modules.forms !== "undefined")
-            self.modules.forms.loadForms();
+        if (typeof self.modules.forms !== "undefined") self.modules.forms.loadForms();
 
         //load UI module
-        if (typeof self.ui !== "undefined")
-            self.ui.init();
+        if (typeof self.ui !== "undefined") self.ui.init();
 
-        if (APP.dev) { console.log("App Core Ready!"); }
+        if (APP.dev) {
+            console.log("Core Ready!");
+        }
     };
 
     /**
@@ -44464,15 +44454,14 @@ module.exports = function() {
      * @method initFoundation
      * @param {Object} element - The jQuery element, default is document object.
      */
-    self.initFoundation = function(element) {
+    self.initFoundation = function (element) {
 
-        if (APP.dev) { console.log("App Core -> Initializing Foundation..."); }
+        if (APP.dev) {
+            console.log("Core -> Initializing Foundation...");
+        }
 
         //check default element
-        if (typeof element == "undefined")
-            element = $(document);
-        else if (element instanceof jQuery === false)
-            element = $(element);
+        if (typeof element == "undefined") element = $(document);else if (element instanceof jQuery === false) element = $(element);
 
         //set framework
         self.framework = "foundation";
@@ -44484,9 +44473,11 @@ module.exports = function() {
      * Bootstrap Initializer, loaded automatically.
      * @method initBootstrap
      */
-    self.initBootstrap = function() {
+    self.initBootstrap = function () {
 
-        if (APP.dev) { console.log("App Core -> Initializing Bootstrap..."); }
+        if (APP.dev) {
+            console.log("Core -> Initializing Bootstrap...");
+        }
 
         //set framework
         self.framework = "bootstrap";
@@ -44497,7 +44488,7 @@ module.exports = function() {
      * @method loadModules
      * @param {Object} modules - The modules oject
      */
-    self.loadModules = function(modules) {
+    self.loadModules = function (modules) {
 
         var mod_name, mod, vm, data;
 
@@ -44506,39 +44497,38 @@ module.exports = function() {
 
             //check module exists
             if (_.isUndefined(self.modules[mod_name])) {
-                console.warn("App Core -> Attempting to load an undefined view module ("+mod_name+").");
+                console.warn("Core -> Attempting to load an undefined view module (" + mod_name + ").");
                 continue;
             }
 
             //get module
-            mod  = self.modules[mod_name];
+            mod = self.modules[mod_name];
             data = modules[mod_name];
 
             //check if module has init method & call it
-            if (_.isFunction(mod.init))
-                mod.init(data);
+            if (_.isFunction(mod.init)) mod.init(data);
         }
 
         //2) load viewModels
         for (mod_name in modules) {
 
             //check module exists
-            if (_.isUndefined(self.modules[mod_name]))
-                continue;
+            if (_.isUndefined(self.modules[mod_name])) continue;
 
             //get module
             mod = self.modules[mod_name];
 
             //bind model to DOM?
-            if (!_.isObject(mod.vm))
-                continue;
+            if (!_.isObject(mod.vm)) continue;
 
             vm = _.assign({
                 //vue element selector
-                el : '#vue-' + mod_name
+                el: "#vue-" + mod_name
             }, mod.vm);
 
-            if (APP.dev) { console.log("App Core -> Binding " + mod_name + " View Model", vm); }
+            if (APP.dev) {
+                console.log("Core -> Binding " + mod_name + " View Model", vm);
+            }
 
             //set new Vue instance (object prop updated)
             mod.vm = new Vue(vm);
@@ -44556,78 +44546,66 @@ module.exports = function() {
      * @param  {Object} events - Event handler object
      * @return {Object} Q promise
      */
-    self.ajaxRequest = function(service, form, extended_data, events) {
+    self.ajaxRequest = function (service, form, extended_data, events) {
 
         //validation, service is required
-        if (typeof service === "undefined")
-            throw new Error("App Core -> ajaxRequest invalid inputs!");
+        if (typeof service === "undefined") throw new Error("Core -> ajaxRequest invalid inputs!");
 
-        if (typeof form === "undefined")
-            form = null;
+        if (typeof form === "undefined") form = null;
 
         //define payload
         var payload = {};
         var submit_btn;
 
         //check for a non jquery object
-        if (!_.isNull(form) && form instanceof jQuery === false)
-            form = $(form);
+        if (!_.isNull(form) && form instanceof jQuery === false) form = $(form);
 
         //check form element has a Foundation data-invalid attribute
         if (!_.isNull(form)) {
 
             //validate abide form
-            if (!self.modules.forms.isFormValid(form))
-                return Q();
+            if (!self.modules.forms.isFormValid(form)) return Q();
 
             //serialize data to URL encoding
             payload = form.serializeArray();
             //disable submit button
-            submit_btn = form.find('button');
+            submit_btn = form.find("button");
 
-            if (submit_btn.length)
-                submit_btn.attr('disabled','disabled');
+            if (submit_btn.length) submit_btn.attr("disabled", "disabled");
         }
 
         //extend more data?
         if (_.isObject(extended_data)) {
 
             //check if element is null
-            if ( _.isNull(form) )
-                _.assign(payload, extended_data); //considerar objetos livianos (selectionDirection error)
-            else
-                payload.push({ name : "extended", value : extended_data });  //serialized object struct
+            if (_.isNull(form)) _.assign(payload, extended_data); //considerar objetos livianos (selectionDirection error)
+            else payload.push({ name: "extended", value: extended_data }); //serialized object struct
         }
 
         //append CSRF token
         if (service.method == "POST") {
 
             //check if element is null
-            if (_.isNull(form))
-                payload[UA.tokenKey] = UA.token; //object style
-            else
-                payload.push({ name : UA.tokenKey, value : UA.token }); //serialized object struct
+            if (_.isNull(form)) payload[UA.tokenKey] = UA.token; //object style
+            else payload.push({ name: UA.tokenKey, value: UA.token }); //serialized object struct
         }
 
         //make ajax request with promises
-        return Q(
-            $.ajax({
-                //request properties
-                type     : service.method,
-                url      : service.url,
-                data     : payload,
-                dataType : "json",
-                timeout  : 14000 //timeout in seconds
-            })
-            //handle fail event for jQuery ajax request
-            .fail(self.handleAjaxError)
-        )
+        return Q($.ajax({
+            //request properties
+            type: service.method,
+            url: service.url,
+            data: payload,
+            dataType: "json",
+            timeout: 14000 //timeout in seconds
+        })
+        //handle fail event for jQuery ajax request
+        .fail(self.handleAjaxError))
         //handle response
-        .then(function(data) {
+        .then(function (data) {
 
             //handle ajax response
-            if (!self.handleAjaxResponse(data, events))
-                return false;
+            if (!self.handleAjaxResponse(data, events)) return false;
 
             var payload = data.response.payload;
 
@@ -44635,10 +44613,9 @@ module.exports = function() {
             return _.isNull(payload) ? true : payload;
         })
         //promise finisher
-        .fin(function() {
+        .fin(function () {
 
-            if (_.isObject(submit_btn) && submit_btn.length)
-                submit_btn.removeAttr('disabled'); //enable button?
+            if (_.isObject(submit_btn) && submit_btn.length) submit_btn.removeAttr("disabled"); //enable button?
         });
     };
 
@@ -44649,19 +44626,19 @@ module.exports = function() {
      * @param  {Object} data - The JSON response object
      * @param  {Object} events - Alert Events Handler
      */
-    self.handleAjaxResponse = function(data, events) {
+    self.handleAjaxResponse = function (data, events) {
 
         //undefined data?
-        if (_.isUndefined(data) || _.isNull(data))
-            return false;
+        if (_.isUndefined(data) || _.isNull(data)) return false;
 
-        if (APP.dev) { console.log("App Core [handleAjaxResponse]:", data); }
+        if (APP.dev) {
+            console.log("Core -> handleAjaxResponse: ", data);
+        }
 
         //check for error
-        var error    = false;
         var response = data.response;
 
-        var onErrorResponse = function() {
+        var onErrorResponse = function onErrorResponse() {
 
             var onCloseFn = null;
             var onClickFn = null;
@@ -44669,12 +44646,10 @@ module.exports = function() {
             //set the callback function if set in error events functions
             if (_.isString(response.namespace) && _.isObject(events)) {
 
-                if (_.isObject(events.onClose) && !_.isUndefined(events.onClose[response.namespace]))
-                    onCloseFn = _.isFunction(events.onClose[response.namespace]) ? events.onClose[response.namespace] : null;
+                if (_.isObject(events.onClose) && !_.isUndefined(events.onClose[response.namespace])) onCloseFn = _.isFunction(events.onClose[response.namespace]) ? events.onClose[response.namespace] : null;
 
-                if (_.isObject(events.onClick) && !_.isUndefined(events.onClick[response.namespace]))
-                    onClickFn = _.isFunction(events.onClick[response.namespace]) ? events.onClick[response.namespace] : null;
-             }
+                if (_.isObject(events.onClick) && !_.isUndefined(events.onClick[response.namespace])) onClickFn = _.isFunction(events.onClick[response.namespace]) ? events.onClick[response.namespace] : null;
+            }
 
             //call the alert message
             self.ui.showAlert(response.payload, response.type, onCloseFn, onClickFn);
@@ -44689,19 +44664,19 @@ module.exports = function() {
         //app errors
         else if (typeof response.type != "undefined") {
 
-            onErrorResponse();
-            return false;
-        }
-        //redirection
-        else if (!_.isUndefined(response.redirect)) {
+                onErrorResponse();
+                return false;
+            }
+            //redirection
+            else if (!_.isUndefined(response.redirect)) {
 
-            self.redirectTo(response.redirect);
-            return true;
-        }
-        //no errors, return true
-        else {
-            return true;
-        }
+                    self.redirectTo(response.redirect);
+                    return true;
+                }
+                //no errors, return true
+                else {
+                        return true;
+                    }
     };
 
     /**
@@ -44710,59 +44685,60 @@ module.exports = function() {
      * @param  {Object} x - The jQuery Response object
      * @param  {String} error - The jQuery error object
      */
-    self.handleAjaxError = function(x, error) {
+    self.handleAjaxError = function (x, error) {
 
         //set message null as default
         var message = null;
-        var log     = "";
-        var code    = _.isObject(x) ? x.status : x;
-        var text    = _.isObject(x) ? x.responseText : code;
+        var log = "";
+        var code = _.isObject(x) ? x.status : x;
+        var text = _.isObject(x) ? x.responseText : code;
 
         //sever parse error
-        if (error == 'parsererror') {
+        if (error == "parsererror") {
             message = APP.TRANS.ALERTS.INTERNAL_ERROR;
-            log     = "App Core -> parsererror: " + text;
+            log = "Core -> parsererror: " + text;
         }
         //timeout
-        else if (error == 'timeout' || code == 408) {
-            message = APP.TRANS.ALERTS.SERVER_TIMEOUT;
-            log     = "App Core -> timeout: " + x;
-        }
-        //400 bad request
-        else if (code == 400) {
-            message = APP.TRANS.ALERTS.BAD_REQUEST;
-            log     = "App Core -> bad request: " + code;
-        }
-        //403 access forbidden
-        else if (code == 403) {
-            message = APP.TRANS.ALERTS.ACCESS_FORBIDDEN;
-            log     = "App Core -> access forbidden: " + code;
-        }
-        //404 not found
-        else if (code == 404) {
-            message = APP.TRANS.ALERTS.NOT_FOUND;
-            log     = "App Core -> not found: " + code;
-        }
-        //method now allowed (invalid GET or POST method)
-        else if (code == 405) {
-            message = APP.TRANS.ALERTS.NOT_FOUND;
-            log     = "App Core -> method now allowed: " + code;
-        }
-        //invalid CSRF token
-        else if (code == 498) {
-            message = APP.TRANS.ALERTS.CSRF;
-            log     = "App Core -> invalid CSRF token: " + code;
-        }
-        else {
-            message = APP.TRANS.ALERTS.INTERNAL_ERROR;
-            log     = "App Core -> unknown error: " + text;
-        }
+        else if (error == "timeout" || code == 408) {
+                message = APP.TRANS.ALERTS.SERVER_TIMEOUT;
+                log = "Core -> timeout: " + x;
+            }
+            //400 bad request
+            else if (code == 400) {
+                    message = APP.TRANS.ALERTS.BAD_REQUEST;
+                    log = "Core -> bad request: " + code;
+                }
+                //403 access forbidden
+                else if (code == 403) {
+                        message = APP.TRANS.ALERTS.ACCESS_FORBIDDEN;
+                        log = "Core -> access forbidden: " + code;
+                    }
+                    //404 not found
+                    else if (code == 404) {
+                            message = APP.TRANS.ALERTS.NOT_FOUND;
+                            log = "Core -> not found: " + code;
+                        }
+                        //method now allowed (invalid GET or POST method)
+                        else if (code == 405) {
+                                message = APP.TRANS.ALERTS.NOT_FOUND;
+                                log = "Core -> method now allowed: " + code;
+                            }
+                            //invalid CSRF token
+                            else if (code == 498) {
+                                    message = APP.TRANS.ALERTS.CSRF;
+                                    log = "Core -> invalid CSRF token: " + code;
+                                } else {
+                                    message = APP.TRANS.ALERTS.INTERNAL_ERROR;
+                                    log = "Core -> unknown error: " + text;
+                                }
 
         //show log?
-        if (APP.dev && log.length) { console.log(log); }
+        if (APP.dev && log.length) {
+            console.log(log);
+        }
 
         //show the alert message
-        self.ui.showAlert(message, 'warning');
+        self.ui.showAlert(message, "warning");
     };
 
     /**
@@ -44771,15 +44747,14 @@ module.exports = function() {
      * @method redirectTo
      * @param  {String} uri - The webapp URI
      */
-    self.redirectTo = function(uri) {
+    self.redirectTo = function (uri) {
 
         var uri_map = {
-           notFound : "error/notFound"
+            notFound: "error/notFound"
         };
 
         //check if has a uri map
-        if (!_.isUndefined(uri_map[uri]))
-            uri = uri_map[uri];
+        if (!_.isUndefined(uri_map[uri])) uri = uri_map[uri];
 
         //redirect to contact
         location.href = APP.baseUrl + uri;
@@ -44791,37 +44766,41 @@ module.exports = function() {
      * @param  {String} option - The option string [ajax_timeout, ajax_loading, dom_events]
      * @param  {Object} object - A jQuery or HTML object element
      */
-    self.debug = function(option, object) {
+    self.debug = function (option, object) {
 
         var assert = true;
 
         //timeout simulator
         if (option == "timeout") {
-            self.ajaxRequest( { method : 'GET', url : 'http://250.21.0.180:8081/fake/path/' } );
+            self.ajaxRequest({ method: "GET", url: "http://250.21.0.180:8081/fake/path/" });
         }
         //get dom events associated to a given object
         else if (option == "events") {
-            var obj = _.isObject(object) ? object[0] : $(object)[0];
-            return $._data(obj, 'events');
-        }
-        else {
-            assert = false;
-        }
+                var obj = _.isObject(object) ? object[0] : $(object)[0];
+                return $._data(obj, "events");
+            } else {
+                assert = false;
+            }
 
         //default return
-        return "Assert ("+assert+")";
+        return "Core -> Assert (" + assert + ")";
     };
 };
 
-},{"./core.ui.js":14}],14:[function(require,module,exports){
-/**
- * App Core UI
- * Dependencies: `jQuery.js`, `VueJs`, `q.js`, `lodash.js`.
- * Required scope vars: `{APP, UA}`.
- * @class Core.UI
- */
+var _coreUi = require("./core.ui.js");
 
-module.exports = function() {
+var _coreUi2 = _interopRequireDefault(_coreUi);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+},{"./core.ui.js":14}],14:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+exports.default = function () {
 
     //self context
     var self = this;
@@ -44834,23 +44813,21 @@ module.exports = function() {
     //common jQuery selectors
     _.assign(APP.UI, {
         //selectors
-        sel_body_wrapper   : "#wrapper",
-        sel_header         : "#header",
-        sel_footer         : "#footer",
-        sel_loading_box    : "#app-loading",
-        sel_flash_messages : "#app-flash",
-        sel_alert_box      : "div.app-alert",
+        sel_body_wrapper: "#wrapper",
+        sel_header: "#header",
+        sel_footer: "#footer",
+        sel_loading_box: "#app-loading",
+        sel_flash_messages: "#app-flash",
+        sel_alert_box: "div.app-alert",
         //setting vars
-        url_img_fallback   : APP.staticUrl + 'images/icons/icon-image-fallback.png',
-        pixel_ratio        : _.isUndefined(window.devicePixelRatio) ? 1 : window.devicePixelRatio
+        url_img_fallback: APP.staticUrl + "images/icons/icon-image-fallback.png",
+        pixel_ratio: _.isUndefined(window.devicePixelRatio) ? 1 : window.devicePixelRatio
     });
 
     //set dynamic required props as default values
-    if (_.isUndefined(APP.UI.alert))
-        APP.UI.alert = { position : "fixed", top : "5%", top_small : "0" };
+    if (_.isUndefined(APP.UI.alert)) APP.UI.alert = { position: "fixed", top: "5%", top_small: "0" };
 
-    if (_.isUndefined(APP.UI.loading))
-        APP.UI.loading = { position : "fixed", top : "25%", top_small : "25%" };
+    if (_.isUndefined(APP.UI.loading)) APP.UI.loading = { position: "fixed", top: "25%", top_small: "25%" };
 
     //++ Methods ++
 
@@ -44858,11 +44835,10 @@ module.exports = function() {
      * Core UI Init
      * @method ready
      */
-    self.init = function() {
+    self.init = function () {
 
         //load UI module
-        if (typeof core.modules.ui !== "undefined")
-            core.modules.ui.init();
+        if (typeof core.modules.ui !== "undefined") core.modules.ui.init();
 
         //ajax setup
         self.setAjaxLoadingHandler();
@@ -44877,14 +44853,14 @@ module.exports = function() {
      * jQuery Ajax Handler, loaded automatically.
      * @method setAjaxLoadingHandler
      */
-    self.setAjaxLoadingHandler = function() {
+    self.setAjaxLoadingHandler = function () {
 
         //this vars must be declared outside ajaxHandler function
         var ajax_timer;
         var app_loading = self.showLoading(true); //hide by default
 
         //ajax handler, show loading if ajax takes more than a X secs, only for POST request
-        var handler = function(options, show_loading) {
+        var handler = function handler(options, show_loading) {
 
             //only for POST request
             if (options.type.toUpperCase() !== "POST") // && options.type.toUpperCase() !== "GET"
@@ -44895,19 +44871,24 @@ module.exports = function() {
                 //clear timer
                 clearTimeout(ajax_timer);
                 //waiting time to show loading box
-                ajax_timer = setTimeout( function() { app_loading.show('fast'); }, 1000);
+                ajax_timer = setTimeout(function () {
+                    app_loading.show("fast");
+                }, 1000);
                 return;
             }
             //otherwise clear timer and hide loading
             clearTimeout(ajax_timer);
-            app_loading.fadeOut('fast');
+            app_loading.fadeOut("fast");
         };
 
         //ajax events
-        $(document)
-         .ajaxSend(function(event, xhr, options)     { handler(options, true);  })
-         .ajaxComplete(function(event, xhr, options) { handler(options, false); })
-         .ajaxError(function(event, xhr, options)    { handler(options, false); });
+        $(document).ajaxSend(function (event, xhr, options) {
+            handler(options, true);
+        }).ajaxComplete(function (event, xhr, options) {
+            handler(options, false);
+        }).ajaxError(function (event, xhr, options) {
+            handler(options, false);
+        });
     };
 
     /**
@@ -44919,51 +44900,43 @@ module.exports = function() {
      * @param  {Function} on_click - The onClick callback function (optional).
      * @param  {Boolean} autohide - Autohides the alert after 8 seconds (optional).
      */
-    self.showAlert = function(payload, type, on_close, on_click, autohide) {
+    self.showAlert = function (payload, type, on_close, on_click, autohide) {
 
         //set alert types
-        var types = ['success', 'warning', 'info', 'alert', 'secondary'];
+        var types = ["success", "warning", "info", "alert", "secondary"];
 
-        if (_.isUndefined(payload))
-            return;
+        if (_.isUndefined(payload)) return;
 
         //array filter
-        if (_.isArray(payload) && payload.length > 0)
-            payload = payload[0];
+        if (_.isArray(payload) && payload.length > 0) payload = payload[0];
 
-        if (_.isUndefined(type) || _.indexOf(types, type) == -1)
-            type = 'info';
+        if (_.isUndefined(type) || _.indexOf(types, type) == -1) type = "info";
 
-        if (_.isUndefined(autohide))
-            autohide = true;
+        if (_.isUndefined(autohide)) autohide = true;
 
-        var wrapper_class    = APP.UI.sel_alert_box.replace("div.", "");
+        var wrapper_class = APP.UI.sel_alert_box.replace("div.", "");
         var identifier_class = _.uniqueId(wrapper_class); //unique ID
 
         //create elements and set classes
-        var div_alert    = $("<div data-alert>").addClass(wrapper_class + ' ' + identifier_class + ' alert-box ' + type);
-        var div_holder   = $("<div>").addClass("holder");
-        var div_content  = $("<div>").addClass("content");
+        var div_alert = $("<div data-alert>").addClass(wrapper_class + " " + identifier_class + " alert-box " + type);
+        var div_holder = $("<div>").addClass("holder");
+        var div_content = $("<div>").addClass("content");
         var anchor_close = $("<a>").attr("href", "javascript:void(0)").addClass("close").html("&times");
-        var span_text    = $("<span>").addClass("text").html(payload);
-        var span_icon    = $("<span>").addClass("icon-wrapper").html('<i class="icon-'+type+'"></i>');
-         //append elements
+        var span_text = $("<span>").addClass("text").html(payload);
+        var span_icon = $("<span>").addClass("icon-wrapper").html("<i class='icon-" + type + "'></i>");
+        //append elements
         div_alert.append(div_holder);
-        div_holder
-            .append(div_content)
-            .append(anchor_close);
-        div_content
-            .append(span_icon)
-            .append(span_text);
+        div_holder.append(div_content).append(anchor_close);
+        div_content.append(span_icon).append(span_text);
         //css style
         div_alert.css("z-index", 99999);
         //set block property
         div_alert.alive = true;
 
         //SHOW alert appending to body
-        $('body').append(div_alert);
+        $("body").append(div_alert);
         //center object after appended to body, special case for mobile
-        var center_object = function() {
+        var center_object = function center_object() {
 
             //check if is mobile
             if (self.checkScreenSize("small")) {
@@ -44980,7 +44953,7 @@ module.exports = function() {
             if (top_value == "belowHeader") {
 
                 var header = $(APP.UI.sel_header);
-                top_value  = header.length ? header.position().top + header.outerHeight() : "0";
+                top_value = header.length ? header.position().top + header.outerHeight() : "0";
             }
 
             //set CSS position x,y
@@ -44989,21 +44962,21 @@ module.exports = function() {
         //call method
         center_object();
         //set center event on window resize
-        $(window).resize(function() { center_object(); });
+        $(window).resize(function () {
+            center_object();
+        });
         //remove presents alerts
-        $(APP.UI.sel_alert_box).not("div."+identifier_class).fadeOut('fast');
+        $(APP.UI.sel_alert_box).not("div." + identifier_class).fadeOut("fast");
 
-        var hide_alert = function() {
+        var hide_alert = function hide_alert() {
 
             // bind onClose function if defined
-            if (_.isFunction(on_close))
-                on_close();
+            if (_.isFunction(on_close)) on_close();
 
-            if (!autohide)
-                return;
+            if (!autohide) return;
 
             div_alert.alive = false;
-            div_alert.fadeOut("fast", function() {
+            div_alert.fadeOut("fast", function () {
                 $(this).remove();
             });
         };
@@ -45015,20 +44988,17 @@ module.exports = function() {
         if (_.isFunction(on_click)) {
 
             // add click-able cursor & oneclick event
-            div_alert
-                .css("cursor", "pointer")
-                .one( "click", function() {
-                    //callback function & hide alert
-                    on_click();
-                    hide_alert();
-                });
+            div_alert.css("cursor", "pointer").one("click", function () {
+                //callback function & hide alert
+                on_click();
+                hide_alert();
+            });
         }
 
         //autoclose after x seconds
-        _.delay(function() {
+        _.delay(function () {
             //check if object already exists
-            if (div_alert.alive)
-                hide_alert();
+            if (div_alert.alive) hide_alert();
         }, 8000);
 
         return true;
@@ -45038,24 +45008,21 @@ module.exports = function() {
      * Prints pending server flash messages (stored in session), loaded automatically.
      * @method showFlashAlerts
      */
-    self.showFlashAlerts = function() {
+    self.showFlashAlerts = function () {
 
         //check for a flash message pending
-        if (!$(APP.UI.sel_flash_messages).length)
-            return;
+        if (!$(APP.UI.sel_flash_messages).length) return;
 
-        var messages = $(APP.UI.sel_flash_messages).children('div');
+        var messages = $(APP.UI.sel_flash_messages).children("div");
 
-        if (!messages.length)
-            return;
+        if (!messages.length) return;
 
-        messages.each(function(index) {
+        messages.each(function () {
             //set a delay to show once at a time
             var html = $(this).html();
             var type = $(this).attr("class");
             //show message
-            if (html.length)
-                self.showAlert(html, type);
+            if (html.length) self.showAlert(html, type);
         });
 
         return true;
@@ -45067,10 +45034,9 @@ module.exports = function() {
      * @param  {Boolean} hidden - Forces the loading element to be hidden.
      * @return {Object} A jQuery object element
      */
-    self.showLoading = function(hidden) {
+    self.showLoading = function (hidden) {
 
-        if (_.isUndefined(hidden))
-            hidden = false;
+        if (_.isUndefined(hidden)) hidden = false;
 
         //set loading object selector
         var loading_obj = $(APP.UI.sel_loading_box);
@@ -45079,27 +45045,24 @@ module.exports = function() {
         if (!loading_obj.length) {
 
             //create object and append to body
-            var div_loading = $("<div>").attr('id', APP.UI.sel_loading_box.replace("#",""));
+            var div_loading = $("<div>").attr("id", APP.UI.sel_loading_box.replace("#", ""));
             div_loading.html(APP.TRANS.ACTIONS.LOADING);
 
             //append to body
-            $('body').append(div_loading);
+            $("body").append(div_loading);
             //re-asign  var
             loading_obj = $(APP.UI.sel_loading_box);
 
             //add special behavior for small screen
-            if (self.checkScreenSize("small"))
-                loading_obj.addClass("small-screen");
+            if (self.checkScreenSize("small")) loading_obj.addClass("small-screen");
 
             var top = self.checkScreenSize("small") ? APP.UI.loading.top_small : APP.UI.loading.top;
 
-            if (typeof APP.UI.loading.center != "undefined" && APP.UI.loading.center)
-                loading_obj.center(APP.UI.loading.position, top);
+            if (typeof APP.UI.loading.center != "undefined" && APP.UI.loading.center) loading_obj.center(APP.UI.loading.position, top);
         }
 
         //dont show for hidden flag (debug only)
-        if (!hidden)
-            loading_obj.show("fast");
+        if (!hidden) loading_obj.show("fast");
 
         return loading_obj;
     };
@@ -45110,10 +45073,9 @@ module.exports = function() {
      * @param {Object} element - The jQuery element object
      * @param {Object} options - Widget options
      */
-    self.newModal = function(element, options) {
+    self.newModal = function (element, options) {
 
-        if (typeof options == "undefined")
-            options = {};
+        if (typeof options == "undefined") options = {};
 
         //new foundation modal
         if (core.framework == "foundation") {
@@ -45123,15 +45085,15 @@ module.exports = function() {
         //new bootstrap modal
         else if (core.framework == "bootstrap") {
 
-            element.modal(options);
-        }
+                element.modal(options);
+            }
     };
 
     /**
      * Hides a crated modal
      * @param  {object} element - The jquery element
      */
-    self.hideModal = function(element) {
+    self.hideModal = function (element) {
 
         //new foundation modal
         if (core.framework == "foundation") {
@@ -45141,8 +45103,8 @@ module.exports = function() {
         //new bootstrap modal
         else if (core.framework == "bootstrap") {
 
-            element.modal("hide");
-        }
+                element.modal("hide");
+            }
     };
 
     /**
@@ -45151,7 +45113,7 @@ module.exports = function() {
      * @param {Object} element - The jQuery element object
      * @param {Object} options - Widget options
      */
-    self.newDialog = function(options) {
+    self.newDialog = function (options) {
 
         $.ccdialog(options);
     };
@@ -45162,7 +45124,7 @@ module.exports = function() {
      * @param {Object} element - The jQuery element object
      * @param {Object} options - Widget options
      */
-    self.newLayer = function(element, options) {
+    self.newLayer = function (element, options) {
 
         element.cclayer(options);
     };
@@ -45171,7 +45133,7 @@ module.exports = function() {
      * Closes cclayer dialog
      * @method isOverlayVisible
      */
-    self.isOverlayVisible = function() {
+    self.isOverlayVisible = function () {
 
         return $.cclayer.isVisible();
     };
@@ -45180,7 +45142,7 @@ module.exports = function() {
      * Hides cclayer
      * @method hideLayer
      */
-    self.hideLayer = function() {
+    self.hideLayer = function () {
 
         $.cclayer.close();
     };
@@ -45189,7 +45151,7 @@ module.exports = function() {
      * Hides cclayer dialog
      * @method hideDialog
      */
-    self.hideDialog = function() {
+    self.hideDialog = function () {
 
         self.hideLayer();
     };
@@ -45198,7 +45160,7 @@ module.exports = function() {
      * Closes cclayer dialog
      * @method closeDialog
      */
-    self.isOverlayVisible = function() {
+    self.isOverlayVisible = function () {
 
         return $.cclayer.isVisible();
     };
@@ -45210,23 +45172,15 @@ module.exports = function() {
      * @param  {String} size - The Screen size: small, medium, large.
      * @return {Boolean}
      */
-    self.checkScreenSize = function(size) {
+    self.checkScreenSize = function (size) {
 
         //foundation
-        if (core.framework == "foundation")
-            return size === Foundation.MediaQuery.current;
+        if (core.framework == "foundation") return size === Foundation.MediaQuery.current;
 
         //bootstrap
         if (core.framework == "bootstrap") {
 
-            if ($(window).width() < 768)
-                return size === "small";
-            else if ($(window).width() >= 768 && $(window).width() <= 992)
-                return size === "medium";
-            else if ($(window).width() > 992 && $(window).width() <= 1200)
-                return size === "large";
-            else
-                return size === "x-large";
+            if ($(window).width() < 768) return size === "small";else if ($(window).width() >= 768 && $(window).width() <= 992) return size === "medium";else if ($(window).width() > 992 && $(window).width() <= 1200) return size === "large";else return size === "x-large";
         }
 
         return false;
@@ -45237,18 +45191,16 @@ module.exports = function() {
      * @method retinaImages
      * @param  {Object} context - A jQuery element context (optional)
      */
-    self.retinaImages = function(context) {
+    self.retinaImages = function (context) {
 
         //check if client supports retina
-        var isRetina = function() {
+        var isRetina = function isRetina() {
 
-            var media_query = '(-webkit-min-device-pixel-ratio: 1.5), (min--moz-device-pixel-ratio: 1.5), (-o-min-device-pixel-ratio: 3/2), (min-resolution: 1.5dppx)';
+            var media_query = "(-webkit-min-device-pixel-ratio: 1.5), (min--moz-device-pixel-ratio: 1.5), (-o-min-device-pixel-ratio: 3/2), (min-resolution: 1.5dppx)";
 
-            if (window.devicePixelRatio > 1)
-                return true;
+            if (window.devicePixelRatio > 1) return true;
 
-            if (window.matchMedia && window.matchMedia(media_query).matches)
-                return true;
+            if (window.matchMedia && window.matchMedia(media_query).matches) return true;
 
             return false;
         };
@@ -45256,17 +45208,17 @@ module.exports = function() {
         if (!isRetina()) return;
 
         //get elements
-        var elements = (typeof context != "undefined") ? $('img[data-retina]', context) : $('img[data-retina]');
+        var elements = typeof context != "undefined" ? $("img[data-retina]", context) : $("img[data-retina]");
 
         //for each image with attr data-retina
-        elements.each(function() {
+        elements.each(function () {
 
             var obj = $(this);
 
             var src = obj.attr("src");
             var ext = src.slice(-4);
             //set new source
-            var new_src = src.replace(ext, "@2x"+ext);
+            var new_src = src.replace(ext, "@2x" + ext);
 
             obj.removeAttr("data-retina");
             obj.attr("src", new_src);
@@ -45278,27 +45230,28 @@ module.exports = function() {
      * @TODO: set event click to reload image source.
      * @method fallbackImages
      */
-    self.fallbackImages = function() {
+    self.fallbackImages = function () {
 
-        $("img").error(function() {
+        $("img").error(function () {
 
-            if (APP.dev) { console.log("App Core -> failed loading image:", $(this).attr("src")); }
+            if (APP.dev) {
+                console.log("Core UI -> failed loading image:", $(this).attr("src"));
+            }
 
             $(this).attr("src", APP.UI.url_img_fallback);
         });
     };
 
     /**
-     * Image preloader, returns an array with image paths [token replaced: '$']
+     * Image preloader, returns an array with image paths [token replaced: "$"]
      * @method preloadImages
      * @param  {String} image_path - The source path
      * @param  {Int} indexes - The indexes, example: image1.png, image2.png, ...
      * @return {Array} The image object array
      */
-    self.preloadImages = function(image_path, indexes) {
+    self.preloadImages = function (image_path, indexes) {
 
-        if (_.isUndefined(indexes) || indexes === 0)
-            indexes = 1;
+        if (_.isUndefined(indexes) || indexes === 0) indexes = 1;
 
         var objects = [];
 
@@ -45307,7 +45260,7 @@ module.exports = function() {
             //create new image object
             objects[i] = new Image();
             //if object has a '$' symbol replace with index
-            objects[i].src = image_path.replace('$', (i+1));
+            objects[i].src = image_path.replace("$", i + 1);
         }
 
         return objects;
@@ -45315,91 +45268,90 @@ module.exports = function() {
 };
 
 },{}],15:[function(require,module,exports){
-/**
- * Facebook View Model - SDK wrapper
- * Required scope vars: `{APP, UA}`.
- * @class Facebook
- */
-module.exports = function() {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+exports.default = function () {
 
 	//++ Module
-    var self  = this;
-    self.name = "facebook";
+	var self = this;
+	self.name = "facebook";
 
-    //Check that facebook conf is set
-    if (_.isUndefined(APP.facebookAppID) || _.isUndefined(UA))
-        return false;
+	//Check that facebook conf is set
+	if (_.isUndefined(APP.facebookAppID) || _.isUndefined(UA)) {
+		return false;
+	}
 
-    /**
+	/**
      * @property sdkLangs
      * @type {Array}
      */
 	self.sdk_langs = {
-		es : 'es_LA',
-		en : 'en_US'
-  	};
+		es: "es_LA",
+		en: "en_US"
+	};
 
-    /**
-     * @attribute config
-     * @type {Object}
-     */
+	/**
+  * @attribute config
+  * @type {Object}
+  */
 	self.config = {
-        api_version           : "v2.5",                              // openGraph version
-        lang                  : self.sdk_langs[UA.lang],             // set SDK lang (self property)
-        dom_class             : "app-btn-fb",                        // jQuery selector
-        graph_url             : UA.protocol + "graph.facebook.com/", // openGraph URL
-        id                    : APP.facebookAppID,                   // from global app var
-        scope                 : APP.facebookAppScope,                // facebook app permissions
-        login_url             : APP.facebookLoginURL,                // facebook app default login URL
-        share_url             : null,                                // facebook dynamic share og URL (set above)
-        has_loaded            : false,                               // flag that sets if sdk has loaded
-        disable_js_sdk        : false,                               // disables javascript SDK
-        login_fn              : null,                                // callback function when user is already logged in
-        login_failed_fn       : null,                                // callback function when user didn't logged in
-        deauthorize_fn        : null,                                // callback function when app is deleted (set in app model)
-        before_redirection_fn : null,                                // callback for before redirection event (for php redirection)
-        loaded_text_attr      : "data-fb-loaded"                     // loaded button text for facebook js SDK button
+		api_version: "v2.5", // openGraph version
+		lang: self.sdk_langs[UA.lang], // set SDK lang (self property)
+		dom_class: "app-btn-fb", // jQuery selector
+		graph_url: UA.protocol + "graph.facebook.com/", // openGraph URL
+		id: APP.facebookAppID, // from global app var
+		scope: APP.facebookAppScope, // facebook app permissions
+		login_url: APP.facebookLoginURL, // facebook app default login URL
+		share_url: null, // facebook dynamic share og URL (set above)
+		has_loaded: false, // flag that sets if sdk has loaded
+		disable_js_sdk: false, // disables javascript SDK
+		login_fn: null, // callback function when user is already logged in
+		login_failed_fn: null, // callback function when user didnt logged in
+		deauthorize_fn: null, // callback function when app is deleted (set in app model)
+		before_redirection_fn: null, // callback for before redirection event (for php redirection)
+		loaded_text_attr: "data-fb-loaded" // loaded button text for facebook js SDK button
 	};
 	//set share URL
-	self.config.share_url = 'https://www.facebook.com/dialog/share?app_id='+self.config.id+'&display=popup&href=<url>&redirect_uri='+window.location.href;
+	self.config.share_url = "https://www.facebook.com/dialog/share?app_id=" + self.config.id + "&display=popup&href=<url>&redirect_uri=" + window.location.href;
 
 	//++ Methods
 
 	/**
-	 * Init facebook SDK with configurations
-	 * @method init
-	 */
-	self.init = function() {
+  * Init facebook SDK with configurations
+  * @method init
+  */
+	self.init = function () {
 
-        //set default login by facebook action
-        if (_.isNull(self.config.login_fn))
-            self.config.login_fn = self.loginUserByFacebook;
+		//set default login by facebook action
+		if (_.isNull(self.config.login_fn)) self.config.login_fn = self.loginUserByFacebook;
 
 		//append the "fb-root" div required by facebook
-		$('body').append('<div id="fb-root"></div>');
+		$("body").append("<div id='fb-root'></div>");
 		//set facebook jquery elements
-		var fb_buttons = $('.' + self.config.dom_class);
+		var fb_buttons = $("." + self.config.dom_class);
 		//check if buttons exists
-		if (!fb_buttons.length)
-			return;
+		if (!fb_buttons.length) return;
 
 		//disable js sdk only for mobile
-		if (!core.modules.facebook.config.disable_js_sdk)
-			self.config.disable_js_sdk = UA.isMobile;
+		if (!core.modules.facebook.config.disable_js_sdk) self.config.disable_js_sdk = UA.isMobile;
 
 		//For mobile use redirections pages, get library request
-		if (!self.config.disable_js_sdk)
-        	return self.getLibraryScript(fb_buttons);
+		if (!self.config.disable_js_sdk) {
+			return self.getLibraryScript(fb_buttons);
+		}
 
 		//click event for redirection strategy
-		fb_buttons.click(function(event) {
+		fb_buttons.click(function () {
 			//get action attribute
 			var action = $(this).attr("data-action");
-			var url    = self.config.login_url;
+			var url = self.config.login_url;
 
 			//share actions
-			if (action == "share-url")
-				url = self.config.share_url.replace("<url>", $(this).attr("data-url"));
+			if (action == "share-url") url = self.config.share_url.replace("<url>", $(this).attr("data-url"));
 
 			//validates url
 			if (!url.length) {
@@ -45408,8 +45360,7 @@ module.exports = function() {
 			}
 
 			//facebook before redirection event
-			if (_.isFunction(self.config.before_redirection_fn))
-				self.config.before_redirection_fn(url);
+			if (_.isFunction(self.config.before_redirection_fn)) self.config.before_redirection_fn(url);
 
 			//console.log("mod_facebook.js -> redirecting to: ", url);return;
 			top.location.href = url;
@@ -45423,40 +45374,40 @@ module.exports = function() {
 		self.config.has_loaded = true;
 	};
 
-    /**
-     * Get the SDK facebook library, async load.
-     * @method getLibraryScript
-     * @async
-     * @param {Object} fb_buttons - The jQuery buttons elements
-     */
-    self.getLibraryScript = function(fb_buttons) {
+	/**
+  * Get the SDK facebook library, async load.
+  * @method getLibraryScript
+  * @async
+  * @param {Object} fb_buttons - The jQuery buttons elements
+  */
+	self.getLibraryScript = function (fb_buttons) {
 
-        //Load Facebook javascript SDK
-		$.getScript('//connect.facebook.net/' + self.config.lang + '/all.js', function() {
+		//Load Facebook javascript SDK
+		$.getScript("//connect.facebook.net/" + self.config.lang + "/all.js", function () {
 			//Init facebook SDK
 			FB.init({
-                appId   : self.config.id,          //Facebook app ID
-                version : self.config.api_version, //API version
-                status  : true,                    //Check Facebook Login status
-                cookie  : true,                    //Use client cookie session?
-                xfbml   : true                     //Look for social plugins on the page
+				appId: self.config.id, //Facebook app ID
+				version: self.config.api_version, //API version
+				status: true, //Check Facebook Login status
+				cookie: true, //Use client cookie session?
+				xfbml: true //Look for social plugins on the page
 			});
 
 			//Get Login Status
-			FB.getLoginStatus(function(response) {
+			FB.getLoginStatus(function () {
 				//click event
-				fb_buttons.click( function(event) {
+				fb_buttons.click(function () {
 
-	 				//get action attribute
-	 				var action = $(this).attr("data-action");
+					//get action attribute
+					var action = $(this).attr("data-action");
 
-	 				//share actions
+					//share actions
 					if (action == "share-url") {
 						self.shareUrl($(this).attr("data-url"));
 						return;
 					}
 
-	 				//login actions
+					//login actions
 					self.login(self.handleUserData, action);
 				});
 
@@ -45468,119 +45419,111 @@ module.exports = function() {
 				self.config.has_loaded = true;
 			});
 		});
-    };
+	};
 
 	/**
-	 * Facebook login through js SDK
-	 * @method login
-	 * @param  {Function} fn_callback - The callback function
-	 * @param  {String} action - The action type: `login`, `share-url`.
-	 */
-	self.login = function(fn_callback, action) {
+  * Facebook login through js SDK
+  * @method login
+  * @param  {Function} fn_callback - The callback function
+  * @param  {String} action - The action type: `login`, `share-url`.
+  */
+	self.login = function (fn_callback, action) {
 
 		//fb buttons
-		var fb_buttons = $('.' + self.config.dom_class);
+		var fb_buttons = $("." + self.config.dom_class);
 		//disable button
 		fb_buttons.prop("disabled", true);
 
 		//login event
-		FB.login(function(response) {
+		FB.login(function (response) {
 
 			//enable button
 			fb_buttons.prop("disabled", false);
 
 			//check auth response, if fail call fallback for login
-			if (response.authResponse)
-				fn_callback(response, action);
-			else
-				self.loginFailed(response);
-		},
-		{ 	//app default permissions
-			scope : self.config.scope
+			if (response.authResponse) fn_callback(response, action);else self.loginFailed(response);
+		}, { //app default permissions
+			scope: self.config.scope
 		});
 	};
 
 	/**
-	 * Facebook login fallback when app auth fails
-	 * Response.status values
-	 * + __not_authorized__: the user is logged in to Facebook, but has not authenticated your app, or posible error
-	 * 	is the app is in sandbox mode (facebook app config). If error continues maybe app has
-	 * 	country restrictions or age restrictions (facebook app config).
-	 * + __unknown__: user haven't login to facebook or 3rd party cookies are blocked.
-	 * @method loginFailed
-	 * @param  {Object} response - The response object
-	 * @param  {Function} fn_pending - The pending function
-	 */
-	self.loginFailed = function(response, fn_pending) {
+  * Facebook login fallback when app auth fails
+  * Response.status values
+  * + __not_authorized__: the user is logged in to Facebook, but has not authenticated your app, or posible error
+  * 	is the app is in sandbox mode (facebook app config). If error continues maybe app has
+  * 	country restrictions or age restrictions (facebook app config).
+  * + __unknown__: user havent login to facebook or 3rd party cookies are blocked.
+  * @method loginFailed
+  * @param  {Object} response - The response object
+  * @param  {Function} fn_pending - The pending function
+  */
+	self.loginFailed = function (response, fn_pending) {
 
 		//check response
-		if (_.isUndefined(response.status))
-			return;
+		if (_.isUndefined(response.status)) return;
 
 		//call failed function
-		if (_.isFunction(self.config.login_failed_fn))
-			self.config.login_failed_fn(response.status, fn_pending);
+		if (_.isFunction(self.config.login_failed_fn)) self.config.login_failed_fn(response.status, fn_pending);
 	};
 
-    /**
-     * Request Login user Form Handler with Facebook JS SDK
-     * @method loginUserByFacebook
-     * @param  {Object} fb_payload - The facebook SDK payload
-     */
-    self.loginUserByFacebook = function(fb_payload) {
+	/**
+  * Request Login user Form Handler with Facebook JS SDK
+  * @method loginUserByFacebook
+  * @param  {Object} fb_payload - The facebook SDK payload
+  */
+	self.loginUserByFacebook = function (fb_payload) {
 
-        //request with promise
-        core.ajaxRequest({ method : 'POST', url :  APP.baseUrl + 'facebook/login' }, null, fb_payload)
-		.done();
-    };
+		//request with promise
+		core.ajaxRequest({ method: "POST", url: APP.baseUrl + "facebook/login" }, null, fb_payload).done();
+	};
 
 	/**
-	 * Force session logout from facebook
-	 * @method logout
-	 * @param  {Function} fn_callback - The callback function
-	 */
-	self.logout = function(fn_callback) {
+  * Force session logout from facebook
+  * @method logout
+  * @param  {Function} fn_callback - The callback function
+  */
+	self.logout = function (fn_callback) {
 
 		//1st check login status
-		FB.getLoginStatus(function(response) {
+		FB.getLoginStatus(function (response) {
 			//check response
-			if (!response.authResponse)
-				return;
+			if (!response.authResponse) return;
 
 			//logout call
-			FB.logout(function(response) {
+			FB.logout(function () {
 				//callback fn is a function?
-				if (_.isFunction(fn_callback))
-					fn_callback();
+				if (_.isFunction(fn_callback)) fn_callback();
 			});
 		});
 	};
 
-    /**
-	 * Deletes app from user facebook account
-	 * @method removeApp
-	 * @param  {Function} fn_callback - The callback function
-	 */
-	self.delete = function(fn_callback) {
+	/**
+ * Deletes app from user facebook account
+ * @method removeApp
+ * @param  {Function} fn_callback - The callback function
+ */
+	self.delete = function (fn_callback) {
 
 		FB.api("/me/permissions", "DELETE", fn_callback);
 	};
 
 	/**
-	 * Get user facebook profile data
-	 * @method getPublicUserData
-	 * @param  {Int} user_id - The user ID
-	 * @param  {Function} fn_callback - The callback function
-	 */
-	self.getPublicUserData = function(user_id, fn_callback) {
+  * Get user facebook profile data
+  * @method getPublicUserData
+  * @param  {Int} user_id - The user ID
+  * @param  {Function} fn_callback - The callback function
+  */
+	self.getPublicUserData = function (user_id, fn_callback) {
 
 		//get request to server (jsonp)
 		$.ajax({
-            type     : "GET",
-            url      : self.config.graph_url + user_id, //url
-            dataType : "jsonp",
-            success  : fn_callback,    //success fn
-            error    : function (e) {  //error fn
+			type: "GET",
+			url: self.config.graph_url + user_id, //url
+			dataType: "jsonp",
+			success: fn_callback, //success fn
+			error: function error(e) {
+				//error fn
 				var response = {};
 				response.error = e.status;
 				//call callback
@@ -45590,18 +45533,17 @@ module.exports = function() {
 	};
 
 	/**
-	 * Handles facebook user data response
-	 * @method handleUserData
-	 * @param  {object} response - The response object
-	 * @param  {string} action - The action type: ```login, share-url```
-	 */
-	self.handleUserData = function(response, action) {
+  * Handles facebook user data response
+  * @method handleUserData
+  * @param  {object} response - The response object
+  * @param  {string} action - The action type: ```login, share-url```
+  */
+	self.handleUserData = function (response, action) {
 
 		//check response
-		if (!response.authResponse)
-			return;
+		if (!response.authResponse) return;
 
-		var data = { "signed_request" : response.authResponse.signedRequest };
+		var data = { "signed_request": response.authResponse.signedRequest };
 
 		//login / register action
 		if (action == "login") {
@@ -45610,104 +45552,111 @@ module.exports = function() {
 		}
 		//delete account action
 		else if (action == "deauthorize" && _.isFunction(self.config.deauthorize_fn)) {
-			//delete fb app
-			self.config.deauthorize_fn(data);
-		}
+				//delete fb app
+				self.config.deauthorize_fn(data);
+			}
 	};
 
 	/**
-	 * Get user fb picture URL
-	 * @method getUserPictureUrl
-	 * @param  {Int} user_id - The facebook user id
-	 * @param  {String} type - The image type, example: ```square, large```
-	 * @return {String} The url
-	 */
-	self.getUserPictureUrl = function(user_id, type) {
+  * Get user fb picture URL
+  * @method getUserPictureUrl
+  * @param  {Int} user_id - The facebook user id
+  * @param  {String} type - The image type, example: ```square, large```
+  * @return {String} The url
+  */
+	self.getUserPictureUrl = function (user_id, type) {
 
 		//default type
-		if (!_.isString(type))
-			type = "square";
+		if (!_.isString(type)) type = "square";
 
 		return self.config.graph_url + user_id + "/picture?type=" + type;
 	};
 
 	/**
-	 * Facebook share action
-	 * @method shareUrl
-	 * @param  {string} url - The URL to share
-	 */
-	self.shareUrl = function(url) {
+  * Facebook share action
+  * @method shareUrl
+  * @param  {string} url - The URL to share
+  */
+	self.shareUrl = function (url) {
 
-		if (!url.length)
-			return;
+		if (!url.length) return;
 		//console.log(url);
 
 		//call API UI
 		FB.ui({
-			method : 'share',
-			href   : url
-		},
-        function(response) {
+			method: "share",
+			href: url
+		}, function () {
 			//...
 		});
 	};
 
 	/**
-	 * Toogle loading text in a button. Button must have ```loaded_text_attr``` attribute.
-	 * @method toggleButtonText
-	 * @param  {Object} buttons - The jQuery object button elements
-	 */
-	self.toggleButtonText = function(buttons) {
+  * Toogle loading text in a button. Button must have ```loaded_text_attr``` attribute.
+  * @method toggleButtonText
+  * @param  {Object} buttons - The jQuery object button elements
+  */
+	self.toggleButtonText = function (buttons) {
 
 		//for each button...
-		buttons.each(function(index) {
+		buttons.each(function () {
 
 			//check if button has attribute
-            var attr = $(this).attr(self.config.loaded_text_attr);
+			var attr = $(this).attr(self.config.loaded_text_attr);
 
-            if (typeof attr === "undefined" || attr === false)
-                return;
+			if (typeof attr === "undefined" || attr === false) {
+				return;
+			}
 
-	 		//update text button (search for a one level span)
-	 		var text_element = $(this).children("span").length ? $(this).children("span") : $(this);
-	 		//toogle texts
-	 		text_element.text(attr);
+			//update text button (search for a one level span)
+			var text_element = $(this).children("span").length ? $(this).children("span") : $(this);
+			//toogle texts
+			text_element.text(attr);
 		});
 	};
 };
 
 },{}],16:[function(require,module,exports){
-/**
- * Forms View Model - Handle Form Validation & Actions
- * Dependencies: ```formValidation jQuery plugin```, ```google reCaptcha JS SDK```
- * @class Forms
- */
-module.exports = function() {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; }; /**
+                                                                                                                                                                                                                                                   * Forms View Model - Handle Form Validation & Actions
+                                                                                                                                                                                                                                                   * Dependencies: ```formValidation jQuery plugin```, ```google reCaptcha JS SDK```
+                                                                                                                                                                                                                                                   * @class Forms
+                                                                                                                                                                                                                                                   */
+/* global APP $ _ jQuery Vue core grecaptcha */
+/* eslint no-undef: "error" */
+
+exports.default = function () {
 
     //++ Module
-    var self  = this;
+    var self = this;
     self.name = "forms";
 
     //++ Components
-    Vue.component('birthday-selector', {
-        template: '#vue-template-birthday-selector',
+    Vue.component("birthday-selector", {
+        template: "#vue-template-birthday-selector",
         //data must be a function
-        data : function () {
+        data: function data() {
             return {
-                day   : "",
-                month : "",
-                year  : ""
+                day: "",
+                month: "",
+                year: ""
             };
         },
-        methods : {
-            flashBirthdayValues : function () {
-                this.day   = "";
+        methods: {
+            flashBirthdayValues: function flashBirthdayValues() {
+                this.day = "";
                 this.month = "";
-                this.year  = "";
+                this.year = "";
             }
         },
-        computed : {
-            birthdayValue : function () {
+        computed: {
+            birthdayValue: function birthdayValue() {
 
                 return this.year + "-" + this.month + "-" + this.day;
             }
@@ -45715,9 +45664,9 @@ module.exports = function() {
     });
 
     //++ UI Selectors
-	_.assign(APP.UI, {
-        sel_recaptcha : "#app-recaptcha"
-	});
+    _.assign(APP.UI, {
+        sel_recaptcha: "#app-recaptcha"
+    });
 
     //++ Methods
 
@@ -45726,24 +45675,24 @@ module.exports = function() {
      * @method loadForms
      * @param {Object} context - The jQuery object element context (optional)
      */
-    self.loadForms = function(context) {
+    self.loadForms = function (context) {
 
-        var forms = (typeof context === "undefined") ? $("form[data-validate]") : $("form[data-validate]", context);
+        var forms = typeof context === "undefined" ? $("form[data-validate]") : $("form[data-validate]", context);
 
         if (!forms.length) return;
 
         //loop through each form
-        forms.each(function() {
+        forms.each(function () {
             //object reference
             var form = $(this);
             //get required inputs
             var elements = form.find("[data-fv-required]");
-            var options  = {
-                fields : {}
+            var options = {
+                fields: {}
             };
 
             //loop through each element form
-            elements.each(function() {
+            elements.each(function () {
                 //object reference
                 var name = $(this).attr("name");
 
@@ -45752,7 +45701,7 @@ module.exports = function() {
 
                 //set validators
                 options.fields[name] = {
-                    validators : { notEmpty : {} }
+                    validators: { notEmpty: {} }
                 };
 
                 //append required props
@@ -45772,36 +45721,36 @@ module.exports = function() {
      * @param  {Object} form - A form jQuery object or native element
      * @param  {Object} options - Extended Options
      */
-    self.newFormValidation = function(form, options) {
+    self.newFormValidation = function (form, options) {
 
         //default selector
-        if (typeof form == "undefined" || _.isNull(form))
-            throw new Error("App Forms -> newFormValidation: A Form object is required!");
+        if (typeof form == "undefined" || _.isNull(form)) throw new Error("Forms -> newFormValidation: A Form object is required!");
 
-        if (form instanceof jQuery === false)
-            form = $(form);
+        if (form instanceof jQuery === false) form = $(form);
 
-         //set settings
-         var opts = {
-            framework : core.framework,
-            err       : { clazz : 'form-error' },
+        //set settings
+        var opts = {
+            framework: core.framework,
+            err: { clazz: "form-error" },
             /*icon : {
-                valid      : 'fa fa-check',
-                invalid    : 'fa fa-times',
-                validating : 'fa fa-refresh'
+                valid      : "fa fa-check",
+                invalid    : "fa fa-times",
+                validating : "fa fa-refresh"
             }*/
             //on success
-            onSuccess: function(e) {
+            onSuccess: function onSuccess(e) {
                 //prevent default submit
                 e.preventDefault();
-           }
+            }
         };
 
         //extend options
         _.assign(opts, options);
 
         //init plugin
-        if (APP.dev) { console.log("App Forms -> loading form with options:", opts); }
+        if (APP.dev) {
+            console.log("Forms -> loading form with options:", opts);
+        }
 
         form.formValidation(opts);
     };
@@ -45812,37 +45761,37 @@ module.exports = function() {
      * @param  {Object} form - A form jQuery object or native element
      * @return {Boolean}
      */
-    self.isFormValid = function(form) {
+    self.isFormValid = function (form) {
 
-        if (form instanceof jQuery === false)
-            form = $(form);
+        if (form instanceof jQuery === false) form = $(form);
 
-        if (typeof form.data === "undefined" || typeof form.data('formValidation') === "undefined")
-            throw new Error("App Core -> form object has no formValidation instance.");
+        if (typeof form.data === "undefined" || typeof form.data("formValidation") === "undefined") throw new Error("Forms -> form object has no formValidation instance.");
 
         //check for input hidden fields that are required
-        var inputs_hidden = form.find('input[type="hidden"][data-fv-excluded="false"]');
+        var inputs_hidden = form.find("input[type='hidden'][data-fv-excluded='false']");
 
         if (inputs_hidden.length) {
 
-            if (APP.dev) { console.log("App Core -> Revalidating hidden inputs..."); }
+            if (APP.dev) {
+                console.log("Forms -> Revalidating hidden inputs...");
+            }
             //loop
-            inputs_hidden.each(function() {
+            inputs_hidden.each(function () {
                 //revalidate field
-                form.data('formValidation').revalidateField($(this));
+                form.data("formValidation").revalidateField($(this));
             });
         }
 
         //force validation first (API call)
-        $(form).data('formValidation').validate();
+        $(form).data("formValidation").validate();
         //check result
-        var is_valid = form.data('formValidation').isValid();
+        var is_valid = form.data("formValidation").isValid();
 
         if (!is_valid && APP.dev) {
 
-            console.log("App Core -> Some form element(s) are not valid:");
+            console.log("Forms -> Some form element(s) are not valid:");
 
-            form.data('formValidation').getInvalidFields().each(function() {
+            form.data("formValidation").getInvalidFields().each(function () {
                 console.log($(this).attr("name"), $(this));
             });
         }
@@ -45856,13 +45805,12 @@ module.exports = function() {
      * @param  {Object} form - A form jQuery object or native element
      * @param  {String} field - The field name
      */
-    self.revalidateFormField = function(form, field) {
+    self.revalidateFormField = function (form, field) {
 
-        if (form instanceof jQuery === false)
-            form = $(form);
+        if (form instanceof jQuery === false) form = $(form);
 
-        var fv = form.data('formValidation');
-        fv.updateStatus(field, 'NOT_VALIDATED');
+        var fv = form.data("formValidation");
+        fv.updateStatus(field, "NOT_VALIDATED");
     };
 
     /**
@@ -45870,15 +45818,13 @@ module.exports = function() {
      * @param  {Object} form - A form jQuery object or native element
      * @param  {Boolean} flag - The enable/disable flag
      */
-    self.enableFormSubmitButtons = function(form, flag) {
+    self.enableFormSubmitButtons = function (form, flag) {
 
-        if (form instanceof jQuery === false)
-            form = $(form);
+        if (form instanceof jQuery === false) form = $(form);
 
-        if (typeof flag === "undefined")
-            flag = true;
+        if (typeof flag === "undefined") flag = true;
 
-        var fv = form.data('formValidation');
+        var fv = form.data("formValidation");
         fv.disableSubmitButtons(!flag);
     };
 
@@ -45887,15 +45833,14 @@ module.exports = function() {
      * @method resetForm
      * @param  {Object} form - A form jQuery object or native element
      */
-    self.resetForm = function(form) {
+    self.resetForm = function (form) {
 
-        if (form instanceof jQuery === false)
-            form = $(form);
+        if (form instanceof jQuery === false) form = $(form);
 
         //clean form
-        form.data('formValidation').resetForm();
-        form.find('input, textarea').val("");
-        form.find("select").prop('selectedIndex', 0);
+        form.data("formValidation").resetForm();
+        form.find("input, textarea").val("");
+        form.find("select").prop("selectedIndex", 0);
     };
 
     /**
@@ -45905,36 +45850,28 @@ module.exports = function() {
      * @param  {Object} context - A jQuery object or native element
      * @param  {Object} validators_obj - Validators Object (formValidation)
      */
-    self.addField = function(field_name, context, validators_obj) {
+    self.addField = function (field_name, context, validators_obj) {
 
-        if (context instanceof jQuery === false)
-            context = $(context);
+        if (context instanceof jQuery === false) context = $(context);
 
         //field target
         var field;
         //set object
-        if (field_name instanceof jQuery === true)
-            field = field_name;
-        else
-            field = $("[name='"+field_name+"']", context);
+        if (field_name instanceof jQuery === true) field = field_name;else field = $("[name='" + field_name + "']", context);
 
         //default validator
-        var v = {validators : { notEmpty : {} }};
+        var v = { validators: { notEmpty: {} } };
 
-        if (typeof validators_obj === "object")
-            v = {validators : validators_obj};
+        if ((typeof validators_obj === "undefined" ? "undefined" : _typeof(validators_obj)) === "object") v = { validators: validators_obj };
 
         //append required props
         self.assignFieldValidatorPattern(field, v.validators);
 
         var form = field.closest("form");
 
-        if (typeof form === "undefined")
-            return console.warn("App Forms [addField] -> Can't find closest element form for field:", field);
-        else if (typeof form.data('formValidation') === "undefined")
-            return;
+        if (typeof form === "undefined") return console.warn("Forms -> addField: Cant find closest element form for field.", field);else if (typeof form.data("formValidation") === "undefined") return;
 
-        var fv = form.data('formValidation');
+        var fv = form.data("formValidation");
         //formValidation API
         fv.addField(field_name, v);
     };
@@ -45944,20 +45881,22 @@ module.exports = function() {
      * @param  {object} field - The jQuery field object
      * @param  {object} validators - The validators object
      */
-    self.assignFieldValidatorPattern = function(field, validators) {
+    self.assignFieldValidatorPattern = function (field, validators) {
 
         try {
 
             var pattern = field.attr("data-fv-required");
 
-            if (!pattern.length)
-                return;
+            if (!pattern.length) return;
 
-            var obj = eval('({' + pattern + '})');
+            var obj = eval("({" + pattern + "})");
             //append required props
             _.assign(validators, obj);
+        } catch (e) {
+            if (APP.dev) {
+                console.log("Form");
+            }
         }
-        catch (e) {}
     };
 
     /**
@@ -45966,30 +45905,34 @@ module.exports = function() {
     * @method recaptchaOnLoad
     * @property {Object} grecaptcha is global and is defined by reCaptcha SDK.
     */
-    self.recaptchaOnLoad = function() {
+    self.recaptchaOnLoad = function () {
 
-        if (APP.dev) { console.log("App Core -> reCaptcha loaded! Main Selector: " + APP.UI.sel_recaptcha); }
+        if (APP.dev) {
+            console.log("Forms -> reCaptcha loaded! Main Selector: " + APP.UI.sel_recaptcha);
+        }
 
         //calback function when user entered valid data
-        var callback_fn = function(value) {
+        var callback_fn = function callback_fn() {
 
-            if (APP.dev) { console.log("App Core -> reCaptcha validation OK!"); }
+            if (APP.dev) {
+                console.log("Forms -> reCaptcha validation OK!");
+            }
 
             //set valid option on sibling input hidden
-            $(APP.UI.sel_recaptcha).siblings('input').eq(0).val("1");
+            $(APP.UI.sel_recaptcha).siblings("input").eq(0).val("1");
             //reset form field
-            self.revalidateFormField($(APP.UI.sel_recaptcha).parents("form").eq(0), 'reCaptchaValue');
+            self.revalidateFormField($(APP.UI.sel_recaptcha).parents("form").eq(0), "reCaptchaValue");
         };
         //render reCaptcha through API call
         grecaptcha.render(APP.UI.sel_recaptcha.replace("#", ""), {
-            'sitekey'  : APP.googleReCaptchaID,
-            'callback' : callback_fn
+            "sitekey": APP.googleReCaptchaID,
+            "callback": callback_fn
         });
 
         //hide after x secs
-        setTimeout(function() {
+        setTimeout(function () {
             //clean any previous error
-            $(APP.UI.sel_recaptcha).siblings('small').eq(0).empty();
+            $(APP.UI.sel_recaptcha).siblings("small").eq(0).empty();
         }, 1500);
     };
 
@@ -45997,33 +45940,36 @@ module.exports = function() {
      * Reloads a reCaptcha element.
      * @method recaptchaReload
      */
-    self.recaptchaReload = function() {
+    self.recaptchaReload = function () {
 
-        if (APP.dev) { console.log("App Core -> reloading reCaptcha..."); }
+        if (APP.dev) {
+            console.log("Forms -> reloading reCaptcha...");
+        }
 
         //reset reCaptcha
-        if (typeof grecaptcha != "undefined")
-            grecaptcha.reset();
+        if (typeof grecaptcha != "undefined") grecaptcha.reset();
 
         //clean hidden input for validation
-        $(APP.UI.sel_recaptcha).siblings('input:hidden').eq(0).val("");
+        $(APP.UI.sel_recaptcha).siblings("input:hidden").eq(0).val("");
     };
 };
 
 },{}],17:[function(require,module,exports){
-/**
- * Password Recovery View Model
- * @class PassRecovery
- */
-module.exports = function() {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+exports.default = function () {
 
     //++ Module
-    var self  = this;
+    var self = this;
     self.name = "passRecovery";
 
     //++ View Model
     self.vm = {
-        methods : {}
+        methods: {}
     };
 
     //++ Methods
@@ -46033,11 +45979,10 @@ module.exports = function() {
      * @method sendRecoveryInstructions
      * @param  {Object} event - The Event Handler
      */
-    self.vm.methods.sendRecoveryInstructions = function(e) {
+    self.vm.methods.sendRecoveryInstructions = function (e) {
 
         //request with promise
-    	core.ajaxRequest({ method : 'POST', url : APP.baseUrl + 'password/sendRecoveryInstructions' }, e.target)
-		.done();
+        core.ajaxRequest({ method: "POST", url: APP.baseUrl + "password/sendRecoveryInstructions" }, e.target).done();
     };
 
     /**
@@ -46045,11 +45990,10 @@ module.exports = function() {
      * @method saveNewPassword
      * @param  {Object} event - The Event Handler
      */
-    self.vm.methods.saveNewPassword = function(e) {
+    self.vm.methods.saveNewPassword = function (e) {
 
         //request with promise
-        core.ajaxRequest({ method : 'POST', url : APP.baseUrl + 'password/saveNewPassword' }, e.target)
-        .done();
+        core.ajaxRequest({ method: "POST", url: APP.baseUrl + "password/saveNewPassword" }, e.target).done();
     };
 };
 
@@ -51692,47 +51636,83 @@ if (typeof jQuery === 'undefined') {
 }(jQuery));
 
 },{}],"webpack_core":[function(require,module,exports){
+"use strict";
+
+require("html5shiv");
+
+require("fastclick");
+
+require("lodash");
+
+require("vue");
+
+require("q");
+
+require("js-cookie");
+
+require("jquery");
+
+require("velocity");
+
+require("velocity.ui");
+
+require("jquery.scrollTo");
+
+require("./plugins/jquery.extended");
+
+require("./plugins/jquery.cclayer");
+
+require("./plugins/jquery.ccdialog");
+
+require("./plugins/jquery.formValidation");
+
+require("./plugins/jquery.formValidation.bootstrap");
+
+require("./plugins/jquery.formValidation.foundation");
+
+var _core = require("./modules/core.js");
+
+var _core2 = _interopRequireDefault(_core);
+
+var _auth = require("./modules/auth.js");
+
+var _auth2 = _interopRequireDefault(_auth);
+
+var _forms = require("./modules/forms.js");
+
+var _forms2 = _interopRequireDefault(_forms);
+
+var _passRecovery = require("./modules/passRecovery.js");
+
+var _passRecovery2 = _interopRequireDefault(_passRecovery);
+
+var _facebook = require("./modules/facebook.js");
+
+var _facebook2 = _interopRequireDefault(_facebook);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/* Load modules */
+
+//export core & make it a global var
+var app = new _core2.default();
+
+//modules
+
+
+//plugins
 /**
  * Core WebPack
+ * ES6 required (babel)
  * @module WebpackCore
  */
 
 //load main libraries
-require('html5shiv');
-require('fastclick');
-require('lodash');
-require('vue');
-require('q');
-require('js-cookie');
-require('jquery');
-require('velocity');
-require('velocity.ui');
-require('jquery.scrollTo');
 
-//plugins
-require('./plugins/jquery.extended');
-require('./plugins/jquery.cclayer');
-require('./plugins/jquery.ccdialog');
-require('./plugins/jquery.formValidation');
-require('./plugins/jquery.formValidation.bootstrap');
-require('./plugins/jquery.formValidation.foundation');
 
-/* Load modules */
-
-//Core
-var core = new (require('./modules/core.js'))();
-
-//export core & make it a global var
-module.exports.core = core;
-
-var modules = [
-    new (require('./modules/auth.js'))(),
-    new (require('./modules/forms.js'))(),
-    new (require('./modules/passRecovery.js'))(),
-    new (require('./modules/facebook.js'))()
-];
+module.exports.core = app;
 
 //set modules
-core.setModules(modules);
+app.setModules([new _auth2.default(), new _forms2.default(), new _passRecovery2.default(), new _facebook2.default()]);
 
 },{"./modules/auth.js":12,"./modules/core.js":13,"./modules/facebook.js":15,"./modules/forms.js":16,"./modules/passRecovery.js":17,"./plugins/jquery.ccdialog":18,"./plugins/jquery.cclayer":19,"./plugins/jquery.extended":20,"./plugins/jquery.formValidation":23,"./plugins/jquery.formValidation.bootstrap":21,"./plugins/jquery.formValidation.foundation":22,"fastclick":1,"html5shiv":2,"jquery":4,"jquery.scrollTo":3,"js-cookie":5,"lodash":6,"q":8,"velocity":9,"velocity.ui":10,"vue":11}]},{},["webpack_core"]);

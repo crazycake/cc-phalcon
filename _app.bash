@@ -5,7 +5,7 @@
 set -e
 
 #Current path
-CURRENT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+PROJECT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 MACHINE_USER_NAME="$(whoami)"
 
 # Package properties
@@ -13,12 +13,15 @@ APP_NAME="cc-phalcon"
 APP_NAMESPACE="$(echo "$APP_NAME" | tr '[:upper:]' '[:lower:]')"
 
 # Webpacks path
-WEBPACKS_PATH=$CURRENT_PATH"/webpacks/"
+WEBPACKS_PATH=$PROJECT_PATH"/webpacks/"
+
+# npm global dependencies
+NPM_GLOBAL_DEPENDENCIES="gulp uglify-js npm-check eslint"
 
 # Local documentation path.
 # PHP Core
 DOC_PHP_INPUT_PATH="./"
-DOC_PHP_OUTPUT_PATH=$CURRENT_PATH"/../cc-docs/cc-phalcon/php/"
+DOC_PHP_OUTPUT_PATH=$PROJECT_PATH"/../cc-docs/cc-phalcon/php/"
 
 #script help function
 scriptHelp() {
@@ -26,7 +29,8 @@ scriptHelp() {
 	echo -e "\033[95m env: App environment set up, set correct permissions on directories and files.\033[0m"
 	echo -e "\033[95m build: [PHP] Builds phar file with default box.json file.\033[0m"
 	echo -e "\033[95m tree: [PHP] Returns the file tree of phar file.\033[0m"
-	echo -e "\033[95m npm: [JS] Install or update npm dev dependencies.\033[0m"
+	echo -e "\033[95m npm-global: [JS] Install npm global dependencies.\033[0m"
+	echo -e "\033[95m npm: [JS] Update npm project dependencies. Use -u for package updates. \033[0m"
 	echo -e "\033[95m watch: [JS] Watch and builds webpack core.\033[0m"
 	echo -e "\033[95m docs: Generates PHP & JS API Docs (PHP apigen & JS apidoc required).\033[0m"
 	echo -e "\033[95m release: Creates a new tag release. Required version and message.\033[0m"
@@ -48,43 +52,63 @@ fi
 
 if [ $1 = "env" ]; then
 	# print project dir
-	echo -e "\033[95mCurrent Dir: "$CURRENT_PATH" \033[0m"
+	echo -e "\033[95mProject path: "$PROJECT_PATH" \033[0m"
 
 	# set default perms for folders & files (use 'xargs -I {} -0 sudo chmod xxxx {}' if args is to long)
 	echo -e "\033[95mApplying user-perms for all folders and files (sudo is required)... \033[0m"
 	# current path
-	find $CURRENT_PATH -type d -print0 | sudo xargs -0 chmod 0755
-	find $CURRENT_PATH -type f -print0 | sudo xargs -0 chmod 0644
+	find $PROJECT_PATH -type d -print0 | sudo xargs -0 chmod 0755
+	find $PROJECT_PATH -type f -print0 | sudo xargs -0 chmod 0644
 
 	#task done!
 	echo -e "\033[92mDone! \033[0m"
 
 elif [ $1 = "build" ]; then
 
-	cd $CURRENT_PATH
+	cd $PROJECT_PATH
 	php box.phar build -v
 	# task done!
 	echo -e "\033[92mDone! \033[0m"
 
 elif [ $1 = "tree" ]; then
 
-	cd $CURRENT_PATH
+	cd $PROJECT_PATH
 	php box.phar info -l $APP_NAMESPACE".phar"
 	# task done!
 	echo -e "\033[92mDone! \033[0m"
+
+elif [ $1 = "npm-global" ]; then
+
+	cd $WEBPACKS_PATH
+
+	echo -e "\033[95mUpdating npm global packages... \033[0m"
+
+	#modules instalation
+	sudo npm install -g $NPM_GLOBAL_DEPENDENCIES
+
+	cd $PROJECT_PATH
 
 elif [ $1 = "npm" ]; then
 
 	cd $WEBPACKS_PATH
 
-	echo -e "\033[35mInstalling npm dependencies in $WEBPACKS_PATH...\033[0m"
+	echo -e "\033[95mUpdating npm project packages... \033[0m"
 
-	# package instalation
+	if [ "$2" = "-u" ]; then
+		echo -e "\033[95mChecking for updates... \033[0m"
+		npm-check -u
+	fi
+
+	#package instalation
 	if [ "$(uname)" == "Darwin" ]; then
 		npm install
+		npm prune
 	else
 		sudo npm install
+		sudo npm prune
 	fi
+
+	cd $PROJECT_PATH
 
 elif [ $1 = "watch" ]; then
 
