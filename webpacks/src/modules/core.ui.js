@@ -4,8 +4,6 @@
  * Required scope vars: `{APP, UA}`.
  * @class Core.UI
  */
- /* global APP $ _ Foundation core */
- /* eslint no-undef: "error" */
 
 export default function() {
 

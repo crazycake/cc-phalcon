@@ -2,9 +2,6 @@
  * Password Recovery View Model
  * @class PassRecovery
  */
- /* global APP core */
- /* eslint no-undef: "error" */
-
 
 export default function() {
 

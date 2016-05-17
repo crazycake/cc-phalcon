@@ -1,10 +1,23 @@
 {
+    "extends": "eslint:recommended",
     "env": {
         "browser" : true,
         "node"    : true,
         "es6"     : true
     },
-    "extends": "eslint:recommended",
+    "globals": {
+        "APP"        : false,
+        "UA"         : false,
+        "FB"         : false,
+        "$"          : false,
+        "jQuery"     : false,
+        "_"          : false,
+        "Vue"        : false,
+        "Q"          : false,
+        "FastClick"  : false,
+        "Foundation" : false,
+        "core"       : true
+    },
     "parserOptions": {
         "sourceType": "module"
     },

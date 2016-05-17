@@ -2,8 +2,6 @@
  * Auth View Model - Handles Auth actions
  * @class Auth
  */
- /* global APP $ _ core */
- /* eslint no-undef: "error" */
 
 export default function() {
 

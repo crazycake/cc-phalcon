@@ -5,10 +5,8 @@
  * Frontend Framework supported: `Foundation v.6.x`, `Bootstrap v3.x`
  * @class Core
  */
- /* global APP UA $ jQuery _ FastClick Vue Q */
- /* eslint no-undef: "error" */
 
-import ui  from "./core.ui.js";
+import ui  from './core.ui.js';
 
 export default function() {
 

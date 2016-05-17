@@ -1,15 +1,12 @@
 /**
  * Test Module
  */
- /* global APP _ core */
- /* eslint no-undef: "error" */
 
-//import foundation
-require("foundation");
-//import form validation
-require("jquery.formValidation.foundation");
+//imports
+import "foundation";
+import "jquery.formValidation.foundation";
 
-//creates a KO model
+//view model
 var model = function() {
 
     //++ Module

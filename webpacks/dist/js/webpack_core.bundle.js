@@ -45628,7 +45628,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                                                                                                                                                                                                                                                    * Dependencies: ```formValidation jQuery plugin```, ```google reCaptcha JS SDK```
                                                                                                                                                                                                                                                    * @class Forms
                                                                                                                                                                                                                                                    */
-/* global APP $ _ jQuery Vue core grecaptcha */
+/* global grecaptcha */
 /* eslint no-undef: "error" */
 
 exports.default = function () {

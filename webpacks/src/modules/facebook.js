@@ -3,8 +3,6 @@
  * Required scope vars: `{APP, UA}`.
  * @class Facebook
  */
- /* global APP UA FB $ _ core */
- /* eslint no-undef: "error" */
 
 export default function() {
 
