@@ -156,9 +156,6 @@ trait Mailer
 
         $template_view = "mailing/$template";
 
-        if(!$this->simpleView->exists($template_view))
-            throw new Exception("Cant find mailing view $template_view");
-
         //get the style file
         $html = $this->simpleView->render($template_view, $this->mailer_conf);
         $css  = file_get_contents(self::$MAILING_CSS_FILE);
