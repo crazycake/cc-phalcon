@@ -100,7 +100,7 @@ trait Mailer
         $to      = $this->mailer_conf["data_email"];
 
         //sends async email
-        return $this->sendMessage("activation", $subject, $to);
+        $this->sendMessage("activation", $subject, $to);
     }
 
     /**
@@ -137,7 +137,7 @@ trait Mailer
         $subject = $this->mailer_conf["trans"]["SUBJECT_PASSWORD"];
         $to      = $this->mailer_conf["data_email"];
         //sends async email
-        return $this->sendMessage("passwordRecovery", $subject, $to);
+        $this->sendMessage("passwordRecovery", $subject, $to);
     }
 
 	/**
@@ -214,7 +214,7 @@ trait Mailer
         $this->mailer_conf = array_combine( array_map(function($k) { return "data_".$k; }, array_keys($message_data)), $message_data);
 
         //sends async email
-        return $this->sendMessage("contact", $subject, $to);
+        $this->sendMessage("contact", $subject, $to);
     }
 
     /**
