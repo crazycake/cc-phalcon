@@ -4,7 +4,7 @@
 	"readme"      : "Run npm install for package install.",
 	"repository"  : "private",
 	"license"     : "MIT",
-	"main"        : "gulpfile.js",
+	"main"        : "gulpfile.babel.js",
 	"devDependencies": {
 		"babel-core"          : "^6.3.26",
   		"babel-preset-es2015" : "^6.3.13",
