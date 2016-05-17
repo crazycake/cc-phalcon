@@ -2,8 +2,6 @@
 /**
  * Mailer - Email Service Trait
  * Requires a Frontend or Backend Module with CoreController
- * Requires Emogrifier & Mandrill class (composer)
- * Requires User & UserToken models
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
@@ -13,7 +11,7 @@ namespace CrazyCake\Services;
 //imports
 use Phalcon\Exception;
 use Pelago\Emogrifier;
-use Mandrill;
+
 //core
 use CrazyCake\Phalcon\AppModule;
 
@@ -26,7 +24,13 @@ trait Mailer
      * Mailing CSS file
      * @var string
      */
-    protected static $MAILING_CSS_FILE = MODULE_PATH."app/views/mailing/css/app.css";
+    protected static $MAILER_CSS_FILE = MODULE_PATH."app/views/mailing/css/app.css";
+
+    /**
+     * Temporal path
+     * @var string
+     */
+    protected static $MAILER_CACHE_PATH = MODULE_PATH."app/cache/mailer/";
 
 	/**
 	 * Config var
@@ -43,6 +47,10 @@ trait Mailer
     public function initMailer($conf = [])
     {
         $this->mailer_conf = $conf;
+
+        //create dir if not exists
+        if(!is_dir(self::$MAILER_CACHE_PATH))
+            mkdir(self::$MAILER_CACHE_PATH, 0755);
     }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
@@ -151,14 +159,14 @@ trait Mailer
         //set app var
         $this->mailer_conf["app"] = $this->config->app;
 
-        if(!is_file(self::$MAILING_CSS_FILE))
-            throw new Exception("Mailer cant find mailing CSS file: ".self::$MAILING_CSS_FILE);
+        if(!is_file(self::$MAILER_CSS_FILE))
+            throw new Exception("Mailer cant find mailing CSS file: ".self::$MAILER_CSS_FILE);
 
         $template_view = "mailing/$template";
 
         //get the style file
         $html = $this->simpleView->render($template_view, $this->mailer_conf);
-        $css  = file_get_contents(self::$MAILING_CSS_FILE);
+        $css  = file_get_contents(self::$MAILER_CSS_FILE);
 
         //HTML inliner
         $emogrifier = new Emogrifier($html, $css);
@@ -188,8 +196,8 @@ trait Mailer
             "email"   => $this->config->app->emails->sender,
             "name"    => $this->config->app->name." System",
             "message" => "A error occurred.".
-                         "\n Data:  ".(is_null($data) ? "empty" : json_encode($data, JSON_UNESCAPED_SLASHES)).
-                         "\n Trace: ".$exception->getMessage()
+                         "\nData:  ".(is_null($data) ? "empty" : json_encode($data, JSON_UNESCAPED_SLASHES)).
+                         "\nTrace: ".$exception->getMessage()
         ]);
     }
 
@@ -215,65 +223,86 @@ trait Mailer
     }
 
     /**
-     *  Sends a message through mandrill API
+     *  Sends a message through mailgun API
      * @param string $template - The template name
      * @param string $subject - The mail subject
      * @param mixed(string|array) $recipients - The receiver emails
      * @param array $attachments - Array with sub-array(s) with content, type and name props
-     * @param boolean $async - Async flag, defaults to true
-     * @return string
+     * @return $result array
      */
-    public function sendMessage($template, $subject, $recipients, $attachments = [], $async = true)
+    public function sendMessage($template, $subject, $recipients, $attachments = [])
     {
         //validation
         if (empty($template) || empty($subject) || empty($recipients))
             throw new Exception("Mailer::sendMessage -> Invalid params data for sending email");
 
         //parse recipients
-        if (is_string($recipients))
-            $recipients = [$recipients];
-
-        $to = [];
-        //create mandrill recipient data struct, push emails to array
-        foreach ($recipients as $email)
-            array_push($to, ["email" => $email]); //optional name (display name) & type (defaults "to").
+        if (is_array($recipients))
+            $recipients = implode(",", $recipients);
 
         //set default subject
         if (empty($subject))
             $subject = $this->config->app->name;
 
-        //Send message email!
+        //prepare message
         $message = [
-            "html"       => $this->inlineHtml($template),
-            "subject"    => $subject,
-            "from_email" => $this->config->app->emails->sender,
-            "from_name"  => $this->config->app->name,
-            "to"         => $to,
-            "tags"       => []
+            "from"    => $this->config->app->name." <".$this->config->app->emails->sender."> ",
+            "to"      => $recipients,
+            "subject" => $subject,
+            "html"    => $this->inlineHtml($template)
         ];
 
-        //append attachments
-        if (!empty($attachments))
-           $message["attachments"] = $attachments;
-
-        //send email!
-        $response = true;
+        $options = [];
+        //parse attachments
+        $this->_parseAttachments($attachments, $options);
 
         try {
-        	//mandrill lib instance
-        	$mandrill = new Mandrill($this->config->app->mandrill->accessKey);
-            $response = $mandrill->messages->send($message, $async);
-        }
-        catch (Mandrill_Error $e) {
 
-            $response = false;
-            // Mandrill errors are thrown as exceptions
-            $this->logger->error("Mailer::sendMessage -> A mandrill error occurred sending a message (".get_class($e)."), trace: ".$e->getMessage());
-        }
+            $key    = $this->config->app->mailgun->apiKey;
+            $domain = $this->config->app->mailgun->domain;
+            $client = new \Http\Adapter\Guzzle6\Client();
+            
+            //service instance
+            $mailgun = new \Mailgun\Mailgun($key, $client);
 
-        return $response;
+            $result = $mailgun->sendMessage($domain, $message, $options);
+
+            return $result;
+        }
+        catch (Exception $e) {
+
+            $this->logger->error("Mailer::sendMessage -> An error occurred sending a message: ".$e->getMessage());
+
+            return false;
+        }
     }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
+    /**
+     * Parse attachments to be sended to Mailgun API service
+     * @param array $attachments - Attachments array
+     * @param array $options - Reference array var
+     * @return array The parsed array data
+     */
+    private function _parseAttachments($attachments = null, &$options)
+    {
+        if(!isset($options) || !is_array($attachments) || empty($attachments))
+            return;
+
+        $options["attachment"] = [];
+
+        foreach ($attachments as $attachment) {
+
+            if(!isset($attachment["name"]) || !isset($attachment["binary"]))
+                continue;
+
+            $file_path = self::$MAILER_CACHE_PATH.$attachment["name"];
+
+            //save file to disk. NOTE: base64 encode not supported by Mailgun API yet :(
+            file_put_contents($file_path, $attachment["binary"]);
+
+            $options["attachment"][] = $file_path;
+        }
+    }
 }
