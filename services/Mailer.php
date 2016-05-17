@@ -62,7 +62,7 @@ trait Mailer
         $data["subject"] = "Contacto ".$this->config->app->name;
 
         //send contact email
-        $this->sendMailMessage("sendAdminMessage", $data);
+        $this->sendAdminMessage($data);
 
         //send JSON response
         $this->jsonResponse(200);
@@ -102,6 +102,7 @@ trait Mailer
         $subject = $this->mailer_conf["trans"]["SUBJECT_ACTIVATION"];
         $to      = $this->mailer_conf["data_email"];
         $tags    = ["account", "activation"];
+
         //sends async email
         return $this->sendMessage($html_raw, $subject, $to, $tags);
     }
@@ -210,7 +211,7 @@ trait Mailer
         //set message properties
         $subject = isset($message_data["subject"]) ? $message_data["subject"] : $this->config->app->name;
         $to      = isset($message_data["to"]) ? $message_data["to"] : $this->config->app->emails->contact;
-        $tags    = array("contact", "support");
+        $tags    = ["contact", "support"];
 
         //add prefix "data" to each element in array
         $view_data = array_combine( array_map(function($k) { return "data_".$k; }, array_keys($message_data)), $message_data);
