@@ -6,7 +6,7 @@
  * @class Core
  */
 
-import ui  from './core.ui.js';
+import ui  from "./core.ui.js";
 
 export default function() {
 
