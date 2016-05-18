@@ -223,7 +223,7 @@ trait Mailer
     }
 
     /**
-     *  Sends a message through mailgun API
+     *  Sends a message through sendgrid API
      * @param string $template - The template name
      * @param string $subject - The mail subject
      * @param mixed(string|array) $recipients - The receiver emails
@@ -237,41 +237,42 @@ trait Mailer
             throw new Exception("Mailer::sendMessage -> Invalid params data for sending email");
 
         //parse recipients
-        if (is_array($recipients))
-            $recipients = implode(",", $recipients);
+        if (is_string($recipients))
+            $recipients = explode(",", $recipients);
 
         //set default subject
         if (empty($subject))
             $subject = $this->config->app->name;
 
-        //prepare message
-        $message = [
-            "from"    => $this->config->app->name." <".$this->config->app->emails->sender."> ",
-            "to"      => $recipients,
-            "subject" => $subject,
-            "html"    => $this->inlineHtml($template)
-        ];
-
-        $options = [];
-        //parse attachments
-        $this->_parseAttachments($attachments, $options);
-
         try {
 
-            $key    = $this->config->app->mailgun->apiKey;
-            $domain = $this->config->app->mailgun->domain;
-            $client = new \Http\Adapter\Guzzle6\Client();
-
             //service instance
-            $mailgun = new \Mailgun\Mailgun($key, $client);
+            $sendgrid = new \SendGrid($this->config->app->sendgrid->apiKey);
+            $message  = new \SendGrid\Email();
 
-            $result = $mailgun->sendMessage($domain, $message, $options);
-            //s($result);exit;
+            $message->setFrom($this->config->app->emails->sender)
+                    ->setFromName($this->config->app->name)
+                    ->setReplyTo($this->config->app->emails->support)
+                    ->setSubject($subject)
+                    ->setHtml($this->inlineHtml($template));
+
+            //add recipients
+            foreach ($recipients as $email)
+                $message ->addTo($email);
+
+            //parse attachments
+            $this->_parseAttachments($attachments, $message);
+            //s($sendgrid, $message);exit;
+
+            //send email
+            $result = $sendgrid->send($message);
+            //s($result);
+
             return $result;
         }
         catch (Exception $e) {
 
-            $this->logger->error("Mailer::sendMessage -> An error occurred sending a message: ".$e->getMessage());
+            $this->logger->error("Mailer::sendMessage -> An error occurred: ".$e->getMessage());
 
             return false;
         }
@@ -280,17 +281,15 @@ trait Mailer
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
-     * Parse attachments to be sended to Mailgun API service
+     * Parse attachments to be sended to sendgrid API service
      * @param array $attachments - Attachments array
-     * @param array $options - Reference array var
+     * @param object $message - The sendgrid object
      * @return array The parsed array data
      */
-    private function _parseAttachments($attachments = null, &$options)
+    private function _parseAttachments($attachments = null, &$message)
     {
-        if(!isset($options) || !is_array($attachments) || empty($attachments))
+        if(!isset($message) || !is_array($attachments) || empty($attachments))
             return;
-
-        $options["attachment"] = [];
 
         foreach ($attachments as $attachment) {
 
@@ -299,10 +298,11 @@ trait Mailer
 
             $file_path = self::$MAILER_CACHE_PATH.$attachment["name"];
 
-            //save file to disk. NOTE: base64 encode not supported by Mailgun API yet :(
+            //save file to disk. NOTE: base64 encode not supported by API yet :(
             file_put_contents($file_path, $attachment["binary"]);
 
-            $options["attachment"][] = $file_path;
+            //set attachment
+            $message->setAttachment($file_path);
         }
     }
 }
