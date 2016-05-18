@@ -261,12 +261,12 @@ trait Mailer
             $key    = $this->config->app->mailgun->apiKey;
             $domain = $this->config->app->mailgun->domain;
             $client = new \Http\Adapter\Guzzle6\Client();
-            
+
             //service instance
             $mailgun = new \Mailgun\Mailgun($key, $client);
 
             $result = $mailgun->sendMessage($domain, $message, $options);
-
+            //s($result);exit;
             return $result;
         }
         catch (Exception $e) {
