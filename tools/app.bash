@@ -277,7 +277,7 @@ elif [ $1 = "clean" ]; then
 
 	# checkout removed .html files
 	echo -e "\033[95mBranch checkout... \033[0m"
-	git checkout "*/app/*/index.html"
+	git checkout "*/app/*/.gitkeep"
 
 	# update environment file and folders
 	bash app.bash env
