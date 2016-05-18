@@ -70,7 +70,7 @@ scriptHelp() {
 appBuild() {
 
 	#import phalcon builder bash file
-	source $TOOLS_PATH"_builder.bash"
+	source $TOOLS_PATH"builder.bash"
 	#call build task for deploy
 	buildTask
 }
@@ -92,17 +92,17 @@ appDeploy() {
 		cd $PROJECT_PATH
 
 		if [ "$CDN_SYNC_BACKEND" = "1" ]; then
-			bash _app.bash aws-cdn -b
+			bash app.bash aws-cdn -b
 		fi
 
 		if [ "$CDN_SYNC_FRONTEND" = "1" ]; then
-			bash _app.bash aws-cdn -f
+			bash app.bash aws-cdn -f
 		fi
 	fi
 
 	#call deploy bash file
 	cd $TOOLS_PATH
-	bash _deploy.bash "$1" "$2"
+	bash deploy.bash "$1" "$2"
 }
 
 # prevents machine from executing some task
@@ -258,7 +258,7 @@ elif [ $1 = "wkhtmltopdf" ]; then
 
 	echo -e "\033[95mInstalling wkhtmltopdf... \033[0m"
 	#call script
-	bash $TOOLS_PATH"/_wkhtmltopdf.bash"
+	bash $TOOLS_PATH"/wkhtmltopdf.bash"
 
 elif [ $1 = "clean" ]; then
 
@@ -280,7 +280,7 @@ elif [ $1 = "clean" ]; then
 	git checkout "*/app/*/index.html"
 
 	# update environment file and folders
-	bash _app.bash env
+	bash app.bash env
 
 	# task done!
 	echo -e "\033[92mDone! \033[0m"
@@ -319,7 +319,7 @@ elif [ $1 = "core" ]; then
 
 	excludeDeployMachine
 
-	bash $TOOLS_PATH"_core.bash"
+	bash $TOOLS_PATH"core.bash"
 
 elif [ $1 = "npm-global" ]; then
 
@@ -354,8 +354,8 @@ elif [ $1 = "trans" ]; then
 
 	excludeDeployMachine
 
-	bash $TOOLS_PATH"_translations.bash" find -b
-	bash $TOOLS_PATH"_translations.bash" find -f
+	bash $TOOLS_PATH"translations.bash" find -b
+	bash $TOOLS_PATH"translations.bash" find -f
 
 elif [ $1 = "aws-cli" ]; then
 

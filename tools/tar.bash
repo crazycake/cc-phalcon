@@ -11,7 +11,7 @@ PROJECT_PATH="$(dirname "$PROJECT_PATH")"
 # help output
 scriptHelp() {
     echo -e "\033[93mWebapp Tar helper script\nValid commands:\033[0m"
-    echo -e "\033[95m compress <path>: Compress an input folder (tar file).\033[0m"
+    echo -e "\033[95m compress <path>: Compress an input folder (tar.gz file).\033[0m"
     exit
 }
 

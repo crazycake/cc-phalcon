@@ -93,13 +93,13 @@ if [ $MACHINE_USER_NAME = "ubuntu" ]; then
 	#database migrations
 	if [ "$2" = "-m" ] || [ "$2" = "-mc" ]; then
 		echo -e "\033[31mExecuting DB migration...\033[0m"
-		bash _app.bash phinx migrate
+		bash app.bash phinx migrate
 	fi
 
 	#composer update
 	if [ "$2" = "-c" ] || [ "$2" = "-mc" ]; then
 		echo -e "\033[31mUpdating composer dependencies...\033[0m"
-		bash _app.bash composer
+		bash app.bash composer
 	fi
 
 	echo -e "\033[92mDeploy done! \033[0m"
@@ -163,13 +163,13 @@ if [ "$1" = "-t" ] || [ "$1" = "-s" ] || [ "$1" = "-p" ]; then
 	# conenct to remote machine and execute script
 	if [ "$1" = "-t" ]; then
 		echo -e "\033[95mSSH: $TESTING_SSH_CMD \033[0m"
-		ssh -i $TESTING_SSH_CMD 'bash -s' -- < ./_deploy.bash $DEPLOY_REMOTE_PATH "$2"
+		ssh -i $TESTING_SSH_CMD 'bash -s' -- < ./deploy.bash $DEPLOY_REMOTE_PATH "$2"
 	elif [ "$1" = "-s" ]; then
 		echo -e "\033[95mSSH: $STAGING_SSH_CMD \033[0m"
-		ssh -i $STAGING_SSH_CMD 'bash -s' -- < ./_deploy.bash $DEPLOY_REMOTE_PATH "$2"
+		ssh -i $STAGING_SSH_CMD 'bash -s' -- < ./deploy.bash $DEPLOY_REMOTE_PATH "$2"
 	else
 		echo -e "\033[95mSSH: $PRODUCTION_SSH_CMD \033[0m"
-		ssh -i $PRODUCTION_SSH_CMD 'bash -s' -- < ./_deploy.bash $DEPLOY_REMOTE_PATH "$2"
+		ssh -i $PRODUCTION_SSH_CMD 'bash -s' -- < ./deploy.bash $DEPLOY_REMOTE_PATH "$2"
 	fi
 
 	# task done!

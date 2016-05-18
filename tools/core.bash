@@ -25,7 +25,7 @@ CORE_TOOLS_PATH=$CORE_PATH"tools/"
 CORE_WEBPACKS_PATH=$CORE_PATH"webpacks/"
 
 # main app bash file
-MAIN_TOOL_FILE="_app"
+MAIN_TOOL_FILE="app"
 
 # check if cc-phalcon symlink is present
 if [ ! -d $CORE_PATH ]; then

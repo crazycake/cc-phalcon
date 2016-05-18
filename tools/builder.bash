@@ -44,7 +44,7 @@ buildTask() {
 	fi
 
 	# check file is present
-	if [ ! -f $TOOLS_PATH"_translations.bash" ]; then
+	if [ ! -f $TOOLS_PATH"translations.bash" ]; then
 		echo -e "\033[31mTranslations tools are required.\033[0m"
 		exit
 	fi
@@ -54,8 +54,8 @@ buildTask() {
 
 	cd $PROJECT_PATH
 
-	bash $TOOLS_PATH"_translations.bash" build -b
-	bash $TOOLS_PATH"_translations.bash" build -f
+	bash $TOOLS_PATH"translations.bash" build -b
+	bash $TOOLS_PATH"translations.bash" build -f
 
 	# task done!
 	echo -e "\033[92mDone! \033[0m"

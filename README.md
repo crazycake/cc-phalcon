@@ -51,5 +51,5 @@ php box.phar info -l <filepath>
 NPM modules installation
 
 ```
-bash _app.bash -npm
+bash app.bash -npm
 ```
