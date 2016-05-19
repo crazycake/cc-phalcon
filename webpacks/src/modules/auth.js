@@ -32,8 +32,7 @@ export default function() {
     self.vm.methods.registerUserByEmail = function(e) {
 
         //request with promise
-        core.ajaxRequest({ method : "POST", url : APP.baseUrl + "auth/register" }, e.target)
-        .done();
+        core.ajaxRequest({ method : "POST", url : APP.baseUrl + "auth/register" }, e.target);
     };
 
     /**
@@ -51,8 +50,7 @@ export default function() {
         };
 
         //request with promise
-        core.ajaxRequest({ method : "POST", url : APP.baseUrl + "auth/login" }, e.target, null, events)
-        .done();
+        core.ajaxRequest({ method : "POST", url : APP.baseUrl + "auth/login" }, e.target, null, events);
     };
 
     /**
@@ -76,7 +74,7 @@ export default function() {
             //show succes message
             core.ui.showAlert(payload, "success");
 
-        }).done();
+        });
     };
 
     /**

@@ -31,8 +31,7 @@ export default function() {
                 core.modules.forms.recaptchaReload();
                 return;
             }
-
-        }).done();
+        });
     };
 
     /**
@@ -43,7 +42,6 @@ export default function() {
     self.vm.methods.saveNewPassword = function(e) {
 
         //request with promise
-        core.ajaxRequest({ method : "POST", url : APP.baseUrl + "password/saveNewPassword" }, e.target)
-        .done();
+        core.ajaxRequest({ method : "POST", url : APP.baseUrl + "password/saveNewPassword" }, e.target);
     };
 }

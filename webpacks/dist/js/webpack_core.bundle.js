@@ -45904,7 +45904,7 @@ exports.default = function () {
     self.vm.methods.registerUserByEmail = function (e) {
 
         //request with promise
-        core.ajaxRequest({ method: "POST", url: APP.baseUrl + "auth/register" }, e.target).done();
+        core.ajaxRequest({ method: "POST", url: APP.baseUrl + "auth/register" }, e.target);
     };
 
     /**
@@ -45922,7 +45922,7 @@ exports.default = function () {
         };
 
         //request with promise
-        core.ajaxRequest({ method: "POST", url: APP.baseUrl + "auth/login" }, e.target, null, events).done();
+        core.ajaxRequest({ method: "POST", url: APP.baseUrl + "auth/login" }, e.target, null, events);
     };
 
     /**
@@ -45944,7 +45944,7 @@ exports.default = function () {
             core.ui.hideModal($(APP.UI.sel_account_modal));
             //show succes message
             core.ui.showAlert(payload, "success");
-        }).done();
+        });
     };
 
     /**
@@ -46378,7 +46378,7 @@ exports.default = function () {
 
         //timeout simulator
         if (option == "timeout") {
-            self.ajaxRequest({ method: "GET", url: "http://250.21.0.180:8081/fake/path/" }).done();
+            self.ajaxRequest({ method: "GET", url: "http://250.21.0.180:8081/fake/path/" });
         }
         //get dom events associated to a given object
         else if (option == "events") {
@@ -47081,7 +47081,7 @@ exports.default = function () {
 	self.loginUserByFacebook = function (fb_payload) {
 
 		//request with promise
-		core.ajaxRequest({ method: "POST", url: APP.baseUrl + "facebook/login" }, null, fb_payload).done();
+		core.ajaxRequest({ method: "POST", url: APP.baseUrl + "facebook/login" }, null, fb_payload);
 	};
 
 	/**
@@ -47594,7 +47594,7 @@ exports.default = function () {
                 core.modules.forms.recaptchaReload();
                 return;
             }
-        }).done();
+        });
     };
 
     /**
@@ -47605,7 +47605,7 @@ exports.default = function () {
     self.vm.methods.saveNewPassword = function (e) {
 
         //request with promise
-        core.ajaxRequest({ method: "POST", url: APP.baseUrl + "password/saveNewPassword" }, e.target).done();
+        core.ajaxRequest({ method: "POST", url: APP.baseUrl + "password/saveNewPassword" }, e.target);
     };
 };
 

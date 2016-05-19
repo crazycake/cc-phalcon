@@ -438,8 +438,7 @@ export default function() {
 
         //timeout simulator
         if (option == "timeout") {
-            self.ajaxRequest( { method : "GET", url : "http://250.21.0.180:8081/fake/path/" } )
-            .done();
+            self.ajaxRequest({ method : "GET", url : "http://250.21.0.180:8081/fake/path/" });
         }
         //get dom events associated to a given object
         else if (option == "events") {
