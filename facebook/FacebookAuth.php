@@ -196,6 +196,7 @@ trait FacebookAuth
         //set message
         $msg = $this->facebook_auth_conf["trans"]["OAUTH_REDIRECTED"]."\n".$e->getMessage();
         $this->view->setVar("error_message", $msg);
+
         $this->dispatcher->forward(["controller" => "error", "action" => "internal"]);
     }
 

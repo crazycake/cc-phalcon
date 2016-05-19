@@ -38,6 +38,8 @@ class BaseUserFacebook extends \CrazyCake\Models\Base
      */
     public $created_at;
 
+    /** ------------------------------------------- § ------------------------------------------------ **/
+
     /**
      * Initializer
      */
@@ -56,7 +58,4 @@ class BaseUserFacebook extends \CrazyCake\Models\Base
     {
         $this->created_at = date("Y-m-d H:i:s");
     }
-
-    /** ------------------------------------------- § ------------------------------------------------ **/
-
 }
