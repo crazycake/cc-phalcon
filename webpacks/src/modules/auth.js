@@ -66,7 +66,10 @@ export default function() {
         core.ajaxRequest({ method : "POST", url :  APP.baseUrl + "auth/resendActivationMailMessage" }, e.target)
         .then(function(payload) {
 
-            if (!payload) return;
+            if (!payload) {
+                core.modules.forms.recaptchaReload();
+                return;
+            }
 
             //modal closer
             core.ui.hideModal($(APP.UI.sel_account_modal));
@@ -84,8 +87,6 @@ export default function() {
 
         //reset recaptcha
         core.modules.forms.recaptchaReload();
-        //reset form field
-        core.modules.forms.revalidateFormField($(APP.UI.sel_recaptcha).parents("form").eq(0), "reCaptchaValue");
 
         //new modal
         core.ui.newModal($(APP.UI.sel_account_modal));

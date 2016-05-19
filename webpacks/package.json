@@ -27,9 +27,9 @@
 		"js-cookie"        : "^2.1.0",
 		"jquery"           : "^2.2.2",
 		"vue"              : "^1.0.20",
-		"q"                : "1.4.1",
-		"velocity-animate" : "1.2.3",
-		"jquery.scrollto"  : "2.1.2"
+		"bluebird"         : "^3.4.0",
+		"velocity-animate" : "^1.2.3",
+		"jquery.scrollto"  : "^2.1.2"
 	},
 	"browserify": {
 		"transform": [
@@ -42,7 +42,7 @@
         "lodash"          : "./node_modules/lodash/lodash.js",
         "jquery"          : "./node_modules/jquery/dist/jquery.js",
         "vue"             : "./node_modules/vue/dist/vue.js",
-        "q"               : "./node_modules/q/q.js",
+        "bluebird"        : "./node_modules/bluebird/js/browser/bluebird.core.js",
         "velocity"        : "./node_modules/velocity-animate/velocity.js",
         "velocity.ui"     : "./node_modules/velocity-animate/velocity.ui.js",
 		"js-cookie"       : "./node_modules/js-cookie/src/js.cookie.js",
@@ -51,7 +51,7 @@
 	"browserify-shim": {
 		"lodash"     : "_",
 		"vue"        : "Vue",
-		"q"          : "Q",
+		"bluebird"   : "Promise",
 		"jquery"     : "jQuery",
 		"js-cookie"  : "Cookies"
 	}

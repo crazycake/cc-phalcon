@@ -25,7 +25,14 @@ export default function() {
 
         //request with promise
         core.ajaxRequest({ method : "POST", url : APP.baseUrl + "password/sendRecoveryInstructions" }, e.target)
-		.done();
+        .then(function(payload) {
+
+            if (!payload) {
+                core.modules.forms.recaptchaReload();
+                return;
+            }
+
+        }).done();
     };
 
     /**

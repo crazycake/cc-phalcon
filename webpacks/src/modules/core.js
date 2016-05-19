@@ -218,7 +218,7 @@ export default function() {
 
             //validate abide form
             if (!self.modules.forms.isFormValid(form))
-                return Q();
+                return Promise.resolve();
 
             //serialize data to URL encoding
             payload = form.serializeArray();
@@ -250,7 +250,7 @@ export default function() {
         }
 
         //make ajax request with promises
-        return Q(
+        return Promise.resolve(
             $.ajax({
                 //request properties
                 type     : service.method,
@@ -275,10 +275,12 @@ export default function() {
             return _.isNull(payload) ? true : payload;
         })
         //promise finisher
-        .fin(function() {
+        .finally(function() {
 
             if (_.isObject(submit_btn) && submit_btn.length)
                 submit_btn.removeAttr("disabled"); //enable button?
+
+            return true;
         });
     };
 
@@ -436,7 +438,8 @@ export default function() {
 
         //timeout simulator
         if (option == "timeout") {
-            self.ajaxRequest( { method : "GET", url : "http://250.21.0.180:8081/fake/path/" } );
+            self.ajaxRequest( { method : "GET", url : "http://250.21.0.180:8081/fake/path/" } )
+            .done();
         }
         //get dom events associated to a given object
         else if (option == "events") {

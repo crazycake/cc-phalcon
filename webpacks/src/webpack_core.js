@@ -9,7 +9,7 @@ import "html5shiv";
 import "fastclick";
 import "lodash";
 import "vue";
-import "q";
+import "bluebird";
 import "js-cookie";
 import "jquery";
 import "velocity";
