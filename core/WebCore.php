@@ -50,22 +50,17 @@ abstract class WebCore extends MvcCore implements WebSecurity
     {
         parent::onConstruct();
 
-        //check enable SSL option
-        $enableSSL = AppModule::getProperty("enableSSL");
-
         //set client object with its properties (User-Agent)
         $this->_setClient();
 
-        //if enabledSSL, force redirect for non-https request
-        if ( APP_ENVIRONMENT === "production"
-            && isset($_SERVER["HTTP_HOST"])
-            && $enableSSL
-            && !$this->request->isSecureRequest()) {
+        //set language translations
+        $this->_setLanguage();
 
-            $url = "https://".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
-            $this->response->redirect($url);
-            return;
-        }
+        //set CSRF
+        $this->_setCSRF();
+
+        //check enable SSL option and force it if enabled
+        $this->_handleSSL();
     }
 
     /**
@@ -74,7 +69,6 @@ abstract class WebCore extends MvcCore implements WebSecurity
     protected function initialize()
     {
         //Skip web core initialize for api module includes
-        //Load view data only for non-ajax requests
         if ($this->request->isAjax() || MODULE_NAME == "api")
             return;
 
@@ -86,7 +80,7 @@ abstract class WebCore extends MvcCore implements WebSecurity
     }
 
     /**
-     * After Execute Route: Triggered after executing the controller/action method
+     * After Execute Route: Triggered after executing the controller/action method (before initialize event)
      */
     protected function afterExecuteRoute()
     {
@@ -98,13 +92,13 @@ abstract class WebCore extends MvcCore implements WebSecurity
         $this->_setAppJsViewVars();
         //set app assets
         $this->_setAppAssets();
-        //update client object property, request uri afterExecuteRoute event.
-        $this->_updateClientProp('requestedUri', $this->getRequestedUri());
 
         //check browser is supported (child method)
         $supported = $this->checkBrowserSupport($this->client->browser, $this->client->shortVersion);
+
         //prevents loops
         if (!$supported && !$this->dispatcher->getPreviousControllerName()) {
+
             $this->dispatcher->forward(["controller" => "error", "action" => "oldBrowser"]);
             $this->dispatcher->dispatch();
         }
@@ -215,6 +209,96 @@ abstract class WebCore extends MvcCore implements WebSecurity
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
+     * Set the client (user agent) object with its properties
+     * @access private
+     */
+    private function _setClient()
+    {
+        //parse user agent
+        $ua = new UserAgent($this->request->getUserAgent());
+        $ua = $ua->parseUserAgent();
+
+        //create a client object
+        $this->client = (object)[
+            //UA
+            "platform"     => $ua["platform"],
+            "browser"      => $ua["browser"],
+            "version"      => $ua["version"],
+            "shortVersion" => $ua["short_version"],
+            "isMobile"     => $ua["is_mobile"],
+            "isLegacy"     => $ua["is_legacy"],
+            "isIE"         => ($ua["browser"] === "MSIE"), //explorer
+            "requestedUri" => $this->getRequestedUri(),
+            "protocol"     => isset($_SERVER["HTTPS"]) ? "https://" : "http://"
+        ];
+    }
+
+    /**
+     * Set app language for translations
+     * @access private
+     */
+    private function _setLanguage()
+    {
+        if(!isset($this->trans)) {
+
+            $this->client->lang = $this->request->getBestLanguage();
+            return;
+        }
+
+        //TODO: onSetLanguage event
+        if (count($this->config->app->langs) > 1)
+            $this->trans->setLanguage($this->request->getBestLanguage());
+        else
+            $this->trans->setLanguage($this->config->app->langs[0]);
+
+        //set client language
+        $this->client->lang = $this->trans->getLanguage();
+    }
+
+    /**
+     * Set CSRF token key and value
+     * @access private
+     */
+    private function _setCSRF()
+    {
+        //check if CSRF was already created
+        if (!$this->session->has("csrf")) {
+
+            $key   = $this->security->getTokenKey();
+            $value = $this->security->getToken();
+
+            //save it in session
+            $this->session->set("csrf", [$key, $value]);
+        }
+        else {
+            //set vars
+            list($key, $value) = $this->session->get("csrf");
+        }
+
+        //update client props
+        $this->client->tokenKey = $key;
+        $this->client->token    = $value;
+    }
+
+    /**
+     * Handles SSL connections
+     * @access private
+     */
+    private function _handleSSL()
+    {
+        $enableSSL = AppModule::getProperty("enableSSL");
+
+        if(APP_ENVIRONMENT !== "production" || !isset($_SERVER["HTTP_HOST"]) ||
+           $this->request->isSecureRequest() || empty($enableSSL)) {
+            return;
+        }
+
+        //if enabledSSL, force redirect for non-https request
+        $url = "https://".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
+        $this->response->redirect($url);
+    }
+
+    /**
      * Set app assets (app.css & app.js)
      * @access protected
      */
@@ -252,88 +336,6 @@ abstract class WebCore extends MvcCore implements WebSecurity
             "css_url" => $css_url,
             "js_url"  => $js_url
         ]);
-    }
-
-    /**
-     * Set the client (user agent) object with its properties
-     * @access private
-     */
-    private function _setClient()
-    {
-        //for API make a API simple client object
-        if (MODULE_NAME == "api") {
-
-            $this->client = (object)[
-                "lang"     => "en",
-                "protocol" => isset($_SERVER["HTTPS"]) ? "https://" : "http://"
-            ];
-            return;
-        }
-
-        //set client object from session if was already created (little perfomance)
-        if ($this->session->has("client")) {
-            //get client from session
-            $this->client = $this->session->get("client");
-            //in each request set language
-            $this->trans->setLanguage($this->client->lang);
-            //set HTTP protocol
-            $this->client->protocol = isset($_SERVER["HTTPS"]) ? "https://" : "http://";
-
-            return;
-        }
-
-        //first-time properties. This static properties are saved in session.
-        //set language, if only one lang is supported, force it.
-        if (count($this->config->app->langs) > 1)
-            $this->trans->setLanguage($this->request->getBestLanguage());
-        else
-            $this->trans->setLanguage($this->config->app->langs[0]);
-
-        //parse user agent
-        $userAgent = new UserAgent($this->request->getUserAgent());
-        $userAgent = $userAgent->parseUserAgent();
-
-        //create a client object
-        $this->client = (object)[
-            //props
-            "lang"     => $this->trans->getLanguage(),
-            //CSRF
-            "tokenKey" => $this->security->getTokenKey(),
-            "token"    => $this->security->getToken(),
-            //UA
-            "platform"     => $userAgent['platform'],
-            "browser"      => $userAgent['browser'],
-            "version"      => $userAgent['version'],
-            "shortVersion" => $userAgent['short_version'],
-            "isMobile"     => $userAgent['is_mobile'],
-            "isLegacy"     => $userAgent['is_legacy'],
-            //set vars to distinguish pecific platforms
-            "isIE" => ($userAgent['browser'] == "MSIE") ? true : false,
-            //set HTTP protocol
-            "protocol" => isset($_SERVER["HTTPS"]) ? "https://" : "http://"
-        ];
-
-        //save in session
-        $this->session->set("client", $this->client);
-
-        return;
-    }
-
-    /**
-     * Update client object property and save again in session
-     * @access private
-     * @param string $prop - The property name
-     * @param string $value - The property value
-     */
-    private function _updateClientProp($prop = "", $value = "")
-    {
-        if (empty($prop))
-            return false;
-
-        //set value
-        $this->client->{$prop} = $value;
-        //save in session
-        $this->session->set("client", $this->client);
     }
 
     /**
