@@ -46018,8 +46018,8 @@ exports.default = function () {
 });
  */
 
-(function($)
-{
+(function($) {
+	
 	if (typeof $.cclayer !== "function")
 		throw new Error('ccdialog -> cclayer jQuery plugin is required');
 
@@ -46169,8 +46169,9 @@ exports.default = function () {
 	//creating an event "destroyed"
 	jQuery.event.special.destroyed = {
 		remove: function(o) {
-		  if (o.handler)
-			o.handler();
+
+			if (o.handler)
+				o.handler();
 		}
 	};
 
@@ -46202,6 +46203,7 @@ exports.default = function () {
  */
 
 (function($) {
+	
 	/** ------------------------------------------------------------------------------------------------
 		cclayer public methods
 	------------------------------------------------------------------------------------------------ **/
@@ -46449,8 +46451,9 @@ exports.default = function () {
 	//creating an event "destroyed"
 	jQuery.event.special.destroyed = {
 		remove: function(o) {
-		  if (o.handler)
-			o.handler();
+
+			if (o.handler)
+				o.handler();
 		}
 	};
 
@@ -46472,6 +46475,7 @@ exports.default = function () {
  * @return object
  */
 jQuery.fn.center = function(position, top, left) {
+	
 	//set CSS position (fixed, absolute, static)
 	if (typeof position === "undefined")
 		this.css("position", "absolute");

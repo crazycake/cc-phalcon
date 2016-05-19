@@ -13,6 +13,7 @@
  * @return object
  */
 jQuery.fn.center = function(position, top, left) {
+	
 	//set CSS position (fixed, absolute, static)
 	if (typeof position === "undefined")
 		this.css("position", "absolute");

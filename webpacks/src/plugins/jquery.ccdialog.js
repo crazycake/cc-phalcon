@@ -18,8 +18,8 @@
 });
  */
 
-(function($)
-{
+(function($) {
+	
 	if (typeof $.cclayer !== "function")
 		throw new Error('ccdialog -> cclayer jQuery plugin is required');
 
@@ -169,8 +169,9 @@
 	//creating an event "destroyed"
 	jQuery.event.special.destroyed = {
 		remove: function(o) {
-		  if (o.handler)
-			o.handler();
+
+			if (o.handler)
+				o.handler();
 		}
 	};
 

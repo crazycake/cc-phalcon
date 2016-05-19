@@ -23,6 +23,7 @@
  */
 
 (function($) {
+	
 	/** ------------------------------------------------------------------------------------------------
 		cclayer public methods
 	------------------------------------------------------------------------------------------------ **/
@@ -270,8 +271,9 @@
 	//creating an event "destroyed"
 	jQuery.event.special.destroyed = {
 		remove: function(o) {
-		  if (o.handler)
-			o.handler();
+
+			if (o.handler)
+				o.handler();
 		}
 	};
 
