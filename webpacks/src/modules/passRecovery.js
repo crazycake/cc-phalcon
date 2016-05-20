@@ -3,7 +3,7 @@
  * @class PassRecovery
  */
 
-export default function() {
+export default new function() {
 
     //++ Module
     var self  = this;
@@ -44,4 +44,4 @@ export default function() {
         //request with promise
         core.ajaxRequest({ method : "POST", url : APP.baseUrl + "password/saveNewPassword" }, e.target);
     };
-}
+};

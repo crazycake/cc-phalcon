@@ -4,7 +4,7 @@
  * @class Facebook
  */
 
-export default function() {
+export default new function() {
 
 	//++ Module
 	var self  = this;
@@ -360,4 +360,4 @@ export default function() {
 			text_element.text(attr);
 		});
 	};
-}
+};

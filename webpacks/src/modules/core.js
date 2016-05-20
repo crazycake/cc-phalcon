@@ -6,9 +6,9 @@
  * @class Core
  */
 
-import ui  from "./core.ui.js";
+import ui from "./core.ui.js";
 
-export default function() {
+export default new function() {
 
     //Check that App Global scope vars are defined
     if (typeof APP == "undefined" || typeof UA == "undefined")
@@ -23,7 +23,7 @@ export default function() {
      * @property ui
      * @type {object}
      */
-    self.ui = new ui();
+    self.ui = ui;
 
     /**
      * @property modules
@@ -452,4 +452,4 @@ export default function() {
         //default return
         return "Core -> Assert ("+assert+")";
     };
-}
+};

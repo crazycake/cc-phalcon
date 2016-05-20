@@ -33,15 +33,12 @@ import facebook from "./modules/facebook.js";
 
 /* Load modules */
 
-//export core & make it a global var
-let app = new core();
-
-module.exports.core = app;
+module.exports.core = core;
 
 //set modules
-app.setModules([
-    new auth(),
-    new forms(),
-    new passRecovery(),
-    new facebook()
+core.setModules([
+    auth,
+    forms,
+    passRecovery,
+    facebook
 ]);

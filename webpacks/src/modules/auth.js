@@ -3,7 +3,7 @@
  * @class Auth
  */
 
-export default function() {
+export default new function() {
 
     //++ Module
     var self  = this;
@@ -89,4 +89,4 @@ export default function() {
         //new modal
         core.ui.newModal($(APP.UI.sel_account_modal));
     };
-}
+};

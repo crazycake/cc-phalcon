@@ -5,7 +5,7 @@
  * @class Core.UI
  */
 
-export default function() {
+export default new function() {
 
     //self context
     var self = this;
@@ -496,4 +496,4 @@ export default function() {
 
         return objects;
     };
-}
+};

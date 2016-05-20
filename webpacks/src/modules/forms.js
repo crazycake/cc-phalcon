@@ -6,7 +6,7 @@
  /* global grecaptcha */
  /* eslint no-undef: "error" */
 
-export default function() {
+export default new function() {
 
     //++ Module
     var self  = this;
@@ -334,4 +334,4 @@ export default function() {
         //clean hidden input for validation
         $(APP.UI.sel_recaptcha).siblings("input:hidden").eq(0).val("");
     };
-}
+};

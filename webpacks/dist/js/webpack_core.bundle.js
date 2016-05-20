@@ -45874,8 +45874,12 @@ var template = Object.freeze({
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+/**
+ * Auth View Model - Handles Auth actions
+ * @class Auth
+ */
 
-exports.default = function () {
+exports.default = new function () {
 
     //++ Module
     var self = this;
@@ -45959,7 +45963,7 @@ exports.default = function () {
         //new modal
         core.ui.newModal($(APP.UI.sel_account_modal));
     };
-};
+}();
 
 },{}],13:[function(require,module,exports){
 "use strict";
@@ -45968,7 +45972,13 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-exports.default = function () {
+var _coreUi = require("./core.ui.js");
+
+var _coreUi2 = _interopRequireDefault(_coreUi);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = new function () {
 
     //Check that App Global scope vars are defined
     if (typeof APP == "undefined" || typeof UA == "undefined") throw new Error("Core -> Error: APP or UA global vars are not defined!");
@@ -45982,7 +45992,7 @@ exports.default = function () {
      * @property ui
      * @type {object}
      */
-    self.ui = new _coreUi2.default();
+    self.ui = _coreUi2.default;
 
     /**
      * @property modules
@@ -46391,13 +46401,13 @@ exports.default = function () {
         //default return
         return "Core -> Assert (" + assert + ")";
     };
-};
-
-var _coreUi = require("./core.ui.js");
-
-var _coreUi2 = _interopRequireDefault(_coreUi);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+}(); /**
+      * Core: main app module.
+      * Dependencies: `jQuery.js`, `VueJs`, `q.js`, `lodash.js`.
+      * Required scope vars: `{APP, UA}`.
+      * Frontend Framework supported: `Foundation v.6.x`, `Bootstrap v3.x`
+      * @class Core
+      */
 
 },{"./core.ui.js":14}],14:[function(require,module,exports){
 "use strict";
@@ -46405,8 +46415,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+/**
+ * App Core UI
+ * Dependencies: `jQuery.js`, `VueJs`, `q.js`, `lodash.js`.
+ * Required scope vars: `{APP, UA}`.
+ * @class Core.UI
+ */
 
-exports.default = function () {
+exports.default = new function () {
 
     //self context
     var self = this;
@@ -46871,7 +46887,7 @@ exports.default = function () {
 
         return objects;
     };
-};
+}();
 
 },{}],15:[function(require,module,exports){
 "use strict";
@@ -46879,8 +46895,13 @@ exports.default = function () {
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
+/**
+ * Facebook View Model - SDK wrapper
+ * Required scope vars: `{APP, UA}`.
+ * @class Facebook
+ */
 
-exports.default = function () {
+exports.default = new function () {
 
 	//++ Module
 	var self = this;
@@ -47220,7 +47241,7 @@ exports.default = function () {
 			text_element.text(attr);
 		});
 	};
-};
+}();
 
 },{}],16:[function(require,module,exports){
 "use strict";
@@ -47229,15 +47250,17 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; }; /**
-                                                                                                                                                                                                                                                   * Forms View Model - Handle Form Validation & Actions
-                                                                                                                                                                                                                                                   * Dependencies: ```formValidation jQuery plugin```, ```google reCaptcha JS SDK```
-                                                                                                                                                                                                                                                   * @class Forms
-                                                                                                                                                                                                                                                   */
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
+/**
+ * Forms View Model - Handle Form Validation & Actions
+ * Dependencies: ```formValidation jQuery plugin```, ```google reCaptcha JS SDK```
+ * @class Forms
+ */
 /* global grecaptcha */
 /* eslint no-undef: "error" */
 
-exports.default = function () {
+exports.default = new function () {
 
     //++ Module
     var self = this;
@@ -47558,7 +47581,7 @@ exports.default = function () {
         //clean hidden input for validation
         $(APP.UI.sel_recaptcha).siblings("input:hidden").eq(0).val("");
     };
-};
+}();
 
 },{}],17:[function(require,module,exports){
 "use strict";
@@ -47566,8 +47589,12 @@ exports.default = function () {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+/**
+ * Password Recovery View Model
+ * @class PassRecovery
+ */
 
-exports.default = function () {
+exports.default = new function () {
 
     //++ Module
     var self = this;
@@ -47607,7 +47634,7 @@ exports.default = function () {
         //request with promise
         core.ajaxRequest({ method: "POST", url: APP.baseUrl + "password/saveNewPassword" }, e.target);
     };
-};
+}();
 
 },{}],18:[function(require,module,exports){
 /**
@@ -53310,8 +53337,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 /* Load modules */
 
-//export core & make it a global var
-var app = new _core2.default();
+module.exports.core = _core2.default;
+
+//set modules
+
 
 //modules
 
@@ -53324,11 +53353,6 @@ var app = new _core2.default();
  */
 
 //load main libraries
-
-
-module.exports.core = app;
-
-//set modules
-app.setModules([new _auth2.default(), new _forms2.default(), new _passRecovery2.default(), new _facebook2.default()]);
+_core2.default.setModules([_auth2.default, _forms2.default, _passRecovery2.default, _facebook2.default]);
 
 },{"./modules/auth.js":12,"./modules/core.js":13,"./modules/facebook.js":15,"./modules/forms.js":16,"./modules/passRecovery.js":17,"./plugins/jquery.ccdialog":18,"./plugins/jquery.cclayer":19,"./plugins/jquery.extended":20,"./plugins/jquery.formValidation":23,"./plugins/jquery.formValidation.bootstrap":21,"./plugins/jquery.formValidation.foundation":22,"bluebird":1,"fastclick":2,"html5shiv":3,"jquery":5,"jquery.scrollTo":4,"js-cookie":6,"lodash":7,"velocity":9,"velocity.ui":10,"vue":11}]},{},["webpack_core"]);
