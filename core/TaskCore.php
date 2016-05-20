@@ -196,17 +196,6 @@ class TaskCore extends Task
      */
     protected function asyncRequest($options = [])
     {
-        //set base url
-        if (empty($options["base_url"]))
-            $this->colorize("Base URL is required", "ERROR", true);
-
-        //add missing slash
-        if (substr($options["base_url"], -1) !== "/")
-            $options["base_url"] .= "/";
-
-        if (filter_var($options["base_url"], FILTER_VALIDATE_URL) === false)
-            $this->colorize("Argument 'base_url' is not a valid URL", "ERROR", true);
-
         //special case for module cross requests
         if (!empty($options["module"]) && $options["module"] == "api") {
 
@@ -214,10 +203,25 @@ class TaskCore extends Task
             $api_key_header_value = AppModule::getProperty("key", "api");
             $api_key_header_name  = str_replace("_", "-", WsCore::HEADER_API_KEY);
             $options["headers"]   = [$api_key_header_name => $api_key_header_value];
+
+            //set API base url
+            $options["base_url"] = AppModule::getUrl("api");
         }
 
+        //check base url
+        if (empty($options["base_url"]))
+            $this->colorize("Base URL is required", "ERROR", true);
+
+        //add missing slash
+        if (substr($options["base_url"], -1) !== "/")
+            $options["base_url"] .= "/";
+
+        //validate URL
+        if (filter_var($options["base_url"], FILTER_VALIDATE_URL) === false)
+            $this->colorize("Option 'base_url' is not a valid URL", "ERROR", true);
+
         //log asyn request
-        $this->logger->debug("TaskCore::_apiRequest -> Options: ".json_encode($options, JSON_UNESCAPED_SLASHES));
+        $this->logger->debug("TaskCore::asyncRequest -> Options: ".json_encode($options, JSON_UNESCAPED_SLASHES));
 
         //guzzle method
         $this->_newRequest($options);
