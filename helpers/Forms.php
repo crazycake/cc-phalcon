@@ -16,22 +16,35 @@ use Phalcon\Exception;
 class Forms
 {
     /* consts */
-    const RUT_EXP = "/^[0-9]+-[0-9kK]{1}/";
+    const RUT_REGEX = "/^[0-9]+-[0-9kK]{1}/";
 
     /**
      * Validates chilean rut
-     * @param string $rut - The input form rut (without points)
+     * @param string $rut - The input form rut (requires '-' token)
      * @return boolean
      */
     public static function validateRut($input_rut = "")
     {
-        if (!preg_match(self::RUT_EXP, $input_rut))
+        $input_rut = str_replace(".", "", $input_rut);
+
+        if (!preg_match(self::RUT_REGEX, $input_rut))
             return false;
 
         $rut = explode("-", $input_rut);
 
         //checks if rut is valid
         return strtolower($rut[1]) == self::validateRutVD($rut[0]);
+    }
+
+    /**
+     * Formats a rut
+     * @param  string $rut - The input rut
+     * @return string
+     */
+    public static function formatRut($rut)
+    {
+        $str = explode("-", $rut);
+	    return number_format($str[0], 0, "", ".").'-'.$str[1];
     }
 
     /**
