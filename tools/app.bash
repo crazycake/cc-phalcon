@@ -45,14 +45,14 @@ fi
 # help output
 scriptHelp() {
 	echo -e "\033[93m"$APP_NAME" webapp CLI [$APP_ENV]\033[0m"
-	echo -e "\033[94mApp actions:\033[0m"
+	echo -e "\033[94mApp commands:\033[0m"
 	echo -e "\033[95m env: App environment set up, sets owner group & perms for apache folders.\033[0m"
-	echo -e "\033[95m composer <option>: Installs/Updates composer libraries with autoload-class dump. Use -s to composer self-update. Use -o for optimized dump.\033[0m"
+	echo -e "\033[95m composer <option>: Installs/Updates composer dependencies. Use -s to composer self-update. Use -o for optimized dump.\033[0m"
 	echo -e "\033[95m phinx: Executes phinx db migrations. Run phinx to display commands.\033[0m"
 	echo -e "\033[95m cli: Executes PHP App CLI.\033[0m"
 	echo -e "\033[95m clean: Cleans cached view files and logs.\033[0m"
 	echo -e "\033[95m wkhtmltopdf: Installs wkhtmltopdf library, required for webapps that uses PDF-maker engine.\033[0m"
-	echo -e "\033[96mDev actions:\033[0m"
+	echo -e "\033[96mDev commands:\033[0m"
 	echo -e "\033[95m build: Executes build process for entire webapp. \033[0m"
 	echo -e "\033[95m deploy <env> <option>: Deploy a phalcon app. env: -t, -s or -p. option: -m [migration], -c [composer], -mc [both]. \033[0m"
 	echo -e "\033[95m watch <module>: Runs watcher daemon for backend or frontend. Modules: -b or -f.\033[0m"
