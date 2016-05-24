@@ -101,6 +101,16 @@ abstract class MvcCore extends Controller
     }
 
     /**
+     * Host URL
+     * @param int $port - The host URL
+     * @return string - The host URL with port appended
+     */
+    protected function host($port = 80)
+    {
+        return $this->request->getHttpHost().":".$port;
+    }
+
+    /**
      * Sends a file to buffer output response
      * @param binary $data - The binary data to send
      * @param string $mime_type - The mime type
