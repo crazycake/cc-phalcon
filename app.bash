@@ -31,7 +31,7 @@ scriptHelp() {
 	echo -e "\033[95m tree: [PHP] Returns the file tree of phar file.\033[0m"
 	echo -e "\033[95m npm-global: [JS] Install npm global dependencies.\033[0m"
 	echo -e "\033[95m npm: [JS] Update npm project dependencies. Use -u for package updates. \033[0m"
-	echo -e "\033[95m watch: [JS] Watch and builds webpack core.\033[0m"
+	echo -e "\033[95m watch <webpack-name>: [JS] Watch and builds a webpack. Defaults to core. \033[0m"
 	echo -e "\033[95m docs: Generates PHP & JS API Docs (PHP apigen & JS apidoc required).\033[0m"
 	echo -e "\033[95m release: Creates a new tag release. Required version and message.\033[0m"
 	echo -e "\033[95m delete-tags: Removes local and remote repository tags.\033[0m"
@@ -115,7 +115,11 @@ elif [ $1 = "watch" ]; then
 	cd $WEBPACKS_PATH
 
 	#executes gulp task
-	gulp build
+	if [ "$2" != "" ]; then
+		gulp build -w "$2"
+	else
+		gulp build
+	fi
 
 elif [ $1 = "docs" ]; then
 
