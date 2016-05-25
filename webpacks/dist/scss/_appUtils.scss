@@ -34,19 +34,21 @@
 }
 
 //background cover image (3rd argument to use custom background to small & medium screen)
-@mixin app-bg-cover($image_path, $attachment: fixed, $responsive: null) {
+@mixin app-bg-cover($image_path, $attachment: fixed, $responsive: false) {
 	//set image
 	@if $image_path != null {
 		background: url($image_path) no-repeat center center $attachment;
 		@include app-background-size();
 	}
 	//small view
-	@if $responsive != null and mixin-exists(breakpoint) {
+	@if $responsive == true and mixin-exists(breakpoint) {
         //MediaQueries
 		@include breakpoint(small only) {
-			$url: str-replace($image_path, $responsive, '-small#{$responsive}');
+			$url: str-replace($image_path, ".jpg", "-small.jpg");
+            $url: str-replace($url, ".png", "-small.png");
             //@debug $url;
-			background: url($url) no-repeat 100% 100% $attachment;
+            position: relative;
+			background: url($url) no-repeat center center $attachment;
             -webkit-background-size: cover;
             -moz-background-size: cover;
             -o-background-size: cover;
@@ -54,8 +56,10 @@
 		}
         //medium
 		@include breakpoint(medium only) {
-			$url: str-replace($image_path, $responsive, '-medium#{$responsive}');
+            $url: str-replace($image_path, ".jpg", "-medium.jpg");
+            $url: str-replace($url, ".png", "-medium.png");
             //@debug $url;
+            position: relative;
             background: url($url) no-repeat 100% 100% $attachment;
             -webkit-background-size: cover;
             -moz-background-size: cover;
