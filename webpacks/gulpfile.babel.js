@@ -3,17 +3,23 @@
  */
 
 //required modules
-import babelify  from 'babelify';
-import browserify  from 'browserify';
-import gulp  from 'gulp';
-import gutil  from 'gulp-util';
-import assign  from 'lodash.assign';
-import source  from 'vinyl-source-stream';
-import watchify  from 'watchify';
+import babelify   from 'babelify';
+import browserify from 'browserify';
+import gulp       from 'gulp';
+import gutil      from 'gulp-util';
+import assign     from 'lodash.assign';
+import source     from 'vinyl-source-stream';
+import watchify   from 'watchify';
+import yargs      from "yargs";
 
 //++ Browserify
 
-const webpack_file = "webpack_core.js";
+let webpack_name = yargs.argv.w;
+//check args
+webpack_name = (typeof webpack_name !== "undefined") ? webpack_name : "webpack_core";
+
+//set consts
+const webpack_file =  webpack_name + ".js";
 const webpack_src  = "./src/" + webpack_file;
 const webpack_dist = "./dist/js/";
 
