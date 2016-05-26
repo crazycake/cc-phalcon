@@ -125,7 +125,17 @@ abstract class WebCore extends MvcCore implements WebSecurity
             $uri .= "?".implode("&", $params);
         }
 
-        $this->response->redirect($this->baseUrl($uri), true);
+        //set url
+        $url = $this->baseUrl($uri);
+
+        //print_r($this->response->getHeaders());die;
+        if (filter_var($url, FILTER_VALIDATE_URL) === false) {
+
+            $this->logger->debug("WebCore::redirectTo -> got an invalid URL: $url");
+            $this->redirectToNotFound();
+        }
+
+        $this->response->redirect($url, true);
         $this->response->send();
         die();
     }
@@ -246,7 +256,7 @@ abstract class WebCore extends MvcCore implements WebSecurity
     private function _setLanguage()
     {
         if(is_null($this->trans)) {
-            
+
             $this->client->lang = $this->request->getBestLanguage();
             return;
         }

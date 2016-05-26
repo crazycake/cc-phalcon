@@ -235,8 +235,7 @@ trait KccManager
         catch (Exception $e) {
 
             $this->logger->error("KccManager::onSuccess -> something occurred on Webpay Success page: Data: \n ".print_r($data, true)." \n ".$e->getMessage());
-            $data["TBK_ERROR"] = $e;
-            //$this->_debug($data);
+
             $this->redirectTo("webpay/failed", $data);
         }
     }
