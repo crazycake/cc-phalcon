@@ -84,7 +84,7 @@
 }
 
 //mixin for RGBa background
-@mixin app-bg-color-opacity($factor: 0, $opacity: 0.95) {
+@mixin app-bg-color($factor: 0, $opacity: 0.95) {
 	background-color: rgb($factor, $factor, $factor);
 	background-color: rgba($factor, $factor, $factor, $opacity) !important;
 	//transition
