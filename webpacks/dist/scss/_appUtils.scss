@@ -27,18 +27,12 @@
 /* Mixins
 ---------------------------------------------------------------------------------------- */
 
-//for box-spaced contents with a topbar
-@mixin app-fill-space($padding-top: 0) {
-	min-height: 100%;
-    padding-top: $padding-top;
-}
-
 //background cover image (3rd argument to use custom background to small & medium screen)
 @mixin app-bg-cover($image_path, $attachment: fixed, $responsive: false) {
 	//set image
 	@if $image_path != null {
 		background: url($image_path) no-repeat center center $attachment;
-		@include app-background-size();
+		background-size: cover;
 	}
 	//small view
 	@if $responsive == true and mixin-exists(breakpoint) {
@@ -69,13 +63,8 @@
 	}
 }
 
-//background image cover pollyfills
-@mixin app-background-size($size: cover) {
-	background-size: $size;
-}
-
 //background image retina support
-@mixin app-bg-image-retina($file, $type, $width, $height, $version:'0.1') {
+@mixin app-bg-retina($file, $type, $width, $height, $version:'0.1') {
     background-image: url($file + '.' + $type + "?v=" + $version);
     //MediaQueries
     @media only screen and (-webkit-min-device-pixel-ratio: 2),
@@ -102,10 +91,16 @@
     transition: all 0.3s ease;
 }
 
+//for box-spaced contents with a topbar
+@mixin app-stretch($padding-top: 0) {
+	min-height: 100%;
+    padding-top: $padding-top;
+}
+
 //bg loading for images
 @mixin app-loading-image($bg_color, $index, $width, $height) {
 	background: $bg_color;
-	@include app-bg-image-retina('../images/icons/icon-loading#{$index}', 'gif', $width, $height);
+	@include app-bg-retina('../images/icons/icon-loading#{$index}', 'gif', $width, $height);
 	background-repeat: no-repeat;
 	background-position: center center;
 }
@@ -127,6 +122,13 @@
         scrollbar-face-color: $foreground-color;
         scrollbar-track-color: $background-color;
     }
+}
+
+/* Medias
+---------------------------------------------------------------------------------------- */
+
+@media print {
+    .app-print { display: block; }
 }
 
 /* Placeholders
@@ -178,7 +180,7 @@
 }
 
 //text wrap with overflow hidden
-%app-text-overflow-hidden {
+%app-text-ellipsis {
 	overflow-x: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
@@ -190,14 +192,16 @@
 //Vue framework
 [v-cloak] { visibility: hidden; }
 
-//padding handlers
+//class helpers
+.app-relative          { position: relative; }
+.app-hide              { display: none; }
+.app-height            { height: 100%; }
+.app-space-small       { height: 2px; }
 .app-no-padding        { padding: 0 !important; }
 .app-no-padding-top    { padding-top: 0 !important; }
 .app-no-padding-bottom { padding-bottom: 0 !important; }
 .app-no-padding-left   { padding-left: 0 !important; }
 .app-no-padding-right  { padding-right: 0 !important; }
-.app-full-height       { height: 100%; }
-.app-line-spacer       { height: 2px; }
 
 //tables
 .app-table {
@@ -219,10 +223,6 @@
     }
 }
 
-.app-relative {
-    position: relative;
-}
-
 .app-absolute-block {
     @extend %app-absolute-block;
 }
@@ -234,9 +234,6 @@
 	left: -99999px !important;
 	visibility: hidden;
 }
-
-//for page printing
-.app-print-only { display: none; }
 
 //no-script fallback (uses classes fixed and center)
 noscript.app-no-js {
