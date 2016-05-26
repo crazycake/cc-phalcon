@@ -128,7 +128,7 @@ abstract class WebCore extends MvcCore implements WebSecurity
         //set url
         $url = $this->baseUrl($uri);
 
-        //print_r($this->response->getHeaders());die;
+        //validate URI
         if (filter_var($url, FILTER_VALIDATE_URL) === false) {
 
             $this->logger->debug("WebCore::redirectTo -> got an invalid URL: $url");
