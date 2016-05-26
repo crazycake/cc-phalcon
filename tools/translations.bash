@@ -17,7 +17,7 @@ APP_CORE_PATH=$PROJECT_PATH"/packages/cc-phalcon/"
 
 # translation filenames
 MO_FILE=$APP_NAMESPACE".mo"
-TEMP_FILE="temp_file"
+TEMP_FILE=".translations"
 
 # load environment file if exists
 if [ -f "$PROJECT_PATH/.env" ]; then
@@ -59,7 +59,7 @@ fi
 # compile and generate mo files
 if [ "$1" = "build" ]; then
 
-	echo -e "\033[94mSearching for .po files in ($APP_NAMESPACE) $APP_LANGS_PATH \033[0m"
+	echo -e "\033[94mSearching for .po files in $APP_LANGS_PATH \033[0m"
 
 	# search .po files
 	LANG_FILES=`find "$APP_LANGS_PATH" -type f -name '*.po'`
@@ -79,10 +79,11 @@ if [ "$1" = "build" ]; then
 # search and generate pot files
 elif [ "$1" = "find" ]; then
 
-	echo -e "\033[94mSearching for .php files in $APP_PATH  \033[0m"
+	echo -e "\033[94mSearching for PHP files in $APP_PATH  \033[0m"
 
 	# find files (exclude some folders)
-	find $APP_PATH $APP_CORE_PATH -type f -not -path "*app/logs*" > $TEMP_FILE
+	find $APP_PATH $APP_CORE_PATH -type f -name '*.php' -not -path "*app/logs*" > $TEMP_FILE
+
 	# generate pot file with xgettext
 	xgettext -o $APP_LANGS_PATH"trans.pot" \
 		-d $APP_PATH -L php --from-code=UTF-8 \
@@ -100,8 +101,11 @@ elif [ "$1" = "find" ]; then
 
 	# merge po file
 	echo "$CODE_LANGS" | while read CODE_DIR ; do
+
 		cd "$CODE_DIR"
+
 		CODE=`basename "$CODE_DIR"`
+
 		if [ -f "$CODE".po ]; then
 			echo -e "\033[94mUpdating new entries for lang code: $CODE  \033[0m"
 			sudo msgmerge -U "$CODE".po ../trans.pot
