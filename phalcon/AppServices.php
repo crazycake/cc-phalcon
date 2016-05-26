@@ -207,7 +207,7 @@ class AppServices
 
             return new \CrazyCake\Services\GetText([
                 "domain"    => $this->config->app->name,
-                "supported" => (array)$this->config->app->langs, //config obj to array
+                "supported" => (array)$this->config->app->langs,
                 "directory" => APP_PATH."langs/"
             ]);
         });
