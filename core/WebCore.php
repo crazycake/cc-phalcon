@@ -245,8 +245,8 @@ abstract class WebCore extends MvcCore implements WebSecurity
      */
     private function _setLanguage()
     {
-        if(!isset($this->trans)) {
-
+        if(is_null($this->trans)) {
+            
             $this->client->lang = $this->request->getBestLanguage();
             return;
         }

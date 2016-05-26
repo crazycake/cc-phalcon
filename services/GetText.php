@@ -58,6 +58,8 @@ class GetText extends GetTextAdapter
 
         //set language
         $this->setLanguage();
+
+        //print_r($this->getLanguage());
     }
 
     /**
@@ -85,5 +87,14 @@ class GetText extends GetTextAdapter
 
         //set environment vars
         $this->setLocale(LC_ALL, $this->current_lang);
+    }
+
+    /**
+     * Get current language
+     * @return string
+     */
+    public function getLanguage()
+    {
+        return $this->current_lang;
     }
 }
