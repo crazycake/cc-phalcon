@@ -97,6 +97,15 @@
     padding-top: $padding-top;
 }
 
+@mixin app-send-to-bg($height: 100%, $zindex: -1) {
+    position: fixed;
+	min-width: 100%;
+	min-height: $height;
+	top: 0;
+	left: 0;
+	z-index: $zindex;
+}
+
 //bg loading for images
 @mixin app-loading-image($bg_color, $index, $width, $height) {
 	background: $bg_color;
@@ -139,15 +148,6 @@
 	position: absolute;
 	width: 100%;
 	height: 100%;
-}
-
-%app-send-to-bg {
-    position: fixed;
-	min-width: 100%;
-	min-height: 100%;
-	top:0;
-	left:0;
-	z-index: -1;
 }
 
 //center an element
