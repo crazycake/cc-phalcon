@@ -134,7 +134,7 @@ abstract class MvcCore extends Controller
             $this->response->setContent($data);
 
         $this->response->send();
-        die(); //exit
+        die();
     }
 
     /**
@@ -268,7 +268,7 @@ abstract class MvcCore extends Controller
         $this->response->setContentType('application/json'); //set JSON as Content-Type header
         $this->response->setContent($content);
         $this->response->send();
-        die(); //exit
+        die();
     }
 
     /**
@@ -289,7 +289,7 @@ abstract class MvcCore extends Controller
         $this->response->setContentType('text/html');
         $this->response->setContent($text);
         $this->response->send();
-        die(); //exit
+        die();
     }
 
     /**
