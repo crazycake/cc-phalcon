@@ -58,8 +58,6 @@ class GetText extends GetTextAdapter
 
         //set language
         $this->setLanguage();
-
-        //print_r($this->getLanguage());
     }
 
     /**
