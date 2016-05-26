@@ -2,9 +2,6 @@
 /**
  * GetText Adapter
  * Requires: getText, see installed locales command with locale -a
- * This library was tested in Ubuntu environment
- * @author Andres Gutierrez <andres@phalconphp.com>
- * @author Eduar Carvajal <eduar@phalconphp.com>
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
@@ -42,7 +39,7 @@ class GetText extends GetTextAdapter
      *     (string) domain
      *     (array) supported
      */
-    public function __construct($options)
+    public function __construct($options = [])
     {
         if (!is_array($options) || !isset($options["domain"]) || !isset($options["directory"]) || !is_array($options["supported"]))
             die("GetText Lib -> Invalid options: directory, domain & supported options are required.");
@@ -53,10 +50,10 @@ class GetText extends GetTextAdapter
 
         //call parent constructor
         parent::__construct([
-            'locale'        => $this->default_locale,
-            'defaultDomain' => $options["domain"],
-            'directory'     => $options["directory"],
-           'category'       => LC_MESSAGES
+            "locale"        => $this->default_locale,
+            "defaultDomain" => $options["domain"],
+            "directory"     => $options["directory"],
+            "category"      => LC_MESSAGES
         ]);
 
         //set language
