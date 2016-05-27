@@ -97,7 +97,7 @@
     padding-top: $padding-top;
 }
 
-@mixin app-send-to-bg($height: 100%, $zindex: -1) {
+@mixin app-fixed-bg($height: 100%, $zindex: -1) {
     position: fixed;
 	min-width: 100%;
 	min-height: $height;
