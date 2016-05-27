@@ -46025,7 +46025,9 @@ exports.default = new function () {
      * @method init
      * @param {Array} modules - The required modules
      */
-    self.setModules = function (modules) {
+    self.setModules = function () {
+        var modules = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
+
 
         if (!modules.length) return;
 
@@ -46124,9 +46126,11 @@ exports.default = new function () {
     /**
      * Loads App modules, if module has a viewModel binds it to DOM automatically
      * @method loadModules
-     * @param {Object} modules - The modules oject
+     * @param {Array} modules
      */
-    self.loadModules = function (modules) {
+    self.loadModules = function () {
+        var modules = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
+
 
         var mod_name, mod, vm, data;
 
@@ -46184,12 +46188,15 @@ exports.default = new function () {
      * @param  {Object} events - Event handler object
      * @return {Object} Q promise
      */
-    self.ajaxRequest = function (request, form, extended_data, events) {
+    self.ajaxRequest = function () {
+        var request = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+        var form = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
+        var extended_data = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
+        var events = arguments.length <= 3 || arguments[3] === undefined ? null : arguments[3];
+
 
         //validation, request is required
-        if (typeof request === "undefined") throw new Error("Core -> ajaxRequest invalid inputs!");
-
-        if (typeof form === "undefined") form = null;
+        if (_.isNull(request)) throw new Error("Core -> ajaxRequest invalid inputs!");
 
         //define payload
         var payload = {};
@@ -46271,10 +46278,13 @@ exports.default = new function () {
      * @param  {Object} data - The JSON response object
      * @param  {Object} events - Alert Events Handler
      */
-    self.handleAjaxResponse = function (data, events) {
+    self.handleAjaxResponse = function () {
+        var data = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+        var events = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
+
 
         //undefined data?
-        if (_.isUndefined(data) || _.isNull(data)) return false;
+        if (_.isNull(data)) return false;
 
         if (APP.dev) {
             console.log("Core -> handleAjaxResponse: ", data);
@@ -46392,7 +46402,9 @@ exports.default = new function () {
      * @method redirectTo
      * @param  {String} uri - The webapp URI
      */
-    self.redirectTo = function (uri) {
+    self.redirectTo = function () {
+        var uri = arguments.length <= 0 || arguments[0] === undefined ? "" : arguments[0];
+
 
         var uri_map = {
             notFound: "error/notFound"
@@ -46686,9 +46698,9 @@ exports.default = new function () {
      * @param  {Boolean} hidden - Forces the loading element to be hidden.
      * @return {Object} A jQuery object element
      */
-    self.showLoading = function (hidden) {
+    self.showLoading = function () {
+        var hidden = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
 
-        if (_.isUndefined(hidden)) hidden = false;
 
         //set loading object selector
         var loading_obj = $(APP.UI.sel_loading_box);
@@ -46725,9 +46737,9 @@ exports.default = new function () {
      * @param {Object} element - The jQuery element object
      * @param {Object} options - Widget options
      */
-    self.newModal = function (element, options) {
+    self.newModal = function (element) {
+        var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
-        if (typeof options == "undefined") options = {};
 
         //new foundation modal
         if (core.framework == "foundation") {
@@ -47380,10 +47392,13 @@ exports.default = new function () {
      * @param  {Object} form - A form jQuery object or native element
      * @param  {Object} options - Extended Options
      */
-    self.newFormValidation = function (form, options) {
+    self.newFormValidation = function () {
+        var form = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+        var options = arguments[1];
+
 
         //default selector
-        if (typeof form == "undefined" || _.isNull(form)) throw new Error("Forms -> newFormValidation: A Form object is required!");
+        if (_.isNull(form)) throw new Error("Forms -> newFormValidation: A Form object is required!");
 
         if (form instanceof jQuery === false) form = $(form);
 
@@ -47475,13 +47490,13 @@ exports.default = new function () {
     /**
      * Enable or Disable form submit buttons
      * @param  {Object} form - A form jQuery object or native element
-     * @param  {Boolean} flag - The enable/disable flag
+     * @param  {Boolean} flag - The enable/disable flag, defaults to tue
      */
-    self.enableFormSubmitButtons = function (form, flag) {
+    self.enableFormSubmitButtons = function (form) {
+        var flag = arguments.length <= 1 || arguments[1] === undefined ? true : arguments[1];
+
 
         if (form instanceof jQuery === false) form = $(form);
-
-        if (typeof flag === "undefined") flag = true;
 
         var fv = form.data("formValidation");
         fv.disableSubmitButtons(!flag);

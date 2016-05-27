@@ -56,7 +56,7 @@ export default new function() {
      * @method init
      * @param {Array} modules - The required modules
      */
-    self.setModules = function(modules) {
+    self.setModules = function(modules = []) {
 
         if (!modules.length)
             return;
@@ -155,9 +155,9 @@ export default new function() {
     /**
      * Loads App modules, if module has a viewModel binds it to DOM automatically
      * @method loadModules
-     * @param {Object} modules - The modules oject
+     * @param {Array} modules
      */
-    self.loadModules = function(modules) {
+    self.loadModules = function(modules = []) {
 
         var mod_name, mod, vm, data;
 
@@ -216,14 +216,11 @@ export default new function() {
      * @param  {Object} events - Event handler object
      * @return {Object} Q promise
      */
-    self.ajaxRequest = function(request, form, extended_data, events) {
+    self.ajaxRequest = function(request = null, form = null, extended_data = null, events = null) {
 
         //validation, request is required
-        if (typeof request === "undefined")
+        if (_.isNull(request))
             throw new Error("Core -> ajaxRequest invalid inputs!");
-
-        if (typeof form === "undefined")
-            form = null;
 
         //define payload
         var payload = {};
@@ -253,7 +250,7 @@ export default new function() {
         if (_.isObject(extended_data)) {
 
             //check if element is null
-            if ( _.isNull(form) )
+            if (_.isNull(form))
                 _.assign(payload, extended_data); //considerar objetos livianos (selectionDirection error)
             else
                 payload.push({ name : "extended", value : extended_data });  //serialized object struct
@@ -316,10 +313,10 @@ export default new function() {
      * @param  {Object} data - The JSON response object
      * @param  {Object} events - Alert Events Handler
      */
-    self.handleAjaxResponse = function(data, events) {
+    self.handleAjaxResponse = function(data = null, events = null) {
 
         //undefined data?
-        if (_.isUndefined(data) || _.isNull(data))
+        if (_.isNull(data))
             return false;
 
         if (APP.dev) { console.log("Core -> handleAjaxResponse: ", data); }
@@ -437,7 +434,7 @@ export default new function() {
      * @method redirectTo
      * @param  {String} uri - The webapp URI
      */
-    self.redirectTo = function(uri) {
+    self.redirectTo = function(uri = "") {
 
         var uri_map = {
            notFound : "error/notFound"

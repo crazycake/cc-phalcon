@@ -96,10 +96,10 @@ export default new function() {
      * @param  {Object} form - A form jQuery object or native element
      * @param  {Object} options - Extended Options
      */
-    self.newFormValidation = function(form, options) {
+    self.newFormValidation = function(form = null, options) {
 
         //default selector
-        if (typeof form == "undefined" || _.isNull(form))
+        if (_.isNull(form))
             throw new Error("Forms -> newFormValidation: A Form object is required!");
 
         if (form instanceof jQuery === false)
@@ -192,15 +192,12 @@ export default new function() {
     /**
      * Enable or Disable form submit buttons
      * @param  {Object} form - A form jQuery object or native element
-     * @param  {Boolean} flag - The enable/disable flag
+     * @param  {Boolean} flag - The enable/disable flag, defaults to tue
      */
-    self.enableFormSubmitButtons = function(form, flag) {
+    self.enableFormSubmitButtons = function(form, flag = true) {
 
         if (form instanceof jQuery === false)
             form = $(form);
-
-        if (typeof flag === "undefined")
-            flag = true;
 
         var fv = form.data("formValidation");
         fv.disableSubmitButtons(!flag);

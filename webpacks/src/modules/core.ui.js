@@ -252,10 +252,7 @@ export default new function() {
      * @param  {Boolean} hidden - Forces the loading element to be hidden.
      * @return {Object} A jQuery object element
      */
-    self.showLoading = function(hidden) {
-
-        if (_.isUndefined(hidden))
-            hidden = false;
+    self.showLoading = function(hidden = false) {
 
         //set loading object selector
         var loading_obj = $(APP.UI.sel_loading_box);
@@ -295,10 +292,7 @@ export default new function() {
      * @param {Object} element - The jQuery element object
      * @param {Object} options - Widget options
      */
-    self.newModal = function(element, options) {
-
-        if (typeof options == "undefined")
-            options = {};
+    self.newModal = function(element, options = {}) {
 
         //new foundation modal
         if (core.framework == "foundation") {
