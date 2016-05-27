@@ -99,6 +99,26 @@ export default new function() {
     };
 
     /**
+     * Helper Get BaseUrl
+     * @param  {String} $uri - Append URI if defined
+     * @return string
+     */
+     self.baseUrl = function(uri = "") {
+
+        return APP.baseUrl + uri;
+     };
+
+     /**
+      * Helper Get StaticUrl
+      * @param  {String} $uri - Append URI if defined
+      * @return string
+      */
+      self.staticUrl = function(uri = "") {
+
+         return APP.staticUrl + uri;
+      };
+
+    /**
      * Foundation Initializer, loaded automatically.
      * Call this function if an element has loaded dynamically and uses foundation js plugins.
      * @method initFoundation
@@ -190,16 +210,16 @@ export default new function() {
      * Validates a form, if valid, sends a promise request with Q lib.
      * @link https://github.com/kriskowal/q
      * @method ajaxRequest
-     * @param  {Object} service - The URL service
+     * @param  {Object} request - A simple request object
      * @param  {Object} form - The form HTML object
      * @param  {Object} extended_data - An object to be extended as sending data (optional)
      * @param  {Object} events - Event handler object
      * @return {Object} Q promise
      */
-    self.ajaxRequest = function(service, form, extended_data, events) {
+    self.ajaxRequest = function(request, form, extended_data, events) {
 
-        //validation, service is required
-        if (typeof service === "undefined")
+        //validation, request is required
+        if (typeof request === "undefined")
             throw new Error("Core -> ajaxRequest invalid inputs!");
 
         if (typeof form === "undefined")
@@ -240,7 +260,7 @@ export default new function() {
         }
 
         //append CSRF token
-        if (service.method == "POST") {
+        if (request.method == "POST") {
 
             //check if element is null
             if (_.isNull(form))
@@ -249,16 +269,21 @@ export default new function() {
                 payload.push({ name : UA.tokenKey, value : UA.token }); //serialized object struct
         }
 
+        //set url
+        let url = (typeof request.url != "undefined") ? request.url : self.baseUrl(request.uri);
+        //set options
+        var options = {
+            //request properties
+            type     : request.method,
+            url      : url,
+            data     : payload,
+            dataType : "json",
+            timeout  : 14000 //timeout in seconds
+        };
+
         //make ajax request with promises
         return Promise.resolve(
-            $.ajax({
-                //request properties
-                type     : service.method,
-                url      : service.url,
-                data     : payload,
-                dataType : "json",
-                timeout  : 14000 //timeout in seconds
-            })
+            $.ajax(options)
             //handle fail event for jQuery ajax request
             .fail(self.handleAjaxError)
         )

@@ -24,9 +24,10 @@ export default new function() {
         sel_loading_box    : "#app-loading",
         sel_flash_messages : "#app-flash",
         sel_alert_box      : "div.app-alert",
+        //uris
+        uri_img_fallback : "images/icons/icon-image-fallback.png",
         //setting vars
-        url_img_fallback   : APP.staticUrl + "images/icons/icon-image-fallback.png",
-        pixel_ratio        : _.isUndefined(window.devicePixelRatio) ? 1 : window.devicePixelRatio
+        pixel_ratio : _.isUndefined(window.devicePixelRatio) ? 1 : window.devicePixelRatio
     });
 
     //set dynamic required props as default values
@@ -468,7 +469,7 @@ export default new function() {
 
             if (APP.dev) { console.log("Core UI -> failed loading image:", $(this).attr("src")); }
 
-            $(this).attr("src", APP.UI.url_img_fallback);
+            $(this).attr("src", core.staticUrl(APP.UI.uri_img_fallback));
         });
     };
 

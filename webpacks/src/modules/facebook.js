@@ -216,7 +216,7 @@ export default new function() {
     self.loginUserByFacebook = function(fb_payload) {
 
         //request with promise
-        core.ajaxRequest({ method : "POST", url :  APP.baseUrl + "facebook/login" }, null, fb_payload);
+        core.ajaxRequest({ method : "POST", uri :  "facebook/login" }, null, fb_payload);
     };
 
 	/**

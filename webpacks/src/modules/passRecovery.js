@@ -24,7 +24,7 @@ export default new function() {
     self.vm.methods.sendRecoveryInstructions = function(e) {
 
         //request with promise
-        core.ajaxRequest({ method : "POST", url : APP.baseUrl + "password/sendRecoveryInstructions" }, e.target)
+        core.ajaxRequest({ method : "POST", uri : "password/sendRecoveryInstructions" }, e.target)
         .then(function(payload) {
 
             if (!payload) {
@@ -42,6 +42,6 @@ export default new function() {
     self.vm.methods.saveNewPassword = function(e) {
 
         //request with promise
-        core.ajaxRequest({ method : "POST", url : APP.baseUrl + "password/saveNewPassword" }, e.target);
+        core.ajaxRequest({ method : "POST", uri : "password/saveNewPassword" }, e.target);
     };
 };

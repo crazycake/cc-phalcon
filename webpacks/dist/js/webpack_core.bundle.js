@@ -45908,7 +45908,7 @@ exports.default = new function () {
     self.vm.methods.registerUserByEmail = function (e) {
 
         //request with promise
-        core.ajaxRequest({ method: "POST", url: APP.baseUrl + "auth/register" }, e.target);
+        core.ajaxRequest({ method: "POST", uri: "auth/register" }, e.target);
     };
 
     /**
@@ -45926,7 +45926,7 @@ exports.default = new function () {
         };
 
         //request with promise
-        core.ajaxRequest({ method: "POST", url: APP.baseUrl + "auth/login" }, e.target, null, events);
+        core.ajaxRequest({ method: "POST", uri: "auth/login" }, e.target, null, events);
     };
 
     /**
@@ -45937,7 +45937,7 @@ exports.default = new function () {
     self.vm.methods.resendActivationMailMessage = function (e) {
 
         //request with promise
-        core.ajaxRequest({ method: "POST", url: APP.baseUrl + "auth/resendActivationMailMessage" }, e.target).then(function (payload) {
+        core.ajaxRequest({ method: "POST", uri: "auth/resendActivationMailMessage" }, e.target).then(function (payload) {
 
             if (!payload) {
                 core.modules.forms.recaptchaReload();
@@ -46063,6 +46063,30 @@ exports.default = new function () {
     };
 
     /**
+     * Helper Get BaseUrl
+     * @param  {String} $uri - Append URI if defined
+     * @return string
+     */
+    self.baseUrl = function () {
+        var uri = arguments.length <= 0 || arguments[0] === undefined ? "" : arguments[0];
+
+
+        return APP.baseUrl + uri;
+    };
+
+    /**
+     * Helper Get StaticUrl
+     * @param  {String} $uri - Append URI if defined
+     * @return string
+     */
+    self.staticUrl = function () {
+        var uri = arguments.length <= 0 || arguments[0] === undefined ? "" : arguments[0];
+
+
+        return APP.staticUrl + uri;
+    };
+
+    /**
      * Foundation Initializer, loaded automatically.
      * Call this function if an element has loaded dynamically and uses foundation js plugins.
      * @method initFoundation
@@ -46154,16 +46178,16 @@ exports.default = new function () {
      * Validates a form, if valid, sends a promise request with Q lib.
      * @link https://github.com/kriskowal/q
      * @method ajaxRequest
-     * @param  {Object} service - The URL service
+     * @param  {Object} request - A simple request object
      * @param  {Object} form - The form HTML object
      * @param  {Object} extended_data - An object to be extended as sending data (optional)
      * @param  {Object} events - Event handler object
      * @return {Object} Q promise
      */
-    self.ajaxRequest = function (service, form, extended_data, events) {
+    self.ajaxRequest = function (request, form, extended_data, events) {
 
-        //validation, service is required
-        if (typeof service === "undefined") throw new Error("Core -> ajaxRequest invalid inputs!");
+        //validation, request is required
+        if (typeof request === "undefined") throw new Error("Core -> ajaxRequest invalid inputs!");
 
         if (typeof form === "undefined") form = null;
 
@@ -46197,22 +46221,27 @@ exports.default = new function () {
         }
 
         //append CSRF token
-        if (service.method == "POST") {
+        if (request.method == "POST") {
 
             //check if element is null
             if (_.isNull(form)) payload[UA.tokenKey] = UA.token; //object style
             else payload.push({ name: UA.tokenKey, value: UA.token }); //serialized object struct
         }
 
-        //make ajax request with promises
-        return Promise.resolve($.ajax({
+        //set url
+        var url = typeof request.url != "undefined" ? request.url : self.baseUrl(request.uri);
+        //set options
+        var options = {
             //request properties
-            type: service.method,
-            url: service.url,
+            type: request.method,
+            url: url,
             data: payload,
             dataType: "json",
             timeout: 14000 //timeout in seconds
-        })
+        };
+
+        //make ajax request with promises
+        return Promise.resolve($.ajax(options)
         //handle fail event for jQuery ajax request
         .fail(self.handleAjaxError))
         //handle response
@@ -46441,8 +46470,9 @@ exports.default = new function () {
         sel_loading_box: "#app-loading",
         sel_flash_messages: "#app-flash",
         sel_alert_box: "div.app-alert",
+        //uris
+        uri_img_fallback: "images/icons/icon-image-fallback.png",
         //setting vars
-        url_img_fallback: APP.staticUrl + "images/icons/icon-image-fallback.png",
         pixel_ratio: _.isUndefined(window.devicePixelRatio) ? 1 : window.devicePixelRatio
     });
 
@@ -46860,7 +46890,7 @@ exports.default = new function () {
                 console.log("Core UI -> failed loading image:", $(this).attr("src"));
             }
 
-            $(this).attr("src", APP.UI.url_img_fallback);
+            $(this).attr("src", core.staticUrl(APP.UI.uri_img_fallback));
         });
     };
 
@@ -47102,7 +47132,7 @@ exports.default = new function () {
 	self.loginUserByFacebook = function (fb_payload) {
 
 		//request with promise
-		core.ajaxRequest({ method: "POST", url: APP.baseUrl + "facebook/login" }, null, fb_payload);
+		core.ajaxRequest({ method: "POST", uri: "facebook/login" }, null, fb_payload);
 	};
 
 	/**
@@ -47615,7 +47645,7 @@ exports.default = new function () {
     self.vm.methods.sendRecoveryInstructions = function (e) {
 
         //request with promise
-        core.ajaxRequest({ method: "POST", url: APP.baseUrl + "password/sendRecoveryInstructions" }, e.target).then(function (payload) {
+        core.ajaxRequest({ method: "POST", uri: "password/sendRecoveryInstructions" }, e.target).then(function (payload) {
 
             if (!payload) {
                 core.modules.forms.recaptchaReload();
@@ -47632,7 +47662,7 @@ exports.default = new function () {
     self.vm.methods.saveNewPassword = function (e) {
 
         //request with promise
-        core.ajaxRequest({ method: "POST", url: APP.baseUrl + "password/saveNewPassword" }, e.target);
+        core.ajaxRequest({ method: "POST", uri: "password/saveNewPassword" }, e.target);
     };
 }();
 

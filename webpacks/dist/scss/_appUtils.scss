@@ -159,7 +159,7 @@
 }
 
 //element centered in middle of screen (check safari!)
-%app-centered-screen {
+%app-position-center {
 	position: absolute;
   	top: 50%;
   	left: 50%;
@@ -167,7 +167,7 @@
 }
 
 //vertical align middle
-%app-vertical-align {
+%app-align-middle {
 	position: relative;
 	top: 50%;
 	transform: translateY(-50%);
@@ -218,6 +218,7 @@
     }
 }
 
+//absolute block
 .app-absolute-block {
     @extend %app-absolute-block;
 }

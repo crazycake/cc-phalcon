@@ -32,7 +32,7 @@ export default new function() {
     self.vm.methods.registerUserByEmail = function(e) {
 
         //request with promise
-        core.ajaxRequest({ method : "POST", url : APP.baseUrl + "auth/register" }, e.target);
+        core.ajaxRequest({ method : "POST", uri : "auth/register" }, e.target);
     };
 
     /**
@@ -50,7 +50,7 @@ export default new function() {
         };
 
         //request with promise
-        core.ajaxRequest({ method : "POST", url : APP.baseUrl + "auth/login" }, e.target, null, events);
+        core.ajaxRequest({ method : "POST", uri :"auth/login" }, e.target, null, events);
     };
 
     /**
@@ -61,7 +61,7 @@ export default new function() {
     self.vm.methods.resendActivationMailMessage = function(e) {
 
         //request with promise
-        core.ajaxRequest({ method : "POST", url :  APP.baseUrl + "auth/resendActivationMailMessage" }, e.target)
+        core.ajaxRequest({ method : "POST", uri : "auth/resendActivationMailMessage" }, e.target)
         .then(function(payload) {
 
             if (!payload) {
