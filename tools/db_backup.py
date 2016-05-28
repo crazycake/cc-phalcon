@@ -45,7 +45,6 @@ def main():
 	print SCS.CYAN + "Asking app configurations to CLI..." + SCS.END
 
 	#get app config from command line (webapp CLI)
-	#TODO: call env vars
 	command = subprocess.Popen("php "+project_dir+"/cli/cli.php main appConfig", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 	output  = command.stdout.read()
 	#print output
@@ -53,10 +52,11 @@ def main():
 
 	#set properties
 	APP.NAMESPACE = config['app']['namespace']
-	APP.DB_HOST   = os.environ.get('DB_HOST')
-	APP.DB_NAME   = os.environ.get('DB_NAME')
-	APP.DB_USER   = os.environ.get('DB_USER')
-	APP.DB_PASS   = os.environ.get('DB_PASS')
+	#get from env vars
+	APP.DB_HOST = os.environ.get('DB_HOST')
+	APP.DB_NAME = os.environ.get('DB_NAME')
+	APP.DB_USER = os.environ.get('DB_USER')
+	APP.DB_PASS = os.environ.get('DB_PASS')
 
 	#s3
 	APP.S3_BUCKET	  = config['app']['aws']['s3Bucket'] + "-prod"
