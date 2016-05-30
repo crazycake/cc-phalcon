@@ -27,7 +27,7 @@
 		"lodash"           : "^4.11.0",
 		"js-cookie"        : "^2.1.0",
 		"jquery"           : "^2.2.2",
-		"vue"              : "^1.0.20",
+		"vue"              : "^1.0.24",
 		"bluebird"         : "^3.4.0",
 		"velocity-animate" : "^1.2.3",
 		"jquery.scrollto"  : "^2.1.2"
