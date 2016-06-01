@@ -455,7 +455,17 @@ trait FacebookAuth
 
             //birthday
             $birthday = $fb_data->getField("birthday");
-            $properties["birthday"] = is_object($birthday) ? $birthday->format("Y-m-d") : null;
+            $properties["birthday"] = is_object($birthday) ? $birthday->format("Y-m-d") : $birthday;
+
+            //is year YYYY format?
+            if(strlen($birthday) == 4 && is_numeric($birthday)) {
+                $properties["birthday"] = $birthday."-00-00";
+            }
+            //is MM/DD format?
+            else if(strlen($birthday) == 5) {
+                $properties["birthday"] = "0000/".$birthday;
+            }
+
             //get gender
             $gender = $fb_data->getField("gender");
             $properties["gender"] = $gender ? $gender : "undefined";
