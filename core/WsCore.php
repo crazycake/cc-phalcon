@@ -18,7 +18,7 @@ use CrazyCake\Phalcon\AppModule;
 abstract class WsCore extends MvcCore
 {
     const HEADER_API_KEY         = "X_API_KEY"; //Phalcon HTTP header keys replace "_" to "-"
-    const WS_RESPONSE_CACHE_PATH = APP_PATH."cache/response/";
+    const WS_RESPONSE_CACHE_PATH = STORAGE_PATH."cache/response/";
 
     /**
      * Welcome message for API server status

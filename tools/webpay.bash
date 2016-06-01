@@ -1,5 +1,6 @@
 #! /bin/bash
 # Helper script for WebPay components
+# author: Nicolas Pulido <nicolas.pulido@crazycake.cl>
 
 # interrupt if error raises
 set -e
@@ -32,10 +33,10 @@ scriptHelp() {
 
 # check args
 if [ "$*" = "" ]; then
-	scriptHelp
-fi
 
-if [ $1 = "env" ]; then
+	scriptHelp
+
+elif [ $1 = "env" ]; then
 	# print project dir
 	echo -e "\033[96mProject Dir: "$PROJECT_PATH" \033[0m"
 	# set default perms for folders & files (use 'xargs -I {} -0 sudo chmod xxxx {}' if args is to long)
@@ -79,6 +80,7 @@ if [ $1 = "env" ]; then
 elif [ $1 = "clean" ]; then
 
 	echo -e "\033[95mCleaning KCC log files... \033[0m"
+
 	find $KIT_FOLDER -type f -name "*.log" -print0 | xargs -0 sudo rm
 
 	#task done!

@@ -20,7 +20,7 @@ trait Core
     {
         //Listen all the database events
         $manager = new \Phalcon\Events\Manager();
-        $logger  = new \Phalcon\Logger\Adapter\File(APP_PATH."logs/".$logFile);
+        $logger  = new \Phalcon\Logger\Adapter\File(STORAGE_PATH."logs/".$logFile);
 
         $manager->attach('db', function ($event, $connection) use ($logger) {
             //log SQL

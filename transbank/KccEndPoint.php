@@ -38,7 +38,7 @@ class KccEndPoint extends MvcCore
     protected function onConstruct()
     {
         //set logger service
-        $this->log = new \Phalcon\Logger\Adapter\File(APP_PATH."logs/webpaykcc_".date("d-m-Y").".log");
+        $this->log = new \Phalcon\Logger\Adapter\File(STORAGE_PATH."logs/webpaykcc_".date("d-m-Y").".log");
     }
 
     /**

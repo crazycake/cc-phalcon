@@ -1,5 +1,6 @@
 #! /bin/bash
 # Phalcon getText script helper for finding translations & compiling po files
+# author: Nicolas Pulido <nicolas.pulido@crazycake.cl>
 
 # interrupt if error raises
 set -e
@@ -61,11 +62,8 @@ if [ "$1" = "build" ]; then
 
 	echo -e "\033[94mSearching for .po files in $APP_LANGS_PATH \033[0m"
 
-	# search .po files
-	LANG_FILES=`find "$APP_LANGS_PATH" -type f -name '*.po'`
-
 	# generate .mo files in LC_MESSAGES subfolder for each lang code
-	echo "$LANG_FILES" | while read PO_FILE ; do
+	find $APP_LANGS_PATH -type f -name '*.po' | while read PO_FILE ; do
 		CODE=`basename "$PO_FILE" .po`
 		TARGET_DIR="$APP_LANGS_PATH$CODE/LC_MESSAGES"
 		mkdir -p "$TARGET_DIR"
@@ -82,7 +80,7 @@ elif [ "$1" = "find" ]; then
 	echo -e "\033[94mSearching for PHP files in $APP_PATH  \033[0m"
 
 	# find files (exclude some folders)
-	find $APP_PATH $APP_CORE_PATH -type f -name '*.php' -not -path "*app/logs*" > $TEMP_FILE
+	find $APP_PATH $APP_CORE_PATH -type f -name '*.php' > $TEMP_FILE
 
 	# generate pot file with xgettext
 	xgettext -o $APP_LANGS_PATH"trans.pot" \
@@ -96,11 +94,8 @@ elif [ "$1" = "find" ]; then
 	# delete temp file
 	rm $TEMP_FILE
 
-	# find code langs
-	CODE_LANGS=`find "$APP_LANGS_PATH" -mindepth 1 -maxdepth 1 -type d`
-
 	# merge po file
-	echo "$CODE_LANGS" | while read CODE_DIR ; do
+	find $APP_LANGS_PATH -mindepth 1 -maxdepth 1 -type d | while read CODE_DIR ; do
 
 		cd "$CODE_DIR"
 

@@ -1,8 +1,9 @@
 #! /bin/bash
 # Deploy script for testing & production environments
+# author: Nicolas Pulido <nicolas.pulido@crazycake.cl>
 
 # owner user name
-MACHINE_USER_NAME="$(whoami)"
+USER_NAME="$(whoami)"
 
 # project paths
 TOOLS_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -44,7 +45,7 @@ scriptHelp() {
 	echo -e "\033[95m -t <option>: deploy to testing environment. \033[0m"
     echo -e "\033[95m -s <option>: deploy to staging environment (branch staging requried). \033[0m"
     echo -e "\033[95m -p <option>: deploy to production environment (branch production requried). \033[0m"
-	echo -e "\033[93m * Option can be '-m' for Database migrations. \033[0m"
+	echo -e "\033[93m * Option can be '-m' for database migrations. \033[0m"
 	exit
 }
 
@@ -64,7 +65,7 @@ checkEnvVars() {
 }
 
 # check onwer machine (basic AWS security)
-if [ $MACHINE_USER_NAME = "ubuntu" ]; then
+if [ $USER_NAME = "ubuntu" ]; then
 
 	#check if directory exists
 	if [ "$1" = "" ] || [ ! -d "$1" ]; then

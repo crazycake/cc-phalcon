@@ -137,7 +137,7 @@ class AppServices
         //Logger adapter
         $di->setShared("logger", function() {
 
-            $logger = new \Phalcon\Logger\Adapter\File(APP_PATH."logs/".date("d-m-Y").".log");
+            $logger = new \Phalcon\Logger\Adapter\File(STORAGE_PATH."logs/".date("d-m-Y").".log");
             return $logger;
         });
 
@@ -254,7 +254,7 @@ class AppServices
                 $volt = new \Phalcon\Mvc\View\Engine\Volt($view, $di_instance);
                 //set volt engine options
                 $volt->setOptions([
-                    "compiledPath"      => APP_PATH."cache/",
+                    "compiledPath"      => STORAGE_PATH."cache/",
                     "compiledSeparator" => "_",
                 ]);
                 //get compiler

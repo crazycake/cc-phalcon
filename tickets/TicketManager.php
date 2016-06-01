@@ -185,7 +185,7 @@ trait TicketManager
         $this->qr_settings = $this->ticket_manager_conf["qr_settings"];
 
         //instance qr maker with log & cache paths
-        $qr_maker = new QRMaker(APP_PATH."logs/", APP_PATH."cache/");
+        $qr_maker = new QRMaker(STORAGE_PATH."logs/", STORAGE_PATH."cache/");
 
         //handle exceptions
         $result  = new \stdClass();

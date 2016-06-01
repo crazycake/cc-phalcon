@@ -1,5 +1,5 @@
 #!/bin/bash
-#system script that shows active cron jobs in current machine (Linux)
+# bash script that shows active cron jobs in current machine (Linux)
 
 # System-wide crontab file and cron job directory. Change these for your system.
 CRONTAB='/etc/crontab'

@@ -1,5 +1,6 @@
 #! /bin/bash
 # PhalconPHP app builder script [extended functions]
+# author: Nicolas Pulido <nicolas.pulido@crazycake.cl>
 
 # interrupt if error raises
 set -e

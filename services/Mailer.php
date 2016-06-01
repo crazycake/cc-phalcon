@@ -30,7 +30,7 @@ trait Mailer
      * Temporal path
      * @var string
      */
-    protected static $MAILER_CACHE_PATH = MODULE_PATH."app/cache/mailer/";
+    protected static $MAILER_CACHE_PATH = STORAGE_PATH."cache/mailer/";
 
 	/**
 	 * Config var

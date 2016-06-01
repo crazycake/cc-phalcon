@@ -75,6 +75,7 @@ abstract class AppModule
         define("MODULE_NAME", strtolower($mod_name));
         define("MODULE_PATH", PROJECT_PATH.MODULE_NAME."/");
         define("PACKAGES_PATH", PROJECT_PATH."packages/");
+        define("STORAGE_PATH", PROJECT_PATH."storage/");
         define("COMPOSER_PATH", PACKAGES_PATH."composer/");
         define("PUBLIC_PATH", MODULE_PATH."public/");
         define("APP_PATH", MODULE_PATH."app/");

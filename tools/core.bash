@@ -1,5 +1,6 @@
 #! /bin/bash
 # core package installer
+# author: Nicolas Pulido <nicolas.pulido@crazycake.cl>
 
 # interrupt if error raises
 set -e
@@ -16,7 +17,6 @@ BACKEND_PATH=$PROJECT_PATH"/backend/"
 
 #webpacks path
 WEBPACKS_PATH=$PACKAGES_PATH"webpacks/"
-
 
 # cc-phalcon paths
 CORE_NAMESPACE="cc-phalcon"

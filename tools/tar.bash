@@ -1,5 +1,6 @@
 #! /bin/bash
-## Tar Helper Script
+# Tar Helper Script
+# author: Nicolas Pulido <nicolas.pulido@crazycake.cl>
 
 # stop execution for exceptions
 set -e
@@ -17,10 +18,10 @@ scriptHelp() {
 
 # check args
 if [ "$*" = "" ]; then
-    scriptHelp
-fi
 
-if [ $1 = "compress" ]; then
+    scriptHelp
+
+elif [ $1 = "compress" ]; then
 
     if [ ! -d "$2" ]; then
         echo -e "\033[31mInput directory not found.\033[0m"
