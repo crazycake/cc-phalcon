@@ -244,7 +244,7 @@ elif [ $1 = "clean" ]; then
 
 	# clean storage
 	if [ -d $STORAGE_PATH ]; then
-		find $STORAGE_PATH -type f -not ".gitkeep" -print0 | xargs -0 sudo rm
+		find $STORAGE_PATH -type f \( ! -iname ".*" \) -print0 | xargs -0 sudo rm
 	fi
 
 	# task done!
