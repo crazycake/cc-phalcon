@@ -59,7 +59,7 @@ scriptHelp() {
 	echo -e "\033[95m npm: Update npm project dependencies. Use -u for package updates. \033[0m"
 	echo -e "\033[95m core: Installs/Updates core package (Requires cc-phalcon project). \033[0m"
 	echo -e "\033[95m trans: Update translations po file. \033[0m"
-	echo -e "\033[95m aws-cli <option>: Install AWS CLI (Pip is required). Use -u for self-update, -c for configuration.\033[0m"
+	echo -e "\033[95m aws-cli <option>: Install AWS CLI (Pip is required). Use -s for self-update, -c for configuration.\033[0m"
 	echo -e "\033[95m aws-cdn <module>: Syncs S3 CDN bucket with app assets. Modules: -b or -f.\033[0m"
 	exit
 }
@@ -137,21 +137,22 @@ elif [ $1 = "env" ]; then
 	# print project dir
 	echo -e "\033[96mProject Dir: "$PROJECT_PATH" \033[0m"
 
-	# add user to apache group
-	if groups $USER_NAME | grep &>/dev/null '\b$APACHE_USER_GROUP\b'; then
+	APACHE_USER_STATE="$( id -nG $USER_NAME | grep -c $APACHE_USER_GROUP )"
 
-	    echo -e "\033[96mUser already belongs to $APACHE_USER_GROUP \033[0m"
+	# add user to apache group?
+	if [ "$APACHE_USER_STATE" = "1" ]; then
+
+	    echo -e "\033[96mUser belongs to $APACHE_USER_GROUP [ok] \033[0m"
 	else
 
-	    echo -e "\033[95mAdding user to $APACHE_USER_GROUP \033[0m"
+	    echo -e "\033[95mAdding user '$USER_NAME' to group '$APACHE_USER_GROUP' \033[0m"
 
 		if [ "$(uname)" == "Darwin" ]; then
-			sudo dseditgroup -o edit -a $USER_NAME -t user _www
+			sudo dseditgroup -o edit -a $USER_NAME -t user $APACHE_USER_GROUP
 		else
-			sudo usermod -a -G www-data $USER_NAME
+			sudo usermod -a -G $APACHE_USER_GROUP $USER_NAME
 		fi
 	fi
-	exit
 
 	# set default perms for folders & files (use 'xargs -I {} -0 sudo chmod xxxx {}' if args is to long)
 	echo -e "\033[95mUpdating user-perms for all folders & files (sudo is required)... \033[0m"
@@ -339,7 +340,7 @@ elif [ $1 = "aws-cli" ]; then
 
 		aws configure
 
-	elif [ "$2" = "-u" ]; then
+	elif [ "$2" = "-s" ]; then
 		echo -e "\033[95mUpdating AWS CLI... \033[0m"
 		sudo pip install --upgrade awscli
 	else
