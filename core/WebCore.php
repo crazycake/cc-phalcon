@@ -330,11 +330,11 @@ abstract class WebCore extends MvcCore implements WebSecurity
         if (APP_ENVIRONMENT === "local") {
 
             //if file not exists use min file
-            if(!is_file($css_url))
+            if(!is_file(PUBLIC_PATH.self::ASSETS_MIN_FOLDER_PATH."app.css"))
                 $css_url = str_replace(".css", ".min.css", $css_url);
 
             //if file not exists use min file
-            if(!is_file($js_url))
+            if(!is_file(PUBLIC_PATH.self::ASSETS_MIN_FOLDER_PATH."app.js"))
                 $js_url  = str_replace(".js", ".min.js", $js_url);
 
             $css_url .= "?v=".$version;
