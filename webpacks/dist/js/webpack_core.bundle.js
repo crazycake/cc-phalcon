@@ -46387,6 +46387,20 @@ exports.default = new function () {
     };
 
     /**
+     * Check if a module has binded
+     * @param  {Object} Module - The input module
+     * @return {Boolean}
+     */
+    self.hasBinded = function () {
+        var module = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+
+        if (_.isNil(module.vm)) return false;
+
+        return module.vm.constructor.name == "Vue";
+    };
+
+    /**
      * Ajax request with form validation.
      * Validates a form, if valid, sends a promise request with Q lib.
      * @link https://github.com/kriskowal/q
