@@ -329,6 +329,14 @@ abstract class WebCore extends MvcCore implements WebSecurity
         //set no-min assets for local dev
         if (APP_ENVIRONMENT === "local") {
 
+            //if file not exists use min file
+            if(!is_file($css_url))
+                $css_url = str_replace(".css", ".min.css", $css_url);
+
+            //if file not exists use min file
+            if(!is_file($js_url))
+                $js_url  = str_replace(".js", ".min.js", $js_url);
+
             $css_url .= "?v=".$version;
             $js_url  .= "?v=".$version;
         }
