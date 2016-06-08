@@ -27,6 +27,35 @@
 /* Mixins
 ---------------------------------------------------------------------------------------- */
 
+//Load Fonts
+@mixin font-face($name, $path, $weight: null, $style: null, $exts: eot woff2 woff ttf svg) {
+
+    $src: null;
+
+ 	$extmods: (
+ 		eot: "?",
+ 		svg: "#" + str-replace($name, " ", "_")
+ 	);
+
+ 	$formats: (
+ 		otf: "opentype",
+ 		ttf: "truetype"
+ 	);
+
+ 	@each $ext in $exts {
+ 		$extmod: if(map-has-key($extmods, $ext), $ext + map-get($extmods, $ext), $ext);
+ 		$format: if(map-has-key($formats, $ext), map-get($formats, $ext), $ext);
+ 		$src: append($src, url(quote($path + "." + $extmod)) format(quote($format)), comma);
+ 	}
+
+ 	@font-face {
+ 		font-family: quote($name);
+ 		font-style: $style;
+ 		font-weight: $weight;
+ 		src: $src;
+ 	}
+}
+
 //background cover image (3rd argument to use custom background to small & medium screen)
 @mixin app-bg-cover($image_path, $attachment: fixed, $responsive: false) {
 	//set image
