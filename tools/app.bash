@@ -33,7 +33,7 @@ if [ "$(uname)" == "Darwin" ]; then
 fi
 
 # folders that apache must own
-APACHE_MODULES_FOLDERS=("app/langs/" "public/uploads/" "public/assets/")
+APACHE_MODULES_FOLDERS=("public/uploads/" "public/assets/")
 
 # load environment file if exists
 if [ -f "$PROJECT_PATH/.env" ]; then
@@ -159,6 +159,7 @@ elif [ $1 = "env" ]; then
 
 	#project storage folder
 	if [ -d $STORAGE_PATH ]; then
+		#NOTE: CLI runs for default as machine user instead of apache user (www-data)
 		sudo chown -R $USER_NAME:$APACHE_USER_GROUP $STORAGE_PATH
 		sudo chmod -R 0775 $STORAGE_PATH
 	fi

@@ -137,7 +137,14 @@ class AppServices
         //Logger adapter
         $di->setShared("logger", function() {
 
-            $logger = new \Phalcon\Logger\Adapter\File(STORAGE_PATH."logs/".date("d-m-Y").".log");
+            //date now
+            $log_file = date("d-m-Y");
+
+            //special case for cli (log is not saved as 'httpd user' as default)
+            if(MODULE_NAME == "cli")
+                $log_file = "cli_".$log_file;
+
+            $logger = new \Phalcon\Logger\Adapter\File(STORAGE_PATH."logs/".$log_file.".log");
             return $logger;
         });
 
