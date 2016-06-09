@@ -1,6 +1,6 @@
 <?php
 /**
- * MAIN LAYOUT: Phalcon loads this view first by default
+ * Root Layout. Phalcon loads this view first by default
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 ?>
