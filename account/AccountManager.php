@@ -84,7 +84,7 @@ trait AccountManager
             $this->jsonResponse(404);
 
         //get settings params
-        $setting_params = isset($this->account_manager_conf["profile_request_params"]) ? $this->account_manager_conf["profile_request_params"] : [];
+        $setting_params = isset($this->account_manager_conf["required_fields"]) ? $this->account_manager_conf["required_fields"] : [];
         //validate and filter request params data, second params are the required fields
         $data = $this->handleRequest(array_merge($default_params, $setting_params));
 

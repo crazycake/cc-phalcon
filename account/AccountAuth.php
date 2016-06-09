@@ -85,7 +85,7 @@ trait AccountAuth
         $this->view->setVar("signup_session", $signup_session);
 
         //send birthday data for form
-        if (isset($this->account_auth_conf["profile_request_params"]["birthday"]))
+        if (isset($this->account_auth_conf["required_fields"]["birthday"]))
             $this->view->setVar("birthday_elements", Forms::getBirthdaySelectors());
 
         //call abstract method
@@ -205,7 +205,7 @@ trait AccountAuth
             "last_name"  => "string"
         ];
 
-        $setting_params = isset($this->account_auth_conf["profile_request_params"]) ? $this->account_auth_conf["profile_request_params"] : [];
+        $setting_params = isset($this->account_auth_conf["required_fields"]) ? $this->account_auth_conf["required_fields"] : [];
 
         //validate and filter request params data, second params are the required fields
         $data = $this->handleRequest(array_merge($default_params, $setting_params));

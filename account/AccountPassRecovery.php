@@ -57,7 +57,9 @@ trait AccountPassRecovery
         $this->view->setVar("js_recaptcha", true); //load reCaptcha
 
         //load javascript modules
-        $this->loadJsModules($this->account_pass_recovery_conf["js_modules"]);
+        $this->loadJsModules([
+            "passRecovery" => null
+        ]);
     }
 
     /**
