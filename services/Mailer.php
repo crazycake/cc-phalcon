@@ -29,7 +29,7 @@ trait Mailer
      * Mailing CSS file
      * @var string
      */
-    protected static $MAILER_CSS_FILE = MODULE_PATH."app/views/mailing/css/app.css";
+    protected static $MAILER_CSS_FILE = MODULE_PATH."dev/volt/mailing/css/app.css";
 
     /**
      * Temporal path

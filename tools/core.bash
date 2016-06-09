@@ -59,14 +59,14 @@ find $CORE_TOOLS_PATH -maxdepth 1 -mindepth 1 -type f -print0 | while read -d $'
 done
 
 # 2) volt files
-if [ -d $BACKEND_PATH"app/views/" ]; then
+if [ -d $BACKEND_PATH"dev/volt/" ]; then
 	echo -e "\033[94mCopying backend volt files ... \033[0m"
-	cp -r $CORE_WEBPACKS_PATH"volt/" $BACKEND_PATH"app/views/"
+	cp -r $CORE_WEBPACKS_PATH"volt/" $BACKEND_PATH"dev/volt/"
 fi
 
-if [ -d $FRONTEND_PATH"app/views/" ]; then
+if [ -d $FRONTEND_PATH"dev/volt/" ]; then
 	echo -e "\033[94mCopying frontend volt files ... \033[0m"
-	cp -r $CORE_WEBPACKS_PATH"volt/" $FRONTEND_PATH"app/views/"
+	cp -r $CORE_WEBPACKS_PATH"volt/" $FRONTEND_PATH"dev/volt/"
 fi
 
 # 3) webpacks folder & files

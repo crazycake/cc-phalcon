@@ -15,45 +15,47 @@
  */
 @function str-replace($string, $search, $replace: '') {
 
-    $index: str-index($string, $search);
-    //@debug $index, $replace;
-    @if $index {
-        @return str-slice($string, 1, $index - 1) + $replace + str-replace(str-slice($string, $index + str-length($search)), $search, $replace);
-    }
+	$index: str-index($string, $search);
+	//@debug $index, $replace;
+	@if $index {
+		@return str-slice($string, 1, $index - 1) + $replace + str-replace(str-slice($string, $index + str-length($search)), $search, $replace);
+	}
 
-    @return $string;
+	@return $string;
 }
 
 /* Mixins
 ---------------------------------------------------------------------------------------- */
 
 //Load Fonts
-@mixin font-face($name, $path, $weight: null, $style: null, $exts: eot woff2 woff ttf svg) {
+@mixin app-font($name, $path, $weight: null, $style: null, $exts: eot woff2 woff ttf svg) {
 
-    $src: null;
+	$src: null;
+	$font_path : "../fonts/" + $path + "/" + $path;
+	//@debug "Including font: " + $font_path;
 
- 	$extmods: (
- 		eot: "?",
- 		svg: "#" + str-replace($name, " ", "_")
- 	);
+	$extmods: (
+		eot: "?",
+		svg: "#" + str-replace($name, " ", "_")
+	);
 
- 	$formats: (
- 		otf: "opentype",
- 		ttf: "truetype"
- 	);
+	$formats: (
+		otf: "opentype",
+		ttf: "truetype"
+	);
 
- 	@each $ext in $exts {
- 		$extmod: if(map-has-key($extmods, $ext), $ext + map-get($extmods, $ext), $ext);
- 		$format: if(map-has-key($formats, $ext), map-get($formats, $ext), $ext);
- 		$src: append($src, url(quote($path + "." + $extmod)) format(quote($format)), comma);
- 	}
+	@each $ext in $exts {
+		$extmod: if(map-has-key($extmods, $ext), $ext + map-get($extmods, $ext), $ext);
+		$format: if(map-has-key($formats, $ext), map-get($formats, $ext), $ext);
+		$src: append($src, url(quote($font_path + "." + $extmod)) format(quote($format)), comma);
+	}
 
- 	@font-face {
- 		font-family: quote($name);
- 		font-style: $style;
- 		font-weight: $weight;
- 		src: $src;
- 	}
+	@font-face {
+		font-family: quote($name);
+		font-style: $style;
+		font-weight: $weight;
+		src: $src;
+	}
 }
 
 //background cover image (3rd argument to use custom background to small & medium screen)
@@ -65,51 +67,51 @@
 	}
 	//small view
 	@if $responsive == true and mixin-exists(breakpoint) {
-        //MediaQueries
+		//MediaQueries
 		@include breakpoint(small only) {
 			$url: str-replace($image_path, ".jpg", "-small.jpg");
-            $url: str-replace($url, ".png", "-small.png");
-            //@debug $url;
-            position: relative;
+			$url: str-replace($url, ".png", "-small.png");
+			//@debug $url;
+			position: relative;
 			background: url($url) no-repeat center center $attachment;
-            -webkit-background-size: cover;
-            -moz-background-size: cover;
-            -o-background-size: cover;
-            background-size: cover;
+			-webkit-background-size: cover;
+			-moz-background-size: cover;
+			-o-background-size: cover;
+			background-size: cover;
 		}
-        //medium
+		//medium
 		@include breakpoint(medium only) {
-            $url: str-replace($image_path, ".jpg", "-medium.jpg");
-            $url: str-replace($url, ".png", "-medium.png");
-            //@debug $url;
-            position: relative;
-            background: url($url) no-repeat 100% 100% $attachment;
-            -webkit-background-size: cover;
-            -moz-background-size: cover;
-            -o-background-size: cover;
-            background-size: cover;
+			$url: str-replace($image_path, ".jpg", "-medium.jpg");
+			$url: str-replace($url, ".png", "-medium.png");
+			//@debug $url;
+			position: relative;
+			background: url($url) no-repeat 100% 100% $attachment;
+			-webkit-background-size: cover;
+			-moz-background-size: cover;
+			-o-background-size: cover;
+			background-size: cover;
 		}
 	}
 }
 
 //background image retina support
 @mixin app-bg-retina($file, $type, $width, $height, $version:'0.1') {
-    background-image: url($file + '.' + $type + "?v=" + $version);
-    //MediaQueries
-    @media only screen and (-webkit-min-device-pixel-ratio: 2),
-    only screen and (-moz-min-device-pixel-ratio: 2),
-    only screen and (-o-min-device-pixel-ratio: 2/1),
-    only screen and (min-device-pixel-ratio: 2),
-    only screen and (min-resolution: 192dpi),
-    only screen and (min-resolution: 2dppx) {
-        & {
-            background-image: url($file + '@2x.' + $type + "?v=" + $version);
-            -webkit-background-size: $width $height;
-            -moz-background-size: $width $height;
-            -o-background-size: $width $height;
-            background-size: $width $height;
-        }
-    }
+	background-image: url($file + '.' + $type + "?v=" + $version);
+	//MediaQueries
+	@media only screen and (-webkit-min-device-pixel-ratio: 2),
+	only screen and (-moz-min-device-pixel-ratio: 2),
+	only screen and (-o-min-device-pixel-ratio: 2/1),
+	only screen and (min-device-pixel-ratio: 2),
+	only screen and (min-resolution: 192dpi),
+	only screen and (min-resolution: 2dppx) {
+		& {
+			background-image: url($file + '@2x.' + $type + "?v=" + $version);
+			-webkit-background-size: $width $height;
+			-moz-background-size: $width $height;
+			-o-background-size: $width $height;
+			background-size: $width $height;
+		}
+	}
 }
 
 //mixin for RGBa background
@@ -117,12 +119,12 @@
 	background-color: rgb($factor, $factor, $factor);
 	background-color: rgba($factor, $factor, $factor, $opacity) !important;
 	//transition
-    transition: all 0.3s ease;
+	transition: all 0.3s ease;
 }
 
 //sends a layer to background
 @mixin app-bg-fixed($height: 100%, $zindex: -1) {
-    position: fixed;
+	position: fixed;
 	min-width: 100%;
 	min-height: $height;
 	top: 0;
@@ -133,7 +135,7 @@
 //for box-spaced contents with a topbar
 @mixin app-stretch($padding-top: 0) {
 	min-height: 100%;
-    padding-top: $padding-top;
+	padding-top: $padding-top;
 }
 
 //bg loading for images
@@ -145,22 +147,22 @@
 }
 
 @mixin app-scrollbar($size, $foreground-color, $background-color: mix($foreground-color, white,  50%)) {
-    //Chrome
-    ::-webkit-scrollbar {
-        width:  $size;
-        height: $size;
-    }
-    ::-webkit-scrollbar-thumb {
-        background: $foreground-color;
-    }
-    ::-webkit-scrollbar-track {
-        background: $background-color;
-    }
-    //IE fallback
-    body {
-        scrollbar-face-color: $foreground-color;
-        scrollbar-track-color: $background-color;
-    }
+	//Chrome
+	::-webkit-scrollbar {
+		width:  $size;
+		height: $size;
+	}
+	::-webkit-scrollbar-thumb {
+		background: $foreground-color;
+	}
+	::-webkit-scrollbar-track {
+		background: $background-color;
+	}
+	//IE fallback
+	body {
+		scrollbar-face-color: $foreground-color;
+		scrollbar-track-color: $background-color;
+	}
 }
 
 /* Placeholders
@@ -174,7 +176,7 @@
 
 //inline block property
 %app-absolute-block {
-    display: block;
+	display: block;
 	position: absolute;
 	width: 100%;
 	height: 100%;
@@ -190,9 +192,9 @@
 //element centered in middle of screen (check safari!)
 %app-position-center {
 	position: absolute;
-  	top: 50%;
-  	left: 50%;
-  	transform: translate(-50%, -50%);
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
 }
 
 //vertical align middle
@@ -229,27 +231,27 @@
 
 //tables
 .app-table {
-    display: table;
+	display: table;
 }
 .app-table-cell {
-    display: table-cell;
-    vertical-align: middle;
+	display: table-cell;
+	vertical-align: middle;
 }
 
 //fixed position
 .app-fixed {
-    position: fixed;
-    width: 100%;
-    z-index: 99;
-    &.top-left {
-        top: 0;
-        left: 0;
-    }
+	position: fixed;
+	width: 100%;
+	z-index: 99;
+	&.top-left {
+		top: 0;
+		left: 0;
+	}
 }
 
 //absolute block
 .app-absolute-block {
-    @extend %app-absolute-block;
+	@extend %app-absolute-block;
 }
 
 //hide an element with absolute property
@@ -262,12 +264,12 @@
 
 //no-script fallback (uses classes fixed and center)
 noscript.app-no-js {
-    display:block;
-    width: 100%;
-    padding: 12px;
-    z-index: 9999;
-    background: #FEF1CC;
-    border-top: 2px solid #EBD085;
-    border-bottom: 2px solid #EBD085;
-    color: #985A35;
+	display:block;
+	width: 100%;
+	padding: 12px;
+	z-index: 9999;
+	background: #FEF1CC;
+	border-top: 2px solid #EBD085;
+	border-bottom: 2px solid #EBD085;
+	color: #985A35;
 }

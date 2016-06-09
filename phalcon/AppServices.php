@@ -272,24 +272,25 @@ class AppServices
             ".phtml" => "Phalcon\Mvc\View\Engine\Php",
         ];
 
+        //set view service
         $di->setShared("view", function() use (&$di_view_engines) {
 
             $view = new \Phalcon\Mvc\View();
             //set directory views
-            $view->setViewsDir(APP_PATH."views/");
+            $view->setViewsDir(MODULE_PATH."dev/volt/");
             //register volt view engine
             $view->registerEngines($di_view_engines);
 
             return $view;
         });
 
-        //Setting up the simpleView component, same as view
+        //simple view service
         $di->setShared("simpleView", function() use (&$di_view_engines) {
 
             //simpleView
             $view = new \Phalcon\Mvc\View\Simple();
             //set directory views
-            $view->setViewsDir(APP_PATH."views/");
+            $view->setViewsDir(MODULE_PATH."dev/volt/");
             //register volt view engine
             $view->registerEngines($di_view_engines);
 
