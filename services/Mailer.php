@@ -21,6 +21,11 @@ use CrazyCake\Phalcon\AppModule;
 trait Mailer
 {
     /**
+     * Before render listener (debug)
+     */
+    abstract public function onRenderPreview();
+
+    /**
      * Mailing CSS file
      * @var string
      */
@@ -276,6 +281,38 @@ trait Mailer
 
             return false;
         }
+    }
+
+    /**
+     * View for debuging - Renders a mail message or a template
+     */
+    public function previewAction($view = null)
+    {
+        if (APP_ENVIRONMENT == 'production' || empty($view))
+            $this->redirectToNotFound();
+
+        $user_class = AppModule::getClass("user");
+
+        $user = $user_class::findFirst();
+
+        //set rendered view vars
+        $this->mailer_conf["data_url"]  = $this->baseUrl('fake/path');
+        $this->mailer_conf["data_user"] = $user;
+
+        //for contact template
+        $this->mailer_conf["data_name"]    = $user->first_name." ".$user->last_name;
+        $this->mailer_conf["data_email"]   = $user->email;
+        $this->mailer_conf["data_message"] = "This is an example message";
+
+        //call listener
+        $this->onRenderPreview();
+
+        //get HTML
+        $html_raw = $this->inlineHtml($view);
+        //render view
+        $this->view->disable();
+
+        echo $html_raw;
     }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
