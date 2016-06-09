@@ -251,7 +251,8 @@ abstract class App extends AppModule implements AppLoader
                     $app_dirs[$dir] = APP_PATH.$dir."/";
             }
         }
-
+        //print_r($app_dirs);exit;
+        
         //inverted sort
         arsort($app_dirs);
         $this->app_conf["directories"] = $app_dirs;
