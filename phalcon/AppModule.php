@@ -119,16 +119,16 @@ abstract class AppModule
         //check for prefix in module settings
         $class_name = \Phalcon\Text::camelize($key);
 
-        //auto prefixes: si la clase no exite, se define un prefijo
-        if (!class_exists($class_name)) {
+        //api special case
+        if (MODULE_NAME == "api" && !class_exists($class_name)) {
 
-            switch (MODULE_NAME) {
-                case "api":
-                    $class_name = "Ws$class_name";
-                    break;
-                default:
-                    break;
-            }
+            //if class not exists append prefix.
+            $class_name = "Ws$class_name";
+        }
+        else if(MODULE_NAME == "backend") {
+
+            //replace standard user with admin user
+            $class_name = str_replace("User", "Admin", $class_name);
         }
 
         return $prefix ? "\\$class_name" : $class_name;

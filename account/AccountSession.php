@@ -202,13 +202,8 @@ trait AccountSession
     {
         //get user session
         $user_session = $this->session->get("user");
-        $user_class   = AppModule::getClass("user");
-        //get user
-        $user = $user_class::getById($user_session["id"]);
 
-        if (!$user)
-            return false;
-
+        //update props
         foreach ($data as $key => $value) {
 
             if (isset($user_session[$key]))
