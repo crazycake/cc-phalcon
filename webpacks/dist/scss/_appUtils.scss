@@ -139,9 +139,9 @@
 }
 
 //bg loading for images
-@mixin app-loading-image($bg_color, $index, $width, $height) {
+@mixin app-loading-image($bg_color, $index, $width, $height, $ext: "gif") {
 	background: $bg_color;
-	@include app-bg-retina('../images/icons/icon-loading#{$index}', 'gif', $width, $height);
+	@include app-bg-retina('../images/icons/icon-loading#{$index}', $ext, $width, $height);
 	background-repeat: no-repeat;
 	background-position: center center;
 }
