@@ -3,17 +3,22 @@
 """
 Dumps MySQL database to be pushed to S3. DB root password is required as arg.
 tinys3 lib is required -> pip install tinys3
+dotenv is required -> pip install python-dotenv
 For cronJobs using crontab: sudo crontab -u ubuntu -e
 CodeStyling PEP 257
 @author: Nicolas Pulido
 """
 
+# python
 import sys
 import os
 import time
-import tinys3
 import subprocess
 import json
+# s3
+import tinys3
+# dot env
+import dotenv
 
 #app properties
 class APP:
@@ -42,6 +47,7 @@ def main():
 	#set current path
 	project_dir = os.path.dirname(os.path.realpath(__file__))
 	project_dir = os.path.abspath(os.path.join(project_dir, os.pardir))
+	dotenv_file = os.path.join(project_dir, '.env')
 
 	print SCS.CYAN + "Project path:" + project_dir + SCS.END
 	print SCS.CYAN + "Asking app configurations to CLI..." + SCS.END
@@ -52,6 +58,12 @@ def main():
 	#print output
 	config  = json.loads(output)
 
+	print SCS.CYAN + "Looking for a present .env file..." + SCS.END
+
+	#load .env file if present
+	if os.path.isfile(dotenv_file):
+		dotenv.load_dotenv(dotenv_file)
+
 	#set properties
 	APP.NAMESPACE = config['app']['namespace']
 	#get from env vars
@@ -60,6 +72,8 @@ def main():
 	APP.DB_NAME = os.environ.get('DB_NAME')
 	APP.DB_USER = os.environ.get('DB_USER')
 	APP.DB_PASS = os.environ.get('DB_PASS')
+
+	print SCS.CYAN + APP.NAMESPACE + " [" + APP.ENV + "] DB: " + APP.DB_HOST
 
 	#environment
 	bucket_env = "prod"
