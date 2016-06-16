@@ -3,11 +3,10 @@
 # -*- coding: utf-8 -*-
 """
 Dumps MySQL database to be pushed to S3. DB root password is required as arg.
-tinys3 lib is required -> pip install tinys3
-dotenv is required -> pip install python-dotenv
-For cronJobs using crontab: sudo crontab -u ubuntu -e
-CodeStyling PEP 257
-@author: Nicolas Pulido
+Required libs: sudo pip install python-dotenv tinys3
+Edit crontab: sudo crontab -e
+CodeStyling: PEP 257
+Author: Nicolas Pulido
 """
 
 # python
