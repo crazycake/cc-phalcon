@@ -96,7 +96,17 @@
 
 //background image retina support
 @mixin app-bg-retina($file, $type, $width, $height, $version:'0.1') {
+
 	background-image: url($file + '.' + $type + "?v=" + $version);
+
+	//set suffix
+	$suffix: "";
+	@if $type != "svg" {
+		$suffix: "@2x";
+	}
+	//set url
+	$url: $file + $suffix + '.' + $type + "?v=" + $version;
+
 	//MediaQueries
 	@media only screen and (-webkit-min-device-pixel-ratio: 2),
 	only screen and (-moz-min-device-pixel-ratio: 2),
@@ -105,7 +115,7 @@
 	only screen and (min-resolution: 192dpi),
 	only screen and (min-resolution: 2dppx) {
 		& {
-			background-image: url($file + '@2x.' + $type + "?v=" + $version);
+			background-image: url($url);
 			-webkit-background-size: $width $height;
 			-moz-background-size: $width $height;
 			-o-background-size: $width $height;
@@ -218,6 +228,7 @@
 [v-cloak] { visibility: hidden; }
 
 //class helpers
+.app-absolute          { position: absolute; }
 .app-relative          { position: relative; }
 .app-hide              { display: none; }
 .app-height            { height: 100%; }
