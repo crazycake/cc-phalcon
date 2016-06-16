@@ -62,7 +62,10 @@ def main():
 	APP.DB_PASS = os.environ.get('DB_PASS')
 
 	#environment
-	bucket_env = (APP.ENV == "production") ? "prod" : "dev"
+	bucket_env = "prod"
+
+	if APP.ENV == "production"
+		bucket_env = "dev"
 
 	#s3
 	APP.S3_BUCKET	  = config['app']['aws']['s3Bucket'] + "-" + bucket_env
