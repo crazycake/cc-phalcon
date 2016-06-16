@@ -4,6 +4,7 @@
 Dumps MySQL database to be pushed to S3. DB root password is required as arg.
 tinys3 lib is required -> pip install tinys3
 For cronJobs using crontab: sudo crontab -u ubuntu -e
+CodeStyling PEP 257
 @author: Nicolas Pulido
 """
 
@@ -42,6 +43,7 @@ def main():
 	project_dir = os.path.dirname(os.path.realpath(__file__))
 	project_dir = os.path.abspath(os.path.join(project_dir, os.pardir))
 
+	print SCS.CYAN + "Project path:" + project_dir + SCS.END
 	print SCS.CYAN + "Asking app configurations to CLI..." + SCS.END
 
 	#get app config from command line (webapp CLI)
@@ -53,13 +55,17 @@ def main():
 	#set properties
 	APP.NAMESPACE = config['app']['namespace']
 	#get from env vars
+	APP.ENV     = os.environ.get('APP_ENV')
 	APP.DB_HOST = os.environ.get('DB_HOST')
 	APP.DB_NAME = os.environ.get('DB_NAME')
 	APP.DB_USER = os.environ.get('DB_USER')
 	APP.DB_PASS = os.environ.get('DB_PASS')
 
+	#environment
+	bucket_env = (APP.ENV == "production") ? "prod" : "dev"
+
 	#s3
-	APP.S3_BUCKET	  = config['app']['aws']['s3Bucket'] + "-prod"
+	APP.S3_BUCKET	  = config['app']['aws']['s3Bucket'] + "-" + bucket_env
 	APP.S3_ACCESS_KEY = config['app']['aws']['accessKey']
 	APP.S3_SECRET_KEY = config['app']['aws']['secretKey']
 
@@ -68,7 +74,7 @@ def main():
 	project_dir = os.path.abspath(os.path.join(project_dir, os.pardir))
 
 	file_stamp  = time.strftime('%d-%m-%Y')
-	output 		= project_dir + "/db/_dump_" + file_stamp + ".sql"
+	output 		= project_dir + "/db/dump_" + file_stamp + ".sql"
 
 	print SCS.CYAN + "Dumping DB..." + SCS.END
 	#exec commands
@@ -82,6 +88,7 @@ def main():
 		print SCS.RED + "Invalid compressed dump file." + SCS.END
 		return
 
+	# uplaod task
 	print SCS.CYAN + "Uploading to S3..." + SCS.END
 	#push to AWS s3
 	save_name = APP.NAMESPACE + "/" + file_stamp + ".sql.gz"
