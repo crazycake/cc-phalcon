@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 # -*- coding: utf-8 -*-
 """
 Dumps MySQL database to be pushed to S3. DB root password is required as arg.
@@ -40,7 +41,7 @@ class SCS:
 
 # -------------------------------------------------------------------------------------------
 def main():
-	"""Main Function"""
+	"""Main Function."""
 
 	#args_num = len(sys.argv)
 
@@ -95,7 +96,7 @@ def main():
 
 	print SCS.CYAN + "Dumping DB..." + SCS.END
 	#exec commands
-	os.system("mysqldump -h " + APP.DB_HOST + " -u root -p" + APP.DB_PASS + " " + APP.DB_NAME + " > " + output)
+	os.system("mysqldump -h " + APP.DB_HOST + " -u " + APP.DB_USER + " -p" + APP.DB_PASS + " " + APP.DB_NAME + " > " + output)
 	os.system("gzip -f " + output)
 	#update output
 	output += ".gz"
@@ -119,7 +120,7 @@ def main():
 
 # -------------------------------------------------------------------------------------------
 def s3_upload_file(file, save_name):
-	"""Setup Tiny S3 lib and upload file"""
+	"""Setup Tiny S3 lib and upload file."""
 	# Specifying a default bucket
 	conn = tinys3.Connection(APP.S3_ACCESS_KEY, APP.S3_SECRET_KEY, APP.S3_BUCKET)
 
