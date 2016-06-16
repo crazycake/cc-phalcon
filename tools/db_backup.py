@@ -77,10 +77,10 @@ def main():
 	print SCS.CYAN + APP.NAMESPACE + " [" + APP.ENV + "] DB: " + APP.DB_HOST
 
 	#environment
-	bucket_env = "prod"
+	bucket_env = "dev"
 
 	if APP.ENV == "production":
-		bucket_env = "dev"
+		bucket_env = "prod"
 
 	#s3
 	APP.S3_BUCKET	  = config['app']['aws']['s3Bucket'] + "-" + bucket_env
@@ -109,7 +109,7 @@ def main():
 	# uplaod task
 	print SCS.CYAN + "Uploading to S3..." + SCS.END
 	#push to AWS s3
-	save_name = APP.NAMESPACE + "/" + file_stamp + ".sql.gz"
+	save_name = APP.NAMESPACE + "-db/" + file_stamp + ".sql.gz"
 	s3_upload_file(output, save_name)
 
 	print SCS.CYAN + "Removing file..." + SCS.END
