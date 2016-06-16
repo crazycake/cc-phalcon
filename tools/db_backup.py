@@ -64,7 +64,7 @@ def main():
 	#environment
 	bucket_env = "prod"
 
-	if APP.ENV == "production"
+	if APP.ENV == "production":
 		bucket_env = "dev"
 
 	#s3
