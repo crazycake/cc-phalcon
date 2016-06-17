@@ -33,6 +33,7 @@ import facebook from "./modules/facebook.js";
 
 /* Load modules */
 
+//export core property
 module.exports.core = core;
 
 //set modules
