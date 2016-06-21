@@ -14,7 +14,6 @@ import "js-cookie";
 import "jquery";
 import "velocity";
 import "velocity.ui";
-import "jquery.scrollTo";
 
 //plugins
 import "./plugins/jquery.extended";

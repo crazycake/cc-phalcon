@@ -20,6 +20,7 @@
 
 # Node & Webpacks
 node_modules
+*.min.js
 .eslintrc
 
 # YuiDoc Themes

@@ -116,9 +116,9 @@ elif [ $1 = "watch" ]; then
 
 	#executes gulp task
 	if [ "$2" != "" ]; then
-		gulp build -w "$2"
+		gulp watch -w "$2"
 	else
-		gulp build
+		gulp watch
 	fi
 
 elif [ $1 = "docs" ]; then

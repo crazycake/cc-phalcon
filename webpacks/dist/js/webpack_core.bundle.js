@@ -3658,7 +3658,7 @@ module.exports = ret;
 }).call(global, undefined, undefined, undefined, undefined, function defineExport(ex) { module.exports = ex; });
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":8}],2:[function(require,module,exports){
+},{"_process":7}],2:[function(require,module,exports){
 ;(function () {
 	'use strict';
 
@@ -4830,218 +4830,6 @@ module.exports = ret;
 }(typeof window !== "undefined" ? window : this, document));
 
 },{}],4:[function(require,module,exports){
-/*!
- * jQuery.scrollTo
- * Copyright (c) 2007-2015 Ariel Flesler - aflesler<a>gmail<d>com | http://flesler.blogspot.com
- * Licensed under MIT
- * http://flesler.blogspot.com/2007/10/jqueryscrollto.html
- * @projectDescription Lightweight, cross-browser and highly customizable animated scrolling with jQuery
- * @author Ariel Flesler
- * @version 2.1.2
- */
-;(function(factory) {
-	'use strict';
-	if (typeof define === 'function' && define.amd) {
-		// AMD
-		define(['jquery'], factory);
-	} else if (typeof module !== 'undefined' && module.exports) {
-		// CommonJS
-		module.exports = factory(require('jquery'));
-	} else {
-		// Global
-		factory(jQuery);
-	}
-})(function($) {
-	'use strict';
-
-	var $scrollTo = $.scrollTo = function(target, duration, settings) {
-		return $(window).scrollTo(target, duration, settings);
-	};
-
-	$scrollTo.defaults = {
-		axis:'xy',
-		duration: 0,
-		limit:true
-	};
-
-	function isWin(elem) {
-		return !elem.nodeName ||
-			$.inArray(elem.nodeName.toLowerCase(), ['iframe','#document','html','body']) !== -1;
-	}		
-
-	$.fn.scrollTo = function(target, duration, settings) {
-		if (typeof duration === 'object') {
-			settings = duration;
-			duration = 0;
-		}
-		if (typeof settings === 'function') {
-			settings = { onAfter:settings };
-		}
-		if (target === 'max') {
-			target = 9e9;
-		}
-
-		settings = $.extend({}, $scrollTo.defaults, settings);
-		// Speed is still recognized for backwards compatibility
-		duration = duration || settings.duration;
-		// Make sure the settings are given right
-		var queue = settings.queue && settings.axis.length > 1;
-		if (queue) {
-			// Let's keep the overall duration
-			duration /= 2;
-		}
-		settings.offset = both(settings.offset);
-		settings.over = both(settings.over);
-
-		return this.each(function() {
-			// Null target yields nothing, just like jQuery does
-			if (target === null) return;
-
-			var win = isWin(this),
-				elem = win ? this.contentWindow || window : this,
-				$elem = $(elem),
-				targ = target, 
-				attr = {},
-				toff;
-
-			switch (typeof targ) {
-				// A number will pass the regex
-				case 'number':
-				case 'string':
-					if (/^([+-]=?)?\d+(\.\d+)?(px|%)?$/.test(targ)) {
-						targ = both(targ);
-						// We are done
-						break;
-					}
-					// Relative/Absolute selector
-					targ = win ? $(targ) : $(targ, elem);
-					/* falls through */
-				case 'object':
-					if (targ.length === 0) return;
-					// DOMElement / jQuery
-					if (targ.is || targ.style) {
-						// Get the real position of the target
-						toff = (targ = $(targ)).offset();
-					}
-			}
-
-			var offset = $.isFunction(settings.offset) && settings.offset(elem, targ) || settings.offset;
-
-			$.each(settings.axis.split(''), function(i, axis) {
-				var Pos	= axis === 'x' ? 'Left' : 'Top',
-					pos = Pos.toLowerCase(),
-					key = 'scroll' + Pos,
-					prev = $elem[key](),
-					max = $scrollTo.max(elem, axis);
-
-				if (toff) {// jQuery / DOMElement
-					attr[key] = toff[pos] + (win ? 0 : prev - $elem.offset()[pos]);
-
-					// If it's a dom element, reduce the margin
-					if (settings.margin) {
-						attr[key] -= parseInt(targ.css('margin'+Pos), 10) || 0;
-						attr[key] -= parseInt(targ.css('border'+Pos+'Width'), 10) || 0;
-					}
-
-					attr[key] += offset[pos] || 0;
-
-					if (settings.over[pos]) {
-						// Scroll to a fraction of its width/height
-						attr[key] += targ[axis === 'x'?'width':'height']() * settings.over[pos];
-					}
-				} else {
-					var val = targ[pos];
-					// Handle percentage values
-					attr[key] = val.slice && val.slice(-1) === '%' ?
-						parseFloat(val) / 100 * max
-						: val;
-				}
-
-				// Number or 'number'
-				if (settings.limit && /^\d+$/.test(attr[key])) {
-					// Check the limits
-					attr[key] = attr[key] <= 0 ? 0 : Math.min(attr[key], max);
-				}
-
-				// Don't waste time animating, if there's no need.
-				if (!i && settings.axis.length > 1) {
-					if (prev === attr[key]) {
-						// No animation needed
-						attr = {};
-					} else if (queue) {
-						// Intermediate animation
-						animate(settings.onAfterFirst);
-						// Don't animate this axis again in the next iteration.
-						attr = {};
-					}
-				}
-			});
-
-			animate(settings.onAfter);
-
-			function animate(callback) {
-				var opts = $.extend({}, settings, {
-					// The queue setting conflicts with animate()
-					// Force it to always be true
-					queue: true,
-					duration: duration,
-					complete: callback && function() {
-						callback.call(elem, targ, settings);
-					}
-				});
-				$elem.animate(attr, opts);
-			}
-		});
-	};
-
-	// Max scrolling position, works on quirks mode
-	// It only fails (not too badly) on IE, quirks mode.
-	$scrollTo.max = function(elem, axis) {
-		var Dim = axis === 'x' ? 'Width' : 'Height',
-			scroll = 'scroll'+Dim;
-
-		if (!isWin(elem))
-			return elem[scroll] - $(elem)[Dim.toLowerCase()]();
-
-		var size = 'client' + Dim,
-			doc = elem.ownerDocument || elem.document,
-			html = doc.documentElement,
-			body = doc.body;
-
-		return Math.max(html[scroll], body[scroll]) - Math.min(html[size], body[size]);
-	};
-
-	function both(val) {
-		return $.isFunction(val) || $.isPlainObject(val) ? val : { top:val, left:val };
-	}
-
-	// Add special hooks so that window scroll properties can be animated
-	$.Tween.propHooks.scrollLeft = 
-	$.Tween.propHooks.scrollTop = {
-		get: function(t) {
-			return $(t.elem)[t.prop]();
-		},
-		set: function(t) {
-			var curr = this.get(t);
-			// If interrupt is true and user scrolled, stop animating
-			if (t.options.interrupt && t._last && t._last !== curr) {
-				return $(t.elem).stop();
-			}
-			var next = Math.round(t.now);
-			// Don't waste CPU
-			// Browsers don't render floating point scroll
-			if (curr !== next) {
-				$(t.elem)[t.prop](next);
-				t._last = this.get(t);
-			}
-		}
-	};
-
-	// AMD requirement
-	return $scrollTo;
-});
-
-},{"jquery":5}],5:[function(require,module,exports){
 (function (global){
 ; var __browserify_shim_require__=require;(function browserifyShim(module, exports, require, define, browserify_shim__define__module__export__) {
 /*!
@@ -14892,7 +14680,7 @@ return jQuery;
 }).call(global, undefined, undefined, undefined, undefined, function defineExport(ex) { module.exports = ex; });
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],6:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 (function (global){
 ; var __browserify_shim_require__=require;(function browserifyShim(module, exports, require, define, browserify_shim__define__module__export__) {
 /*!
@@ -15046,7 +14834,7 @@ return jQuery;
 }).call(global, undefined, undefined, undefined, undefined, function defineExport(ex) { module.exports = ex; });
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],7:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 (function (global){
 ; var __browserify_shim_require__=require;(function browserifyShim(module, exports, require, define, browserify_shim__define__module__export__) {
 /**
@@ -31297,7 +31085,7 @@ return jQuery;
 }).call(global, undefined, undefined, undefined, undefined, function defineExport(ex) { module.exports = ex; });
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],8:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -31390,7 +31178,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],9:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 /*! VelocityJS.org (1.2.3). (C) 2014 Julian Shapiro. MIT @license: en.wikipedia.org/wiki/MIT_License */
 
 /*************************
@@ -35277,7 +35065,7 @@ return function (global, window, document, undefined) {
 /* The CSS spec mandates that the translateX/Y/Z transforms are %-relative to the element itself -- not its parent.
 Velocity, however, doesn't make this distinction. Thus, converting to or from the % unit with these subproperties
 will produce an inaccurate conversion value. The same issue exists with the cx/cy attributes of SVG circles and ellipses. */
-},{}],10:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 /**********************
    Velocity UI Pack
 **********************/
@@ -36040,7 +35828,7 @@ return function (global, window, document, undefined) {
     };
 }((window.jQuery || window.Zepto || window), window, document);
 }));
-},{}],11:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 (function (global){
 ; var __browserify_shim_require__=require;(function browserifyShim(module, exports, require, define, browserify_shim__define__module__export__) {
 /*!
@@ -46077,7 +45865,7 @@ var template = Object.freeze({
 }).call(global, undefined, undefined, undefined, undefined, function defineExport(ex) { module.exports = ex; });
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],12:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -46174,7 +45962,7 @@ exports.default = new function () {
     };
 }();
 
-},{}],13:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -46677,7 +46465,7 @@ exports.default = new function () {
       * @class Core
       */
 
-},{"./core.ui.js":14}],14:[function(require,module,exports){
+},{"./core.ui.js":13}],13:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -47158,7 +46946,7 @@ exports.default = new function () {
     };
 }();
 
-},{}],15:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -47512,7 +47300,7 @@ exports.default = new function () {
 	};
 }();
 
-},{}],16:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -47855,7 +47643,7 @@ exports.default = new function () {
     };
 }();
 
-},{}],17:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -47908,7 +47696,7 @@ exports.default = new function () {
     };
 }();
 
-},{}],18:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 /**
  * ccdialog jQuery plugin v 1.0
  * Requires jQuery 1.7.x or superior, and cclayer plugin
@@ -48088,7 +47876,7 @@ exports.default = new function () {
 
 })(jQuery);
 
-},{}],19:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 /**
  * cclayer jQuery plugin v 1.1
  * Requires jQuery 1.7.x or superior
@@ -48114,7 +47902,7 @@ exports.default = new function () {
  */
 
 (function($) {
-	
+
 	/** ------------------------------------------------------------------------------------------------
 		cclayer public methods
 	------------------------------------------------------------------------------------------------ **/
@@ -48294,12 +48082,12 @@ exports.default = new function () {
 				});
 			}
 			else {
-				div_overlay.unbind("click");
+				div_overlay.off("click");
 			}
 
 			//add "destroyed" event handler for "onClose" param
 			if (typeof options.onClose === 'function')
-				div_overlay.bind('destroyed', options.onClose);
+				div_overlay.on('destroyed', options.onClose);
 
 			//append to body
 			div_overlay.appendTo("body");
@@ -48370,7 +48158,7 @@ exports.default = new function () {
 
 })(jQuery);
 
-},{}],20:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 /**
  * jQuery extended
  * Useful jQuery extensions
@@ -48432,7 +48220,7 @@ jQuery.fn.padding = function(direction) {
 	return parseInt(this.css('padding-' + direction));
 };
 
-},{}],21:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 /*!
  * FormValidation (http://formvalidation.io)
  * The best jQuery plugin to validate form fields. Support Bootstrap, Foundation, Pure, SemanticUI, UIKit and custom frameworks
@@ -48715,7 +48503,7 @@ jQuery.fn.padding = function(direction) {
     $.fn.bootstrapValidator.Constructor = FormValidation.Framework.Bootstrap;
 }(jQuery));
 
-},{}],22:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 /*!
  * FormValidation (http://formvalidation.io)
  * The best jQuery plugin to validate form fields. Support Bootstrap, Foundation, Pure, SemanticUI, UIKit and custom frameworks
@@ -48880,7 +48668,7 @@ jQuery.fn.padding = function(direction) {
     });
 }(jQuery));
 
-},{}],23:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 /*!
  * FormValidation (http://formvalidation.io)
  * The best jQuery plugin to validate form fields. Support Bootstrap, Foundation, Pure, SemanticUI, UIKit and custom frameworks
@@ -53571,8 +53359,6 @@ require("velocity");
 
 require("velocity.ui");
 
-require("jquery.scrollTo");
-
 require("./plugins/jquery.extended");
 
 require("./plugins/jquery.cclayer");
@@ -53609,6 +53395,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 /* Load modules */
 
+//export core property
+/**
+ * Core WebPack
+ * ES6 required (babel)
+ * @module WebpackCore
+ */
+
+//load main libraries
 module.exports.core = _core2.default;
 
 //set modules
@@ -53618,13 +53412,6 @@ module.exports.core = _core2.default;
 
 
 //plugins
-/**
- * Core WebPack
- * ES6 required (babel)
- * @module WebpackCore
- */
-
-//load main libraries
 _core2.default.setModules([_auth2.default, _forms2.default, _passRecovery2.default, _facebook2.default]);
 
-},{"./modules/auth.js":12,"./modules/core.js":13,"./modules/facebook.js":15,"./modules/forms.js":16,"./modules/passRecovery.js":17,"./plugins/jquery.ccdialog":18,"./plugins/jquery.cclayer":19,"./plugins/jquery.extended":20,"./plugins/jquery.formValidation":23,"./plugins/jquery.formValidation.bootstrap":21,"./plugins/jquery.formValidation.foundation":22,"bluebird":1,"fastclick":2,"html5shiv":3,"jquery":5,"jquery.scrollTo":4,"js-cookie":6,"lodash":7,"velocity":9,"velocity.ui":10,"vue":11}]},{},["webpack_core"]);
+},{"./modules/auth.js":11,"./modules/core.js":12,"./modules/facebook.js":14,"./modules/forms.js":15,"./modules/passRecovery.js":16,"./plugins/jquery.ccdialog":17,"./plugins/jquery.cclayer":18,"./plugins/jquery.extended":19,"./plugins/jquery.formValidation":22,"./plugins/jquery.formValidation.bootstrap":20,"./plugins/jquery.formValidation.foundation":21,"bluebird":1,"fastclick":2,"html5shiv":3,"jquery":4,"js-cookie":5,"lodash":6,"velocity":8,"velocity.ui":9,"vue":10}]},{},["webpack_core"]);
