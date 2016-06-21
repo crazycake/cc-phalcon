@@ -50,7 +50,7 @@ function bundleApp() {
     //browserify js bundler
     return webpack.bundle()
         .on("error", gutil.log.bind(gutil, "Browserify Bundle Error"))
-        .pipe(source(webpack_src.replace(".js", ".bundle.js")))
+        .pipe(source(webpack_name + ".bundle.js"))
         //prepend contents
         .pipe(gulp.dest(webpack_dist));
 }
