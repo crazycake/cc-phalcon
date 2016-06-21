@@ -11,8 +11,8 @@ import watchify   from "watchify";
 import yargs      from "yargs";
 import process    from "child_process";
 //gulp
-import gulp       from "gulp";
-import gutil      from "gulp-util";
+import gulp  from "gulp";
+import gutil from "gulp-util";
 
 //++ Browserify
 
@@ -35,10 +35,15 @@ const browserify_conf = {
 
 //set browserify object
 var webpack = watchify(browserify(assign({}, watchify.args, browserify_conf)))
+                //es6 transpiler
                 .transform(babelify, {
                     presets : ["es2015"],
                     ignore  : "./src/plugins/"
-                });
+                })
+                //minify
+                .transform({
+                    global : true
+                }, "uglifyify");
 
 //require bundle with expose name
 webpack.require([webpack_src], { expose : webpack_name });
@@ -50,7 +55,7 @@ function bundleApp() {
     //browserify js bundler
     return webpack.bundle()
         .on("error", gutil.log.bind(gutil, "Browserify Bundle Error"))
-        .pipe(source(webpack_name + ".bundle.js"))
+        .pipe(source(webpack_name + ".bundle.min.js"))
         //prepend contents
         .pipe(gulp.dest(webpack_dist));
 }
@@ -68,5 +73,5 @@ function minifyJs() {
 
 gulp.task("js", bundleApp);
 gulp.task("minify-js", minifyJs);
-gulp.task("watch", ["js", "minify-js"]); //NOTE: build excluded temporary
+gulp.task("watch", ["js"]);
 gulp.task("default", ["watch"]);

@@ -2,7 +2,7 @@
  * Core: main app module.
  * Dependencies: `jQuery.js`, `VueJs`, `q.js`, `lodash.js`.
  * Required scope vars: `{APP, UA}`.
- * Frontend Framework supported: `Foundation v.6.x`, `Bootstrap v3.x`
+ * Frontend Framework supported: `Foundation 6`, `Bootstrap 3`
  * @class Core
  */
 
