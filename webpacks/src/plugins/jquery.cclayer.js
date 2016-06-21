@@ -23,7 +23,7 @@
  */
 
 (function($) {
-	
+
 	/** ------------------------------------------------------------------------------------------------
 		cclayer public methods
 	------------------------------------------------------------------------------------------------ **/
@@ -203,12 +203,12 @@
 				});
 			}
 			else {
-				div_overlay.unbind("click");
+				div_overlay.off("click");
 			}
 
 			//add "destroyed" event handler for "onClose" param
 			if (typeof options.onClose === 'function')
-				div_overlay.bind('destroyed', options.onClose);
+				div_overlay.on('destroyed', options.onClose);
 
 			//append to body
 			div_overlay.appendTo("body");
