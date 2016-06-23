@@ -30,7 +30,8 @@ const webpack_dist = "./dist/js/";
 const browserify_conf = {
     entries      : [webpack_src],
     cache        : {},
-    packageCache : {}
+    packageCache : {},
+    debug        : true //set to false for release
 };
 
 //set browserify object
@@ -60,18 +61,8 @@ function bundleApp() {
         .pipe(gulp.dest(webpack_dist));
 }
 
-/**
- * Minifies JS with uglifyjs (faster than gulp-uglify)
- */
-function minifyJs() {
-
-    process.exec("uglifyjs " + webpack_dist + webpack_name + ".bundle.js" + " -o "
-                             + webpack_dist + webpack_name + ".bundle.min.js");
-}
-
 //++ Tasks
 
 gulp.task("js", bundleApp);
-gulp.task("minify-js", minifyJs);
 gulp.task("watch", ["js"]);
 gulp.task("default", ["watch"]);
