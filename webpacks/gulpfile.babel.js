@@ -30,7 +30,7 @@ const browserify_conf = {
     entries      : [webpack_src],
     cache        : {},
     packageCache : {},
-    debug        : true //set to false for release, true enables source-maps
+    debug        : false //set to false for release, true enables source-maps
 };
 
 //set browserify object
