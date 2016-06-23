@@ -9,7 +9,6 @@ import assign     from "lodash.assign";
 import source     from "vinyl-source-stream";
 import watchify   from "watchify";
 import yargs      from "yargs";
-import process    from "child_process";
 //gulp
 import gulp  from "gulp";
 import gutil from "gulp-util";
@@ -31,7 +30,7 @@ const browserify_conf = {
     entries      : [webpack_src],
     cache        : {},
     packageCache : {},
-    debug        : true //set to false for release
+    debug        : true //set to false for release, true enables source-maps
 };
 
 //set browserify object
