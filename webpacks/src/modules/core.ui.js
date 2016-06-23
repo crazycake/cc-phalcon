@@ -459,7 +459,7 @@ export default new function() {
      */
     self.fallbackImages = function() {
 
-        $("img").error(function() {
+        $("img").on("error", function() {
 
             if (APP.dev) { console.log("Core UI -> failed loading image:", $(this).attr("src")); }
 
