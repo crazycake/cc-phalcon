@@ -87,7 +87,7 @@
     </head>
     {# Flush the buffer (optimization) #}
     <?php  flush(); ?>
-    <body{{ html_body_class is defined ? 'class="'~html_body_class~'"' : '' }}>
+    <body {{ html_body_class is defined ? 'class="'~html_body_class~'"' : '' }}>
 
         {# body wrapper #}
         <div id="wrapper">
