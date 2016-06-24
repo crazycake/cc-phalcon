@@ -252,7 +252,7 @@ abstract class App extends AppModule implements AppLoader
             }
         }
         //print_r($app_dirs);exit;
-        
+
         //inverted sort
         arsort($app_dirs);
         $this->app_conf["directories"] = $app_dirs;
@@ -275,7 +275,7 @@ abstract class App extends AppModule implements AppLoader
 
         //3.- Composer libs auto loader
         if (!is_file(COMPOSER_PATH."vendor/autoload.php"))
-            throw new Exception("App::_autoloadClasses -> Composer libraries are missing, please run environment script file.");
+            throw new Exception("App::_autoloadClasses -> Composer libraries are not installed yet, run app.bash composer.");
 
         //autoload composer file
         require COMPOSER_PATH."vendor/autoload.php";

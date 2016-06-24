@@ -64,7 +64,7 @@ checkEnvVars() {
 	PRODUCTION_SSH_CMD="$SSH_DIR/$PRODUCTION_KEY $PRODUCTION_HOST"
 }
 
-# check onwer machine (basic AWS security)
+# AWS machine username
 if [ $USER_NAME = "ubuntu" ]; then
 
 	#check if directory exists
