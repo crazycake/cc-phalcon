@@ -45,12 +45,10 @@ if [ "$(uname)" == "Darwin" ]; then
 	APACHE_USER_GROUP="$(whoami):_www"
 fi
 
-# check args
-if [ "$*" = "" ]; then
-	scriptHelp
-fi
+#commands
+case "$1" in
 
-if [ $1 = "env" ]; then
+env)
 	# print project dir
 	echo -e "\033[95mProject path: "$PROJECT_PATH" \033[0m"
 
@@ -62,22 +60,25 @@ if [ $1 = "env" ]; then
 
 	#task done!
 	echo -e "\033[92mDone! \033[0m"
+    ;;
 
-elif [ $1 = "build" ]; then
+build)
 
 	cd $PROJECT_PATH
 	php box.phar build -v
 	# task done!
 	echo -e "\033[92mDone! \033[0m"
+	;;
 
-elif [ $1 = "tree" ]; then
+tree)
 
 	cd $PROJECT_PATH
 	php box.phar info -l $APP_NAMESPACE".phar"
 	# task done!
 	echo -e "\033[92mDone! \033[0m"
+	;;
 
-elif [ $1 = "npm-global" ]; then
+npm-global)
 
 	cd $WEBPACKS_PATH
 
@@ -87,8 +88,9 @@ elif [ $1 = "npm-global" ]; then
 	sudo npm install -g $NPM_GLOBAL_DEPENDENCIES
 
 	cd $PROJECT_PATH
+	;;
 
-elif [ $1 = "npm" ]; then
+npm)
 
 	cd $WEBPACKS_PATH
 
@@ -109,8 +111,9 @@ elif [ $1 = "npm" ]; then
 	fi
 
 	cd $PROJECT_PATH
+    ;;
 
-elif [ $1 = "watch" ]; then
+watch)
 
 	cd $WEBPACKS_PATH
 
@@ -120,8 +123,9 @@ elif [ $1 = "watch" ]; then
 	else
 		gulp watch
 	fi
+    ;;
 
-elif [ $1 = "docs" ]; then
+docs)
 
 	#PHP
 	echo -e "\033[35mGenerating PHP Docs...\033[0m"
@@ -131,8 +135,9 @@ elif [ $1 = "docs" ]; then
 	cd $WEBPACKS_PATH
 	echo -e "\033[35mGenerating JS Docs...\033[0m"
 	yuidoc "src/modules/"
+    ;;
 
-elif [ $1 = "release" ]; then
+release)
 
 	if [ "$2" = "" ] || [ "$3" = "" ] ; then
 		echo -e "\033[95mRelease and message params are required.\033[0m"
@@ -143,8 +148,9 @@ elif [ $1 = "release" ]; then
 
 	git tag -a "$2" -m "$3"
 	git push origin master --tags
+    ;;
 
-elif [ $1 = "delete-tags" ]; then
+delete-tags)
 
 	#loop through tags
 	for t in `git tag`
@@ -152,7 +158,10 @@ elif [ $1 = "delete-tags" ]; then
 	    git push origin :$t
 	    git tag -d $t
 	done
+    ;;
 
-else
-	echo -e "\033[31mInvalid command\033[0m"
-fi
+#default
+*)
+	scriptHelp
+    ;;
+esac
