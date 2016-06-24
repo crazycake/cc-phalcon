@@ -16,12 +16,10 @@ scriptHelp() {
     exit
 }
 
-# check args
-if [ "$*" = "" ]; then
+# commands
+case "$1" in
 
-    scriptHelp
-
-elif [ $1 = "compress" ]; then
+compress)
 
     if [ ! -d "$2" ]; then
         echo -e "\033[31mInput directory not found.\033[0m"
@@ -36,7 +34,10 @@ elif [ $1 = "compress" ]; then
 
     #task done!
     echo -e "\033[92mDone! \033[0m"
+    ;;
 
-else
-    echo -e "\033[31mInvalid command\033[0m"
-fi
+#default
+*)
+	scriptHelp
+    ;;
+esac

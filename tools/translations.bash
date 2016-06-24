@@ -1,5 +1,5 @@
 #! /bin/bash
-# Phalcon getText script helper for finding translations & compiling po files
+# Webapp getText script helper for finding translations & compiling po files
 # author: Nicolas Pulido <nicolas.pulido@crazycake.cl>
 
 # interrupt if error raises
@@ -57,8 +57,11 @@ if [ ! -d $MODULE_PATH ] || [ ! -d $APP_LANGS_PATH ]; then
 	exit
 fi
 
+# commands
+case "$1" in
+
 # compile and generate mo files
-if [ "$1" = "build" ]; then
+build)
 
 	echo -e "\033[94mSearching for .po files in $APP_LANGS_PATH \033[0m"
 
@@ -73,9 +76,10 @@ if [ "$1" = "build" ]; then
 
 	# task done!
 	echo -e "\033[92mDone! \033[0m"
+	;;
 
 # search and generate pot files
-elif [ "$1" = "find" ]; then
+find)
 
 	echo -e "\033[94mSearching for PHP files in $APP_PATH  \033[0m"
 
@@ -112,8 +116,10 @@ elif [ "$1" = "find" ]; then
 
 	# task done!
 	echo -e "\033[92mDone! \033[0m"
+	;;
 
-else
-	echo -e "\033[31mArgument option is missing\033[0m"
+#default
+*)
 	scriptHelp
-fi
+	;;
+esac

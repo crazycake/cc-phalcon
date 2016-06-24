@@ -6,10 +6,13 @@
 set -e
 
 # check platform
-if [ "$(uname)" == "Darwin" ]; then
+case "$(uname)" in
+
+Darwin)
     echo -e "\033[95mInstall wkhtmltopdf via binary file. URL: http://wkhtmltopdf.org/downloads.html \033[0m"
-    exit
-else
+    ;;
+
+Linux)
     # install steps
     echo -e "\033[95mInstalling wkhtmltopdf dependencies... \033[0m"
     # essential dependencies
@@ -26,4 +29,10 @@ else
     echo -e "\033[93mLibrary installed! Test with:\033[0m"
     echo -e "\033[95m /usr/local/bin/wkhtmltopdf.sh --lowquality http://www.google.com test.pdf \033[0m"
     echo -e "\033[92mDone! \033[0m"
-fi
+    ;;
+
+#default
+*)
+	echo -e "\033[95mInstall wkhtmltopdf manually. \033[0m"
+    ;;
+esac

@@ -31,12 +31,10 @@ scriptHelp() {
 	exit
 }
 
-# check args
-if [ "$*" = "" ]; then
+# commands
+case "$1" in
 
-	scriptHelp
-
-elif [ $1 = "env" ]; then
+env)
 	# print project dir
 	echo -e "\033[96mProject Dir: "$PROJECT_PATH" \033[0m"
 	# set default perms for folders & files (use 'xargs -I {} -0 sudo chmod xxxx {}' if args is to long)
@@ -76,8 +74,9 @@ elif [ $1 = "env" ]; then
 
 	#task done!
 	echo -e "\033[92mDone! \033[0m"
+	;;
 
-elif [ $1 = "clean" ]; then
+clean)
 
 	echo -e "\033[95mCleaning KCC log files... \033[0m"
 
@@ -85,7 +84,10 @@ elif [ $1 = "clean" ]; then
 
 	#task done!
 	echo -e "\033[92mDone! \033[0m"
+	;;
 
-else
-	echo -e "\033[31mInvalid command\033[0m"
-fi
+#default
+*)
+	scriptHelp
+    ;;
+esac

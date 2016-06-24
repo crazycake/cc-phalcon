@@ -127,13 +127,10 @@ handleModuleArgument() {
 	fi
 }
 
-# check args
-if [ "$*" = "" ]; then
+# commands
+case "$1" in
 
-	scriptHelp
-
-elif [ $1 = "env" ]; then
-
+env)
 	# print project dir
 	echo -e "\033[96mProject Dir: "$PROJECT_PATH" \033[0m"
 
@@ -185,8 +182,9 @@ elif [ $1 = "env" ]; then
 
 	#task done!
 	echo -e "\033[92mDone! \033[0m"
+	;;
 
-elif [ $1 = "composer" ]; then
+composer)
 
 	if [ ! -d $COMPOSER_PATH ]; then
 		echo -e "\033[95mComposer folder not found in packages directory.\033[0m"
@@ -214,11 +212,12 @@ elif [ $1 = "composer" ]; then
 
 	php composer.phar dump-autoload --optimize --no-dev
 	cd $PROJECT_PATH
-	# task done!
-	echo -e "\033[95mComposer optimized autoload dump created! \033[0m"
-	echo -e "\033[92mDone! \033[0m"
 
-elif [ $1 = "db" ]; then
+	# task done!
+	echo -e "\033[95mComposer optimized autoload dump created. Done! \033[0m"
+	;;
+
+db)
 
 	if [ ! -f $COMPOSER_PATH"vendor/bin/phinx" ]; then
 		echo -e "\033[31mphinx library not found in composer project folder.\033[0m"
@@ -228,20 +227,23 @@ elif [ $1 = "db" ]; then
 	echo -e "\033[95mRunning phinx command... \033[0m"
 
 	php $COMPOSER_PATH"vendor/bin/phinx" "${@:2}"
+	;;
 
-elif [ $1 = "cli" ]; then
+cli)
 
 	echo -e "\033[95mRunning PHP App CLI... \033[0m"
 
 	php $PROJECT_PATH"/cli/cli.php" "main" "${@:2}"
+	;;
 
-elif [ $1 = "wkhtmltopdf" ]; then
+wkhtmltopdf)
 
 	echo -e "\033[95mInstalling wkhtmltopdf... \033[0m"
 	#call script
 	bash $TOOLS_PATH"/wkhtmltopdf.bash"
+	;;
 
-elif [ $1 = "clean" ]; then
+clean)
 
 	# clean storage
 	if [ -d $STORAGE_PATH ]; then
@@ -250,20 +252,23 @@ elif [ $1 = "clean" ]; then
 
 	# task done!
 	echo -e "\033[92mDone! \033[0m"
+	;;
 
-elif [ $1 = "build" ]; then
+build)
 
 	excludeDeployMachine
 
 	appBuild
+	;;
 
-elif [ $1 = "deploy" ]; then
+deploy)
 
 	excludeDeployMachine
 
 	appDeploy "$2" "$3"
+	;;
 
-elif [ $1 = "watch" ]; then
+watch)
 
 	excludeDeployMachine
 
@@ -272,8 +277,9 @@ elif [ $1 = "watch" ]; then
 	echo -e "\033[95mRunning gulp...\033[0m"
 
 	gulp watch -m $MOD_NAME
+	;;
 
-elif [ $1 = "watch-mailing" ]; then
+watch-mailing)
 
 	excludeDeployMachine
 
@@ -282,8 +288,9 @@ elif [ $1 = "watch-mailing" ]; then
 	echo -e "\033[95mRunning gulp...\033[0m"
 
 	gulp watch-mailing -m $MOD_NAME
+	;;
 
-elif [ $1 = "npm-global" ]; then
+npm-global)
 
 	excludeDeployMachine
 
@@ -291,8 +298,9 @@ elif [ $1 = "npm-global" ]; then
 
 	#modules instalation
 	sudo npm install -g $NPM_GLOBAL_DEPENDENCIES
+	;;
 
-elif [ $1 = "npm" ]; then
+npm)
 
 	excludeDeployMachine
 
@@ -305,27 +313,28 @@ elif [ $1 = "npm" ]; then
 
 	#package instalation (sudo is not required for OSX)
 	if [ "$(uname)" == "Darwin" ]; then
-		npm install
-		npm prune
+		npm install && npm prune
 	else
-		sudo npm install
-		sudo npm prune
+		sudo npm install && sudo npm prune
 	fi
+	;;
 
-elif [ $1 = "core" ]; then
+core)
 
 	excludeDeployMachine
 
 	bash $TOOLS_PATH"core.bash"
+	;;
 
-elif [ $1 = "trans" ]; then
+trans)
 
 	excludeDeployMachine
 
 	bash $TOOLS_PATH"translations.bash" find -b
 	bash $TOOLS_PATH"translations.bash" find -f
+	;;
 
-elif [ $1 = "aws-cli" ]; then
+aws-cli)
 
 	excludeDeployMachine
 
@@ -353,8 +362,9 @@ elif [ $1 = "aws-cli" ]; then
 	echo -e "\033[95mChecking AWS CLI version... \033[0m"
 	#get AWS CLI version
 	aws --version
+	;;
 
-elif [ $1 = "aws-cdn" ]; then
+aws-cdn)
 
 	excludeDeployMachine
 
@@ -383,7 +393,10 @@ elif [ $1 = "aws-cdn" ]; then
 	echo -e "\033[95mBucket Syncing $SYNC_LOCAL_PATH -> $SYNC_REMOTE_PATH \033[0m"
 	#sync
 	aws s3 sync $SYNC_LOCAL_PATH $SYNC_REMOTE_PATH --delete --cache-control max-age=864000 --exclude '*.htaccess' --exclude '*.DS_Store' --exclude '*.html'
+	;;
 
-else
-	echo -e "\033[31mInvalid command\033[0m"
-fi
+#default
+*)
+	scriptHelp
+    ;;
+esac

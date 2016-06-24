@@ -107,12 +107,10 @@ if [ $USER_NAME = "ubuntu" ]; then
 	exit
 fi
 
-# check args
-if [ "$*" = "" ]; then
-	scriptHelp
-fi
+# commands
+case "$1" in
 
-if [ "$1" = "-t" ] || [ "$1" = "-s" ] || [ "$1" = "-p" ]; then
+-t|-s|-p)
 
 	checkEnvVars
 
@@ -175,7 +173,10 @@ if [ "$1" = "-t" ] || [ "$1" = "-s" ] || [ "$1" = "-p" ]; then
 
 	# task done!
 	echo -e "\033[92mDone! \033[0m"
+	;;
 
-else
-	echo -e "\033[31mInvalid command\033[0m"
-fi
+#default
+*)
+	scriptHelp
+    ;;
+esac

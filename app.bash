@@ -103,11 +103,9 @@ npm)
 
 	#package instalation
 	if [ "$(uname)" == "Darwin" ]; then
-		npm install
-		npm prune
+		npm install && npm prune
 	else
-		sudo npm install
-		sudo npm prune
+		sudo npm install && sudo npm prune
 	fi
 
 	cd $PROJECT_PATH
