@@ -244,14 +244,14 @@ abstract class App extends AppModule implements AppLoader
 
                 $paths = explode("/", $dir, 2);
 
-                //set directory path (if first index is a module)
-                if (count($paths) > 1 && in_array($paths[0], self::$CORE_DEFAULT_LIBS))
+                //set directory path
+                if (count($paths) > 1)
                     $app_dirs[$dir] = PROJECT_PATH.$paths[0]."/app/".$paths[1]."/";
                 else
                     $app_dirs[$dir] = APP_PATH.$dir."/";
             }
         }
-        //print_r($app_dirs);exit;
+        //print_r($app_dirs); exit;
 
         //inverted sort
         arsort($app_dirs);
@@ -324,7 +324,7 @@ abstract class App extends AppModule implements AppLoader
         foreach ($libraries as $lib) {
             $namespaces[self::APP_CORE_NAMESPACE.ucfirst($lib)] = "$class_path/$lib/";
         }
-        //var_dump($class_path, $namespaces);
+        //var_dump($class_path, $namespaces);exit;
 
         //register namespaces
         if (!empty($namespaces))
