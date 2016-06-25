@@ -1,10 +1,15 @@
 {
+  "name": "cc-webpacks",
+  "version": "0.0.1",
   "author": "Nicolas Pulido M",
   "description": "CrazyCake Webpacks",
-  "readme": "Run npm install for package install.",
-  "repository": "private",
+  "readme": "Run npm install then gulp.",
   "license": "MIT",
   "main": "gulpfile.babel.js",
+  "files": [
+    "dist",
+    "src"
+  ],
   "devDependencies": {
     "babel-core": "^6.10.4",
     "babel-preset-es2015": "^6.9.0",

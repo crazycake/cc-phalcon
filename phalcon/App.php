@@ -18,14 +18,14 @@ require "AppServices.php";
 abstract class App extends AppModule implements AppLoader
 {
     /** const **/
-    const APP_CORE_PACKAGE   = "CrazyCake\\";
-    const APP_CORE_NAMESPACE = "cc-phalcon";
+    const APP_CORE_NAMESPACE = "CrazyCake\\";
+    const APP_CORE_PROJECT   = "cc-phalcon";
 
     /**
-     * App Core default packages
+     * App Core default libs
      * @var array
      */
-    protected static $CORE_DEFAULT_PACKAGES = ["services", "core", "helpers", "models", "account"];
+    protected static $CORE_DEFAULT_LIBS = ["services", "core", "helpers", "models", "account"];
 
     /**
      * The App Dependency injector
@@ -245,7 +245,7 @@ abstract class App extends AppModule implements AppLoader
                 $paths = explode("/", $dir, 2);
 
                 //set directory path (if first index is a module)
-                if (count($paths) > 1 && in_array($paths[0], self::$CORE_DEFAULT_MODULES))
+                if (count($paths) > 1 && in_array($paths[0], self::$CORE_DEFAULT_LIBS))
                     $app_dirs[$dir] = PROJECT_PATH.$paths[0]."/app/".$paths[1]."/";
                 else
                     $app_dirs[$dir] = APP_PATH.$dir."/";
@@ -270,15 +270,15 @@ abstract class App extends AppModule implements AppLoader
 
         $core_libs = self::getProperty("core");
 
-        //2.- Register any static libs (like core)
-        $this->_loadStaticLibs($loader, $core_libs);
+        //2.- Register core static modules
+        $this->_loadCoreLibraries($loader, $core_libs);
 
         //3.- Composer libs auto loader
-        if (!is_file(COMPOSER_PATH."vendor/autoload.php"))
+        if (!is_file(COMPOSER_PATH."autoload.php"))
             throw new Exception("App::_autoloadClasses -> Composer libraries are not installed yet, run app.bash composer.");
 
         //autoload composer file
-        require COMPOSER_PATH."vendor/autoload.php";
+        require COMPOSER_PATH."autoload.php";
 
         //4.- Register phalcon loader
         $loader->register();
@@ -286,33 +286,32 @@ abstract class App extends AppModule implements AppLoader
     }
 
     /**
-     * Loads statics libs from sym-link or phar file.
+     * Loads static libraries.
      * Use Phar::running() to get path of current phar running
      * Use get_included_files() to see all files that has loaded
-     * it seems that phalcon"s loader->registerNamespaces don"t consider phar inside paths
      * @param object $loader - Phalcon loader object
-     * @param array $packages - Modules packages list
+     * @param array $libraries - Libraries required
      */
-    private function _loadStaticLibs($loader = null, $packages = [])
+    private function _loadCoreLibraries($loader = null, $libraries = [])
     {
         if (is_null($loader))
             return;
 
-        if (!is_array($packages))
-            $packages = [];
+        if (!is_array($libraries))
+            $libraries = [];
 
-        //merge packages with defaults
-        $packages = array_merge(self::$CORE_DEFAULT_PACKAGES, $packages);
+        //merge libraries with defaults
+        $libraries = array_merge(self::$CORE_DEFAULT_LIBS, $libraries);
 
         //check if library was loaded from dev environment
-        $class_path = is_link(PACKAGES_PATH.self::APP_CORE_NAMESPACE) ? PACKAGES_PATH.self::APP_CORE_NAMESPACE : false;
+        $class_path = is_link(CORE_PATH.self::APP_CORE_PROJECT) ? CORE_PATH.self::APP_CORE_PROJECT : false;
 
-        //load classes directly form phar
+        //load classes directly form phar file
         if (!$class_path) {
             //get class map array
             $class_map = include "AppClassMap.php";
 
-            foreach ($packages as $lib) {
+            foreach ($libraries as $lib) {
                 //loop through package files
                 foreach ($class_map[$lib] as $class)
                     require \Phar::running()."/$lib/".$class;
@@ -320,10 +319,10 @@ abstract class App extends AppModule implements AppLoader
             return;
         }
 
-        //load classes from symlink
+        //set library path => namespaces
         $namespaces = [];
-        foreach ($packages as $lib) {
-            $namespaces[self::APP_CORE_PACKAGE.ucfirst($lib)] = "$class_path/$lib/";
+        foreach ($libraries as $lib) {
+            $namespaces[self::APP_CORE_NAMESPACE.ucfirst($lib)] = "$class_path/$lib/";
         }
         //var_dump($class_path, $namespaces);
 

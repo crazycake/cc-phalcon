@@ -14,7 +14,7 @@ APP_NAME="${APP_NAME/-webapp/}"
 APP_NAMESPACE="$(echo "$APP_NAME" | tr '[:upper:]' '[:lower:]')"
 
 # cc-phalcon directory
-APP_CORE_PATH=$PROJECT_PATH"/packages/cc-phalcon/"
+APP_CORE_PATH=$PROJECT_PATH"/core/cc-phalcon/"
 
 # translation filenames
 MO_FILE=$APP_NAMESPACE".mo"

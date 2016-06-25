@@ -82,7 +82,7 @@ npm-global)
 
 	cd $WEBPACKS_PATH
 
-	echo -e "\033[95mUpdating npm global packages... \033[0m"
+	echo -e "\033[95mUpdating npm global modules... \033[0m"
 
 	#modules instalation
 	sudo npm install -g $NPM_GLOBAL_DEPENDENCIES
@@ -94,7 +94,7 @@ npm)
 
 	cd $WEBPACKS_PATH
 
-	echo -e "\033[95mUpdating npm project packages... \033[0m"
+	echo -e "\033[95mUpdating npm project modules... \033[0m"
 
 	if [ "$2" = "-u" ]; then
 		echo -e "\033[95mChecking for updates... \033[0m"

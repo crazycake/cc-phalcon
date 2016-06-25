@@ -15,10 +15,10 @@ APP_NAME="${APP_NAME/-webapp/}"
 MODULES_NAME=("frontend" "backend" "api" "cli")
 MOD_NAME=""
 
-# tools & packages path
+# app paths
 TOOLS_PATH=$PROJECT_PATH"/.tools/"
 STORAGE_PATH=$PROJECT_PATH"/storage/"
-COMPOSER_PATH=$PROJECT_PATH"/packages/composer/"
+COMPOSER_PATH=$PROJECT_PATH"/vendor/"
 
 # npm global dependencies
 NPM_GLOBAL_DEPENDENCIES="gulp uglify-js npm-check eslint"
@@ -186,32 +186,18 @@ env)
 
 composer)
 
-	if [ ! -d $COMPOSER_PATH ]; then
-		echo -e "\033[95mComposer folder not found in packages directory.\033[0m"
-		exit
-	fi
-
-	# go to composer dir
-	cd $COMPOSER_PATH
-
-	# check for self-update option
-	if [ "$2" = "-s" ]; then
-		# directory not exists, install
-		php composer.phar self-update
-		exit
 	# check if folder is created
-	elif [ ! -d $COMPOSER_PATH"vendor" ]; then
+	if [ ! -d $COMPOSER_PATH ]; then
 		# directory not exists, install
 		echo -e "\033[95mInstalling composer libraries...\033[0m"
-		php composer.phar install --no-dev
+		composer install --no-dev
 	else
 		# directory exists, update
 		echo -e "\033[95mUpdating composer libraries...\033[0m"
-		php composer.phar update --no-dev
+		composer update --no-dev
 	fi
 
-	php composer.phar dump-autoload --optimize --no-dev
-	cd $PROJECT_PATH
+	composer dump-autoload --optimize --no-dev
 
 	# task done!
 	echo -e "\033[95mComposer optimized autoload dump created. Done! \033[0m"
@@ -219,14 +205,14 @@ composer)
 
 db)
 
-	if [ ! -f $COMPOSER_PATH"vendor/bin/phinx" ]; then
+	if [ ! -f $COMPOSER_PATH"bin/phinx" ]; then
 		echo -e "\033[31mphinx library not found in composer project folder.\033[0m"
 		exit
 	fi
 
 	echo -e "\033[95mRunning phinx command... \033[0m"
 
-	php $COMPOSER_PATH"vendor/bin/phinx" "${@:2}"
+	php $COMPOSER_PATH"bin/phinx" "${@:2}"
 	;;
 
 cli)
@@ -294,7 +280,7 @@ npm-global)
 
 	excludeDeployMachine
 
-	echo -e "\033[95mUpdating npm global packages... \033[0m"
+	echo -e "\033[95mUpdating npm global modules... \033[0m"
 
 	#modules instalation
 	sudo npm install -g $NPM_GLOBAL_DEPENDENCIES
@@ -304,7 +290,7 @@ npm)
 
 	excludeDeployMachine
 
-	echo -e "\033[95mUpdating npm project packages... \033[0m"
+	echo -e "\033[95mUpdating npm project modules... \033[0m"
 
 	if [ "$2" = "-u" ]; then
 		echo -e "\033[95mChecking for updates... \033[0m"
