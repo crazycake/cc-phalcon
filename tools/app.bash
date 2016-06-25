@@ -186,8 +186,13 @@ env)
 
 composer)
 
-	# check if folder is created
-	if [ ! -d $COMPOSER_PATH ]; then
+	# check for self-update option
+	if [ "$2" = "-s" ]; then
+		# self-update
+		composer self-update
+		exit
+
+	elif [ ! -d $COMPOSER_PATH ]; then
 		# directory not exists, install
 		echo -e "\033[95mInstalling composer libraries...\033[0m"
 		composer install --no-dev
