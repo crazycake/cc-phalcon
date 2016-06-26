@@ -5,7 +5,7 @@
   "description": "CrazyCake Webpacks",
   "readme": "Run npm install then gulp.",
   "license": "MIT",
-  "main": "gulpfile.babel.js",
+  "main": "dist/js/webpack_core.bundle.min.js",
   "files": [
     "dist",
     "src"
