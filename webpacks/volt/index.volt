@@ -5,7 +5,7 @@
  */
 ?>
 <!DOCTYPE html>
-<html>
+<html{{ html_doc_class is defined ? ' class="'~html_doc_class~'"' : '' }}>
     <head>
         {# charset #}
         <meta charset="utf-8" />
@@ -87,7 +87,7 @@
     </head>
     {# Flush the buffer (optimization) #}
     <?php  flush(); ?>
-    <body {{ html_body_class is defined ? 'class="'~html_body_class~'"' : '' }}>
+    <body{{ html_body_class is defined ? ' class="'~html_body_class~'"' : '' }}>
 
         {# body app wrapper #}
         <div id="app">
