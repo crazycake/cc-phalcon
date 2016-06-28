@@ -398,14 +398,23 @@ export default new function() {
         //bootstrap
         if (core.framework == "bootstrap") {
 
-            if ($(window).width() < 768)
-                return size === "small";
-            else if ($(window).width() >= 768 && $(window).width() <= 992)
-                return size === "medium";
-            else if ($(window).width() > 992 && $(window).width() <= 1200)
-                return size === "large";
-            else
-                return size === "x-large";
+            var envs = ["xs", "sm", "md", "lg"];
+            var env = "";
+
+            var $el = $("<div>");
+            $el.appendTo($("body"));
+
+            for (var i = envs.length - 1; i >= 0; i--) {
+                env = envs[i];
+                $el.addClass("hidden-" + env + "-up");
+
+                if ($el.is(":hidden")) {
+                    break; // env detected
+                }
+            }
+            $el.remove();
+
+            return size === env;
         }
 
         return false;
