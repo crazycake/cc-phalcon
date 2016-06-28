@@ -156,25 +156,6 @@
 	background-position: center center;
 }
 
-@mixin app-scrollbar($size, $foreground-color, $background-color: mix($foreground-color, white,  50%)) {
-	//Chrome
-	::-webkit-scrollbar {
-		width:  $size;
-		height: $size;
-	}
-	::-webkit-scrollbar-thumb {
-		background: $foreground-color;
-	}
-	::-webkit-scrollbar-track {
-		background: $background-color;
-	}
-	//IE fallback
-	body {
-		scrollbar-face-color: $foreground-color;
-		scrollbar-track-color: $background-color;
-	}
-}
-
 /* Placeholders
 ---------------------------------------------------------------------------------------- */
 
