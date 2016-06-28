@@ -19,7 +19,7 @@
             {# android metas #}
             <meta name="mobile-web-app-capable" content="yes">
          {% else %}
-            <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
         {% endif %}
 
         {# InternetExplorer: force last version of render compatibility mod  #}
@@ -89,8 +89,8 @@
     <?php  flush(); ?>
     <body {{ html_body_class is defined ? 'class="'~html_body_class~'"' : '' }}>
 
-        {# body wrapper #}
-        <div id="wrapper">
+        {# body app wrapper #}
+        <div id="app">
             {# Content rendering #}
             {{ get_content() }}
             {# Footer #}

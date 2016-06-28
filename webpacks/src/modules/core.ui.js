@@ -18,16 +18,16 @@ export default new function() {
     //common jQuery selectors
     _.assign(APP.UI, {
         //selectors
-        sel_body_wrapper   : "#wrapper",
+        sel_app            : "#app",
         sel_header         : "#header",
         sel_footer         : "#footer",
         sel_loading_box    : "#app-loading",
         sel_flash_messages : "#app-flash",
         sel_alert_box      : "div.app-alert",
         //uris
-        uri_img_fallback : "images/icons/icon-image-fallback.png",
+        uri_img_fallback   : "images/icons/icon-image-fallback.png",
         //setting vars
-        pixel_ratio : _.isUndefined(window.devicePixelRatio) ? 1 : window.devicePixelRatio
+        pixel_ratio        : _.isUndefined(window.devicePixelRatio) ? 1 : window.devicePixelRatio
     });
 
     //set dynamic required props as default values
