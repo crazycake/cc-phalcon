@@ -291,7 +291,7 @@ class APN
 	function disconnectFeedback()
 	{
 		$this->_log("APN: disconnectFeedback");
-		
+
 		if ($this->feedback_stream && is_resource($this->feedback_stream))
 			return @fclose($this->feedback_stream);
 		else
@@ -480,7 +480,7 @@ class APN
 	}
 
 	/**
-	 * Log wrapper
+	 * Log function
 	 * @param  string $text - The input text
 	 * @param  string $type - Log type
 	 */
