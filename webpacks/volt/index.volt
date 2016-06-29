@@ -123,8 +123,8 @@
         {# App JS Core Event #}
         <script>core.ready();</script>
 
-        {# GoogleAnalytics (Modern loader) #}
-        {% if app.google is defined %}
+        {# GoogleAnalytics (Frontend only, async loading) #}
+        {% if app.google is defined and constant("MODULE_NAME") == "frontend" %}
             <script async src='//www.google-analytics.com/analytics.js'></script>
             <script>
                 window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
