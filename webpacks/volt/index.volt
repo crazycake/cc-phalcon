@@ -69,6 +69,13 @@
             {{ partial("templates/metas") }}
         {% endif %}
 
+        {# APP EXTERNAL CSS LINKS #}
+        {% if css_links is defined and css_links is iterable %}
+            {% for link in css_links %}
+                <link href="{{ link }}" rel="stylesheet" />
+            {% endfor %}
+        {% endif %}
+
         {# APP CSS #}
         <link rel="stylesheet" type="text/css" href="{{ css_url }}" />
 
