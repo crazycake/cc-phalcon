@@ -89,13 +89,16 @@
     <?php  flush(); ?>
     <body{{ html_body_class is defined ? ' class="'~html_body_class~'"' : '' }}>
 
-        {# body app wrapper #}
-        <div id="app">
-            {# Content rendering #}
+        {# app content wrapper #}
+        {% if html_app_wrapper is defined and !html_app_wrapper %}
+            {# layout content #}
             {{ get_content() }}
-            {# Footer #}
-            {{ partial("templates/footer") }}
-        </div>
+        {% else %}
+            <div id="app">
+                {# layout content #}
+                {{ get_content() }}
+            </div>
+        {% endif %}
 
         {# flash messages #}
         <div id="app-flash" class="hide">
