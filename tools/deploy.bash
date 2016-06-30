@@ -94,7 +94,7 @@ if [ $USER_NAME = "ubuntu" ]; then
 	#database migrations
 	if [ "$2" = "-m" ] || [ "$2" = "-mc" ]; then
 		echo -e "\033[31mExecuting DB migration...\033[0m"
-		bash app.bash phinx migrate
+		bash app.bash db migrate
 	fi
 
 	#composer update
