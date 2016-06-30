@@ -19,8 +19,8 @@ export default new function() {
     _.assign(APP.UI, {
         //selectors
         sel_app            : "#app",
-        sel_header         : "#header",
-        sel_footer         : "#footer",
+        sel_header         : "#app-header",
+        sel_footer         : "#app-footer",
         sel_loading_box    : "#app-loading",
         sel_flash_messages : "#app-flash",
         sel_alert_box      : "div.app-alert",
@@ -261,8 +261,14 @@ export default new function() {
         if (!loading_obj.length) {
 
             //create object and append to body
-            var div_loading = $("<div>").attr("id", APP.UI.sel_loading_box.replace("#",""));
-            div_loading.html(APP.TRANS.ACTIONS.LOADING);
+            let div_loading = $("<div>").attr("id", APP.UI.sel_loading_box.replace("#",""));
+            let content     = APP.TRANS.ACTIONS.LOADING;
+
+            //custom content
+            if(!_.isUndefined(APP.UI.loading.content))
+                content = APP.UI.loading.content;
+
+            div_loading.html(content);
 
             //append to body
             $("body").append(div_loading);
