@@ -78,8 +78,10 @@ trait AccountPassRecovery
             $this->view->setVar("html_title", $this->account_pass_recovery_conf["trans"]["TITLE_CREATE_PASS"]);
             $this->view->setVar("edata", $encrypted_data); //pass to view the encrypted data
 
-            //load javascript
-            $this->loadJsModules($this->account_pass_recovery_conf["js_modules"]);
+            //load javascript modules
+            $this->loadJsModules([
+                "passRecovery" => null
+            ]);
         }
         catch (Exception $e) {
             $this->logger->error("AccountPass::newAction -> Error in account activation, encrypted data (" . $encrypted_data . "). Trace: " . $e->getMessage());
