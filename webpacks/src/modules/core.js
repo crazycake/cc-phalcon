@@ -76,8 +76,15 @@ export default new function() {
      */
     self.ready = function() {
 
+        //css async loading
+        if(!_.isUndefined(APP.cssLazy) && APP.cssLazy) {
+
+            if (APP.dev) { console.log("Core: loading async CSS file", APP.cssLazy); }
+            loadCSS(APP.cssLazy);
+        }
+
         //load fast click for mobile
-        if (UA.isMobile && typeof FastClick != "undefined")
+        if (UA.isMobile && typeof FastClick !== "undefined")
             FastClick.attach(document.body);
 
         //load Foundation framework
@@ -88,13 +95,13 @@ export default new function() {
             self.initBootstrap();
 
         //load forms module
-        if (typeof self.modules.forms !== "undefined")
+        if (!_.isUndefined(self.modules.forms))
             self.modules.forms.loadForms();
 
         //load UI module
-        if (typeof self.ui !== "undefined")
-            self.ui.init();
+        self.ui.init();
 
+        //core ready msg
         if (APP.dev) { console.log("Core Ready!"); }
     };
 

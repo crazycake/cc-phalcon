@@ -14,14 +14,15 @@ import "js-cookie";
 import "jquery";
 import "velocity";
 import "velocity.ui";
+import "fg-loadcss";
 
 //plugins
 import "./plugins/jquery.extended";
 import "./plugins/jquery.cclayer";
 import "./plugins/jquery.ccdialog";
 import "./plugins/jquery.formValidation";
-import "./plugins/jquery.formValidation.bootstrap";
-import "./plugins/jquery.formValidation.foundation";
+import "./plugins/jquery.formValidation.bootstrap4";
+import "./plugins/jquery.formValidation.foundation6";
 
 //modules
 import core from "./modules/core.js";

@@ -13,7 +13,7 @@
         "jQuery"     : false,
         "_"          : false,
         "Vue"        : false,
-        "Q"          : false,
+        "loadCSS"    : false,
         "FastClick"  : false,
         "Foundation" : false,
         "core"       : true

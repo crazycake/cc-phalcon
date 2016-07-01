@@ -40,28 +40,14 @@
         <title>{{ tag_title }}</title>
 
         {# favicons #}
-        <link rel="shortcut icon" href="{{ static_url('images/favicons/favicon.ico') }}" />
-        <link rel="icon" type="image/png" href="{{ static_url('images/favicons/favicon-192x192.png') }}" sizes="192x192" />
-        <link rel="icon" type="image/png" href="{{ static_url('images/favicons/favicon-160x160.png') }}" sizes="160x160" />
-        <link rel="icon" type="image/png" href="{{ static_url('images/favicons/favicon-96x96.png') }}" sizes="96x96" />
-        <link rel="icon" type="image/png" href="{{ static_url('images/favicons/favicon-16x16.png') }}" sizes="16x16" />
-        <link rel="icon" type="image/png" href="{{ static_url('images/favicons/favicon-32x32.png') }}" sizes="32x32" />
-        {# Apple touch favicons #}
-        <link rel="apple-touch-icon" sizes="57x57"   href="{{ static_url('images/favicons/apple-touch-icon-57x57.png') }}" />
-        <link rel="apple-touch-icon" sizes="114x114" href="{{ static_url('images/favicons/apple-touch-icon-114x114.png') }}" />
-        <link rel="apple-touch-icon" sizes="72x72"   href="{{ static_url('images/favicons/apple-touch-icon-72x72.png') }}" />
-        <link rel="apple-touch-icon" sizes="144x144" href="{{ static_url('images/favicons/apple-touch-icon-144x144.png') }}" />
-        <link rel="apple-touch-icon" sizes="60x60"   href="{{ static_url('images/favicons/apple-touch-icon-60x60.png') }}" />
-        <link rel="apple-touch-icon" sizes="120x120" href="{{ static_url('images/favicons/apple-touch-icon-120x120.png') }}" />
-        <link rel="apple-touch-icon" sizes="76x76"   href="{{ static_url('images/favicons/apple-touch-icon-76x76.png') }}" />
-        <link rel="apple-touch-icon" sizes="152x152" href="{{ static_url('images/favicons/apple-touch-icon-152x152.png') }}" />
-        <link rel="apple-touch-icon" sizes="180x180" href="{{ static_url('images/favicons/apple-touch-icon-180x180.png') }}" />
+        <link rel="icon" type="image/png" href="{{ static_url('images/favicons/favicon.png') }}" />
+        <link rel="apple-touch-icon" href="{{ static_url('images/favicons/apple-touch-icon.png') }}" />
 
         {# Windows 8 #}
-        {% if client is defined and client.platform == 'Windows' %}
+        {% if client is defined and client.platform == "Windows" %}
             <meta name="application-name" content="{{ app.name }}" />
-            <meta name="msapplication-TileColor" content="#efefef">
-            <meta name="msapplication-TileImage" content="{{ static_url('images/favicons/mstile-144x144.png') }}" />
+            <meta name="msapplication-TileColor" content="#efefef" />
+            <meta name="msapplication-TileImage" content="{{ static_url('images/favicons/mstile.png') }}" />
         {% endif %}
 
         {# custom metas #}
@@ -79,7 +65,7 @@
         {# APP CSS #}
         <link rel="stylesheet" type="text/css" href="{{ css_url }}" />
 
-        {# APP Scope vars #}
+        {# APP Global scope vars #}
         {% if js_app is defined %}
             <script>
                 APP = {{ js_app }};
@@ -125,12 +111,12 @@
 
         {# GoogleAnalytics (Frontend only, async loading) #}
         {% if app.google is defined and constant("MODULE_NAME") == "frontend" %}
-            <script async src='//www.google-analytics.com/analytics.js'></script>
             <script>
-                window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-                ga('create', '{{ app.google.analyticsUA }}', 'auto');
-                ga('send', 'pageview');
+                window.ga=function(){ga.q.push(arguments)};ga.q=[];ga.l=+new Date;
+                ga('create','{{ app.google.analyticsUA }}','auto');
+                ga('send','pageview')
             </script>
+            <script src="//www.google-analytics.com/analytics.js" async defer></script>
         {% endif %}
 
         {# reCaptcha plugin #}
@@ -144,7 +130,7 @@
             {{ trans._('Este sitio funciona con Javascript. Porfavor activa el motor de Javascript en tu navegador.') }}
         </noscript>
 
-       {# debug: output render time #}
+        {# debug: output render time #}
         {% if constant("APP_ENVIRONMENT") != "production" %}
             <script>
                 console.log('App Core -> PhalconPHP <?php echo \Phalcon\Version::get(); ?>. Page rendered in <?php echo number_format((float)(microtime(true) - APP_START), 3, ".", ""); ?> seconds.');

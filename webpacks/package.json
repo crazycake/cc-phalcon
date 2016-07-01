@@ -30,6 +30,7 @@
   "dependencies": {
     "bluebird": "^3.4.1",
     "fastclick": "^1.0.6",
+    "fg-loadcss": "^1.2.0",
     "html5shiv": "^3.7.2",
     "jquery": "2.2.2",
     "js-cookie": "^2.1.2",
@@ -51,13 +52,15 @@
     "bluebird": "./node_modules/bluebird/js/browser/bluebird.core.js",
     "velocity": "./node_modules/velocity-animate/velocity.js",
     "velocity.ui": "./node_modules/velocity-animate/velocity.ui.js",
-    "js-cookie": "./node_modules/js-cookie/src/js.cookie.js"
+    "js-cookie": "./node_modules/js-cookie/src/js.cookie.js",
+    "fg-loadcss": "./node_modules/fg-loadcss/src/loadCSS.js"
   },
   "browserify-shim": {
     "lodash": "_",
     "vue": "Vue",
     "bluebird": "Promise",
     "jquery": "jQuery",
-    "js-cookie": "Cookies"
+    "js-cookie": "Cookies",
+    "fg-loadcss": "loadCSS"
   }
 }

@@ -74,8 +74,8 @@ abstract class WebCore extends MvcCore implements WebSecurity
 
         //Set App common vars (this must be set before render any page)
         $this->view->setVars([
-            "app"    => $this->config->app,  //app configuration vars
-            "client" => $this->client        //client object
+            "app"    => $this->config->app, //app configuration vars
+            "client" => $this->client       //client object
         ]);
     }
 
@@ -88,10 +88,10 @@ abstract class WebCore extends MvcCore implements WebSecurity
         if ($this->request->isAjax())
             return;
 
-        //set javascript vars in view
-        $this->_setAppJsViewVars();
         //set app assets
         $this->_setAppAssets();
+        //set javascript vars in view
+        $this->_setAppJsViewVars();
 
         //check browser is supported (child method)
         $supported = $this->checkBrowserSupport($this->client->browser, $this->client->shortVersion);
@@ -379,6 +379,10 @@ abstract class WebCore extends MvcCore implements WebSecurity
 
         //set custom properties
         $this->setAppJsProperties($js_app);
+
+        //css lazy loading properties
+        if(isset($js_app->cssLazy) && $js_app->cssLazy)
+            $js_app->cssLazy = str_replace("app.", "lazy.", $this->view->getVar("css_url"));
 
         //set translations?
         if (class_exists("TranslationController"))
