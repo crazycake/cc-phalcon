@@ -105,9 +105,15 @@ export default new function() {
         if (form instanceof jQuery === false)
             form = $(form);
 
+        //special case bootstrap 4
+        let framework = core.framework;
+        //NOTE: hardcoded, drop support for bootstrap3
+        if(framework == "bootstrap")
+            framework += "4";
+
          //set settings
-         var opts = {
-            framework : core.framework,
+         let opts = {
+            framework : framework,
             err       : { clazz : "form-error" },
             /*icon : {
                 valid      : "fa fa-check",

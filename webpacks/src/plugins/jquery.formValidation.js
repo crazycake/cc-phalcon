@@ -27,7 +27,7 @@
  *
  * Use formValidation(.min).js file if you want to have all validators.
  *
- * @version     v0.7.1, built on 2016-02-01 12:00:57 AM
+ * @version     v0.8.0, built on 2016-06-28 2:44:42 AM
  * @author      https://twitter.com/formvalidation
  * @copyright   (c) 2013 - 2016 Nguyen Huu Phuoc
  * @license     http://formvalidation.io/license/
@@ -276,6 +276,8 @@ if (typeof jQuery === 'undefined') {
                         // aren't defined by the 'button.selector' option
                         if (that.options.button.selector && !$button.is(that.options.button.selector) && !$button.is(that.$hiddenButton)) {
                             that.$form.off('submit.' + that._namespace).submit();
+                            // Fix the issue where 'formnovalidate' causes IE to send two postbacks to server
+                            return false;
                         }
                     }
                 });
@@ -1603,7 +1605,8 @@ if (typeof jQuery === 'undefined') {
                     fv: this,
                     field: field,
                     element: $field,
-                    status: status
+                    status: status,
+                    validator: validatorName
                 });
                 this._onFieldValidated($field, validatorName);
             }
@@ -1664,7 +1667,7 @@ if (typeof jQuery === 'undefined') {
 
             var that       = this,
                 type       = fields.attr('type'),
-                total      = ('radio' === type || 'checkbox' === type) ? 1 : fields.length,
+                total      = (('radio' === type || 'checkbox' === type) && this.options.live !== 'disabled') ? 1 : fields.length,
                 updateAll  = ('radio' === type || 'checkbox' === type),
                 validators = this.options.fields[field].validators,
                 verbose    = this.isOptionEnabled(field, 'verbose'),
@@ -1862,11 +1865,12 @@ if (typeof jQuery === 'undefined') {
                 row    = this.options.fields[field].row || this.options.row.selector;
                 for (i = 0; i < fields.length; i++) {
                     $field = fields.eq(i);
+                    // Remove all error messages
+                    var $messages = $field.data(ns + '.messages');
+                    if ($messages) {
+                        $messages.find('.' + clazz + '[data-' + ns + '-validator][data-' + ns + '-for="' + field + '"]').remove();
+                    }
                     $field
-                        // Remove all error messages
-                        .data(ns + '.messages')
-                            .find('.' + clazz + '[data-' + ns + '-validator][data-' + ns + '-for="' + field + '"]').remove().end()
-                            .end()
                         .removeData(ns + '.messages')
                         .removeData(ns + '.validators')
                         // Remove feedback classes
@@ -3018,6 +3022,10 @@ if (typeof jQuery === 'undefined') {
                     length: [15],
                     prefix: ['34', '37']
                 },
+                DANKORT: {
+                    length: [16],
+                    prefix: ['5019']
+                },
                 DINERS_CLUB: {
                     length: [14],
                     prefix: ['300', '301', '302', '303', '304', '305', '36']
@@ -3035,6 +3043,16 @@ if (typeof jQuery === 'undefined') {
                              '622924', '622925', '644', '645', '646', '647', '648',
                              '649', '65']
                 },
+                ELO: {
+                    length: [16],
+                    prefix: ['4011', '4312', '4389', '4514', '4573', '4576',
+                             '5041', '5066', '5067', '509',
+                             '6277', '6362', '6363', '650', '6516', '6550']
+                },
+                FORBRUGSFORENINGEN: {
+                    length: [16],
+                    prefix: ['600722']
+                },
                 JCB: {
                     length: [16],
                     prefix: ['3528', '3529', '353', '354', '355', '356', '357', '358']
@@ -3045,7 +3063,7 @@ if (typeof jQuery === 'undefined') {
                 },
                 MAESTRO: {
                     length: [12, 13, 14, 15, 16, 17, 18, 19],
-                    prefix: ['5018', '5020', '5038', '6304', '6759', '6761', '6762', '6763', '6764', '6765', '6766']
+                    prefix: ['5018', '5020', '5038', '5868', '6304', '6759', '6761', '6762', '6763', '6764', '6765', '6766']
                 },
                 MASTERCARD: {
                     length: [16],
@@ -3061,6 +3079,10 @@ if (typeof jQuery === 'undefined') {
                              '62215', '62216', '62217', '62218', '62219', '6222', '6223',
                              '6224', '6225', '6226', '6227', '6228', '62290', '62291',
                              '622920', '622921', '622922', '622923', '622924', '622925']
+                },
+                VISA_ELECTRON: {
+                    length: [16],
+                    prefix: ['4026', '417500', '4405', '4508', '4844', '4913', '4917']
                 },
                 VISA: {
                     length: [16],
@@ -3677,6 +3699,17 @@ if (typeof jQuery === 'undefined') {
     });
 
     FormValidation.Validator.file = {
+        Error: {
+            EXTENSION: 'EXTENSION',
+            MAX_FILES: 'MAX_FILES',
+            MAX_SIZE: 'MAX_SIZE',
+            MAX_TOTAL_SIZE: 'MAX_TOTAL_SIZE',
+            MIN_FILES: 'MIN_FILES',
+            MIN_SIZE: 'MIN_SIZE',
+            MIN_TOTAL_SIZE: 'MIN_TOTAL_SIZE',
+            TYPE: 'TYPE'
+        },
+
         html5Attributes: {
             extension: 'extension',
             maxfiles: 'maxFiles',
@@ -3704,7 +3737,7 @@ if (typeof jQuery === 'undefined') {
          * - minTotalSize: The minimum size in bytes for all files
          * - message: The invalid message
          * - type: The allowed MIME type, separated by a comma
-         * @returns {Boolean}
+         * @returns {Boolean|Object}
          */
         validate: function(validator, $field, options, validatorName) {
             var value = validator.getFieldValue($field, validatorName);
@@ -3723,35 +3756,102 @@ if (typeof jQuery === 'undefined') {
                     total     = files.length,
                     totalSize = 0;
 
-                if ((options.maxFiles && total > parseInt(options.maxFiles, 10))        // Check the maxFiles
-                    || (options.minFiles && total < parseInt(options.minFiles, 10)))    // Check the minFiles
-                {
-                    return false;
+                // Check the maxFiles
+                if (options.maxFiles && total > parseInt(options.maxFiles, 10)) {
+                    return {
+                        valid: false,
+                        error: this.Error.MAX_FILES
+                    };
                 }
 
+                // Check the minFiles
+                if (options.minFiles && total < parseInt(options.minFiles, 10)) {
+                    return {
+                        valid: false,
+                        error: this.Error.MIN_FILES
+                    };
+                }
+
+                var metaData = {};
                 for (var i = 0; i < total; i++) {
                     totalSize += files[i].size;
                     ext        = files[i].name.substr(files[i].name.lastIndexOf('.') + 1);
+                    metaData   = {
+                        file: files[i],
+                        size: files[i].size,
+                        ext: ext,
+                        type: files[i].type
+                    };
 
-                    if ((options.minSize && files[i].size < parseInt(options.minSize, 10))                      // Check the minSize
-                        || (options.maxSize && files[i].size > parseInt(options.maxSize, 10))                   // Check the maxSize
-                        || (extensions && $.inArray(ext.toLowerCase(), extensions) === -1)                      // Check file extension
-                        || (files[i].type && types && $.inArray(files[i].type.toLowerCase(), types) === -1))    // Check file type
-                    {
-                        return false;
+                    // Check the minSize
+                    if (options.minSize && files[i].size < parseInt(options.minSize, 10)) {
+                       return {
+                           valid: false,
+                           error: this.Error.MIN_SIZE,
+                           metaData: metaData
+                       };
+                    }
+
+                    // Check the maxSize
+                    if (options.maxSize && files[i].size > parseInt(options.maxSize, 10)) {
+                        return {
+                            valid: false,
+                            error: this.Error.MAX_SIZE,
+                            metaData: metaData
+                        };
+                    }
+
+                    // Check file extension
+                    if (extensions && $.inArray(ext.toLowerCase(), extensions) === -1) {
+                        return {
+                            valid: false,
+                            error: this.Error.EXTENSION,
+                            metaData: metaData
+                        };
+                    }
+
+                    // Check file type
+                    if (files[i].type && types && $.inArray(files[i].type.toLowerCase(), types) === -1) {
+                        return {
+                            valid: false,
+                            error: this.Error.TYPE,
+                            metaData: metaData
+                        };
                     }
                 }
 
-                if ((options.maxTotalSize && totalSize > parseInt(options.maxTotalSize, 10))        // Check the maxTotalSize
-                    || (options.minTotalSize && totalSize < parseInt(options.minTotalSize, 10)))    // Check the minTotalSize
-                {
-                    return false;
+                // Check the maxTotalSize
+                if (options.maxTotalSize && totalSize > parseInt(options.maxTotalSize, 10)) {
+                    return {
+                        valid: false,
+                        error: this.Error.MAX_TOTAL_SIZE,
+                        metaData: {
+                            totalSize: totalSize
+                        }
+                    };
+                }
+
+                // Check the minTotalSize
+                if (options.minTotalSize && totalSize < parseInt(options.minTotalSize, 10)) {
+                    return {
+                        valid: false,
+                        error: this.Error.MIN_TOTAL_SIZE,
+                        metaData: {
+                            totalSize: totalSize
+                        }
+                    };
                 }
             } else {
                 // Check file extension
                 ext = value.substr(value.lastIndexOf('.') + 1);
                 if (extensions && $.inArray(ext.toLowerCase(), extensions) === -1) {
-                    return false;
+                    return {
+                        valid: false,
+                        error: this.Error.EXTENSION,
+                        metaData: {
+                            ext: ext
+                        }
+                    };
                 }
             }
 

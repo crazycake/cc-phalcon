@@ -1,14 +1,14 @@
-/*!
+/**
  * FormValidation (http://formvalidation.io)
  * The best jQuery plugin to validate form fields. Support Bootstrap, Foundation, Pure, SemanticUI, UIKit and custom frameworks
  *
- * @version     v0.7.1, built on 2016-02-01 12:00:57 AM
  * @author      https://twitter.com/formvalidation
  * @copyright   (c) 2013 - 2016 Nguyen Huu Phuoc
  * @license     http://formvalidation.io/license/
  */
+
 /**
- * This class supports validating Foundation form (http://foundation.zurb.com/)
+ * This class supports validating Foundation v6+ form (http://foundation.zurb.com/)
  */
 /* global Foundation: false */
 (function($) {
@@ -21,8 +21,8 @@
                 disabled: 'disabled'
             },
             err: {
-                // http://foundation.zurb.com/docs/components/forms.html#error-states
-                clazz: 'error',
+                // http://foundation.zurb.com/sites/docs/abide.html
+                clazz: 'form-error',
                 parent: '^.*((small|medium|large)-[0-9]+)\\s.*(columns).*$'
             },
             // Foundation doesn't support feedback icon
@@ -33,10 +33,9 @@
                 feedback: 'fv-control-feedback'
             },
             row: {
-                // http://foundation.zurb.com/docs/components/forms.html
                 selector: '.row',
                 valid: 'fv-has-success',
-                invalid: 'error',
+                invalid: 'fv-has-error',
                 feedback: 'fv-has-feedback'
             }
         }, options);
@@ -55,8 +54,7 @@
             var ns      = this._namespace,
                 type    = $field.attr('type'),
                 field   = $field.attr('data-' + ns + '-field'),
-                row     = this.options.fields[field].row || this.options.row.selector,
-                $parent = $field.closest(row);
+                row     = this.options.fields[field].row || this.options.row.selector;
 
             if ('checkbox' === type || 'radio' === type) {
                 var $next = $icon.next();
@@ -64,39 +62,31 @@
                     $icon.insertAfter($next);
                 }
             }
-
-            if ($parent.find('label').length === 0) {
-                $icon.addClass('fv-icon-no-label');
-            }
         },
 
         /**
          * Create a tooltip or popover
          * It will be shown when focusing on the field
          *
+         * @see http://foundation.zurb.com/sites/docs/tooltip.html
          * @param {jQuery} $field The field element
          * @param {String} message The message
          * @param {String} type Can be 'tooltip' or 'popover'
          */
         _createTooltip: function($field, message, type) {
-            var that  = this,
-                $icon = $field.data('fv.icon');
+            var $icon = $field.data('fv.icon');
             if ($icon) {
-                $icon
-                    .attr('title', message)
-                    .css({
-                        'cursor': 'pointer'
-                    })
-                    .off('mouseenter.container.fv focusin.container.fv')
-                    .on('mouseenter.container.fv', function() {
-                        that._showTooltip($field, type);
-                    })
-                    .off('mouseleave.container.fv focusout.container.fv')
-                    .on('mouseleave.container.fv focusout.container.fv', function() {
-                        that._hideTooltip($field, type);
-                    });
-                Foundation.libs.tooltip.create($icon);
-                $icon.data('fv.foundation.tooltip', $icon);
+                var tooltip = $icon.data('fv.foundation.tooltip');
+                if (tooltip) {
+                    tooltip.destroy();
+                }
+
+                $icon.css('cursor', 'pointer')
+                     .off('.zf.tooltip')
+                     .data('fv.foundation.tooltip', new Foundation.Tooltip($icon, {
+                         templateClasses: 'fv-foundation-tooltip',
+                         tipText: message
+                     }));
             }
         },
 
@@ -109,14 +99,14 @@
         _destroyTooltip: function($field, type) {
             var $icon = $field.data('fv.icon');
             if ($icon) {
-                $icon.css({
-                    'cursor': ''
-                });
-                var $tooltip = $icon.data('fv.foundation.tooltip');
-                if ($tooltip) {
-                    // Foundation doesn't provide method to destroy particular tooltip instance
-                    $tooltip.off('.fndtn.tooltip');
-                    Foundation.libs.tooltip.hide($tooltip);
+                $icon.removeAttr('title')
+                     .removeAttr('data-tooltip')
+                     .css('cursor', '')
+                     .off('.zf.tooltip');
+
+                var tooltip = $icon.data('fv.foundation.tooltip');
+                if (tooltip) {
+                    tooltip.destroy();
                     $icon.removeData('fv.foundation.tooltip');
                 }
             }
@@ -131,12 +121,10 @@
         _hideTooltip: function($field, type) {
             var $icon = $field.data('fv.icon');
             if ($icon) {
-                $icon.css({
-                    'cursor': ''
-                });
-                var $tooltip = $icon.data('fv.foundation.tooltip');
-                if ($tooltip) {
-                    Foundation.libs.tooltip.hide($tooltip);
+                $icon.css('cursor', '');
+                var tooltip = $icon.data('fv.foundation.tooltip');
+                if (tooltip) {
+                    tooltip.hide();
                 }
             }
         },
@@ -150,12 +138,10 @@
         _showTooltip: function($field, type) {
             var $icon = $field.data('fv.icon');
             if ($icon) {
-                var $tooltip = $icon.data('fv.foundation.tooltip');
-                if ($tooltip) {
-                    $icon.css({
-                        'cursor': 'pointer'
-                    });
-                    Foundation.libs.tooltip.show($tooltip);
+                $icon.css('cursor', 'pointer');
+                var tooltip = $icon.data('fv.foundation.tooltip');
+                if (tooltip) {
+                    tooltip.show();
                 }
             }
         }
