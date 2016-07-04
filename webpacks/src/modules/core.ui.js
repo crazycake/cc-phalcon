@@ -433,7 +433,7 @@ export default new function() {
      * @method retinaImages
      * @param  {Object} context - A jQuery element context (optional)
      */
-    self.retinaImages = function(context) {
+    self.retinaImages = function(context = false) {
 
         //check if client supports retina
         var isRetina = function() {
@@ -452,7 +452,7 @@ export default new function() {
         if (!isRetina()) return;
 
         //get elements
-        var elements = (typeof context != "undefined") ? $("img[data-retina]", context) : $("img[data-retina]");
+        var elements = !context ? $("img[data-retina]", context) : $("img[data-retina]");
 
         //for each image with attr data-retina
         elements.each(function() {
@@ -471,12 +471,14 @@ export default new function() {
 
     /**
      * Fallback for images that failed loading.
-     * @TODO: set event click to reload image source.
      * @method fallbackImages
+     * @param  {Object} context - A jQuery element context (optional)
      */
-    self.fallbackImages = function() {
+    self.fallbackImages = function(context = false) {
 
-        $("img[data-fallback]").on("error", function() {
+        var objects = !context ? $("img[data-fallback]", context) : $("img[data-fallback]");
+
+        objects.on("error", function() {
 
             if (APP.dev) { console.log("Core UI -> failed loading image:", $(this).attr("src")); }
 
@@ -488,10 +490,13 @@ export default new function() {
     /**
      * Async loding image
      * @method loadImage
+     * @param  {Object} context - A jQuery element context (optional)
      */
-    self.loadImages = function() {
+    self.loadImages = function(context = false) {
 
-        $("img[data-loader]").each(function() {
+        var objects = !context ? $("img[data-loader]", context) : $("img[data-loader]");
+
+        objects.each(function() {
 
             var obj = $(this);
             var img = new Image();
@@ -508,7 +513,7 @@ export default new function() {
                 //set new src
                 obj.attr("src", this.src);
 
-                if (APP.dev) { console.log("Core UI -> image loaded:", this.src); }
+                if (APP.dev) { console.log("Core UI -> image loaded (async):", this.src); }
             };
 
             //trigger download
