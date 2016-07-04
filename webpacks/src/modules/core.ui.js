@@ -25,7 +25,8 @@ export default new function() {
         sel_flash_messages : "#app-flash",
         sel_alert_box      : "div.app-alert",
         //uris
-        uri_img_fallback   : "images/icons/icon-image-fallback.png",
+        img_asset_fallback : "images/icons/icon-image-fallback.png",
+        img_asset_loading  : "images/icons/icon-loading1.svg",
         //setting vars
         pixel_ratio        : _.isUndefined(window.devicePixelRatio) ? 1 : window.devicePixelRatio
     });
@@ -51,7 +52,8 @@ export default new function() {
 
         //ajax setup
         self.setAjaxLoadingHandler();
-        //load retina images & fallback
+        //load images, apply retina & fallback
+        self.loadImages();
         self.retinaImages();
         self.fallbackImages();
         //check server flash messages
@@ -474,11 +476,40 @@ export default new function() {
      */
     self.fallbackImages = function() {
 
-        $("img").on("error", function() {
+        $("img[data-fallback]").on("error", function() {
 
             if (APP.dev) { console.log("Core UI -> failed loading image:", $(this).attr("src")); }
 
-            $(this).attr("src", core.staticUrl(APP.UI.uri_img_fallback));
+            $(this).attr("src", core.staticUrl(APP.UI.img_asset_fallback));
+        });
+    };
+
+
+    /**
+     * Async loding image
+     * @method loadImage
+     */
+    self.loadImages = function() {
+
+        $("img[data-loader]").each(function() {
+
+            let img = new Image();
+
+            img.onload = function() {
+
+                //set dimensions
+                if($(this)[0].hasAttribute("data-width"))
+                    $(this).attr("width", $(this).attr("data-width"));
+
+                if($(this)[0].hasAttribute("data-height"))
+                    $(this).attr("height", $(this).attr("data-height"));
+
+                //set new src
+                $(this).attr("src", this.src);
+            };
+
+            //trigger download
+            img.src = $(this).attr("data-loader]");
         });
     };
 
