@@ -107,6 +107,7 @@ export default new function() {
 
         //special case bootstrap 4
         let framework = core.framework;
+        
         //NOTE: hardcoded, drop support for bootstrap3
         if(framework == "bootstrap")
             framework += "4";
