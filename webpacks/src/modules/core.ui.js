@@ -493,23 +493,26 @@ export default new function() {
 
         $("img[data-loader]").each(function() {
 
-            let img = new Image();
+            var obj = $(this);
+            var img = new Image();
 
             img.onload = function() {
 
                 //set dimensions
-                if($(this)[0].hasAttribute("data-width"))
-                    $(this).attr("width", $(this).attr("data-width"));
+                if(obj[0].hasAttribute("data-width"))
+                    obj.attr("width", obj.attr("data-width"));
 
-                if($(this)[0].hasAttribute("data-height"))
-                    $(this).attr("height", $(this).attr("data-height"));
+                if(obj[0].hasAttribute("data-height"))
+                    obj.attr("height", obj.attr("data-height"));
 
                 //set new src
-                $(this).attr("src", this.src);
+                obj.attr("src", this.src);
+
+                if (APP.dev) { console.log("Core UI -> image loaded:", this.src); }
             };
 
             //trigger download
-            img.src = $(this).attr("data-loader]");
+            img.src = obj.attr("data-loader");
         });
     };
 
