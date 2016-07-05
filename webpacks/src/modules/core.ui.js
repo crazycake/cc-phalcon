@@ -452,7 +452,7 @@ export default new function() {
                     obj.attr("height", obj.attr("data-height"));
 
                 //set new src
-                obj.attr("src", this.src);
+                obj[0].src =  this.src;
 
                 if (APP.dev) { console.log("Core UI -> image loaded (async):", this.src); }
             };
