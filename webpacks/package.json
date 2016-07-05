@@ -35,7 +35,6 @@
     "jquery": "2.2.2",
     "js-cookie": "^2.1.2",
     "lodash": "^4.13.1",
-    "velocity-animate": "^1.2.3",
     "vue": "^1.0.25"
   },
   "browserify": {
@@ -50,8 +49,6 @@
     "jquery": "./node_modules/jquery/dist/jquery.js",
     "vue": "./node_modules/vue/dist/vue.js",
     "bluebird": "./node_modules/bluebird/js/browser/bluebird.core.js",
-    "velocity": "./node_modules/velocity-animate/velocity.js",
-    "velocity.ui": "./node_modules/velocity-animate/velocity.ui.js",
     "js-cookie": "./node_modules/js-cookie/src/js.cookie.js",
     "fg-loadcss": "./node_modules/fg-loadcss/src/loadCSS.js"
   },

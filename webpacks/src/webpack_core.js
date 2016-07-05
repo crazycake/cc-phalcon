@@ -12,8 +12,6 @@ import "vue";
 import "bluebird";
 import "js-cookie";
 import "jquery";
-import "velocity";
-import "velocity.ui";
 import "fg-loadcss";
 
 //plugins

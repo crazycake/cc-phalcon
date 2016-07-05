@@ -73,7 +73,7 @@
             </script>
         {% else %}
             <script>
-                console.log('App Core -> (warning) javascript APP or UA scope vars are not defined.');
+                console.log('Core -> (warning) javascript APP or UA scope vars are not defined.');
             </script>
         {% endif %}
 
@@ -133,7 +133,7 @@
         {# debug: output render time #}
         {% if constant("APP_ENVIRONMENT") != "production" %}
             <script>
-                console.log('App Core -> PhalconPHP <?php echo \Phalcon\Version::get(); ?>. Page rendered in <?php echo number_format((float)(microtime(true) - APP_START), 3, ".", ""); ?> seconds.');
+                console.log('Core -> PhalconPHP <?php echo \Phalcon\Version::get(); ?>. Page rendered in <?php echo number_format((float)(microtime(true) - APP_START), 3, ".", ""); ?> seconds.');
             </script>
         {% endif %}
 
