@@ -79,7 +79,7 @@ export default new function() {
         //css async loading
         if(!_.isUndefined(APP.cssLazy) && APP.cssLazy) {
 
-            if (APP.dev) { console.log("Core: loading async CSS file", APP.cssLazy); }
+            if (APP.dev) { console.log("Core -> loading CSS file (async)", APP.cssLazy); }
             loadCSS(APP.cssLazy);
         }
 
