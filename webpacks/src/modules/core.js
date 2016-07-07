@@ -324,8 +324,13 @@ export default new function() {
         //promise finisher
         .finally(function() {
 
-            if (_.isObject(submit_btn) && submit_btn.length)
-                submit_btn.removeAttr("disabled"); //enable button?
+            if (!submit_btn.length)
+                return true;
+
+            //re-enable button
+            submit_btn
+                .removeAttr("disabled")
+                .removeClass("disabled");
 
             return true;
         });
