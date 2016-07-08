@@ -25,7 +25,7 @@ CORE_SRC_TOOLS=$CORE_SRC_PATH"tools/"
 CORE_SRC_WEBPACKS=$CORE_SRC_PATH"webpacks/"
 
 # main app bash file
-MAIN_TOOL_FILE="app"
+ROOT_TOOL_FILES=("app.bash" "gulpfile.babel.js")
 
 # check if cc-phalcon symlink is present
 if [ ! -d $CORE_SRC_PATH ]; then
@@ -43,12 +43,10 @@ copyToolFiles() {
 
 		#get file props
 		FILENAME=$(basename "$FILE")
-		EXT="${FILENAME##*.}"
-		FILENAME="${FILENAME%.*}"
 
-		echo -e "\033[96mCopying script file $FILENAME.$EXT ... \033[0m"
+		echo -e "\033[96mCopying script file $FILENAME... \033[0m"
 		# exclude main app script file (project folder)
-		if [ "$FILENAME" = "$MAIN_TOOL_FILE" ]; then
+		if [[ " ${ROOT_TOOL_FILES[@]} " =~ " ${FILENAME} " ]]; then
 	        cp $FILE "$PROJECT_PATH/"
 	    else
 			cp $FILE "$TOOLS_PATH/"
