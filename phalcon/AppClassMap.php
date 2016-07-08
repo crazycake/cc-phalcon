@@ -77,6 +77,7 @@ return array (
     2 => 'Mailer.php',
     3 => 'Redis.php',
     4 => 'StorageS3.php',
+    5 => 'Uploader.php',
   ),
   'soap' => 
   array (
