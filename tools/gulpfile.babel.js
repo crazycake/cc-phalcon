@@ -115,9 +115,9 @@ gulp.task("watch", watchApp);
 gulp.task("watch-mailing", watchMailing);
 //build mailing
 gulp.task("build-mailing", buildMailing);
-//JS minfier (gulp-uglify is slow)
+//JS minify
 gulp.task("minify-js", minifyJs);
-//CSS minfier
+//CSS minify
 gulp.task("minify-css", minifyCss);
 //create assets revision (CDN)
 gulp.task("rev-assets", revision);
@@ -162,7 +162,7 @@ function bundleApp(release = false) {
 }
 
 /**
- * Minifies JS with uglifyjs (faster than pipe)
+ * Minifies JS with uglifyify
  */
 function minifyJs() {
 
