@@ -16,8 +16,10 @@ import gutil from "gulp-util";
 //++ Browserify
 
 //get argument
+let environment = yargs.argv.e;
 let webpack_arg = yargs.argv.w;
 //check args
+environment = (typeof environment !== "undefined") ? environment : "production";
 webpack_arg = (typeof webpack_arg !== "undefined") ? webpack_arg : "webpack_core";
 
 //set consts
@@ -25,12 +27,15 @@ const webpack_name =  webpack_arg;
 const webpack_src  = "./src/" + webpack_name + ".js";
 const webpack_dist = "./dist/js/";
 
+//set environment
+process.env.NODE_ENV = environment;
+
 // set up the browserify instance on a task basis
 const browserify_conf = {
     entries      : [webpack_src],
     cache        : {},
     packageCache : {},
-    debug        : false //set to false for release, true enables source-maps
+    debug        : !(environment == "production") //true enables source-maps
 };
 
 //set browserify object
