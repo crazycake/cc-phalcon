@@ -71,15 +71,16 @@ const sass_mailing_conf = {
 const app_paths = {
     assets   : "./" + app_module + "/public/assets/",
     sass     : "./" + app_module + "/dev/scss/",
-    volt     : "./" + app_module + "/dev/volt/",
+    js       : "./" + app_module + "/dev/js/",
     vue      : "./" + app_module + "/dev/vue/",
+    volt     : "./" + app_module + "/dev/volt/",
     mailing  : "./" + app_module + "/dev/mailing/",
     webpack  : "./" + core_path  + "js/webpack_core.bundle.min.js"
 };
 
 // set up the browserify instance on a task basis
 const browserify_opts = assign({}, watchify.args, {
-    entries      : ["./" + app_module + "/dev/js/app.js"],
+    entries      : [app_paths.js + "app.js"],
     cache        : {},
     packageCache : {},
     plugin       : [watchify]
@@ -213,8 +214,12 @@ function watchApp() {
     bundleApp();
     //sass files
     gulp.watch([app_paths.sass + "*.scss", app_paths.sass + "**/*.scss"], buildSass);
-    //volt & vue files
-    gulp.watch([app_paths.volt + "**/*.volt", app_paths.vue + "*.vue"], function() {
+    //vue files
+    gulp.watch(app_paths.vue + "*.vue", function() {
+        return gulp.src(app_paths.js + "app.js").pipe(livereload());
+    });
+    //volt
+    gulp.watch(app_paths.volt + "**/*.volt", function() {
         return gulp.src(app_paths.volt + "index.volt").pipe(livereload());
     });
 }
