@@ -21,7 +21,7 @@ STORAGE_PATH=$PROJECT_PATH"/storage/"
 COMPOSER_PATH=$PROJECT_PATH"/vendor/"
 
 # npm global dependencies
-NPM_GLOBAL_DEPENDENCIES="gulp uglify-js npm-check eslint"
+NPM_GLOBAL_DEPENDENCIES="gulp npm-check"
 
 # apache set up
 USER_NAME="$(whoami)"
