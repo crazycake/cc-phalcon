@@ -34,6 +34,12 @@ trait Uploader
     protected static $DEFAULT_FILE_TYPE = ["csv"];
 
     /**
+     * Header Name for file checking
+     * @var string
+     */
+    protected static $HEADER_NAME = "File-Key";
+
+    /**
 	 * Config var
 	 * @var array
 	 */
@@ -51,12 +57,11 @@ trait Uploader
         if(!is_dir(self::$UPLOAD_PATH))
             mkdir(self::$UPLOAD_PATH, 0755);
 
-        //set defaults
-        if(!isset($this->uploader_conf["max_size"]))
-            $this->uploader_conf["max_size"] = self::$DEFAULT_MAX_SIZE;
+        if(empty($conf["files"]))
+            throw new Exception("Uploader requires files array in config.");
 
-        if(!isset($this->uploader_conf["file_type"]))
-            $this->uploader_conf["file_type"] = self::$DEFAULT_FILE_TYPE;
+        //set data for view
+        $this->view->setVar("upload_files", $this->uploader_conf["files"]);
     }
 
     /**
@@ -71,22 +76,35 @@ trait Uploader
         if (!$this->request->hasFiles())
             $this->jsonResponse(901);
 
+        // get headers to set the uploaded object
+        $headers = $this->request->getHeaders();
+
+        if(empty($headers[self::$HEADER_NAME]))
+            $this->jsonResponse(406);
+
         // loop through uploaded files
         $files = $this->request->getUploadedFiles();
 
-        foreach ($files as $file) {
+        foreach ($files as $index => $file) {
 
-            $validated_file = $this->_validateUploadedFile($file);
+            //validate file
+            $new_file = $this->_validateUploadedFile($file, $headers[self::$HEADER_NAME]);
 
             //check for error
-            if ($validated_file["error"]) {
-                array_push($errors, $validated_file["error"]);
+            if ($new_file["error"]) {
+                array_push($errors, $new_file["error"]);
                 continue;
             }
 
-            array_push($uploaded, $validated_file);
-            //Move the file into the application
-            $file->moveTo(self::$UPLOAD_PATH.$validated_file["namespace"]);
+            //set file saved name
+            $save_name = $new_file["key"].($index + 1).".".$new_file["ext"];
+            //append resource url
+            $new_file["url"] = $this->baseUrl("uploads/temp/".$save_name."?v=".time());
+
+            //move file into temp folder
+            $file->moveTo(self::$UPLOAD_PATH.$save_name);
+            //push to array
+            array_push($uploaded, $new_file);
         }
 
         //set payload
@@ -117,50 +135,64 @@ trait Uploader
      * Validate uploaded file
      * @return array
      */
-    private function _validateUploadedFile($file)
+    private function _validateUploadedFile($file, $file_key = "")
     {
         //get file properties
-        $file_key        = $file->getKey();
         $file_name       = $file->getName();
         $file_name_array = explode(".", $file_name);
 
-        $file_ext       = end($file_name_array);                     //get file extension
-        $file_cname     = str_replace(".$file_ext", "", $file_name); //get clean name
-        $file_mimetype  = $file->getRealType();                      //real file MIME type
-        $file_size      = (float)($file->getSize() / 1000);          //set to KB unit
-        $file_namespace = Slug::generate($file_cname);               //namespacer slug
+        $file_ext       = end($file_name_array);
+        $file_cname     = str_replace(".".$file_ext, "", $file_name);
+        $file_namespace = Slug::generate($file_cname);
+        $file_mimetype  = $file->getRealType();              //real file MIME type
+        $file_size      = (float)($file->getSize() / 1000);  //set to KB unit
 
         //set array keys
-        $validated_file = [
+        $new_file = [
             "name"      => $file_name,
-            "namespace" => $file_namespace.".$file_ext",
+            "namespace" => $file_namespace,
             "size"      => $file_size,
             "key"       => $file_key,
             "ext"       => $file_ext,
             "mime"      => $file_mimetype,
             "error"     => false
         ];
-        //var_dump($validated_file);exit;
+        //var_dump($new_file);exit;
 
-        //check size
-        if ($file_size > $this->uploader_conf["max_size"]) {
+        try {
 
-            $validated_file["error_code"] = 910;
-            //msg
-            $validated_file["error"] = str_replace(["{file}", "{size}"],[$file_name, $this->uploader_conf["max_size"]." KB"],
-                                                    $this->uploader_conf["trans"]["MAX_SIZE"]);
+            //get file config with file_key
+            $file_conf = array_filter($this->uploader_conf["files"], function($o) use ($file_key) {
+
+                return $o["key"] == $file_key;
+            });
+
+            if(empty($file_conf))
+                throw new Exception("Uploader file configuration missing for $file_name.");
+
+            //get first
+            $file_conf = $file_conf[0];
+
+            //set defaults
+            if(!isset($file_conf["max_size"]))
+                $file_conf["max_size"] = self::$DEFAULT_MAX_SIZE;
+
+            if(!isset($file_conf["type"]))
+                $file_conf["type"] = self::$DEFAULT_FILE_TYPE;
+
+            //validations
+            if ($file_size > $file_conf["max_size"])
+                throw new Exception(str_replace(["{file}", "{size}"],[$file_name, $file_conf["max_size"]." KB"],
+                                                                      $this->uploader_conf["trans"]["MAX_SIZE"]));
+
+            if (!in_array($file_ext, $file_conf["type"]))
+                throw new Exception(str_replace("{file}", $file_name, $this->uploader_conf["trans"]["FILE_TYPE"]));
         }
-        //check extension
-        else if (!in_array($file_ext, $this->uploader_conf["file_type"])) {
+        catch (Exception $e) {
 
-            $validated_file["error_code"] = 911;
-            //msg
-            $validated_file["error"] = str_replace("{file}", $file_name, $this->uploader_conf["trans"]["FILE_TYPE"]);
+            $new_file["error"] = $e->getMessage();
         }
 
-        //append resource url
-        $validated_file["url"] = $this->baseUrl("uploads/temp/".$validated_file["namespace"]);
-
-        return $validated_file;
+        return $new_file;
     }
 }
