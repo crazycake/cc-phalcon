@@ -11,16 +11,10 @@ use Phalcon\Exception;
 use CrazyCake\Helpers\Slug;
 
 /**
- * Uploader Adapter Handler
+ * Uploader Adapter Handler.
  */
 trait Uploader
 {
-    /**
-     * Temporal upload path
-     * @var string
-     */
-    protected static $UPLOAD_PATH = PUBLIC_PATH."uploads/temp/";
-
     /**
      * Default upload max size
      * @var integer
@@ -40,25 +34,43 @@ trait Uploader
     protected static $HEADER_NAME = "File-Key";
 
     /**
+     * Root upload path
+     * Files are saved in a temporal public user folder.
+     * @var string
+     */
+    protected static $ROOT_UPLOAD_PATH = PUBLIC_PATH."uploads/temp/";
+
+    /**
 	 * Config var
 	 * @var array
 	 */
-	public $uploader_conf;
+	protected $uploader_conf;
 
     /**
      * This method must be call in constructor parent class
      * @param array $conf - The config array
      */
-    public function initUploader($conf = [])
+    protected function initUploader($conf = [])
     {
         $this->uploader_conf = $conf;
 
-        //create dir if not exists
-        if(!is_dir(self::$UPLOAD_PATH))
-            mkdir(self::$UPLOAD_PATH, 0755);
-
         if(empty($conf["files"]))
             throw new Exception("Uploader requires files array in config.");
+
+        //get session user id
+        $user_session = $this->session->get("user");
+        //set upload path
+        $this->uploader_conf["path"] = self::$ROOT_UPLOAD_PATH.$user_session["id_hashed"]."/";
+
+        //create dir if not exists
+        if(!is_dir($this->uploader_conf["path"])) {
+            mkdir($this->uploader_conf["path"], 0755);
+        }
+        else {
+            //clean folder?
+            if(!$this->request->isAjax())
+                $this->cleanUploadFolder();
+        }
 
         //set data for view
         $this->view->setVar("upload_files", $this->uploader_conf["files"]);
@@ -102,7 +114,7 @@ trait Uploader
             $new_file["url"] = $this->baseUrl("uploads/temp/".$save_name."?v=".time());
 
             //move file into temp folder
-            $file->moveTo(self::$UPLOAD_PATH.$save_name);
+            $file->moveTo($this->uploader_conf["path"].$save_name);
             //push to array
             array_push($uploaded, $new_file);
         }
@@ -118,15 +130,23 @@ trait Uploader
     }
 
     /**
+     * Copy files in upload folder to given path
+     */
+    protected function copyFilesTo($path = "")
+    {
+
+    }
+
+    /**
      * Cleans upload temporal folder
      */
-    public function cleanTemporalFolder()
+    protected function cleanUploadFolder()
     {
-        if(!is_dir(self::$UPLOAD_PATH))
+        if(!is_dir($this->uploader_conf["path"]))
             return;
 
         //cleans folder
-        array_map('unlink', glob(self::$UPLOAD_PATH."*"));
+        array_map('unlink', glob($this->uploader_conf["path"]."*"));
     }
 
     /** ------------------------------------------- § ------------------------------------------------ **/
