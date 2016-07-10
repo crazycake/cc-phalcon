@@ -25,8 +25,9 @@ trait AccountSession
      */
     abstract protected function onUserLoggedIn($user);
 
-
-    /** const **/
+    /**
+     * Excluded user props to be saved in session
+     */
     protected static $DEFAULT_USER_PROPS_FILTER = ["id", "account_flag", "auth"];
 
     /**
