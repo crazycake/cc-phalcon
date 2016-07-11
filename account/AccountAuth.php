@@ -22,6 +22,16 @@ use CrazyCake\Helpers\ReCaptcha;
 trait AccountAuth
 {
     /**
+     * Session Handler Event Handler OnUserLoggedIn
+     */
+    abstract public function dispatchOnUserLoggedIn($uri = "account", $payload = null, $auth_redirect = true);
+
+    /**
+     * Session Destructor with Autoredirection (logout)
+     */
+    abstract public function destroyUserSessionAndRedirect($uri = "signIn");
+
+    /**
      * Before Render SignIn View Listener
      */
     abstract public function beforeRenderSignInView();
@@ -131,6 +141,7 @@ trait AccountAuth
 
             //success login
             $this->userHasLoggedIn($user_id);
+            //session
             $this->dispatchOnUserLoggedIn();
         }
         catch (Exception $e) {
@@ -190,6 +201,7 @@ trait AccountAuth
 
         //success login
         $this->userHasLoggedIn($user->id);
+        //session controller
         $this->dispatchOnUserLoggedIn();
     }
 

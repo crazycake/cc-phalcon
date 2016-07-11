@@ -119,7 +119,8 @@ trait Uploader
             //set file saved name
             $save_name = $new_file["key"]."-".time().".".$new_file["ext"];
             //append resource url
-            $new_file["url"] = $this->baseUrl("uploads/temp/".$save_name);
+            $new_file["url"]       = $this->baseUrl("uploads/temp/".$save_name);
+            $new_file["save_name"] = $save_name;
 
             //move file into temp folder
             $file->moveTo($this->uploader_conf["path"].$save_name);
@@ -138,13 +139,14 @@ trait Uploader
     }
 
     /**
-     * Ajax Action - Cleans upload temporal folder
+     * Ajax Action - Removes a file in uploader folder
      */
-    public function cleanUploadFolderAction()
+    public function removeFileAction()
     {
         $this->onlyAjax();
 
-        $this->cleanUploadFolder();
+        //cleans folder
+        array_map('unlink', glob($this->uploader_conf["path"]."*"));
 
         $this->jsonResponse(200);
     }
