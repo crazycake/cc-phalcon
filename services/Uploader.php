@@ -47,6 +47,12 @@ trait Uploader
 	protected $uploader_conf;
 
     /**
+	 * Request headers
+	 * @var array
+	 */
+	private $headers;
+
+    /**
      * This method must be call in constructor parent class
      * @param array $conf - The config array
      */
@@ -56,6 +62,9 @@ trait Uploader
 
         if(empty($conf["files"]))
             throw new Exception("Uploader requires files array in config.");
+
+        //set request headers
+        $this->headers = $this->request->getHeaders();
 
         //get session user id
         $user_session = $this->session->get("user");
@@ -67,8 +76,9 @@ trait Uploader
             mkdir($this->uploader_conf["path"], 0755);
         }
         else {
-            //clean folder?
-            if(!$this->request->isAjax())
+
+            //clean folder if uploader header is not present
+            if(empty($this->headers[self::$HEADER_NAME]))
                 $this->cleanUploadFolder();
         }
 
@@ -84,23 +94,21 @@ trait Uploader
         $uploaded = [];
         $errors   = [];
 
-        // check if user has uploaded files
+        //check if user has uploaded files
         if (!$this->request->hasFiles())
             $this->jsonResponse(901);
 
-        // get headers to set the uploaded object
-        $headers = $this->request->getHeaders();
-
-        if(empty($headers[self::$HEADER_NAME]))
+        //check header
+        if(empty($this->headers[self::$HEADER_NAME]))
             $this->jsonResponse(406);
 
         // loop through uploaded files
         $files = $this->request->getUploadedFiles();
 
-        foreach ($files as $index => $file) {
+        foreach ($files as $file) {
 
             //validate file
-            $new_file = $this->_validateUploadedFile($file, $headers[self::$HEADER_NAME]);
+            $new_file = $this->_validateUploadedFile($file, $this->headers[self::$HEADER_NAME]);
 
             //check for error
             if ($new_file["error"]) {
@@ -109,9 +117,9 @@ trait Uploader
             }
 
             //set file saved name
-            $save_name = $new_file["key"].($index + 1).".".$new_file["ext"];
+            $save_name = $new_file["key"]."-".time().".".$new_file["ext"];
             //append resource url
-            $new_file["url"] = $this->baseUrl("uploads/temp/".$save_name."?v=".time());
+            $new_file["url"] = $this->baseUrl("uploads/temp/".$save_name);
 
             //move file into temp folder
             $file->moveTo($this->uploader_conf["path"].$save_name);
@@ -130,11 +138,15 @@ trait Uploader
     }
 
     /**
-     * Copy files in upload folder to given path
+     * Ajax Action - Cleans upload temporal folder
      */
-    protected function copyFilesTo($path = "")
+    public function cleanUploadFolderAction()
     {
+        $this->onlyAjax();
 
+        $this->cleanUploadFolder();
+
+        $this->jsonResponse(200);
     }
 
     /**
@@ -147,6 +159,14 @@ trait Uploader
 
         //cleans folder
         array_map('unlink', glob($this->uploader_conf["path"]."*"));
+    }
+
+    /**
+     * Copy files in upload folder to given path
+     */
+    protected function copyFilesToPath($path = "")
+    {
+
     }
 
     /** ------------------------------------------- § ------------------------------------------------ **/
