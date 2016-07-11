@@ -214,10 +214,6 @@ function watchApp() {
     bundleApp();
     //sass files
     gulp.watch([app_paths.sass + "*.scss", app_paths.sass + "**/*.scss"], buildSass);
-    //vue files
-    gulp.watch(app_paths.vue + "*.vue", function() {
-        return gulp.src(app_paths.js + "app.js").pipe(livereload());
-    });
     //volt
     gulp.watch(app_paths.volt + "**/*.volt", function() {
         return gulp.src(app_paths.volt + "index.volt").pipe(livereload());
