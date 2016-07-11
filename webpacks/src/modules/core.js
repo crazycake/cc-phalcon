@@ -324,7 +324,7 @@ export default new function() {
         //promise finisher
         .finally(function() {
 
-            if (!submit_btn.length)
+            if (_.isUndefined(submit_btn) || !submit_btn.length)
                 return true;
 
             //re-enable button
