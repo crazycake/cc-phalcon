@@ -117,10 +117,12 @@ trait Uploader
             }
 
             //set file saved name
-            $save_name = $new_file["key"]."-".time().".".$new_file["ext"];
+            $namespace = $new_file["key"]."-".time();
+            $save_name = $namespace.".".$new_file["ext"];
             //append resource url
-            $new_file["url"]       = $this->baseUrl("uploads/temp/".$save_name);
-            $new_file["save_name"] = $save_name;
+            $new_file["url"]            = $this->baseUrl("uploads/temp/".$save_name);
+            $new_file["save_name"]      = $save_name;
+            $new_file["save_namespace"] = $namespace;
 
             //move file into temp folder
             $file->moveTo($this->uploader_conf["path"].$save_name);
@@ -139,14 +141,25 @@ trait Uploader
     }
 
     /**
-     * Ajax Action - Removes a file in uploader folder
+     * Ajax POST Action - Removes a file in uploader folder
      */
-    public function removeFileAction()
+    public function removeUploadedFileAction()
     {
         $this->onlyAjax();
 
-        //cleans folder
-        array_map('unlink', glob($this->uploader_conf["path"]."*"));
+        //validate and filter request params data, second params are the required fields
+        $data = $this->handleRequest([
+            "uploaded_file" => "array"
+        ]);
+
+        $file = $data["uploaded_file"];
+
+        //get file path
+        $file_path = $this->uploader_conf["path"].$file["save_name"];
+
+        //check if exists
+        if(is_file($file_path))
+            unlink($file_path);
 
         $this->jsonResponse(200);
     }
@@ -186,8 +199,8 @@ trait Uploader
         $file_ext       = end($file_name_array);
         $file_cname     = str_replace(".".$file_ext, "", $file_name);
         $file_namespace = Slug::generate($file_cname);
-        $file_mimetype  = $file->getRealType();              //real file MIME type
-        $file_size      = (float)($file->getSize() / 1000);  //set to KB unit
+        $file_mimetype  = $file->getRealType();       //real file MIME type
+        $file_size      = (float)($file->getSize());  //set to KB unit
 
         //set array keys
         $new_file = [
@@ -223,7 +236,7 @@ trait Uploader
                 $file_conf["type"] = self::$DEFAULT_FILE_TYPE;
 
             //validations
-            if ($file_size > $file_conf["max_size"])
+            if ($file_size/1024 > $file_conf["max_size"])
                 throw new Exception(str_replace(["{file}", "{size}"],[$file_name, $file_conf["max_size"]." KB"],
                                                                       $this->uploader_conf["trans"]["MAX_SIZE"]));
 
