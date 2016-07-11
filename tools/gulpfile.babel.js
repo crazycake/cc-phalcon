@@ -159,7 +159,7 @@ function bundleApp(release = false) {
             .pipe(gulpif(release, rename({ suffix : ".min" })))
             .pipe(chmod(775))
             .pipe(gulp.dest(app_paths.assets))
-            .pipe(gulpif(!release, livereload()));
+            .pipe(livereload());
 }
 
 /**
