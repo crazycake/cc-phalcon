@@ -278,7 +278,7 @@ export default new function() {
             if (_.isNull(form))
                 _.assign(payload, extended_data); //considerar objetos livianos (selectionDirection error)
             else
-                payload.push({ name : "extended", value : extended_data });  //serialized object struct
+                payload.push({ name : "payload", value : extended_data });  //serialized object struct
         }
 
         //append CSRF token
