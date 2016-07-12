@@ -232,12 +232,7 @@ trait Uploader
 
                 //TODO: resize
                 if(isset($file_conf["resize"])) {
-
-                    $image = new GD($dest);
-
-                    // foreach ($file_conf["resize"] as $key => $value) {
-                    //
-                    // }
+                    
                 }
 
                 $i++;

@@ -89,7 +89,7 @@ trait Crud
     }
 
     /**
-     * View for Update Object
+     * Ajax POST action for update an Object
      */
     public function updateAction()
     {
@@ -97,7 +97,7 @@ trait Crud
     }
 
     /**
-     * Ajax POST Action for deleting an Object
+     * Ajax POST Action for delete an Object
      */
     public function deleteAction()
     {
