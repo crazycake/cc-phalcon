@@ -2,12 +2,15 @@
 /**
  * Uploader Adapter
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
+ * Imagick Adapter required
+ * @link https://docs.phalconphp.com/en/latest/api/Phalcon_Image_Adapter_Imagick.html
  */
 
 namespace CrazyCake\Services;
 
 //imports
 use Phalcon\Exception;
+use Phalcon\Image\Adapter\GD;
 use CrazyCake\Helpers\Slug;
 
 /**
@@ -228,7 +231,14 @@ trait Uploader
                 });
 
                 //TODO: resize
-                //if(isset($file_conf["resize"]))
+                if(isset($file_conf["resize"])) {
+
+                    $image = new GD($dest);
+
+                    // foreach ($file_conf["resize"] as $key => $value) {
+                    //
+                    // }
+                }
 
                 $i++;
             }
@@ -286,13 +296,28 @@ trait Uploader
             if(!isset($file_conf["type"]))
                 $file_conf["type"] = self::$DEFAULT_FILE_TYPE;
 
-            //validations
+            //validation: max-size
             if ($file_size/1024 > $file_conf["max_size"])
                 throw new Exception(str_replace(["{file}", "{size}"],[$file_name, $file_conf["max_size"]." KB"],
                                                                       $this->uploader_conf["trans"]["MAX_SIZE"]));
-
+            //validation: file-type
             if (!in_array($file_ext, $file_conf["type"]))
                 throw new Exception(str_replace("{file}", $file_name, $this->uploader_conf["trans"]["FILE_TYPE"]));
+
+            //validation: image size
+            if(isset($file_conf["isize"])) {
+
+                $size  = $file_conf["isize"];
+                $image = new GD($file->getTempName());
+
+                //fixed width
+                if(isset($size["w"]) && $size["w"] != $image->getWidth())
+                    throw new Exception(str_replace(["{file}", "{w}"], [$file_name, $size["w"]], $this->uploader_conf["trans"]["IMG_WIDTH"]));
+
+                //fixed height
+                if(isset($size["h"]) && $size["h"] != $image->getHeight())
+                    throw new Exception(str_replace(["{file}", "{h}"], [$file_name, $size["h"]], $this->uploader_conf["trans"]["IMG_HEIGHT"]));
+            }
         }
         catch (Exception $e) {
 
