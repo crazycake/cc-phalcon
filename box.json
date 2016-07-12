@@ -3,6 +3,7 @@
     "directories": [
 		"phalcon",
 		"core",
+		"controllers",
 		"models",
 		"services",
 		"account",

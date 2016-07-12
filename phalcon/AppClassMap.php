@@ -18,6 +18,10 @@ return array (
     3 => 'CheckoutJobs.php',
     4 => 'CheckoutManager.php',
   ),
+  'controllers' => 
+  array (
+    0 => 'Crud.php',
+  ),
   'core' => 
   array (
     0 => 'Core.php',
