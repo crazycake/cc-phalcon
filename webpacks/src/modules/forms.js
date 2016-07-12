@@ -107,7 +107,7 @@ export default new function() {
 
         //special case bootstrap 4
         let framework = core.framework;
-        
+
         //NOTE: hardcoded, drop support for bootstrap3
         if(framework == "bootstrap")
             framework += "4";
@@ -184,13 +184,17 @@ export default new function() {
     /**
      * Revalidates a field in form.
      * @method revalidateFormField
-     * @param  {Object} form - A form jQuery object or native element
      * @param  {String} field - The field name
+     * @param  {Object} form - A form jQuery object or native element context (optional)
      */
-    self.revalidateFormField = function(form, field) {
+    self.revalidateFormField = function(field, form = null) {
 
-        if (form instanceof jQuery === false)
+        if(_.isNull(form)) {
+            form = $("form[data-validate]");
+        }
+        else if (form instanceof jQuery === false) {
             form = $(form);
+        }
 
         var fv = form.data("formValidation");
         fv.updateStatus(field, "NOT_VALIDATED");
@@ -306,9 +310,9 @@ export default new function() {
             if (APP.dev) { console.log("Forms -> reCaptcha validation OK!"); }
 
             //set valid option on sibling input hidden
-            $(APP.UI.sel_recaptcha).siblings("input").eq(0).val("1");
+            $(APP.UI.sel_recaptcha).siblings("input:hidden").eq(0).val("1");
             //reset form field
-            self.revalidateFormField($(APP.UI.sel_recaptcha).parents("form").eq(0), "reCaptchaValue");
+            self.revalidateFormField("reCaptchaValue");
         };
         //render reCaptcha through API call
         grecaptcha.render(APP.UI.sel_recaptcha.replace("#", ""), {
