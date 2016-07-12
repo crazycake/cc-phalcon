@@ -38,7 +38,7 @@ trait Uploader
      * Files are saved in a temporal public user folder.
      * @var string
      */
-    protected static $ROOT_UPLOAD_PATH = PUBLIC_PATH."uploads/temp/";
+    protected static $ROOT_UPLOAD_PATH = PUBLIC_PATH."uploads/";
 
     /**
 	 * Config var
@@ -69,21 +69,25 @@ trait Uploader
         //get session user id
         $user_session = $this->session->get("user");
         //set upload path
-        $this->uploader_conf["path"] = self::$ROOT_UPLOAD_PATH.$user_session["id_hashed"]."/";
+        $this->uploader_conf["path"] = self::$ROOT_UPLOAD_PATH."temp/".$user_session["id_hashed"]."/";
 
         //create dir if not exists
         if(!is_dir($this->uploader_conf["path"])) {
             mkdir($this->uploader_conf["path"], 0755);
         }
-        else {
-
-            //clean folder if uploader header is not present
-            if(empty($this->headers[self::$HEADER_NAME]))
-                $this->cleanUploadFolder();
-        }
 
         //set data for view
         $this->view->setVar("upload_files", $this->uploader_conf["files"]);
+    }
+
+    /**
+     * afterDispatch event, cleans upload folder for non ajax requests
+     */
+    protected function afterDispatch()
+    {
+        //clean folder if uploader header is not present
+        if(!$this->request->isAjax())
+            $this->cleanUploadFolder();
     }
 
     /**
@@ -177,11 +181,58 @@ trait Uploader
     }
 
     /**
-     * Copy files in upload folder to given path
+     * Move Uploaded files
+     * @param array $map - The file destination map
      */
-    protected function copyFilesToPath($path = "")
+    protected function moveUploadedFiles($map = [])
     {
+        //exclude hidden files
+        $uploaded_files = preg_grep('/^([^.])/', scandir($this->uploader_conf["path"]));
 
+        foreach ($map as $key => $object_id) {
+
+            $i = 1;
+            foreach ($uploaded_files as $file) {
+
+                //check key if belongs
+                if(strpos($file, $key) === false)
+                    continue;
+
+                //remove timestamp & replace it for an index
+                $dest_filename = preg_replace("/[\\-\\d]{6,}/", $i, $file);
+
+                //strip object name
+                preg_match("/^(.*?)\\_.*/", $file, $key_objects);
+
+                if(!isset($key_objects[1]))
+                    continue;
+
+                //hash id
+                $id_hashed = $this->getDI()->getShared('cryptify')->encryptHashId($object_id);
+
+                $org  = $this->uploader_conf["path"].$file;
+                $dest = self::$ROOT_UPLOAD_PATH.strtolower($key_objects[1])."/".$id_hashed."/";
+
+                if(!is_dir($dest))
+                    mkdir($dest, 0755, true);
+
+                //copy file ...
+                copy($org, $dest.$dest_filename);
+                //unlink temp file
+                unlink($org);
+
+                //get file config with file_key
+                $file_conf = array_filter($this->uploader_conf["files"], function($o) use ($key) {
+
+                    return $o["key"] == $key;
+                });
+
+                //TODO: resize
+                //if(isset($file_conf["resize"]))
+
+                $i++;
+            }
+        }
     }
 
     /** ------------------------------------------- § ------------------------------------------------ **/

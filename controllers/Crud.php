@@ -1,10 +1,13 @@
 <?php
 /**
- * BaseCrud Trait
+ * BaseCrud Trait for Backend apps.
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
 namespace CrazyCake\Controllers;
+
+//imports
+use CrazyCake\Phalcon\AppModule;
 
 /**
  * Base CRUD Controller
@@ -17,13 +20,17 @@ trait Crud
     abstract protected function onBeforeSave(&$data);
 
     /**
+     * Event on after save
+     */
+    abstract protected function onAfterSave(&$data);
+
+    /**
 	 * Config var
 	 * @var array
 	 */
 	protected $crud_conf;
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
-
 
     /**
      * This method must be call in constructor parent class
@@ -35,29 +42,36 @@ trait Crud
 
         if(empty($conf["model"]))
             throw new Exception("Crud requires object model class name.");
-
     }
 
     /**
      * View to get a collection of objects
      */
-    protected function listAction()
+    public function listAction()
     {
 
     }
 
     /**
-     * View for New Object
+     * Ajax POST action for New Object
      */
-    protected function newAction()
+    public function newAction()
     {
-        //get data
-        $data = $this->handleRequest([
-            "payload" => "",
-        ]);
+        $this->onlyAjax();
 
-        //call listener
-        $this->onBeforeSave($data);
+        //get data
+        $data = $this->handleRequest();
+
+        //merge paylod if set
+        $this->_mergePayload($data);
+
+        try {
+            //call listener
+            $this->onBeforeSave($data);
+        }
+        catch(Exception $e) {
+            $this->jsonResponse(200, $e->getMessage(), "alert");
+        }
 
         //save object
         $object_class = AppModule::getClass($this->crud_conf["model"]);
@@ -67,6 +81,9 @@ trait Crud
         if(!$object->save($data))
             throw new Exception($object->getMessages());
 
+        //call listener
+        $this->onAfterSave($object);
+
         //send response
         $this->jsonResponse(200, $object->toArray());
     }
@@ -74,7 +91,7 @@ trait Crud
     /**
      * View for Update Object
      */
-    protected function updateAction()
+    public function updateAction()
     {
 
     }
@@ -82,8 +99,25 @@ trait Crud
     /**
      * Ajax POST Action for deleting an Object
      */
-    protected function deleteAction()
+    public function deleteAction()
     {
 
+    }
+
+    /* --------------------------------------------------- § -------------------------------------------------------- */
+
+    private function _mergePayload(&$data)
+    {
+        //merge payload if set
+        if(!isset($data["payload"]))
+            return;
+
+        $payload = json_decode($data["payload"], true);
+
+        //merge
+        $data = array_merge($data, $payload);
+
+        //unset payload
+        unset($data["payload"]);
     }
 }
