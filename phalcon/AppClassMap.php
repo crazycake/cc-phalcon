@@ -21,6 +21,10 @@ return array (
   'controllers' => 
   array (
     0 => 'Crud.php',
+    1 => 'Mailer.php',
+    2 => 'Requester.php',
+    3 => 'Responser.php',
+    4 => 'Uploader.php',
   ),
   'core' => 
   array (
@@ -77,11 +81,8 @@ return array (
   'services' => 
   array (
     0 => 'GetText.php',
-    1 => 'Guzzle.php',
-    2 => 'Mailer.php',
-    3 => 'Redis.php',
-    4 => 'StorageS3.php',
-    5 => 'Uploader.php',
+    1 => 'Redis.php',
+    2 => 'StorageS3.php',
   ),
   'soap' => 
   array (
