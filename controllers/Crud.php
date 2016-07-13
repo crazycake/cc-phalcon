@@ -6,6 +6,8 @@
 
 namespace CrazyCake\Controllers;
 
+//pagination
+use Phalcon\Paginator\Adapter\Model as PaginatorModel;
 //imports
 use CrazyCake\Phalcon\AppModule;
 
@@ -14,11 +16,6 @@ use CrazyCake\Phalcon\AppModule;
  */
 trait Crud
 {
-    /**
-     * Event on before render list
-     */
-    abstract protected function onBeforeRenderList();
-
     /**
      * Event on before save
      */
@@ -47,20 +44,6 @@ trait Crud
 
         if(empty($this->crud_conf["model"]))
             throw new Exception("Crud requires object model class name.");
-    }
-
-    /**
-     * TODO: Move to CRUD controller
-     * View - index
-     */
-    public function indexAction()
-    {
-		//call listeners
-		$this->onBeforeRenderList();
-
-		//list conditions
-		if(!isset($this->crud_conf["list_conditions"]))
-			$this->crud_conf["list_conditions"] = ["order" => "id DESC"];
 
 		//set default fields?
 		if(!isset($this->crud_conf["fields"])) {
@@ -85,18 +68,26 @@ trait Crud
 			];
 		}
 
+		//fields filter
+		$this->crud_conf["fields_filter"] = array_map(create_function('$o', 'return $o->name;'),
+													  $this->crud_conf["fields"]);
+    }
+
+    /**
+     * TODO: Move to CRUD controller
+     * View - index
+     */
+    public function indexAction()
+    {
 		//set list objects
-		$model_name  = $this->crud_conf["model"];
-		$module_name = strtolower($model_name);
-		$fields  	 = array_map(create_function('$o', 'return $o->name;'), $this->crud_conf["fields"]);
-		$objects 	 = $model_name::find($this->crud_conf["list_conditions"]);
+		$module_name = strtolower($this->crud_conf["model"]);
 
         //load modules
         $this->loadJsModules([
             "$module_name" => [
 				"actions" => true,
-				"fields"  => $this->crud_conf["fields"],
-				"objects" => $objects ? $objects->toArray($fields) : []
+				"url"     => $this->baseUrl($module_name."/list"),
+				"fields"  => $this->crud_conf["fields"]
 			]
         ]);
     }
@@ -106,7 +97,50 @@ trait Crud
      */
     public function listAction()
     {
+		$this->onlyAjax();
 
+		$data = $this->handleRequest([], "GET");
+
+		//list query conditions
+		if(!isset($this->crud_conf["find"]))
+			$this->crud_conf["find"] = ["order" => "id DESC"];
+
+		$model_name = $this->crud_conf["model"];
+		$objects 	= $model_name::find($this->crud_conf["find"]);
+
+		// Passing a resultset as data
+		$paginator = new PaginatorModel([
+		    "data"  => $objects,
+		    "limit" => 10,
+		    "page"  => (int)$data["page"]
+		]);
+
+		$page = $paginator->getPaginate();
+
+		$items = [];
+
+		foreach ($page->items as $obj)
+			$items[] = $obj->toArray($this->crud_conf["fields_filter"]);
+
+		//create response object
+		$response = (object)[
+			"total" 	    => $objects->count(),
+			"per_page" 		=> 15,
+			"from" 			=> 1,
+			"to" 			=> 15,
+			"current_page"  => $page->current,
+			"last_page" 	=> $page->last,
+			"next_page_url" => $page->next,
+			"prev_page_url" => $page->before,
+			"data" 			=> $items
+		];
+
+		//send response. TODO: put method in core
+		$this->response->setStatusCode(200, "OK");
+        $this->response->setContentType("application/json");
+        $this->response->setContent(json_encode($response, JSON_UNESCAPED_SLASHES));
+        $this->response->send();
+		die();
     }
 
     /**
@@ -126,7 +160,7 @@ trait Crud
             //call listener
             $this->onBeforeSave($data);
         }
-        catch(Exception $e) {
+        catch (Exception $e) {
             $this->jsonResponse(200, $e->getMessage(), "alert");
         }
 

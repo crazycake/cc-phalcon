@@ -261,11 +261,11 @@ abstract class MvcCore extends Controller
             $this->view->disable(); //disable view output
 
         //encode JSON
-        $content = json_encode(['response' => $response], JSON_UNESCAPED_SLASHES);
+        $content = json_encode(["response" => $response], JSON_UNESCAPED_SLASHES);
 
         //output the response
         $this->response->setStatusCode(200, "OK");
-        $this->response->setContentType('application/json'); //set JSON as Content-Type header
+        $this->response->setContentType("application/json"); //set JSON as Content-Type header
         $this->response->setContent($content);
         $this->response->send();
         die();
@@ -275,7 +275,7 @@ abstract class MvcCore extends Controller
      * Sends a simple text response
      * @param  mixed [string|array] $text - Any text string
      */
-    protected function textResponse($text = "OK"){
+    protected function textResponse($text = "OK") {
 
         if (is_array($text) || is_object($text))
             $text = json_encode($text, JSON_UNESCAPED_SLASHES);
