@@ -15,6 +15,11 @@ use CrazyCake\Phalcon\AppModule;
 trait Crud
 {
     /**
+     * Event on before render list
+     */
+    abstract protected function onBeforeRenderList();
+
+    /**
      * Event on before save
      */
     abstract protected function onBeforeSave(&$data);
@@ -40,12 +45,64 @@ trait Crud
     {
         $this->crud_conf = $conf;
 
-        if(empty($conf["model"]))
+        if(empty($this->crud_conf["model"]))
             throw new Exception("Crud requires object model class name.");
     }
 
     /**
-     * View to get a collection of objects
+     * TODO: Move to CRUD controller
+     * View - index
+     */
+    public function indexAction()
+    {
+		//call listeners
+		$this->onBeforeRenderList();
+
+		//list conditions
+		if(!isset($this->crud_conf["list_conditions"]))
+			$this->crud_conf["list_conditions"] = ["order" => "id DESC"];
+
+		//set default fields?
+		if(!isset($this->crud_conf["fields"])) {
+
+			$this->crud_conf["fields"] = [
+				(object)[
+					"title" 	=> "ID",
+					"name" 		=> "id",
+					"sortField" => "id",
+					"dataClass" => "text-center"
+				],
+				(object)[
+					"title" 	=> "Nombre",
+					"name" 		=> "name",
+					"sortField" => "name"
+				],
+				(object)[
+					"title" 	=> "Creado",
+					"name" 		=> "created_at",
+					"sortField" => "created_at"
+				]
+			];
+		}
+
+		//set list objects
+		$model_name  = $this->crud_conf["model"];
+		$module_name = strtolower($model_name);
+		$fields  	 = array_map(create_function('$o', 'return $o->name;'), $this->crud_conf["fields"]);
+		$objects 	 = $model_name::find($this->crud_conf["list_conditions"]);
+
+        //load modules
+        $this->loadJsModules([
+            "$module_name" => [
+				"actions" => true,
+				"fields"  => $this->crud_conf["fields"],
+				"objects" => $objects ? $objects->toArray($fields) : []
+			]
+        ]);
+    }
+
+    /**
+     * Ajax POST action for List Collection
      */
     public function listAction()
     {
