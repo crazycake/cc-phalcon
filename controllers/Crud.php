@@ -40,37 +40,38 @@ trait Crud
      */
     protected function initCrud($conf = [])
     {
-        $this->crud_conf = $conf;
-
-        if(empty($this->crud_conf["model"]))
+		//validations
+        if(empty($conf["model"]))
             throw new Exception("Crud requires object model class name.");
 
 		//set default fields?
-		if(!isset($this->crud_conf["fields"])) {
+		if(!isset($conf["fields"]))
+			throw new Exception("Crud requires fields array option.");
 
-			$this->crud_conf["fields"] = [
-				(object)[
-					"title" 	=> "ID",
-					"name" 		=> "id",
-					"sortField" => "id",
-					"dataClass" => "text-center"
-				],
-				(object)[
-					"title" 	=> "Nombre",
-					"name" 		=> "name",
-					"sortField" => "name"
-				],
-				(object)[
-					"title" 	=> "Creado",
-					"name" 		=> "created_at",
-					"sortField" => "created_at"
-				]
+		$fields_meta = [];
+		//create fields metadata
+		foreach ($conf["fields"] as $field) {
+
+			$obj = (object)[
+				"title" 	=> current($field),
+				"name" 		=> key($field),
+				"sortField" => key($field)
 			];
+
+			//a date?
+			if(in_array($obj->name, ["created_at", "date"]))
+				$obj->callback = "formatDate|D/MM/Y";
+
+			$fields_meta[] = $obj;
 		}
 
 		//fields filter
-		$this->crud_conf["fields_filter"] = array_map(create_function('$o', 'return $o->name;'),
-													  $this->crud_conf["fields"]);
+		$conf["fields"] = array_map(create_function('$o', 'return key($o);'), $conf["fields"]);
+		//fields js metadata
+		$conf["fields_meta"] = $fields_meta;
+
+		//finally set conf
+        $this->crud_conf = $conf;
     }
 
     /**
@@ -87,7 +88,7 @@ trait Crud
             "$module_name" => [
 				"actions" => true,
 				"url"     => $this->baseUrl($module_name."/list"),
-				"fields"  => $this->crud_conf["fields"]
+				"fields"  => $this->crud_conf["fields_meta"]
 			]
         ]);
     }
@@ -120,7 +121,7 @@ trait Crud
 		$items = [];
 
 		foreach ($page->items as $obj)
-			$items[] = $obj->toArray($this->crud_conf["fields_filter"]);
+			$items[] = $obj->toArray($this->crud_conf["fields"]);
 
 		//create response object
 		$response = (object)[
