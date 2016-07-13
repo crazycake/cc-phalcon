@@ -466,6 +466,13 @@ export default new function() {
      */
     self.redirectTo = function(uri = "") {
 
+        //self-reload
+        if(uri === true) {
+
+            location.reload();
+            return;
+        }
+
         var uri_map = {
            notFound : "error/notFound"
         };
