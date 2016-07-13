@@ -135,12 +135,8 @@ trait Crud
 			"data" 			=> $items
 		];
 
-		//send response. TODO: put method in core
-		$this->response->setStatusCode(200, "OK");
-        $this->response->setContentType("application/json");
-        $this->response->setContent(json_encode($response, JSON_UNESCAPED_SLASHES));
-        $this->response->send();
-		die();
+		//output json response
+		$this->outputJsonResponse($response);
     }
 
     /**

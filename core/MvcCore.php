@@ -260,13 +260,23 @@ abstract class MvcCore extends Controller
         if (isset($this->view))
             $this->view->disable(); //disable view output
 
-        //encode JSON
-        $content = json_encode(["response" => $response], JSON_UNESCAPED_SLASHES);
+        //outputs JSON response
+        $this->outputJsonResponse(["response" => $response]);
+    }
+
+    /**
+     * Sets JSON response for output
+     */
+    protected function outputJsonResponse($response = []) {
+
+        //if a view service is set, disable rendering
+        if (isset($this->view))
+            $this->view->disable(); //disable view output
 
         //output the response
         $this->response->setStatusCode(200, "OK");
         $this->response->setContentType("application/json"); //set JSON as Content-Type header
-        $this->response->setContent($content);
+        $this->response->setContent(json_encode($response, JSON_UNESCAPED_SLASHES));
         $this->response->send();
         die();
     }
