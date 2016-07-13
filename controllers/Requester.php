@@ -1,22 +1,24 @@
 <?php
 /**
- * Guzzle Trait
- * Requires a Frontend or Backend Module with CoreController
+ * Requester Trait - Can make HTTP requests
+ * Requires a Frontend or Backend Module with MvcCore
  * Requires Guzzle library (composer)
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
-namespace CrazyCake\Services;
+namespace CrazyCake\Controllers;
 
 //imports
 use Phalcon\Exception;
 use GuzzleHttp\Client as GuzzleClient;  //Guzzle client for requests
 use GuzzleHttp\Promise;
+//core
+use CrazyCake\Phalcon\AppModule;
 
 /**
- * Guzzle HTTP Request Handler
+ * HTTP Request Handler
  */
-trait Guzzle
+trait Requester
 {
     /** static vars */
     protected static $REQUEST_TIMEOUT     = 30.0;
@@ -33,11 +35,11 @@ trait Guzzle
      * +method: The HTTP method (GET, POST)
      * +socket: Makes async call as socket connection
      */
-    protected function _newRequest($options = [])
+    protected function newRequest($options = [])
     {
         //simple input validation
         if (empty($options["base_url"]) || empty($options["uri"]))
-            throw new Exception("Guzzle::newRequest -> base_url & uri method params are required.");
+            throw new Exception("Requester::newRequest -> base_url & uri method params are required.");
 
         if (empty($options["payload"]))
             $options["payload"] = "";
@@ -67,7 +69,7 @@ trait Guzzle
 
         //log error
         $di = \Phalcon\DI::getDefault();
-        $di->getShared("logger")->error("Guzzle::newRequest -> Options: ".json_encode($options, JSON_UNESCAPED_SLASHES).", Exception: ".$exception->getMessage().
+        $di->getShared("logger")->error("Requester::newRequest -> Options: ".json_encode($options, JSON_UNESCAPED_SLASHES).", Exception: ".$exception->getMessage().
                                         "\n".$exception->getLine()." ".$e->getFile());
     }
 
@@ -166,24 +168,24 @@ trait Guzzle
             //handle response (OK status)
             if ($response->getStatusCode() == 200 && strpos($body, "<!DOCTYPE") === false) {
 
-                $logger->debug("Guzzle::_sendPromise -> response: $body \nOptions: ".json_encode($options, JSON_UNESCAPED_SLASHES));
+                $logger->debug("Requester::_sendPromise -> response: $body \nOptions: ".json_encode($options, JSON_UNESCAPED_SLASHES));
             }
             else {
 
                 if (isset($this->router)) {
                     $controller_name = $this->router->getControllerName();
                     $action_name     = $this->router->getActionName();
-                    $logger->error("Guzzle::_sendPromise -> Error on request: $controller_name -> $action_name. Options: ".json_encode($options, JSON_UNESCAPED_SLASHES));
+                    $logger->error("Requester::_sendPromise -> Error on request: $controller_name -> $action_name. Options: ".json_encode($options, JSON_UNESCAPED_SLASHES));
                 }
                 else {
-                    $logger->error("Guzzle::_sendPromise -> An Error occurred on request. Options: ".json_encode($options, JSON_UNESCAPED_SLASHES));
+                    $logger->error("Requester::_sendPromise -> An Error occurred on request. Options: ".json_encode($options, JSON_UNESCAPED_SLASHES));
                 }
 
                 //catch response for app errors
                 if (strpos($body, "<!DOCTYPE") === false)
-                    $logger->debug("Guzzle::_sendPromise -> Catched response: $body \nOptions: ".json_encode($options, JSON_UNESCAPED_SLASHES));
+                    $logger->debug("Requester::_sendPromise -> Catched response: $body \nOptions: ".json_encode($options, JSON_UNESCAPED_SLASHES));
                 else
-                    $logger->debug("Guzzle::_sendPromise -> NOTE: Above response is a redirection webpage, check correct route and redirections.");
+                    $logger->debug("Requester::_sendPromise -> NOTE: Above response is a redirection webpage, check correct route and redirections.");
             }
         });
         //force promise to be completed
@@ -256,7 +258,7 @@ trait Guzzle
         if ($options["method"] == "POST" && !empty($options["payload"])) {
             $out .= $options["payload"];
         }
-        $this->logger->debug("Guzzle::_socketAsync -> sending out request ".print_r($out, true));
+        $this->logger->debug("Requester::_socketAsync -> sending out request ".print_r($out, true));
 
         fwrite($socket, $out);
         fclose($socket);

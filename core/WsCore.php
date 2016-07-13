@@ -86,6 +86,36 @@ abstract class WsCore extends MvcCore
     }
 
     /**
+     * Validate search number & offset parameters
+     * @param int $input_num - Input number
+     * @param int $input_off - Input offset
+     * @param int $max_num - Maximum number
+     * @return array
+     */
+    protected function handleLimitInput($input_num = null, $input_off = null, $max_num = null)
+    {
+        if (!is_null($input_num)) {
+            $number = $input_num;
+            $offset = $input_off;
+
+            if ($number < 0 || !is_numeric($number))
+                $number = 0;
+
+            if ($offset < 0 || !is_numeric($offset))
+                $offset = 1;
+
+            if ((empty($number) && $max_num >= 1) || ($number > $max_num))
+                $number = $max_num;
+        }
+        else {
+            $number = empty($max_num) ? 1 : $max_num;
+            $offset = 0;
+        }
+
+        return ["number" => $number, "offset" => $offset];
+    }
+
+    /**
      * Handles a cache response
      * @param string $key - The key for saving cached data
      * @param mixed $data - The data to be cached or served

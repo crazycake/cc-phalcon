@@ -11,7 +11,7 @@ use Phalcon\CLI\Task;
 use Phalcon\Exception;
 //core
 use CrazyCake\Phalcon\AppModule;
-use CrazyCake\Services\Guzzle;
+use CrazyCake\Controllers\Requester;
 
 /**
  * Common functions for CLI tasks
@@ -20,7 +20,7 @@ class TaskCore extends Task
 {
     /* traits */
     use Core;
-    use Guzzle;
+    use Requester;
 
     /**
      * Main Action Executer
@@ -191,7 +191,7 @@ class TaskCore extends Task
     }
 
     /**
-     * Async Request
+     * Async Request (CLI struct)
      * @param  array $options - The HTTP options
      */
     protected function asyncRequest($options = [])
@@ -223,7 +223,7 @@ class TaskCore extends Task
         //log asyn request
         $this->logger->debug("TaskCore::asyncRequest -> Options: ".json_encode($options, JSON_UNESCAPED_SLASHES));
 
-        //guzzle method
-        $this->_newRequest($options);
+        //requester
+        $this->newRequest($options);
     }
 }

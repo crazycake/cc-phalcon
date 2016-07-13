@@ -5,7 +5,7 @@
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
-namespace CrazyCake\Services;
+namespace CrazyCake\Controllers;
 
 
 //imports
