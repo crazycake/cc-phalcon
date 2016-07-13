@@ -171,7 +171,7 @@ trait Crud
         //call listener
         $this->onAfterSave($object);
 
-		$this->flash->success($this->crud_conf["trans"][];
+		$this->flash->success($this->crud_conf["trans"]["SAVED"]);
 
         //send response
         $this->jsonResponse(200, ["redirect" => true]);

@@ -25,7 +25,7 @@ abstract class App extends AppModule implements AppLoader
      * App Core default libs
      * @var array
      */
-    protected static $CORE_DEFAULT_LIBS = ["services", "core", "controllers", "helpers", "models", "account"];
+    protected static $CORE_DEFAULT_LIBS = ["services", "controllers", "core", "helpers", "models", "account"];
 
     /**
      * The App Dependency injector
