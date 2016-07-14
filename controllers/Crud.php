@@ -158,7 +158,7 @@ trait Crud
 		//limits
 		$total = $objects->count();
 		$from  = $current_page == 1 ? 1 : ($per_page*$current_page - $per_page + 1);
-		$to    = $from + $per_page + 1;
+		$to    = $from + $per_page - 1;
 
 		if($to > $total) $to = $total;
 
