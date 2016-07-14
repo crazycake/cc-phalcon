@@ -95,14 +95,18 @@ trait Crud
     }
 
     /**
-     * Ajax POST action for List Collection
+     * Ajax GET action to retrieve List Collection
+     * params: sort, filter, page, per_page
      */
     public function listAction()
     {
 		$this->onlyAjax();
 
 		$data = $this->handleRequest([
-			"@filter" => "string"
+			"@sort"   	=> "string",
+			"@filter" 	=> "string",
+			"@page" 	=> "int",
+			"@per_page" => "int"
 		], "GET");
 
 		//list query conditions
