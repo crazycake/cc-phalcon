@@ -149,11 +149,11 @@ abstract class MvcCore extends Controller
      * Example: ```{ $data, array( "@name" => "string"), POST }```
      * @link   http://docs.phalconphp.com/en/latest/reference/filter.html#sanitizing-data
      * @param array $req_fields - Required fields
-     * @param string $method - HTTP method: [GET, POST, MIXED]
+     * @param string $method - HTTP method: [GET, POST, MIXED], defaults to GET.
      * @param boolean $check_csrf - Checks the form CSRF token
      * @return array
      */
-    protected function handleRequest($req_fields = [], $method = 'POST', $check_csrf = true)
+    protected function handleRequest($req_fields = [], $method = "GET", $check_csrf = true)
     {
         //check API module and set special settings
         if (MODULE_NAME === "api")

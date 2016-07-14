@@ -157,7 +157,7 @@ trait Uploader
         //validate and filter request params data, second params are the required fields
         $data = $this->handleRequest([
             "uploaded_file" => "array"
-        ]);
+        ], "POST");
 
         $file = $data["uploaded_file"];
 

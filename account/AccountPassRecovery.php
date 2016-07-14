@@ -98,7 +98,7 @@ trait AccountPassRecovery
         $data = $this->handleRequest([
             "email"                 => "email",
             "@g-recaptcha-response" => "string",
-        ]);
+        ], "POST");
 
         //google reCaptcha helper
         $recaptcha = new ReCaptcha($this->config->app->google->reCaptchaKey);
@@ -136,7 +136,7 @@ trait AccountPassRecovery
         $data = $this->handleRequest([
             "edata" => "string",
             "pass"  => "string"
-        ]);
+        ], "POST");
 
         //validate encrypted data
         $payload = false;

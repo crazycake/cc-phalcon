@@ -70,7 +70,7 @@ trait Mailer
             "email"   => "email",
             "name"    => "string",
             "message" => "string"
-        ]);
+        ], "POST");
 
         $data["subject"] = "Contacto ".$this->config->app->name;
 

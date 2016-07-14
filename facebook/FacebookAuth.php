@@ -91,12 +91,12 @@ trait FacebookAuth
      */
     public function loginAction()
     {
-        //validate and filter request params data, second params are the required fields
+        //validate and filter request params data
         $data = $this->handleRequest([
             "signed_request" => "string",
             "@user_data"     => "int",
             "@validation"    => "string"
-        ]);
+        ], "POST");
 
         try {
             //check signed request

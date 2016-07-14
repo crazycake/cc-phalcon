@@ -170,7 +170,7 @@ trait AccountAuth
         $data = $this->handleRequest([
             "email" => "email",
             "pass"  => "string"
-        ]);
+        ], "POST");
 
         //get model classes
         $user_class = AppModule::getClass("user");
@@ -220,7 +220,8 @@ trait AccountAuth
         $setting_params = isset($this->account_auth_conf["required_fields"]) ? $this->account_auth_conf["required_fields"] : [];
 
         //validate and filter request params data, second params are the required fields
-        $data = $this->handleRequest(array_merge($default_params, $setting_params));
+        $data = $this->handleRequest(array_merge($default_params, $setting_params),
+                                     "POST");
 
         //validate names
         $nums = "0123456789";
@@ -262,7 +263,7 @@ trait AccountAuth
         $data = $this->handleRequest([
             "email"                 => "email",
             "@g-recaptcha-response" => "string"
-        ]);
+        ], "POST");
 
         //google reCaptcha helper
         $recaptcha = new ReCaptcha($this->config->app->google->reCaptchaKey);

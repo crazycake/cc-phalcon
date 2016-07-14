@@ -453,7 +453,7 @@ trait CheckoutManager
             "gateway"        => "string",  //checkout payment gateway
             "categories"     => "array",   //the categories references
             "@invoice_email" => "string"   //optional, custom validation
-        ]);
+        ], "POST");
 
         //check invoice email if set
         if (!isset($data["invoice_email"]) || !filter_var($data["invoice_email"], FILTER_VALIDATE_EMAIL))

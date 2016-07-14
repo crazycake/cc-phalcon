@@ -106,33 +106,71 @@ trait Crud
 		if(!isset($this->crud_conf["find"]))
 			$this->crud_conf["find"] = ["order" => "id DESC"];
 
-		$model_name = $this->crud_conf["model"];
-		$objects 	= $model_name::find($this->crud_conf["find"]);
+		//sort param
+		if(!empty($data["sort"]))
+			$this->crud_conf["find"]["order"] = str_replace("|", " ", $data["sort"]);
+
+		//filter param
+		if(!empty($data["filter"])) {
+
+			//create filter syntax
+			$search_fields = isset($this->crud_conf["search"]) ?
+								   $this->crud_conf["search"] : ["id"];
+
+			$syntax = [];
+			foreach ($search_fields as $k => $v) {
+
+				$syntax[] = "$v LIKE '%".$data["filter"]."%'";
+			}
+
+			$this->crud_conf["find"]["conditions"] = implode(" OR ", $syntax);
+			$this->crud_conf["find"]["bind"] 	   = $bind;
+		}
+		//print_r($this->crud_conf["find"]);exit;
+
+		//find objects
+		$this->dblog();
+		$model_name   = $this->crud_conf["model"];
+		$objects      = $model_name::find($this->crud_conf["find"]);
+		$current_page = (int)$data["page"];
+		$per_page     = (int)$data["per_page"];
 
 		// Passing a resultset as data
 		$paginator = new PaginatorModel([
 		    "data"  => $objects,
-		    "limit" => 10,
-		    "page"  => (int)$data["page"]
+		    "limit" => $per_page,
+		    "page"  => $current_page
 		]);
-
+		//page object
 		$page = $paginator->getPaginate();
 
+		//set data items
 		$items = [];
-
 		foreach ($page->items as $obj)
 			$items[] = $obj->toArray($this->crud_conf["fields"]);
 
+		//baseUrl
+		$url = $this->baseUrl(strtolower($model_name)."/list?page=");
+		//limits
+		$total = $objects->count();
+		$from  = $current_page == 1 ? 1 : ($per_page*$current_page - $per_page + 1);
+		$to    = $from + $per_page + 1;
+
+		if($to > $total) $to = $total;
+
 		//create response object
 		$response = (object)[
-			"total" 	    => $objects->count(),
-			"per_page" 		=> 15,
-			"from" 			=> 1,
-			"to" 			=> 15,
+			"total" 	    => $total,
+			"per_page" 		=> $per_page,
 			"current_page"  => $page->current,
 			"last_page" 	=> $page->last,
-			"next_page_url" => $page->next,
-			"prev_page_url" => $page->before,
+			//just for indexing in view
+			"from" 			=> $from,
+			"to" 			=> $to,
+			//urls
+			"next_page_url" => $url.$page->next,
+			"prev_page_url" => $url.$page->before,
+			//objects
 			"data" 			=> $items
 		];
 
@@ -148,7 +186,7 @@ trait Crud
         $this->onlyAjax();
 
         //get data
-        $data = $this->handleRequest();
+        $data = $this->handleRequest([], "POST");
 
         //merge paylod if set
         $this->_mergePayload($data);
