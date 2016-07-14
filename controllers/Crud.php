@@ -83,6 +83,9 @@ trait Crud
 		//set list objects
 		$module_name = strtolower($this->crud_conf["model"]);
 
+		//set current_view
+		$this->view->setVar("current_view", $module_name);
+
         //load modules
         $this->loadJsModules([
             "$module_name" => [
