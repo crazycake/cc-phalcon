@@ -212,24 +212,18 @@
 .app-absolute          { position: absolute; }
 .app-relative          { position: relative; }
 .app-hide              { display: none; }
+.app-invisible         { visibility: hidden; opacity: 0; }
 .app-height            { height: 100%; }
 .app-height-inherit    { height: inherit; }
-.app-space-small       { height: 2px; }
 .app-no-padding        { padding: 0 !important; }
 .app-no-padding-top    { padding-top: 0 !important; }
 .app-no-padding-bottom { padding-bottom: 0 !important; }
 .app-no-padding-left   { padding-left: 0 !important; }
 .app-no-padding-right  { padding-right: 0 !important; }
-
-//tables
-.app-table {
-	display: table;
-}
-.app-table-cell {
-	display: table-cell;
-	vertical-align: middle;
-}
-
+//displays
+.app-table 			{ display: table; }
+.app-table-cell 	{ display: table-cell; vertical-align: middle; }
+.app-absolute-block { @extend %app-absolute-block; }
 //fixed position
 .app-fixed {
 	position: fixed;
@@ -239,19 +233,6 @@
 		top: 0;
 		left: 0;
 	}
-}
-
-//absolute block
-.app-absolute-block {
-	@extend %app-absolute-block;
-}
-
-//hide an element with absolute property
-.app-absolute-hide {
-	position: absolute !important;
-	top: -99999px !important;
-	left: -99999px !important;
-	visibility: hidden;
 }
 
 //no-script fallback (uses classes fixed and center)
