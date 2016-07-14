@@ -88,7 +88,8 @@ trait Crud
             "$module_name" => [
 				"actions" => true,
 				"url"     => $this->baseUrl($module_name."/list"),
-				"fields"  => $this->crud_conf["fields_meta"]
+				"fields"  => $this->crud_conf["fields_meta"],
+				"sfields" => $this->crud_conf["sfields"]
 			]
         ]);
     }
@@ -100,7 +101,9 @@ trait Crud
     {
 		$this->onlyAjax();
 
-		$data = $this->handleRequest([], "GET");
+		$data = $this->handleRequest([
+			"@filter" => "string"
+		], "GET");
 
 		//list query conditions
 		if(!isset($this->crud_conf["find"]))
@@ -114,22 +117,19 @@ trait Crud
 		if(!empty($data["filter"])) {
 
 			//create filter syntax
-			$search_fields = isset($this->crud_conf["search"]) ?
-								   $this->crud_conf["search"] : ["id"];
+			$search_fields = isset($this->crud_conf["sfields"]) ?
+								   $this->crud_conf["sfields"] : ["id"];
 
 			$syntax = [];
-			foreach ($search_fields as $k => $v) {
-
+			foreach ($search_fields as $k => $v)
 				$syntax[] = "$v LIKE '%".$data["filter"]."%'";
-			}
 
 			$this->crud_conf["find"]["conditions"] = implode(" OR ", $syntax);
-			$this->crud_conf["find"]["bind"] 	   = $bind;
 		}
+		//$this->dblog();
 		//print_r($this->crud_conf["find"]);exit;
 
 		//find objects
-		$this->dblog();
 		$model_name   = $this->crud_conf["model"];
 		$objects      = $model_name::find($this->crud_conf["find"]);
 		$current_page = (int)$data["page"];
