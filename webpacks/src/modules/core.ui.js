@@ -71,10 +71,10 @@ export default new function() {
         var app_loading = self.showLoading(true); //hide by default
 
         //ajax handler, show loading if ajax takes more than a X secs, only for POST request
-        var handler = function(options, show_loading) {
+        var handler = function(opts, show_loading) {
 
             //only for POST request
-            if (options.type.toUpperCase() !== "POST") // && options.type.toUpperCase() !== "GET"
+            if (opts.type.toUpperCase() !== "POST") // && opts.type.toUpperCase() !== "GET"
                 return;
 
             //show loading?
@@ -82,7 +82,7 @@ export default new function() {
                 //clear timer
                 clearTimeout(ajax_timer);
                 //waiting time to show loading box
-                ajax_timer = setTimeout( function() { app_loading.show("fast"); }, 1000);
+                ajax_timer = setTimeout(function() { app_loading.show("fast"); }, 1000);
                 return;
             }
             //otherwise clear timer and hide loading
@@ -92,9 +92,9 @@ export default new function() {
 
         //ajax events
         $(document)
-         .ajaxSend(function(event, xhr, options)     { handler(options, true);  })
-         .ajaxComplete(function(event, xhr, options) { handler(options, false); })
-         .ajaxError(function(event, xhr, options)    { handler(options, false); });
+         .ajaxError(function(e, xhr, opts)    { handler(opts, false); })
+         .ajaxSend(function(e, xhr, opts)     { handler(opts, true);  })
+         .ajaxComplete(function(e, xhr, opts) { handler(opts, false); });
     };
 
     /**
