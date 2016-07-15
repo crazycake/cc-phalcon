@@ -71,7 +71,7 @@
 		onClose      : null,
 		onShowAnim   : null,
 		onCloseAnim  : null,
-		zindex       : 100,
+		zindex       : 9999,
 		escape       : true
 	};
 

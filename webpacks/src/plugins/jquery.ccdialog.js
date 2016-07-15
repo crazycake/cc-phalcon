@@ -19,7 +19,7 @@
  */
 
 (function($) {
-	
+
 	if (typeof $.cclayer !== "function")
 		throw new Error('ccdialog -> cclayer jQuery plugin is required');
 
@@ -58,7 +58,7 @@
 		buttons      : [],
 		onClose      : null,
 		escape       : true,
-		zindex       : 100,
+		zindex       : 9999,
 		smallScreen  : 640
 	};
 
