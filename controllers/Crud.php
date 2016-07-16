@@ -90,7 +90,7 @@ trait Crud
         $this->loadJsModules([
             "$module_name" => [
 				"actions" => true,
-				"url"     => $this->baseUrl($module_name."/list"),
+				"url"     => $this->baseUrl($module_name),
 				"fields"  => $this->crud_conf["fields_meta"],
 				"sfields" => $this->crud_conf["sfields"]
 			]
@@ -201,26 +201,24 @@ trait Crud
         try {
             //call listener
             $this->onBeforeSave($data);
+
+			//save object
+	        $object_class = AppModule::getClass($this->crud_conf["model"]);
+
+	        $object = new $object_class();
+	        //save object
+	        if(!$object->save($data))
+	            throw new Exception($object->getMessages());
+
+	        //call listener
+	        $this->onAfterSave($object);
+
+			//send response
+	        $this->jsonResponse(200);
         }
         catch (Exception $e) {
             $this->jsonResponse(200, $e->getMessage(), "alert");
         }
-
-        //save object
-        $object_class = AppModule::getClass($this->crud_conf["model"]);
-
-        $object = new $object_class();
-        //save object
-        if(!$object->save($data))
-            throw new Exception($object->getMessages());
-
-        //call listener
-        $this->onAfterSave($object);
-
-		$this->flash->success($this->crud_conf["trans"]["SAVED"]);
-
-        //send response
-        $this->jsonResponse(200, ["redirect" => true]);
     }
 
     /**
@@ -236,7 +234,23 @@ trait Crud
      */
     public function deleteAction()
     {
+		$this->onlyAjax();
 
+		$data = $this->handleRequest([
+			"id" => "int"
+		], "POST");
+
+		//find object
+		$model_name = $this->crud_conf["model"];
+		$object 	= $model_name::getById($data["id"]);
+
+		$deleted = false;
+
+		if($object)
+			$object->delete();
+
+		//send response
+        $this->jsonResponse(200, ["deleted" => $deleted]);
     }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
