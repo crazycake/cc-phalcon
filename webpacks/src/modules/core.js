@@ -166,7 +166,7 @@ export default new function() {
      */
     self.loadModules = function(modules = []) {
 
-        var mod_name, mod, vm, data;
+        var mod_name, mod, data;
 
         //1) call inits
         for (mod_name in modules) {
@@ -200,15 +200,13 @@ export default new function() {
             if (!_.isObject(mod.vm))
                 continue;
 
-            vm = _.assign({
-                //vue element selector
-                el : "#vue-" + mod_name
-            }, mod.vm);
+            if(_.isUndefined(mod.vm.el))
+                mod.vm.el = "#vue-" + mod_name;
 
-            if (APP.dev) { console.log("Core -> Binding " + mod_name + " View Model", vm); }
+            if (APP.dev) { console.log("Core -> Binding " + mod_name + " View Model", mod.vm); }
 
             //set new Vue instance (object prop updated)
-            mod.vm = new Vue(vm);
+            mod.vm = new Vue(mod.vm);
         }
     };
 
