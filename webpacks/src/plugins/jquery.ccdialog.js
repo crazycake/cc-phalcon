@@ -21,7 +21,7 @@
 (function($) {
 
 	if (typeof $.cclayer !== "function")
-		throw new Error('ccdialog -> cclayer jQuery plugin is required');
+		throw new Error('ccdialog: cclayer jQuery plugin is required');
 
 	/** ------------------------------------------------------------------------------------------------
 		cclayer public methods
@@ -100,7 +100,7 @@
 				div_wrapper.width("90%");
 
 			//check if dialog must have buttons
-			if (typeof options.buttons !== 'object')
+			if (typeof options.buttons !== "object")
 				return;
 
 			//append buttons?
@@ -111,15 +111,15 @@
 
 				var btn = options.buttons[key];
 
-				if (typeof btn !== 'object' || typeof btn.label == 'undefined')
+				if (typeof btn !== "object" || typeof btn.label == "undefined")
 					continue;
 
 				var button_element = $("<button>")
-										.attr("name", 'button-'+index)
-										.addClass('button-'+index)
+										.attr("name", "button-"+index)
+										.addClass("button-"+index)
 										.html(btn.label);
 
-				if (typeof btn.click === 'function')
+				if (typeof btn.click === "function")
 					button_element.click(btn.click);
 				else
 					button_element.click(self.close);
@@ -143,7 +143,7 @@
 
 			var fn_onclose = null;
 			//check onClose function
-			if (typeof options.onClose === 'function')
+			if (typeof options.onClose === "function")
 				fn_onclose = options.onClose;
 
 			//show modal

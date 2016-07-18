@@ -255,8 +255,8 @@
 
 			//enable back scroll
 			if (options.fixed) {
-				$("html").css("overflow","visible");
-				$("body").css("position","static");
+				$("html").css("overflow", "visible");
+				$("body").css("position", "static");
 			}
 
 			//delete the overlay
