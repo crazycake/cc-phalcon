@@ -98,9 +98,9 @@
 			//overlay div
 			var div_overlay = $("<div>").addClass("cclayer-overlay");
 
-			//check if object is present in DOM (auto-append to overlay)
+			//check if object is present in DOM (auto-append)
 			if(!document.contains(el[0]))
-				el.appendTo(div_overlay);
+				el.appendTo("body");
 
 			//OVERLAY CSS
 			if (options.overlay) {
@@ -208,7 +208,7 @@
 			if (typeof options.onClose === "function")
 				div_overlay.on("destroyed", options.onClose);
 
-			//append to body
+			//finally append to body
 			div_overlay.appendTo("body");
 		},
 		drop: function() {
