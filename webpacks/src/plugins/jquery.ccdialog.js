@@ -148,12 +148,12 @@
 
 			//show modal
 			$("div.cclayer-dialog").cclayer({
-				fixed           : options.fixed,
-				overlay         : options.overlay,
-				overlayColor    : options.overlayColor,
-				escape          : options.escape,
-				zindex          : options.zindex,
-				onClose         : fn_onclose
+				fixed        : options.fixed,
+				overlay      : options.overlay,
+				overlayColor : options.overlayColor,
+				escape       : options.escape,
+				zindex       : options.zindex,
+				onClose      : fn_onclose
 			});
 		},
 		close: function() {
