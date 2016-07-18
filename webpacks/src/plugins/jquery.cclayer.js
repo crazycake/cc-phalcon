@@ -101,8 +101,9 @@
 			var div_overlay = $("<div>").addClass("cclayer-overlay");
 
 			//check if object is present in DOM
-			if(!document.contains(obj[0]))
-				obj.appendTo(div_overlay);
+			if(!document.contains(obj[0])) {
+				obj.appendTo("body");
+			}
 
 			//OVERLAY CSS
 			if (options.overlay) {
@@ -211,8 +212,8 @@
 			}
 
 			//add "destroyed" event handler for "onClose" param
-			if (typeof options.onClose === 'function')
-				div_overlay.on('destroyed', options.onClose);
+			if (typeof options.onClose === "function")
+				div_overlay.on("destroyed", options.onClose);
 
 			//append to body
 			div_overlay.appendTo("body");
@@ -245,7 +246,7 @@
 				obj.fadeIn("fast");
 
 			//call onShow function if set
-			if (typeof options.onShow === 'function')
+			if (typeof options.onShow === "function")
 				options.onShow.call();
 		},
 		close: function(options, obj) {
