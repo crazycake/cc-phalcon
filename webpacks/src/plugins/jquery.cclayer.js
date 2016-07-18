@@ -60,7 +60,7 @@
 	$.fn.cclayer.defaults = {
 		fixed        : false,
 		overlay      : true,
-		overlayColor : "rgba(0, 0, 0, 0.8)",
+		overlayColor : "rgba(0, 0, 0, 0.9)",
 		top          : 50,
 		left         : 50,
 		bottom       : null,
