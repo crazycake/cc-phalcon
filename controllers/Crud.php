@@ -41,7 +41,7 @@ trait Crud
     protected function initCrud($conf = [])
     {
 		//validations
-        if(empty($conf["model"]))
+        if(empty($conf["entity"]))
             throw new Exception("Crud requires object model class name.");
 
 		//set default fields?
@@ -81,16 +81,18 @@ trait Crud
     public function indexAction()
     {
 		//set list objects
-		$module_name = strtolower($this->crud_conf["model"]);
+		$entity = strtolower($this->crud_conf["entity"]);
 
 		//set current_view
-		$this->view->setVar("current_view", $module_name);
+		$this->view->setVar("current_view", $entity);
+		//set common layout
+		$this->view->setLayout("crud");
 
         //load modules
         $this->loadJsModules([
-            "$module_name" => [
+            "crud" => [
 				"actions" => true,
-				"url"     => $this->baseUrl($module_name),
+				"entity"  => $entity,
 				"fields"  => $this->crud_conf["fields_meta"],
 				"sfields" => $this->crud_conf["sfields"]
 			]
@@ -133,11 +135,10 @@ trait Crud
 
 			$this->crud_conf["find"]["conditions"] = implode(" OR ", $syntax);
 		}
-		//$this->dblog();
 		//print_r($this->crud_conf["find"]);exit;
 
 		//find objects
-		$model_name   = $this->crud_conf["model"];
+		$model_name   = $this->crud_conf["entity"];
 		$objects      = $model_name::find($this->crud_conf["find"]);
 		$current_page = (int)$data["page"];
 		$per_page     = (int)$data["per_page"];
@@ -154,7 +155,7 @@ trait Crud
 		//set data items
 		$items = [];
 		foreach ($page->items as $obj)
-			$items[] = $obj->toArray($this->crud_conf["fields"]);
+			$items[] = $obj->toArray();
 
 		//baseUrl
 		$url = $this->baseUrl(strtolower($model_name)."/list?page=");
@@ -203,7 +204,7 @@ trait Crud
             $this->onBeforeSave($data);
 
 			//save object
-	        $object_class = AppModule::getClass($this->crud_conf["model"]);
+	        $object_class = AppModule::getClass($this->crud_conf["entity"]);
 
 	        $object = new $object_class();
 	        //save object
@@ -226,7 +227,13 @@ trait Crud
      */
     public function updateAction()
     {
+		$this->onlyAjax();
 
+		$data = $this->handleRequest([
+			"id" => "int"
+		], "POST");
+
+		$this->jsonResponse(200, $data);
     }
 
     /**
@@ -241,7 +248,7 @@ trait Crud
 		], "POST");
 
 		//find object
-		$model_name = $this->crud_conf["model"];
+		$model_name = $this->crud_conf["entity"];
 		$object 	= $model_name::getById($data["id"]);
 
 		$deleted = false;
