@@ -100,6 +100,10 @@
 			//overlay div
 			var div_overlay = $("<div>").addClass("cclayer-overlay");
 
+			//check if object is present in DOM
+			if(!document.contains(obj[0]))
+				obj.appendTo(div_overlay);
+
 			//OVERLAY CSS
 			if (options.overlay) {
 				//set opacity
