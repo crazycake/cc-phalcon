@@ -1,7 +1,7 @@
 /**
  * ccdialog jQuery plugin v 1.0
  * Requires jQuery 1.7.x or superior, and cclayer plugin
- * Supports mayor browsers including IE8
+ * Support IE9+
  * @author Nicolas Pulido M.
  * Usage:
  * $.ccdialog({
@@ -53,8 +53,7 @@
 		width        : "60%",
 		fixed        : false,
 		overlay      : true,
-		overlayAlpha : 70,
-		overlayColor : "#000",
+		overlayColor : "rgba(0, 0, 0, 0.9)",
 		buttons      : [],
 		onClose      : null,
 		escape       : true,
@@ -151,7 +150,6 @@
 			$("div.cclayer-dialog").cclayer({
 				fixed           : options.fixed,
 				overlay         : options.overlay,
-				overlayAlpha    : options.overlayAlpha,
 				overlayColor    : options.overlayColor,
 				escape          : options.escape,
 				zindex          : options.zindex,

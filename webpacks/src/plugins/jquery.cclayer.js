@@ -7,7 +7,6 @@
  * $(element).cclayer({
 		fixed        : (boolean) present a fixed element?
 		overlay      : (boolean) set an overlay?
-		overlayAlpha : (int) overlay opacity
 		overlayColor : (string) overlay bg color
 		top          : (int) css top value set as percentage
 		bottom       : (int) css bottom value set as percentage (optional)
@@ -61,8 +60,7 @@
 	$.fn.cclayer.defaults = {
 		fixed        : false,
 		overlay      : true,
-		overlayAlpha : 80,
-		overlayColor : "#000",
+		overlayColor : "rgba(0, 0, 0, 0.8)",
 		top          : 50,
 		left         : 50,
 		bottom       : null,
@@ -78,20 +76,20 @@
 	//CORE
 	$.fn.cclayer.core = {
 
-		init: function(options, obj) {
+		init: function(options, el) {
 			//extend options
 			this.opts = $.extend({}, $.fn.cclayer.defaults, options);
 			//check if cclayer was already invoked
-			if ($("div.cclayer-overlay").length || obj.is(":visible"))
+			if ($("div.cclayer-overlay").length || el.is(":visible"))
 				return;
 
 			//make and show
-			this.make(this.opts, obj);
-			this.show(this.opts, obj);
+			this.make(this.opts, el);
+			this.show(this.opts, el);
 
 			return this;
 		},
-		make: function(options, obj) {
+		make: function(options, el) {
 
 			var self = this;
 			//drop any overlay created before
@@ -100,15 +98,12 @@
 			//overlay div
 			var div_overlay = $("<div>").addClass("cclayer-overlay");
 
-			//check if object is present in DOM
-			if(!document.contains(obj[0])) {
-				obj.appendTo("body");
-			}
+			//check if object is present in DOM (auto-append to overlay)
+			if(!document.contains(el[0]))
+				el.appendTo(div_overlay);
 
 			//OVERLAY CSS
 			if (options.overlay) {
-				//set opacity
-				var opacity = options.overlayAlpha;
 
 				var doc_height = $(document).height();
 
@@ -125,8 +120,6 @@
 					"width"      : "100%",
 					"height"     : doc_height,
 					"background" : options.overlayColor,
-					"opacity"    : opacity / 100,
-					"filter"     : "alpha(opacity="+opacity+")",
 					"z-index"    : options.zindex
 				});
 			}
@@ -155,8 +148,8 @@
 			}
 
 			//get element width & height
-			var elem_width  = obj.width();
-			var elem_height = obj.height();
+			var elem_width  = el.width();
+			var elem_height = el.height();
 
 			//FIXED position
 			if (options.fixed) {
@@ -176,15 +169,15 @@
 			}
 
 			//set css props
-			obj.css({
+			el.css({
 				"position" : css_pos,
 				"z-index"  : (options.zindex + 1)
-			});
-			//set margins
-			obj.css(xRule, css_x);
-			obj.css(yRule, css_y);
-			obj.css("margin-"+xRule, css_margin_x);
-			obj.css("margin-"+yRule, css_margin_y);
+			})
+			//dynamic props
+			.css(xRule, css_x)
+			.css(yRule, css_y)
+			.css("margin-"+xRule, css_margin_x)
+			.css("margin-"+yRule, css_margin_y);
 
 			/** -- EVENTS -- **/
 			//force escape?
@@ -192,7 +185,7 @@
 				//onClick event
 				div_overlay.one("click", function() {
 					//close action
-					self.close(options, obj);
+					self.close(options, el);
 				});
 
 				//onKeyUp event for ESC key
@@ -203,7 +196,7 @@
 
 					//ENTER or ESC key
 					if (e.keyCode == 27) {
-						self.close(options, obj);
+						self.close(options, el);
 					}
 				});
 			}
@@ -223,7 +216,7 @@
 			if ($("div.cclayer-overlay").length)
 				$("div.cclayer-overlay").remove();
 		},
-		show: function(options, obj) {
+		show: function(options, el) {
 
 			//if fixed, disable html,body scroll
 			if (options.fixed) {
@@ -243,19 +236,19 @@
 			if (typeof options.onShowAnim == "function")
 				options.onShowAnim.call();
 			else
-				obj.fadeIn("fast");
+				el.fadeIn("fast");
 
 			//call onShow function if set
 			if (typeof options.onShow === "function")
 				options.onShow.call();
 		},
-		close: function(options, obj) {
+		close: function(options, el) {
 
 			//close with defined animation?
 			if (typeof options.onCloseAnim == "function")
 				options.onCloseAnim.call();
 			else
-				obj.hide();
+				el.hide();
 
 			//modal close
 			$("div.cclayer-overlay").fadeOut();
