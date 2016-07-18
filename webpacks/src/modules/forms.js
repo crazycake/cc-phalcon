@@ -228,10 +228,6 @@ export default new function() {
         form.data("formValidation").resetForm();
         form.find("input, textarea").val("");
         form.find("select").prop("selectedIndex", 0);
-
-        //wysiwyg editor
-        if(!_.isUndefined(APP.UI.sel_wysiwyg))
-            $(APP.UI.sel_wysiwyg).trumbowyg("html", "");
     };
 
     /**
