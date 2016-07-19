@@ -13,7 +13,7 @@
  * @return object
  */
 jQuery.fn.center = function(position, top, left) {
-	
+
 	//set CSS position (fixed, absolute, static)
 	if (typeof position === "undefined")
 		this.css("position", "absolute");
@@ -57,4 +57,13 @@ jQuery.fn.padding = function(direction) {
 
 	//returns int value
 	return parseInt(this.css('padding-' + direction));
+};
+
+/**
+ * Check if a jquery object (selector) exists in DOM
+ * @return {boolean}
+ */
+jQuery.fn.exists = function() {
+
+	return this.length > 0;
 };
