@@ -192,6 +192,9 @@ trait Uploader
         //exclude hidden files
         $uploaded_files = preg_grep('/^([^.])/', scandir($this->uploader_conf["path"]));
 
+        if(empty($uploaded_files))
+            return;
+
         foreach ($map as $key => $object_id) {
 
             $i = 1;
