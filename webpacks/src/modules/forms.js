@@ -196,8 +196,17 @@ export default new function() {
             form = $(form);
         }
 
+        //get instance
         var fv = form.data("formValidation");
-        fv.updateStatus(field, "NOT_VALIDATED");
+
+        //single field
+        if(field !== "all")
+            fv.updateStatus(field, "NOT_VALIDATED");
+
+        //update all fields
+        form.find("[data-fv-required]").each(function(){
+            fv.updateStatus($(this).attr("name"), "NOT_VALIDATED");
+        });
     };
 
     /**
