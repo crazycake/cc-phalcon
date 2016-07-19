@@ -96,7 +96,7 @@ export default new function() {
 
         //load forms module
         if (!_.isUndefined(self.modules.forms))
-            self.modules.forms.loadForms();
+            self.modules.forms.load();
 
         //load UI module
         self.ui.init();
@@ -257,7 +257,7 @@ export default new function() {
         if (!_.isNull(form)) {
 
             //validate abide form
-            if (!self.modules.forms.isFormValid(form))
+            if (!self.modules.forms.isValid(form))
                 return Promise.resolve();
 
             //serialize data to URL encoding

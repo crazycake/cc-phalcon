@@ -46,11 +46,11 @@ export default new function() {
     //++ Methods
 
     /**
-     * Autoloads validation for ```form[data-validate]``` selector
-     * @method loadForms
+     * Autoloads validation for `form[data-validate]` selector
+     * @method load
      * @param {Object} context - The jQuery object element context (optional)
      */
-    self.loadForms = function(context) {
+    self.load = function(context) {
 
         var forms = (typeof context === "undefined") ? $("form[data-validate]") : $("form[data-validate]", context);
 
@@ -80,7 +80,7 @@ export default new function() {
                 };
 
                 //append required props
-                self.assignFieldValidatorPattern($(this), options.fields[name].validators);
+                self.setFieldPattern($(this), options.fields[name].validators);
             });
 
             //new Form Validation instance
@@ -89,7 +89,7 @@ export default new function() {
     };
 
     /**
-     * Creates a New Form Validation.
+     * Creates a New Form Validation. (private)
      * Ref: [http://formvalidation.io/api/]
      * TODO: set bootstrap icon classes (glyphs)
      * @method newFormValidation
@@ -133,17 +133,17 @@ export default new function() {
 
         //init plugin
         if (APP.dev) { console.log("Forms -> loading form with options:", opts); }
-
+        //instance
         form.formValidation(opts);
     };
 
     /**
      * Check if a Form is valid [formValidator]
-     * @method isFormValid
+     * @method isValid
      * @param  {Object} form - A form jQuery object or native element
      * @return {Boolean}
      */
-    self.isFormValid = function(form) {
+    self.isValid = function(form) {
 
         if (form instanceof jQuery === false)
             form = $(form);
@@ -183,11 +183,11 @@ export default new function() {
 
     /**
      * Revalidates a field in form.
-     * @method revalidateFormField
+     * @method revalidateField
      * @param  {String} field - The field name
      * @param  {Object} form - A form jQuery object or native element context (optional)
      */
-    self.revalidateFormField = function(field, form = null) {
+    self.revalidateField = function(field, form = null) {
 
         if(_.isNull(form)) {
             form = $("form[data-validate]");
@@ -205,7 +205,7 @@ export default new function() {
      * @param  {Object} form - A form jQuery object or native element
      * @param  {Boolean} flag - The enable/disable flag, defaults to tue
      */
-    self.enableFormSubmitButtons = function(form, flag = true) {
+    self.enableSubmitButtons = function(form, flag = true) {
 
         if (form instanceof jQuery === false)
             form = $(form);
@@ -215,17 +215,18 @@ export default new function() {
     };
 
     /**
-     * Resets a form validation
+     * Cleans a form and reset validation
      * @method resetForm
      * @param  {Object} form - A form jQuery object or native element
      */
-    self.resetForm = function(form) {
+    self.clean = function(form) {
 
         if (form instanceof jQuery === false)
             form = $(form);
 
-        //clean form
-        form.data("formValidation").resetForm();
+        //clean form validations
+        form.data("formValidation").resetForm(true);
+        //form cleaner
         form.find("input, textarea").val("");
         form.find("select").prop("selectedIndex", 0);
     };
@@ -257,7 +258,7 @@ export default new function() {
             v = {validators : validators_obj};
 
         //append required props
-        self.assignFieldValidatorPattern(field, v.validators);
+        self.setFieldPattern(field, v.validators);
 
         var form = field.closest("form");
 
@@ -272,11 +273,11 @@ export default new function() {
     };
 
     /**
-     * Assign validator field pattern in data attribute
+     * Set validator field pattern in data attribute
      * @param  {object} field - The jQuery field object
      * @param  {object} validators - The validators object
      */
-    self.assignFieldValidatorPattern = function(field, validators) {
+    self.setFieldPattern = function(field, validators) {
 
         try {
 
@@ -312,7 +313,7 @@ export default new function() {
             //set valid option on sibling input hidden
             $(APP.UI.sel_recaptcha).siblings("input:hidden").eq(0).val("1");
             //reset form field
-            self.revalidateFormField("reCaptchaValue");
+            self.revalidateField("reCaptchaValue");
         };
         //render reCaptcha through API call
         grecaptcha.render(APP.UI.sel_recaptcha.replace("#", ""), {
