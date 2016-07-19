@@ -5,8 +5,7 @@
  */
 
 namespace CrazyCake\Controllers;
-
-//pagination
+//phalcon
 use Phalcon\Paginator\Adapter\Model as PaginatorModel;
 //imports
 use CrazyCake\Phalcon\AppModule;
@@ -19,12 +18,12 @@ trait Crud
     /**
      * Event on before save
      */
-    abstract protected function onBeforeSave(&$data);
+    abstract protected function onBeforeSave(&$data, $action);
 
     /**
      * Event on after save
      */
-    abstract protected function onAfterSave(&$data);
+    abstract protected function onAfterSave(&$data, $action);
 
     /**
 	 * Config var
@@ -42,11 +41,11 @@ trait Crud
     {
 		//validations
         if(empty($conf["entity"]))
-            throw new Exception("Crud requires object model class name.");
+            throw new \Exception("Crud requires object model class name.");
 
 		//set default fields?
 		if(!isset($conf["fields"]))
-			throw new Exception("Crud requires fields array option.");
+			throw new \Exception("Crud requires fields array option.");
 
 		$fields_meta = [];
 		//create fields metadata
@@ -187,9 +186,9 @@ trait Crud
     }
 
     /**
-     * Ajax POST action for New Object
+     * Ajax POST action for object creation
      */
-    public function newAction()
+    public function createAction()
     {
         $this->onlyAjax();
 
@@ -201,23 +200,23 @@ trait Crud
 
         try {
             //call listener
-            $this->onBeforeSave($data);
+            $this->onBeforeSave($data, "create");
 
-			//save object
+			//new object
 	        $object_class = AppModule::getClass($this->crud_conf["entity"]);
+	        $object 	  = new $object_class();
 
-	        $object = new $object_class();
 	        //save object
 	        if(!$object->save($data))
-	            throw new Exception($object->getMessages());
+	            throw new \Exception($object->getMessages());
 
 	        //call listener
-	        $this->onAfterSave($object);
+	        $this->onAfterSave($object, "create");
 
 			//send response
 	        $this->jsonResponse(200);
         }
-        catch (Exception $e) {
+        catch (\Exception $e) {
             $this->jsonResponse(200, $e->getMessage(), "alert");
         }
     }
@@ -233,7 +232,44 @@ trait Crud
 			"id" => "int"
 		], "POST");
 
-		$this->jsonResponse(200, $data);
+		//merge paylod if set
+        $this->_mergePayload($data);
+
+        try {
+            //call listener
+            $this->onBeforeSave($data, "update");
+
+			//get object
+	        $object_class = AppModule::getClass($this->crud_conf["entity"]);
+	        $object 	  = $object_class::getById($data["id"]);
+
+	        //check object exists
+	        if(!$object)
+	            throw new \Exception("Objeto no encontrado");
+
+			//consider only attributes from object (phalcon metadata)
+			$meta_data  = $object->getModelsMetaData();
+			$attributes = $meta_data->getAttributes($object);
+			//unset id
+			unset($attributes["id"]);
+
+			//filter data
+			$new_data = array_filter($data,
+							function ($key) use ($attributes) { return in_array($key, $attributes); },
+							ARRAY_FILTER_USE_KEY);
+
+			//update values
+			$object->update($new_data);
+
+	        //call listener
+	        $this->onAfterSave($object, "update");
+
+			//send response
+	        $this->jsonResponse(200);
+        }
+        catch (\Exception $e) {
+            $this->jsonResponse(200, $e->getMessage(), "alert");
+        }
     }
 
     /**
