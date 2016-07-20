@@ -273,7 +273,8 @@ trait Crud
     }
 
     /**
-     * Ajax POST Action for delete an Object
+     * Ajax POST Action for delete an Object.
+     * TODO: delete file objects. Uploader logic
      */
     public function deleteAction()
     {
