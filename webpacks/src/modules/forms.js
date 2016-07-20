@@ -305,6 +305,16 @@ export default new function() {
     };
 
     /**
+     * Strips HTML from a given string
+     * @param  {string} string
+     * @return {string}
+     */
+    self.stripHtml = function(string = "") {
+
+        return string.replace(/<\/?[^>]+(>|$)/g, "");
+    };
+
+    /**
     * App Google reCaptcha onLoad Callback.
     * Function name is defined in script loader.
     * @method recaptchaOnLoad
