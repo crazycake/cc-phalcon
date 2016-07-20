@@ -84,23 +84,23 @@ export default new function() {
             });
 
             //new Form Validation instance
-            self.newFormValidation(form, options);
+            self.newValidator(form, options);
         });
     };
 
     /**
-     * Creates a New Form Validation. (private)
+     * Creates a New Form Validation. (private use)
      * Ref: [http://formvalidation.io/api/]
      * TODO: set bootstrap icon classes (glyphs)
-     * @method newFormValidation
+     * @method newValidator
      * @param  {Object} form - A form jQuery object or native element
      * @param  {Object} options - Extended Options
      */
-    self.newFormValidation = function(form = null, options) {
+    self.newValidator = function(form = null, options) {
 
         //default selector
         if (_.isNull(form))
-            throw new Error("Forms -> newFormValidation: A Form object is required!");
+            throw new Error("Forms -> newValidator: A Form object is required!");
 
         if (form instanceof jQuery === false)
             form = $(form);
