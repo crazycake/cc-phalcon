@@ -1,7 +1,7 @@
 /**
  * cclayer jQuery plugin v 1.1
  * Requires jQuery 1.7.x or superior
- * Supports mayor browsers including IE8
+ * Supports mayor browsers including IE9
  * @author Nicolas Pulido M.
  * Usage:
  * $(element).cclayer({
