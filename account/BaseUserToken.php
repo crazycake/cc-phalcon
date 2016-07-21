@@ -47,7 +47,7 @@ class BaseUserToken extends \CrazyCake\Models\Base
     /**
      * @var array
      */
-    static $TOKEN_TYPES = ["activation", "pass"];
+    static $TOKEN_TYPES = ["activation", "pass", "access"];
 
     /**
      * Validation Event
