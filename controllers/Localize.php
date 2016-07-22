@@ -32,9 +32,8 @@ trait Localize
      */
     public static function getCoreTranslations($controller = "")
     {
-        //get translate service
-        $di = \Phalcon\DI::getDefault();
-
+        //get services
+        $di       = \Phalcon\DI::getDefault();
         $app_name = $di->getShared('config')->app->name;
 
         $data = [
@@ -82,6 +81,27 @@ trait Localize
             ]
         ];
 
+        //facebook
+        if(class_exists("\FacebookController")) {
+
+            $fb_email_settings_url = "https://www.facebook.com/settings?tab=account&section=email&view";
+
+            $data["FACEBOOK"] = [
+                "SESSION_ERROR"    => "Ocurrió un problema con tu sesión de Facebook, porfavor inténtalo nuevamente.
+                                       Si aún se presenta este problema, prueba iniciando una nueva sesión en Facebook.",
+                "OAUTH_REDIRECTED" => "Ocurrió un problema con tu sesión de Facebook, porfavor inténtalo nuevamente.",
+                "OAUTH_PERMS"      => "Debes aceptar los permisos de la aplicación en tu cuenta de Facebook.",
+                "SESSION_SWITCHED" => "Es posible que tengas abierta otra sesión de Facebook, intenta cerrando tu sesión actual de Facebook.",
+                "ACCOUNT_SWITCHED" => "Esta sesión de Facebook está vinculada a otra cuenta ".$app_name.", intenta con otra cuenta en Facebook.",
+                "ACCOUNT_DISABLED" => "Esta cuenta se encuentra desactivada por incumplimiento a nuestros términos y condiciones,
+                                        porfavor comunícate con nuestro equipo.",
+                "INVALID_EMAIL"    => 'No hemos logrado obtener tu correo primario de Facebook, asegúrate de aceptar los permisos y validar
+                                       tu correo primario en tu cuenta de Facebook.
+                                       Haz <a href="'.\FacebookController::$FB_EMAIL_SETTINGS_URL.'" target="_blank">click aquí</a>
+                                       para configurar tu correo primario.'
+            ];
+        }
+
         //call handler
         $data = array_merge($data, self::coreTranslations());
 
@@ -95,8 +115,9 @@ trait Localize
      */
     public static function getJsTranslations()
     {
-        //get translate service
-        $di = \Phalcon\DI::getDefault();
+        //get services
+        $di       = \Phalcon\DI::getDefault();
+        $app_name = $di->getShared('config')->app->name;
 
         $data = [
             "ALERTS" => [
@@ -132,6 +153,21 @@ trait Localize
                 "DELETE_CONFIRM" => "¿Estás seguro que quieres eliminar este registro?"
             ]
         ];
+
+        //facebook
+        if(class_exists("\FacebookController")) {
+
+            $data["FB"] = [
+                //facebook
+        		"LOADING" 				=> "cargando ...",
+                "LOADING_FALLBACK"  	=> "Espera unos momentos mientras facebook carga...",
+                "LINKED"            	=> "Conectado",
+        		"UNLINKED"  	        => "No conectado",
+                "PERMS_REQUIRED"  	    => $app_name." necesita los permisos de Facebook (publicación en tu muro).",
+        		"PUBLISH_STORY_SUCCESS" => "¡Hemos publicado con éxito la historia en tu muro!",
+        		"PUBLISH_STORY_FAILED"  => "No tenemos permisos para publicar la historia en tu muro.",
+            ];
+        }
 
         //call handler
         $data = array_merge($data, self::jsTranslations());
