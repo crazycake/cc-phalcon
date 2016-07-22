@@ -326,5 +326,26 @@ trait AccountAuth
         return;
     }
 
-    /* --------------------------------------------------- § -------------------------------------------------------- */
+    /**
+     * Access Token validation for API Auth
+     * @param string $token - The input token
+     */
+    protected function validateAccessToken($token = "")
+    {
+        try {
+            //get token
+            $data = $this->handleRequest([
+                "token" => "string"
+            ], "MIXED");
+
+            $token_class = $this->account_auth_conf["user_token_entity"];
+            $token       = $token_class::getTokenByValue($data["token"], "access");
+
+            if(!$token)
+                throw new Exception("Invalid token");
+        }
+        catch(Exception $e) {
+            $this->jsonResponse(401, $e->getMessage());
+        }
+    }
 }

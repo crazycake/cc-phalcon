@@ -78,14 +78,30 @@ class BaseUserToken extends \CrazyCake\Models\Base
     /** ------------------------------------------- § ------------------------------------------------ **/
 
     /**
-     * Find Token By User and Value (make sure record exists)
+     * Find First Token By Value and Type.
      * @static
      * @param int $user_id - The user ID
      * @param string $type - The token type
      * @param string $token - The token value
      * @return object
      */
-    public static function getTokenByUserAndValue($user_id, $type = "activation", $token)
+    public static function getTokenByValue($token = "", $type = "activation")
+    {
+        $conditions = "token = ?1 AND type = ?2";
+        $binding    = [1 => $token, 2 => $type];
+
+        return self::findFirst([$conditions, "bind" => $binding]);
+    }
+
+    /**
+     * Find First Token By User and Value.
+     * @static
+     * @param int $user_id - The user ID
+     * @param string $type - The token type
+     * @param string $token - The token value
+     * @return object
+     */
+    public static function getTokenByUserAndValue($user_id = 0, $type = "activation", $token = "")
     {
         $conditions = "user_id = ?1 AND type = ?2 AND token = ?3";
         $binding    = [1 => $user_id, 2 => $type, 3 => $token];
@@ -94,13 +110,13 @@ class BaseUserToken extends \CrazyCake\Models\Base
     }
 
     /**
-     * Find Token By User and Token Type
+     * Find First Token By User and Token Type
      * @static
      * @param int $user_id - The user ID
      * @param string $type - The token type
      * @return object
      */
-    public static function getTokenByUserAndType($user_id, $type = "activation")
+    public static function getTokenByUserAndType($user_id = 0, $type = "activation")
     {
         $conditions = "user_id = ?1 AND type = ?2";
         $binding    = [1 => $user_id, 2 => $type];
@@ -109,13 +125,13 @@ class BaseUserToken extends \CrazyCake\Models\Base
     }
 
     /**
-     * Saves a new ORM object
+     * Saves a new ORM object.
      * @static
      * @param int $user_id - The user ID
      * @param string $type - The token type, default is "activation"
      * @return mixed [string|boolean]
      */
-    public static function newToken($user_id, $type = "activation")
+    public static function newToken($user_id = 0, $type = "activation")
     {
         //Saves a new token
         $class = static::who();
@@ -134,12 +150,12 @@ class BaseUserToken extends \CrazyCake\Models\Base
     }
 
     /**
-     * Check token date and generate a new user token if expired, returns a token object
+     * Check token date and generate a new user token if expired, returns a token object.
      * @param int $user_id - The user ID
      * @param string $type - The token type
      * @return string
      */
-    public static function newTokenIfExpired($user_id, $type)
+    public static function newTokenIfExpired($user_id = 0, $type = null)
     {
         //search if a token already exists and delete it.
         $token = self::getTokenByUserAndType($user_id, $type);
