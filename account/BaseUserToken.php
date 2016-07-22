@@ -48,9 +48,15 @@ class BaseUserToken extends \CrazyCake\Models\Base
      */
     public static $TOKEN_EXPIRES_THRESHOLD = [
                         "activation" => 60,
-                        "access"     => 1,
+                        "access"     => 90,
                         "pass"       => 3
                    ];
+
+    /**
+     * Token default length
+     * @var integer
+     */
+    public static $TOKEN_LENGTH = 13;
 
     /**
      * Validation Event
@@ -111,18 +117,20 @@ class BaseUserToken extends \CrazyCake\Models\Base
      */
     public static function newToken($user_id, $type = "activation")
     {
-        //Save a new temporal token
+        //Saves a new token
         $class = static::who();
         $token = new $class();
 
+        $di   = \Phalcon\DI::getDefault();
+        $hash = $di->getShared("cryptify")->newHash(static::$TOKEN_LENGTH);
+
         $token->user_id    = $user_id;
-        $token->token      = uniqid();  //creates a 13 len token
+        $token->token      = $hash;
         $token->type       = $type;
         $token->created_at = date("Y-m-d H:i:s");
 
         //save token
         return $token->save() ? $token : false;
-
     }
 
     /**
