@@ -167,7 +167,7 @@ trait AccountPassRecovery
             $this->flash->success($this->account_pass_recovery_conf["trans"]["NEW_PASS_SAVED"]);
 
             //abstract parent controller
-            $this->userHasLoggedIn($user->id);
+            $this->onLoggedIn($user->id);
         }
         catch (Exception $e) {
             $this->logger->error("AccountPass::saveNewPasswordAction -> Error saving new password. Trace: ".$e->getMessage());

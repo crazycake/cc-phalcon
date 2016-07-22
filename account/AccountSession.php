@@ -23,7 +23,7 @@ trait AccountSession
      * Listener - Append properties to user session
      * @param object $user - The user object reference
      */
-    abstract protected function onUserLoggedIn($user);
+    abstract protected function onSessionSave($user);
 
     /**
      * Excluded user props to be saved in session
@@ -100,7 +100,7 @@ trait AccountSession
      * Set user Session as logged in
      * @param int $user_id - The user ID
      */
-    protected function userHasLoggedIn($user_id)
+    protected function onLoggedIn($user_id)
     {
         //get user data from DB
         $user_class = AppModule::getClass("user");
@@ -110,7 +110,7 @@ trait AccountSession
             throw new Exception("User not found, cant set session auth");
 
         //call abstract method
-        $user_data = $this->onUserLoggedIn($user);
+        $user_data = $this->onSessionSave($user);
 
         if (empty($user_data))
             $user_data = [];
@@ -127,12 +127,11 @@ trait AccountSession
      * Handles response on logged in event, check for pending redirection. Default uri is 'account'.
      * @param string $uri - The URI to redirect after loggedIn
      * @param array $payload - Sends a payload response instead of redirection (optional)
-     * @param boolean $auth_redirect - Flag to check session auth redirection (optional)
      */
-    protected function dispatchOnUserLoggedIn($uri = "account", $payload = null, $auth_redirect = true)
+    protected function onLoggedInDispatch($uri = "account", $payload = null)
     {
         //check if redirection is set in session
-        if ($auth_redirect && $this->session->has("auth_redirect")) {
+        if ($uri && $this->session->has("auth_redirect")) {
             //get redirection uri from session
             $uri = $this->session->get("auth_redirect");
             //remove from session
@@ -140,11 +139,11 @@ trait AccountSession
         }
 
         //check for ajax request
-        if ($this->request->isAjax()) {
+        if ($this->request->isAjax() || MODULE_NAME === "api") {
             $this->jsonResponse(200, empty($payload) ? ["redirect" => $uri] : $payload);
         }
         else {
-            $this->redirectTo($uri);
+            $this->redirectTo($uri ? $uri : "account");
         }
     }
 
@@ -152,7 +151,7 @@ trait AccountSession
      * Set redirection URL for after loggedIn event
      * @param string $uri - The URL to be redirected
      */
-    protected function setRedirectionOnUserLoggedIn($uri = null)
+    protected function setRedirectionOnLoggedIn($uri = null)
     {
         if (is_null($uri))
             $uri = $this->getRequestedUri();
@@ -216,10 +215,10 @@ trait AccountSession
     }
 
     /**
-     * Destroy user session data and redirect to home
+     * Event - Destroy user session data and redirect to home
      * @param string $uri - The URI to redirect
      */
-    protected function destroyUserSessionAndRedirect($uri = "signIn")
+    protected function onLogout($uri = "signIn")
     {
         //unset all user session data
         $this->session->remove("user");

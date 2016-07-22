@@ -51,7 +51,7 @@ trait AccountManager
 
         //if not logged In, set this URI to redirected after logIn
         if (!$this->isLoggedIn())
-            $this->setRedirectionOnUserLoggedIn();
+            $this->setRedirectionOnLoggedIn();
 
         //check if user is logged in, if not dispatch to auth/logout
         $this->requireLoggedIn();

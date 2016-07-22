@@ -72,7 +72,7 @@ trait CheckoutManager
             //set a flash message for non authenticated users
             $this->flash->notice($this->checkout_manager_conf["trans"]["NOTICE_AUTH"]);
             //if not logged In, set this URI to redirected after logIn
-            $this->setRedirectionOnUserLoggedIn();
+            $this->setRedirectionOnLoggedIn();
         }
 
         //handle response, dispatch to auth/logout

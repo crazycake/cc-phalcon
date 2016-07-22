@@ -22,24 +22,21 @@ use CrazyCake\Helpers\ReCaptcha;
 trait AccountAuth
 {
     /**
-     * Session Handler Event Handler OnUserLoggedIn
+     * Event on user logged in
      */
-    abstract public function dispatchOnUserLoggedIn($uri = "account", $payload = null, $auth_redirect = true);
+    abstract public function onLoggedIn($user_id);
+
+    /**
+     * Disptach event on logged in
+     * @param string $uri - target Uri
+     * @param array $payload - Optional data
+     */
+    abstract public function onLoggedInDispatch($uri = "account", $payload = null);
 
     /**
      * Session Destructor with Autoredirection (logout)
      */
-    abstract public function destroyUserSessionAndRedirect($uri = "signIn");
-
-    /**
-     * Before Render SignIn View Listener
-     */
-    abstract public function beforeRenderSignInView();
-
-    /**
-     * Before Render SignUp View Listener
-     */
-    abstract public function beforeRenderSignUpView();
+    abstract public function onLogout($uri = "signIn");
 
     /**
      * Config var
@@ -55,7 +52,13 @@ trait AccountAuth
      */
     public function initAccountAuth($conf = [])
     {
-        $this->account_auth_conf = $conf;
+        //defaults
+        $defaults = [
+            "js_recaptcha" => false,
+            "oauth"        => false,
+        ];
+
+        $this->account_auth_conf = array_merge($conf, $defaults);
     }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
@@ -74,7 +77,8 @@ trait AccountAuth
         $this->view->setVar("js_recaptcha", $this->account_auth_conf["js_recaptcha"]);
 
         //call abstract method
-        $this->beforeRenderSignInView();
+        if(method_exists($this, "beforeRenderSignInView"))
+            $this->beforeRenderSignInView();
     }
 
     /**
@@ -91,15 +95,16 @@ trait AccountAuth
         //check sign_up session data for auto completion field
         $signup_session = $this->getSessionObjects("signup_session");
 
-        $this->destroySessionObjects("signup_session");
         $this->view->setVar("signup_session", $signup_session);
+        $this->destroySessionObjects("signup_session");
 
         //send birthday data for form
         if (isset($this->account_auth_conf["required_fields"]["birthday"]))
             $this->view->setVar("birthday_elements", Forms::getBirthdaySelectors());
 
         //call abstract method
-        $this->beforeRenderSignUpView();
+        if(method_exists($this, "beforeRenderSignUpView"))
+            $this->beforeRenderSignUpView();
     }
 
     /**
@@ -115,10 +120,10 @@ trait AccountAuth
         try {
             //get model classes
             $user_class   = AppModule::getClass("user");
-            $tokens_class = AppModule::getClass("user_token");
+            $token_class = AppModule::getClass("user_token");
 
             //handle the encrypted data with parent controller
-            $data = $tokens_class::handleUserTokenValidation($encrypted_data);
+            $data = $token_class::handleUserTokenValidation($encrypted_data);
             //assign values
             list($user_id, $token_type, $token) = $data;
 
@@ -132,7 +137,7 @@ trait AccountAuth
             $user->update(["account_flag" => "enabled"]);
 
             //get token object and remove it
-            $token = $tokens_class::getTokenByUserAndValue($user_id, $token_type, $token);
+            $token = $token_class::getTokenByUserAndValue($user_id, $token_type, $token);
             //delete user token
             $token->delete();
 
@@ -140,9 +145,9 @@ trait AccountAuth
             $this->flash->success($this->account_auth_conf["trans"]["ACTIVATION_SUCCESS"]);
 
             //success login
-            $this->userHasLoggedIn($user_id);
+            $this->onLoggedIn($user_id);
             //session
-            $this->dispatchOnUserLoggedIn();
+            $this->onLoggedInDispatch();
         }
         catch (Exception $e) {
 
@@ -158,11 +163,12 @@ trait AccountAuth
      */
     public function logoutAction()
     {
-        $this->destroyUserSessionAndRedirect();
+        //session controller
+        $this->onLogout();
     }
 
     /**
-     * Ajax - Login user by email & pass
+     * Action - Login user by email & pass
      */
     public function loginAction()
     {
@@ -173,7 +179,9 @@ trait AccountAuth
         ], "POST");
 
         //get model classes
-        $user_class = AppModule::getClass("user");
+        $user_class  = AppModule::getClass("user");
+        $token_class = AppModule::getClass("user_token");
+
         //find this user
         $user = $user_class::getUserByEmail($data["email"]);
 
@@ -199,10 +207,14 @@ trait AccountAuth
             $this->jsonResponse(200, $msg, "warning", $namespace);
         }
 
+        //custom payload
+        $payload = $this->account_auth_conf["oauth"] ? $token_class::newToken("access") : null;
+
         //success login
-        $this->userHasLoggedIn($user->id);
-        //session controller
-        $this->dispatchOnUserLoggedIn();
+        $this->onLoggedIn($user->id);
+
+        //session controller, dispatch response
+        $this->onLoggedInDispatch("account", $payload);
     }
 
     /**
@@ -252,7 +264,7 @@ trait AccountAuth
         //send activation account email
         $this->sendMailMessage("accountActivation", $user->id);
         //force redirection
-        $this->dispatchOnUserLoggedIn("signIn", null, false);
+        $this->onLoggedInDispatch(false);
     }
 
     /**
