@@ -17,8 +17,8 @@ class BaseUserTicket extends \CrazyCake\Models\Base
     /* static vars */
 
     //this static methods can be "overrided" as late binding
-    public static $QR_CODE_LEGTH     = 40;
-    public static $TICKET_CODE_LEGTH = 10;
+    public static $HASH_LENGTH = 24;
+    public static $CODE_LENGTH = 10;
 
     /* properties */
 
@@ -73,7 +73,7 @@ class BaseUserTicket extends \CrazyCake\Models\Base
     {
         //set qr hash
         if (is_null($this->qr_hash))
-            $this->qr_hash = $this->newHash(uniqid()); //param is like a seed
+            $this->qr_hash = $this->newHash();
 
         //set alphanumeric code
         if (is_null($this->code))
@@ -165,31 +165,18 @@ class BaseUserTicket extends \CrazyCake\Models\Base
     /**
      * Generates a random Hash
      * @access protected
-     * @param  string $phrase - A text phrase
+     * @param  string $seed - A string seed
      * @return string
      */
-    protected function newHash($phrase = "")
+    protected function newHash()
     {
-        $length = static::$QR_CODE_LEGTH;
-        $code   = "";
-        $p      = 0;
-
-        for ($k = 1; $k <= $length; $k++) {
-
-            $num  = chr(rand(48, 57));
-            $char = chr(rand(97, 122));
-            //append string
-            $code .= (rand(1, 2) == 1) ? $num : $char;
-        }
-
-        //make sure hash is always different
-        $hash = sha1($code.microtime().$phrase);
-        $hash = substr(str_shuffle($hash), 0, $length);
+        $di   = \Phalcon\DI::getDefault();
+        $hash = $di->getShared("cryptify")->newHash(static::$HASH_LENGTH);
 
         //unique constrait
         $exists = self::findFirstByQrHash($hash);
 
-        return $exists ? $this->newHash($phrase) : $hash;
+        return $exists ? $this->newHash() : $hash;
     }
 
     /**
@@ -200,7 +187,8 @@ class BaseUserTicket extends \CrazyCake\Models\Base
     protected function newCode()
     {
         $code = $this->getDI()->getShared("cryptify")
-                              ->newAlphanumeric(static::$TICKET_CODE_LEGTH);
+                              ->newAlphanumeric(static::$CODE_LENGTH);
+
         //unique constrait
         $user_id = isset($this->user_id) ? $this->user_id : 0;
         $exists  = self::getByCodeAndUserId($code, $user_id);

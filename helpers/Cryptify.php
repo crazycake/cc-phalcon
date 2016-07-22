@@ -146,6 +146,34 @@ class Cryptify
     }
 
     /**
+     * Generates a random Hash
+     * @param  int $length - The hash length, max length 20.
+     * @param  string $seed - The string seed
+     * @return string
+     */
+    public function newHash($length = 20, $seed = "")
+    {
+        if(empty($seed))
+            $seed = uniqid();
+
+        $code = "";
+
+        for ($k = 1; $k <= $length; $k++) {
+
+            $num  = chr(rand(48, 57));
+            $char = chr(rand(97, 122));
+            //append string
+            $code .= (rand(1, 2) == 1) ? $num : $char;
+        }
+
+        //make sure hash is always different
+        $hash = sha1($code.microtime().$seed);
+        $hash = substr(str_shuffle($hash), 0, $length);
+
+        return $hash;
+    }
+
+    /**
      * Generates a random alphanumeric code
      * @param int $length - The code length
      * @return string
