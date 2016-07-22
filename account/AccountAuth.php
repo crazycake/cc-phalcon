@@ -207,8 +207,12 @@ trait AccountAuth
             $this->jsonResponse(200, $msg, "warning", $namespace);
         }
 
-        //custom payload
-        $payload = $this->account_auth_conf["oauth"] ? $token_class::newToken("access") : null;
+        //set payload
+        $payload = null;
+
+        //for api oauth
+        if($this->account_auth_conf["oauth"])
+            $payload = $token_class::newToken($user->id, "access");
 
         //success login
         $this->onLoggedIn($user->id);

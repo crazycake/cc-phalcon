@@ -106,7 +106,7 @@ class BaseUserToken extends \CrazyCake\Models\Base
      * @param string $type - The token type, default is "activation"
      * @return mixed [string|boolean]
      */
-    public static function saveNewToken($user_id, $type = "activation")
+    public static function newToken($user_id, $type = "activation")
     {
         //Save a new temporal token
         $class = static::who();
@@ -140,11 +140,11 @@ class BaseUserToken extends \CrazyCake\Models\Base
             if ($days_passed > static::$TOKEN_EXPIRES_THRESHOLD) {
                 //if token has expired delete it and generate a new one
                 $token->delete();
-                $token = self::saveNewToken($user_id, $type);
+                $token = self::newToken($user_id, $type);
             }
         }
         else {
-            $token = self::saveNewToken($user_id, $type);
+            $token = self::newToken($user_id, $type);
         }
 
         //append encrypted data
