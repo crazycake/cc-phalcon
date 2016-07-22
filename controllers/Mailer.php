@@ -51,6 +51,19 @@ trait Mailer
      */
     public function initMailer($conf = [])
     {
+        //defaults
+        $defaults = [
+            //entities
+            "user_entity"       => "User",
+            "user_token_entity" => "UserToken"
+        ];
+
+        //merge confs
+        $conf = array_merge($defaults, $conf);
+        //append class prefixes
+        $conf["user_entity"]       = AppModule::getClass($conf["user_entity"]);
+        $conf["user_token_entity"] = AppModule::getClass($conf["user_token_entity"]);
+
         $this->mailer_conf = $conf;
 
         //create dir if not exists
@@ -88,14 +101,14 @@ trait Mailer
      */
     public function accountActivation($user_id)
     {
-        $user_class = AppModule::getClass("user");
-        $user = $user_class::getById($user_id);
+        $user_class = $this->mailer_conf["user_entity"];
+        $user       = $user_class::getById($user_id);
 
         if (!$user)
             $this->jsonResponse(403);
 
         //get user token
-        $tokens_class = AppModule::getClass("user_token");
+        $tokens_class = $this->mailer_conf["user_token_entity"];
         $token = $tokens_class::newTokenIfExpired($user_id, "activation");
 
         if (!$token)
@@ -124,7 +137,7 @@ trait Mailer
      */
     public function passwordRecovery($user_id)
     {
-        $user_class = AppModule::getClass("user");
+        $user_class = $this->mailer_conf["user_entity"];
         $user = $user_class::getById($user_id);
 
         //if invalid user, send permission denied response
@@ -132,8 +145,8 @@ trait Mailer
             $this->jsonResponse(403);
 
         //get user token
-        $tokens_class = AppModule::getClass("user_token");
-        $token = $tokens_class::newTokenIfExpired($user_id, "pass");
+        $tokens_class = $this->mailer_conf["user_token_entity"];
+        $token        = $tokens_class::newTokenIfExpired($user_id, "pass");
 
         if (!$token)
             $this->jsonResponse(500);
@@ -291,7 +304,7 @@ trait Mailer
         if (APP_ENVIRONMENT == 'production' || empty($view))
             $this->redirectToNotFound();
 
-        $user_class = AppModule::getClass("user");
+        $user_class = $this->mailer_conf["user_entity"];
 
         $user = $user_class::findFirst();
 
