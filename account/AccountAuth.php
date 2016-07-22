@@ -56,9 +56,19 @@ trait AccountAuth
         $defaults = [
             "js_recaptcha" => false,
             "oauth"        => false,
+            //entities
+            "user_entity"       => "User",
+            "user_token_entity" => "UserToken"
         ];
 
-        $this->account_auth_conf = array_merge($conf, $defaults);
+        //merge confs
+        $conf = array_merge($defaults, $conf);
+        //append class prefixes
+        $conf["user_entity"]       = AppModule::getClass($conf["user_entity"]);
+        $conf["user_token_entity"] = AppModule::getClass($conf["user_token_entity"]);
+
+        //set configuration
+        $this->account_auth_conf = $conf;
     }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
@@ -119,8 +129,8 @@ trait AccountAuth
         //get decrypted data
         try {
             //get model classes
-            $user_class   = AppModule::getClass("user");
-            $token_class = AppModule::getClass("user_token");
+            $user_class  = $this->account_auth_conf["user_entity"];
+            $token_class = $this->account_auth_conf["user_token_entity"];
 
             //handle the encrypted data with parent controller
             $data = $token_class::handleEncryptedValidation($encrypted_data);
@@ -179,8 +189,8 @@ trait AccountAuth
         ], "POST");
 
         //get model classes
-        $user_class  = AppModule::getClass("user");
-        $token_class = AppModule::getClass("user_token");
+        $user_class  = $this->account_auth_conf["user_entity"];
+        $token_class = $this->account_auth_conf["user_token_entity"];
 
         //find this user
         $user = $user_class::getUserByEmail($data["email"]);
@@ -252,7 +262,7 @@ trait AccountAuth
         $data["last_name"]  = mb_convert_case($data["last_name"], MB_CASE_TITLE, "UTF-8");
 
         //get model classes
-        $user_class = AppModule::getClass("user");
+        $user_class = $this->account_auth_conf["user_entity"];
         //set pending email confirmation status
         $data["account_flag"] = "pending";
 
@@ -291,7 +301,7 @@ trait AccountAuth
         }
 
         //get model classes
-        $user_class = AppModule::getClass("user");
+        $user_class = $this->account_auth_conf["user_entity"];
         $user       = $user_class::getUserByEmail($data["email"], "pending");
 
         //check if user exists is a pending account

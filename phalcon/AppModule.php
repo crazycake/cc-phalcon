@@ -125,11 +125,6 @@ abstract class AppModule
             //if class not exists append prefix.
             $class_name = "Ws$class_name";
         }
-        else if(MODULE_NAME == "backend") {
-
-            //replace standard user with admin user
-            $class_name = str_replace("User", "Admin", $class_name);
-        }
 
         return $prefix ? "\\$class_name" : $class_name;
     }

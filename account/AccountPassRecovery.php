@@ -32,6 +32,19 @@ trait AccountPassRecovery
      */
     public function initAccountPassRecovery($conf = [])
     {
+        //defaults
+        $defaults = [
+            //entities
+            "user_entity"       => "User",
+            "user_token_entity" => "UserToken"
+        ];
+
+        //merge confs
+        $conf = array_merge($defaults, $conf);
+        //append class prefixes
+        $conf["user_entity"]       = AppModule::getClass($conf["user_entity"]);
+        $conf["user_token_entity"] = AppModule::getClass($conf["user_token_entity"]);
+
         $this->account_pass_recovery_conf = $conf;
     }
 
@@ -71,7 +84,7 @@ trait AccountPassRecovery
         //get decrypted data
         try {
             //handle the encrypted data with parent controller
-            $tokens_class = AppModule::getClass("user_token");
+            $tokens_class = $this->account_pass_recovery_conf["user_token_entity"];
             $tokens_class::handleEncryptedValidation($encrypted_data);
 
             //view vars
@@ -110,7 +123,7 @@ trait AccountPassRecovery
         }
 
         //check if user exists is a active account
-        $user_class = AppModule::getClass("user");
+        $user_class = $this->account_pass_recovery_conf["user_entity"];
         $user       = $user_class::getUserByEmail($data["email"], "enabled");
 
         //if user not exists, send message
@@ -143,8 +156,8 @@ trait AccountPassRecovery
 
         try {
             //get model classes
-            $user_class   = AppModule::getClass("user");
-            $tokens_class = AppModule::getClass("user_token");
+            $user_class   = $this->account_pass_recovery_conf["user_entity"];
+            $tokens_class = $this->account_pass_recovery_conf["user_token_entity"];
 
             $edata = $tokens_class::handleEncryptedValidation($data["edata"]);
             list($user_id, $token_type, $token) = $edata;

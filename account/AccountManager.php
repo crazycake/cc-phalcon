@@ -39,6 +39,18 @@ trait AccountManager
      */
     public function initAccountManager($conf = [])
     {
+        //defaults
+        $defaults = [
+            //entities
+            "user_entity" => "User"
+        ];
+
+        //merge confs
+        $conf = array_merge($defaults, $conf);
+        //append class prefixes
+        $conf["user_entity"] = AppModule::getClass($conf["user_entity"]);
+
+        //set configuration
         $this->account_manager_conf = $conf;
     }
 
@@ -76,7 +88,7 @@ trait AccountManager
         ];
 
         //get model class name
-        $user_class = AppModule::getClass("user");
+        $user_class = $this->account_manager_conf["user_entity"];
         //get user
         $user = $user_class::getById($this->user_session["id"]);
         //validate user

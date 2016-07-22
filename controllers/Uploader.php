@@ -61,6 +61,7 @@ trait Uploader
      */
     protected function initUploader($conf = [])
     {
+        //set conf
         $this->uploader_conf = $conf;
 
         if(empty($conf["files"]))

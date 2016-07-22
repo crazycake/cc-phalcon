@@ -26,9 +26,10 @@ trait AccountSession
     abstract protected function onSessionSave($user);
 
     /**
-     * Excluded user props to be saved in session
+     * Config var
+     * @var array
      */
-    protected static $DEFAULT_USER_PROPS_FILTER = ["id", "account_flag", "auth"];
+    public $account_session_conf;
 
     /**
      * Stores user session as array for direct access
@@ -39,17 +40,30 @@ trait AccountSession
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
-     * Phalcon Constructor Event
+     * This method must be call in constructor parent class
+     * @param array $conf - The config array
      */
-    protected function onConstruct()
+    public function initAccountSession($conf = [])
     {
-        //always call parent constructor
-        parent::onConstruct();
+        //defaults
+        $defaults = [
+            //entities
+            "user_entity" => "User",
+            //excluded user props to be saved in session
+            "view_user_data_filter" => ["id", "account_flag", "auth"]
+        ];
+
+        //merge confs
+        $conf = array_merge($defaults, $conf);
+        //append class prefixes
+        $conf["user_entity"] = AppModule::getClass($conf["user_entity"]);
+
+        $this->account_session_conf = $conf;
 
         //set session var
         $this->user_session = $this->getUserSession();
         //set user data for view, filter is passed to exclude some properties
-        $this->_setUserDataForView(self::$DEFAULT_USER_PROPS_FILTER);
+        $this->_setUserDataForView();
     }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
@@ -69,7 +83,7 @@ trait AccountSession
         if (!is_array($user_session) || !isset($user_session["id"]) || !isset($user_session["auth"]))
             return false;
 
-        $user_class = AppModule::getClass("user");
+        $user_class = $this->account_session_conf["user_entity"];
 
         if ($user_class::getById($user_session["id"]) == false)
             return false;
@@ -103,7 +117,7 @@ trait AccountSession
     protected function onLoggedIn($user_id)
     {
         //get user data from DB
-        $user_class = AppModule::getClass("user");
+        $user_class = $this->account_session_conf["user_entity"];
         $user       = $user_class::getById($user_id);
 
         if (!$user)
@@ -331,8 +345,10 @@ trait AccountSession
      * @access private
      * @param array $filter - A string array of properties to filter
      */
-    private function _setUserDataForView($filter = [])
+    private function _setUserDataForView()
     {
+        $filter = $this->account_session_conf["view_user_data_filter"];
+
         //Load view data only for non-ajax requests, set user data var for view
         if (!$this->request->isAjax()) {
             $this->view->setVar("user_data", $this->getUserSession($filter));
