@@ -21,10 +21,11 @@ return array (
   'controllers' => 
   array (
     0 => 'Crud.php',
-    1 => 'Mailer.php',
-    2 => 'Requester.php',
-    3 => 'Responser.php',
-    4 => 'Uploader.php',
+    1 => 'Localize.php',
+    2 => 'Mailer.php',
+    3 => 'Requester.php',
+    4 => 'Responser.php',
+    5 => 'Uploader.php',
   ),
   'core' => 
   array (

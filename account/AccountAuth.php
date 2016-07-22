@@ -63,8 +63,8 @@ trait AccountAuth
         //merge confs
         $conf = array_merge($defaults, $conf);
         //append class prefixes
+        $conf["user_token_entity"] = AppModule::getClass($conf["user_entity"])."Token";
         $conf["user_entity"]       = AppModule::getClass($conf["user_entity"]);
-        $conf["user_token_entity"] = AppModule::getClass($conf["user_entity"]."Token");
 
         //set configuration
         $this->account_auth_conf = $conf;

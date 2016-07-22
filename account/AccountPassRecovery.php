@@ -42,8 +42,8 @@ trait AccountPassRecovery
         //merge confs
         $conf = array_merge($defaults, $conf);
         //append class prefixes
+        $conf["user_token_entity"] = AppModule::getClass($conf["user_entity"])."Token";
         $conf["user_entity"]       = AppModule::getClass($conf["user_entity"]);
-        $conf["user_token_entity"] = AppModule::getClass($conf["user_entity"]."Token");
 
         $this->account_pass_recovery_conf = $conf;
     }
