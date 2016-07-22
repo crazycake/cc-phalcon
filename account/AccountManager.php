@@ -41,8 +41,8 @@ trait AccountManager
     {
         //defaults
         $defaults = [
-            "profile_pass_min_length" => 8,
-            "required_fields"         => [], //aditional user fields
+            "pass_min_length" => 8,
+            "required_fields" => [], //aditional user fields
             //entities
             "user_entity" => "User"
         ];
@@ -115,7 +115,7 @@ trait AccountManager
             //changed pass validation
             if (!empty($data["pass"]) && !empty($data["current_pass"])) {
 
-                if (strlen($data["pass"]) < $this->account_manager_conf["profile_pass_min_length"])
+                if (strlen($data["pass"]) < $this->account_manager_conf["pass_min_length"])
                     throw new Exception($this->account_manager_conf["trans"]["PASS_TOO_SHORT"]);
 
                 //check current pass
