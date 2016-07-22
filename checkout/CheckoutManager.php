@@ -47,7 +47,8 @@ trait CheckoutManager
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
-     * This method must be call in constructor parent class
+     * This method must be call in constructor parent class.
+     * TODO: implement defaults conf values.
      * @param array $conf - The config array
      */
     public function initCheckoutManager($conf = [])
@@ -104,7 +105,7 @@ trait CheckoutManager
 
             //check if an error occurred
             if (!$checkout_orm)
-                throw new Exception($this->checkout_manager_conf["TRANS"]["ERROR_UNEXPECTED"]);
+                throw new Exception($this->checkout_manager_conf["trans"]["ERROR_UNEXPECTED"]);
 
             //set buy order
             $checkout->buy_order = $checkout_orm->buy_order;
