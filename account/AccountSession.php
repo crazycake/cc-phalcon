@@ -138,12 +138,15 @@ trait AccountSession
             $this->session->remove("auth_redirect");
         }
 
+        if($uri === false)
+            $uri = "account";
+
         //check for ajax request
         if ($this->request->isAjax() || MODULE_NAME === "api") {
             $this->jsonResponse(200, empty($payload) ? ["redirect" => $uri] : $payload);
         }
         else {
-            $this->redirectTo($uri ? $uri : "account");
+            $this->redirectTo($uri);
         }
     }
 

@@ -17,9 +17,6 @@ use CrazyCake\Helpers\Dates;
  */
 class BaseUserToken extends \CrazyCake\Models\Base
 {
-    //this static method can be "overrided" as late binding
-    public static $TOKEN_EXPIRES_THRESHOLD = 3; //days
-
     /* properties */
 
     /**
@@ -45,9 +42,19 @@ class BaseUserToken extends \CrazyCake\Models\Base
     /* inclusion vars */
 
     /**
+     * Token expiration in days.
+     * Can be overrided.
+     * @var integer
+     */
+    public static $TOKEN_EXPIRES_THRESHOLD = [
+                        "activation" => 365,
+                        "access"     => 1095,
+                        "pass"       => 3
+                   ];
+    /**
      * @var array
      */
-    static $TOKEN_TYPES = ["activation", "pass", "access"];
+    public static $TOKEN_TYPES = ["activation", "pass", "access"];
 
     /**
      * Validation Event
@@ -137,7 +144,7 @@ class BaseUserToken extends \CrazyCake\Models\Base
             //check token "days passed" (checks if token is expired)
             $days_passed = Dates::getTimePassedFromDate($token->created_at);
 
-            if ($days_passed > static::$TOKEN_EXPIRES_THRESHOLD) {
+            if ($days_passed > static::$TOKEN_EXPIRES_THRESHOLD[$type]) {
                 //if token has expired delete it and generate a new one
                 $token->delete();
                 $token = self::newToken($user_id, $type);
@@ -185,16 +192,12 @@ class BaseUserToken extends \CrazyCake\Models\Base
         if (!$token)
             throw new Exception("temporal token dont exists.");
 
-        //special case for activation (don"t expires)
-        if ($token_type == "activation") {
-            //success
-            return $data;
-        }
+        $expiration = static::$TOKEN_EXPIRES_THRESHOLD[$token_type];
 
         //for other token type, get days passed
         $days_passed = Dates::getTimePassedFromDate($token->created_at);
 
-        if ($days_passed > static::$TOKEN_EXPIRES_THRESHOLD)
+        if ($days_passed > $expiration)
             throw new Exception("temporal token (id: ".$token->id.") has expired (".$days_passed." days passed since ".$token->created_at.")");
 
         return $data;
@@ -210,27 +213,33 @@ class BaseUserToken extends \CrazyCake\Models\Base
         //use carbon to manipulate days
         try {
 
-            //use server datetime
-            $now = new \Carbon\Carbon();
-            //consider one hour early from date
-            $now->subDays(static::$TOKEN_EXPIRES_THRESHOLD);
+            $token_types = static::$TOKEN_EXPIRES_THRESHOLD;
+            $count       = 0;
 
-            //get expired objects
-            $conditions = "created_at < ?1";
-            $binding    = [1 => $now->toDateTimeString()];
-            //query
-            $objects = self::find([$conditions, "bind" => $binding]);
+            foreach ($token_types as $type => $expiration) {
 
-            $count = 0;
+                //use server datetime
+                $now = new \Carbon\Carbon();
+                //consider one hour early from date
+                $now->subDays($expiration);
 
-            if ($objects) {
+                //get expired objects
+                $conditions = "created_at < ?1 AND type = ?2";
+                $binding    = [1 => $now->toDateTimeString(), 2 => $type];
+                //query
+                $objects = self::find([$conditions, "bind" => $binding]);
+
+                //delete objects
+                if (!$objects)
+                    continue;
+
                 //set count
-                $count = $objects->count();
+                $count += $objects->count();
                 //delete action
                 $objects->delete();
             }
 
-            //delete expired objects
+            //return count
             return $count;
         }
         catch (Exception $e) {

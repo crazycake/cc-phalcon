@@ -144,7 +144,7 @@ trait Mailer
         $this->mailer_conf["data_user"]  = $user;
         $this->mailer_conf["data_email"] = $user->email;
         $this->mailer_conf["data_url"]   = $this->baseUrl($uri);
-        $this->mailer_conf["data_token_expiration"] = $tokens_class::$TOKEN_EXPIRES_THRESHOLD;
+        $this->mailer_conf["data_token_expiration"] = $tokens_class::$TOKEN_EXPIRES_THRESHOLD["pass"];
 
         //set message properties
         $subject = $this->mailer_conf["trans"]["SUBJECT_PASSWORD"];
