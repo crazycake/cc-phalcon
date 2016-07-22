@@ -51,10 +51,6 @@ class BaseUserToken extends \CrazyCake\Models\Base
                         "access"     => 1095,
                         "pass"       => 3
                    ];
-    /**
-     * @var array
-     */
-    public static $TOKEN_TYPES = ["activation", "pass", "access"];
 
     /**
      * Validation Event
@@ -64,8 +60,8 @@ class BaseUserToken extends \CrazyCake\Models\Base
         //type
         $this->validate(new InclusionIn([
             "field"   => "type",
-            "domain"  => self::$TOKEN_TYPES,
-            "message" => "Invalid token type. Types supported: ".implode(", ", self::$TOKEN_TYPES)
+            "domain"  => array_keys(self::$TOKEN_EXPIRES_THRESHOLD),
+            "message" => "Invalid token type."
         ]));
 
         //check validations
@@ -223,7 +219,7 @@ class BaseUserToken extends \CrazyCake\Models\Base
                 //consider one hour early from date
                 $now->subDays($expiration);
                 //print_r($now->toDateTimeString());exit;
-                
+
                 //get expired objects
                 $conditions = "created_at < ?1 AND type = ?2";
                 $binding    = [1 => $now->toDateTimeString(), 2 => $type];
