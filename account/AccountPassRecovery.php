@@ -34,6 +34,7 @@ trait AccountPassRecovery
     {
         //defaults
         $defaults = [
+            "pass_min_length" => 8,
             //entities
             "user_entity" => "User"
         ];
@@ -167,6 +168,10 @@ trait AccountPassRecovery
             if (!$user)
                 throw new Exception("got an invalid user (id:" . $user_id . ") when validating encrypted data.");
 
+            //pass length
+            if (strlen($data["pass"]) < $this->account_pass_recovery_conf["pass_min_length"])
+                throw new Exception($this->account_pass_recovery_conf["trans"]["PASS_TOO_SHORT"]);
+
             //save new account flag state
             $user->update(["pass" => $this->security->hash($data["pass"])]);
 
@@ -183,7 +188,7 @@ trait AccountPassRecovery
         }
         catch (Exception $e) {
             $this->logger->error("AccountPass::saveNewPasswordAction -> Error saving new password. Trace: ".$e->getMessage());
-            return $this->jsonResponse(400);
+            return $this->jsonResponse($e->getMessage());
         }
 
         //send JSON response
