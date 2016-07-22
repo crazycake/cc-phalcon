@@ -49,7 +49,7 @@ trait Localize
                 "AUTH_FAILED"        => "El correo ó contraseña no son válidos.",
                 "ACCOUNT_PENDING"    => "Te hemos enviado un correo de activación. Haz click <a href=\"#\">aquí</a> si no has recibido este correo.",
                 "ACCOUNT_DISABLED"   => "Esta cuenta se encuentra desactivada por incumplimiento a nuestros términos y condiciones
-                                         porfavor <a href=\"javascript:core.redirectTo('contact');\">comunícate aquí</a> con nuestro equipo.",
+                                         porfavor comunícate con nuestro equipo.",
                 "ACCOUNT_NOT_FOUND"  => "Esta cuenta no se encuentra registrada.",
                 "INVALID_NAMES"      => "Tu nombre no parece ser válido.",
                 "RECAPTCHA_FAILED"   => "No hemos logrado verficar el reCaptcha, porfavor inténtalo de nuevo.",

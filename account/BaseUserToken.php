@@ -48,7 +48,7 @@ class BaseUserToken extends \CrazyCake\Models\Base
      */
     public static $TOKEN_EXPIRES_THRESHOLD = [
                         "activation" => 60,
-                        "access"     => 90,
+                        "access"     => 1,
                         "pass"       => 3
                    ];
 

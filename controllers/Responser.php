@@ -58,7 +58,7 @@ trait Responser
      * Codes: ```200, 400, 404, 405, 498, 500, 501, 800, 900, 901, 902```
      * @param string $code - The app message code.
      * @param object $payload - Payload to send
-     * @param string $type - (optional) Append a type attr to the response.
+     * @param string $type - (optional) Append a type attr to the response. Example alert, warning.
      * @param string $namespace - (optional) Append a type namespace to the response.
      * @return string - The response
      */

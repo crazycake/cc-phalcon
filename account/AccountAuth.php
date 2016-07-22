@@ -196,7 +196,12 @@ trait AccountAuth
 
         //check user & given hash with the one stored (wrong combination)
         if (!$user || !$this->security->checkHash($data["pass"], $user->pass)) {
-            $this->jsonResponse(200, $this->account_auth_conf["trans"]["AUTH_FAILED"], "alert");
+
+            //for API handle alerts & warning as errors
+            if(MODULE_NAME === "api")
+                $this->jsonResponse(401, $this->account_auth_conf["trans"]["AUTH_FAILED"]);
+            else
+                $this->jsonResponse(200, $this->account_auth_conf["trans"]["AUTH_FAILED"], "alert");
         }
 
         //check user account flag
@@ -212,8 +217,11 @@ trait AccountAuth
                 $namespace = "ACCOUNT_PENDING";
             }
 
-            //show error message with custom handler
-            $this->jsonResponse(200, $msg, "warning", $namespace);
+            //for API handle alerts & warning as errors,
+            if(MODULE_NAME === "api")
+                $this->jsonResponse(401, $msg);
+            else
+                $this->jsonResponse(200, $msg, "warning", $namespace); //browser custom handler
         }
 
         //set payload
