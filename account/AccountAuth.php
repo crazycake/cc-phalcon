@@ -123,7 +123,7 @@ trait AccountAuth
             $token_class = AppModule::getClass("user_token");
 
             //handle the encrypted data with parent controller
-            $data = $token_class::handleUserTokenValidation($encrypted_data);
+            $data = $token_class::handleEncryptedValidation($encrypted_data);
             //assign values
             list($user_id, $token_type, $token) = $data;
 
@@ -212,7 +212,7 @@ trait AccountAuth
 
         //for api oauth
         if($this->account_auth_conf["oauth"])
-            $payload = $token_class::newToken($user->id, "access");
+            $payload = $token_class::newTokenIfExpired($user->id, "access");
 
         //success login
         $this->onLoggedIn($user->id);

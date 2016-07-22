@@ -47,8 +47,8 @@ class BaseUserToken extends \CrazyCake\Models\Base
      * @var integer
      */
     public static $TOKEN_EXPIRES_THRESHOLD = [
-                        "activation" => 365,
-                        "access"     => 1095,
+                        "activation" => 60,
+                        "access"     => 90,
                         "pass"       => 3
                    ];
 
@@ -165,7 +165,7 @@ class BaseUserToken extends \CrazyCake\Models\Base
      * @param string $encrypted_data - The encrypted data
      * @return array
      */
-    public static function handleUserTokenValidation($encrypted_data = null)
+    public static function handleEncryptedValidation($encrypted_data = null)
     {
         if (is_null($encrypted_data))
             throw new Exception("sent input null encrypted_data");

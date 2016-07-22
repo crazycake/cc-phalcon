@@ -72,7 +72,7 @@ trait AccountPassRecovery
         try {
             //handle the encrypted data with parent controller
             $tokens_class = AppModule::getClass("user_token");
-            $tokens_class::handleUserTokenValidation($encrypted_data);
+            $tokens_class::handleEncryptedValidation($encrypted_data);
 
             //view vars
             $this->view->setVar("html_title", $this->account_pass_recovery_conf["trans"]["TITLE_CREATE_PASS"]);
@@ -146,7 +146,7 @@ trait AccountPassRecovery
             $user_class   = AppModule::getClass("user");
             $tokens_class = AppModule::getClass("user_token");
 
-            $edata = $tokens_class::handleUserTokenValidation($data["edata"]);
+            $edata = $tokens_class::handleEncryptedValidation($data["edata"]);
             list($user_id, $token_type, $token) = $edata;
 
             //get user
