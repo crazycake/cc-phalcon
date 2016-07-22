@@ -57,15 +57,14 @@ trait AccountAuth
             "js_recaptcha" => false,
             "oauth"        => false,
             //entities
-            "user_entity"       => "User",
-            "user_token_entity" => "UserToken"
+            "user_entity"  => "User"
         ];
 
         //merge confs
         $conf = array_merge($defaults, $conf);
         //append class prefixes
         $conf["user_entity"]       = AppModule::getClass($conf["user_entity"]);
-        $conf["user_token_entity"] = AppModule::getClass($conf["user_token_entity"]);
+        $conf["user_token_entity"] = AppModule::getClass($conf["user_entity"]."Token");
 
         //set configuration
         $this->account_auth_conf = $conf;

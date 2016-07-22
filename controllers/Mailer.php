@@ -54,15 +54,14 @@ trait Mailer
         //defaults
         $defaults = [
             //entities
-            "user_entity"       => "User",
-            "user_token_entity" => "UserToken"
+            "user_entity" => "User"
         ];
 
         //merge confs
         $conf = array_merge($defaults, $conf);
         //append class prefixes
         $conf["user_entity"]       = AppModule::getClass($conf["user_entity"]);
-        $conf["user_token_entity"] = AppModule::getClass($conf["user_token_entity"]);
+        $conf["user_token_entity"] = AppModule::getClass($conf["user_entity"]."Token");
 
         $this->mailer_conf = $conf;
 

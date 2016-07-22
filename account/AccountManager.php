@@ -41,6 +41,8 @@ trait AccountManager
     {
         //defaults
         $defaults = [
+            "profile_pass_min_length" => 8,
+            "required_fields"         => [], //aditional user fields
             //entities
             "user_entity" => "User"
         ];
