@@ -59,39 +59,9 @@
 }
 
 //background cover image (3rd argument to use custom background to small & medium screen)
-@mixin app-bg-cover($image_path, $attachment: fixed, $responsive: false) {
-	//set image
-	@if $image_path != null {
-		background: url($image_path) no-repeat center center $attachment;
-		background-size: cover;
-	}
-	//small view
-	@if $responsive == true and mixin-exists(breakpoint) {
-		//MediaQueries
-		@include breakpoint(small only) {
-			$url: str-replace($image_path, ".jpg", "-small.jpg");
-			$url: str-replace($url, ".png", "-small.png");
-			//@debug $url;
-			position: relative;
-			background: url($url) no-repeat center center $attachment;
-			-webkit-background-size: cover;
-			-moz-background-size: cover;
-			-o-background-size: cover;
-			background-size: cover;
-		}
-		//medium
-		@include breakpoint(medium only) {
-			$url: str-replace($image_path, ".jpg", "-medium.jpg");
-			$url: str-replace($url, ".png", "-medium.png");
-			//@debug $url;
-			position: relative;
-			background: url($url) no-repeat 100% 100% $attachment;
-			-webkit-background-size: cover;
-			-moz-background-size: cover;
-			-o-background-size: cover;
-			background-size: cover;
-		}
-	}
+@mixin app-bg-cover($image_path, $attachment: fixed) {
+	background: url($image_path) no-repeat center center $attachment;
+	background-size: cover;
 }
 
 //background image retina support
@@ -128,7 +98,6 @@
 @mixin app-bg-color($factor: 0, $opacity: 0.95) {
 	background-color: rgb($factor, $factor, $factor);
 	background-color: rgba($factor, $factor, $factor, $opacity) !important;
-	//transition
 	transition: all 0.3s ease;
 }
 
