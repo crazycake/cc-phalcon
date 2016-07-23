@@ -84,8 +84,6 @@ trait Crud
 
 		//set current_view
 		$this->view->setVar("current_view", $entity);
-		//set common layout
-		$this->view->setLayout("crud");
 
         //load modules
         $this->loadJsModules([
