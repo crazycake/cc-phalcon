@@ -21,9 +21,11 @@ export default new function() {
         sel_app            : "#app",
         sel_header         : "#app-header",
         sel_footer         : "#app-footer",
+        sel_content        : "#app-content",
         sel_loading_box    : "#app-loading",
         sel_flash_messages : "#app-flash",
         sel_alert_box      : "div.app-alert",
+        sel_tooltips       : '[data-toggle="tooltip"]',
         //uris
         img_asset_fallback : "images/icons/icon-image-fallback.png",
         img_asset_loading  : "images/icons/icon-loading1.svg",
@@ -58,6 +60,10 @@ export default new function() {
         self.fallbackImages();
         //check server flash messages
         self.showFlashAlerts();
+
+        //tooltips
+        if(self.framework == "bootstrap")
+            self.loadTooltips();
     };
 
     /**
@@ -543,5 +549,14 @@ export default new function() {
 
             $(this).attr("src", core.staticUrl(APP.UI.img_asset_fallback));
         });
+    };
+
+    /**
+     * Load Bootstrap tooltips
+     */
+    self.loadTooltips = function() {
+
+        if(APP.UI.sel_tooltips.length)
+            $(APP.UI.sel_tooltips).tooltip();
     };
 };
