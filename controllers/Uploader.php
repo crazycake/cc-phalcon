@@ -65,13 +65,14 @@ trait Uploader
         $this->uploader_conf = $conf;
 
         if(empty($conf["files"]))
-            throw new Exception("Uploader requires files array in config.");
+            throw new Exception("Uploader requires files array config.");
 
         //set request headers
         $this->headers = $this->request->getHeaders();
 
         //get session user id
         $user_session = $this->session->get("user");
+
         //set upload path
         $this->uploader_conf["path"] = self::$ROOT_UPLOAD_PATH."temp/".$user_session["id_hashed"]."/";
 
@@ -186,9 +187,9 @@ trait Uploader
 
     /**
      * Move Uploaded files
-     * @param array $map - The file destination map
+     * @param int $object_id - The object id
      */
-    protected function moveUploadedFiles($map = [])
+    protected function moveUploadedFiles($object_id = 0)
     {
         //exclude hidden files
         $uploaded_files = preg_grep('/^([^.])/', scandir($this->uploader_conf["path"]));
@@ -196,10 +197,12 @@ trait Uploader
         if(empty($uploaded_files))
             return;
 
-        foreach ($map as $key => $object_id) {
+        foreach ($this->uploader_conf["files"] as $file_conf) {
 
             $i = 1;
             foreach ($uploaded_files as $file) {
+
+                $key = $file_conf["key"];
 
                 //check key if belongs
                 if(strpos($file, $key) === false)
@@ -208,17 +211,13 @@ trait Uploader
                 //remove timestamp & replace it for an index
                 $dest_filename = preg_replace("/[\\-\\d]{6,}/", $i, $file);
 
-                //strip object name
-                preg_match("/^(.*?)\\_.*/", $file, $key_objects);
-
-                if(!isset($key_objects[1]))
-                    continue;
-
                 //hash id
                 $id_hashed = $this->getDI()->getShared('cryptify')->encryptHashId($object_id);
+                //append entity folder?
+                $entity = isset($this->uploader_conf["entity"]) ? strtolower($this->uploader_conf["entity"])."/" : "";
 
                 $org  = $this->uploader_conf["path"].$file;
-                $dest = self::$ROOT_UPLOAD_PATH.strtolower($key_objects[1])."/".$id_hashed."/";
+                $dest = self::$ROOT_UPLOAD_PATH.$entity.$id_hashed."/";
 
                 if(!is_dir($dest))
                     mkdir($dest, 0755, true);
