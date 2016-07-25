@@ -137,7 +137,7 @@ export default new function() {
         var div_alert    = $("<div data-alert>").addClass(wrapper_class + " " + identifier_class + " alert-box " + type);
         var div_holder   = $("<div>").addClass("holder");
         var div_content  = $("<div>").addClass("content");
-        var anchor_close = $("<a>").attr("href", "javascript:void(0)").addClass("close").html("&times");
+        var anchor_close = $("<a>").attr("href", "#").addClass("close").html("&times");
         var span_text    = $("<span>").addClass("text").html(payload);
         var span_icon    = $("<span>").addClass("icon-wrapper").html("<i class='icon-"+type+"'></i>");
          //append elements
