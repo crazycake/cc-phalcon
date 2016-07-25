@@ -15,6 +15,9 @@ use CrazyCake\Phalcon\AppModule;
  */
 trait Crud
 {
+	//uploader trait
+	use Uploader;
+
     /**
      * Event on before save
      */
@@ -39,17 +42,32 @@ trait Crud
      */
     protected function initCrud($conf = [])
     {
-		//validations
-        if(empty($conf["entity"]))
-            throw new \Exception("Crud requires object model class name.");
+		//default configurations
+        $defaults = [
+			"id"		  => 0,
+            "entity" 	  => "",
+            "dfields" 	  => [],
+            "sfields" 	  => [],
+			"actions"	  => true,
+            "entity_text" => "Bitácora",
+            "new_text" 	  => "Nuevo",
+        ];
+
+        //merge confs
+        $conf = array_merge($defaults, $conf);
 
 		//set default fields?
-		if(!isset($conf["fields"]))
-			throw new \Exception("Crud requires fields array option.");
+		if(empty($conf["entity"]) || empty($conf["dfields"]) || empty($conf["sfields"]))
+			throw new \Exception("Crud requires entity, dfields & sfields options.");
 
-		$fields_meta = [];
+		//set entity lower case
+		$conf["entity"] = strtolower($conf["entity"]);
+		$conf["uploader"]["entity"] = $conf["entity"];
+
+		//prepare fields data for rendering
+		$dfields = [];
 		//create fields metadata
-		foreach ($conf["fields"] as $field) {
+		foreach ($conf["dfields"] as $field) {
 
 			$obj = (object)[
 				"title" 	=> current($field),
@@ -57,17 +75,28 @@ trait Crud
 				"sortField" => key($field)
 			];
 
-			//a date?
+			//format dates
 			if(in_array($obj->name, ["created_at", "date"]))
 				$obj->callback = "formatDate|D/MM/Y";
 
-			$fields_meta[] = $obj;
+			$dfields[] = $obj;
 		}
 
 		//fields filter
-		$conf["fields"] = array_map(create_function('$o', 'return key($o);'), $conf["fields"]);
-		//fields js metadata
-		$conf["fields_meta"] = $fields_meta;
+		$conf["fields"] = array_map(create_function('$o', 'return key($o);'), $conf["dfields"]);
+		//data fields
+		$conf["dfields"] = $dfields;
+
+		//append actions
+		if($conf["actions"])
+			array_push($conf["dfields"], ["name" => "__actions", "dataClass" => "text-center"]);
+
+		//append fetch url
+		$conf["fetch_url"] = $this->baseUrl($conf["entity"]."/list");
+
+		//init uploader?
+		if(isset($conf["uploader"]))
+        	$this->initUploader($conf["uploader"]);
 
 		//finally set conf
         $this->crud_conf = $conf;
@@ -79,20 +108,15 @@ trait Crud
      */
     public function indexAction()
     {
-		//set list objects
-		$entity = strtolower($this->crud_conf["entity"]);
-
 		//set current_view
-		$this->view->setVar("current_view", $entity);
+		$this->view->setVars($this->crud_conf);
+		//set layout
+		$this->view->setLayout("crud");
+		$this->view->pick("crud/index");
 
         //load modules
         $this->loadJsModules([
-            "crud" => [
-				"actions" => true,
-				"entity"  => $entity,
-				"fields"  => $this->crud_conf["fields_meta"],
-				"sfields" => $this->crud_conf["sfields"]
-			]
+            "crud" => $this->crud_conf
         ]);
     }
 
@@ -132,11 +156,10 @@ trait Crud
 
 			$this->crud_conf["find"]["conditions"] = implode(" OR ", $syntax);
 		}
-		//print_r($this->crud_conf["find"]);exit;
 
 		//find objects
-		$model_name   = $this->crud_conf["entity"];
-		$objects      = $model_name::find($this->crud_conf["find"]);
+		$object_class = AppModule::getClass($this->crud_conf["entity"]);
+		$objects      = $object_class::find($this->crud_conf["find"]);
 		$current_page = (int)$data["page"];
 		$per_page     = (int)$data["per_page"];
 
@@ -155,7 +178,7 @@ trait Crud
 			$items[] = $obj->toArray();
 
 		//baseUrl
-		$url = $this->baseUrl(strtolower($model_name)."/list?page=");
+		$url = $this->baseUrl($this->crud_conf["entity"]."/list?page=");
 		//limits
 		$total = $objects->count();
 		$from  = $current_page == 1 ? 1 : ($per_page*$current_page - $per_page + 1);
@@ -208,6 +231,10 @@ trait Crud
 	        if(!$object->save($data))
 	            throw new \Exception($object->getMessages());
 
+			//move uploaded files? (UploaderController)
+			if(isset($this->crud_conf["uploader"]))
+				$this->moveUploadedFiles($object->id);
+
 	        //call listener
 	        $this->onAfterSave($object, "create");
 
@@ -259,6 +286,10 @@ trait Crud
 			//update values
 			$object->update($new_data);
 
+			//move uploaded files? (UploaderController)
+			if(isset($this->crud_conf["uploader"]))
+				$this->moveUploadedFiles($object->id);
+
 	        //call listener
 	        $this->onAfterSave($object, "update");
 
@@ -283,8 +314,8 @@ trait Crud
 		], "POST");
 
 		//find object
-		$model_name = $this->crud_conf["entity"];
-		$object 	= $model_name::getById($data["id"]);
+		$object_class = $this->crud_conf["entity"];
+		$object 	  = $object_class::getById($data["id"]);
 
 		$deleted = false;
 
