@@ -37,7 +37,7 @@ trait Crud
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
-     * This method must be call in constructor parent class
+     * This method must be call in constructor/initializer parent class
      * @param array $conf - The config array
      */
     protected function initCrud($conf = [])
@@ -49,7 +49,7 @@ trait Crud
             "dfields" 	  => [],
             "sfields" 	  => [],
 			"actions"	  => true,
-            "entity_text" => "Bitácora",
+            "entity_text" => "Colección",
             "new_text" 	  => "Nuevo",
         ];
 
@@ -76,15 +76,18 @@ trait Crud
 			];
 
 			//format dates
-			if(in_array($obj->name, ["created_at", "date"]))
+			if(in_array($obj->name, ["created_at", "date", "datetime"]))
 				$obj->callback = "formatDate|D/MM/Y";
+
+			//format binary values
+			if(!empty($field["format"]))
+				$obj->callback = "formatCategory|".json_encode($field["format"], JSON_UNESCAPED_SLASHES);
 
 			$dfields[] = $obj;
 		}
 
 		//fields filter
-		$conf["fields"] = array_map(create_function('$o', 'return key($o);'), $conf["dfields"]);
-		//data fields
+		$conf["fields"]  = array_map(create_function('$o', 'return key($o);'), $conf["dfields"]);
 		$conf["dfields"] = $dfields;
 
 		//append actions
@@ -229,7 +232,7 @@ trait Crud
 
 	        //save object
 	        if(!$object->save($data))
-	            throw new \Exception($object->getMessages());
+	            throw new \Exception($object->allMessages(true));
 
 			//move uploaded files? (UploaderController)
 			if(isset($this->crud_conf["uploader"]))
