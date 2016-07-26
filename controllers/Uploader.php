@@ -56,7 +56,7 @@ trait Uploader
 	private $headers;
 
     /**
-     * This method must be call in constructor/initializer parent class
+     * This method must be call in constructor parent class
      * @param array $conf - The config array
      */
     protected function initUploader($conf = [])
@@ -202,15 +202,22 @@ trait Uploader
         if(empty($uploaded_files))
             return;
 
-        foreach ($this->uploader_conf["files"] as $file_conf) {
+        $file_conf = $this->uploader_conf["files"];
+        //s($file_conf, $uploaded_files);exit;
+
+        foreach ($file_conf as $conf) {
 
             $i = 1;
             foreach ($uploaded_files as $file) {
 
-                if(!isset($file_conf["key"]))
-                    throw new Exception("Couldn't move file ".$file." => ".json_encode($file_conf));
+                if(!isset($conf["key"])) {
 
-                $key = $file_conf["key"];
+                    $this->logger->error("Couldn't move file ".$file.". Configuration exception: ".json_encode($conf));
+
+                    throw new Exception("Hay archivos aún cargándose, profavor inténtalo nuevamente.");
+                }
+
+                $key = $conf["key"];
 
                 //check key if belongs
                 if(strpos($file, $key) === false)
@@ -227,16 +234,8 @@ trait Uploader
                 //unlink temp file
                 unlink($org);
 
-                //get file config with file_key
-                $file_conf = array_filter($this->uploader_conf["files"], function($o) use ($key) {
-
-                    return $o["key"] == $key;
-                });
-
                 //TODO: resize
-                if(isset($file_conf["resize"])) {
-
-                }
+                //if(isset($conf["resize"]))
 
                 $i++;
             }

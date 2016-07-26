@@ -37,7 +37,7 @@ trait Crud
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
-     * This method must be call in constructor/initializer parent class
+     * This method must be call in constructor parent class
      * @param array $conf - The config array
      */
     protected function initCrud($conf = [])
