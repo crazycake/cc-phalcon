@@ -5,8 +5,10 @@
  */
 
 namespace CrazyCake\Controllers;
+
 //phalcon
 use Phalcon\Paginator\Adapter\Model as PaginatorModel;
+use Phalcon\Exception;
 //imports
 use CrazyCake\Phalcon\AppModule;
 
