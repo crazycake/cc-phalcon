@@ -307,17 +307,8 @@ abstract class App extends AppModule implements AppLoader
         $class_path = is_link(CORE_PATH.self::APP_CORE_PROJECT) ? CORE_PATH.self::APP_CORE_PROJECT : false;
 
         //load classes directly form phar file
-        if (!$class_path) {
-            //get class map array
-            $class_map = include "AppClassMap.php";
-
-            foreach ($libraries as $lib) {
-                //loop through package files
-                foreach ($class_map[$lib] as $class)
-                    require \Phar::running()."/$lib/".$class;
-            }
-            return;
-        }
+        if (!$class_path)
+            $class_path = \Phar::running();
 
         //set library path => namespaces
         $namespaces = [];
@@ -327,8 +318,7 @@ abstract class App extends AppModule implements AppLoader
         //var_dump($class_path, $namespaces);exit;
 
         //register namespaces
-        if (!empty($namespaces))
-            $loader->registerNamespaces($namespaces);
+        $loader->registerNamespaces($namespaces);
     }
 
     /**

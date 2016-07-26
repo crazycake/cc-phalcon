@@ -16,7 +16,6 @@
 		"soap",
 		"transbank"
 	],
-    "bootstrap" : "Bootstrap.php",
     "main"      : "autoload.php",
     "output"    : "cc-phalcon.phar",
     "shebang"   : false,
