@@ -21,9 +21,9 @@ trait AccountSession
 {
     /**
      * Listener - Append properties to user session
-     * @param object $user - The user object reference
+     * @param array $user_data - The user data to be saved
      */
-    abstract protected function onSessionSave($user);
+    abstract protected function onSessionSave(&$user_data);
 
     /**
      * Config var
@@ -123,15 +123,20 @@ trait AccountSession
         if (!$user)
             throw new Exception("User not found, cant set session auth");
 
+        //set user data
+        $user_data = [
+            "auth"         => true,
+            "id"           => $user->id,
+            "id_hashed"    => $user->id_hashed,
+            "email"        => $user->email,
+            "first_name"   => $user->first_name,
+            "last_name"    => $user->last_name,
+            "last_login"   => $user->last_login,
+            "account_flag" => $user->account_flag
+        ];
+
         //call abstract method
-        $user_data = $this->onSessionSave($user);
-
-        if (empty($user_data))
-            $user_data = [];
-
-        //set default proeprties
-        $user_data["id"]   = $user_id;
-        $user_data["auth"] = true;
+        $this->onSessionSave($user_data);
 
         //save in session
         $this->session->set("user", $user_data);

@@ -26,7 +26,7 @@ abstract class WebCore extends MvcCore implements WebSecurity
      * Set App Javascript Properties for global scope
      * @param object $js_app - The javascript app object reference
      */
-    abstract protected function setAppJsProperties($js_app);
+    abstract protected function setAppJsProperties(&$js_app);
 
     /**
      * Checks Browser Support

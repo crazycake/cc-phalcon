@@ -1,7 +1,6 @@
 <?php
 /**
  * Facebook Actions Trait - Facebook php sdk v5.0
- * This class has common actions for facebook actions
  * Requires a Frontend or Backend Module with CoreController and Session Trait
  * Open Graph v2.4
  * Get page extend access token:

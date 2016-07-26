@@ -13,10 +13,10 @@ namespace CrazyCake\Tickets;
 use Phalcon\Exception;
 //core
 use CrazyCake\Phalcon\AppModule;
-use CrazyCake\Services\StorageS3; //AWS S3 File Storage helper
-use CrazyCake\Qr\QRMaker;         //CrazyCake QR
-use CrazyCake\Helpers\PDF;        //PDF helper
-use CrazyCake\Helpers\Dates; //Date Helper functions
+use CrazyCake\Services\StorageS3;
+use CrazyCake\Qr\QRMaker;
+use CrazyCake\Helpers\PDF;
+use CrazyCake\Helpers\Dates;
 
 /**
  * Ticket Manager Trait

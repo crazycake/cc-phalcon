@@ -68,7 +68,7 @@ abstract class BaseUser extends \CrazyCake\Models\Base
      * @static
      * @var array
      */
-    static $ACCOUNT_FLAGS = ['pending', 'enabled', 'disabled'];
+    static $ACCOUNT_FLAGS = ["pending", "enabled", "disabled"];
 
     /**
      * Initializer
@@ -76,7 +76,7 @@ abstract class BaseUser extends \CrazyCake\Models\Base
     public function initialize()
     {
         //Skips fields/columns on both INSERT/UPDATE operations
-        $this->skipAttributes(['created_at']);
+        $this->skipAttributes(["created_at"]);
     }
 
     /**
@@ -86,7 +86,7 @@ abstract class BaseUser extends \CrazyCake\Models\Base
     {
         //hashed ticket id?
         if (isset($this->id))
-            $this->id_hashed = $this->getDI()->getShared('cryptify')->encryptHashId($this->id);
+            $this->id_hashed = $this->getDI()->getShared("cryptify")->encryptHashId($this->id);
     }
 
     /**
@@ -96,10 +96,10 @@ abstract class BaseUser extends \CrazyCake\Models\Base
     {
         //set password hash
         if (!is_null($this->pass))
-            $this->pass = $this->getDI()->getShared('security')->hash( $this->pass );
+            $this->pass = $this->getDI()->getShared("security")->hash( $this->pass );
 
         //set last login
-        $this->last_login = date('Y-m-d H:i:s');
+        $this->last_login = date("Y-m-d H:i:s");
     }
 
     /**
@@ -110,7 +110,7 @@ abstract class BaseUser extends \CrazyCake\Models\Base
         parent::beforeValidationOnUpdate();
 
         //set last login
-        $this->last_login = date('Y-m-d H:i:s');
+        $this->last_login = date("Y-m-d H:i:s");
     }
 
     /**
@@ -120,7 +120,7 @@ abstract class BaseUser extends \CrazyCake\Models\Base
     {
         //email required
         $this->validate(new Email([
-            "field"    => 'email',
+            "field"    => "email",
             "required" => true,
             "message"  => $this->getMessage("email_required")
         ]));

@@ -1,7 +1,6 @@
 <?php
 /**
  * Facebook Trait - Facebook php sdk v5.0
- * This class has common actions for account facebook controllers
  * Requires a Frontend or Backend Module with CoreController and Session Trait
  * Open Graph v2.4
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
@@ -37,7 +36,7 @@ trait FacebookAuth
      * Listener - On app deauthorized
      * @param object $data - The response data
      */
-    abstract public function onAppDeauthorized($data = array());
+    abstract public function onAppDeauthorized($data = []);
 
     /**
      * Config var
