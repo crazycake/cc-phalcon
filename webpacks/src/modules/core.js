@@ -20,6 +20,12 @@ export default new function() {
     //++ Properties
 
     /**
+     * @property debug
+     * @type {boolean}
+     */
+    self.debug = false;
+
+    /**
      * @property ui
      * @type {object}
      */
@@ -484,12 +490,12 @@ export default new function() {
     };
 
     /**
-     * App debug methods
+     * App test methods
      * @method debug
      * @param  {String} option - The option string [ajax_timeout, ajax_loading, dom_events]
      * @param  {Object} object - A jQuery or HTML object element
      */
-    self.debug = function(option, object) {
+    self.test = function(option, object) {
 
         var assert = true;
 
