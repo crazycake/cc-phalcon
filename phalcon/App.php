@@ -288,7 +288,7 @@ abstract class App extends AppModule implements AppLoader
     /**
      * Loads static libraries.
      * Use Phar::running() to get path of current phar running
-     * Use get_included_files() to see all files that has loaded
+     * Use get_included_files() to see all loaded classes
      * @param object $loader - Phalcon loader object
      * @param array $libraries - Libraries required
      */
