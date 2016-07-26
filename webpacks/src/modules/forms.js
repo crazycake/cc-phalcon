@@ -132,7 +132,7 @@ export default new function() {
         _.assign(opts, options);
 
         //init plugin
-        if (APP.dev) { console.log("Forms -> loading form with options:", opts); }
+        if (core.debug) { console.log("Forms -> loading form with options:", opts); }
         //instance
         form.formValidation(opts);
     };
@@ -169,7 +169,7 @@ export default new function() {
         //check result
         var is_valid = form.data("formValidation").isValid();
 
-        if (!is_valid && APP.dev) {
+        if (!is_valid && core.debug) {
 
             console.log("Forms -> Some form element(s) are not valid:");
 
@@ -300,7 +300,7 @@ export default new function() {
             _.assign(validators, obj);
         }
         catch (e) {
-            if (APP.dev) { console.log("Form"); }
+            if (core.debug) { console.log("Form"); }
         }
     };
 
@@ -322,12 +322,12 @@ export default new function() {
     */
     self.recaptchaOnLoad = function() {
 
-        if (APP.dev) { console.log("Forms -> reCaptcha loaded! Main Selector: " + APP.UI.sel_recaptcha); }
+        if (core.debug) { console.log("Forms -> reCaptcha loaded! Main Selector: " + APP.UI.sel_recaptcha); }
 
         //calback function when user entered valid data
         var callback_fn = function() {
 
-            if (APP.dev) { console.log("Forms -> reCaptcha validation OK!"); }
+            if (core.debug) { console.log("Forms -> reCaptcha validation OK!"); }
 
             //set valid option on sibling input hidden
             $(APP.UI.sel_recaptcha).siblings("input:hidden").eq(0).val("1");
@@ -353,7 +353,7 @@ export default new function() {
      */
     self.recaptchaReload = function() {
 
-        if (APP.dev) { console.log("Forms -> reloading reCaptcha..."); }
+        if (core.debug) { console.log("Forms -> reloading reCaptcha..."); }
 
         //reset reCaptcha
         if (typeof grecaptcha != "undefined")
