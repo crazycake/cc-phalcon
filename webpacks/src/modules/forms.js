@@ -156,7 +156,7 @@ export default new function() {
 
         if (inputs_hidden.length) {
 
-            if (APP.dev) { console.log("Forms -> Revalidating hidden inputs..."); }
+            if (core.debug) { console.log("Forms -> Revalidating hidden inputs..."); }
             //loop
             inputs_hidden.each(function() {
                 //revalidate field
