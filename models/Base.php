@@ -157,10 +157,10 @@ class Base extends \Phalcon\Mvc\Model
 
     /**
      * Get messages from a created or updated object
-     * @param boolean $json_encode - Returns a json string
+     * @param boolean $format - Returns a joined string
      * @return mixed [array|string]
      */
-    public function allMessages($json_encode = false)
+    public function allMessages($format = false)
     {
         $data = [];
 
@@ -170,8 +170,8 @@ class Base extends \Phalcon\Mvc\Model
         foreach ($this->getMessages() as $msg)
             array_push($data, $msg->getMessage());
 
-        if ($json_encode)
-            $data = json_encode($data);
+        if ($format)
+            $data = implode($data, " ");
 
         return $data;
     }
