@@ -44,10 +44,11 @@ trait Crud
     {
 		//default configurations
         $defaults = [
-			"id"		  => 0,
-            "entity" 	  => "",
-            "dfields" 	  => [],
-            "sfields" 	  => [],
+			"id"	   	  => 0,
+            "entity"   	  => "",
+            "dfields"  	  => [],
+            "sfields"  	  => [],
+			"cfields"  	  => [],
 			"actions"	  => true,
             "entity_text" => "Colección",
             "new_text" 	  => "Nuevo",
@@ -65,7 +66,8 @@ trait Crud
 		$conf["uploader"]["entity"] = $conf["entity"];
 
 		//prepare fields data for rendering
-		$dfields = [];
+		$dfields = []; //datatable
+		$cfields = []; //categories
 		//create fields metadata
 		foreach ($conf["dfields"] as $field) {
 
@@ -79,16 +81,21 @@ trait Crud
 			if(in_array($obj->name, ["created_at", "date", "datetime"]))
 				$obj->callback = "formatDate|D/MM/Y";
 
-			//format binary values
-			if(!empty($field["format"]))
+			//save categories and set format callback
+			if(!empty($field["format"])) {
+
+				//set object callback
 				$obj->callback = "formatCategory|".json_encode($field["format"], JSON_UNESCAPED_SLASHES);
+				//append new category
+				$cfields[$obj->name] = $field["format"];
+			}
 
 			$dfields[] = $obj;
 		}
 
 		//fields filter
-		$conf["fields"]  = array_map(create_function('$o', 'return key($o);'), $conf["dfields"]);
 		$conf["dfields"] = $dfields;
+		$conf["cfields"] = $cfields;
 
 		//append actions
 		if($conf["actions"])
@@ -306,7 +313,6 @@ trait Crud
 
     /**
      * Ajax POST Action for delete an Object.
-     * TODO: delete file objects. Uploader logic
      */
     public function deleteAction()
     {
@@ -320,13 +326,15 @@ trait Crud
 		$object_class = $this->crud_conf["entity"];
 		$object 	  = $object_class::getById($data["id"]);
 
-		$deleted = false;
-
 		if($object)
 			$object->delete();
 
+		//delete upload files?
+		if(isset($this->crud_conf["uploader"]))
+			$this->cleanUploadFolder($this->_getDestinationFolder($object->id));
+
 		//send response
-        $this->jsonResponse(200, ["deleted" => $deleted]);
+        $this->jsonResponse(200);
     }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */

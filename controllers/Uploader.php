@@ -174,15 +174,20 @@ trait Uploader
     }
 
     /**
-     * Cleans upload temporal folder
+     * Cleans upload folder
+     * @param string $path - The target path to delete
      */
-    protected function cleanUploadFolder()
+    protected function cleanUploadFolder($path = "")
     {
-        if(!is_dir($this->uploader_conf["path"]))
+        if(empty($path))
+            $path = $this->uploader_conf["path"];
+
+        if(!is_dir($path))
             return;
 
         //cleans folder
-        array_map('unlink', glob($this->uploader_conf["path"]."*"));
+        array_map('unlink', glob($path."*"));
+        rmdir($path);
     }
 
     /**
@@ -202,6 +207,9 @@ trait Uploader
             $i = 1;
             foreach ($uploaded_files as $file) {
 
+                if(!isset($file_conf["key"]))
+                    throw new Exception("Couldn't move file ".$file);
+
                 $key = $file_conf["key"];
 
                 //check key if belongs
@@ -211,16 +219,8 @@ trait Uploader
                 //remove timestamp & replace it for an index
                 $dest_filename = preg_replace("/[\\-\\d]{6,}/", $i, $file);
 
-                //hash id
-                $id_hashed = $this->getDI()->getShared('cryptify')->encryptHashId($object_id);
-                //append entity folder?
-                $entity = isset($this->uploader_conf["entity"]) ? strtolower($this->uploader_conf["entity"])."/" : "";
-
                 $org  = $this->uploader_conf["path"].$file;
-                $dest = self::$ROOT_UPLOAD_PATH.$entity.$id_hashed."/";
-
-                if(!is_dir($dest))
-                    mkdir($dest, 0755, true);
+                $dest = $this->_getDestinationFolder($object_id, true);
 
                 //copy file ...
                 copy($org, $dest.$dest_filename);
@@ -247,6 +247,8 @@ trait Uploader
 
     /**
      * Validate uploaded file
+     * @param $file object - The phalcon uploaded file
+     * @param $file_key string - The file key
      * @return array
      */
     private function _validateUploadedFile($file, $file_key = "")
@@ -323,5 +325,29 @@ trait Uploader
         }
 
         return $new_file;
+    }
+
+    /**
+     * Gest destination folder
+     * @param int $object_id - The object ID
+     * @param boolean $mkdir - Creates folder on the fly
+     * @return string
+     */
+    private function _getDestinationFolder($object_id = 0, $mkdir = false)
+    {
+        //hash id
+        $id_hashed = $this->getDI()->getShared('cryptify')->encryptHashId($object_id);
+        //append entity folder?
+        $entity = isset($this->uploader_conf["entity"]) ? strtolower($this->uploader_conf["entity"])."/" : "";
+
+        $path = self::$ROOT_UPLOAD_PATH.$entity.$id_hashed."/";
+
+        if(!$mkdir)
+            return $path;
+
+        if(!is_dir($path))
+            mkdir($path, 0755, true);
+
+        return $path;
     }
 }
