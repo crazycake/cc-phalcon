@@ -191,15 +191,17 @@ abstract class AppModule
      * @param int $object_id - The ID
      * @return string
      */
-    public function getUploadPath($entity = "", $object_id = 0)
+    public static function getUploadPath($entity = "", $object_id = 0)
     {
         $path = \CrazyCake\Controllers\Uploader::$ROOT_UPLOAD_PATH;
 
         if(!empty($entity))
             $entity .= "/";
 
+        $di = \Phalcon\Di::getDefault();
+
         //get upload path
-        $id_hashed = $this->getDI()->getShared("cryptify")->encryptHashId($object_id);
+        $id_hashed = $di->getShared("cryptify")->encryptHashId($object_id);
         //get URL
         $url = AppModule::getUrl(MODULE_NAME, "uploads/$entity$id_hashed/", "static");
 
