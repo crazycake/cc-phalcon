@@ -56,7 +56,7 @@ trait Uploader
 	private $headers;
 
     /**
-     * This method must be call in constructor parent class
+     * This method must be call in constructor/initializer parent class
      * @param array $conf - The config array
      */
     protected function initUploader($conf = [])
@@ -271,7 +271,7 @@ trait Uploader
             "mime"      => $file_mimetype,
             "error"     => false
         ];
-        //var_dump($new_file);exit;
+        //s($this->uploader_conf);exit;
 
         try {
 
@@ -282,7 +282,7 @@ trait Uploader
             });
 
             if(empty($file_conf))
-                throw new Exception("Uploader file configuration missing for $file_name.");
+                throw new Exception("Uploader file configuration missing for $file_key.");
 
             //get first
             $file_conf = $file_conf[0];
