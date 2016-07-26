@@ -227,17 +227,22 @@ export default new function() {
      * Cleans a form and reset validation
      * @method resetForm
      * @param  {Object} form - A form jQuery object or native element
+     * @param  {Boolean} force - Selector clean up.
      */
-    self.clean = function(form) {
+    self.clean = function(form, force = false) {
 
         if (form instanceof jQuery === false)
             form = $(form);
 
         //clean form validations
         form.data("formValidation").resetForm(true);
-        //form cleaner
-        form.find("input, textarea").val("");
-        form.find("select").prop("selectedIndex", 0);
+
+        //force cleanup
+        if(force) {
+            //form cleaner
+            form.find("input, textarea").val("");
+            form.find("select").prop("selectedIndex", 0);
+        }
     };
 
     /**
@@ -300,7 +305,7 @@ export default new function() {
             _.assign(validators, obj);
         }
         catch (e) {
-            if (core.debug) { console.log("Form"); }
+            if (APP.dev) { console.log("Form pattern error:", e); }
         }
     };
 

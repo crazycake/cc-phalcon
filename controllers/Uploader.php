@@ -208,7 +208,7 @@ trait Uploader
             foreach ($uploaded_files as $file) {
 
                 if(!isset($file_conf["key"]))
-                    throw new Exception("Couldn't move file ".$file);
+                    throw new Exception("Couldn't move file ".$file." => ".json_encode($file_conf));
 
                 $key = $file_conf["key"];
 
