@@ -21,9 +21,9 @@ trait AccountSession
 {
     /**
      * Listener - Append properties to user session
-     * @param array $user_data - The user data to be saved
+     * @param object $user - The user ORM object
      */
-    abstract protected function onSessionSave(&$user_data);
+    abstract protected function onSessionSave($user);
 
     /**
      * Config var
@@ -136,8 +136,7 @@ trait AccountSession
         ];
 
         //call abstract method
-        $this->onSessionSave($user_data);
-
+        $user_data = array_merge($user_data, $this->onSessionSave($user));
         //save in session
         $this->session->set("user", $user_data);
     }
