@@ -41,7 +41,7 @@ trait Uploader
      * Files are saved in a temporal public user folder.
      * @var string
      */
-    protected static $ROOT_UPLOAD_PATH = PUBLIC_PATH."uploads/";
+    public static $ROOT_UPLOAD_PATH = PUBLIC_PATH."uploads/";
 
     /**
 	 * Config var
