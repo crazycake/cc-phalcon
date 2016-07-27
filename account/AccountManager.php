@@ -22,8 +22,9 @@ trait AccountManager
      * Before update user profile Listener
      * @param object $user - The user object
      * @param array $data - The data to be updated
+     * @return array
      */
-    abstract public function beforeUpdateProfile($user, $data); //returns an array
+    abstract public function beforeUpdateProfile($user, $data);
 
     /**
      * Config var
@@ -100,8 +101,7 @@ trait AccountManager
         //get settings params
         $setting_params = isset($this->account_manager_conf["required_fields"]) ? $this->account_manager_conf["required_fields"] : [];
         //validate and filter request params data, second params are the required fields
-        $data = $this->handleRequest(array_merge($default_params, $setting_params),
-                                     "POST");
+        $data = $this->handleRequest(array_merge($default_params, $setting_params), "POST");
 
         try {
 
