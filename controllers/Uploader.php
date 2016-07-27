@@ -285,8 +285,8 @@ trait Uploader
             if(empty($file_conf))
                 throw new Exception("Uploader file configuration missing for $file_key.");
 
-            //get first
-            $file_conf = $file_conf[0];
+            //get first item
+            $file_conf = current($file_conf);
 
             //set defaults
             if(!isset($file_conf["max_size"]))
