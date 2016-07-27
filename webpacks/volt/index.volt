@@ -1,11 +1,11 @@
 <?php
 /**
- * Root Layout. Phalcon loads this view first by default
+ * Root Layout. Phalcon main template.
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 ?>
 <!DOCTYPE html>
-<html{{ html_doc_class is defined ? ' class="'~html_doc_class~'"' : '' }}>
+<html{{ client is defined ? ' lang="'~client.lang~'"' : '' }}>
     <head>
         {# charset #}
         <meta charset="utf-8" />
