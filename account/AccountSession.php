@@ -20,8 +20,9 @@ use CrazyCake\Helpers\Dates;
 trait AccountSession
 {
     /**
-     * Listener - Append properties to user session
+     * Set user Session as logged in
      * @param object $user - The user ORM object
+     * @return array
      */
     abstract protected function onSessionSave($user);
 
