@@ -8,9 +8,11 @@ namespace CrazyCake\Controllers;
 
 //phalcon
 use Phalcon\Paginator\Adapter\Model as PaginatorModel;
+use \Phalcon\Mvc\Model\Resultset\Simple as Resultset;
 use Phalcon\Exception;
 //imports
 use CrazyCake\Phalcon\AppModule;
+use CrazyCake\Models\BaseResultset;
 
 /**
  * Base CRUD Controller
@@ -30,6 +32,12 @@ trait Crud
      */
     abstract protected function onAfterSave(&$data, $action);
 
+	/**
+     * On after fetch resultset
+     * @param object $resultset - Phalcon PDO resultset
+     */
+    abstract protected function onListResultset(&$resultset);
+
     /**
 	 * Config var
 	 * @var array
@@ -48,6 +56,7 @@ trait Crud
         $defaults = [
 			"id"	   	  => 0,
             "entity"   	  => "",
+			"find"		  => [],
             "dfields"  	  => [],
             "sfields"  	  => [],
 			"cfields"  	  => [],
@@ -148,7 +157,7 @@ trait Crud
 		], "GET");
 
 		//list query conditions
-		if(!isset($this->crud_conf["find"]))
+		if(empty($this->crud_conf["find"]))
 			$this->crud_conf["find"] = ["order" => "id DESC"];
 
 		//sort param
@@ -169,34 +178,44 @@ trait Crud
 			$this->crud_conf["find"]["conditions"] = implode(" OR ", $syntax);
 		}
 
-		//find objects
-		$object_class = AppModule::getClass($this->crud_conf["entity"]);
-		$objects      = $object_class::find($this->crud_conf["find"]);
+		//set vars
 		$current_page = (int)$data["page"];
 		$per_page     = (int)$data["per_page"];
 
+		//find objects
+		$object_class = AppModule::getClass($this->crud_conf["entity"]);
+		$resultset    = $object_class::find($this->crud_conf["find"]);
+
 		// Passing a resultset as data
 		$paginator = new PaginatorModel([
-		    "data"  => $objects,
+		    "data"  => $resultset, //data setter
 		    "limit" => $per_page,
 		    "page"  => $current_page
 		]);
 		//page object
 		$page = $paginator->getPaginate();
 
-		//set data items
-		$items = [];
-		foreach ($page->items as $obj)
-			$items[] = $obj->toArray();
-
 		//baseUrl
 		$url = $this->baseUrl($this->crud_conf["entity"]."/list?page=");
 		//limits
-		$total = $objects->count();
+		$total = $resultset->count();
 		$from  = $current_page == 1 ? 1 : ($per_page*$current_page - $per_page + 1);
 		$to    = $from + $per_page - 1;
 
 		if($to > $total) $to = $total;
+
+		//listener
+		$this->onListResultset($resultset);
+
+		$items = [];
+		//check for phalcon resultset
+		if($resultset instanceof Resultset) {
+			foreach ($resultset as $obj)
+				$items[] = $obj->toArray();
+		}
+		else if(is_array($resultset)) {
+			$items = $resultset;
+		}
 
 		//create response object
 		$response = (object)[
