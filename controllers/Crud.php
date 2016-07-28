@@ -163,29 +163,17 @@ trait Crud
 		$query 		= $namespace::query();
 
 		//conditions
-		if(isset($this->crud_conf["find"])) {
+		if(isset($this->crud_conf["find"]))
 			$query->conditions = $this->crud_conf["find"];
-		}
 
 		//default order
-		$query->order("$class_name.id DESC");
+		$query->order($this->_handleBuilderSyntax($query, "id DESC"));
 
 		if(!empty($data["sort"])) {
-
 			//parse sort data from js
-			$sort     = str_replace("|", " ", $data["sort"]);
-			$entities = explode(".", $sort);
-			$prefix   = $class_name.".";
+			$syntax = str_replace("|", " ", $data["sort"]);
 
-			//caso especial para inner joins
-			if(count($entities) > 1) {
-				$prefix = "";
-				$sort = \Phalcon\Text::camelize($sort);
-				//inner join
-				$query->join(\Phalcon\Text::camelize($entities[0]));
-			}
-
-			$query->order($prefix.$sort);
+			$query->order($this->_handleBuilderSyntax($query, $syntax));
 		}
 
 		//filter param for search
@@ -197,13 +185,16 @@ trait Crud
 			//loop through search fields
 			foreach ($search_fields as $index => $fname) {
 
+				$syntax    = "$fname LIKE '%".$data["filter"]."%'";
+				$condition = $this->_handleBuilderSyntax($query, $syntax);
+
 				//1st condition
 				if(empty($index)) {
-					$query->where("$class_name.$fname LIKE '%".$data["filter"]."%'");
+					$query->where($condition);
 					continue;
 				}
 				//append other condition
-				$query->orWhere("$class_name.$fname LIKE '%".$data["filter"]."%'");
+				$query->orWhere($condition);
 			}
 		}
 
@@ -386,6 +377,32 @@ trait Crud
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
+	/**
+	 * Handles joins forbuilder synatx.
+	 * @param object $query  - The query builder object
+	 * @param string $syntax - Any query syntax.
+	 */
+	private function _handleBuilderSyntax(&$query, $syntax = "")
+	{
+		$class_name = AppModule::getClass($this->crud_conf["entity"], false);
+		$prefix     = $class_name.".";
+		$entities   = explode(".", $syntax);
+
+		if(count($entities) < 2)
+			return $prefix.$syntax;
+
+		//auto join
+		$query->join(\Phalcon\Text::camelize($entities[0]));
+		//caso especial para inner joins
+		$syntax = \Phalcon\Text::camelize($syntax);
+		
+		return $syntax;
+	}
+
+	/**
+	 * Merges payload key with data array
+	 * @param  array $data - The input data
+	 */
     private function _mergePayload(&$data)
     {
         //merge payload if set
@@ -393,7 +410,6 @@ trait Crud
             return;
 
         $payload = json_decode($data["payload"], true);
-
         //merge
         $data = array_merge($data, $payload);
 
