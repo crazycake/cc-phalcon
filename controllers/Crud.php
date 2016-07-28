@@ -166,13 +166,16 @@ trait Crud
 		if(isset($this->crud_conf["find"]))
 			$query->conditions = $this->crud_conf["find"];
 
+		//joins handler
+		$this->crud_conf["joins"] = [];
+
 		//default order
 		$query->order($this->_handleBuilderSyntax($query, "id DESC"));
 
 		if(!empty($data["sort"])) {
 			//parse sort data from js
 			$syntax = str_replace("|", " ", $data["sort"]);
-
+			//set order
 			$query->order($this->_handleBuilderSyntax($query, $syntax));
 		}
 
@@ -197,6 +200,10 @@ trait Crud
 				$query->orWhere($condition);
 			}
 		}
+
+		//inner joins
+		foreach ($this->crud_conf["joins"] as $join)
+			$query->join($join);
 
 		//set vars
 		$resultset    = $query->execute();
@@ -391,11 +398,15 @@ trait Crud
 		if(count($entities) < 2)
 			return $prefix.$syntax;
 
-		//auto join
-		$query->join(\Phalcon\Text::camelize($entities[0]));
+		//idenitfy neede joins
+		$join_class = \Phalcon\Text::camelize($entities[0]);
+
+		if(!in_array($join_class, $this->crud_conf["joins"]))
+			$this->crud_conf["joins"][] = $join_class;
+
 		//caso especial para inner joins
 		$syntax = \Phalcon\Text::camelize($syntax);
-		
+
 		return $syntax;
 	}
 
