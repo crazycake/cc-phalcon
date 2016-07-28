@@ -156,35 +156,61 @@ trait Crud
 			"@per_page" => "int"
 		], "GET");
 
-		//list query conditions
-		if(empty($this->crud_conf["find"]))
-			$this->crud_conf["find"] = ["order" => "id DESC"];
+		//find objects
+		$entity		= $this->crud_conf["entity"];
+		$class_name = AppModule::getClass($entity, false);
+		$namespace  = "\\$class_name";
+		$query 		= $namespace::query();
 
-		//sort param
-		if(!empty($data["sort"]))
-			$this->crud_conf["find"]["order"] = str_replace("|", " ", $data["sort"]);
+		//conditions
+		if(isset($this->crud_conf["find"])) {
+			$query->conditions = $this->crud_conf["find"];
+		}
 
-		//filter param
+		//default order
+		$query->order("$class_name.id DESC");
+
+		if(!empty($data["sort"])) {
+
+			//parse sort data from js
+			$sort     = str_replace("|", " ", $data["sort"]);
+			$entities = explode(".", $sort);
+			$prefix   = $class_name.".";
+
+			//caso especial para inner joins
+			if(count($entities) > 1) {
+				$prefix = "";
+				$sort = \Phalcon\Text::camelize($sort);
+				//inner join
+				$query->join(\Phalcon\Text::camelize($entities[0]));
+			}
+
+			$query->order($prefix.$sort);
+		}
+
+		//filter param for search
 		if(!empty($data["filter"])) {
 
 			//create filter syntax
-			$search_fields = isset($this->crud_conf["sfields"]) ?
-								   $this->crud_conf["sfields"] : ["id"];
+			$search_fields = isset($this->crud_conf["sfields"]) ? $this->crud_conf["sfields"] : ["id"];
 
-			$syntax = [];
-			foreach ($search_fields as $k => $v)
-				$syntax[] = "$v LIKE '%".$data["filter"]."%'";
+			//loop through search fields
+			foreach ($search_fields as $index => $fname) {
 
-			$this->crud_conf["find"]["conditions"] = implode(" OR ", $syntax);
+				//1st condition
+				if(empty($index)) {
+					$query->where("$class_name.$fname LIKE '%".$data["filter"]."%'");
+					continue;
+				}
+				//append other condition
+				$query->orWhere("$class_name.$fname LIKE '%".$data["filter"]."%'");
+			}
 		}
 
 		//set vars
-		$current_page = (int)$data["page"];
+		$resultset    = $query->execute();
 		$per_page     = (int)$data["per_page"];
-
-		//find objects
-		$object_class = AppModule::getClass($this->crud_conf["entity"]);
-		$resultset    = $object_class::find($this->crud_conf["find"]);
+		$current_page = (int)$data["page"];
 
 		// Passing a resultset as data
 		$paginator = new PaginatorModel([
@@ -196,7 +222,7 @@ trait Crud
 		$page = $paginator->getPaginate();
 
 		//baseUrl
-		$url = $this->baseUrl($this->crud_conf["entity"]."/list?page=");
+		$url = $this->baseUrl("$entity/list?page=");
 		//limits
 		$total = $resultset->count();
 		$from  = $current_page == 1 ? 1 : ($per_page*$current_page - $per_page + 1);
