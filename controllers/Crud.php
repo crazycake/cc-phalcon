@@ -12,7 +12,6 @@ use \Phalcon\Mvc\Model\Resultset\Simple as Resultset;
 use Phalcon\Exception;
 //imports
 use CrazyCake\Phalcon\AppModule;
-use CrazyCake\Models\BaseResultset;
 
 /**
  * Base CRUD Controller
@@ -206,27 +205,9 @@ trait Crud
 			$query->join($join);
 
 		//set vars
-		$resultset    = $query->execute();
-		$per_page     = (int)$data["per_page"];
-		$current_page = (int)$data["page"];
-
-		// Passing a resultset as data
-		$paginator = new PaginatorModel([
-		    "data"  => $resultset, //data setter
-		    "limit" => $per_page,
-		    "page"  => $current_page
-		]);
-		//page object
-		$page = $paginator->getPaginate();
-
-		//baseUrl
-		$url = $this->baseUrl("$entity/list?page=");
-		//limits
-		$total = $resultset->count();
-		$from  = $current_page == 1 ? 1 : ($per_page*$current_page - $per_page + 1);
-		$to    = $from + $per_page - 1;
-
-		if($to > $total) $to = $total;
+		$resultset = $query->execute();
+		//get pagination response
+		$response = $this->_getPaginationData($resultset, $data);
 
 		//listener
 		$this->onListResultset($resultset);
@@ -241,22 +222,8 @@ trait Crud
 			$items = $resultset;
 		}
 
-		//create response object
-		$response = (object)[
-			"total" 	    => $total,
-			"per_page" 		=> $per_page,
-			"current_page"  => $page->current,
-			"last_page" 	=> $page->last,
-			//just for indexing in view
-			"from" 			=> $from,
-			"to" 			=> $to,
-			//urls
-			"next_page_url" => $url.$page->next,
-			"prev_page_url" => $url.$page->before,
-			//objects
-			"data" 			=> $items
-		];
-
+		//set items data
+		$response->data = $items;
 		//output json response
 		$this->outputJsonResponse($response);
     }
@@ -385,7 +352,7 @@ trait Crud
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
 	/**
-	 * Handles joins forbuilder synatx.
+	 * Handles builder syntax (active record)
 	 * @param object $query  - The query builder object
 	 * @param string $syntax - Any query syntax.
 	 */
@@ -408,6 +375,51 @@ trait Crud
 		$syntax = \Phalcon\Text::camelize($syntax);
 
 		return $syntax;
+	}
+
+	/**
+	 * Get Pagination Data
+	 * @param  object $resultset - The resultset
+	 * @param  array $data - The input data
+	 * @return stdClass object
+	 */
+	private function _getPaginationData($resultset, $data = [])
+	{
+		$per_page     = (int)$data["per_page"];
+		$current_page = (int)$data["page"];
+		$entity		  = $this->crud_conf["entity"];
+
+		// Passing a resultset as data
+		$paginator = new PaginatorModel([
+		    "data"  => $resultset, //data setter
+		    "limit" => $per_page,
+		    "page"  => $current_page
+		]);
+		//page object
+		$page = $paginator->getPaginate();
+
+		//baseUrl
+		$url = $this->baseUrl("$entity/list?page=");
+		//limits
+		$total = $resultset->count();
+		$from  = $current_page == 1 ? 1 : ($per_page*$current_page - $per_page + 1);
+		$to    = $from + $per_page - 1;
+
+		if($to > $total) $to = $total;
+
+		//create response object
+		return (object)[
+			"total" 	    => $total,
+			"per_page" 		=> $per_page,
+			"current_page"  => $page->current,
+			"last_page" 	=> $page->last,
+			//just for indexing in view
+			"from" 			=> $from,
+			"to" 			=> $to,
+			//urls
+			"next_page_url" => $url.$page->next,
+			"prev_page_url" => $url.$page->before
+		];
 	}
 
 	/**
