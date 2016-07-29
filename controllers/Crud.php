@@ -7,7 +7,7 @@
 namespace CrazyCake\Controllers;
 
 //phalcon
-use Phalcon\Paginator\Adapter\Model as PaginatorModel;
+use Phalcon\Paginator\Adapter\QueryBuilder as Paginator;
 use \Phalcon\Mvc\Model\Resultset\Simple as Resultset;
 use Phalcon\Exception;
 //imports
@@ -32,8 +32,8 @@ trait Crud
     abstract protected function onAfterSave(&$data, $action);
 
 	/**
-     * On after fetch resultset
-     * @param object $resultset - Phalcon PDO resultset
+     * On list resultset
+     * @param object $resultset - Phalcon DB resultset
      */
     abstract protected function onListResultset(&$resultset);
 
@@ -81,7 +81,7 @@ trait Crud
 		//categories
 		if(!isset($conf["cfields"]))
 		 	$conf["cfields"] = [];
-			
+
 		//create fields metadata
 		foreach ($conf["dfields"] as $field) {
 
@@ -161,8 +161,8 @@ trait Crud
 		//find objects
 		$entity		= $this->crud_conf["entity"];
 		$class_name = AppModule::getClass($entity, false);
-		$namespace  = "\\$class_name";
-		$query 		= $namespace::query();
+		//build query object
+		$query = $this->modelsManager->createBuilder()->from($class_name);
 
 		//conditions
 		if(isset($this->crud_conf["find"]))
@@ -172,13 +172,13 @@ trait Crud
 		$this->crud_conf["joins"] = [];
 
 		//default order
-		$query->order($this->_handleBuilderSyntax($query, "id DESC"));
+		$query->orderBy($this->_handleBuilderSyntax($query, "id DESC"));
 
 		if(!empty($data["sort"])) {
 			//parse sort data from js
 			$syntax = str_replace("|", " ", $data["sort"]);
 			//set order
-			$query->order($this->_handleBuilderSyntax($query, $syntax));
+			$query->orderBy($this->_handleBuilderSyntax($query, $syntax));
 		}
 
 		//filter param for search
@@ -207,26 +207,16 @@ trait Crud
 		foreach ($this->crud_conf["joins"] as $join)
 			$query->join($join);
 
-		//set vars
-		$resultset = $query->execute();
 		//get pagination response
-		$response = $this->_getPaginationData($resultset, $data);
+		$response = $this->_getPaginationData($query, $data);
 
 		//listener
-		$this->onListResultset($resultset);
+		$this->onListResultset($response->data);
 
-		$items = [];
-		//check for phalcon resultset
-		if($resultset instanceof Resultset) {
-			foreach ($resultset as $obj)
-				$items[] = $obj->toArray();
-		}
-		else if(is_array($resultset)) {
-			$items = $resultset;
-		}
+		//parse data array
+		if($response->data instanceof Resultset)
+			$response->data = $response->data ? $response->data->toArray() : [];
 
-		//set items data
-		$response->data = $items;
 		//output json response
 		$this->outputJsonResponse($response);
     }
@@ -365,10 +355,11 @@ trait Crud
 		$prefix     = $class_name.".";
 		$entities   = explode(".", $syntax);
 
+		//cross data entity?
 		if(count($entities) < 2)
 			return $prefix.$syntax;
 
-		//idenitfy neede joins
+		//idenitfy needed joins
 		$join_class = \Phalcon\Text::camelize($entities[0]);
 
 		if(!in_array($join_class, $this->crud_conf["joins"]))
@@ -382,21 +373,21 @@ trait Crud
 
 	/**
 	 * Get Pagination Data
-	 * @param  object $resultset - The resultset
-	 * @param  array $data - The input data
+	 * @param  object $query - The query builder object
+	 * @param  array $data - A data array
 	 * @return stdClass object
 	 */
-	private function _getPaginationData($resultset, $data = [])
+	private function _getPaginationData($query, $data)
 	{
-		$per_page     = (int)$data["per_page"];
-		$current_page = (int)$data["page"];
 		$entity		  = $this->crud_conf["entity"];
+		$per_page 	  = (int)$data["per_page"];
+		$current_page = (int)$data["page"];
 
 		// Passing a resultset as data
-		$paginator = new PaginatorModel([
-		    "data"  => $resultset, //data setter
-		    "limit" => $per_page,
-		    "page"  => $current_page
+		$paginator = new Paginator([
+		    "builder" => $query, //data setter
+		    "limit"   => $per_page,
+		    "page"    => $current_page
 		]);
 		//page object
 		$page = $paginator->getPaginate();
@@ -404,7 +395,7 @@ trait Crud
 		//baseUrl
 		$url = $this->baseUrl("$entity/list?page=");
 		//limits
-		$total = $resultset->count();
+		$total = $page->total_items;
 		$from  = $current_page == 1 ? 1 : ($per_page*$current_page - $per_page + 1);
 		$to    = $from + $per_page - 1;
 
@@ -421,7 +412,8 @@ trait Crud
 			"to" 			=> $to,
 			//urls
 			"next_page_url" => $url.$page->next,
-			"prev_page_url" => $url.$page->before
+			"prev_page_url" => $url.$page->before,
+			"data"			=> $page->items
 		];
 	}
 
