@@ -55,6 +55,14 @@ export default new function() {
         cache : true  //improvement for third-party libs like Facebook.
     });
 
+
+    //++ Vue setup
+
+    if(!APP.dev) {
+        Vue.config.debug  = false;
+        Vue.config.silent = true;
+    }
+
     //++ Methods ++
 
     /**
