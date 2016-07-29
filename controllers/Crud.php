@@ -77,7 +77,11 @@ trait Crud
 
 		//prepare fields data for rendering
 		$dfields = []; //datatable
-		$cfields = []; //categories
+
+		//categories
+		if(!isset($conf["cfields"]))
+		 	$conf["cfields"] = [];
+			
 		//create fields metadata
 		foreach ($conf["dfields"] as $field) {
 
@@ -97,7 +101,7 @@ trait Crud
 				//set object callback
 				$obj->callback = "formatCategory|".json_encode($field["format"], JSON_UNESCAPED_SLASHES);
 				//append new category
-				$cfields[$obj->name] = $field["format"];
+				$conf["cfields"][$obj->name] = $field["format"];
 			}
 
 			$dfields[] = $obj;
@@ -105,7 +109,6 @@ trait Crud
 
 		//fields filter
 		$conf["dfields"] = $dfields;
-		$conf["cfields"] = $cfields;
 
 		//append actions
 		if($conf["actions"])
