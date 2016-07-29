@@ -26,6 +26,7 @@ import autoprefixer from "gulp-autoprefixer";
 import sass         from "gulp-sass";
 import css_minifier from "gulp-clean-css";
 import replacer     from "gulp-replace";
+import uglify       from "gulp-uglify";
 import sourcemaps   from "gulp-sourcemaps";
 import livereload   from "gulp-livereload";
 //libs
@@ -156,6 +157,7 @@ function bundleApp(release = false) {
             .pipe(buffer())
             //prepend contents
             .pipe(insert.prepend(fs.readFileSync(app_paths.webpack, "utf-8")))
+            .pipe(gulpif(release, uglify()))
             .pipe(gulpif(release, rename({ suffix : ".min" })))
             .pipe(chmod(775))
             .pipe(gulp.dest(app_paths.assets))
@@ -166,11 +168,6 @@ function bundleApp(release = false) {
  * Minifies JS with uglifyify
  */
 function minifyJs() {
-
-    //uglify transform
-    b.transform({
-        global : true
-    }, "uglifyify");
 
     //bundle with minification
     return bundleApp(true);
