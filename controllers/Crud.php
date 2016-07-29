@@ -214,8 +214,14 @@ trait Crud
 		$this->onListResultset($response->data);
 
 		//parse data array
-		if($response->data instanceof Resultset)
-			$response->data = $response->data ? $response->data->toArray() : [];
+		if($response->data instanceof Resultset) {
+
+	        $objects = [];
+	        foreach ($response->data as $obj)
+	            $objects[] = $obj->toArray();
+
+	         $response->data = $objects;
+		}
 
 		//output json response
 		$this->outputJsonResponse($response);
@@ -412,6 +418,7 @@ trait Crud
 			//urls
 			"next_page_url" => $url.$next,
 			"prev_page_url" => $url.$before,
+			//resultset
 			"data"			=> $resultset
 		];
 	}
