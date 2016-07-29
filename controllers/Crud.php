@@ -7,7 +7,7 @@
 namespace CrazyCake\Controllers;
 
 //phalcon
-use Phalcon\Paginator\Adapter\QueryBuilder as Paginator;
+use Phalcon\Paginator\Adapter\Model as Paginator;
 use \Phalcon\Mvc\Model\Resultset\Simple as Resultset;
 use Phalcon\Exception;
 //imports
@@ -162,7 +162,7 @@ trait Crud
 		$entity		= $this->crud_conf["entity"];
 		$class_name = AppModule::getClass($entity, false);
 		//build query object
-		$query = $this->modelsManager->createBuilder()->from($class_name);
+		$query = $class_name::query();//$this->modelsManager->createBuilder()->from($class_name);
 
 		//conditions
 		if(isset($this->crud_conf["find"]))
@@ -172,13 +172,13 @@ trait Crud
 		$this->crud_conf["joins"] = [];
 
 		//default order
-		$query->orderBy($this->_handleBuilderSyntax($query, "id DESC"));
+		$query->order($this->_handleBuilderSyntax($query, "id DESC"));
 
 		if(!empty($data["sort"])) {
 			//parse sort data from js
 			$syntax = str_replace("|", " ", $data["sort"]);
 			//set order
-			$query->orderBy($this->_handleBuilderSyntax($query, $syntax));
+			$query->order($this->_handleBuilderSyntax($query, $syntax));
 		}
 
 		//filter param for search
@@ -372,7 +372,8 @@ trait Crud
 	}
 
 	/**
-	 * Get Pagination Data
+	 * Get Pagination Data.
+	 * NOTE: Se descarto el paginator de Phalcon (en favor de EagerLoding + afterFetch).
 	 * @param  object $query - The query builder object
 	 * @param  array $data - A data array
 	 * @return stdClass object
@@ -383,37 +384,35 @@ trait Crud
 		$per_page 	  = (int)$data["per_page"];
 		$current_page = (int)$data["page"];
 
-		// Passing a resultset as data
-		$paginator = new Paginator([
-		    "builder" => $query, //data setter
-		    "limit"   => $per_page,
-		    "page"    => $current_page
-		]);
-		//page object
-		$page = $paginator->getPaginate();
+		//get total records
+		$total = $query->execute()->count();
 
 		//baseUrl
 		$url = $this->baseUrl("$entity/list?page=");
 		//limits
-		$total = $page->total_items;
-		$from  = $current_page == 1 ? 1 : ($per_page*$current_page - $per_page + 1);
-		$to    = $from + $per_page - 1;
+		$from   = ($current_page == 1) ? 1 : ($per_page*$current_page - $per_page + 1);
+		$to     = $from + $per_page - 1;
+		$last 	= ceil($total / $per_page);
+		$before = ($current_page <= 1) ? 1 : $current_page - 1;
+		$next   = ($current_page + 1) >= $last ? $last : $current_page + 1;
 
 		if($to > $total) $to = $total;
+
+		//filtered resultset
+		$resultset = $query->limit($per_page, $from - 1)->execute();
 
 		//create response object
 		return (object)[
 			"total" 	    => $total,
 			"per_page" 		=> $per_page,
-			"current_page"  => $page->current,
-			"last_page" 	=> $page->last,
-			//just for indexing in view
+			"current_page"  => $current_page,
+			"last_page" 	=> $last,
 			"from" 			=> $from,
 			"to" 			=> $to,
 			//urls
-			"next_page_url" => $url.$page->next,
-			"prev_page_url" => $url.$page->before,
-			"data"			=> $page->items
+			"next_page_url" => $url.$next,
+			"prev_page_url" => $url.$before,
+			"data"			=> $resultset
 		];
 	}
 
