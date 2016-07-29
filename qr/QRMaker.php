@@ -63,7 +63,7 @@ class QRMaker
 
 		//create cache dir if not exists
 		if (!is_dir(QR_CACHE_DIR))
-			mkdir(QR_CACHE_DIR, 0775);
+			mkdir(QR_CACHE_DIR, 0775, true);
 
 		//Check if library is running from a Phar file, if does, assets must be copied to cache folder.
 		//For reading assets from a phar directly, see: http://php.net/manual/en/phar.webphar.php

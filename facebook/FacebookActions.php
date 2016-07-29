@@ -74,7 +74,7 @@ trait FacebookActions
 
         //upload path
         if (!is_dir($this->upload_path))
-            mkdir($this->upload_path, 0755);
+            mkdir($this->upload_path, 0755, true);
 
         //set redis service
         $this->redis = new Redis();
