@@ -96,8 +96,10 @@ trait Crud
 			];
 
 			//format dates
-			if(in_array($obj->name, ["created_at", "date", "datetime"]))
+			if(in_array($obj->name, ["created_at", "date"]))
 				$obj->callback = "formatDate|D/MM/Y";
+			else if(in_array($obj->name, ["datetime"]))
+				$obj->callback = "formatDate|D/MM/YY H:mm:s";
 
 			//save categories and set format callback
 			if(!empty($field["format"])) {
@@ -146,7 +148,7 @@ trait Crud
 
 		//set current_view
 		$this->view->setVars($this->crud_conf);
-		
+
         //load modules
         $this->loadJsModules([
             "crud" => $this->crud_conf
