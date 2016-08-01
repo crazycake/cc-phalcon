@@ -21,6 +21,11 @@ trait Crud
 	//uploader trait
 	use Uploader;
 
+	/**
+     * Event on before render Index
+     */
+    abstract protected function onBeforeRenderIndex();
+
     /**
      * Event on before save
      */
@@ -73,7 +78,6 @@ trait Crud
 
 		//set entity lower case
 		$conf["entity"] = strtolower($conf["entity"]);
-		$conf["uploader"]["entity"] = $conf["entity"];
 
 		//prepare fields data for rendering
 		$dfields = []; //datatable
@@ -118,25 +122,31 @@ trait Crud
 		$conf["fetch_url"] = $this->baseUrl($conf["entity"]."/list");
 
 		//init uploader?
-		if(isset($conf["uploader"]))
+		if(isset($conf["uploader"])) {
+
+			$conf["uploader"]["entity"] = $conf["entity"];
         	$this->initUploader($conf["uploader"]);
+		}
 
 		//finally set conf
         $this->crud_conf = $conf;
     }
 
     /**
-     * TODO: Move to CRUD controller
      * View - index
      */
     public function indexAction()
     {
-		//set current_view
-		$this->view->setVars($this->crud_conf);
 		//set layout
 		$this->view->setLayout("crud");
 		$this->view->pick("crud/index");
 
+		//listener
+		$this->onBeforeRenderIndex();
+
+		//set current_view
+		$this->view->setVars($this->crud_conf);
+		
         //load modules
         $this->loadJsModules([
             "crud" => $this->crud_conf
