@@ -239,6 +239,7 @@ trait Crud
 
         //merge paylod if set
         $this->_mergePayload($data);
+		//print_r($data);exit;
 
         try {
             //call listener
