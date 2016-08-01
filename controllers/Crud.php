@@ -174,7 +174,7 @@ trait Crud
 		$entity		= $this->crud_conf["entity"];
 		$class_name = AppModule::getClass($entity, false);
 		//build query object
-		$query = $class_name::query();//$this->modelsManager->createBuilder()->from($class_name);
+		$query = $class_name::query();
 
 		//conditions
 		if(isset($this->crud_conf["find"]))
@@ -216,8 +216,23 @@ trait Crud
 		}
 
 		//inner joins
-		foreach ($this->crud_conf["joins"] as $join)
-			$query->join($join);
+		foreach ($this->crud_conf["joins"] as $join) {
+
+			//check for an alias
+			$namespace = explode("@", $join);
+			$model 	   = $namespace[0];
+
+			if(count($namespace) > 1) {
+
+				$alias  	 = $namespace[1];
+				$alias_camel = \Phalcon\Text::camelize($alias);
+				//set join
+				$query->join($model, "$alias_camel.id = $class_name.".$alias."_id", $alias_camel);
+			}
+			else {
+				$query->join($model);
+			}
+		}
 
 		//get pagination response
 		$response = $this->_getPaginationData($query, $data);
@@ -378,11 +393,17 @@ trait Crud
 		if(count($entities) < 2)
 			return $prefix.$syntax;
 
-		//idenitfy needed joins
-		$join_class = \Phalcon\Text::camelize($entities[0]);
+		//prepare join data
+		$model = \Phalcon\Text::camelize($entities[0]);
 
-		if(!in_array($join_class, $this->crud_conf["joins"]))
-			$this->crud_conf["joins"][] = $join_class;
+		//check for any alias
+		$alias = explode("_", $entities[0]);
+		//struct for alias
+		if(count($alias) > 1)
+			$model = \Phalcon\Text::camelize($alias[0])."@".$entities[0];
+
+		if(!in_array($model, $this->crud_conf["joins"]))
+			$this->crud_conf["joins"][] = $model;
 
 		//caso especial para inner joins
 		$syntax = \Phalcon\Text::camelize($syntax);
