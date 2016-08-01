@@ -380,6 +380,7 @@ trait Crud
 
 	/**
 	 * Handles builder syntax (active record)
+	 * Also push joins relations in array if query will need them
 	 * @param object $query  - The query builder object
 	 * @param string $syntax - Any query syntax.
 	 */
