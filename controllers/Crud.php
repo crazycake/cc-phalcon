@@ -97,9 +97,9 @@ trait Crud
 
 			//format dates
 			if(in_array($obj->name, ["created_at", "date"]))
-				$obj->callback = "formatDate|D/MM/Y";
+				$obj->callback = "formatDate|DD/MM/YY";
 			else if(in_array($obj->name, ["datetime"]))
-				$obj->callback = "formatDate|D/MM/YY H:mm:s";
+				$obj->callback = "formatDate|DD/MM/YY HH:mm:ss";
 
 			//save categories and set format callback
 			if(!empty($field["format"])) {

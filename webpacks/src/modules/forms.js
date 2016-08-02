@@ -247,6 +247,19 @@ export default new function() {
     };
 
     /**
+     * Update hidden validators in given context
+     * @method updateHiddenValidators
+     * @param  {Object} form - A form jQuery object or native element
+     */
+    self.updateHiddenValidators = function(form) {
+
+        if (form instanceof jQuery === false)
+            form = $(form);
+
+        $('input[data-fv-excluded="false"]', form).val("1");
+    };
+
+    /**
      * Add a dynamic field to form
      * @method addField
      * @param  {String} field_name - The field name
