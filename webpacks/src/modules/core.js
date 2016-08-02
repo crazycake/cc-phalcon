@@ -90,13 +90,6 @@ export default new function() {
      */
     self.ready = function() {
 
-        //css async loading
-        if(!_.isUndefined(APP.cssLazy) && APP.cssLazy) {
-
-            if (APP.dev) { console.log("Core -> loading CSS file (async)", APP.cssLazy); }
-            loadCSS(APP.cssLazy);
-        }
-
         //load fast click for mobile
         if (UA.isMobile && typeof FastClick !== "undefined")
             FastClick.attach(document.body);
@@ -114,6 +107,13 @@ export default new function() {
 
         //load UI module
         self.ui.init();
+
+        //css async loading
+        if(!_.isUndefined(APP.cssLazy) && APP.cssLazy) {
+
+            if (APP.dev) { console.log("Core -> loading CSS file (async)", APP.cssLazy); }
+            loadCSS(APP.cssLazy);
+        }
 
         //core ready msg
         if (APP.dev) { console.log("Core Ready!"); }
