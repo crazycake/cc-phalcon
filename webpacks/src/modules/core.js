@@ -315,6 +315,8 @@ export default new function() {
             timeout  : 14000 //timeout in seconds
         };
 
+        if(APP.dev) { console.log("Core -> new promise request with options:", options); }
+
         //make ajax request with promises
         return Promise.resolve(
             $.ajax(options)
@@ -495,6 +497,16 @@ export default new function() {
 
         //redirect to contact
         location.href = APP.baseUrl + uri;
+    };
+
+    /**
+     * Gets Default Date DB format
+     * @method getDefaultDateFormat
+     * @return string
+     */
+    self.getDefaultDateFormat = function() {
+
+        return "YYYY-MM-DD HH:mm:ss";
     };
 
     /**
