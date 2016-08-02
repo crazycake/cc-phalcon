@@ -18,9 +18,9 @@ import "fg-loadcss";
 import "./plugins/jquery.extended";
 import "./plugins/jquery.cclayer";
 import "./plugins/jquery.ccdialog";
-import "./plugins/jquery.formValidation";
-import "./plugins/jquery.formValidation.bootstrap4";
-import "./plugins/jquery.formValidation.foundation6";
+import "./plugins/formValidation.popular";
+import "./plugins/formValidation.bootstrap4";
+import "./plugins/formValidation.foundation6";
 
 //modules
 import core from "./modules/core.js";

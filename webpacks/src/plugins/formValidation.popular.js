@@ -27,7 +27,7 @@
  *
  * Use formValidation(.min).js file if you want to have all validators.
  *
- * @version     v0.8.0, built on 2016-06-28 2:44:42 AM
+ * @version     v0.8.1, built on 2016-07-29 1:10:54 AM
  * @author      https://twitter.com/formvalidation
  * @copyright   (c) 2013 - 2016 Nguyen Huu Phuoc
  * @license     http://formvalidation.io/license/

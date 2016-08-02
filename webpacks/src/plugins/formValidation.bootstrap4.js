@@ -8,8 +8,7 @@
  */
 
 /**
- * This class supports validating Bootstrap 4 form (http://getbootstrap.com/)
- * The latest supported version is Bootstrap 4 alpha 2
+ * This class supports validating Bootstrap 4 alpha form (http://v4-alpha.getbootstrap.com/)
  */
 (function($) {
     FormValidation.Framework.Bootstrap4 = function(element, options, namespace) {
@@ -21,8 +20,8 @@
             },
             err: {
                 // http://v4-alpha.getbootstrap.com/components/forms/#validation
-                clazz: 'text-help',
-                parent: '^(.*)col-(xs|sm|md|lg)-(offset-){0,1}[0-9]+(.*)$'
+                clazz: 'form-control-feedback',
+                parent: '^(.*)(col|offset)-(xs|sm|md|lg)-[0-9]+(.*)$'
             },
             // - Use FontAwesome icons:
             //  icon: {
@@ -68,9 +67,9 @@
             // so when clicking the icon, it doesn't effect to the checkbox/radio element
             if ('checkbox' === type || 'radio' === type) {
                 var $fieldParent = $field.parent();
-                if ($fieldParent.hasClass(type)) {
+                if ($fieldParent.hasClass('form-check')) {
                     $icon.insertAfter($fieldParent);
-                } else if ($fieldParent.parent().hasClass(type)) {
+                } else if ($fieldParent.parent().hasClass('form-check')) {
                     $icon.insertAfter($fieldParent.parent());
                 }
             }
