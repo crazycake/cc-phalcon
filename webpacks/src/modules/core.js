@@ -44,6 +44,12 @@ export default new function() {
     self.framework = "none";
 
     /**
+     * Server Date format
+     * @type {string}
+     */
+    self.dateFormat =  "YYYY-MM-DD HH:mm:ss";
+
+    /**
      * @property window.core
      * @type {object}
      */
@@ -497,16 +503,6 @@ export default new function() {
 
         //redirect to contact
         location.href = APP.baseUrl + uri;
-    };
-
-    /**
-     * Gets Default Date DB format
-     * @method getDefaultDateFormat
-     * @return string
-     */
-    self.getDefaultDateFormat = function() {
-
-        return "YYYY-MM-DD HH:mm:ss";
     };
 
     /**
