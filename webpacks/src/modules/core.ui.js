@@ -526,6 +526,11 @@ export default new function() {
 
             var src = obj.attr("src");
             var ext = src.slice(-4);
+
+            //check extension
+            if(ext !== ".png" && ext !== ".jpg")
+                return;
+
             //set new source
             var new_src = src.replace(ext, "@2x"+ext);
 
