@@ -187,12 +187,16 @@ abstract class AppModule
 
     /**
      * Super helper to get quick upload path
+     * @param string $module_name - The module name
      * @param string $entity - The object entity
-     * @param int $object_id - The ID
+     * @param int $object_id - The object ID
      * @return string
      */
-    public static function getUploadPath($entity = "", $object_id = 0)
+    public static function getUploadPath($module_name = null, $entity = "", $object_id = 0)
     {
+        if(empty($module_name))
+            $module_name = MODULE_NAME;
+
         $path = \CrazyCake\Controllers\Uploader::$ROOT_UPLOAD_PATH;
 
         if(!empty($entity))
@@ -203,7 +207,7 @@ abstract class AppModule
         //get upload path
         $id_hashed = $di->getShared("cryptify")->encryptHashId($object_id);
         //get URL
-        $url = AppModule::getUrl(MODULE_NAME, "uploads/$entity$id_hashed/", "static");
+        $url = AppModule::getUrl($module_name, "uploads/$entity$id_hashed/", "static");
 
         return $url;
     }
