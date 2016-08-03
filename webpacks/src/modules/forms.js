@@ -240,8 +240,9 @@ export default new function() {
         //force cleanup
         if(force) {
             //form cleaner
-            $('input:checkbox', form).removeAttr("checked");
-            $("input, textarea", form).val("");
+            $("input:checkbox, input:radio", form).prop("checked", false);
+            $("input", form).not("input:radio").val("");
+            $("textarea", form).val("");
             $("select", form).prop("selectedIndex", 0);
         }
     };

@@ -321,7 +321,7 @@ export default new function() {
             timeout  : 14000 //timeout in seconds
         };
 
-        if(APP.dev) { console.log("Core -> new promise request with options:", options); }
+        if(APP.dev) { console.log("Core -> new promise request with payload:", payload); }
 
         //make ajax request with promises
         return Promise.resolve(
