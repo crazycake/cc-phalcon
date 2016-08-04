@@ -220,7 +220,7 @@ class TaskCore extends Task
         if (filter_var($options["base_url"], FILTER_VALIDATE_URL) === false)
             $this->colorize("Option 'base_url' is not a valid URL", "ERROR", true);
 
-        //log asyn request
+        //log async request
         $this->logger->debug("TaskCore::asyncRequest -> Options: ".json_encode($options, JSON_UNESCAPED_SLASHES));
 
         //requester
