@@ -71,22 +71,6 @@ copyVoltFiles() {
 	fi
 }
 
-copyVueFiles() {
-
-	if [ -d $CORE_SRC_WEBPACKS"vue/" ]; then
-
-		if [ -d $BACKEND_PATH"dev/vue/" ]; then
-			echo -e "\033[94mCopying backend vue files ... \033[0m"
-			cp -r $CORE_SRC_WEBPACKS"vue/" $BACKEND_PATH"dev/vue/"
-		fi
-
-		if [ -d $FRONTEND_PATH"dev/vue/" ]; then
-			echo -e "\033[94mCopying frontend vue files ... \033[0m"
-			cp -r $CORE_SRC_WEBPACKS"vue/" $FRONTEND_PATH"dev/vue/"
-		fi
-	fi
-}
-
 copyWebpacks() {
 
 	#check src path
@@ -115,13 +99,10 @@ copyToolFiles
 # 2) volt files
 copyVoltFiles
 
-# 3) vue files
-copyVueFiles
-
-# 4) webpacks folder & files (debug)
+# 3) webpacks folder & files (debug)
 copyWebpacks
 
-# 5) php phar core builder
+# 4) php phar core builder
 buildCorePhar
 
 # task done!
