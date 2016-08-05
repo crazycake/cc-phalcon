@@ -265,7 +265,7 @@ watch)
 
 	handleModuleArgument "$2"
 
-	echo -e "\033[95mRunning gulp...\033[0m"
+	echo -e "\033[95mRunning gulp watch...\033[0m"
 
 	gulp watch -m $MOD_NAME
 	;;
@@ -276,7 +276,7 @@ watch-mailing)
 
 	handleModuleArgument "$2"
 
-	echo -e "\033[95mRunning gulp...\033[0m"
+	echo -e "\033[95mRunning gulp watch-mailing...\033[0m"
 
 	gulp watch-mailing -m $MOD_NAME
 	;;
