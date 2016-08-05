@@ -11,6 +11,7 @@ namespace CrazyCake\Controllers;
 //imports
 use Phalcon\Exception;
 use Phalcon\Image\Adapter\GD;
+use CrazyCake\Phalcon\AppModule;
 use CrazyCake\Helpers\Slug;
 
 /**
@@ -77,20 +78,20 @@ trait Uploader
         $this->uploader_conf["path"] = self::$ROOT_UPLOAD_PATH."temp/".$user_session["id_hashed"]."/";
 
         //create dir if not exists
-        if(!is_dir($this->uploader_conf["path"])) {
+        if(!is_dir($this->uploader_conf["path"]))
             mkdir($this->uploader_conf["path"], 0755, true);
-        }
 
         //set data for view
         $this->view->setVar("upload_files", $this->uploader_conf["files"]);
     }
 
     /**
-     * afterDispatch event, cleans upload folder for non ajax requests
+     * Dispatch Event, cleans upload folder for non ajax requests
      */
-    protected function afterDispatch()
+    protected function afterExecuteRoute()
     {
-        //clean folder if uploader header is not present
+        parent::afterExecuteRoute();
+
         if(!$this->request->isAjax())
             $this->cleanUploadFolder();
     }
@@ -139,14 +140,11 @@ trait Uploader
             array_push($uploaded, $new_file);
         }
 
-        //set payload
-    	$payload = [
+		//response
+		$this->jsonResponse(200, [
             "uploaded" => $uploaded,
             "errors"   => $errors
-        ];
-
-		//response
-		$this->jsonResponse(200, $payload);
+        ]);
     }
 
     /**
@@ -191,21 +189,27 @@ trait Uploader
     }
 
     /**
+     * Gets uploaded files in temp directory
+     * @return string
+     */
+    protected function getUploadedFiles()
+    {
+        return preg_grep('/^([^.])/', scandir($this->uploader_conf["path"]));
+    }
+
+    /**
      * Move Uploaded files
      * @param int $object_id - The object id
      */
     protected function moveUploadedFiles($object_id = 0)
     {
         //exclude hidden files
-        $uploaded_files = preg_grep('/^([^.])/', scandir($this->uploader_conf["path"]));
+        $uploaded_files = $this->getUploadedFiles();
 
         if(empty($uploaded_files))
             return;
 
-        $file_conf = $this->uploader_conf["files"];
-        //s($file_conf, $uploaded_files);exit;
-
-        foreach ($file_conf as $conf) {
+        foreach ($this->uploader_conf["files"] as $conf) {
 
             $i = 1;
             foreach ($uploaded_files as $file) {
@@ -229,7 +233,7 @@ trait Uploader
                 $org  = $this->uploader_conf["path"].$file;
                 $dest = $this->_getDestinationFolder($object_id, true);
 
-                //copy file ...
+                //copy file
                 copy($org, $dest.$dest_filename);
                 //unlink temp file
                 unlink($org);
@@ -245,6 +249,30 @@ trait Uploader
     /** ------------------------------------------- § ------------------------------------------------ **/
 
     /**
+     * Gest destination folder
+     * @param int $object_id - The object ID
+     * @param boolean $mkdir - Creates folder on the fly
+     * @return string
+     */
+    private function _getDestinationFolder($object_id = 0, $mkdir = false)
+    {
+        //hash id
+        $id_hashed = empty($object_id) ? "" : $this->getDI()->getShared('cryptify')->encryptHashId($object_id);
+        //append entity folder?
+        $entity = isset($this->uploader_conf["entity"]) ? strtolower($this->uploader_conf["entity"])."/" : "";
+
+        $path = self::$ROOT_UPLOAD_PATH.$entity.$id_hashed."/";
+
+        if(!$mkdir)
+            return $path;
+
+        if(!is_dir($path))
+            mkdir($path, 0755, true);
+
+        return $path;
+    }
+
+    /**
      * Validate uploaded file
      * @param $file object - The phalcon uploaded file
      * @param $file_key string - The file key
@@ -255,12 +283,11 @@ trait Uploader
         //get file properties
         $file_name       = $file->getName();
         $file_name_array = explode(".", $file_name);
-
-        $file_ext       = end($file_name_array);
-        $file_cname     = str_replace(".".$file_ext, "", $file_name);
-        $file_namespace = Slug::generate($file_cname);
-        $file_mimetype  = $file->getRealType();       //real file MIME type
-        $file_size      = (float)($file->getSize());  //set to KB unit
+        $file_ext        = end($file_name_array);
+        $file_cname      = str_replace(".".$file_ext, "", $file_name);
+        $file_namespace  = Slug::generate($file_cname);
+        $file_mimetype   = $file->getRealType();       //real file MIME type
+        $file_size       = (float)($file->getSize());  //set to KB unit
 
         //set array keys
         $new_file = [
@@ -324,29 +351,5 @@ trait Uploader
         }
 
         return $new_file;
-    }
-
-    /**
-     * Gest destination folder
-     * @param int $object_id - The object ID
-     * @param boolean $mkdir - Creates folder on the fly
-     * @return string
-     */
-    private function _getDestinationFolder($object_id = 0, $mkdir = false)
-    {
-        //hash id
-        $id_hashed = $this->getDI()->getShared('cryptify')->encryptHashId($object_id);
-        //append entity folder?
-        $entity = isset($this->uploader_conf["entity"]) ? strtolower($this->uploader_conf["entity"])."/" : "";
-
-        $path = self::$ROOT_UPLOAD_PATH.$entity.$id_hashed."/";
-
-        if(!$mkdir)
-            return $path;
-
-        if(!is_dir($path))
-            mkdir($path, 0755, true);
-
-        return $path;
     }
 }

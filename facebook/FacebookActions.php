@@ -237,8 +237,7 @@ trait FacebookActions
 
         $story_object = $this->facebook_actions_conf["og_namespace"].":".$this->facebook_actions_conf["og_story_object"];
         //push open graph object
-        $response = $this->fb->post("me/objects/".$story_object,
-                             ["object" => $object], $user_fb->fac)
+        $response = $this->fb->post("me/objects/".$story_object, ["object" => $object], $user_fb->fac)
                              ->getGraphNode();
         //get OG object id
         $object_id = is_object($response) ? $response->getField("id") : false;
