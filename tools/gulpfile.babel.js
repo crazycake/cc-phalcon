@@ -127,6 +127,7 @@ gulp.task("rev-assets", revision);
 gulp.task("prod-node-env", function() {
     return process.env.NODE_ENV = "production";
 });
+
 /**
  * Get Module Argument
  */
@@ -250,20 +251,19 @@ function watchMailing() {
     //live reaload
     livereload.listen();
 
-    //sass
-    gulp.watch(app_paths.mailing + "scss/*.scss").on("change", function() {
-
+    //watcher sass
+    gulp.watch([app_paths.mailing + "scss/app.scss"], function(){
         sassMailing();
-        bundleMailing();
     });
-    //layouts and partials
+
+    //watcher html
     gulp.watch([
+        app_paths.mailing + "scss/app.scss",
         app_paths.mailing + "pages/**/*",
         app_paths.mailing + "layouts/**/*",
         app_paths.mailing + "partials/**/*"
-    ])
-    .on("change", function() {
-
+    ],
+    function(){
         bundleMailing();
     });
 }
@@ -273,8 +273,6 @@ function watchMailing() {
  */
 function buildMailing() {
 
-    //rerfresh panini
-    panini.refresh();
     //compile sass
     sassMailing();
     //bundle mailing
@@ -285,6 +283,8 @@ function buildMailing() {
  * Sass mailer compiler
  */
 function sassMailing() {
+
+    gutil.log(gutil.colors.yellow("Sass mailing..."));
 
     return gulp.src(app_paths.mailing + "scss/[^_]*.scss")
             .pipe(sass(sass_mailing_conf)
@@ -303,6 +303,10 @@ function sassMailing() {
  * Then parse using Inky templates
  */
 function bundleMailing() {
+
+    gutil.log(gutil.colors.yellow("Bundle mailing..."));
+
+    panini.refresh();
 
     return gulp.src(app_paths.mailing + "pages/*.html")
             .pipe(panini({
