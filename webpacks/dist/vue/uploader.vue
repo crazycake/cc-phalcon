@@ -103,8 +103,8 @@ export default {
 	props: {
 		name   	   : String, //the input name (key)
 		controller : String, //url action
-		imageUrl   : String, //image holder for current image
-		required   : false  //required prop for form validation
+		imageUrl   : "", 	 //image holder for current image
+		required   : false   //required prop for form validation
 	},
 	data() {
 		return {
