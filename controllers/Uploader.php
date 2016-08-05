@@ -190,11 +190,18 @@ trait Uploader
 
     /**
      * Gets uploaded files in temp directory
+     * @param boolean $absolute_path - Append absolute path to each image
      * @return string
      */
-    protected function getUploadedFiles()
+    protected function getUploadedFiles($absolute_path = true)
     {
-        return preg_grep('/^([^.])/', scandir($this->uploader_conf["path"]));
+        //exclude hidden files
+        $files = preg_grep('/^([^.])/', scandir($this->uploader_conf["path"]));
+
+        if(!$absolute_path)
+            return $files;
+
+        return array_map(function($f) { return $this->uploader_conf["path"].$f; }, $files);
     }
 
     /**
@@ -203,8 +210,7 @@ trait Uploader
      */
     protected function moveUploadedFiles($object_id = 0)
     {
-        //exclude hidden files
-        $uploaded_files = $this->getUploadedFiles();
+        $uploaded_files = $this->getUploadedFiles(false);
 
         if(empty($uploaded_files))
             return;
@@ -221,10 +227,8 @@ trait Uploader
                     throw new Exception("Hay archivos aún cargándose, profavor inténtalo nuevamente.");
                 }
 
-                $key = $conf["key"];
-
                 //check key if belongs
-                if(strpos($file, $key) === false)
+                if(strpos($file, $conf["key"]) === false)
                     continue;
 
                 //remove timestamp & replace it for an index
