@@ -279,9 +279,8 @@ trait FacebookActions
         //get event facebook object
         $fb_object = $object->{$this->facebook_actions_conf["object_fb_relation"]};
 
-        if (!$fb_object || empty($fb_object->photo_text)) {
+        if (!$fb_object || empty($fb_object->photo_text))
             throw new Exception("Facebook Object is not set up (".$this->facebook_actions_conf["object_fb_relation"].").");
-        }
 
         //get uploaded files
         $file_path = $this->upload_path;
@@ -295,14 +294,22 @@ trait FacebookActions
             //move file
             $file->moveTo($file_path);
         }
+        //file_path parameter (file in server)
+        else if(!empty($this->request->getPost("file_path"))) {
+
+            $file_path = $this->request->getPost("file_path");
+
+            if(!is_file($file_path))
+                throw new Exception("file not found: $file_path.");
+        }
         //base64
         else {
 
-            //get raw file
-            $base64_string = $this->request->getPost("raw_file");
+            //decode file
+            $base64_string = $this->request->getPost("file_raw");
 
             if (!$base64_string)
-                throw new Exception("no raw or multipart input file given.");
+                throw new Exception("no input file given.");
 
             $file_name = "social-".$object->namespace."-".uniqid().".jpg";
             $file_path = $this->_base64ToJpg($base64_string, $file_path.$file_name);
