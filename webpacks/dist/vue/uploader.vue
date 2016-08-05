@@ -82,7 +82,7 @@
 		<!-- uploader messages -->
 		<small class="form-error" v-if="messages" v-text="messages"></small>
 		<!-- image uploaded box -->
-		<span v-if="imageUrl.length && !uploaded_files.length" @click="imageZoom" class="image-holder">
+		<span v-if="imageUrl && !uploaded_files.length" @click="imageZoom" class="image-holder">
 			<img :src="imageUrl" alt="" />
 			<a href="javascript:void(0);">
 				<i class="material-icons md-32">zoom_in</i>
@@ -103,7 +103,7 @@ export default {
 	props: {
 		name   	   : String, //the input name (key)
 		controller : String, //url action
-		imageUrl   : "", 	 //image holder for current image
+		imageUrl   : false,  //image holder for current image
 		required   : false   //required prop for form validation
 	},
 	data() {
