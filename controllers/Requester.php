@@ -83,8 +83,8 @@ trait Requester
     private function _getRequest($client, $options = [])
     {
         //curl options
-        $verify_host = (APP_ENVIRONMENT != "production") ? false : 2; //prod_recommended: 2
-        $verify_peer = (APP_ENVIRONMENT != "production") ? false : true; //prod_recommended: true
+        $verify_host = (!empty($options["verify_host"]) && $options["verify_host"]) ? 2 : false;     //prod_recommended: 2
+        $verify_peer = (!empty($options["verify_host"]) && $options["verify_host"]) ? true : false ; //prod_recommended: true
 
         $guzzle_options = [
             "curl" => [
