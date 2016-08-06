@@ -83,8 +83,8 @@ trait Requester
     private function _getRequest($client, $options = [])
     {
         //curl options
-        $verify_host = (!empty($options["verify_host"]) && $options["verify_host"]) ? 2 : false;     //prod_recommended: 2
-        $verify_peer = (!empty($options["verify_host"]) && $options["verify_host"]) ? true : false ; //prod_recommended: true
+        $verify_host = (!empty($options["verify_host"]) && $options["verify_host"]) ? 2 : false;    //prod_recommended: 2
+        $verify_peer = (!empty($options["verify_host"]) && $options["verify_host"]) ? true : false; //prod_recommended: true
 
         $guzzle_options = [
             "curl" => [
@@ -119,14 +119,10 @@ trait Requester
     private function _postRequest($client, $options = [])
     {
         //curl options
-        $verify_host = (APP_ENVIRONMENT != "production") ? false : 2;
-        $verify_peer = (APP_ENVIRONMENT != "production") ? false : true;
-
+        $verify_host = (!empty($options["verify_host"]) && $options["verify_host"]) ? 2 : false;
+        $verify_peer = (!empty($options["verify_host"]) && $options["verify_host"]) ? true : false;
         //form params
-        if (is_array($options["payload"]))
-            $form_params = $options["payload"];
-        else
-            $form_params = ["payload" => $options["payload"]];
+        $form_params = is_array($options["payload"]) ? $options["payload"] : ["payload" => $options["payload"]];
 
         $guzzle_options = [
             "form_params" => $form_params,
