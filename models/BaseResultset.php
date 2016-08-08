@@ -47,75 +47,6 @@ class BaseResultset extends Resultset
     }
 
     /**
-     * Splits a resultset for object properties
-     * Example ticket_id, ticket_name, brand_id, brand_name
-     * @return string
-     */
-    public function split()
-    {
-        $result = $this->toArray();
-
-        $result = self::splitResult($result);
-
-        return $result;
-    }
-
-    /**
-     * Parse an array of objects for Json Struct (API WS)
-     * @static
-     * @param array $result - A result array
-     */
-    public static function splitResultset($result = [])
-    {
-        $objects = [];
-
-        //loop each object
-        foreach ($result as $obj) {
-            //get object properties
-            $props = is_array($obj) ? get_object_vars((object)$obj) : get_object_vars($obj);
-
-            if (empty($props))
-                continue;
-
-            $new_obj = new \stdClass();
-
-            foreach ($props as $k => $v) {
-
-                //reduce properties that has a class prefix
-                $namespace = explode("_", $k);
-
-                //check property namespace, check if class exists in models (append plural noun)
-                if (empty($namespace) || !class_exists(ucfirst($namespace[0]."s"))) {
-
-                    if (is_null($v)) continue;
-
-                    $type = "global";
-                    $prop = $k;
-                }
-                else {
-                    $type = $namespace[0];
-                    $prop = str_replace($type."_", "", $k);
-                }
-
-                //creates the object struct
-                if (!isset($new_obj->{$type}))
-                    $new_obj->{$type} = new \stdClass();
-
-                //set props
-                $new_obj->{$type}->{$prop} = $v;
-            }
-
-            //check for a non-props object
-            if (empty(get_object_vars($new_obj)))
-                continue;
-
-            array_push($objects, $new_obj);
-        }
-
-        return $objects;
-    }
-
-    /**
      * Returns an array of Ids of current resultSet object
      * @param array $field - The object field name
      * @return array of Ids
@@ -126,7 +57,7 @@ class BaseResultset extends Resultset
     }
 
     /**
-     * Returns an array of Ids of given objects
+     * Returns an array of distinct ids of given objects
      * @static
      * @param array $result - The resultSet array or a simple array
      * @param array $field - The object field name
@@ -147,10 +78,10 @@ class BaseResultset extends Resultset
     }
 
     /**
-     * Merge all arbitray props
+     * Merge arbitrary props in _ext array property.
      * @static
-     * @param array $result - The resultSet array or a simple array
-     * @param array - A simple array
+     * @param array $result - The resultset array or a native array
+     * @param array
      */
     public static function mergeArbitraryProps(&$result = null)
     {
