@@ -51,22 +51,32 @@ class Base extends \Phalcon\Mvc\Model
     /**
      * Find Override
      * @param array $params - The input params
+     * @param boolean $reduce - Reduce object to native array
      * @return Simple\Resultset
      */
-    public static function find($params = null)
+    public static function find($params = null, $reduce = false)
     {
         $objects = parent::find($params);
+
+        if($reduce)
+            $objects = BaseResultset::reduceResultset($objects);
+
         return $objects;
     }
 
     /**
      * FindFirst Override
      * @param array $params - The input params
+     * @param boolean $reduce - Reduce object to native array
      * @return Object
      */
-    public static function findFirst($params = null)
+    public static function findFirst($params = null, $reduce = false)
     {
         $object = parent::findFirst($params);
+
+        if($reduce)
+            $object = BaseResultset::reduceResultset($object);
+
         return $object;
     }
 
