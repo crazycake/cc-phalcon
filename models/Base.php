@@ -58,8 +58,10 @@ class Base extends \Phalcon\Mvc\Model
     {
         $objects = parent::find($params);
 
+        $props = empty($params["columns"]) ? null : $params["columns"];
+
         if($reduce)
-            $objects = BaseResultset::reduceResultset($objects);
+            $objects = BaseResultset::reduceResultset($objects, $props);
 
         return $objects;
     }
@@ -74,8 +76,10 @@ class Base extends \Phalcon\Mvc\Model
     {
         $object = parent::findFirst($params);
 
+        $props = empty($params["columns"]) ? null : $params["columns"];
+
         if($reduce)
-            $object = BaseResultset::reduceResultset($object);
+            $object = BaseResultset::reduceResultset($object, $props);
 
         return $object;
     }
