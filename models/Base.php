@@ -49,6 +49,28 @@ class Base extends \Phalcon\Mvc\Model
     ---------------------------------------------- § -------------------------------------------------- */
 
     /**
+     * Find Override
+     * @param array $params - The input params
+     * @return Simple\Resultset
+     */
+    public static function find($params = null)
+    {
+        $objects = parent::find($params);
+        return $objects;
+    }
+
+    /**
+     * FindFirst Override
+     * @param array $params - The input params
+     * @return Object
+     */
+    public static function findFirst($params = null)
+    {
+        $object = parent::findFirst($params);
+        return $object;
+    }
+
+    /**
      * Find Object by ID
      * @param int $id - The object ID
      * @return Object

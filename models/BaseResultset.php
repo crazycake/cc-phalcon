@@ -24,10 +24,24 @@ class BaseResultset extends Resultset
      */
     public function reduce($props = null) {
 
+        return self::reduceResultset($this, $props);
+    }
+
+    /**
+     * Reduces a Resultset to native objects array
+     * @param object $resultset - Phalcon simple resultset
+     * @param array $props - Filter properties, if empty array given filters all.
+     * @return array
+     */
+    public static function reduceResultset($resultset = null, $props = null) {
+
+        if(!$resultset)
+            return [];
+
         //objects
         $objects = [];
-        foreach ($this as $obj)
-            $objects[] = $obj->reduce($props);
+        foreach ($resultset as $obj)
+            $objects[] = method_exists($obj, "reduce") ? $obj->reduce($props) : (object)$obj->toArray($props);
 
         return $objects;
     }
@@ -51,7 +65,7 @@ class BaseResultset extends Resultset
      * @static
      * @param array $result - A result array
      */
-    public static function splitResult($result = [])
+    public static function splitResultset($result = [])
     {
         $objects = [];
 
