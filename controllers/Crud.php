@@ -333,7 +333,8 @@ trait Crud
 							ARRAY_FILTER_USE_KEY);
 
 			//update values
-			$object->update($new_data);
+			if(!$object->update($new_data))
+				throw new \Exception($object->allMessages(true));
 
 			//move uploaded files? (UploaderController)
 			if(isset($this->crud_conf["uploader"]))
