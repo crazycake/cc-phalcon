@@ -30,15 +30,10 @@ export default new function() {
         img_asset_fallback : "images/icons/icon-image-fallback.png",
         img_asset_loading  : "images/icons/icon-loading1.svg",
         //setting vars
+        alert              : { position : "fixed", top : "5%", top_small : "0", live_time : 8000 },
+        loading            : { position : "fixed", top : "25%", top_small : "25%" },
         pixel_ratio        : _.isUndefined(window.devicePixelRatio) ? 1 : window.devicePixelRatio
     });
-
-    //set dynamic required props as default values
-    if (_.isUndefined(APP.UI.alert))
-        APP.UI.alert = { position : "fixed", top : "5%", top_small : "0" };
-
-    if (_.isUndefined(APP.UI.loading))
-        APP.UI.loading = { position : "fixed", top : "25%", top_small : "25%" };
 
     //++ Methods ++
 
@@ -217,12 +212,13 @@ export default new function() {
                 });
         }
 
-        //autoclose after x seconds
+        //autoclose after x seconds (check if item is alive)
         _.delay(function() {
-            //check if object already exists
+
             if (div_alert.alive)
                 hide_alert();
-        }, 8000);
+
+        }, APP.UI.alert.live_time);
 
         return true;
     };
