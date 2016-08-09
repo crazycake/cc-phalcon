@@ -631,7 +631,7 @@ trait FacebookAuth
 
         $user_data = $user_fb->toArray();
         //extend properties
-        $user_data["action"] = "deleted";
+        $user_data["action"] = "deauth";
         //call listener
         $this->onAppDeauthorized($user_data);
         //remove fac & expiration date
