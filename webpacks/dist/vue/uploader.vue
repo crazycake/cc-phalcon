@@ -49,8 +49,6 @@
 				right: 30px;
 				color: #fff;
 				transition: opacity .2s ease-in-out;
-			   	-moz-transition: opacity .2s ease-in-out;
-			   	-webkit-transition: opacity .2s ease-in-out;
 			}
 			&:hover a { opacity: 100; }
 		}
