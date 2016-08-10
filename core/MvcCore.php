@@ -289,8 +289,7 @@ abstract class MvcCore extends Controller
             $response = json_encode($response);
 
         //save response only for non production-environment
-        if (APP_ENVIRONMENT !== "production")
-            $this->logger->debug("MvcCore::sendMailMessage -> Got response from MailerController:\n".$response);
+        $this->logger->debug("MvcCore::sendMailMessage -> Queuing new Mailer Message [$method].");
 
         return $response;
     }
