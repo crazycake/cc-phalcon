@@ -204,7 +204,7 @@ trait Mailer
     {
         //Error on success checkout task
         if (isset($this->logger))
-            $this->logger->error("Mailer::sendExceptionSystemMail -> something ocurred, err: ".$exception->getMessage());
+            $this->logger->error("Mailer::adminException -> something ocurred, err: ".$exception->getMessage());
 
         //Sending a warning to admin users!
         $this->sendAdminMessage([
