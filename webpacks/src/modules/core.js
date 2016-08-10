@@ -242,10 +242,11 @@ export default new function() {
 
         let module = self.modules[mod_name];
 
+        //null or undefined?
         if(_.isNil(module.vm))
             return false;
 
-        return module.vm.constructor.name == "Vue";
+        return _.isNil(module.vm.$el) ? false : true;
     };
 
     /**
