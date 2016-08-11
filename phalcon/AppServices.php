@@ -273,6 +273,8 @@ class AppServices
                 $compiler->addFunction("replace", "str_replace");
                 //++ in_array
                 $compiler->addFunction("in_array", "in_array");
+                //++ resizedImagePath (see Helper\Images)
+                //$compiler->addFunction("resized_image_path", "");
 
                 return $volt;
             },

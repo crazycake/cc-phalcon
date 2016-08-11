@@ -12,6 +12,7 @@ use Phalcon\Exception;
 use Phalcon\Image\Adapter\GD;
 use CrazyCake\Phalcon\AppModule;
 use CrazyCake\Helpers\Slug;
+use CrazyCake\Helpers\Images;
 
 /**
  * Uploader Adapter Handler.
@@ -243,7 +244,7 @@ trait Uploader
 
                 //image resize
                 if(!empty($conf["resize"]))
-                    $this->_imageResizer($dest, $dest_filename, $conf);
+                    Images::resize($dest, $dest_filename, $conf["resize"]);
 
                 $i++;
             }
@@ -251,44 +252,6 @@ trait Uploader
     }
 
     /** ------------------------------------------- § ------------------------------------------------ **/
-
-    /**
-     * Resize input image with config params
-     * @param  string $dest - The destination folder
-     * @param  string $file - The input filename
-     * @param  array $conf - The key file configuration
-     * @return boolean Success of failed action
-     */
-    private function _imageResizer($dest = "", $filename = "", $conf = [])
-    {
-        //full path file
-        $file = $dest.$filename;
-
-        if(!is_file($file))
-            return;
-
-        $image = new GD($file);
-
-        //loop resizer
-        foreach ($conf["resize"] as $key => $value) {
-
-            //resize image with % keeping aspect ratio
-            try {
-
-                //get extension
-                $ext      = pathinfo($file, PATHINFO_EXTENSION);
-                $new_name = basename($file, ".$ext")."_$key.".$ext;
-                $new_file = $dest.$new_name;
-                //s($file, $ext, $new_name, $new_file);exit;
-
-                $image->resize($image->getWidth()*$value/100, $image->getHeight()*$value/100);
-                $image->save($new_file);
-            }
-            catch(\Exception $e) {
-                $this->logger->error("Uploader::_imageResizer -> failed resizing image $key: ".$e->getMessage());
-            }
-        }
-    }
 
     /**
      * Gest destination folder
