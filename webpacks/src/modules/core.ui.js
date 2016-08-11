@@ -553,6 +553,22 @@ export default new function() {
     };
 
     /**
+     * Get resized image path.
+     * @method resizedImagePath
+     * Example: public/uploads/media/dj/IMAGE1.jpg?v=5
+     *          public/uploads/media/dj/IMAGE1_TH.jpg?v=5
+     * @param  {string} url - An image URL
+     * @param  {string} key - The suffix key to append
+     * @return string
+     */
+    self.resizedImagePath = function(url = "", key = "TH") {
+
+        let regex = /\.([0-9a-z]+)(?:[\?#]|$)/i;
+
+        return url.replace(regex, "_" + key + ".$1?");
+    };
+
+    /**
      * Load Bootstrap tooltips
      */
     self.loadTooltips = function() {
