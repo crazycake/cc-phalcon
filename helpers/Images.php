@@ -43,7 +43,7 @@ class Images
         $file = $dest.$filename;
 
         if(!is_file($file))
-            return;
+            return false;
 
         $image = new GD($file);
         $saved = 0;
