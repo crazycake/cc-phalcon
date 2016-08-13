@@ -33,7 +33,7 @@ class Forms
         $rut = explode("-", $input_rut);
 
         //checks if rut is valid
-        return strtolower($rut[1]) == self::validateRutVD($rut[0]);
+        return strtolower($rut[1]) == self::_validateRutVD($rut[0]);
     }
 
     /**
@@ -129,7 +129,7 @@ class Forms
      * @param  string $R - The input rut without VD
      * @return mixed [int|string]
      */
-    private static function validateRutVD($R)
+    private static function _validateRutVD($R)
     {
         $M = 0;
         $S = 1;
