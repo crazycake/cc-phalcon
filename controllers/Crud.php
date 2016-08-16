@@ -276,6 +276,9 @@ trait Crud
 	        $object_class = AppModule::getClass($this->crud_conf["entity"]);
 	        $object 	  = new $object_class();
 
+			//set empty strings as null data
+			$data = array_map(function($prop) { return $prop == "" ? null : $prop; }, $data);
+
 	        //save object
 	        if(!$object->save($data))
 	            throw new \Exception($object->allMessages(true));
@@ -331,6 +334,9 @@ trait Crud
 			$new_data = array_filter($data,
 							function ($key) use ($attributes) { return in_array($key, $attributes); },
 							ARRAY_FILTER_USE_KEY);
+
+			//set empty strings as null data
+			$new_data = array_map(function($prop) { return $prop == "" ? null : $prop; }, $new_data);
 
 			//update values
 			if(!$object->update($new_data))
