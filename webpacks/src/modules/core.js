@@ -507,6 +507,28 @@ export default new function() {
     };
 
     /**
+     * Check if given URL is a resource URL
+     * @method isUrl
+     * @return {Boolean}
+     */
+    self.isResourceUrl = function(url = "") {
+
+        let types = /(\.jpg|\.png|\.svg|\.gif)/i;
+
+        return self.isUrl(url) && types.test(url);
+    };
+
+    /**
+     * Check if given URL starts with http
+     * @method isUrl
+     * @return {Boolean}
+     */
+    self.isUrl = function(url = "") {
+
+        return url.substring(0, 4) === "http";
+    };
+
+    /**
      * App test methods
      * @method debug
      * @param  {String} option - The option string [ajax_timeout, ajax_loading, dom_events]

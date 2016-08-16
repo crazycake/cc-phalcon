@@ -338,17 +338,6 @@ export default new function() {
         return string.replace(/<\/?[^>]+(>|$)/g, "");
     };
 
-
-    /**
-     * Check if given URL starts with http
-     * @method isUrl
-     * @return {Boolean}
-     */
-    self.isUrl = function(url = "") {
-
-        return url.substring(0, 4) === "http";
-    };
-
     /**
     * App Google reCaptcha onLoad Callback.
     * Function name is defined in script loader.
