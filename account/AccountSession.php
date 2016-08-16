@@ -124,6 +124,10 @@ trait AccountSession
         if (!$user)
             throw new Exception("User not found, cant set session auth");
 
+        //update user state
+        $last_login = date("Y-m-d H:i:s");
+        $user->update(["last_login" => $last_login]);
+
         //set user data
         $user_data = [
             "auth"         => true,
@@ -132,8 +136,8 @@ trait AccountSession
             "email"        => $user->email,
             "first_name"   => $user->first_name,
             "last_name"    => $user->last_name,
-            "last_login"   => $user->last_login,
-            "account_flag" => $user->account_flag
+            "account_flag" => $user->account_flag,
+            "last_login"   => $last_login
         ];
 
         //call abstract method
