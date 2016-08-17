@@ -158,7 +158,10 @@ function bundleApp(release = false) {
             .pipe(buffer())
             //prepend contents
             .pipe(insert.prepend(fs.readFileSync(app_paths.webpack, "utf-8")))
-            .pipe(gulpif(release, uglify()))
+            .pipe(gulpif(release, uglify({
+                            mangle   : { screw_ie8 : true },
+                            compress : { screw_ie8 : true }
+                         })))
             .pipe(gulpif(release, rename({ suffix : ".min" })))
             .pipe(chmod(775))
             .pipe(gulp.dest(app_paths.assets))
