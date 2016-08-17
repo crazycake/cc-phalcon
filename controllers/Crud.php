@@ -77,7 +77,7 @@ trait Crud
 			throw new \Exception("Crud requires entity, dfields & sfields options.");
 
 		//set entity lower case
-		$conf["entity"] = strtolower($conf["entity"]);
+		$conf["entity"] = \Phalcon\Text::uncamelize($conf["entity"]);
 
 		//prepare fields data for rendering
 		$dfields = []; //datatable
@@ -94,6 +94,10 @@ trait Crud
 				"name" 		=> key($field),
 				"sortField" => key($field)
 			];
+
+			//no sorting field?
+			if(isset($field["sort"]) && $field["sort"] === false)
+				unset($obj->sortField);
 
 			//format dates
 			if(in_array($obj->name, ["created_at", "date"]))
