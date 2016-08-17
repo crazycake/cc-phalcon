@@ -264,7 +264,7 @@ trait Uploader
         //hash id
         $id_hashed = empty($object_id) ? "" : $this->getDI()->getShared('cryptify')->encryptHashId($object_id);
         //append entity folder?
-        $entity = isset($this->uploader_conf["entity"]) ? strtolower($this->uploader_conf["entity"])."/" : "";
+        $entity = isset($this->uploader_conf["entity"]) ? \Phalcon\Text::uncamelize($this->uploader_conf["entity"])."/" : "";
 
         $path = self::$ROOT_UPLOAD_PATH.$entity.$id_hashed."/";
 
