@@ -563,9 +563,14 @@ export default new function() {
      */
     self.resizedImagePath = function(url = "", key = "TH") {
 
-        let regex = /\.([0-9a-z]+)(?:[\?#]|$)/i;
+        var regex   = /\.([0-9a-z]+)(?:[\?#]|$)/i;
+        var new_url = url.replace(regex, "_" + key + ".$1?");
 
-        return url.replace(regex, "_" + key + ".$1?");
+        //remove single question marks
+        if(new_url[new_url.length - 1] === "?")
+            new_url = new_url.substring(0, new_url.length - 1);
+
+        return new_url;
     };
 
     /**
