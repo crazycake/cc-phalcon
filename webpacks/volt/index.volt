@@ -94,7 +94,7 @@
         {% endif %}
 
         {# flash messages #}
-        <div id="app-flash" class="hide">
+        <div id="app-flash" style="display:none;">
             {{ flash.output() }}
         </div>
 
