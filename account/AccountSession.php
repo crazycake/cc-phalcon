@@ -140,6 +140,10 @@ trait AccountSession
             "last_login"   => $last_login
         ];
 
+        //optional props
+        if(isset($user->role))
+            $user_data["role"] = $user->role;
+
         //call abstract method
         $user_data = array_merge($user_data, $this->onSessionSave($user));
         //save in session
