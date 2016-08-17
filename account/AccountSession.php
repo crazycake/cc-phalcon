@@ -51,7 +51,7 @@ trait AccountSession
             //entities
             "user_entity" => "User",
             //excluded user props to be saved in session
-            "view_user_data_filter" => ["id", "account_flag", "auth"]
+            "user_session_filter_view" => ["id", "account_flag", "auth"]
         ];
 
         //merge confs
@@ -129,7 +129,7 @@ trait AccountSession
         $user->update(["last_login" => $last_login]);
 
         //set user data
-        $user_data = [
+        $session_data = [
             "auth"         => true,
             "id"           => $user->id,
             "id_hashed"    => $user->id_hashed,
@@ -142,12 +142,12 @@ trait AccountSession
 
         //optional props
         if(isset($user->role))
-            $user_data["role"] = $user->role;
+            $session_data["role"] = $user->role;
 
         //call abstract method
-        $user_data = array_merge($user_data, $this->onSessionSave($user));
+        $session_data = array_merge($session_data, $this->onSessionSave($user));
         //save in session
-        $this->session->set("user", $user_data);
+        $this->session->set("user", $session_data);
     }
 
     /**
@@ -360,11 +360,11 @@ trait AccountSession
      */
     private function _setUserDataForView()
     {
-        $filter = $this->account_session_conf["view_user_data_filter"];
+        $filter = $this->account_session_conf["user_session_filter_view"];
 
         //Load view data only for non-ajax requests, set user data var for view
         if (!$this->request->isAjax()) {
-            $this->view->setVar("user_data", $this->getUserSession($filter));
+            $this->view->setVar("user_session", $this->getUserSession($filter));
         }
     }
 }
