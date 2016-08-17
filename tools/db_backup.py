@@ -106,7 +106,7 @@ def main():
 		return
 
 	# uplaod task
-	print SCS.CYAN + "Uploading to S3..." + SCS.END
+	print SCS.CYAN + "Uploading to S3 Bucket " + APP.S3_BUCKET + SCS.END
 	#push to AWS s3
 	save_name = APP.NAMESPACE + "-db/" + file_stamp + ".sql.gz"
 	s3_upload_file(output, save_name)
