@@ -99,7 +99,7 @@
 			var div_overlay = $("<div>").addClass("cclayer-overlay");
 
 			//check if object is present in DOM (auto-append)
-			if(!document.contains(el[0]))
+			if(!el.length)
 				el.appendTo("body");
 
 			//OVERLAY CSS
