@@ -176,10 +176,8 @@ trait Mailer
         //set app var
         $this->mailer_conf["app"] = $this->config->app;
 
-        $template_view = "mailing/$template";
-
-        //get the style file
-        $html = $this->simpleView->render($template_view, $this->mailer_conf);
+        //get the view in mailing folder
+        $html = $this->simpleView->render("mailing/$template", $this->mailer_conf);
 
         //apply a HTML inliner if a stylesheet is present
         if(is_file(self::$MAILER_CSS_FILE)) {
