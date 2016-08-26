@@ -329,6 +329,7 @@ trait AccountAuth
     /**
      * Access Token validation for API Auth
      * @param string $token - The input token
+     * @return object - The token ORM object
      */
     protected function validateAccessToken($token = "")
     {
@@ -343,6 +344,8 @@ trait AccountAuth
 
             if(!$token)
                 throw new Exception("Invalid token");
+
+            return $token;
         }
         catch(Exception $e) {
             $this->jsonResponse(401, $e->getMessage());
