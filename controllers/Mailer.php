@@ -176,21 +176,20 @@ trait Mailer
         //set app var
         $this->mailer_conf["app"] = $this->config->app;
 
-        if(!is_file(self::$MAILER_CSS_FILE))
-            throw new Exception("Mailer cant find mailing CSS file: ".self::$MAILER_CSS_FILE);
-
         $template_view = "mailing/$template";
 
         //get the style file
         $html = $this->simpleView->render($template_view, $this->mailer_conf);
-        $css  = file_get_contents(self::$MAILER_CSS_FILE);
 
-        //HTML inliner
-        $emogrifier = new Emogrifier($html, $css);
-        $emogrifier->addExcludedSelector("head");
-        $emogrifier->addExcludedSelector("meta");
+        //apply a HTML inliner if a stylesheet is present
+        if(is_file(self::$MAILER_CSS_FILE)) {
 
-        $html = $emogrifier->emogrify();
+            $emogrifier = new Emogrifier($html, file_get_contents(self::$MAILER_CSS_FILE));
+            $emogrifier->addExcludedSelector("head");
+            $emogrifier->addExcludedSelector("meta");
+            //inliner
+            $html = $emogrifier->emogrify();
+        }
 
         return $html;
     }
