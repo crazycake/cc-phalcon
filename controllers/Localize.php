@@ -148,7 +148,7 @@ trait Localize
             "CRUD" => [
                 "SAVED"          => "Datos guardados.",
                 "UPDATED"        => "Datos actualizados.",
-                "EMPTY_SEARCH"   => "Nada relevante.",
+                "EMPTY_SEARCH"   => "Sin resultados.",
                 "INFO_RESULTS"   => "Del {from} al {to} de {total} elementos.",
                 "DELETE_CONFIRM" => "¿Estás seguro que quieres eliminar este registro?"
             ]
