@@ -285,7 +285,7 @@ trait Crud
 
 	        //save object
 	        if(!$object->save($data))
-	            throw new \Exception($object->allMessages(true));
+	            throw new \Exception($object->messages(true));
 
 			//move uploaded files? (UploaderController)
 			if(isset($this->crud_conf["uploader"]))
@@ -344,7 +344,7 @@ trait Crud
 
 			//update values
 			if(!$object->update($new_data))
-				throw new \Exception($object->allMessages(true));
+				throw new \Exception($object->messages(true));
 
 			//move uploaded files? (UploaderController)
 			if(isset($this->crud_conf["uploader"]))

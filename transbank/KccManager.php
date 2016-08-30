@@ -143,7 +143,7 @@ trait KccManager
             $trx = new $checkout_trx_class();
 
             if (!$trx->save($this->_parseKccTrx($params, $checkout)))
-                throw new Exception("Error saving transaction: ".$trx->allMessages(true));
+                throw new Exception("Error saving transaction: ".$trx->messages(true));
 
             $this->logger->debug("KccManager::successTrxAction -> successCheckout: ".json_encode($checkout));
 

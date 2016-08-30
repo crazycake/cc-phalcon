@@ -278,7 +278,7 @@ trait AccountAuth
 
         //if user dont exists, show error message
         if (!$user->save($data))
-            $this->jsonResponse(200, $user->allMessages(), "alert");
+            $this->jsonResponse(200, $user->messages(), "alert");
 
         //set a flash message to show on account controller
         $this->flash->success(str_replace("{email}", $user->email, $this->account_auth_conf["trans"]["ACTIVATION_PENDING"]));

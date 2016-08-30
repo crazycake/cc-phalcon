@@ -577,7 +577,7 @@ trait FacebookAuth
                         //insert user
                         $user = new $user_class();
                         if (!$user->save($properties))
-                            $this->jsonResponse(200, $user->allMessages(), "alert");
+                            $this->jsonResponse(200, $user->messages(), "alert");
                     }
                 }
             }
@@ -751,7 +751,7 @@ trait FacebookAuth
         if (!$user_fb->save()) {
 
             $this->logger->error("Facebook::__saveUser() -> Error Insertion User Facebook data. userId -> ".$user_id.",
-                                  FBUserId -> ".$fb_id.", trace: ".$user_fb->allMessages(true));
+                                  FBUserId -> ".$fb_id.", trace: ".$user_fb->messages(true));
 
             $user = $user_class::getById($user_id);
             $user->delete();

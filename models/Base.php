@@ -192,11 +192,11 @@ class Base extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Get messages from a created or updated object
+     * Get all messages from a created or updated object
      * @param boolean $format - Returns a joined string
      * @return mixed [array|string]
      */
-    public function allMessages($format = false)
+    public function messages($format = false)
     {
         $data = [];
 
