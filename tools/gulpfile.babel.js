@@ -233,7 +233,7 @@ function buildSass() {
                 .on("error", sass.logError))
             //autoprefixer
             .pipe(autoprefixer({
-                browsers : ["last 2 versions"],
+                browsers : ["last 3 versions"],
                 cascade  : false
             }))
             .pipe(sourcemaps.write())
@@ -293,7 +293,7 @@ function sassMailing() {
             .pipe(sass(sass_mailing_conf)
                   .on("error", sass.logError))
             .pipe(autoprefixer({
-                browsers : ["last 2 versions"],
+                browsers : ["last 3 versions"],
                 cascade  : false
             }))
             .pipe(gulp.dest(app_paths.volt + "mailing/css"))
