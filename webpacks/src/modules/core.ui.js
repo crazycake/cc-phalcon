@@ -561,7 +561,7 @@ export default new function() {
      * @param  {string} key - The suffix key to append
      * @return string
      */
-    self.resizedImagePath = function(url = "", key = "TH") {
+    self.resizedImagePath = function(url = "", key = "TN") {
 
         var regex   = /\.([0-9a-z]+)(?:[\?#]|$)/i;
         var new_url = url.replace(regex, "_" + key + ".$1?");
