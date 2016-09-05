@@ -28,8 +28,8 @@
         {% endif %}
 
         {# define vars #}
-        {% set tag_title            = html_title is defined ? app.name~" - "~html_title : app.name %}
-        {% set tag_meta_description = html_description is defined ? app.name~": "~html_description : app.name %}
+        {% set tag_title            = html_title is defined ? html_title : app.name %}
+        {% set tag_meta_description = html_description is defined ? html_description : app.name %}
         {% set tag_meta_robots      = html_disallow_robots is defined ? "noindex,nofollow" : "index,follow" %}
 
         {# descriptive metas #}
