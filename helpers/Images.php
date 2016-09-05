@@ -9,7 +9,7 @@ namespace CrazyCake\Helpers;
 
 //imports
 use Phalcon\Exception;
-use Phalcon\Image\Adapter\GD;
+use Phalcon\Image\Adapter\Imagick as Image;
 
 /**
  * Form Helper
@@ -51,7 +51,7 @@ class Images
         if(!is_file($file))
             return false;
 
-        $image = new GD($file);
+        $image = new Image($file);
         $saved = 0;
 
         //loop resizer
@@ -67,7 +67,7 @@ class Images
                 //s($file, $ext, $new_name, $new_file);exit;
 
                 $image->resize($image->getWidth()*$value/100, $image->getHeight()*$value/100);
-                $image->save($new_file);
+                $image->save($new_file, 100);
 
                 $saved++;
             }
