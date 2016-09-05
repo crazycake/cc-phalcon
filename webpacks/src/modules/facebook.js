@@ -62,11 +62,15 @@ export default new function() {
 
 		//append the "fb-root" div required by facebook
 		$("body").append("<div id='fb-root'></div>");
+
 		//set facebook jquery elements
 		var fb_buttons = $("." + self.config.dom_class);
+
 		//check if buttons exists
-		if (!fb_buttons.length)
+		if (!fb_buttons.length) {
+			console.log("Facebook -> No buttons found with class " + self.config.dom_class);
 			return;
+		}
 
 		//disable js sdk only for mobile
 		if (!core.modules.facebook.config.disable_js_sdk)
@@ -74,11 +78,13 @@ export default new function() {
 
 		//For mobile use redirections pages, get library request
 		if (!self.config.disable_js_sdk) {
-			return self.getLibraryScript(fb_buttons);
+			self.getLibraryScript(fb_buttons);
+			return;
 		}
 
 		//click event for redirection strategy
 		fb_buttons.click(function() {
+
 			//get action attribute
 			var action = $(this).attr("data-action");
 			var url    = self.config.login_url;
