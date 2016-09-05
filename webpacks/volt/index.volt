@@ -30,11 +30,12 @@
         {# define vars #}
         {% set tag_title            = html_title is defined ? html_title : app.name %}
         {% set tag_meta_description = html_description is defined ? html_description : app.name %}
+        {% set tag_meta_author      = html_author is defined ? html_author : app.name~' Team' %}
         {% set tag_meta_robots      = html_disallow_robots is defined ? "noindex,nofollow" : "index,follow" %}
 
         {# descriptive metas #}
-        <meta name="author" content="{{ app.name }} Team" />
         <meta name="description" content="{{ tag_meta_description }}" />
+        <meta name="author" content="{{ tag_meta_author }}" />
         <meta name="robots" content="{{ tag_meta_robots }}" />
         {# page title #}
         <title>{{ tag_title }}</title>
