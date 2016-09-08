@@ -41,6 +41,7 @@ class Dates
 
     /**
      * Returns time difference from two input dates
+     * Consider using Carbon Library
      * @static
      * @param date $date1 - Format Y-m-d H:i:s or a DateTime object
      * @param date $date2 - Format Y-m-d H:i:s or a DateTime object
@@ -186,6 +187,26 @@ class Dates
         $date = explode("-", $date);
 
         return self::getTranslatedDateTime($date[0], $date[1], $date[2]);
+    }
+
+
+    /**
+     * Get translated human date.
+     * Carbon::setLocale('es'); de Carbon tiene mala traduccion
+     * @static
+     * @return string - The translated date
+     */
+    public static function getTranslatedHumanDate($date)
+    {
+        $search  = [
+            'antes',
+        ];
+
+        $replace = [
+            'atrás',
+        ];
+
+        return str_replace($search, $replace, $date);
     }
 
     /**
