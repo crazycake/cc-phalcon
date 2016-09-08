@@ -105,7 +105,7 @@ var b = browserify(browserify_opts)
 /** Tasks. TODO: implement gulp.series() v 4.x **/
 
 //build & deploy
-gulp.task("build", ["prod-node-env", "build-mailing", "minify-js", "minify-css", "rev-assets"], function() {
+gulp.task("build", ["prod-node-env", "build-sass-app", "build-mailing", "minify-js", "minify-css", "rev-assets"], function() {
 
     gutil.log(gutil.colors.blue("Build complete"));
     //safer exit
@@ -117,6 +117,8 @@ gulp.task("watch", watchApp);
 gulp.task("watch-mailing", watchMailing);
 //build mailing
 gulp.task("build-mailing", buildMailing);
+//build mailing
+gulp.task("build-sass-app", buildSass);
 //JS minify
 gulp.task("minify-js", minifyJs);
 //CSS minify
@@ -226,6 +228,8 @@ function watchApp() {
  */
 function buildSass() {
 
+    gutil.log(gutil.colors.yellow("Building app CSS..."));
+
     return gulp.src(app_paths.sass + "[^_]*.scss")
             .pipe(sourcemaps.init())
             //libsass
@@ -233,7 +237,7 @@ function buildSass() {
                 .on("error", sass.logError))
             //autoprefixer
             .pipe(autoprefixer({
-                browsers : ["last 3 versions"],
+                browsers : ["last 2 versions"],
                 cascade  : false
             }))
             .pipe(sourcemaps.write())
@@ -255,7 +259,7 @@ function watchMailing() {
     livereload.listen();
 
     //watcher sass
-    gulp.watch([app_paths.mailing + "scss/app.scss"], function(){
+    gulp.watch([app_paths.mailing + "scss/app.scss"], function() {
         sassMailing();
     });
 
@@ -266,7 +270,7 @@ function watchMailing() {
         app_paths.mailing + "layouts/**/*",
         app_paths.mailing + "partials/**/*"
     ],
-    function(){
+    function() {
         bundleMailing();
     });
 }
@@ -275,6 +279,8 @@ function watchMailing() {
  * Build mailing
  */
 function buildMailing() {
+
+    gutil.log(gutil.colors.yellow("Building mailing..."));
 
     //compile sass
     sassMailing();
@@ -287,13 +293,11 @@ function buildMailing() {
  */
 function sassMailing() {
 
-    gutil.log(gutil.colors.yellow("Sass mailing..."));
-
     return gulp.src(app_paths.mailing + "scss/[^_]*.scss")
             .pipe(sass(sass_mailing_conf)
                   .on("error", sass.logError))
             .pipe(autoprefixer({
-                browsers : ["last 3 versions"],
+                browsers : ["last 2 versions"],
                 cascade  : false
             }))
             .pipe(gulp.dest(app_paths.volt + "mailing/css"))
@@ -307,8 +311,7 @@ function sassMailing() {
  */
 function bundleMailing() {
 
-    gutil.log(gutil.colors.yellow("Bundle mailing..."));
-
+    //refresh panini
     panini.refresh();
 
     return gulp.src(app_paths.mailing + "pages/*.html")
