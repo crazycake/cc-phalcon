@@ -199,11 +199,11 @@ class Dates
     public static function getTranslatedHumanDate($date)
     {
         $search  = [
-            'antes',
+            "antes",
         ];
 
         $replace = [
-            'atrás',
+            "atrás",
         ];
 
         return str_replace($search, $replace, $date);
