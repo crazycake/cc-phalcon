@@ -18,7 +18,24 @@ use Predis\Client as RedisClient;
  */
 class Redis
 {
-    const REDIS_DEFAULT_PORT = 6379;
+    /** Consts **/
+
+    /**
+     * @var Redis default Configuration
+     * @link https://github.com/nrk/predis/wiki/Connection-Parameters
+     * scheme : defaults tcp.
+     * host : defaults to localhost.
+     * port : Redis port number.
+     * database : Accepts a numeric value that is used by Predis to automatically select a logical database.
+     * password : Auth password server key.
+     * persistent : Specifies if the underlying connection resource should be left open when a script ends its lifecycle.
+     */
+    const REDIS_DEFAULT_CONF = [
+        "scheme"     => "tcp",
+        "host"       => "127.0.0.1",
+        "port"       => 6379,
+        "persistent" => false
+    ];
 
     /**
      * The client reference
@@ -39,8 +56,8 @@ class Redis
         if (!isset($conf["prefix"]))
             $conf["prefix"] = $di->getShared("config")->app->namespace.":";
 
-        //setup Redis
-        $this->_setupRedis($conf);
+        // setup redis connection
+        $this->client = new RedisClient(array_merge(self::REDIS_DEFAULT_CONF, $conf));
 
         //check client was set
         if (is_null($this->client))
@@ -138,27 +155,4 @@ class Redis
      }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
-
-    /**
-     * Sets up redis connection with predis lib.
-     * @link https://github.com/nrk/predis/wiki/Connection-Parameters
-     * @param array $conf - The input config data
-     * scheme : defaults tcp.
-     * host : defaults to localhost.
-     * port : Redis port number.
-     * database : Accepts a numeric value that is used by Predis to automatically select a logical database.
-     * password : Auth password server key.
-     * persistent : Specifies if the underlying connection resource should be left open when a script ends its lifecycle.
-     */
-    private function _setupRedis($conf = [])
-    {
-        $clientConf = [
-            "scheme"     => "tcp",
-            "host"       => "127.0.0.1",
-            "port"       => self::REDIS_DEFAULT_PORT,
-            "persistent" => false
-        ];
-        // sets up redis connection
-        $this->client = new RedisClient(array_merge($clientConf, $conf));
-    }
 }
