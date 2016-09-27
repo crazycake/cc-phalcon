@@ -196,6 +196,9 @@ export default {
 
 			for (var i = 0; i < this.uploaded_files.length; i++)
 				this.removeUpload(i);
+
+			//clean messages
+			this.messages = "";
 		},
 		//VueUploader events
 		onFileClick(file) {
