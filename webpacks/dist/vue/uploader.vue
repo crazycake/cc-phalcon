@@ -1,7 +1,7 @@
 /**
- * Uploader component for CrazyCake Phalcon App */
+ * Uploader component for CrazyCake Phalcon App
  * Requires crazycake JS core
- */
+ **/
 
 //SCSS
 <style lang="scss">
