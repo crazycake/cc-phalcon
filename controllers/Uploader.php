@@ -207,13 +207,16 @@ trait Uploader
     /**
      * Move Uploaded files
      * @param int $object_id - The object id
+     * @param string $destination_path - The destination path (opcional)
      */
-    protected function moveUploadedFiles($object_id = 0)
+    protected function moveUploadedFiles($object_id = 0, $destination_path = null)
     {
         $uploaded_files = $this->getUploadedFiles(false);
 
         if(empty($uploaded_files))
             return;
+
+        $moved_files = [];
 
         foreach ($this->uploader_conf["files"] as $conf) {
 
@@ -235,12 +238,17 @@ trait Uploader
                 $dest_filename = preg_replace("/[\\-\\d]{6,}/", $i, $file);
 
                 $org  = $this->uploader_conf["path"].$file;
-                $dest = $this->_getDestinationFolder($object_id, true);
+                $dest = $destination_path ? $destination_path : $this->_getDefaultDestinationPath($object_id);
+
+                if(!is_dir($dest))
+                    mkdir($dest, 0755, true);
 
                 //copy file
                 copy($org, $dest.$dest_filename);
                 //unlink temp file
                 unlink($org);
+                //append destination to array
+                array_push($moved_files, $dest.$dest_filename);
 
                 //image resize
                 if(!empty($conf["resize"]))
@@ -249,30 +257,26 @@ trait Uploader
                 $i++;
             }
         }
+
+        return $moved_files;
     }
 
     /** ------------------------------------------- § ------------------------------------------------ **/
 
     /**
-     * Gest destination folder
-     * @param int $object_id - The object ID
-     * @param boolean $mkdir - Creates folder on the fly
+     * Gest destination folder path
+     * @param int $object_id - The object ID (Id is encrypted for basic security)
      * @return string
      */
-    private function _getDestinationFolder($object_id = 0, $mkdir = false)
+    private function _getDefaultDestinationPath($object_id = 0)
     {
-        //hash id
-        $id_hashed = empty($object_id) ? "" : $this->getDI()->getShared('cryptify')->encryptHashId($object_id);
+        //hash object id?
+        $object_id = empty($object_id) ? "" : $this->getDI()->getShared('cryptify')->encryptHashId($object_id)."/";
+
         //append entity folder?
         $entity = isset($this->uploader_conf["entity"]) ? \Phalcon\Text::uncamelize($this->uploader_conf["entity"])."/" : "";
 
-        $path = self::$ROOT_UPLOAD_PATH.$entity.$id_hashed."/";
-
-        if(!$mkdir)
-            return $path;
-
-        if(!is_dir($path))
-            mkdir($path, 0755, true);
+        $path = self::$ROOT_UPLOAD_PATH.$entity.$object_id;
 
         return $path;
     }

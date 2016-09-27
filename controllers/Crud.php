@@ -381,7 +381,7 @@ trait Crud
 
 		//delete upload files?
 		if(isset($this->crud_conf["uploader"]))
-			$this->cleanUploadFolder($this->_getDestinationFolder($object->id));
+			$this->cleanUploadFolder($this->_getDefaultDestinationPath($object->id));
 
 		//send response
         $this->jsonResponse(200);
