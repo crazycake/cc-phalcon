@@ -65,7 +65,7 @@
 		<!-- validator -->
 		<input name="uploader-validator" type="hidden" v-if="required"
 			   data-fv-excluded="false" data-fv-required="numeric : {}"
-			   data-fv-message="Selecciona una imagen." />
+			   data-fv-message="Selecciona una imagen." value="" />
 		<!-- progress bar -->
 		<div class="progress-bar" v-show="file_progress > 0" :style="getProgressBarStyle"></div>
 		<!-- files uploaded -->
