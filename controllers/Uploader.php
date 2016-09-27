@@ -238,13 +238,13 @@ trait Uploader
                 //set destination path. TODO: eliminar logica object_id
                 $dest = is_numeric($dest_path) ? $this->_getDefaultDestinationPath($dest_path, false) : $dest_path;
                 //remove timestamp & replace it for an index
-                $dest_filename = preg_replace("/[\\-\\d]{6,}/", $i, $file);
+                $dest_filename = $file; //preg_replace("/[\\-\\d]{6,}/", $i, $file);
 
                 //add missing slash to destination path?
                 if (substr($dest, -1) !== "/") $dest .= "/";
 
                 //append destination to array
-                $moved_files[$conf["key"]] = $dest.$dest_filename;
+                $moved_files[$conf["key"]] = $dest.$file;
 
                 //append fullpath
                 $dest = self::$ROOT_UPLOAD_PATH.$dest;
