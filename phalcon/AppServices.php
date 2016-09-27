@@ -174,7 +174,9 @@ class AppServices
         }
 
         //Kint options
-        \Kint::$theme = "solarized";
+        if (class_exists("\Kint")) {
+            \Kint::$theme = "solarized";
+        }
     }
 
     /**
