@@ -203,9 +203,9 @@ abstract class AppModule
         $di = \Phalcon\Di::getDefault();
 
         //get upload path
-        $id_hashed = empty($object_id) ? "" : $di->getShared("cryptify")->encryptHashId($object_id);
+        $id_hashed = empty($object_id) ? "" : $di->getShared("cryptify")->encryptHashId($object_id)."/";
         //get URL
-        $url = AppModule::getUrl($module_name, "uploads/$entity$id_hashed/", "static");
+        $url = AppModule::getUrl($module_name, "uploads/$entity$id_hashed", "static");
 
         return $url;
     }

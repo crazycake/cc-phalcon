@@ -172,6 +172,9 @@ class AppServices
                 return new \CrazyCake\Helpers\Cryptify($this->config->app->cryptKey);
             });
         }
+
+        //Kint options
+        \Kint::$theme = "solarized";
     }
 
     /**

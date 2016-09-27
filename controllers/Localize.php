@@ -74,10 +74,13 @@ trait Localize
                 "TITLE_CREATE_PASS" => "Crea una nueva contraseña"
             ],
             "UPLOADER" => [
-                "MAX_SIZE"   => "El archivo {file} excede el máximo tamaño permitido de {size}.",
-                "FILE_TYPE"  => "El archivo {file} no es soportado.",
-                "IMG_WIDTH"  => "La imagen {file} tiene un ancho distinto de {w}px.",
-                "IMG_HEIGHT" => "La imagen {file} tiene un alto distinto de {h}px."
+                "MAX_SIZE"       => "El archivo {file} excede el máximo tamaño permitido de {size}.",
+                "FILE_TYPE"      => "El archivo {file} no es soportado.",
+                "IMG_WIDTH"      => "La imagen {file} tiene un ancho distinto de {w}px.",
+                "IMG_HEIGHT"     => "La imagen {file} tiene un alto distinto de {h}px.",
+                "IMG_MIN_WIDTH"  => "La imagen {file} debe tener un ancho de al menos {w}px.",
+                "IMG_MIN_HEIGHT" => "La imagen {file} debe tener una altura de al menos {h}px.",
+                "IMG_RATIO"      => "La imagen {file} debe tener un ratio de {r}.",
             ]
         ];
 
