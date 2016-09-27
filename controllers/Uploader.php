@@ -206,10 +206,9 @@ trait Uploader
 
     /**
      * Move Uploaded files
-     * @param int $object_id - The object id
-     * @param string $destination_path - The destination path (opcional)
+     * @param mixed[int|string] $dest_path - Can be an object ID or a path. If is numeric, ID gets encrypted.
      */
-    protected function moveUploadedFiles($object_id = 0, $destination_path = null)
+    protected function moveUploadedFiles($dest_path = "")
     {
         $uploaded_files = $this->getUploadedFiles(false);
 
@@ -234,19 +233,24 @@ trait Uploader
                 if(strpos($file, $conf["key"]) === false)
                     continue;
 
-                //remove timestamp & replace it for an index
-                $dest_filename = preg_replace("/[\\-\\d]{6,}/", $i, $file);
+                //set source path
+                $src = $this->uploader_conf["path"].$file;
+                //set destination path
+                $dest = is_numeric($dest_path) ? $this->_getDefaultDestinationPath($dest_path) : self::$ROOT_UPLOAD_PATH.$dest_path;
 
-                $org  = $this->uploader_conf["path"].$file;
-                $dest = $destination_path ? $destination_path : $this->_getDefaultDestinationPath($object_id);
+                //add missing slash?
+                if (substr($dest, -1) !== "/") $dest .= "/";
 
                 if(!is_dir($dest))
                     mkdir($dest, 0755, true);
 
+                //remove timestamp & replace it for an index
+                $dest_filename = preg_replace("/[\\-\\d]{6,}/", $i, $file);
+
                 //copy file
-                copy($org, $dest.$dest_filename);
+                copy($src, $dest.$dest_filename);
                 //unlink temp file
-                unlink($org);
+                unlink($src);
                 //append destination to array
                 array_push($moved_files, $dest.$dest_filename);
 
@@ -270,11 +274,11 @@ trait Uploader
      */
     private function _getDefaultDestinationPath($object_id = 0)
     {
+        //append entity folder?
+        $entity = !isset($this->uploader_conf["entity"]) ? "" : \Phalcon\Text::uncamelize($this->uploader_conf["entity"])."/";
+
         //hash object id?
         $object_id = empty($object_id) ? "" : $this->getDI()->getShared('cryptify')->encryptHashId($object_id)."/";
-
-        //append entity folder?
-        $entity = isset($this->uploader_conf["entity"]) ? \Phalcon\Text::uncamelize($this->uploader_conf["entity"])."/" : "";
 
         $path = self::$ROOT_UPLOAD_PATH.$entity.$object_id;
 
