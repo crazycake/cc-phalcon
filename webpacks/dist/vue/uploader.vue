@@ -200,6 +200,8 @@ export default {
 			//restore vars to default
 			this.messages 		= false;
 			this.uploaded_files = [];
+			//clean input
+			$('input[type="file"]', this.$el).val("");
 		},
 		//VueUploader events
 		onFileClick(file) {
