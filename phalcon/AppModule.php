@@ -185,31 +185,6 @@ abstract class AppModule
         return $base_url.$uri;
     }
 
-    /**
-     * Super helper to get quick upload path
-     * @param string $module_name - The module name
-     * @param string $entity - The object entity
-     * @param int $object_id - The object ID
-     * @return string
-     */
-    public static function getUploadUrl($module_name = null, $entity = "", $object_id = 0)
-    {
-        if(empty($module_name))
-            $module_name = MODULE_NAME;
-
-        if(!empty($entity))
-            $entity .= "/";
-
-        $di = \Phalcon\Di::getDefault();
-
-        //get upload path
-        $id_hashed = empty($object_id) ? "" : $di->getShared("cryptify")->encryptHashId($object_id)."/";
-        //get URL
-        $url = AppModule::getUrl($module_name, "uploads/$entity$id_hashed", "static");
-
-        return $url;
-    }
-
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
