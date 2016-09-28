@@ -52,10 +52,11 @@ class Images
             return false;
 
         $image = new Image($file);
+        $ratio = $image->getWidth() / $image->getHeight();
         $saved = 0;
 
         //loop resizer
-        foreach ($conf as $key => $value) {
+        foreach ($conf as $key => $array) {
 
             //resize image with % keeping aspect ratio
             try {
@@ -66,7 +67,20 @@ class Images
                 $new_file = $dest.$new_name;
                 //s($file, $ext, $new_name, $new_file);exit;
 
-                $image->resize($image->getWidth()*$value/100, $image->getHeight()*$value/100);
+                //percentage
+                if(isset($array["p"])) {
+                    $image->resize($image->getWidth()*$array["p"]/100, $image->getHeight()*$array["p"]/100);
+                }
+                //width px, keep ratio
+                else if(isset($array["w"])) {
+                    $image->resize($array["w"], $array["w"] / $ratio);
+                }
+                //height px, keep ratio
+                else if(isset($array["h"])) {
+                    $image->resize($array["h"] * $ratio, $array["h"]);
+                }
+
+                //save image
                 $image->save($new_file, 100);
 
                 $saved++;
