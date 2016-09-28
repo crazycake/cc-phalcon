@@ -374,12 +374,13 @@ trait Crud
 		$object_class = $this->crud_conf["entity"];
 		$object 	  = $object_class::getById($data["id"]);
 
+		//orm deletion
 		if($object)
 			$object->delete();
 
 		//delete upload files?
 		if(isset($this->crud_conf["uploader"]))
-			$this->cleanUploadFolder($this->_getDefaultDestinationPath($object->id));
+			$this->cleanUploadFolder($this->crud_conf["entity"]."/".$data["id"]."/");
 
 		//send response
         $this->jsonResponse(200);
