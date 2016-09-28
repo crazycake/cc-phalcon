@@ -51,8 +51,6 @@ class Images
         if(!is_file($file))
             return false;
 
-        $image = new Image($file);
-        $ratio = $image->getWidth() / $image->getHeight();
         $saved = 0;
 
         //loop resizer
@@ -61,12 +59,16 @@ class Images
             //resize image with % keeping aspect ratio
             try {
 
-                //get extension
+                //new image object from original file
+                $image    = new Image($file);
+                $ratio    = $image->getWidth() / $image->getHeight();
+                //get file name & ext
                 $ext      = pathinfo($file, PATHINFO_EXTENSION);
                 $new_name = basename($file, ".$ext")."_$key.".$ext;
                 $new_file = $dest.$new_name;
                 //s($file, $ext, $new_name, $new_file);exit;
 
+                //++ Resizes
                 //percentage
                 if(isset($array["p"])) {
                     $image->resize($image->getWidth()*$array["p"]/100, $image->getHeight()*$array["p"]/100);
@@ -79,6 +81,18 @@ class Images
                 else if(isset($array["h"])) {
                     $image->resize($array["h"] * $ratio, $array["h"]);
                 }
+                //height px, keep ratio
+                else if(isset($array["c"])) {
+                    $image->crop($array["c"][0], $array["c"][1], $array["c"][2], $array["c"][3]);
+                }
+
+                //++ EFXs
+                //blur
+                if(isset($array["b"]))
+                    $image->blur($array["b"]);
+                //rotate
+                if(isset($array["r"]))
+                    $image->rotate($array["r"]);
 
                 //save image
                 $image->save($new_file, 100);
