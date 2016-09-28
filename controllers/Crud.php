@@ -288,8 +288,7 @@ trait Crud
 	            throw new \Exception($object->messages(true));
 
 			//move uploaded files? (UploaderController)
-			if(isset($this->crud_conf["uploader"]))
-				$this->moveUploadedFiles($object->id);
+			$this->_moveUploadedFiles($object);
 
 	        //call listener
 	        $this->onAfterSave($object, "create");
@@ -347,8 +346,7 @@ trait Crud
 				throw new \Exception($object->messages(true));
 
 			//move uploaded files? (UploaderController)
-			if(isset($this->crud_conf["uploader"]))
-				$this->moveUploadedFiles($object->id);
+			$this->_moveUploadedFiles($object);
 
 	        //call listener
 	        $this->onAfterSave($object, "update");
@@ -486,4 +484,29 @@ trait Crud
         //unset payload
         unset($data["payload"]);
     }
+
+	/**
+	 * Move Uploaded files with Uploaded
+	 * @param object $object - The entity object
+	 */
+	private function _moveUploadedFiles($object)
+	{
+		//move uploaded files? (UploaderController)
+		if(!isset($this->crud_conf["uploader"]))
+			return;
+
+		$files = $this->moveUploadedFiles($this->crud_conf["entity"]."/".$object->id."/");
+
+		if(!$files)
+			return;
+
+		//save assets path as {key}_url prop
+		$data = [];
+		foreach ($files as $key => $value)
+			$data[strtolower($key)."_url"] = AppModule::getUrl(MODULE_NAME, "uploads/".$value, "static");
+
+		//update object
+		if($data)
+			$object->update($data);
+	}
 }

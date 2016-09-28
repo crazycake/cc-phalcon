@@ -219,7 +219,6 @@ trait Uploader
 
         foreach ($this->uploader_conf["files"] as $conf) {
 
-            $i = 1;
             foreach ($uploaded_files as $file) {
 
                 if(empty($conf["key"])) {
@@ -235,34 +234,28 @@ trait Uploader
 
                 //set source path
                 $src = $this->uploader_conf["path"].$file;
-                //set destination path. TODO: eliminar logica object_id
-                $dest = is_numeric($dest_path) ? $this->_getDefaultDestinationPath($dest_path, false) : $dest_path;
-                //remove timestamp & replace it for an index
-                $dest_filename = $file; //preg_replace("/[\\-\\d]{6,}/", $i, $file);
 
                 //add missing slash to destination path?
-                if (substr($dest, -1) !== "/") $dest .= "/";
+                if (substr($dest_path, -1) !== "/") $dest_path .= "/";
 
                 //append destination to array
-                $moved_files[$conf["key"]] = $dest.$file;
+                $moved_files[$conf["key"]] = $dest_path.$file;
 
                 //append fullpath
-                $dest = self::$ROOT_UPLOAD_PATH.$dest;
+                $dest = self::$ROOT_UPLOAD_PATH.$dest_path;
 
                 //create folder?
                 if(!is_dir($dest))
                     mkdir($dest, 0755, true);
 
                 //copy file
-                copy($src, $dest.$dest_filename);
+                copy($src, $dest.$file);
                 //unlink temp file
                 unlink($src);
 
                 //image resize
                 if(!empty($conf["resize"]))
-                    Images::resize($dest, $dest_filename, $conf["resize"]);
-
-                $i++;
+                    Images::resize($dest, $file, $conf["resize"]);
             }
         }
 
@@ -270,26 +263,6 @@ trait Uploader
     }
 
     /** ------------------------------------------- § ------------------------------------------------ **/
-
-    /**
-     * Gest destination folder path
-     * @param int $object_id - The object ID (Id is encrypted for basic security)
-     * @param boolean $fullpath - Appends fullpath (optional)
-     * @return string
-     */
-    private function _getDefaultDestinationPath($object_id = 0, $fullpath = true)
-    {
-        //append entity folder?
-        $entity = !isset($this->uploader_conf["entity"]) ? "" : \Phalcon\Text::uncamelize($this->uploader_conf["entity"])."/";
-
-        //hash object id?
-        $object_id = empty($object_id) ? "" : $this->getDI()->getShared('cryptify')->encryptHashId($object_id)."/";
-
-        //set path
-        $path = $entity.$object_id;
-
-        return $fullpath ? self::$ROOT_UPLOAD_PATH.$path : $path;
-    }
 
     /**
      * Validate uploaded file
@@ -364,11 +337,11 @@ trait Uploader
                     throw new Exception(str_replace(["{file}", "{h}"], [$file_name, $size["h"]], $this->uploader_conf["trans"]["IMG_HEIGHT"]));
 
                 //minimun width
-                if(isset($size["mw"]) && $size["mw"] < $image->getWidth())
+                if(isset($size["mw"]) && $image->getWidth() < $size["mw"])
                     throw new Exception(str_replace(["{file}", "{w}"], [$file_name, $size["mw"]], $this->uploader_conf["trans"]["IMG_MIN_WIDTH"]));
 
                 //minimun width
-                if(isset($size["mh"]) && $size["mh"] < $image->getHeight())
+                if(isset($size["mh"]) && $image->getHeight() < $size["mh"])
                     throw new Exception(str_replace(["{file}", "{h}"], [$file_name, $size["mh"]], $this->uploader_conf["trans"]["IMG_MIN_HEIGHT"]));
 
                 //ratio
