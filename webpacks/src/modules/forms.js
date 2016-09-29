@@ -200,8 +200,10 @@ export default new function() {
         var fv = form.data("formValidation");
 
         //single field
-        if(field !== "all")
+        if(field !== "all") {
             fv.updateStatus(field, "NOT_VALIDATED");
+            return;
+        }
 
         //update all fields
         form.find("[data-fv-required]").each(function(){
