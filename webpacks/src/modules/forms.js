@@ -350,8 +350,10 @@ export default new function() {
 
         if (core.debug) { console.log("Forms -> reCaptcha loaded! Main Selector: " + APP.UI.sel_recaptcha); }
 
+        var selector = $(APP.UI.sel_recaptcha);
+
         //calback function when user entered valid data
-        var callback_fn = function() {
+        let callback_fn = function() {
 
             if (core.debug) { console.log("Forms -> reCaptcha validation OK!"); }
 
@@ -360,16 +362,23 @@ export default new function() {
             //reset form field
             self.revalidateField("reCaptchaValue");
         };
+
+        //widget size
+        let size  = typeof selector.attr("data-size") !== "undefined" ? selector.attr("data-size") : "normal";
+        let theme = typeof selector.attr("data-theme") !== "undefined" ? selector.attr("data-theme") : "light";
+
         //render reCaptcha through API call
         grecaptcha.render(APP.UI.sel_recaptcha.replace("#", ""), {
             "sitekey"  : APP.googleReCaptchaID,
+            "size"     : size,
+            "theme"    : theme,
             "callback" : callback_fn
         });
 
         //hide after x secs
         setTimeout(function() {
             //clean any previous error
-            $(APP.UI.sel_recaptcha).siblings("small").eq(0).empty();
+            selector.siblings("small").eq(0).empty();
         }, 1500);
     };
 
