@@ -67,7 +67,7 @@ trait Localize
                 "RECAPTCHA_FAILED"  => "No hemos logrado verficar el reCaptcha, porfavor inténtalo de nuevo.",
                 "ACCOUNT_NOT_FOUND" => "Esta cuenta no se encuentra registrada o no ha sido activada.",
                 "PASS_MAIL_SENT"    => "Te hemos enviado un correo a {email} para recuperar tu contraseña.",
-                "NEW_PASS_SAVED"    => "¡Tu contraseña ha sido modificada!",
+                "NEW_PASS_SAVED"    => "Tu contraseña ha sido guardada.",
                 "PASS_TOO_SHORT"    => "Debes ingresar una contraseña de al menos 8 caracteres.",
                 //text titles
                 "TITLE_RECOVERY"    => "Recupera tu contraseña",
