@@ -256,6 +256,9 @@ trait AccountAuth
         $data = $this->handleRequest(array_merge($default_params, $setting_params),
                                      "POST");
 
+        if(empty($data["email"]) || empty($data["first_name"]) || $data["last_name"])
+            $this->jsonResponse(400);
+
         //validate names
         $nums = "0123456789";
         if (strcspn($data["first_name"], $nums) != strlen($data["first_name"]) ||
