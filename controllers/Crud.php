@@ -371,7 +371,7 @@ trait Crud
 		], "POST");
 
 		//find object
-		$object_class = $this->crud_conf["entity"];
+		$object_class = AppModule::getClass($this->crud_conf["entity"]);
 		$object 	  = $object_class::getById($data["id"]);
 
 		//orm deletion
