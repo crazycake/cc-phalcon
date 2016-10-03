@@ -161,29 +161,34 @@ abstract class WebCore extends MvcCore implements WebSecurity
 
     /**
      * Dispatch to Internal Error
+     * @param string $title -  The error title message
      * @param string $message -  The human error message
      * @param string $go_back_url - A go-back link URL
      * @param string $log_error - The debug message to log
      *
      */
-    protected function internalError($message = null, $go_back_url = null, $log_error = "n/a")
+    protected function internalError($title = null, $message = null, $go_back_url = null, $log_error = "n/a")
     {
-        //dispatch to internal
+        //log error
         $this->logger->info("WebCore::internalError -> something ocurred (message: ".$message."). Error: ".$log_error);
 
         //special case for ajax
-        if ($this->request->isAjax()) {
-
+        if ($this->request->isAjax())
             $this->jsonResponse(200, $message, "error");
-        }
+
+        //set title
+        if (!is_null($title))
+            $this->view->setVar("error_title", $title);
 
         //set message
         if (!is_null($message))
             $this->view->setVar("error_message", str_replace(".", ".<br/>", $message));
 
+        //go back url
         if (!is_null($go_back_url))
             $this->view->setVar("go_back", $go_back_url);
 
+        //dispatch
         $this->dispatcher->forward(["controller" => "error", "action" => "internal"]);
         $this->dispatcher->dispatch();
     }
