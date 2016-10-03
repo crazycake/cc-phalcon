@@ -177,7 +177,7 @@ trait AccountAuth
     }
 
     /**
-     * Action - Login user by email & pass
+     * Mixed [Normal & XHR] - Login user by email & pass
      */
     public function loginAction()
     {
@@ -239,7 +239,7 @@ trait AccountAuth
     }
 
     /**
-     * Ajax - Register user by email
+     * Mixed [Normal & XHR] - Register user by email
      */
     public function registerAction()
     {
@@ -262,7 +262,7 @@ trait AccountAuth
         //validate names
         $nums = "0123456789";
         if (strcspn($data["first_name"], $nums) != strlen($data["first_name"]) ||
-           strcspn($data["last_name"], $nums) != strlen($data["last_name"])) {
+            strcspn($data["last_name"], $nums) != strlen($data["last_name"])) {
 
             $this->jsonResponse(200, $this->account_auth_conf["trans"]["INVALID_NAMES"], "alert");
         }
@@ -296,6 +296,8 @@ trait AccountAuth
      */
     public function resendActivationMailMessageAction()
     {
+        $this->onlyAjax();
+
         $data = $this->handleRequest([
             "email"                 => "email",
             "@g-recaptcha-response" => "string"
