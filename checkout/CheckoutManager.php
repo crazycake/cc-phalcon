@@ -140,7 +140,7 @@ trait CheckoutManager
      * POST Async checkout action (executes slow tasks)
      * Logic tasks:
      * 1) Update status del checkout
-     * 2) Calls user event tickets generation logic
+     * 2) Calls purchased object generation logic
      * 3) generates PDF invoice
      * 4) sends the checkout invoice email
      */
@@ -264,7 +264,6 @@ trait CheckoutManager
 
     /**
      * Skips payment, simulates success checkout
-     * Metodo parche para crear entradas a partir de un checkout generado (se salta el pago)
      * La transaccion es opcional
      * @param string $code - The security code
      * @return SQL statements
@@ -404,7 +403,7 @@ trait CheckoutManager
         //get module class name
         $user_checkout_class = AppModule::getClass("user_checkout");
 
-        //check for last used invoice email
+        //check for last used invoice email if set
         $last_checkout = $user_checkout_class::findFirst([
             "user_id = ?0",
             "order" => "local_time DESC",
