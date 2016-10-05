@@ -8,7 +8,6 @@
 import "html5shiv";
 import "fastclick";
 import "lodash";
-import "vue";
 import "bluebird";
 import "js-cookie";
 import "jquery";
