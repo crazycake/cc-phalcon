@@ -12,32 +12,6 @@ export default new function() {
     var self  = this;
     self.name = "forms";
 
-    //++ Components
-    Vue.component("birthday-selector", {
-        template: "#vue-template-birthday-selector",
-        //data must be a function
-        data : function () {
-            return {
-                day   : "",
-                month : "",
-                year  : ""
-            };
-        },
-        methods : {
-            flashBirthdayValues : function () {
-                this.day   = "";
-                this.month = "";
-                this.year  = "";
-            }
-        },
-        computed : {
-            birthdayValue : function () {
-
-                return this.year + "-" + this.month + "-" + this.day;
-            }
-        }
-    });
-
     //++ UI Selectors
 	_.assign(APP.UI, {
         sel_recaptcha : "#app-recaptcha"
