@@ -61,14 +61,6 @@ export default new function() {
         cache : true  //improvement for third-party libs like Facebook.
     });
 
-
-    //++ Vue setup
-
-    if(!APP.dev) {
-        Vue.config.debug  = false;
-        Vue.config.silent = true;
-    }
-
     //++ Methods ++
 
     /**
@@ -226,6 +218,11 @@ export default new function() {
             if (APP.dev) { console.log("Core -> Binding " + mod_name + " View Model", mod.vm); }
 
             //set new Vue instance (object prop updated)
+            if(typeof Vue == "undefined") {
+                console.warn("Core -> Vue has not loaded!");
+                return;
+            }
+
             mod.vm = new Vue(mod.vm);
         }
     };
