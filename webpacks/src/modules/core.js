@@ -1,6 +1,5 @@
 /**
  * Core: main app module.
- * Dependencies: `jQuery.js`, `VueJs`, `q.js`, `lodash.js`.
  * Required scope vars: `{APP, UA}`.
  * Frontend Framework supported: `Foundation 6`, `Bootstrap 4`
  * @class Core
@@ -217,12 +216,12 @@ export default new function() {
 
             if (APP.dev) { console.log("Core -> Binding " + mod_name + " View Model", mod.vm); }
 
-            //set new Vue instance (object prop updated)
-            if(typeof Vue == "undefined") {
+            if(typeof Vue === "undefined") {
                 console.warn("Core -> Vue has not loaded!");
                 return;
             }
 
+            //set new Vue instance (object prop updated)
             mod.vm = new Vue(mod.vm);
         }
     };

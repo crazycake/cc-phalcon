@@ -1,6 +1,5 @@
 /**
  * App Core UI
- * Dependencies: `jQuery.js`, `VueJs`, `q.js`, `lodash.js`.
  * Required scope vars: `{APP, UA}`.
  * @class Core.UI
  */
