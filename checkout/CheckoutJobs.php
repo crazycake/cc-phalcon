@@ -27,7 +27,7 @@ trait CheckoutJobs
      * Redis cache key to store Dollar day value to CLP currency
      * @var string
      */
-    private static $CACHE_KEY_USD_CLP_VALUE = "USD_CLP";
+    private static $CACHE_KEY_USD_CLP_VALUE = "CHECKOUT_CURRENCY_USD_CLP";
 
     /** ------------------------------------------- § ------------------------------------------------ **/
 
@@ -107,7 +107,7 @@ trait CheckoutJobs
 
         //fallback
         if (empty($value))
-            throw new Exception("Invalid value stored in cache. Run CLI to store value");
+            throw new Exception("Invalid chilean currency value stored in Redis. Run CLI to store value");
 
         //apply conversion
         return number_format((float)($amount / $value), 2, '.', '');
