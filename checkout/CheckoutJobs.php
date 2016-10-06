@@ -11,6 +11,7 @@ use Phalcon\Exception;
 //core
 use CrazyCake\Phalcon\AppModule;
 use CrazyCake\Services\Redis;
+use Carbon\Carbon;
 
 /**
  * Checkout Jobs for CLI
@@ -24,10 +25,10 @@ trait CheckoutJobs
     private static $API_URL_CLP_CURRENCY = "http://www.mindicador.cl/";
 
     /**
-     * Redis cache key to store Dollar day value to CLP currency
+     * Redis key to store Dollar day value to CLP currency
      * @var string
      */
-    private static $CACHE_KEY_USD_CLP_VALUE = "CHECKOUT_CURRENCY_USD_CLP";
+    private static $REDIS_KEY_USD_CLP_VALUE = "CHECKOUT_CURRENCY_USD_CLP";
 
     /** ------------------------------------------- § ------------------------------------------------ **/
 
@@ -37,7 +38,7 @@ trait CheckoutJobs
     protected function initCheckoutJobs()
     {
         $this->colorize("userCheckoutCleaner: Cleans expired user checkouts", "WARNING");
-        $this->colorize("storeDollarChileanPesoValue: API request & stores in cache dollar CLP conversion value", "WARNING");
+        $this->colorize("storeDollarChileanPesoValue: API request & stores dollar CLP conversion value in Redis.", "WARNING");
     }
 
     /**
@@ -81,9 +82,9 @@ trait CheckoutJobs
             $redis = new Redis();
 
             //set key
-            $redis->set(self::$CACHE_KEY_USD_CLP_VALUE, $value);
+            $redis->set(self::$REDIS_KEY_USD_CLP_VALUE, $value);
 
-            $output = "[".date("d-m-Y H:i:s")."] storeDollarChileanPesoValue -> Stored value '$value' in redis cache. \n";
+            $output = "[".date("d-m-Y H:i:s")."] storeDollarChileanPesoValue -> Stored value '$value' in Redis. \n";
             //print output
             $this->output($output);
         }
@@ -103,7 +104,7 @@ trait CheckoutJobs
         //redis service
         $redis = new Redis();
 
-        $value = $redis->get(self::$CACHE_KEY_USD_CLP_VALUE);
+        $value = $redis->get(self::$REDIS_KEY_USD_CLP_VALUE);
 
         //fallback
         if (empty($value))
@@ -122,8 +123,13 @@ trait CheckoutJobs
      */
     private function _apiChileanCurrencyRequest($indicator = "dolar")
     {
+        //subtract now 12 hours
+        $date = (new Carbon())->subHours(12);
+
         //get dollar value for today
-        $api_url = self::$API_URL_CLP_CURRENCY."api/$indicator/".date("d-m-Y");
+        $api_url = self::$API_URL_CLP_CURRENCY."api/$indicator/".$date->format("d-m-Y");
+        //print output
+        $this->colorize("Requesting: ".$api_url);
 
         //try both approaches
         if (ini_get("allow_url_fopen")) {
@@ -150,6 +156,10 @@ trait CheckoutJobs
         if (!isset($indicator->valor))
             throw new Exception("Missing 'valor' property for parsed JSON object: ".json_encode($data));
 
-        return  (float)($indicator->valor);
+        $value = (float)($indicator->valor);
+
+        $this->colorize("Saving value in Redis: ".$value);
+
+        return $value;
     }
 }
