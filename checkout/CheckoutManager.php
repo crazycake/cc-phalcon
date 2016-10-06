@@ -50,30 +50,6 @@ trait CheckoutManager
         $this->checkout_manager_conf = $conf;
     }
 
-    /**
-     * Phalcon Initializer Event
-     */
-    protected function initialize()
-    {
-        parent::initialize();
-
-        //handle loggedIn exception
-        if ($this->router->getActionName() == "successCheckoutTask")
-            return;
-
-        //if not logged in
-        if (!$this->isLoggedIn()) {
-
-            //set a flash message for non authenticated users
-            $this->flash->notice($this->checkout_manager_conf["trans"]["NOTICE_AUTH"]);
-            //if not logged In, set this URI to redirected after logIn
-            $this->setRedirectionOnLoggedIn();
-        }
-
-        //handle response, dispatch to auth/logout
-        $this->requireLoggedIn();
-    }
-
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
