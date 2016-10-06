@@ -381,68 +381,6 @@ trait CheckoutManager
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
-     * Loads common setup for checkout view.
-     * This are used for HTML bindings
-     * @param string $type - The checkout type, example: paid, free, etc.
-     * @param array $categories - The categories array
-     * @param array $collections - The objects collection association array (key is objectType)
-     * @param object $view - The checkout view class
-     */
-    protected function setupCheckoutView($type = "", $categories = [], $collections = [], $view = "default")
-    {
-        //default inputs for checkout
-        $inputs = [
-            "gateway"    => "", //checkout gateway name
-            "buy_order"  => "", //checkout buy order
-            "categories" => implode(",", $categories) //checkout categories as string
-        ];
-
-        //set default max checkout number
-        $checkoutMax = ($type != "paid") ? 1 : $this->checkout_manager_conf["max_per_item_allowed"];
-
-        //get module class name
-        $user_checkout_class = AppModule::getClass("user_checkout");
-
-        //check for last used invoice email if set
-        $last_checkout = $user_checkout_class::findFirst([
-            "user_id = ?0",
-            "order" => "local_time DESC",
-            "bind"  => [$this->user_session["id"]]
-        ]);
-
-        //set invoice
-        $last_invoice_email = $last_checkout ? $last_checkout->invoice_email : "";
-        $invoice_email      = empty($last_invoice_email) ? $this->user_session["email"] : $last_invoice_email;
-
-        //pass data to view
-        $this->view->setVars([
-            //disallow robots for this page
-            "html_disallow_robots" => true,
-            //checkout vars
-            "invoice_email"   => $invoice_email,
-            "checkout_inputs" => $inputs,
-            "objects_classes" => array_keys($collections)
-        ]);
-
-        //load JS modules
-        $js_modules = $this->checkout_manager_conf["js_modules"];
-
-        $this->loadJsModules(array_merge([
-                "$js_modules[0]" => [
-                    "checkout_type" => $type,
-                    "checkout_max"  => $checkoutMax,
-                    "collections"   => $collections,
-                ]
-            ],
-            //merge with array
-            count($js_modules) > 1 ? array_slice($js_modules, 1) : []
-        ));
-
-        //pick view
-        $this->view->pick("checkout/$view");
-    }
-
-    /**
      * Parses the checkout POST params
      * @return object
      */
