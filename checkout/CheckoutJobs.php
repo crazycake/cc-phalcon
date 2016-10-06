@@ -62,7 +62,7 @@ trait CheckoutJobs
     }
 
     /**
-     * CLI - Saves in cache CLP - USD value conversion
+     * CLI - Saves in Redis currency CLP - USD value conversion
      */
     public function storeDollarChileanPesoValueAction()
     {
