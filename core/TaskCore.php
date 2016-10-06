@@ -32,7 +32,7 @@ class TaskCore extends Task
         $this->colorize("Usage: \ncli.php main [param]", "OK");
         $this->colorize("--------------------", "NOTE");
         $this->colorize("appConfig: Outputs app configuration in JSON format", "WARNING");
-        $this->colorize("getCache [key]: Gets stored data in Cache (Redis)", "WARNING");
+        $this->colorize("getRedisKey [key]: Gets stored value in Redis.", "WARNING");
     }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
@@ -59,10 +59,10 @@ class TaskCore extends Task
     }
 
     /**
-     * Gets cached data set by Cacher library.
+     * Gets cached data in Redis.
      * @param array $args - The input params
      */
-    public function getCacheAction($args = [])
+    public function getRedisKeyAction($args = [])
     {
         if (empty($args))
             $this->colorize("Empty key argument", "ERROR", true);
