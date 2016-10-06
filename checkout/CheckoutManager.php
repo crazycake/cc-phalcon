@@ -33,12 +33,6 @@ trait CheckoutManager
     abstract public function onSuccessCheckoutTaskComplete($user_id, &$checkout);
 
     /**
-     * Listener - On skipped payment [testing]
-     * @param object $checkout - The checkout object
-     */
-    abstract public function onSkippedPayment(&$checkout);
-
-    /**
      * Config var
      * @var array
      */
@@ -260,48 +254,6 @@ trait CheckoutManager
             $user_checkout_class::updateState($checkout->buy_order, "failed");
 
         return true;
-    }
-
-    /**
-     * Skips payment, simulates success checkout
-     * La transaccion es opcional
-     * @param string $code - The security code
-     * @return SQL statements
-     */
-    public function skipPaymentAction($code = "")
-    {
-        //get module class name
-        $user_checkout_class = AppModule::getClass("user_checkout");
-
-        //instance cache lib and get data
-        $checkout = $user_checkout_class::getLast($this->user_session["id"]);
-
-        if (!$checkout || $checkout->state != "pending")
-            die("No pending checkout found for user id:".$this->user_session["id"]);
-
-        //basic security
-        $hashed_key = sha1($checkout->buy_order."_".$this->config->app->cryptKey);
-
-        if (APP_ENVIRONMENT != "local" && $code !== $hashed_key)
-            return $this->redirectToNotFound();
-
-        //discard ORM props
-        $checkout = $checkout->reduce();
-        //append custom comment
-        $this->onSkippedPayment($checkout);
-        //log
-        $this->logger->debug("CheckoutManager::skipPaymentAction -> Skipped payment for userId: ".$checkout->user_id.", BO: ".$checkout->buy_order);
-        //call succes checkout
-        $this->successCheckout($checkout);
-
-        //set flash message
-        $this->flash->success($this->checkout_manager_conf["trans"]["SUCCESS_CHECKOUT"]);
-
-        //redirect
-        if (!$this->checkout_manager_conf["debug"])
-            $this->redirectTo("account");
-        else
-            echo "CheckoutManager::Config Debug Mode is On...";
     }
 
     /**
