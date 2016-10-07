@@ -73,7 +73,6 @@ const app_paths = {
     assets   : "./" + app_module + "/public/assets/",
     sass     : "./" + app_module + "/dev/scss/",
     js       : "./" + app_module + "/dev/js/",
-    vue      : "./" + app_module + "/dev/vue/",
     volt     : "./" + app_module + "/dev/volt/",
     mailing  : "./" + app_module + "/dev/mailing/",
     webpack  : "./" + core_path  + "js/webpack_core.bundle.min.js"
