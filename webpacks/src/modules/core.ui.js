@@ -27,7 +27,6 @@ export default new function() {
         sel_tooltips       : '[data-toggle="tooltip"]',
         //uris
         img_asset_fallback : "images/icons/icon-image-fallback.png",
-        img_asset_loading  : "images/icons/icon-loading1.gif",
         //setting vars
         alert              : { position : "fixed", top : "5%", top_small : "0", live_time : 8000 },
         loading            : { position : "fixed", top : "25%", top_small : "25%" },
