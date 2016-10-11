@@ -338,6 +338,12 @@ export default new function() {
             //set true value if payload is null
             return _.isNull(payload) ? true : payload;
         })
+        .catch(e => {
+
+            if(APP.dev) { console.log("Core -> [WARN] promise exception", e); }
+
+            //throw e;
+        })
         //promise finisher
         .finally(function() {
 
