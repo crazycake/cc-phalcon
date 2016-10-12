@@ -82,7 +82,7 @@ build)
 # search and generate pot files
 find)
 
-	echo -e "\033[94mSearching for keyword 'trans' in project files...  \033[0m"
+	echo -e "\033[95mSearching for keyword 'trans' in project files...  \033[0m"
 
 	# find files (exclude some folders)
 	find $APP_CORE_PATH $APP_PATH $APP_VIEWS_CACHE_PATH -type f -name '*.php' > $TEMP_FILE
