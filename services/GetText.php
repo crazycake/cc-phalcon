@@ -45,19 +45,17 @@ class GetText extends GetTextAdapter
             die("GetText Lib -> Invalid options: directory, domain & supported options are required.");
 
         //set class properties
-        $this->default_locale  = (php_uname("s") == "Darwin") ? "en_US.UTF-8" : "en_US.utf8"; //OSX or Ubuntu
+        $this->default_locale  = php_uname("s") == "Darwin" ? "en_US.UTF-8" : "en_US.utf8"; //OSX or Ubuntu
         $this->supported_langs = $options["supported"];
+        $this->current_lang    = substr($this->default_locale, 0, 2);
 
         //call parent constructor
         parent::__construct([
-            "locale"        => $this->default_locale,
+            "locale"        => $this->current_lang,
             "defaultDomain" => $options["domain"],
             "directory"     => $options["directory"],
             "category"      => LC_MESSAGES
         ]);
-
-        //set language
-        $this->setLanguage();
     }
 
     /**
@@ -65,23 +63,17 @@ class GetText extends GetTextAdapter
      * @param string $new_lang - The new language
      * @return void
      */
-    public function setLanguage($new_lang = null)
+    public function setLanguage($lang = "")
     {
-        //validate new language
-        if (is_null($new_lang)) {
-            $this->current_lang = substr($this->default_locale, 0, 2);
-        }
-        else {
-            $new_lang = trim(strtolower($new_lang));
-            $new_lang = substr($new_lang, 0, 2);
+        //validate language
+        $lang = substr(trim(strtolower($lang)), 0, 2);
 
-            if (!in_array($new_lang, $this->supported_langs))
-                $new_lang = substr($this->default_locale, 0, 2);
+        if (!in_array($lang, $this->supported_langs))
+            $lang = substr($this->default_locale, 0, 2);
 
-            //set new lang
-            $this->current_lang = $new_lang;
-        }
-        //sd("CrazyCake GetText (setLanguage) -> ". $this->current_lang ."\n" );
+        //set new lang
+        $this->current_lang = $lang;
+        //sd($this->getDefaultDomain(), $this->getCategory(), $this->getDirectory(), $this->current_lang);
 
         //set environment vars
         $this->setLocale(LC_ALL, $this->current_lang);
