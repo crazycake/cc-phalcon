@@ -15,6 +15,7 @@ APP_NAMESPACE="$(echo "$APP_NAME" | tr '[:upper:]' '[:lower:]')"
 
 # cc-phalcon directory
 APP_CORE_PATH=$PROJECT_PATH"/core/cc-phalcon/"
+APP_VIEWS_CACHE_PATH=$PROJECT_PATH"/storage/cache/"
 
 # translation filenames
 MO_FILE=$APP_NAMESPACE".mo"
@@ -81,10 +82,10 @@ build)
 # search and generate pot files
 find)
 
-	echo -e "\033[94mSearching for PHP files in $APP_PATH  \033[0m"
+	echo -e "\033[94mSearching for keyword 'trans' in project files...  \033[0m"
 
 	# find files (exclude some folders)
-	find $APP_PATH $APP_CORE_PATH -type f -name '*.php' > $TEMP_FILE
+	find $APP_CORE_PATH $APP_PATH $APP_VIEWS_CACHE_PATH -type f -name '*.php' > $TEMP_FILE
 
 	# generate pot file with xgettext
 	xgettext -o $APP_LANGS_PATH"trans.pot" \
