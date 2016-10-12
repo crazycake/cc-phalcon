@@ -108,10 +108,10 @@ find)
 
 		if [ -f "$CODE".po ]; then
 			echo -e "\033[94mUpdating new entries for lang code: $CODE  \033[0m"
-			sudo msgmerge -U "$CODE".po ../trans.pot
+			msgmerge -U "$CODE".po ../trans.pot
 		else
 			echo -e "\033[94mGenerating new entries for lang code: $CODE  \033[0m"
-			sudo msginit -i ../trans.pot --no-translator -l "$CODE"
+			msginit -i ../trans.pot --no-translator -l "$CODE"
 		fi
 	done
 
