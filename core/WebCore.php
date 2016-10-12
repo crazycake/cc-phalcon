@@ -260,20 +260,27 @@ abstract class WebCore extends MvcCore implements WebSecurity
      */
     private function _setLanguage()
     {
-        if(is_null($this->trans)) {
+        //get langs config (set by AppModule)
+        $langs = (array)$this->config->app->langs;
 
-            $this->client->lang = $this->request->getBestLanguage();
-            return;
+        //Set default lang if only one available
+        if (count($langs) == 1) {
+            $lang = $langs[0];
+        }
+        else {
+
+            //load lang from session?
+            if($this->session->has("lang"))
+                $lang = $this->session->get("lang");
+            else
+                $lang = $this->request->getBestLanguage();
         }
 
-        //TODO: onSetLanguage event
-        if (count($this->config->app->langs) > 1)
-            $this->trans->setLanguage($this->request->getBestLanguage());
-        else
-            $this->trans->setLanguage($this->config->app->langs[0]);
-
         //set client language
-        $this->client->lang = $this->trans->getLanguage();
+        $this->client->lang = $lang;
+        //set translation service
+        if(!is_null($this->trans))
+            $this->trans->setLanguage($lang);
     }
 
     /**
