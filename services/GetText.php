@@ -19,6 +19,7 @@ class GetText extends GetTextAdapter
     const LOCALES = [
         "en" => "en_US.utf8",
         "es" => "es_ES.utf8",
+        "zh" => "zh_CN.utf8"
     ];
 
     /**
@@ -81,8 +82,14 @@ class GetText extends GetTextAdapter
         $this->current_lang = $lang;
         //sd($this->getDefaultDomain(), $this->getCategory(), $this->getDirectory(), $this->current_lang);
 
+        $locale = self::LOCALES[$lang];
+
+        //caso especial OSX
+        if(php_uname("s") == "Darwin")
+            $locale = str_replace("utf8", "UTF-8", $locale);
+
         //set environment vars
-        $this->setLocale(LC_ALL, self::LOCALES[$lang]);
+        $this->setLocale(LC_ALL, $locale);
     }
 
     /**
