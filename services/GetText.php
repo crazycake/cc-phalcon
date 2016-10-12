@@ -81,7 +81,7 @@ class GetText extends GetTextAdapter
             //set new lang
             $this->current_lang = $new_lang;
         }
-        //print_r("CrazyCake GetText (setLanguage) -> ". $this->current_lang ."\n" );
+        //sd("CrazyCake GetText (setLanguage) -> ". $this->current_lang ."\n" );
 
         //set environment vars
         $this->setLocale(LC_ALL, $this->current_lang);

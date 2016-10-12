@@ -29,8 +29,8 @@ fi
 # help output
 scriptHelp() {
 	echo -e "\033[93m WebApp Translations Script\nValid actions:\033[0m"
-	echo -e "\033[95m build <module> : build po files in app folder. \033[0m"
-    echo -e "\033[95m find <module> : Find for new translations in app folder. \033[0m"
+	echo -e "\033[95m build <module>: build po files in app folder. \033[0m"
+    echo -e "\033[95m find <module>: Find for new translations in app folder. \033[0m"
 	echo -e "\033[93m * Module option can be '-b' or '-f' (backend or frontend). \033[0m"
 	exit
 }
