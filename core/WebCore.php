@@ -265,7 +265,7 @@ abstract class WebCore extends MvcCore implements WebSecurity
 
         //Set default lang if only one available
         if (count($langs) == 1) {
-            $lang = $langs[0];
+            $lang = current($langs);
         }
         else {
 
