@@ -12,7 +12,7 @@ use CrazyCake\Helpers\Dates;
 use CrazyCake\Helpers\Forms;
 
 /**
- * Base Tickets Model
+ * BaseUserCheckoutTrx Model
  */
 class BaseUserCheckoutTrx extends \CrazyCake\Models\Base
 {

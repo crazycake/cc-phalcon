@@ -84,7 +84,7 @@ abstract class BaseUser extends \CrazyCake\Models\Base
      */
     public function afterFetch()
     {
-        //hashed ticket id?
+        //hash user id
         if (isset($this->id))
             $this->id_hashed = $this->getDI()->getShared("cryptify")->encryptHashId($this->id);
     }
