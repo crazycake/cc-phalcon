@@ -108,7 +108,7 @@ trait Mailer
 
         //get user token
         $tokens_class = $this->mailer_conf["user_token_entity"];
-        $token = $tokens_class::newTokenIfExpired($user_id, "activation");
+        $token        = $tokens_class::newTokenIfExpired($user_id, "activation");
 
         if (!$token)
             $this->jsonResponse(500);
@@ -137,7 +137,7 @@ trait Mailer
     public function passwordRecovery($user_id)
     {
         $user_class = $this->mailer_conf["user_entity"];
-        $user = $user_class::getById($user_id);
+        $user       = $user_class::getById($user_id);
 
         //if invalid user, send permission denied response
         if (!$user)
