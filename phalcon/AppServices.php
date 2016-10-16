@@ -187,19 +187,24 @@ class AppServices
      */
     private function _setDatabaseService(&$di, $adapter = "mysql")
     {
-        if ($adapter != "mysql")
-            throw new Exception("AppServices::setDatabaseService -> this adapter has not implemented yet :(");
+        if ($adapter !== "mysql")
+            throw new Exception("AppServices::setDatabaseService -> the adapter $adapter has not implemented yet.");
 
         //Database connection is created based in the parameters defined in the configuration file
         $di->setShared("db", function() {
 
-            return new \Phalcon\Db\Adapter\Pdo\Mysql([
+            //set conf
+            $db_conf = [
                 "host"     => getenv("DB_HOST"),
-                "username" => getenv("DB_USERNAME"),
-                "password" => getenv("DB_PASSWORD"),
-                "dbname"   => "app",
-                "options"  => [\PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"] //force utf8-charset
-            ]);
+                "username" => getenv("DB_USER"),
+                "password" => getenv("DB_PASS"),
+                "dbname"   => getenv("DB_NAME")
+            ];
+            //sd($db_conf);
+
+            return new \Phalcon\Db\Adapter\Pdo\Mysql(array_merge($db_conf, [
+                "options" => [\PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"] //force utf8-charset
+            ]));
         });
     }
 

@@ -45,10 +45,6 @@ class TaskCore extends Task
     {
         $conf = $this->config;
 
-        //protect env vars
-        if (isset($conf->database))
-            unset($conf->database);
-
         if (empty($args))
             $this->output($conf, true);
 
