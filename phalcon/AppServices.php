@@ -194,10 +194,10 @@ class AppServices
         $di->setShared("db", function() {
 
             return new \Phalcon\Db\Adapter\Pdo\Mysql([
-                "host"     => $this->config->database["host"],
-                "username" => $this->config->database["username"],
-                "password" => $this->config->database["password"],
-                "dbname"   => $this->config->database["dbname"],
+                "host"     => getenv("DB_HOST"),
+                "username" => getenv("DB_USERNAME"),
+                "password" => getenv("DB_PASSWORD"),
+                "dbname"   => "app",
                 "options"  => [\PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"] //force utf8-charset
             ]);
         });

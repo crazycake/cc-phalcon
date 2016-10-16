@@ -49,8 +49,6 @@ abstract class App extends AppModule implements AppLoader
      */
     public function setDI()
     {
-        //set dabase configs
-        $this->_databaseSetup();
         //set DI services (requires composer)
         $this->_setServices();
     }
@@ -206,24 +204,6 @@ abstract class App extends AppModule implements AppLoader
         //get DI preset services for module
         $services = new AppServices($this);
         $this->di = $services->getDI();
-    }
-
-    /**
-     * Set Database configurations
-     * @access private
-     */
-    private function _databaseSetup()
-    {
-        if (empty(getenv("DB_HOST")))
-            throw new Exception("App::_databaseSetup -> DB environment is not set.");
-
-        //set database config
-        $this->app_conf["database"] = [
-            "host"      => getenv("DB_HOST"),
-            "username"  => getenv("DB_USER"),
-            "password"  => getenv("DB_PASS"),
-            "dbname"    => getenv("DB_NAME")
-        ];
     }
 
     /**
