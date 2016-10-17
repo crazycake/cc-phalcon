@@ -193,18 +193,28 @@ class AppServices
         //Database connection is created based in the parameters defined in the configuration file
         $di->setShared("db", function() {
 
-            //running from docker?
-            $docker_host = getenv("MYSQL_PORT_3306_TCP_ADDR") ?: false;
-            $docker_port = getenv("MYSQL_PORT_3306_TCP_PORT") ?: false;
+            //.env file has priority
+			if(getenv("DB_HOST")) {
 
-            //set conf
-            $db_conf = [
-                "host"     => $docker_host ?: getenv("DB_HOST"),
-                "dbname"   => $docker_host ? "app" : getenv("DB_NAME"),
-                "username" => $docker_host ? "root" : getenv("DB_USER"),
-                "password" => $docker_host ? "dev" : getenv("DB_PASS"),
-                "port"     => $docker_port ?: 3306
-            ];
+	            $db_conf = [
+	                "host"     => getenv("DB_HOST"),
+	                "port"     => 3306,
+	                "dbname"   => getenv("DB_NAME"),
+	                "username" => getenv("DB_USER"),
+	                "password" => getenv("DB_PASS")
+	            ];
+			}
+			//DOCKER
+			else {
+
+	            $db_conf = [
+	                "host"     => getenv("MYSQL_PORT_3306_TCP_ADDR"),
+	                "port"     => getenv("MYSQL_PORT_3306_TCP_PORT"),
+	                "dbname"   => "app",
+	                "username" => "root",
+	                "password" => "dev"
+	            ];
+			}
             //sd($db_conf);
 
             return new \Phalcon\Db\Adapter\Pdo\Mysql(array_merge($db_conf, [
