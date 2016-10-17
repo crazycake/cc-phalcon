@@ -193,12 +193,17 @@ class AppServices
         //Database connection is created based in the parameters defined in the configuration file
         $di->setShared("db", function() {
 
+            //running from docker?
+            $docker_host = getenv("MYSQL_PORT_3306_TCP_ADDR") ?: false;
+            $docker_port = getenv("MYSQL_PORT_3306_TCP_PORT") ?: false;
+
             //set conf
             $db_conf = [
-                "host"     => getenv("DB_HOST"),
-                "username" => getenv("DB_USER"),
-                "password" => getenv("DB_PASS"),
-                "dbname"   => getenv("DB_NAME")
+                "host"     => $docker_host ?: getenv("DB_HOST"),
+                "dbname"   => $docker_host ? "app" : getenv("DB_NAME"),
+                "username" => $docker_host ? "root" : getenv("DB_USER"),
+                "password" => $docker_host ? "dev" : getenv("DB_PASS"),
+                "port"     => $docker_port ?: 3306
             ];
             //sd($db_conf);
 
