@@ -254,7 +254,7 @@ export default new function() {
      * @param  {Object} form - The form HTML object
      * @param  {Object} extended_data - An object to be extended as sending data (optional)
      * @param  {Object} events - Event handler object
-     * @return {Object} Q promise
+     * @return {Object} promise
      */
     self.ajaxRequest = function(request = null, form = null, extended_data = null, events = null) {
 
@@ -275,7 +275,7 @@ export default new function() {
 
             //validate abide form
             if (!self.modules.forms.isValid(form))
-                return Promise.resolve();
+                return P.resolve();
 
             //serialize data to URL encoding
             payload = form.serializeArray();
@@ -321,7 +321,7 @@ export default new function() {
         if(APP.dev) { console.log("Core -> new promise request with payload:", payload); }
 
         //make ajax request with promises
-        return Promise.resolve(
+        return P.resolve(
             $.ajax(options)
             //handle fail event for jQuery ajax request
             .fail(self.handleAjaxError)

@@ -51,7 +51,7 @@
     "lodash": "./node_modules/lodash/lodash.js"
   },
   "browserify-shim": {
-    "bluebird": "Promise",
+    "bluebird": "P",
     "fg-loadcss": "loadCSS",
     "jquery": "jQuery",
     "js-cookie": "Cookies",
