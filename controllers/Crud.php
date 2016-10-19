@@ -217,6 +217,8 @@ trait Crud
 				//append other condition
 				$query->orWhere($condition);
 			}
+			//group results
+			$query->groupBy($this->_fieldToPhql("id"));
 		}
 
 		//inner joins
