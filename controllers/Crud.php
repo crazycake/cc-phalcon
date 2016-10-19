@@ -410,20 +410,20 @@ trait Crud
 		//two or more levels
 		$entities = array_slice($entities, count($entities) - 2);
 
-		$class_name = \Phalcon\Text::camelize(current($entities));
-
 		//check for any alias
-		$alias = explode("_", current($entities));
+		$class_name = \Phalcon\Text::camelize(current($entities));
+		$alias 		= explode("_", current($entities));
 		//hadle struct for aliases
 		if(count($alias) > 1)
 			$class_name = \Phalcon\Text::camelize(current($alias))."@".current($entities);
 
 		//new join?
-		if(!in_array($class_name, $this->crud_conf["joins"]))
+		if(!in_array($class_name, $this->crud_conf["joins"])) {
 			$this->crud_conf["joins"][] = $class_name;
+		}
 
 		//syntax is always table.field
-		$field = $class_name.".".end($entities);
+		$field = \Phalcon\Text::camelize(current($entities)).".".end($entities);
 
 		return $field;
 	}
