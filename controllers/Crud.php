@@ -188,13 +188,14 @@ trait Crud
 		$this->crud_conf["joins"] = [];
 
 		//default order
-		$query->order($this->_handleBuilderSyntax($query, "id DESC"));
+		$query->order($this->_fieldToPhql("id")." DESC");
 
 		if(!empty($data["sort"])) {
 			//parse sort data from js
-			$syntax = str_replace("|", " ", $data["sort"]);
+			$sort  = explode("|", $data["sort"], 2);
+			$order = $this->_fieldToPhql($sort[0])." ".$sort[1];
 			//set order
-			$query->order($this->_handleBuilderSyntax($query, $syntax));
+			$query->order($order);
 		}
 
 		//filter param for search
@@ -206,8 +207,7 @@ trait Crud
 			//loop through search fields
 			foreach ($search_fields as $index => $fname) {
 
-				$syntax    = "$fname LIKE '%".$data["filter"]."%'";
-				$condition = $this->_handleBuilderSyntax($query, $syntax);
+				$condition = $this->_fieldToPhql($fname)." LIKE '%".$data["filter"]."%'";
 
 				//1st condition
 				if(empty($index)) {
@@ -391,35 +391,39 @@ trait Crud
 	/**
 	 * Handles builder syntax (active record)
 	 * Also push joins relations in array if query will need them
-	 * @param object $query  - The query builder object
-	 * @param string $syntax - Any query syntax.
+	 * @param string $field - Any field name.
 	 */
-	private function _handleBuilderSyntax(&$query, $syntax = "")
+	private function _fieldToPhql($field = "")
 	{
-		$class_name = AppModule::getClass($this->crud_conf["entity"], false);
-		$prefix     = $class_name.".";
-		$entities   = explode(".", $syntax);
+		$entities = explode(".", $field);
 
-		//cross data entity?
-		if(count($entities) < 2)
-			return $prefix.$syntax;
+		//one level relation
+		if(count($entities) < 2) {
 
-		//prepare join data
-		$model = \Phalcon\Text::camelize($entities[0]);
+			$class_name = AppModule::getClass($this->crud_conf["entity"], false);
+
+			return $class_name.".".$field;
+		}
+
+		//two or more levels
+		$entities = array_slice($entities, count($entities) - 2);
+
+		$class_name = \Phalcon\Text::camelize(current($entities));
 
 		//check for any alias
-		$alias = explode("_", $entities[0]);
-		//struct for alias
+		$alias = explode("_", current($entities));
+		//hadle struct for aliases
 		if(count($alias) > 1)
-			$model = \Phalcon\Text::camelize($alias[0])."@".$entities[0];
+			$class_name = \Phalcon\Text::camelize(current($alias))."@".current($entities);
 
-		if(!in_array($model, $this->crud_conf["joins"]))
-			$this->crud_conf["joins"][] = $model;
+		//new join?
+		if(!in_array($class_name, $this->crud_conf["joins"]))
+			$this->crud_conf["joins"][] = $class_name;
 
-		//caso especial para inner joins
-		$syntax = \Phalcon\Text::camelize($syntax);
+		//syntax is always table.field
+		$field = $class_name.".".end($entities);
 
-		return $syntax;
+		return $field;
 	}
 
 	/**
