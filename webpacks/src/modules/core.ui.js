@@ -571,19 +571,6 @@ export default new function() {
         return new_url;
     };
 
-	/**
-	 * Checks if an image is already cached
-	 * @param  {String} src - The source image path
-	 * @return {Boolean}
-	 */
-	self.isImageCached = function(src = "") {
-
-		let img = new Image();
-	    img.src = src;
-
-	    return img.complete;
-	};
-
     /**
      * Load Bootstrap tooltips
      */
