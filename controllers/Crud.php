@@ -37,6 +37,12 @@ trait Crud
     abstract protected function onAfterSave(&$data, $action);
 
 	/**
+     * On Query
+     * @param object $query - The Query object
+     */
+    abstract protected function onQuery(&$query);
+
+	/**
      * On list resultset
      * @param object $resultset - Phalcon DB resultset
      */
@@ -184,18 +190,16 @@ trait Crud
 		if(isset($this->crud_conf["find"]))
 			$query->conditions = $this->crud_conf["find"];
 
-		//joins handler
-		$this->crud_conf["joins"] = [];
-
 		//default order
 		$query->order($this->_fieldToPhql("id")." DESC");
 
 		if(!empty($data["sort"])) {
 			//parse sort data from js
 			$sort  = explode("|", $data["sort"], 2);
-			$order = $this->_fieldToPhql($sort[0])." ".$sort[1];
+			$order = $this->_fieldToPhql($sort[0])." ".strtoupper($sort[1]);
 			//set order
 			$query->order($order);
+			//sd($order);
 		}
 
 		//filter param for search
@@ -208,7 +212,7 @@ trait Crud
 			foreach ($search_fields as $index => $fname) {
 
 				$condition = $this->_fieldToPhql($fname)." LIKE '%".$data["filter"]."%'";
-
+				//s($condition);
 				//1st condition
 				if(empty($index)) {
 					$query->where($condition);
@@ -217,47 +221,30 @@ trait Crud
 				//append other condition
 				$query->orWhere($condition);
 			}
-			//group results
-			$query->groupBy($this->_fieldToPhql("id"));
 		}
 
-		//inner joins
-		foreach ($this->crud_conf["joins"] as $join) {
+		//group results
+		$query->groupBy($this->_fieldToPhql("id"));
 
-			//check for an alias
-			$namespace = explode("@", $join);
-			$model 	   = $namespace[0];
-
-			if(count($namespace) > 1) {
-
-				$alias  	 = $namespace[1];
-				$alias_camel = \Phalcon\Text::camelize($alias);
-				//set join
-				$query->join($model, "$alias_camel.id = $class_name.".$alias."_id", $alias_camel);
-			}
-			else {
-				$query->join($model);
-			}
-		}
-
+		//listerner, on query
+		$this->onQuery($query);
 		//get pagination response
-		$response = $this->_getPaginationData($query, $data);
-
+		$result = $this->_getPaginationData($query, $data);
 		//listener
-		$this->onListResultset($response->data);
+		$this->onListResultset($result->data);
 
 		//parse data array
-		if($response->data instanceof Resultset) {
+		if($result->data instanceof Resultset) {
 
 	        $objects = [];
-	        foreach ($response->data as $obj)
+	        foreach ($result->data as $obj)
 	            $objects[] = $obj->toArray();
 
-	         $response->data = $objects;
+	         $result->data = $objects;
 		}
 
 		//output json response
-		$this->outputJsonResponse($response);
+		$this->outputJsonResponse($result);
     }
 
     /**
@@ -397,10 +384,10 @@ trait Crud
 	 */
 	private function _fieldToPhql($field = "")
 	{
-		$entities = explode(".", $field);
+		$namespaces = explode(".", $field);
 
 		//one level relation
-		if(count($entities) < 2) {
+		if(count($namespaces) < 2) {
 
 			$class_name = AppModule::getClass($this->crud_conf["entity"], false);
 
@@ -408,19 +395,8 @@ trait Crud
 		}
 
 		//two or more levels
-		$entities = array_slice($entities, count($entities) - 2);
-
-		//check for any alias
-		$class_name = \Phalcon\Text::camelize(current($entities));
-		$alias 		= explode("_", current($entities));
-		//hadle struct for aliases
-		if(count($alias) > 1)
-			$class_name = \Phalcon\Text::camelize(current($alias))."@".current($entities);
-
-		//new join?
-		if(!in_array($class_name, $this->crud_conf["joins"])) {
-			$this->crud_conf["joins"][] = $class_name;
-		}
+		$levels   = count($namespaces);
+		$entities = array_slice($namespaces, $levels - 2);
 
 		//syntax is always table.field
 		$field = \Phalcon\Text::camelize(current($entities)).".".end($entities);
@@ -456,7 +432,8 @@ trait Crud
 		if($to > $total) $to = $total;
 
 		//filtered resultset
-		$resultset = $query->limit($per_page, $from - 1)->execute();
+		$resultset = $query->limit($per_page, $from - 1)
+						   ->execute();
 
 		//create response object
 		return (object)[

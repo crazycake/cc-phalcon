@@ -24,8 +24,11 @@ trait Core
 
         $manager->attach('db', function ($event, $connection) use ($logger) {
             //log SQL
-            if ($event->getType() == 'beforeQuery')
-                $logger->debug("Core:dblog -> SQL:\n".$connection->getSQLStatement());
+            if ($event->getType() == 'beforeQuery') {
+
+				$sql = $connection->getSQLStatement();
+				$logger->log($sql, \Phalcon\Logger::INFO);
+			}
         });
         // Assign the eventsManager to the db adapter instance
         $this->db->setEventsManager($manager);
