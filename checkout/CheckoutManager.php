@@ -47,7 +47,15 @@ trait CheckoutManager
      */
     public function initCheckoutManager($conf = [])
     {
-        $this->checkout_manager_conf = $conf;
+        $defaults = [
+            "debug"                => false,
+            "encrypted_ids"        => false,
+            "max_per_item_allowed" => 5,
+            "max_user_acquisition" => 10,
+            "default_currency"     => "USD"
+        ];
+
+        $this->checkout_manager_conf = array_merge($defaults, $conf);
     }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
@@ -267,7 +275,11 @@ trait CheckoutManager
 
             //get object props
             $object_class = $props[1];
-            $object_id    = $this->cryptify->decryptHashId($props[2]);
+            $object_id    = $props[2];
+
+            if($this->checkout_manager_conf["encrypted_ids"]) {
+                $object_id = $this->cryptify->decryptHashId($object_id);
+            }
 
             $preffixed_object_class = "\\$object_class";
             $object = $preffixed_object_class::getById($object_id);
