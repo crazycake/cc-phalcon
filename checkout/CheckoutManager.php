@@ -78,7 +78,7 @@ trait CheckoutManager
 
             //get class
             $user_checkout_class = AppModule::getClass("user_checkout");
-            //save checkout detail in DB
+
             $checkout_orm = $user_checkout_class::newBuyOrder($this->user_session["id"], $checkout);
 
             //check if an error occurred
@@ -351,7 +351,7 @@ trait CheckoutManager
 
         //parse checkout objects
         $this->parseCheckoutObjects($checkout, $data);
-        //print_r($checkout);exit;
+        //sd($checkout);
 
         //weird error, no checkout objects
         if (empty($checkout->objects))
