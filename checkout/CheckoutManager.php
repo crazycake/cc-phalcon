@@ -317,12 +317,12 @@ trait CheckoutManager
         //get form data
         $data = $this->handleRequest([
             "gateway"        => "string",  //checkout payment gateway
-            "categories"     => "array",   //the categories references
+            "@categories"    => "array",   //the categories references
             "@invoice_email" => "string"   //optional, custom validation
         ], "POST");
 
         //check invoice email if set
-        if (!isset($data["invoice_email"]) || !filter_var($data["invoice_email"], FILTER_VALIDATE_EMAIL))
+        if (!empty($data["invoice_email"]) && !filter_var($data["invoice_email"], FILTER_VALIDATE_EMAIL))
             throw new Exception($this->checkout_manager_conf["trans"]["ERROR_INVOICE_EMAIL"]);
 
         //lower case email
@@ -331,7 +331,7 @@ trait CheckoutManager
         //set object properties. TODO: create a object class
         $checkout = (object)[
             "client"        => json_encode($this->client, JSON_UNESCAPED_SLASHES),
-            "categories"    => explode(",", $data["categories"]),
+            "categories"    => empty($data["categories"]) ? [] : explode(",", $data["categories"]),
             "gateway"       => $data["gateway"],
             "invoice_email" => $data["invoice_email"],
             "currency"      => $this->checkout_manager_conf["default_currency"]
