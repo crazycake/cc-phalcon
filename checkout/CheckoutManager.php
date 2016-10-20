@@ -270,7 +270,7 @@ trait CheckoutManager
             $props = explode("_", $key);
 
             //validates checkout data has defined prefix
-            if (strpos($key, "checkout_") === false || count($props) != 3 || empty($q))
+            if (strpos($key, "Checkout_") === false || count($props) != 3 || empty($q))
                 continue;
 
             //get object props
