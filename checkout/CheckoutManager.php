@@ -150,7 +150,6 @@ trait CheckoutManager
             $checkout = $checkout->reduce();
 
             //extended properties
-            $checkout->type             = "payment";
             $checkout->amount_formatted = Forms::formatPrice($checkout->amount, $checkout->currency);
             $checkout->objects          = $user_checkout_object_class::getCollection($checkout->buy_order);
 
