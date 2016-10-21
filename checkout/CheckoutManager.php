@@ -332,9 +332,12 @@ trait CheckoutManager
         if(empty($data["currency"]))
             $data["currency"] = $this->checkout_manager_conf["default_currency"];
 
-        //set object properties. TODO: create a object class
+        //check user_id
+        $user_id = empty($this->user_session["id"]) ? null : $this->user_session["id"];
+
+        //create checkout object
         $checkout = (object)[
-            "user_id"  => $this->user_session["id"],
+            "user_id"  => $user_id,
             "client"   => json_encode($this->client, JSON_UNESCAPED_SLASHES),
             "gateway"  => $data["gateway"],
             "currency" => $data["currency"]
