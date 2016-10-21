@@ -264,7 +264,7 @@ export default new function() {
 
             //create object and append to body
             let div_loading = $("<div>").attr("id", APP.UI.sel_loading_box.replace("#",""));
-            let content     = !_.isNull(text) ? text : APP.TRANS.ACTIONS.LOADING;
+            let content     = _.isNull(text) ? APP.TRANS.ACTIONS.LOADING : text;
             div_loading.html(content);
 
             //append to body
