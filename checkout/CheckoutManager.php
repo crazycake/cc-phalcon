@@ -137,7 +137,6 @@ trait CheckoutManager
             $user_class                 = AppModule::getClass("user");
             $user_checkout_class        = AppModule::getClass("user_checkout");
             $user_checkout_object_class = AppModule::getClass("user_checkout_object");
-            $checkout_trx_class         = AppModule::getClass("user_checkout_trx");
 
             //get checkout, user and event
             $checkout = $user_checkout_class::findFirstByBuyOrder($data->buy_order);
@@ -185,10 +184,6 @@ trait CheckoutManager
                     $this->logger->debug("CheckoutManager::onSuccessCheckout, missing onSuccessCheckout fn on class: ".$obj->object_class);
                 }
             }
-
-            //3) set checkout trx object
-            $trx = $checkout_trx_class::findFirstByBuyOrder($checkout->buy_order);
-            $checkout->trx = $trx ? $trx->reduce() : null;
 
             if ($this->checkout_manager_conf["debug"])
                 $this->logger->debug("Checkout task complete: ".json_encode($checkout));
