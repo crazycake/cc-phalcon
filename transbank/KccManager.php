@@ -149,7 +149,7 @@ trait KccManager
 
             //call succes checkout and get checkout objects
             $checkout_controller = AppModule::getClass("checkout_controller");
-            (new $checkout_controller())->successCheckout($checkout);
+            (new $checkout_controller())->successCheckout($checkout->buy_order);
 
             //ok response
             $this->jsonResponse(200);
