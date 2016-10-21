@@ -54,16 +54,6 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
      */
     public $gateway;
 
-    /*
-     * @var string
-     */
-    public $categories;
-
-    /**
-     * @var string
-     */
-    public $invoice_email;
-
     /**
      * @var string
      */
@@ -161,13 +151,12 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 
     /**
      * Creates a new buy order
-     * @param int $user_id - The user ID
      * @param object $checkoutObj - The checkout object
      * @return mixed [boolean|string] - If success returns the buy order
      */
-    public static function newBuyOrder($user_id = 0, $checkoutObj = null)
+    public static function newBuyOrder($checkoutObj = null)
     {
-        if (empty($user_id) || is_null($checkoutObj))
+        if (is_null($checkoutObj))
             return false;
 
         //get DI reference (static)
@@ -179,27 +168,32 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 
         //generates buy order
         $buy_order = self::newBuyOrderCode(static::$BUY_ORDER_CODE_LENGTH);
-
-        //creates object with some checkout object props
-        $checkout = new $checkout_class_name();
-        //props
-        $checkout->user_id       = $user_id;
-        $checkout->buy_order     = $buy_order;
-        $checkout->amount        = $checkoutObj->amount;
-        $checkout->currency      = $checkoutObj->currency;
-        $checkout->gateway       = $checkoutObj->gateway;
-        $checkout->categories    = implode(",", $checkoutObj->categories);
-        $checkout->invoice_email = $checkoutObj->invoice_email;
-        $checkout->client        = $checkoutObj->client;
+        $checkoutObj->buy_order = $buy_order;
 
         //log statement
-        $di->getShared("logger")->debug("BaseUserCheckout::newBuyOrder -> Saving BuyOrder: $buy_order, for UserID: $user_id, Email: $checkoutObj->invoice_email");
+        $di->getShared("logger")->debug("BaseUserCheckout::newBuyOrder -> Saving BuyOrder: $buy_order");
 
         try {
+
+            //creates object with some checkout object props
+            $checkout = new $checkout_class_name();
+
             //begin trx
             $di->getShared("db")->begin();
 
-            if (!$checkout->save())
+            //implode sub-arrays
+            $checkout_data = (array)$checkoutObj;
+            //unset checkout objects
+            unset($checkout_data["objects"]);
+
+            foreach ($checkout_data as $key => $value) {
+
+                if(is_array($value))
+                    $checkout_data[$key] = implode(",", $value);
+            }
+            //sd($checkout_data);
+
+            if (!$checkout->save($checkout_data))
                 throw new Exception("A DB error ocurred saving in checkouts model.");
 
             //save each cehckout item

@@ -51,8 +51,7 @@ trait CheckoutManager
             "debug"                => false,
             "encrypted_ids"        => false,
             "max_per_item_allowed" => 5,
-            "max_user_acquisition" => 10,
-            "default_currency"     => "USD"
+            "default_currency"     => "CLP"
         ];
 
         $this->checkout_manager_conf = array_merge($defaults, $conf);
@@ -69,17 +68,16 @@ trait CheckoutManager
         $this->onlyAjax();
 
         try {
+            //get class
+            $user_checkout_class = AppModule::getClass("user_checkout");
 
             //get checkout object with parsed data
-            $checkout = $this->_parseCheckoutData();
+            $checkout = $this->setCheckoutObject();
 
             //call listeners
             $this->onBeforeBuyOrderCreation($checkout);
 
-            //get class
-            $user_checkout_class = AppModule::getClass("user_checkout");
-
-            $checkout_orm = $user_checkout_class::newBuyOrder($this->user_session["id"], $checkout);
+            $checkout_orm = $user_checkout_class::newBuyOrder($checkout);
 
             //check if an error occurred
             if (!$checkout_orm)
@@ -156,7 +154,6 @@ trait CheckoutManager
             $checkout->type             = "payment";
             $checkout->amount_formatted = Forms::formatPrice($checkout->amount, $checkout->currency);
             $checkout->objects          = $user_checkout_object_class::getCollection($checkout->buy_order);
-            $checkout->categories       = explode(",", $checkout->categories); //set categories as array
 
             //$this->logger->debug("successCheckoutTask:: before parsing checkout objects: ".print_r($checkout, true));
 
@@ -288,7 +285,7 @@ trait CheckoutManager
             //check that object is in stock (also validates object exists)
             if (!$user_checkout_object_class::validateStock($object_class, $object_id, $q)) {
 
-                $this->logger->error("CheckoutManager::_parseCheckoutObjects -> No stock for object $object_class, ID: $object_id, Q: $q.");
+                $this->logger->error("CheckoutManager::parseCheckoutObjects -> No stock for object $object_class, ID: $object_id, Q: $q.");
                 throw new Exception(str_replace("{name}", $object->name, $this->checkout_manager_conf["trans"]["ERROR_NO_STOCK"]));
             }
 
@@ -321,32 +318,26 @@ trait CheckoutManager
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
-     * Parses the checkout POST params
+     * Set checkout object
      * @return object
      */
-    private function _parseCheckoutData()
+    private function setCheckoutObject()
     {
         //get form data
         $data = $this->handleRequest([
-            "gateway"        => "string",  //checkout payment gateway
-            "@categories"    => "array",   //the categories references
-            "@invoice_email" => "string"   //optional, custom validation
+            "gateway"   => "string",
+            "@currency" => "string",
         ], "POST");
 
-        //check invoice email if set
-        if (!empty($data["invoice_email"]) && !filter_var($data["invoice_email"], FILTER_VALIDATE_EMAIL))
-            throw new Exception($this->checkout_manager_conf["trans"]["ERROR_INVOICE_EMAIL"]);
-
-        //lower case email
-        $data["invoice_email"] = strtolower($data["invoice_email"]);
+        if(empty($data["currency"]))
+            $data["currency"] = $this->checkout_manager_conf["default_currency"];
 
         //set object properties. TODO: create a object class
         $checkout = (object)[
-            "client"        => json_encode($this->client, JSON_UNESCAPED_SLASHES),
-            "categories"    => empty($data["categories"]) ? [] : explode(",", $data["categories"]),
-            "gateway"       => $data["gateway"],
-            "invoice_email" => $data["invoice_email"],
-            "currency"      => $this->checkout_manager_conf["default_currency"]
+            "user_id"  => $this->user_session["id"],
+            "client"   => json_encode($this->client, JSON_UNESCAPED_SLASHES),
+            "gateway"  => $data["gateway"],
+            "currency" => $data["currency"]
         ];
 
         //parse checkout objects
