@@ -264,23 +264,25 @@ export default new function() {
 
             //create object and append to body
             let div_loading = $("<div>").attr("id", APP.UI.sel_loading_box.replace("#",""));
-            let content     = _.isNull(text) ? APP.TRANS.ACTIONS.LOADING : text;
-            div_loading.html(content);
 
             //append to body
             $("body").append(div_loading);
             //re-asign  var
             loading_obj = $(APP.UI.sel_loading_box);
-
-            //add special behavior for small screen
-            if (self.checkScreenSize("small"))
-                loading_obj.addClass("small-screen");
-
-            var top = self.checkScreenSize("small") ? APP.UI.loading.top_small : APP.UI.loading.top;
-
-            if (typeof APP.UI.loading.center != "undefined" && APP.UI.loading.center)
-                loading_obj.center(APP.UI.loading.position, top);
         }
+
+        //add special behavior for small screen
+        if (self.checkScreenSize("small"))
+            loading_obj.addClass("small-screen");
+
+        var top = self.checkScreenSize("small") ? APP.UI.loading.top_small : APP.UI.loading.top;
+
+        if (typeof APP.UI.loading.center != "undefined" && APP.UI.loading.center)
+            loading_obj.center(APP.UI.loading.position, top);
+
+        //set content
+        let content = _.isNull(text) ? APP.TRANS.ACTIONS.LOADING : text;
+        loading_obj.html(content);
 
         //dont show for hidden flag (debug only)
         if (!hidden)
