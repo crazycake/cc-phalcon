@@ -83,7 +83,7 @@ trait KccManager
             "TBK_URL_FRACASO"      => $this->baseUrl($this->kcc_manager_conf["failedUri"]),     //Failure page
             "TBK_TIPO_TRANSACCION" => "TR_NORMAL",
             //dynamic inputs
-            "TBK_ID_SESION"        => sha1(uniqid().microtime()),
+            "TBK_ID_SESION"        => md5(uniqid(rand(), true)),
             "TBK_ORDEN_COMPRA"     => "",
             "TBK_MONTO"            => ""
         ];
