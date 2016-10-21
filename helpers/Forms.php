@@ -48,7 +48,7 @@ class Forms
     }
 
     /**
-     * Formats price
+     * Formats price.
      * @todo Complete other global currencys formats
      * @static
      * @param numeric $price - The price numeric value
