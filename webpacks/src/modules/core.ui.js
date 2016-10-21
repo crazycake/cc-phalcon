@@ -290,6 +290,15 @@ export default new function() {
     };
 
     /**
+     * Hides loading message
+     */
+    self.hideLoading = function() {
+
+        //set loading object selector
+        $(APP.UI.sel_loading_box).fadeOut("fast");
+    };
+
+    /**
      * Creates a new modal object
      * @method newModal
      * @param {Object} element - The jQuery element object
