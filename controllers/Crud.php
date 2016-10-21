@@ -88,7 +88,6 @@ trait Crud
 		//prepare fields data for rendering
 		$dfields = []; //datatable
 
-		//categories
 		if(!isset($conf["cfields"]))
 		 	$conf["cfields"] = [];
 
@@ -111,7 +110,7 @@ trait Crud
 			else if(in_array($obj->name, ["datetime"]))
 				$obj->callback = "formatDate|DD/MM/YY HH:mm:ss";
 
-			//save categories and set format callback
+			//save category fields and set format callback
 			if(!empty($field["format"])) {
 
 				//set object callback
