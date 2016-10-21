@@ -67,7 +67,7 @@ export default new function() {
 
         //this vars must be declared outside ajaxHandler function
         var ajax_timer;
-        var app_loading = self.showLoading(true); //hide by default
+        var app_loading = self.showLoading(null, true); //hide by default
 
         //ajax handler, show loading if ajax takes more than a X secs, only for POST request
         var handler = function(opts, show_loading) {
@@ -254,7 +254,7 @@ export default new function() {
      * @param  {Boolean} hidden - Forces the loading element to be hidden.
      * @return {Object} A jQuery object element
      */
-    self.showLoading = function(hidden = false) {
+    self.showLoading = function(text = null, hidden = false) {
 
         //set loading object selector
         var loading_obj = $(APP.UI.sel_loading_box);
@@ -264,12 +264,7 @@ export default new function() {
 
             //create object and append to body
             let div_loading = $("<div>").attr("id", APP.UI.sel_loading_box.replace("#",""));
-            let content     = APP.TRANS.ACTIONS.LOADING;
-
-            //custom content
-            if(!_.isUndefined(APP.UI.loading.content))
-                content = APP.UI.loading.content;
-
+            let content     = !_.isNull(text) ? text : APP.TRANS.ACTIONS.LOADING;
             div_loading.html(content);
 
             //append to body
