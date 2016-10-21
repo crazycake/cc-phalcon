@@ -101,10 +101,7 @@ trait CheckoutJobs
      */
     public function chileanPesoToDollar($amount = 0)
     {
-        //redis service
-        $redis = new Redis();
-
-        $value = $redis->get(self::$REDIS_KEY_USD_CLP_VALUE);
+        $value = $this->getChileanPesoToDollarConversion();
 
         //fallback
         if (empty($value))
@@ -113,6 +110,17 @@ trait CheckoutJobs
         //apply conversion
         return number_format((float)($amount / $value), 2, '.', '');
     }
+
+    /**
+     * Get currency conversion
+     */
+	public function getChileanPesoToDollarConversion()
+	{
+		//redis service
+        $redis = new Redis();
+
+		return $redis->get(self::$REDIS_KEY_USD_CLP_VALUE);
+	}
 
     /** ------------------------------------------- § ------------------------------------------------ **/
 
