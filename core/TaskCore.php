@@ -65,7 +65,7 @@ class TaskCore extends Task
 
         try {
 
-            //catcher adapter
+            //redis adapter
             $redis = new \CrazyCake\Services\Redis();
             //get data from cache json-undecoded
             $data = $redis->get($args[0], false);
