@@ -327,6 +327,11 @@ function bundleMailing() {
             .pipe(replacer("&quot;", "\""))
             .pipe(replacer("<trans>", "{{ trans._(\""))
             .pipe(replacer("</trans>", "\") }}"))
+            .pipe(replacer("<trans-p>", "{{ trans._(\""))
+            .pipe(replacer("</trans-p>", ") }}"))
+            .pipe(replacer("<tp>", "\",[\""))
+            .pipe(replacer(" => ", "\":\"<strong>\"~"))
+            .pipe(replacer("</tp>", "~\"</strong>\"]"))
             //rename
             .pipe(rename({ extname : ".volt" }))
             .pipe(gulp.dest(app_paths.volt + "mailing"))
