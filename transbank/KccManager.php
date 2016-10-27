@@ -58,12 +58,12 @@ trait KccManager
 
         //set payment types
         $this->kcc_payment_types = [
-            "VN" => ["credit", $this->trans->_("Crédito"),  $this->trans->_("Sin Cuotas"), "0"],
-            "VC" => ["credit", $this->trans->_("Crédito"),  $this->trans->_("Cuotas normales"), "4-48"],
-            "SI" => ["credit", $this->trans->_("Crédito"),  $this->trans->_("Sin interés"), "3"],
-            "S2" => ["credit", $this->trans->_("Crédito"),  $this->trans->_("Sin interés"), "2"],
-            "CI" => ["credit", $this->trans->_("Crédito"),  $this->trans->_("Cuotas Comercio"), $this->trans->_("Número no definido")],
-            "VD" => ["debit", $this->trans->_("Redcompra"), $this->trans->_("Débito"), "0"]
+            "VN" => ["credit", "Crédito", "Sin Cuotas", "0"],
+            "VC" => ["credit", "Crédito", "Cuotas normales", "4-48"],
+            "SI" => ["credit", "Crédito", "Sin interés", "3"],
+            "S2" => ["credit", "Crédito", "Sin interés", "2"],
+            "CI" => ["credit", "Crédito", "Cuotas Comercio", "Número no definido"],
+            "VD" => ["debit", "Redcompra", "Débito", "0"]
         ];
     }
 
