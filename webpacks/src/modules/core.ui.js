@@ -275,14 +275,14 @@ export default new function() {
         if (self.checkScreenSize("small"))
             loading_obj.addClass("small-screen");
 
-        var top = self.checkScreenSize("small") ? APP.UI.loading.top_small : APP.UI.loading.top;
+		//set content
+        let content = _.isNull(text) ? APP.TRANS.ACTIONS.LOADING : text;
+        loading_obj.html(content);
+
+        let top = self.checkScreenSize("small") ? APP.UI.loading.top_small : APP.UI.loading.top;
 
         if (typeof APP.UI.loading.center != "undefined" && APP.UI.loading.center)
             loading_obj.center(APP.UI.loading.position, top);
-
-        //set content
-        let content = _.isNull(text) ? APP.TRANS.ACTIONS.LOADING : text;
-        loading_obj.html(content);
 
         //dont show for hidden flag (debug only)
         if (!hidden)
