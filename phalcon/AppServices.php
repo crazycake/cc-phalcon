@@ -193,27 +193,31 @@ class AppServices
         //Database connection is created based in the parameters defined in the configuration file
         $di->setShared("db", function() {
 
-            //.env file has priority
-			if(getenv("DB_HOST")) {
+            $prefix = strtoupper($this->config->app->namespace);
 
-	            $db_conf = [
+            //check env for DOCKER
+			if(getenv($prefix."_DB_PORT_3306_TCP_ADDR")) {
+
+	              $db_conf = [
+   	                "host"     => getenv($prefix."_DB_PORT_3306_TCP_ADDR"),
+   	                "port"     => getenv($prefix."_DB_PORT_3306_TCP_PORT"),
+   	                "dbname"   => $this->config->app->namespace,
+   	                "username" => "root",
+   	                "password" => "dev"
+   	            ];
+			}
+			//NON-DOCKER
+			else {
+
+                if(is_null(getenv("DB_HOST")))
+                    throw new Exception("No DB_HOST var in .env file");
+
+                $db_conf = [
 	                "host"     => getenv("DB_HOST"),
 	                "port"     => 3306,
 	                "dbname"   => getenv("DB_NAME"),
 	                "username" => getenv("DB_USER"),
 	                "password" => getenv("DB_PASS")
-	            ];
-			}
-			//DOCKER
-			else {
-                $prefix = strtoupper($this->config->app->namespace);
-
-	            $db_conf = [
-	                "host"     => getenv($prefix."_DB_PORT_3306_TCP_ADDR"),
-	                "port"     => getenv($prefix."_DB_PORT_3306_TCP_PORT"),
-	                "dbname"   => $this->config->app->namespace,
-	                "username" => "root",
-	                "password" => "dev"
 	            ];
 			}
 
