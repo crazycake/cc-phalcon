@@ -34,7 +34,7 @@ trait Localize
     {
         //get services
         $di       = \Phalcon\DI::getDefault();
-        $app_name = $di->getShared('config')->app->name;
+        $app_name = $di->getShared("config")->app->name;
 
         $data = [
             "ACCOUNT" => [
@@ -120,7 +120,7 @@ trait Localize
     {
         //get services
         $di       = \Phalcon\DI::getDefault();
-        $app_name = $di->getShared('config')->app->name;
+        $app_name = $di->getShared("config")->app->name;
 
         $data = [
             "ALERTS" => [
@@ -133,16 +133,13 @@ trait Localize
         		"ACCESS_FORBIDDEN" => "Tu sesión ha caducado, porfavor <a href=\"./signIn\">ingresa nuevamente aquí</a>."
         	],
         	"ACTIONS" => [
+        		"LOADING"  => "cargando ...",
         		"OK" 	   => "Ok",
         		"ACCEPT"   => "Aceptar",
         		"CANCEL"   => "Cancelar",
         		"NOT_NOW"  => "Ahora No",
         		"SEND" 	   => "Enviar",
         		"GOT_IT"   => "Entendido",
-        		"LOADING"  => "cargando ...",
-                "TRANSFER" => "Transferir",
-                "NULLIFY"  => "Anular",
-                "UNLINK"   => "Desvincular",
                 "DELETE"   => "Eliminar"
         	],
         	"MAILER" => [
@@ -156,21 +153,6 @@ trait Localize
                 "DELETE_CONFIRM" => "¿Estás seguro que quieres eliminar este registro?"
             ]
         ];
-
-        //facebook
-        if(class_exists("\FacebookController")) {
-
-            $data["FB"] = [
-                //facebook
-        		"LOADING" 				=> "cargando ...",
-                "LOADING_FALLBACK"  	=> "Espera unos momentos mientras facebook carga...",
-                "LINKED"            	=> "Conectado",
-        		"UNLINKED"  	        => "No conectado",
-                "PERMS_REQUIRED"  	    => $app_name." necesita los permisos de Facebook (publicación en tu muro).",
-        		"PUBLISH_STORY_SUCCESS" => "¡Hemos publicado con éxito la historia en tu muro!",
-        		"PUBLISH_STORY_FAILED"  => "No tenemos permisos para publicar la historia en tu muro.",
-            ];
-        }
 
         //call handler
         $data = array_merge($data, self::jsTranslations());
