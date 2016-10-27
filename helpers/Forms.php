@@ -106,10 +106,10 @@ class Forms
             $month = strftime("%m", mktime(0, 0, 0, $i, 1));
 
             //get abbr month
-            $month_dt = \DateTime::createFromFormat($month, "m");
+            $dt = new \DateTime("1930-".$month."-01");
 
             //set month array
-            $months_array[$prefix] = $month_dt->format("M");
+            $months_array[$prefix] = $dt->format("M");
         }
 
         //years
