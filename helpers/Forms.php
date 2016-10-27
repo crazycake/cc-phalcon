@@ -102,22 +102,19 @@ class Forms
         $months_array[""] = $trans->_("month");
         //loop
         for ($i = 1; $i <= 12; $i++) {
+
             $prefix = ($i <= 9) ? "0$i" : "$i";
-            $month = strftime("%m", mktime(0, 0, 0, $i, 1));
-
-            //get abbr month
-            $dt = new \DateTime("1930-".$month."-01");
-
             //set month array
-            $months_array[$prefix] = $dt->format("M");
+            $months_array[$prefix] = ucfirst(strftime("%b", mktime(0, 0, 0, $i, 1)));
         }
 
         //years
         $years_array = [];
         $years_array[""] = $trans->_("year");
         //loop
-        for ($i = (int)date("Y"); $i >= 1930; $i--)
+        for ($i = (int)date("Y"); $i >= 1930; $i--) {
             $years_array["$i"] = $i;
+        }
 
         return [$years_array, $months_array, $days_array];
     }
