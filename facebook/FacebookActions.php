@@ -23,7 +23,6 @@ use Facebook\Exceptions\FacebookSDKException;
 //CrazyCake Libs
 use CrazyCake\Phalcon\AppModule;
 use CrazyCake\Services\Redis;
-use CrazyCake\Helpers\Dates;
 
 /**
  * Facebook Actions

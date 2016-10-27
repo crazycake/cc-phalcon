@@ -84,7 +84,7 @@ class Forms
         $di = \Phalcon\DI::getDefault();
 
         if (!$di->has("trans"))
-            throw new Exception("Forms -> no translate service adapter found.");
+            throw new Exception("Forms::getBirthdaySelectors -> no translate service adapter found.");
 
         $trans = $di->getShared("trans");
 
@@ -106,10 +106,10 @@ class Forms
             $month = strftime("%m", mktime(0, 0, 0, $i, 1));
 
             //get abbr month
-            $month = Dates::getTranslatedMonthName($month, true);
+            $month_dt = \DateTime::createFromFormat($month, "m");
 
             //set month array
-            $months_array[$prefix] = $month;
+            $months_array[$prefix] = $month_dt->format("M");
         }
 
         //years

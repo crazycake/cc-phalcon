@@ -9,8 +9,6 @@ namespace CrazyCake\Account;
 //imports
 use Phalcon\Exception;
 use Phalcon\Mvc\Model\Validator\InclusionIn;
-//other imports
-use CrazyCake\Helpers\Dates;
 
 /**
  * Base User Tokens Model
@@ -162,7 +160,7 @@ class BaseUserToken extends \CrazyCake\Models\Base
 
         if ($token) {
             //check token "days passed" (checks if token is expired)
-            $days_passed = Dates::getTimePassedFromDate($token->created_at);
+            $days_passed = self::getTimePassedFromDate($token->created_at);
 
             if ($days_passed > static::$TOKEN_EXPIRES_THRESHOLD[$type]) {
                 //if token has expired delete it and generate a new one
@@ -215,7 +213,7 @@ class BaseUserToken extends \CrazyCake\Models\Base
         $expiration = static::$TOKEN_EXPIRES_THRESHOLD[$token_type];
 
         //for other token type, get days passed
-        $days_passed = Dates::getTimePassedFromDate($token->created_at);
+        $days_passed = self::getTimePassedFromDate($token->created_at);
 
         if ($days_passed > $expiration)
             throw new Exception("temporal token (id: ".$token->id.") has expired (".$days_passed." days passed since ".$token->created_at.")");
@@ -267,5 +265,30 @@ class BaseUserToken extends \CrazyCake\Models\Base
             //throw new Exception("BaseUserToken::deleteExpiredTokens -> error: ".$e->getMessage());
             return 0;
         }
+    }
+
+	/**
+     * Returns daytime passed from Now and given date
+     * @static
+     * @param date $date - Format Y-m-d H:i:s or a DateTime object
+     * @param string $f - The interval unit datetime, default is days.
+     * @return int
+     */
+    public static function getTimePassedFromDate($date = null, $f = "days")
+    {
+        //validation
+        if (is_null($date))
+            throw new Exception("BaseUserToken::getTimePassedFromDate -> invalid date parameter, must be string or DateTime object.");
+
+        //check if is a DateTime object
+        $target_date = $date instanceof \DateTime ? $date : new \DateTime($date);
+
+        //check days passed
+        $today = new \DateTime("now");
+        //calculate diff dates
+        $interval = $today->diff($target_date);
+
+        //return days property
+        return $interval->$f;
     }
 }

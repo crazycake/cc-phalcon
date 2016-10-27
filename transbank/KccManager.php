@@ -12,7 +12,6 @@ namespace CrazyCake\Transbank;
 use Phalcon\Exception;
 //core
 use CrazyCake\Phalcon\AppModule;
-use CrazyCake\Helpers\Dates;
 use CrazyCake\Helpers\Forms;
 
 /**
@@ -412,11 +411,8 @@ trait KccManager
             $params["TBK_MONTO_FORMATO"] = Forms::formatPrice($params["TBK_MONTO"], "CLP")." (CLP)";
 
             //date & time
-            $date = str_split($params["TBK_FECHA_TRANSACCION"], 2);
-            $time = str_split($params["TBK_HORA_TRANSACCION"], 2);
-
             $params["TBK_DATE"]         = $params["TBK_FECHA_TRANSACCION"]."-".$params["TBK_HORA_TRANSACCION"];
-            $params["TBK_DATE_FORMATO"] = Dates::getTranslatedDateTime(null, $date[0], $date[1], implode(":", $time));
+            $params["TBK_DATE_FORMATO"] = self::_formatDate($params["TBK_FECHA_TRANSACCION"], $params["TBK_HORA_TRANSACCION"]);
 
             //payment type
             if (isset($this->kcc_payment_types[$params["TBK_TIPO_PAGO"]])) {
@@ -434,5 +430,24 @@ trait KccManager
             $this->logger->error("WebpayHelper::_parseMacFile -> error parsing file, err: ".$e->getMessage());
             return false;
         }
+    }
+
+	/**
+     * Format Date
+     * @return string
+     */
+    private function _formatDate($tbk_date, $tbk_time)
+    {
+        $date  = str_split($tbk_date, 2);
+        $time  = str_split($tbk_time, 2);
+        $month = $date[0];
+        $day   = $date[1];
+		$hour  = implode(":", $time);
+
+        //set month
+        $months = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+        $month  = $months[(int)$month - 1];
+
+        return "$day de $month a las $hour.";
     }
 }

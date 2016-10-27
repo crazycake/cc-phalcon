@@ -12,7 +12,6 @@ use Phalcon\Exception;
 
 //core
 use CrazyCake\Phalcon\AppModule;
-use CrazyCake\Helpers\Dates;
 
 /**
  * Account Session Handler

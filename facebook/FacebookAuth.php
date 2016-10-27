@@ -18,7 +18,6 @@ use Facebook\Exceptions\FacebookSDKException;
 use Facebook\Exceptions\FacebookResponseException;
 //CrazyCake Libs
 use CrazyCake\Phalcon\AppModule;
-use CrazyCake\Helpers\Dates;
 
 /**
  * Facebook Authentication
