@@ -206,16 +206,16 @@ class AppServices
 			}
 			//DOCKER
 			else {
+                $prefix = strtoupper($this->config->app->namespace);
 
 	            $db_conf = [
-	                "host"     => getenv("MYSQL_PORT_3306_TCP_ADDR"),
-	                "port"     => getenv("MYSQL_PORT_3306_TCP_PORT"),
-	                "dbname"   => "app",
+	                "host"     => getenv($prefix."_DB_PORT_3306_TCP_ADDR"),
+	                "port"     => getenv($prefix."_DB_PORT_3306_TCP_PORT"),
+	                "dbname"   => $this->config->app->namespace,
 	                "username" => "root",
 	                "password" => "dev"
 	            ];
 			}
-            //sd($db_conf);
 
             return new \Phalcon\Db\Adapter\Pdo\Mysql(array_merge($db_conf, [
                 "options" => [\PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"] //force utf8-charset
