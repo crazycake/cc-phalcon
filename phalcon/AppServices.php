@@ -196,29 +196,29 @@ class AppServices
             $prefix = strtoupper($this->config->app->namespace);
 
             //check env for DOCKER
-			if(getenv($prefix."_DB_PORT_3306_TCP_ADDR")) {
+			if(getenv("DB_HOST")) {
 
-	              $db_conf = [
-   	                "host"     => getenv($prefix."_DB_PORT_3306_TCP_ADDR"),
-   	                "port"     => getenv($prefix."_DB_PORT_3306_TCP_PORT"),
-   	                "dbname"   => $this->config->app->namespace,
-   	                "username" => "root",
-   	                "password" => "dev"
-   	            ];
-			}
-			//NON-DOCKER
-			else {
-
-                if(is_null(getenv("DB_HOST")))
-                    throw new Exception("No DB_HOST var in .env file");
-
-                $db_conf = [
+				$db_conf = [
 	                "host"     => getenv("DB_HOST"),
 	                "port"     => 3306,
 	                "dbname"   => getenv("DB_NAME"),
 	                "username" => getenv("DB_USER"),
 	                "password" => getenv("DB_PASS")
 	            ];
+			}
+			//NON-DOCKER
+			else {
+
+                if(is_null(getenv($prefix."_DB_PORT_3306_TCP_ADDR")))
+                    throw new Exception("Env var ".$prefix."_DB_PORT_3306_TCP_ADDR is not set.");
+
+				$db_conf = [
+   	                "host"     => getenv($prefix."_DB_PORT_3306_TCP_ADDR"),
+   	                "port"     => getenv($prefix."_DB_PORT_3306_TCP_PORT"),
+   	                "dbname"   => $this->config->app->namespace,
+   	                "username" => "root",
+   	                "password" => "dev"
+   	            ];
 			}
             //sd($db_conf);
 
