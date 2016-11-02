@@ -113,20 +113,21 @@ trait CheckoutCurrency
     /**
      * Calls API Chilean Currency to get indicator values
      * @param  string $indicator - Values: [uf, ivp, dolar, dolar_intercambio, euro, ipc, utm, imacec, tpm, libra_cobre, tasa_desempleo]
+     * @param  int $interval - horas iterativas
      * @return float - The value
      */
-    protected function apiChileanCurrencyRequest($indicator = "dolar")
+    protected function apiChileanCurrencyRequest($indicator = "dolar", $interval = 12)
     {
 		try {
 	        //subtract now 12 hours
-	        $date = (new Carbon())->subHours(12);
+	        $date = (new Carbon())->subHours($interval);
 
 	        //get dollar value for today
 	        $api_url = self::$API_URL_CLP_CURRENCY."api/$indicator/".$date->format("d-m-Y");
 
 	        //print output for CLI
 			if(method_exists($this, "colorize"))
-		        	$this->colorize("Requesting: ".$api_url);
+		        $this->colorize("Requesting: ".$api_url." => Date: ".$date->format("d-m-Y H:i"));
 
 	        //try both approaches
 	        if (ini_get("allow_url_fopen")) {
@@ -146,15 +147,17 @@ trait CheckoutCurrency
 		    $data = json_decode($json);
 
 		    //check struct
-		    if (!$data || !is_array($data->serie) || empty($data->serie))
-		        throw new Exception("Missing 'serie' property for parsed JSON object: ".json_encode($data));
+		    if (!$data || !is_array($data->serie) || empty($data->serie)) {
 
-		    $indicator = $data->serie[0];
+				if(method_exists($this, "colorize"))
+					$this->colorize("Invalid response struct o empty payload: ".json_encode($data, JSON_UNESCAPED_SLASHES), "WARNING");
 
-		    if (empty($indicator->valor))
-		        throw new Exception("Missing 'valor' property for parsed JSON object: ".json_encode($data));
+		        $this->apiChileanCurrencyRequest($indicator, $interval + 12);
+				return;
+			}
 
-		    $value = (float)($indicator->valor);
+		    $serie = current($data->serie);
+		    $value = (float)($serie->valor);
 
 			//print output for CLI
 			if(method_exists($this, "colorize"))
