@@ -134,20 +134,23 @@ env)
 	# print project dir
 	echo -e "\033[96mProject Dir: "$PROJECT_PATH" \033[0m"
 
-	APACHE_USER_STATE="$( id -nG $USER_NAME | grep -c $APACHE_USER_GROUP )"
+	if [ ! "$USER_NAME" = "root" ]; then
 
-	# add user to apache group?
-	if [ "$APACHE_USER_STATE" = "1" ]; then
+		APACHE_USER_STATE="$( id -nG $USER_NAME | grep -c $APACHE_USER_GROUP )"
 
-	    echo -e "\033[96mUser belongs to $APACHE_USER_GROUP [ok] \033[0m"
-	else
+		# add user to apache group?
+		if [ "$APACHE_USER_STATE" = "1" ]; then
 
-	    echo -e "\033[95mAdding user '$USER_NAME' to group '$APACHE_USER_GROUP' \033[0m"
-
-		if [ "$(uname)" == "Darwin" ]; then
-			sudo dseditgroup -o edit -a $USER_NAME -t user $APACHE_USER_GROUP
+		    echo -e "\033[96mUser belongs to $APACHE_USER_GROUP [ok] \033[0m"
 		else
-			sudo usermod -a -G $APACHE_USER_GROUP $USER_NAME
+
+		    echo -e "\033[95mAdding user '$USER_NAME' to group '$APACHE_USER_GROUP' \033[0m"
+
+			if [ "$(uname)" == "Darwin" ]; then
+				sudo dseditgroup -o edit -a $USER_NAME -t user $APACHE_USER_GROUP
+			else
+				sudo usermod -a -G $APACHE_USER_GROUP $USER_NAME
+			fi
 		fi
 	fi
 
