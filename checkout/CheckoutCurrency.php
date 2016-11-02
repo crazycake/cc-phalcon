@@ -83,7 +83,7 @@ trait CheckoutCurrency
      */
     protected function chileanPesoToDollar($amount = 0)
     {
-        $value = $this->getChileanPesoToDollarConversion();
+        $value = $this->dollarToChileanPeso();
 
         //fallback
         if (empty($value))
@@ -94,14 +94,14 @@ trait CheckoutCurrency
     }
 
     /**
-     * Get currency conversion
+     * Get currency conversion USD to CLP
      */
-	protected function getChileanPesoToDollarConversion()
+	protected function dollarToChileanPeso($amount = 1.00)
 	{
 		//redis service
 		$redis = $this->newRedisClient();
 
-		return $redis->get(self::$REDIS_KEY_USD_CLP_VALUE);
+		return $redis->get(self::$REDIS_KEY_USD_CLP_VALUE) * $amount;
 	}
 
     /**
