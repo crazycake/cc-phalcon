@@ -117,47 +117,61 @@ trait CheckoutCurrency
      */
     protected function apiChileanCurrencyRequest($indicator = "dolar")
     {
-        //subtract now 12 hours
-        $date = (new Carbon())->subHours(12);
+		try {
+	        //subtract now 12 hours
+	        $date = (new Carbon())->subHours(12);
 
-        //get dollar value for today
-        $api_url = self::$API_URL_CLP_CURRENCY."api/$indicator/".$date->format("d-m-Y");
+	        //get dollar value for today
+	        $api_url = self::$API_URL_CLP_CURRENCY."api/$indicator/".$date->format("d-m-Y");
 
-        //print output for CLI
+	        //print output for CLI
+			if(method_exists($this, "colorize"))
+		        	$this->colorize("Requesting: ".$api_url);
+
+	        //try both approaches
+	        if (ini_get("allow_url_fopen")) {
+
+	            $json = file_get_contents($api_url);
+				//sd($json);
+	        }
+	        else {
+
+	            $curl = curl_init($api_url);
+	            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+	            $json = curl_exec($curl);
+	            curl_close($curl);
+	        }
+
+		    //get data
+		    $data = json_decode($json);
+
+		    //check struct
+		    if (!$data || !is_array($data->serie) || empty($data->serie))
+		        throw new Exception("Missing 'serie' property for parsed JSON object: ".json_encode($data));
+
+		    $indicator = $data->serie[0];
+
+		    if (empty($indicator->valor))
+		        throw new Exception("Missing 'valor' property for parsed JSON object: ".json_encode($data));
+
+		    $value = (float)($indicator->valor);
+
+			//print output for CLI
+			if(method_exists($this, "colorize"))
+		    	$this->colorize("Saving value in Redis: ".$value);
+
+			return $value;
+		}
+		catch(Exception $e) {
+			$msg = $e->getMessage();
+		}
+		catch(\Exception $e) {
+			$msg = $e->getMessage();
+		}
+
 		if(method_exists($this, "colorize"))
-        	$this->colorize("Requesting: ".$api_url);
+			$this->colorize($msg, "ERROR");
 
-        //try both approaches
-        if (ini_get("allow_url_fopen")) {
-
-            $json = file_get_contents($api_url);
-        }
-        else {
-
-            $curl = curl_init($api_url);
-            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-            $json = curl_exec($curl);
-            curl_close($curl);
-        }
-
-        //get data
-        $data = json_decode($json);
-
-        //check struct
-        if (!$data || !is_array($data->serie) || empty($data->serie))
-            throw new Exception("Missing 'serie' property for parsed JSON object: ".json_encode($data));
-
-        $indicator = $data->serie[0];
-
-        if (!isset($indicator->valor))
-            throw new Exception("Missing 'valor' property for parsed JSON object: ".json_encode($data));
-
-        $value = (float)($indicator->valor);
-
-		//print output for CLI
-		if(method_exists($this, "colorize"))
-        	$this->colorize("Saving value in Redis: ".$value);
-
-        return $value;
+		return null;
     }
 }
