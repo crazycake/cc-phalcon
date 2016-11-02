@@ -195,7 +195,7 @@ class AppServices
 
             $prefix = strtoupper($this->config->app->namespace);
 
-            //check env for DOCKER
+            //Traditional env
 			if(getenv("DB_HOST")) {
 
 				$db_conf = [
@@ -206,7 +206,7 @@ class AppServices
 	                "password" => getenv("DB_PASS")
 	            ];
 			}
-			//NON-DOCKER
+			//check env for DOCKER
 			else {
 
                 if(is_null(getenv($prefix."_DB_PORT_3306_TCP_ADDR")))
