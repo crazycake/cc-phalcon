@@ -201,14 +201,18 @@ trait Requester
 
         //full URL
         $parts = parse_url($url);
+		//sd($parts);
 
-        /*if ($parts["sheme"] == "https")
-            $default_port = 443; //SSL*/
+		//set port
+		$port = isset($parts["port"]) ? $parts["port"] : self::$SOCKET_DEFAULT_PORT;
 
-        // set socket to be opened
+		if(!in_array($port, [80, 443]))
+			$port = self::$SOCKET_DEFAULT_PORT;
+
+        //set socket to be opened
         $socket = fsockopen(
             $parts["host"],
-            isset($parts["port"]) ? $parts["port"] : self::$SOCKET_DEFAULT_PORT,
+            $port,
             $errno,
             $errstr,
             self::$REQUEST_TIMEOUT
