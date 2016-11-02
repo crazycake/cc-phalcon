@@ -206,6 +206,7 @@ trait Requester
 		//set port
 		$port = isset($parts["port"]) ? $parts["port"] : self::$SOCKET_DEFAULT_PORT;
 
+		//docker localhost fallback
 		if(!in_array($port, [80, 443]))
 			$port = self::$SOCKET_DEFAULT_PORT;
 
