@@ -16,6 +16,11 @@ use CrazyCake\Phalcon\AppModule;
  */
 trait CheckoutJobs
 {
+	/**
+     * Implementation required
+     */
+    abstract protected function storeDollarChileanPesoValue();
+
     /**
      * Initializer
      */
@@ -33,9 +38,6 @@ trait CheckoutJobs
      */
     public function userCheckoutCleanerAction()
     {
-        if (MODULE_NAME !== "cli")
-            throw new Exception("This action is only for CLI app.");
-
         $user_checkout_class = AppModule::getClass("user_checkout");
 
         //delete pending checkouts with default expiration time
@@ -54,9 +56,6 @@ trait CheckoutJobs
      */
     public function storeDollarChileanPesoValueAction()
     {
-        if (MODULE_NAME !== "cli")
-            throw new Exception("This action is only for CLI app.");
-
         try {
             //checkout currency
             $output = $this->storeDollarChileanPesoValue();
