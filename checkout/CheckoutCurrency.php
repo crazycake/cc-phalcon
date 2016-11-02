@@ -152,8 +152,7 @@ trait CheckoutCurrency
 				if(method_exists($this, "colorize"))
 					$this->colorize("Invalid response struct o empty payload: ".json_encode($data, JSON_UNESCAPED_SLASHES), "WARNING");
 
-		        $this->apiChileanCurrencyRequest($indicator, $interval + 12);
-				return;
+		        return $this->apiChileanCurrencyRequest($indicator, $interval + 12);
 			}
 
 		    $serie = current($data->serie);
