@@ -58,9 +58,6 @@ trait CheckoutCurrency
      */
     protected function storeDollarChileanPesoValue()
     {
-        if (MODULE_NAME !== "cli")
-            throw new Exception("This action is only for CLI app.");
-
         try {
 
             //get value from remote API
@@ -125,8 +122,10 @@ trait CheckoutCurrency
 
         //get dollar value for today
         $api_url = self::$API_URL_CLP_CURRENCY."api/$indicator/".$date->format("d-m-Y");
-        //print output
-        $this->colorize("Requesting: ".$api_url);
+
+        //print output for CLI
+		if(method_exists($this, "colorize"))
+        	$this->colorize("Requesting: ".$api_url);
 
         //try both approaches
         if (ini_get("allow_url_fopen")) {
@@ -155,7 +154,9 @@ trait CheckoutCurrency
 
         $value = (float)($indicator->valor);
 
-        $this->colorize("Saving value in Redis: ".$value);
+		//print output for CLI
+		if(method_exists($this, "colorize"))
+        	$this->colorize("Saving value in Redis: ".$value);
 
         return $value;
     }
