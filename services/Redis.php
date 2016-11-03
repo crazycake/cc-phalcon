@@ -70,7 +70,7 @@ class Redis
 	* @param mixed $value - The Value for Key
 	* @return boolean - Value is true if data was set in cache.
 	*/
-	public function set($key = "", $value = null)
+	public function set($key = "", $value = null, $encode = true)
 	{
 		try {
 
@@ -81,7 +81,7 @@ class Redis
 				throw new Exception("Attempting to set null value for key $key.");
 
 			//set data
-			$value  = json_encode($value, JSON_UNESCAPED_SLASHES);
+			$value  = $encode ? json_encode($value, JSON_UNESCAPED_SLASHES) : $value;
 			$result = $this->client->set($key, $value);
 
 			if (!$result)
