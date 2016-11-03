@@ -8,9 +8,9 @@ namespace CrazyCake\Checkout;
 
 //imports
 use Phalcon\Exception;
+use Predis\Client as Redis;
 //core
 use CrazyCake\Phalcon\AppModule;
-use CrazyCake\Services\Redis;
 use Carbon\Carbon;
 
 /**
@@ -39,8 +39,10 @@ trait CheckoutCurrency
 	{
 		//redis
 		$setup = [
-			"host" => getenv("REDIS_PORT_6379_TCP_ADDR") ?: "localhost",
-			"port" => getenv("REDIS_PORT_6379_TCP_PORT") ?: 6379,
+			"scheme" 	 => "tcp",
+			"host"   	 => getenv("REDIS_PORT_6379_TCP_ADDR") ?: "localhost",
+			"port"   	 => getenv("REDIS_PORT_6379_TCP_PORT") ?: 6379,
+			"persistent" => false
 		];
         //sd($setup);
         //client instance

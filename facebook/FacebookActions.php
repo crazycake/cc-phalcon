@@ -22,7 +22,7 @@ use Facebook\Helpers\FacebookJavaScriptHelper;
 use Facebook\Exceptions\FacebookSDKException;
 //CrazyCake Libs
 use CrazyCake\Phalcon\AppModule;
-use CrazyCake\Services\Redis;
+use Predis\Client as Redis;
 
 /**
  * Facebook Actions
@@ -76,7 +76,13 @@ trait FacebookActions
             mkdir($this->upload_path, 0755, true);
 
         //set redis service
-        $this->redis = new Redis();
+		$setup = [
+			"scheme" 	 => "tcp",
+			"host"   	 => "localhost",
+			"port"   	 => 6379,
+			"persistent" => false
+		];
+        $this->redis = new Redis($setup);
 
         //set Facebook SDK Object
         if (is_null($this->fb)) {

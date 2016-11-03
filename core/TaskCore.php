@@ -32,7 +32,6 @@ class TaskCore extends Task
         $this->colorize("Usage: \ncli.php main [param]", "OK");
         $this->colorize("--------------------", "NOTE");
         $this->colorize("appConfig: Outputs app configuration in JSON format", "WARNING");
-        $this->colorize("getRedisKey [key]: Gets stored value in Redis.", "WARNING");
     }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
@@ -52,31 +51,6 @@ class TaskCore extends Task
             $this->colorize("No value found for argument.", "ERROR", true);
 
         $this->output($conf->{$args[0]}, true);
-    }
-
-    /**
-     * Gets cached data in Redis.
-     * @param array $args - The input params
-     */
-    public function getRedisKeyAction($args = [])
-    {
-        if (empty($args))
-            $this->colorize("Empty key argument", "ERROR", true);
-
-        try {
-
-            //redis adapter
-            $redis = new \CrazyCake\Services\Redis();
-            //get data from cache json-undecoded
-            $data = $redis->get($args[0], false);
-
-            //outputs value
-            $this->output($data);
-        }
-        catch (Exception $e) {
-            //outputs error
-            die("CLI TaskCore -> Error retrieving cached data for: ".$args[0].", err: ".$e->getMessage());
-        }
     }
 
     /**
