@@ -27,10 +27,9 @@ trait CheckoutManager
 
     /**
      * Listener - Success checkout Task completed
-     * @param int $user - The user ID
      * @param object $checkout - The checkout object
      */
-    abstract public function onSuccessCheckoutTaskComplete($user_id, &$checkout);
+    abstract public function onSuccessCheckout(&$checkout);
 
     /**
      * Config var
@@ -48,7 +47,6 @@ trait CheckoutManager
     public function initCheckoutManager($conf = [])
     {
         $defaults = [
-            "debug"                => false,
             "encrypted_ids"        => false,
             "max_per_item_allowed" => 5,
             "default_currency"     => "CLP"
@@ -102,31 +100,31 @@ trait CheckoutManager
      */
     public function successCheckout($buy_order = "")
     {
-        //executes another async self request, this time as socket (connection is closed before waiting for response)
+        //triggers async request
         $this->asyncRequest([
             "controller" => "checkout",
             "action"     => "successCheckoutTask",
             "method"     => "post",
-            "socket"     => !$this->checkout_manager_conf["debug"], //wait for response debugging
+            "socket"     => true,
             "payload"    => ["buy_order" => $buy_order]
         ]);
     }
 
     /**
-     * POST Async checkout action (executes slow tasks)
+     * POST Async checkout action
      * Logic tasks:
      * 1) Update status del checkout
-     * 2) Calls purchased object generation logic
-     * 3) generates PDF invoice
-     * 4) sends the checkout invoice email
+     * 2) Calls listener onSuccessCheckout
      */
     public function successCheckoutTaskAction()
     {
-        $data = $this->handleRequest([
-            "payload" => "string",
-        ], "POST", false);
-
         try {
+
+			//get post params
+			$data = $this->handleRequest([
+	            "payload" => "string",
+	        ], "POST", false);
+
             //decrypt data
             $data = $this->cryptify->decryptData($data["payload"], true);
 
@@ -138,7 +136,7 @@ trait CheckoutManager
             $user_checkout_class        = AppModule::getClass("user_checkout");
             $user_checkout_object_class = AppModule::getClass("user_checkout_object");
 
-            //get checkout, user and event
+            //get checkout & user
             $checkout = $user_checkout_class::findFirstByBuyOrder($data->buy_order);
             $user     = $user_class::getById($checkout->user_id);
 
@@ -151,84 +149,28 @@ trait CheckoutManager
 
             //extended properties
             $checkout->amount_formatted = Forms::formatPrice($checkout->amount, $checkout->currency);
-            $checkout->objects          = $user_checkout_object_class::getCollection($checkout->buy_order);
-
-            //$this->logger->debug("successCheckoutTask:: before parsing checkout objects: ".print_r($checkout, true));
+			//set objects
+            $checkout->objects = $user_checkout_object_class::getCollection($checkout->buy_order);
 
             //1) update status of checkout
             $user_checkout_class::updateState($checkout->buy_order, "success");
 
-            //2) set checkout object classes
-            $checkout->objects_classes = [];
-
-            foreach ($checkout->objects as $obj) {
-
-                //only once
-                if (in_array($obj->object_class, $checkout->objects_classes))
-                    continue;
-
-                //save object class
-                array_push($checkout->objects_classes, $obj->object_class);
-
-                //call object class listener
-                $this->logger->debug("CheckoutManager::calling ".$obj->object_class."Controller::onSuccessCheckout");
-
-                if (method_exists($obj->object_class."Controller", "onSuccessCheckout")) {
-
-                    $class_name = $obj->object_class."Controller";
-
-                    (new $class_name())->onSuccessCheckout($user->id, $checkout);
-                }
-                else {
-                    $this->logger->debug("CheckoutManager::onSuccessCheckout, missing onSuccessCheckout fn on class: ".$obj->object_class);
-                }
-            }
-
-            if ($this->checkout_manager_conf["debug"])
-                $this->logger->debug("Checkout task complete: ".json_encode($checkout));
-
-            //3) Call listener
-            $this->onSuccessCheckoutTaskComplete($user->id, $checkout);
+            //2) Call listener
+            $this->onSuccessCheckout($checkout);
         }
         catch (Exception $e) {
             //get mailer controller
             $mailer = AppModule::getClass("mailer_controller");
             //send alert system mail message
             (new $mailer())->adminException($e, [
-                "action"  => "successCheckoutTask",
-                "user_id" => (isset($user) ? $user->id : "unknown")
+                "action" => "successCheckoutTask",
+                "data"   => json_encode($data, JSON_UNESCAPED_SLASHES)
             ]);
         }
         finally {
             //send OK response
             $this->jsonResponse(200);
         }
-    }
-
-    /**
-     * Failed checkout, marks checkout as failed and deletes saved cache
-     * @static
-     * @param object $checkout - The checkout object
-     * @return boolean
-     */
-    public function failedCheckout($checkout = false)
-    {
-        //get module class name
-        $user_checkout_class = AppModule::getClass("user_checkout");
-
-        if (!$checkout || !isset($checkout->buy_order))
-            return false;
-
-        //get ORM object and update status of checkout
-        $checkout_orm = $user_checkout_class::findFirstByBuyOrder($checkout->buy_order);
-
-        if (!$checkout_orm)
-            return false;
-
-        if ($checkout_orm->state == "pending")
-            $user_checkout_class::updateState($checkout->buy_order, "failed");
-
-        return true;
     }
 
     /**
