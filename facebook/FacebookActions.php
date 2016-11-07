@@ -82,18 +82,19 @@ trait FacebookActions
 			"port"   	 => 6379,
 			"persistent" => false
 		];
-        $this->redis = new Redis($setup);
+        $this->redis = new Redis(isset($conf["redis"]) ?: $setup);
 
         //set Facebook SDK Object
-        if (is_null($this->fb)) {
+        if (!is_null($this->fb))
+			return;
 
-            $this->fb = new \Facebook\Facebook([
-                "app_id"     => $this->config->app->facebook->appID,
-                "app_secret" => $this->config->app->facebook->appKey,
-                //api version
-                "default_graph_version" => "v2.5"
-            ]);
-        }
+		//set facebook client
+        $this->fb = new \Facebook\Facebook([
+            "app_id"     => $this->config->app->facebook->appID,
+            "app_secret" => $this->config->app->facebook->appKey,
+            //api version
+            "default_graph_version" => "v2.5"
+        ]);
     }
 
     /**
