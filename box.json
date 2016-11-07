@@ -11,9 +11,7 @@
 		"qr",
 		"facebook",
 		"checkout",
-		"mobile",
-		"soap",
-		"transbank"
+		"mobile"
 	],
     "main"      : "autoload.php",
     "output"    : "cc-phalcon.phar",
