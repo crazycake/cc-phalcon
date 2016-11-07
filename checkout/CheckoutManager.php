@@ -94,7 +94,7 @@ trait CheckoutManager
     }
 
     /**
-     * Succesful checkout, Called when checkout was made succesfuly (eg: after payment)
+     * Succesful checkout, Called when checkout was made succesfuly
      * @param string $buy_order - The buy order
      * @return object Checkout
      */
@@ -144,7 +144,7 @@ trait CheckoutManager
             if (!$checkout || !$user)
                 throw new Exception("Invalid decrypted data, user or checkout not found: ".json_encode($data));
 
-            //reduce object
+            //reduce ORM to simple object
             $checkout = $checkout->reduce();
 
             //extended properties
