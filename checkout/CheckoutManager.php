@@ -114,7 +114,7 @@ trait CheckoutManager
      * POST Async checkout action
      * Logic tasks:
      * 1) Update status del checkout
-     * 2) Calls listener onSuccessCheckout
+     * 2) Calls listener
      */
     public function successCheckoutTaskAction()
     {
