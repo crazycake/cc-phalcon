@@ -65,6 +65,7 @@ class Forms
                 $formatted = str_replace(",", ".", $formatted);
                 break;
             case "USD":
+				$formatted = "$".$formatted;
                 break;
             default:
                 break;
