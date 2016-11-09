@@ -65,17 +65,18 @@ trait CheckoutManager
         //make sure is ajax request
         $this->onlyAjax();
 
-        try {
-            //get class
-            $user_checkout_class = AppModule::getClass("user_checkout");
+        //get class
+        $user_checkout_class = AppModule::getClass("user_checkout");
 
-            //get checkout object with parsed data
-            $checkout = $this->setCheckoutObject();
+		try {
 
-            //call listeners
-            $this->onBeforeBuyOrderCreation($checkout);
+	        //get checkout object with parsed data
+	        $checkout = $this->setCheckoutObject();
 
-            $checkout_orm = $user_checkout_class::newBuyOrder($checkout);
+	        //call listeners
+	        $this->onBeforeBuyOrderCreation($checkout);
+
+	        $checkout_orm = $user_checkout_class::newBuyOrder($checkout);
 
             //check if an error occurred
             if (!$checkout_orm)
@@ -89,6 +90,7 @@ trait CheckoutManager
         }
         catch (Exception $e)  { $exception = $e->getMessage(); }
         catch (\Exception $e) { $exception = $e->getMessage(); }
+
         //sends an error message
         $this->jsonResponse(200, $exception, "alert");
     }
@@ -119,7 +121,6 @@ trait CheckoutManager
     public function successCheckoutTaskAction()
     {
         try {
-
 			//get post params
 			$data = $this->handleRequest([
 	            "payload" => "string",
@@ -143,6 +144,10 @@ trait CheckoutManager
             //check if data is OK
             if (!$checkout || !$user)
                 throw new Exception("Invalid decrypted data, user or checkout not found: ".json_encode($data));
+
+			//already process
+			if($checkout->state == "success")
+				throw new Exception("Checkout already processed, buy order: ".$data->buy_order);
 
             //reduce ORM to simple object
             $checkout = $checkout->reduce();
