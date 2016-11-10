@@ -100,14 +100,14 @@ trait CheckoutManager
      * @param string $buy_order - The buy order
      * @return object Checkout
      */
-    public function successCheckout($buy_order = "")
+    public function successCheckout($buy_order = "", $async = true)
     {
         //triggers async request
         $this->asyncRequest([
             "controller" => "checkout",
             "action"     => "successCheckoutTask",
             "method"     => "post",
-            "socket"     => true,
+            "socket"     => $async,
             "payload"    => ["buy_order" => $buy_order]
         ]);
     }
