@@ -82,7 +82,7 @@ trait FacebookActions
 			"port"   	 => 6379,
 			"persistent" => false
 		];
-        $this->redis = new Redis(isset($conf["redis"]) ?: $setup);
+        $this->redis = new Redis(array_merge($setup, $conf));
 
         //set Facebook SDK Object
         if (!is_null($this->fb))
