@@ -21,8 +21,8 @@ use CrazyCake\Phalcon\AppModule;
 trait Requester
 {
     /** static vars */
-    protected static $REQUEST_TIMEOUT     = 30.0;
-    protected static $SOCKET_DEFAULT_PORT = 80;
+    protected static $REQUEST_TIMEOUT   = 30.0;
+    protected static $HTTP_DEFAULT_PORT = 80;
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
@@ -47,11 +47,23 @@ trait Requester
         //set method, default is GET, value is uppercased
         $options["method"] = empty($options["method"]) ? "GET" : strtoupper($options["method"]);
 
+		//get URL parts
+        $url_parts = parse_url($options["base_url"].$options["uri"]);
+
+		//replace port to default?
+		if(isset($url_parts["port"]))
+			$options["base_url"] = str_replace(":".$url_parts["port"], "", $options["base_url"]);
+
+		//merge options
+		$options = array_merge($options, $url_parts);
+		//sd($options);
+
         try {
             //socket async call?
             if (!empty($options["socket"]) && $options["socket"] === true)
                 return $this->_socketAsync($options);
 
+			//guzzle options
             $guzzle_options = [
                 "base_uri" => $options["base_url"],
                 "timeout"  => self::$REQUEST_TIMEOUT
@@ -194,26 +206,10 @@ trait Requester
      */
     private function _socketAsync($options = [])
     {
-        //check URL
-        $url = $options["base_url"].$options["uri"];
-        //append final slash?
-        if (substr($url, -1) !== "/") $url .= "/";
-
-        //full URL
-        $parts = parse_url($url);
-		//sd($parts);
-
-		//set port
-		$port = isset($parts["port"]) ? $parts["port"] : self::$SOCKET_DEFAULT_PORT;
-
-		//docker localhost fallback
-		if(!in_array($port, [80, 443]))
-			$port = self::$SOCKET_DEFAULT_PORT;
-
         //set socket to be opened
         $socket = fsockopen(
-            $parts["host"],
-            $port,
+            $options["host"],
+            self::$HTTP_DEFAULT_PORT,
             $errno,
             $errstr,
             self::$REQUEST_TIMEOUT
@@ -221,7 +217,7 @@ trait Requester
 
         // Data goes in the path for a GET request
         if ($options["method"] == "GET") {
-            $parts["path"] .= $options["payload"];
+            $options["path"] .= $options["payload"];
             $length = 0;
         }
         else {
@@ -239,8 +235,8 @@ trait Requester
         }
 
         //set output
-        $out = $options["method"]." ".$parts["path"]." HTTP/1.1\r\n";
-        $out .= "Host: ".$parts["host"]."\r\n";
+        $out = $options["method"]." ".$options["path"]." HTTP/1.1\r\n";
+        $out .= "Host: ".$options["host"]."\r\n";
         $out .= "User-Agent: AppLocalServer\r\n";
         $out .= "Content-Type: application/x-www-form-urlencoded\r\n";
         $out .= "Content-Length: ".$length."\r\n";
@@ -259,6 +255,7 @@ trait Requester
         if ($options["method"] == "POST" && !empty($options["payload"])) {
             $out .= $options["payload"];
         }
+		
         $this->logger->debug("Requester::_socketAsync -> sending out request ".print_r($out, true));
 
         fwrite($socket, $out);
