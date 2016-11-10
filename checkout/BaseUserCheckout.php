@@ -151,8 +151,8 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 
     /**
      * Creates a new buy order
-     * @param object $checkoutObj - The checkout object
-     * @return mixed [boolean|string] - If success returns the buy order
+     * @param object $checkoutObj -The checkout object
+     * @return mixed [object] - The checkout ORM object
      */
     public static function newBuyOrder($checkoutObj = null)
     {
@@ -248,7 +248,6 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
     public static function deleteExpired()
     {
         try {
-
             //use carbon library to handle time
             $now = new \Carbon\Carbon();
             //substract time
