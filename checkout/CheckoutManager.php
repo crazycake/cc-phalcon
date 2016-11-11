@@ -146,16 +146,17 @@ trait CheckoutManager
                 throw new Exception("Invalid input checkout: ".json_encode($data));
 
 			//already process
-			if(APP_ENVIRONMENT == "local" && $checkout->state == "success")
+			if(APP_ENVIRONMENT !== "local" && $checkout->state == "success")
 				throw new Exception("Checkout already processed, buy order: ".$data->buy_order);
 
+			//1) update status of checkout
+			$checkout->update(["state" => "success"]);
+			//reduce object
+			$checkout = $checkout->reduce();
             //extended properties
             $checkout->amount_formatted = Forms::formatPrice($checkout->amount, $checkout->currency);
 			//set objects
             $checkout->objects = $user_checkout_object_class::getCollection($checkout->buy_order);
-
-            //1) update status of checkout
-			$checkout->update(["state" => "success"]);
 
             //2) Call listener
             $this->onSuccessCheckout($checkout);
@@ -236,7 +237,6 @@ trait CheckoutManager
 
             //update total Q
             $total_q += $q;
-
             //update amount
             $checkout->amount += $q * $object->price;
 
