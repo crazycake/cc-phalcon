@@ -136,7 +136,6 @@ trait CheckoutManager
 			$this->logger->debug("CheckoutManager::successCheckoutTask -> processing buy order: ".$data->buy_order);
 
             //set classes
-            $user_class                 = AppModule::getClass("user");
             $user_checkout_class        = AppModule::getClass("user_checkout");
             $user_checkout_object_class = AppModule::getClass("user_checkout_object");
 
@@ -146,14 +145,9 @@ trait CheckoutManager
 			if (!$checkout)
                 throw new Exception("Invalid input checkout: ".json_encode($data));
 
-            $user = $user_class::getById($checkout->user_id);
-
 			//already process
-			if($checkout->state == "success")
+			if(APP_ENVIRONMENT == "local" && $checkout->state == "success")
 				throw new Exception("Checkout already processed, buy order: ".$data->buy_order);
-
-            //reduce ORM to simple object
-            $checkout = $checkout->reduce();
 
             //extended properties
             $checkout->amount_formatted = Forms::formatPrice($checkout->amount, $checkout->currency);
@@ -161,12 +155,15 @@ trait CheckoutManager
             $checkout->objects = $user_checkout_object_class::getCollection($checkout->buy_order);
 
             //1) update status of checkout
-            $user_checkout_class::updateState($checkout->buy_order, "success");
+			$checkout->update(["state" => "success"]);
 
             //2) Call listener
             $this->onSuccessCheckout($checkout);
         }
         catch (Exception $e) {
+
+			$this->logger->debug("CheckoutManager::successCheckoutTask -> Exception: ".$e->getMessage());
+
             //get mailer controller
             $mailer = AppModule::getClass("mailer_controller");
             //send alert system mail message
