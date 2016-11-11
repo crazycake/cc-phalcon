@@ -222,25 +222,6 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
     }
 
     /**
-     * Updates a checkout state
-     * @param string $buy_order - The buy order
-     * @param string $state - The new state
-     * @return boolean
-     */
-    public static function updateState($buy_order, $state)
-    {
-        $checkout = self::findFirstByBuyOrder($buy_order);
-
-        //check object and default state
-        if (!$checkout || $checkout->state != self::$STATES[0])
-            return false;
-
-        $checkout->update(["state" => $state]);
-
-        return true;
-    }
-
-    /**
      * Deletes expired pending checkouts
      * Requires Carbon library
      * @return int
