@@ -37,33 +37,33 @@ trait Requester
      */
     protected function newRequest($options = [])
     {
-        //simple input validation
+        // simple input validation
         if (empty($options["base_url"]) || empty($options["uri"]))
             throw new Exception("Requester::newRequest -> base_url & uri method params are required.");
 
         if (empty($options["payload"]))
             $options["payload"] = "";
 
-        //set method, default is GET, value is uppercased
+        // set method, default is GET, value is uppercased
         $options["method"] = empty($options["method"]) ? "GET" : strtoupper($options["method"]);
 
-		//get URL parts
+		// get URL parts
         $url_parts = parse_url($options["base_url"].$options["uri"]);
 
-		//replace port to default?
-		if(isset($url_parts["port"]))
-			$options["base_url"] = str_replace(":".$url_parts["port"], "", $options["base_url"]);
+		// NOTE: temporary strip ports
+		//if(isset($url_parts["port"]))
+		//	$options["base_url"] = str_replace(":".$url_parts["port"], "", $options["base_url"]);
 
-		//merge options
+		// merge options
 		$options = array_merge($options, $url_parts);
-		//sd($options);
+		// sd($options);
 
         try {
-            //socket async call?
+            // socket async call?
             if (!empty($options["socket"]) && $options["socket"] === true)
                 return $this->_socketAsync($options);
 
-			//guzzle options
+			// guzzle options
             $guzzle_options = [
                 "base_uri" => $options["base_url"],
                 "timeout"  => self::$REQUEST_TIMEOUT
@@ -71,7 +71,7 @@ trait Requester
 
             $client = new GuzzleClient($guzzle_options);
 
-            //reflection function
+            // reflection function
             $action = "_".strtolower($options["method"])."Request";
 
             return $this->$action($client, $options);
@@ -79,7 +79,7 @@ trait Requester
         catch (Exception $e)  { $exception = $e; }
         catch (\Exception $e) { $exception = $e; }
 
-        //log error
+        // log error
         $di = \Phalcon\DI::getDefault();
         $di->getShared("logger")->error("Requester::newRequest -> Options: ".json_encode($options, JSON_UNESCAPED_SLASHES).", Exception: ".$exception->getMessage().
                                         "\n".$exception->getLine()." ".$e->getFile());
@@ -255,7 +255,7 @@ trait Requester
         if ($options["method"] == "POST" && !empty($options["payload"])) {
             $out .= $options["payload"];
         }
-		
+
         $this->logger->debug("Requester::_socketAsync -> sending out request ".print_r($out, true));
 
         fwrite($socket, $out);
