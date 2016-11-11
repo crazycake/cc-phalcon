@@ -19,16 +19,11 @@ TESTING_KEY=""
 TESTING_HOST=""
 TESTING_BRANCH="testing"
 
-STAGING_KEY=""
-STAGING_HOST=""
-STAGING_BRANCH="staging"
-
 PRODUCTION_KEY=""
 PRODUCTION_HOST=""
 PRODUCTION_BRANCH="production"
 
 TESTING_SSH_CMD=""
-STAGING_SSH_CMD=""
 PRODUCTION_SSH_CMD=""
 
 # date NOW
@@ -43,7 +38,6 @@ fi
 scriptHelp() {
 	echo -e "\033[93mWebapp deploy script [$APP_ENV].\nValid options:\033[0m"
 	echo -e "\033[95m -t <option>: deploy to testing environment. \033[0m"
-    echo -e "\033[95m -s <option>: deploy to staging environment (branch staging requried). \033[0m"
     echo -e "\033[95m -p <option>: deploy to production environment (branch production requried). \033[0m"
 	echo -e "\033[93m * Option can be '-m' for database migrations. \033[0m"
 	exit
@@ -60,7 +54,6 @@ checkEnvVars() {
 
 	#set values
 	TESTING_SSH_CMD="$SSH_DIR/$TESTING_KEY $TESTING_HOST"
-	STAGING_SSH_CMD="$SSH_DIR/$STAGING_KEY $STAGING_HOST"
 	PRODUCTION_SSH_CMD="$SSH_DIR/$PRODUCTION_KEY $PRODUCTION_HOST"
 }
 
@@ -131,15 +124,6 @@ case "$1" in
 		# make a pull for colaborative deploys
 		git pull
 
-	elif [ "$1" = "-s" ]; then
-		#commit
-		git commit -a -m "BUILD STAGING [$NOW]"
-		# checkout to staging
-		echo -e "\033[95mMerging to staging... \033[0m"
-		git checkout $STAGING_BRANCH
-		# make a pull for colaborative deploys
-		git pull
-
 	else
 		#commit
 		git commit -a -m "BUILD PRODUCTION [$NOW]"
@@ -163,9 +147,6 @@ case "$1" in
 	if [ "$1" = "-t" ]; then
 		echo -e "\033[95mSSH: $TESTING_SSH_CMD \033[0m"
 		ssh -i $TESTING_SSH_CMD 'bash -s' -- < ./deploy.bash $DEPLOY_REMOTE_PATH "$2"
-	elif [ "$1" = "-s" ]; then
-		echo -e "\033[95mSSH: $STAGING_SSH_CMD \033[0m"
-		ssh -i $STAGING_SSH_CMD 'bash -s' -- < ./deploy.bash $DEPLOY_REMOTE_PATH "$2"
 	else
 		echo -e "\033[95mSSH: $PRODUCTION_SSH_CMD \033[0m"
 		ssh -i $PRODUCTION_SSH_CMD 'bash -s' -- < ./deploy.bash $DEPLOY_REMOTE_PATH "$2"

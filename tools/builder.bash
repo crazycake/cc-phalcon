@@ -25,7 +25,7 @@ buildTask() {
 	CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
 
 	# environment protection (prevents env merges)
-	if [ "testing" = "$CURRENT_BRANCH" ] || [ "staging" = "$CURRENT_BRANCH" ] || [ "production" = "$CURRENT_BRANCH" ]; then
+	if [ "testing" = "$CURRENT_BRANCH" ] || [ "production" = "$CURRENT_BRANCH" ]; then
 
 		echo -e "\033[31mWarning your current branch is: $CURRENT_BRANCH. \033[0m"
 		exit

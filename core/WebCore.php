@@ -354,8 +354,8 @@ abstract class WebCore extends MvcCore implements WebSecurity
             $css_url .= "?v=".$version;
             $js_url  .= "?v=".$version;
         }
-        //special case for cdn staging or production
-        else if ($staticUrl && in_array(APP_ENVIRONMENT, ["staging", "production"])) {
+        //special case for cdn production
+        else if ($staticUrl && APP_ENVIRONMENT == "production") {
 
             $version = str_replace(".", "", $version);
             //set paths

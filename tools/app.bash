@@ -84,8 +84,8 @@ appDeploy() {
 	# build app first
 	appBuild
 
-	# only staging or production
-	if [ "$1" = "-s" ] || [ "$1" = "-p" ]; then
+	# only production
+	if [ "$1" = "-p" ]; then
 		echo -e "\033[95mChecking CDN_SYNC env var... \033[0m"
 		cd $PROJECT_PATH
 

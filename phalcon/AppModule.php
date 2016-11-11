@@ -131,8 +131,6 @@ abstract class AppModule
 
     /**
      * Get a module URL from current environment
-     * For production use defined URIS, for dev local folders path
-     * and for staging or testing URI replacement
      * @static
      * @param  string $module - The module name
      * @param  string $uri - A uri to be appended
@@ -151,7 +149,6 @@ abstract class AppModule
         //environments
         switch (APP_ENVIRONMENT) {
 
-            case "staging":
             case "production":
 
                 //check if static url is set

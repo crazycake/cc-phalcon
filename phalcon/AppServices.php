@@ -125,8 +125,8 @@ class AppServices
             //get static url
             $static_url = isset($this->props["staticUrl"]) ? $this->props["staticUrl"] : false;
 
-            //set static uri for assets, cdn only for staging or production
-            if (!$static_url || in_array(APP_ENVIRONMENT, ["local", "testing"]))
+            //set static uri for assets, cdn only for production
+            if (!$static_url || APP_ENVIRONMENT !== "production")
                 $static_url = APP_BASE_URL;
 
             $url->setStaticBaseUri($static_url);
