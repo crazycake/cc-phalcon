@@ -121,6 +121,7 @@ trait CheckoutManager
     public function successCheckoutTaskAction()
     {
         try {
+
 			//get post params
 			$data = $this->handleRequest([
 	            "payload" => "string",
@@ -132,6 +133,8 @@ trait CheckoutManager
             if (is_null($data) || !isset($data->buy_order))
                 throw new Exception("Invalid decrypted data: ".json_encode($data));
 
+			$this->logger->debug("CheckoutManager::successCheckoutTask -> processing buy order: ".$data->buy_order);
+
             //set classes
             $user_class                 = AppModule::getClass("user");
             $user_checkout_class        = AppModule::getClass("user_checkout");
@@ -139,11 +142,11 @@ trait CheckoutManager
 
             //get checkout & user
             $checkout = $user_checkout_class::findFirstByBuyOrder($data->buy_order);
-            $user     = $user_class::getById($checkout->user_id);
 
-            //check if data is OK
-            if (!$checkout || !$user)
-                throw new Exception("Invalid decrypted data, user or checkout not found: ".json_encode($data));
+			if (!$checkout)
+                throw new Exception("Invalid input checkout: ".json_encode($data));
+
+            $user = $user_class::getById($checkout->user_id);
 
 			//already process
 			if($checkout->state == "success")

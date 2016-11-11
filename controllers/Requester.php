@@ -51,12 +51,14 @@ trait Requester
         $url_parts = parse_url($options["base_url"].$options["uri"]);
 
 		// NOTE: temporary strip ports
-		//if(isset($url_parts["port"]))
-		//	$options["base_url"] = str_replace(":".$url_parts["port"], "", $options["base_url"]);
+		if(isset($url_parts["port"]))
+			$options["base_url"] = str_replace(":".$url_parts["port"], "", $options["base_url"]);
 
 		// merge options
 		$options = array_merge($options, $url_parts);
 		// sd($options);
+
+        $this->logger->debug("Requester::newRequest -> Options: ".json_encode($options, JSON_UNESCAPED_SLASHES));
 
         try {
             // socket async call?

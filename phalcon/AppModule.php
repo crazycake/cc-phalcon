@@ -202,7 +202,7 @@ abstract class AppModule
 
         //get env-vars
         $debug        = getenv("APP_DEBUG");
-        $environment  = getenv("APP_ENV") ?: "local";
+        $environment  = getenv("APP_ENV") ?: "local"; //default to LOCAL
         $app_base_uri = getenv("APP_URI_".strtoupper(MODULE_NAME));
 
         //set APP debug environment
