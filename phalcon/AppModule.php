@@ -202,7 +202,7 @@ abstract class AppModule
 
         //get env-vars
         $debug        = getenv("APP_DEBUG");
-        $environment  = getenv("APP_ENV");
+        $environment  = getenv("APP_ENV") ?: "local";
         $app_base_uri = getenv("APP_URI_".strtoupper(MODULE_NAME));
 
         //set APP debug environment
@@ -231,7 +231,7 @@ abstract class AppModule
             //fallback for missing env var
             if (empty($app_base_uri)) {
                 $base_url = (isset($_SERVER["HTTPS"]) ? "https://" : "http://").
-                                       $_SERVER["HTTP_HOST"].preg_replace("@/+$@", "", dirname($_SERVER["SCRIPT_NAME"]))."/";
+                                   $_SERVER["HTTP_HOST"].preg_replace("@/+$@", "", dirname($_SERVER["SCRIPT_NAME"]))."/";
             }
         }
 
