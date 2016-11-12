@@ -12,7 +12,6 @@ namespace CrazyCake\Checkout;
 use Phalcon\Exception;
 //core
 use CrazyCake\Phalcon\AppModule;
-use CrazyCake\Helpers\Forms;
 
 /**
  * Checkout Manager
@@ -154,8 +153,6 @@ trait CheckoutManager
 
 			//reduce object
 			$checkout = $checkout->reduce();
-            //extended properties
-            $checkout->amount_formatted = Forms::formatPrice($checkout->amount, $checkout->currency);
 			//set objects
             $checkout->objects = $user_checkout_object_class::getCollection($checkout->buy_order);
 
