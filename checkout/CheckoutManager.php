@@ -151,6 +151,7 @@ trait CheckoutManager
 
 			//1) update status of checkout
 			$checkout->update(["state" => "success"]);
+
 			//reduce object
 			$checkout = $checkout->reduce();
             //extended properties
