@@ -56,6 +56,7 @@ trait AccountAuth
         $defaults = [
             "js_recaptcha" => false,
             "oauth"        => false,
+			"logout_uri"   => "signIn",
             //entities
             "user_entity"  => "User"
         ];
@@ -172,8 +173,8 @@ trait AccountAuth
      */
     public function logoutAction()
     {
-        //session controller
-        $this->onLogout();
+        //handled by session controller
+        $this->onLogout($this->account_auth_conf["logout_uri"]);
     }
 
     /**
@@ -254,7 +255,7 @@ trait AccountAuth
 
         //validate and filter request params data, second params are the required fields
         $data = $this->handleRequest(array_merge($default_params, $setting_params), "POST");
-        
+
         if(empty($data["email"]) || empty($data["first_name"]) || empty($data["last_name"]))
             $this->jsonResponse(400);
 

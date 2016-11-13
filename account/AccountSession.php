@@ -342,14 +342,6 @@ trait AccountSession
         $this->redirectTo("account");
     }
 
-    /**
-     * Redirect to login/register
-     */
-    protected function redirectToLogin()
-    {
-        $this->redirectTo("signIn");
-    }
-
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
