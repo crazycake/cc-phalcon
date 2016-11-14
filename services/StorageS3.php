@@ -61,8 +61,8 @@ class StorageS3
         //set app AWS S3 bucket
         $suffix = "";
 
-        if ($autoenv && defined("APP_ENVIRONMENT"))
-            $suffix = (APP_ENVIRONMENT === "production") ? "-prod" : "-dev";
+        if ($autoenv && defined("APP_ENV"))
+            $suffix = (APP_ENV === "production") ? "-prod" : "-dev";
 
         $this->accessKey  = $access;
         $this->secretKey  = $secret;

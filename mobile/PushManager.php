@@ -141,7 +141,7 @@ trait PushManager
 
             case "apn":
                 //set sandbox mode
-                $this->config->app->apn->sandbox = APP_ENVIRONMENT != "production" ? true : false;
+                $this->config->app->apn->sandbox = APP_ENV != "production" ? true : false;
                 //set apn client
                 $this->apn = new APN((array)$this->config->app->apn);
                 break;
@@ -197,7 +197,7 @@ trait PushManager
 												);
 
             //log action
-            if (APP_ENVIRONMENT != "production")
+            if (APP_ENV != "production")
                 $this->logger->debug("PushManager::_sendNotificationAPN -> new push to $uuid: ".$subscriber->payload);
 
             //handle response
@@ -262,7 +262,7 @@ trait PushManager
 			$response = $this->gcm->send();
 
             //log action
-            if (APP_ENVIRONMENT != "production")
+            if (APP_ENV != "production")
                 $this->logger->debug("PushManager::_sendNotificationGCM -> new push to $uuid: ".$subscriber->payload);
 
             //handle response

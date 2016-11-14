@@ -318,7 +318,7 @@ abstract class WebCore extends MvcCore implements WebSecurity
     {
         $enableSSL = AppModule::getProperty("enableSSL");
 
-        if(APP_ENVIRONMENT !== "production" || !isset($_SERVER["HTTP_HOST"]) ||
+        if(APP_ENV !== "production" || !isset($_SERVER["HTTP_HOST"]) ||
            $this->request->isSecureRequest() || empty($enableSSL)) {
             return;
         }
@@ -341,7 +341,7 @@ abstract class WebCore extends MvcCore implements WebSecurity
         $js_url  = $this->staticUrl(self::ASSETS_MIN_FOLDER_PATH."app.js");
 
         //set no-min assets for local dev
-        if (APP_ENVIRONMENT === "local") {
+        if (APP_ENV === "local") {
 
             //if file not exists use min file
             if(!is_file(PUBLIC_PATH.self::ASSETS_MIN_FOLDER_PATH."app.css"))
@@ -355,7 +355,7 @@ abstract class WebCore extends MvcCore implements WebSecurity
             $js_url  .= "?v=".$version;
         }
         //special case for cdn production
-        else if ($staticUrl && APP_ENVIRONMENT == "production") {
+        else if ($staticUrl && APP_ENV == "production") {
 
             $version = str_replace(".", "", $version);
             //set paths
@@ -387,7 +387,7 @@ abstract class WebCore extends MvcCore implements WebSecurity
             "name"      => $this->config->app->name,
             "baseUrl"   => $this->baseUrl(),
             "staticUrl" => $this->staticUrl(),
-            "dev"       => (APP_ENVIRONMENT === "production") ? 0 : 1,
+            "dev"       => (APP_ENV === "production") ? 0 : 1,
             "version"   => AppModule::getProperty("version")
         ];
 
