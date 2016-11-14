@@ -84,8 +84,8 @@ trait AccountManager
     {
         //get post params
         $default_params = [
-            "first_name"    => "string",
-            "last_name"     => "string",
+            "@first_name"   => "string",
+            "@last_name"    => "string",
             "@current_pass" => "string",
             "@pass"         => "string"
         ];
@@ -130,8 +130,12 @@ trait AccountManager
                 $updating_data["pass"] = $this->security->hash($data["pass"]);
             }
 
-            //check first & last name
-            if (strlen($data["first_name"]) >= 2 && $data["first_name"] != $user->first_name) {
+			//check first & last name
+			if (strlen($data["first_name"]) < 3 || strlen($data["last_name"]) < 3)
+                throw new Exception($this->account_manager_conf["trans"]["INVALID_NAMES"]);
+
+            //check for a change
+            if ($data["first_name"] != $user->first_name) {
 
                 //validate name
                 if (strcspn($data["first_name"], "0123456789") != strlen($data["first_name"]))
@@ -141,7 +145,7 @@ trait AccountManager
                 $updating_data["first_name"] = mb_convert_case($data["first_name"], MB_CASE_TITLE, "UTF-8");
             }
 
-            if (strlen($data["last_name"]) >= 2 && $data["last_name"] != $user->last_name) {
+            if ($data["last_name"] != $user->last_name) {
 
                 //validate name
                 if (strcspn($data["last_name"], "0123456789") != strlen($data["last_name"]))
