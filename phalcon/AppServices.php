@@ -193,38 +193,16 @@ class AppServices
         //Database connection is created based in the parameters defined in the configuration file
         $di->setShared("db", function() {
 
-            $prefix = strtoupper($this->config->app->namespace);
-
-            //Traditional env
-			if(getenv("DB_HOST")) {
-
-				$db_conf = [
-	                "host"     => getenv("DB_HOST"),
-	                "port"     => 3306,
-	                "dbname"   => getenv("DB_NAME"),
-	                "username" => getenv("DB_USER"),
-	                "password" => getenv("DB_PASS")
-	            ];
-			}
-			//check env for DOCKER
-			else {
-
-                if(is_null(getenv($prefix."_DB_PORT_3306_TCP_ADDR")))
-                    throw new Exception("Env var ".$prefix."_DB_PORT_3306_TCP_ADDR is not set.");
-
-				$db_conf = [
-   	                "host"     => getenv($prefix."_DB_PORT_3306_TCP_ADDR"),
-   	                "port"     => getenv($prefix."_DB_PORT_3306_TCP_PORT"),
-   	                "dbname"   => $this->config->app->namespace,
-   	                "username" => "root",
-   	                "password" => "dev"
-   	            ];
-			}
-            //sd($db_conf);
-
-            return new \Phalcon\Db\Adapter\Pdo\Mysql(array_merge($db_conf, [
-                "options" => [\PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"] //force utf8-charset
-            ]));
+    		$db_conf = [
+                "host"     => "db",
+                "port"     => 3306,
+                "dbname"   => $this->config->app->namespace,
+                "username" => "root",
+                "password" => "dev",
+                "options"  => [\PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"]
+            ];
+		
+            return new \Phalcon\Db\Adapter\Pdo\Mysql($db_conf);
         });
     }
 

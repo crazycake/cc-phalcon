@@ -40,8 +40,8 @@ trait CheckoutCurrency
 		//redis
 		$setup = [
 			"scheme" 	 => "tcp",
-			"host"   	 => getenv("REDIS_PORT_6379_TCP_ADDR") ?: "localhost",
-			"port"   	 => getenv("REDIS_PORT_6379_TCP_PORT") ?: 6379,
+			"host"   	 => "redis",
+			"port"   	 => 6379,
 			"persistent" => false
 		];
         //sd($setup);
