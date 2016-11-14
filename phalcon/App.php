@@ -146,53 +146,6 @@ abstract class App extends AppModule implements AppLoader
         }
     }
 
-    /**
-     * Extract assets inside the phar file
-     * @static
-     * @param string $assets_uri - The phar assets phar as URI, not absolute & must end with a slash
-     * @param string $cache_path - The app cache path, must end with a slash
-     * @param string $force_extract - Forces extraction not validating contents in given cache path
-     * @return mixed [boolean|string] - The absolute include cache path
-     */
-    public static function extractAssetsFromPhar($assets_uri = null, $cache_path = null, $force_extract = false)
-    {
-        //check folders
-        if (is_null($assets_uri) || is_null($cache_path))
-            throw new Exception("App::extractAssetsFromPhar -> assets and cache path must be valid paths.");
-
-        if (!is_dir($cache_path))
-            throw new Exception("App::extractAssetsFromPhar -> cache path directory not found.");
-
-        //check phar is running
-        if (!\Phar::running())
-            return false;
-
-        //set phar assets path
-        $phar_assets = dirname(__DIR__)."/".$assets_uri; //parent dir
-        $output_path = $cache_path.$assets_uri;
-
-        //check if files are already extracted
-        if (!$force_extract && is_dir($output_path))
-            return $output_path;
-
-        //get files in directory & exclude ".", ".." directories
-        $assets = [];
-        $files  = scandir($phar_assets);
-        unset($files["."], $files[".."]);
-
-        //fill the asset array
-        foreach ($files as $file)
-            array_push($assets, $assets_uri.$file);
-
-        //instance a phar file object
-        $phar = new \Phar(\Phar::running());
-        //extract all files in a given directory
-        $phar->extractTo($cache_path, $assets, true);
-
-        //return path
-        return $output_path;
-    }
-
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
@@ -223,12 +176,8 @@ abstract class App extends AppModule implements AppLoader
             foreach ($folders as $dir) {
 
                 $paths = explode("/", $dir, 2);
-
                 //set directory path
-                if (count($paths) > 1)
-                    $app_dirs[$dir] = PROJECT_PATH.$paths[0]."/app/".$paths[1]."/";
-                else
-                    $app_dirs[$dir] = APP_PATH.$dir."/";
+                $app_dirs[$dir] = count($paths) > 1 ? PROJECT_PATH.$paths[0]."/app/".$paths[1]."/" : APP_PATH.$dir."/";
             }
         }
         //print_r($app_dirs); exit;

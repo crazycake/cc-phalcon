@@ -268,19 +268,19 @@ trait PushManager
             //handle response
             if ($response) {
                 $successful_delivers++;
+				continue;
 			}
-			else {
 
-                //output data to string
-				$gcm_send_status = $this->gcm->status;
-				//$gcm_msg_status  = $this->gcm->messagesStatuses;
-				//set data to print as as string
-				if (is_array($gcm_send_status))
-					$gcm_send_status = implode(";", $gcm_send_status);
+            //output data to string
+			$gcm_send_status = $this->gcm->status;
+			//$gcm_msg_status  = $this->gcm->messagesStatuses;
+			//set data to print as as string
+			if (is_array($gcm_send_status))
+				$gcm_send_status = implode(";", $gcm_send_status);
 
-				$this->logger->error("PushManager -> GCM onNotificationSent error: $gcm_send_status, token: ".$subscriber->token.", uuid: ".$uuid);
-				$failed_delivers++;
-			}
+			$failed_delivers++;
+
+			$this->logger->error("PushManager -> GCM onNotificationSent error: $gcm_send_status, token: ".$subscriber->token.", uuid: ".$uuid);
         }
 
         //send response
