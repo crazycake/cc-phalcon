@@ -1,7 +1,7 @@
 <?php
 /**
- * PDF: PDF helper to generate PDF files
- * Requires Snappy composer library and wkhtmltopdf library.
+ * PDF helper to generate PDF files
+ * Requires Snappy library and wkhtmltopdf library.
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
@@ -70,35 +70,6 @@ class PDF
         }
 
         //get binary file?
-        if ($binary)
-            return file_get_contents($output_path);
-        else
-            return $output_path;
-    }
-
-    /**
-     * Merge PDF files
-     * @param array $files - The file paths array
-     * @param string $output - The file paths array
-     * @param string $options - Options: [file, browser, download, string]
-     */
-    public function mergePdfFiles($files = array(), $output = "pdf_merged.pdf", $option = "browser")
-    {
-        if (empty($files))
-            throw new Exception("PDF::mergePdfFiles -> Input files is empty");
-
-        //Merge PDFs
-        try {
-            $pdf = new \Clegginabox\PDFMerger\PDFMerger();
-        }
-        catch (Exception $e) {
-            throw new Exception("PDF::mergePdfFiles -> \Clegginabox\PDFMerger\PDFMerger class is required");
-        }
-
-        foreach ($files as $f)
-            $pdf->addPDF($f);
-
-        //merge files
-        $pdf->merge($option, $output);
+        return $binary ? file_get_contents($output_path) : $output_path;
     }
 }
