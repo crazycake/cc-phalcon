@@ -179,7 +179,6 @@ abstract class AppModule
      */
     private function _environment()
     {
-
         //get env-vars
         $env = getenv("APP_ENV") ?: "local"; //default to LOCAL
 
