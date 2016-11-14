@@ -126,7 +126,7 @@ class AppServices
             $static_url = isset($this->props["staticUrl"]) ? $this->props["staticUrl"] : false;
 
             //set static uri for assets, cdn only for production
-            if (!$static_url || APP_ENVIRONMENT !== "production")
+            if (!$static_url || APP_ENV !== "production")
                 $static_url = APP_BASE_URL;
 
             $url->setStaticBaseUri($static_url);
@@ -196,12 +196,12 @@ class AppServices
     		$db_conf = [
                 "host"     => "db",
                 "port"     => 3306,
-                "dbname"   => $this->config->app->namespace,
+                "dbname"   => "app",
                 "username" => "root",
                 "password" => "dev",
                 "options"  => [\PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"]
             ];
-		
+
             return new \Phalcon\Db\Adapter\Pdo\Mysql($db_conf);
         });
     }

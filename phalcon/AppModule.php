@@ -119,12 +119,9 @@ abstract class AppModule
         //check for prefix in module settings
         $class_name = \Phalcon\Text::camelize($key);
 
-        //api special case
-        if (MODULE_NAME == "api" && !class_exists($class_name)) {
-
-            //if class not exists append prefix.
+        //api special case (if class not exists append prefix.)
+        if (MODULE_NAME == "api" && !class_exists($class_name))
             $class_name = "Ws$class_name";
-        }
 
         return $prefix ? "\\$class_name" : $class_name;
     }
@@ -141,13 +138,11 @@ abstract class AppModule
     {
         //get module
         $module = empty($module) ? MODULE_NAME : strtolower($module);
-        //get base uri
-        $app_base_uri = getenv("APP_URI_".strtoupper($module));
         //set base URL
-        $base_url = empty($app_base_uri) ? null : (isset($_SERVER["HTTPS"]) ? "https://" : "http://").$app_base_uri;
+        $base_url = "./";
 
         //environments
-        switch (APP_ENVIRONMENT) {
+        switch (APP_ENV) {
 
             case "production":
 
@@ -161,17 +156,11 @@ abstract class AppModule
                 $base_url = ($type == "static" && $static_url) ? $static_url : $base_url;
                 break;
 
-            case "local":
-
-                if (empty($base_url))
-                    $base_url = str_replace(["/api/", "/frontend/", "/backend/"], "/$module/", APP_BASE_URL);
-
-                break;
-
+			//dev
             default:
 
                 if (empty($base_url))
-                    $base_url = str_replace([".api.", ".frontend.", ".backend."], ".$module.", APP_BASE_URL);
+                    $base_url = str_replace(["/api/", "/frontend/", "/backend/"], "/$module/", APP_BASE_URL);
 
                 break;
         }
@@ -190,20 +179,12 @@ abstract class AppModule
      */
     private function _environment()
     {
-        //load .env file configuration with Dotenv
-        $envfile = PROJECT_PATH.".env";
-        $dotenv  = new \Dotenv\Dotenv(PROJECT_PATH);
-
-        if (is_file($envfile))
-            $dotenv->load();
 
         //get env-vars
-        $debug        = getenv("APP_DEBUG");
-        $environment  = getenv("APP_ENV") ?: "local"; //default to LOCAL
-        $app_base_uri = getenv("APP_URI_".strtoupper(MODULE_NAME));
+        $env = getenv("APP_ENV") ?: "local"; //default to LOCAL
 
         //set APP debug environment
-        if ($debug) {
+        if ($env == "local") {
             ini_set("display_errors", 1);
             error_reporting(E_ALL);
         }
@@ -212,8 +193,7 @@ abstract class AppModule
             error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
         }
 
-        //set base URL (project path for CGI & CLI)
-        $base_url = empty($app_base_uri) ? PROJECT_PATH : (isset($_SERVER["HTTPS"]) ? "https://" : "http://").$app_base_uri;
+        $base_url = "./";
 
         //Check for CLI execution & CGI execution
         if (php_sapi_name() !== "cli") {
@@ -223,22 +203,22 @@ abstract class AppModule
 
             //set localhost if host is not set
             if (!isset($_SERVER["HTTP_HOST"]))
-                $_SERVER["HTTP_HOST"] = "127.0.0.1";
+                $_SERVER["HTTP_HOST"] = "localhost";
 
             //fallback for missing env var
             if (empty($app_base_uri)) {
                 $base_url = (isset($_SERVER["HTTPS"]) ? "https://" : "http://").
                                    $_SERVER["HTTP_HOST"].preg_replace("@/+$@", "", dirname($_SERVER["SCRIPT_NAME"]))."/";
             }
+
+			//add missing slash
+	        if (substr($base_url, -1) !== "/") $base_url .= "/";
         }
 
-        //add missing slash
-        if (substr($base_url, -1) !== "/") $base_url .= "/";
-
         //set environment consts & self vars
-        define("APP_ENVIRONMENT", $environment);
+        define("APP_ENV", $env);
         define("APP_BASE_URL", $base_url);
-        //var_dump(APP_ENVIRONMENT, APP_BASE_URL);exit;
+        //sd(APP_ENV, APP_BASE_URL);exit;
     }
 
     /**

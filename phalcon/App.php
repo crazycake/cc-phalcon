@@ -138,7 +138,7 @@ abstract class App extends AppModule implements AppLoader
                     return $output;
 
                 //Handle the request
-                if (APP_ENVIRONMENT !== "local")
+                if (APP_ENV !== "local")
                     ob_start([$this,"_minifyOutput"]); //call function
 
                 echo $output;
