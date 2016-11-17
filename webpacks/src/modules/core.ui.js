@@ -30,6 +30,7 @@ export default new function() {
         //setting vars
         alert              : { position : "fixed", top : "5%", top_small : "0", live_time : 8000 },
         loading            : { position : "fixed", top : "25%", top_small : "25%" },
+		skip_flash		   : false,
         pixel_ratio        : _.isUndefined(window.devicePixelRatio) ? 1 : window.devicePixelRatio
     });
 
@@ -228,7 +229,7 @@ export default new function() {
     self.showFlashAlerts = function() {
 
         //check for a flash message pending
-        if (!$(APP.UI.sel_flash_messages).length)
+        if (!$(APP.UI.sel_flash_messages).length || APP.UI.skip_flash)
             return;
 
         var messages = $(APP.UI.sel_flash_messages).children("div");
