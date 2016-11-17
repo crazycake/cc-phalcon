@@ -191,8 +191,8 @@ class Cryptify
             $code .= ($p == 1) ? $num : $char;
         }
         //replace ambiguos chars
-        $placeholders = ["O", "I", "J", "B"];
-        $replacers    = ["0", "1", "X", "3"];
+        $placeholders = ["0", "O", "I", "J", "B"];
+        $replacers    = ["G", "Y", "1", "X", "3"];
 
         return str_replace($placeholders, $replacers, $code);
     }
