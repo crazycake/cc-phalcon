@@ -20,7 +20,7 @@ COMPOSER_PATH=$PROJECT_PATH"/vendor/"
 
 # help output
 scriptHelp() {
-	echo -e "\033[93m"$APP_NAME" webapp CLI [$APP_ENV]\033[0m"
+	echo -e "\033[93m"$APP_NAME" webapp CLI\033[0m"
 	echo -e "\033[94mDev commands:\033[0m"
 	echo -e "\033[95m cli: Executes PHP App CLI.\033[0m"
 	echo -e "\033[95m db: Executes DB migrations. Run command for help (phinx engine).\033[0m"
