@@ -21,11 +21,10 @@ COMPOSER_PATH=$PROJECT_PATH"/vendor/"
 # help output
 scriptHelp() {
 	echo -e "\033[93m"$APP_NAME" webapp CLI [$APP_ENV]\033[0m"
-	echo -e "\033[94mApp commands:\033[0m"
+	echo -e "\033[94mDev commands:\033[0m"
 	echo -e "\033[95m cli: Executes PHP App CLI.\033[0m"
 	echo -e "\033[95m db: Executes DB migrations. Run command for help (phinx engine).\033[0m"
 	echo -e "\033[95m clean: Cleans storage folder (cache, logs).\033[0m"
-	echo -e "\033[96mDev commands:\033[0m"
 	echo -e "\033[95m build: build JS & CSS bundles and compile translations. \033[0m"
 	echo -e "\033[95m watch <module>: Runs watcher daemon for backend or frontend. Modules: -b or -f.\033[0m"
 	echo -e "\033[95m watch-mailing <module>: Runs mailing watcher daemon for backend or frontend. Modules: -b or -f.\033[0m"
