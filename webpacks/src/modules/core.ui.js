@@ -459,7 +459,7 @@ export default new function() {
                     obj.attr("height", obj.attr("data-height"));
 
                 //set new src
-                obj[0].src =  this.src;
+                obj[0].src = this.src;
 
                 if (APP.dev) { console.log("Core UI -> image loaded (async):", this.src); }
             };
@@ -501,21 +501,7 @@ export default new function() {
      */
     self.retinaImages = function(context = false) {
 
-        //check if client supports retina
-        var isRetina = function() {
-
-            var media_query = "(-webkit-min-device-pixel-ratio: 1.5), (min--moz-device-pixel-ratio: 1.5), (-o-min-device-pixel-ratio: 3/2), (min-resolution: 1.5dppx)";
-
-            if (window.devicePixelRatio > 1)
-                return true;
-
-            if (window.matchMedia && window.matchMedia(media_query).matches)
-                return true;
-
-            return false;
-        };
-
-        if (!isRetina()) return;
+        if (!self.isRetina()) return;
 
         //get elements
         var elements = !context ? $("img[data-retina]", context) : $("img[data-retina]");
@@ -523,21 +509,29 @@ export default new function() {
         //for each image with attr data-retina
         elements.each(function() {
 
-            var obj = $(this);
+            var obj     = $(this);
+            var new_src = self.retinaImagePath(obj.attr("src"), true);
 
-            var src = obj.attr("src");
-            var ext = src.slice(-4);
-
-            //check extension
-            if(ext !== ".png" && ext !== ".jpg")
-                return;
-
-            //set new source
-            var new_src = src.replace(ext, "@2x"+ext);
-
-            obj.removeAttr("data-retina");
-            obj.attr("src", new_src);
+            obj.removeAttr("data-retina")
+               .attr("src", new_src);
         });
+    };
+
+    /**
+     * checks if display is retina
+     * @return {Boolean}
+     */
+    self.isRetina = function() {
+
+        let media_query = "(-webkit-min-device-pixel-ratio: 1.5), (min--moz-device-pixel-ratio: 1.5), (-o-min-device-pixel-ratio: 3/2), (min-resolution: 1.5dppx)";
+
+        if (window.devicePixelRatio > 1)
+            return true;
+
+        if (window.matchMedia && window.matchMedia(media_query).matches)
+            return true;
+
+        return false;
     };
 
     /**
@@ -556,6 +550,23 @@ export default new function() {
             $(this).attr("src", core.staticUrl(APP.UI.img_fallback));
         });
     };
+
+	/**
+	 * Return retina image path for URLs
+	 */
+	self.retinaImagePath = function(url = "", force = false) {
+
+        if(!force && !self.isRetina())
+            return url;
+
+        var ext = url.slice(-4);
+
+        //check extension
+        if(!force && ext !== ".png" && ext !== ".jpg")
+            return url;
+
+        return url.replace(ext, "@2x"+ext);
+	};
 
     /**
      * Get resized image path.
