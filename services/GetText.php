@@ -71,11 +71,8 @@ class GetText extends GetTextAdapter
      */
     public function setLanguage($lang = "")
     {
-        //validate language
-        $lang = substr(trim(strtolower($lang)), 0, 2);
-
-        //short name
-        if (!in_array($lang, $this->supported_langs))
+        //validate lang
+        if (strlen($lang) > 2 || !in_array($lang, $this->supported_langs))
             $lang = substr($this->default_locale, 0, 2);
 
         //set new lang
