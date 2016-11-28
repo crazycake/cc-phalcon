@@ -24,7 +24,7 @@ scriptHelp() {
 	echo -e "\033[94mDev commands:\033[0m"
 	echo -e "\033[95m cli: Executes PHP App CLI.\033[0m"
 	echo -e "\033[95m db: Executes DB migrations. Run command for help (phinx engine).\033[0m"
-	echo -e "\033[95m clean: Cleans storage folder (cache, logs).\033[0m"
+	echo -e "\033[95m clean: Cleans cache & logs (storage folder).\033[0m"
 	echo -e "\033[95m build: build JS & CSS bundles and compile translations. \033[0m"
 	echo -e "\033[95m watch <module>: Runs watcher daemon for backend or frontend. Modules: -b or -f.\033[0m"
 	echo -e "\033[95m watch-mailing <module>: Runs mailing watcher daemon for backend or frontend. Modules: -b or -f.\033[0m"
@@ -84,7 +84,7 @@ clean)
 
 	# clean storage
 	if [ -d $STORAGE_PATH ]; then
-		find $STORAGE_PATH -type f \( ! -iname ".*" \) -print0 | xargs -0 sudo rm
+		find $STORAGE_PATH"cache" $STORAGE_PATH"logs" -type f \( ! -iname ".*" \) -print0 | xargs -0 sudo rm
 	fi
 
 	# task done!
