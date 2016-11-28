@@ -84,7 +84,14 @@ abstract class MvcCore extends Controller
      */
     protected function host($port = 80)
     {
-        return $this->request->getHttpHost().":".$port;
+		$host 		= $this->request->getHttpHost();
+		$host_parts = explode(":", $host);
+
+		//check if host already has binded a port
+		if(count($host_parts) > 1)
+			$host = current($host_parts);
+
+        return $host.":".$port;
     }
 
     /**
