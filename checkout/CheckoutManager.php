@@ -104,6 +104,8 @@ trait CheckoutManager
      */
     public function successCheckout($buy_order = "", $async = true)
     {
+        $this->logger->debug("CheckoutManager::successCheckout -> $buy_order, async: ".(int)$async);
+
         //triggers async request
         $this->asyncRequest([
             "controller" => "checkout",
