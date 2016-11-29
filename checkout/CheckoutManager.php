@@ -46,7 +46,6 @@ trait CheckoutManager
     public function initCheckoutManager($conf = [])
     {
         $defaults = [
-            "encrypted_ids"        => false,
             "max_per_item_allowed" => 5,
             "default_currency"     => "CLP"
         ];
@@ -78,8 +77,11 @@ trait CheckoutManager
 	        $checkout_orm = $user_checkout_class::newBuyOrder($checkout);
 
             //check if an error occurred
-            if (!$checkout_orm)
+            if (!$checkout_orm) {
+
+                $this->logger->error("CheckoutManager::buyOrder -> failed saving checkout ".$checkout_orm->messages(true));
                 throw new Exception($this->checkout_manager_conf["trans"]["ERROR_UNEXPECTED"]);
+            }
 
             //set buy order
             $checkout->buy_order = $checkout_orm->buy_order;
@@ -214,10 +216,6 @@ trait CheckoutManager
             $object_class = $props[1];
             $object_id    = $props[2];
 
-            if($this->checkout_manager_conf["encrypted_ids"]) {
-                $object_id = $this->cryptify->decryptHashId($object_id);
-            }
-
             $preffixed_object_class = "\\$object_class";
             $object = $preffixed_object_class::getById($object_id);
             //var_dump($object_class, $object_id, $object->toArray());exit;
@@ -287,8 +285,11 @@ trait CheckoutManager
         //sd($checkout);
 
         //weird error, no checkout objects
-        if (empty($checkout->objects))
+        if (empty($checkout->objects)) {
+
+            $this->logger->error("CheckoutManager::setCheckoutObject -> empty checkout objects ".json_encode($checkout));
             throw new Exception($this->checkout_manager_conf["trans"]["ERROR_UNEXPECTED"]);
+        }
 
         //check max objects allowed
         if ($checkout->total_q > $this->checkout_manager_conf["max_user_acquisition"]) {
