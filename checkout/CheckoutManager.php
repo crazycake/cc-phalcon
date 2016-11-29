@@ -46,6 +46,7 @@ trait CheckoutManager
     public function initCheckoutManager($conf = [])
     {
         $defaults = [
+            "async"                => true,
             "max_per_item_allowed" => 5,
             "default_currency"     => "CLP"
         ];
@@ -159,7 +160,7 @@ trait CheckoutManager
             $checkout->objects = $user_checkout_object_class::getCollection($checkout->buy_order);
 
             //2) Call listener
-            $this->onSuccessCheckout($checkout);
+            $this->onSuccessCheckout($checkout, $this->checkout_manager_conf["async"]);
         }
         catch (Exception $e) {
 
