@@ -37,16 +37,12 @@ trait CheckoutCurrency
 	 */
 	protected function newRedisClient()
 	{
-		//redis
-		$setup = [
+        return new Redis([
 			"scheme" 	 => "tcp",
 			"host"   	 => "redis",
 			"port"   	 => 6379,
 			"persistent" => false
-		];
-        //sd($setup);
-        //client instance
-        return new Redis($setup);
+		]);
 	}
 
     /**
