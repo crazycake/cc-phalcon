@@ -21,11 +21,6 @@ APP_VIEWS_CACHE_PATH=$PROJECT_PATH"/storage/cache/"
 MO_FILE=$APP_NAMESPACE".mo"
 TEMP_FILE=".translations"
 
-# load environment file if exists
-if [ -f "$PROJECT_PATH/.env" ]; then
-	source "$PROJECT_PATH/.env"
-fi
-
 # help output
 scriptHelp() {
 	echo -e "\033[93m WebApp Translations Script\nValid actions:\033[0m"

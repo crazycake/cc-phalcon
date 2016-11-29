@@ -14,11 +14,6 @@ TOOLS_PATH=$PROJECT_PATH"/.tools/"
 FRONTEND_PATH=$PROJECT_PATH"/frontend/"
 BACKEND_PATH=$PROJECT_PATH"/backend/"
 
-# load environment file if exists
-if [ -f "$PROJECT_PATH/.env" ]; then
-	source "$PROJECT_PATH/.env"
-fi
-
 buildTask() {
 
 	# GIT properties

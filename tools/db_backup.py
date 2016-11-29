@@ -58,12 +58,6 @@ def main():
 	#print output
 	config  = json.loads(output)
 
-	print SCS.CYAN + "Looking for a present .env file..." + SCS.END
-
-	#load .env file if present
-	if os.path.isfile(dotenv_file):
-		dotenv.load_dotenv(dotenv_file)
-
 	#set properties
 	APP.NAMESPACE = config['app']['namespace']
 	#get from env vars
