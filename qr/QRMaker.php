@@ -68,7 +68,7 @@ class QRMaker
 		//Check if library is running from a Phar file, if does, assets must be copied to cache folder.
 		//For reading assets from a phar directly, see: http://php.net/manual/en/phar.webphar.php
 		if (\Phar::running()) {
-			define("QR_ASSETS_PATH", $this->_extractAssetsFromPhar("qr/assets/", $cache_path));
+			define("QR_ASSETS_PATH", $this->_extractAssetsFromPhar($cache_path));
 		}
 		else {
 			define("QR_ASSETS_PATH", __DIR__."/assets/");
@@ -185,7 +185,7 @@ class QRMaker
 				$embed_img = imagecreatefromjpeg($embed_img_path);
 				break;
 			case "gif":
-				$embed_img = imagecreatefromgif ($embed_img_path);
+				$embed_img = imagecreatefromgif($embed_img_path);
 				break;
 		}
 
@@ -218,40 +218,39 @@ class QRMaker
 
 	/**
      * Extract assets inside the phar file
-     * @param string $assets_uri - The phar assets phar as URI, not absolute & must end with a slash
      * @param string $cache_path - The app cache path, must end with a slash
      * @param string $force_extract - Forces extraction not validating contents in given cache path
      * @return mixed [boolean|string] - The absolute include cache path
      */
-    private function _extractAssetsFromPhar($assets_uri = null, $cache_path = null, $force_extract = false)
+    private function _extractAssetsFromPhar($cache_path = null, $force_extract = false)
     {
         //check folders
-        if (is_null($assets_uri) || is_null($cache_path) || !is_dir($cache_path))
+        if (is_null($cache_path) || !is_dir($cache_path))
             throw new Exception("extractAssetsFromPhar -> assets and cache path must be valid paths.");
 
-        //check phar is running
-        if (!\Phar::running())
-            return false;
-
         //set phar assets path
-        $phar_assets = dirname(__DIR__)."/".$assets_uri; //parent dir
-        $output_path = $cache_path.$assets_uri;
-
-        //check if files are already extracted
-        if (!$force_extract && is_dir($output_path))
-            return $output_path;
+        $output_path = $cache_path."qr/assets/";
 
         //get files in directory & exclude ".", ".." directories
-        $assets = [];
-        $files  = scandir($phar_assets);
+		$assets_dir = __DIR__."/assets";
+        $files  	= scandir($assets_dir);
+		//sd($assets_dir, $files, $output_path);
+
         unset($files["."], $files[".."]);
 
+		//skip if files were already copied
+	    if (!$force_extract && is_file($output_path.current($files)))
+            return $output_path;
+
+		$assets = [];
         //fill the asset array
         foreach ($files as $file)
-            array_push($assets, $assets_uri.$file);
+            array_push($assets, "qr/assets/".$file);
 
         //instance a phar file object
         $phar = new \Phar(\Phar::running());
+		//sd($assets, $output_path);
+
         //extract all files in a given directory
         $phar->extractTo($cache_path, $assets, true);
 
