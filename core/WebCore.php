@@ -343,32 +343,13 @@ abstract class WebCore extends MvcCore implements WebSecurity
         $css_url = $this->staticUrl(self::ASSETS_MIN_FOLDER_PATH."app.css");
         $js_url  = $this->staticUrl(self::ASSETS_MIN_FOLDER_PATH."app.js");
 
-        //set no-min assets for local dev
-        if (APP_ENV === "local") {
-
-            //if file not exists use min file
-            if(!is_file(PUBLIC_PATH.self::ASSETS_MIN_FOLDER_PATH."app.css"))
-                $css_url = str_replace(".css", ".min.css", $css_url);
-
-            //if file not exists use min file
-            if(!is_file(PUBLIC_PATH.self::ASSETS_MIN_FOLDER_PATH."app.js"))
-                $js_url  = str_replace(".js", ".min.js", $js_url);
-
-            $css_url .= "?v=".$version;
-            $js_url  .= "?v=".$version;
-        }
-        //special case for cdn production
-        else if ($staticUrl && APP_ENV == "production") {
+        //set revision file for non local env
+        if (APP_ENV !== "local") {
 
             $version = str_replace(".", "", $version);
             //set paths
             $css_url = str_replace(".css", "-$version.rev.css", $css_url);
             $js_url  = str_replace(".js", "-$version.rev.js", $js_url);
-        }
-        else {
-
-            $css_url = str_replace(".css", ".min.css", $css_url)."?v=".$version;
-            $js_url  = str_replace(".js", ".min.js", $js_url)."?v=".$version;
         }
         //s($css_url, $js_url);exit;
 
