@@ -232,9 +232,7 @@ class QRMaker
         $output_path = $cache_path."qr/assets/";
 
         //get files in directory & exclude ".", ".." directories
-		$assets_dir = __DIR__."/assets";
-        $files  	= scandir($assets_dir);
-		//sd($assets_dir, $files, $output_path);
+        $files = scandir(__DIR__."/assets");
 
         unset($files["."], $files[".."]);
 
