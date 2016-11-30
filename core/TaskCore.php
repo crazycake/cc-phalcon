@@ -78,10 +78,13 @@ class TaskCore extends Task
 
         $version_stripped = str_replace(".", "", $version);
 
-        //CSS
+        //APP CSS
         copy($assets_path."app.min.css", $assets_path."app-".$version_stripped.".rev.css");
-        //JS
+        //APP JS
         copy($assets_path."app.min.js", $assets_path."app-".$version_stripped.".rev.js");
+		//LAZY CSS
+		if(is_file($assets_path."lazy.min.css"))
+			copy($assets_path."lazy.min.css", $assets_path."lazy-".$version_stripped.".rev.css");
 
         //print output
         $this->colorize("Created revision assets: $version", "OK", true);
