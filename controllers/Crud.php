@@ -85,53 +85,6 @@ trait Crud
 		//set entity lower case
 		$conf["entity"] = \Phalcon\Text::uncamelize($conf["entity"]);
 
-		//prepare fields data for rendering
-		$dfields = []; //datatable
-
-		if(!isset($conf["cfields"]))
-		 	$conf["cfields"] = [];
-
-		//create fields metadata
-		foreach ($conf["dfields"] as $field) {
-
-			$obj = (object)[
-				"title" 	=> current($field),
-				"name" 		=> key($field),
-				"sortField" => key($field)
-			];
-
-			//no sorting field?
-			if(isset($field["sort"]) && $field["sort"] === false)
-				unset($obj->sortField);
-
-			//format dates
-			if(in_array($obj->name, ["created_at", "date"]))
-				$obj->callback = "formatDate|DD/MM/YY";
-			else if(in_array($obj->name, ["datetime"]))
-				$obj->callback = "formatDate|DD/MM/YY HH:mm:ss";
-
-			//save category fields and set format callback
-			if(!empty($field["format"])) {
-
-				//set object callback
-				$obj->callback = "formatCategory|".json_encode($field["format"], JSON_UNESCAPED_SLASHES);
-				//append new category
-				$conf["cfields"][$obj->name] = $field["format"];
-			}
-
-			$dfields[] = $obj;
-		}
-
-		//fields filter
-		$conf["dfields"] = $dfields;
-
-		//append actions
-		if($conf["actions"])
-			array_push($conf["dfields"], ["name" => "__actions", "dataClass" => "text-center"]);
-
-		//append fetch url
-		$conf["fetch_url"] = $this->baseUrl($conf["entity"]."/list");
-
 		//init uploader?
 		if(isset($conf["uploader"])) {
 

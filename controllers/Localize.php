@@ -149,7 +149,7 @@ trait Localize
                 "SAVED"          => "Datos guardados.",
                 "UPDATED"        => "Datos actualizados.",
                 "EMPTY_SEARCH"   => "Sin resultados.",
-                "INFO_RESULTS"   => "Del {from} al {to} de {total} elementos.",
+                "INFO_RESULTS"   => "Del {from} al {to} de {total} registros.",
                 "DELETE_CONFIRM" => "¿Estás seguro que quieres eliminar este registro?"
             ]
         ];
