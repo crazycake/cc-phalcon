@@ -38,8 +38,7 @@ trait Uploader
     protected static $HEADER_NAME = "File-Key";
 
     /**
-     * Root upload path
-     * Files are saved in a temporal public user folder.
+     * Root upload path. Files are saved in a temporal public user folder.
      * @var string
      */
     public static $ROOT_UPLOAD_PATH = STORAGE_PATH."uploads/";
