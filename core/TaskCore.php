@@ -176,9 +176,6 @@ class TaskCore extends Task
             $api_key_header_value = AppModule::getProperty("key", "api");
             $api_key_header_name  = str_replace("_", "-", WsCore::HEADER_API_KEY);
             $options["headers"]   = [$api_key_header_name => $api_key_header_value];
-
-            //set API base url
-            $options["base_url"] = AppModule::getUrl("api");
         }
 
         //check base url
