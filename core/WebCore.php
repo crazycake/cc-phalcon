@@ -19,8 +19,7 @@ use CrazyCake\Helpers\UserAgent;
 abstract class WebCore extends MvcCore implements WebSecurity
 {
     /* consts */
-    const ASSETS_MIN_FOLDER_PATH = "assets/";
-    const JS_LOADER_FUNCTION     = "core.loadModules";
+    const JS_LOADER_FUNCTION = "core.loadModules";
 
     /**
      * Set App Javascript Properties for global scope
@@ -340,11 +339,11 @@ abstract class WebCore extends MvcCore implements WebSecurity
         $version   = AppModule::getProperty("version");
         $staticUrl = AppModule::getProperty("staticUrl");
 
-        $css_url = $this->staticUrl(self::ASSETS_MIN_FOLDER_PATH."app.css");
-        $js_url  = $this->staticUrl(self::ASSETS_MIN_FOLDER_PATH."app.js");
+        $css_url = $this->staticUrl("assets/app.css");
+        $js_url  = $this->staticUrl("assets/app.js");
 
         //set revision file for non local env
-        if (APP_ENV !== "local") {
+        if (!is_file(PUBLIC_PATH."assets/app.js")) {
 
             $version = str_replace(".", "", $version);
             $css_url = str_replace(".css", "-$version.rev.css", $css_url);
