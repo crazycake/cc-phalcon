@@ -571,8 +571,8 @@ export default new function() {
     /**
      * Get resized image path.
      * @method resizedImagePath
-     * Example: public/uploads/media/dj/IMAGE1.jpg?v=5
-     *          public/uploads/media/dj/IMAGE1_TH.jpg?v=5
+     * Example: ./media/dj/IMAGE1.jpg?v=5
+     *          ./media/dj/IMAGE1_TH.jpg?v=5
      * @param  {string} url - An image URL
      * @param  {string} key - The suffix key to append
      * @return string
