@@ -67,9 +67,6 @@ abstract class AppModule
         if (empty($mod_name) || empty($config))
             throw new Exception("AppModule::constructor -> invalid input module, check setup.");
 
-        //modules config
-        self::$modules_conf = $config["modules"];
-
         //define APP contants
         define("PROJECT_PATH", $config["projectPath"]);
         define("MODULE_NAME", strtolower($mod_name));
@@ -81,6 +78,8 @@ abstract class AppModule
         define("APP_PATH", MODULE_PATH."app/");
         define("APP_START", microtime(true));  //for debugging render time
 
+        //set modules config
+        self::$modules_conf = $config["modules"];
         //call class loader
         $this->loadClasses();
         //module setup configurations
@@ -136,39 +135,19 @@ abstract class AppModule
      */
     public static function getUrl($module = "", $uri = "", $type = "base")
     {
+		//set base URL
+        $url = "./";
         //get module
         $module = empty($module) ? MODULE_NAME : strtolower($module);
-        //set base URL
-        $base_url = "./";
 
-        //environments
-        switch (APP_ENV) {
-
-            case "production":
-
-                //check if static url is set
-                $static_url = self::getProperty("staticUrl", $module);
-
-                if (empty($base_url))
-                    $base_url = self::getProperty("baseUrl", $module);
-
-                //set URL
-                $base_url = ($type == "static" && $static_url) ? $static_url : $base_url;
-                break;
-
-			//dev
-            default:
-
-                if (empty($base_url))
-                    $base_url = str_replace(["/api/", "/frontend/", "/backend/"], "/$module/", APP_BASE_URL);
-
-                break;
-        }
+        //get static URL?
+        if ($type == "static" && $static_url = self::getProperty("staticUrl", $module))
+            $url = $static_url;
 
         //add missing slash
-        if (substr($base_url, -1) !== "/") $base_url .= "/";
+        if (substr($url, -1) !== "/") $url .= "/";
 
-        return $base_url.$uri;
+        return $url.$uri;
     }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
