@@ -42,7 +42,7 @@ trait Uploader
      * Files are saved in a temporal public user folder.
      * @var string
      */
-    public static $ROOT_UPLOAD_PATH = PUBLIC_PATH."uploads/";
+    public static $ROOT_UPLOAD_PATH = STORAGE_PATH."uploads/";
 
     /**
 	 * Config var
@@ -71,11 +71,11 @@ trait Uploader
         //set request headers
         $this->headers = $this->request->getHeaders();
 
-        //get session user id
-        $user_session = $this->session->get("user");
+        //get session user id or temp dir
+        $subdir = ($user_session = $this->session->get("user")) ? $user_session["id_hashed"] : microtime();
 
         //set upload path
-        $this->uploader_conf["path"] = self::$ROOT_UPLOAD_PATH."temp/".$user_session["id_hashed"]."/";
+        $this->uploader_conf["path"] = self::$ROOT_UPLOAD_PATH."temp/".$subdir."/";
 
         //create dir if not exists
         if(!is_dir($this->uploader_conf["path"]))
