@@ -113,7 +113,7 @@ class Forms
         $years_array = [];
         $years_array[""] = $trans->_("Año");
         //loop
-        for ($i = (int)date("Y"); $i >= 1930; $i--) {
+        for ($i = (int)date("Y") - 5; $i >= 1930; $i--) {
             $years_array["$i"] = $i;
         }
 
