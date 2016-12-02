@@ -439,7 +439,7 @@ trait Crud
 		//save assets path as {key}_url prop
 		$data = [];
 		foreach ($files as $key => $value)
-			$data[strtolower($key)."_url"] = "./uploads/".$value;
+			$data[strtolower($key)."_url"] = $this->baseUrl("uploads/".$value);
 
 		//update object
 		if($data)
