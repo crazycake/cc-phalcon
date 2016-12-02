@@ -91,7 +91,7 @@ class Forms
 
         //days
         $days_array = [];
-        $days_array[""] = $trans->_("day");
+        $days_array[""] = $trans->_("Día");
         //loop
         for ($i = 1; $i <= 31; $i++) {
             $prefix = ($i <= 9) ? "0$i" : "$i";
@@ -100,7 +100,7 @@ class Forms
 
         //months
         $months_array = [];
-        $months_array[""] = $trans->_("month");
+        $months_array[""] = $trans->_("Mes");
         //loop
         for ($i = 1; $i <= 12; $i++) {
 
@@ -111,7 +111,7 @@ class Forms
 
         //years
         $years_array = [];
-        $years_array[""] = $trans->_("year");
+        $years_array[""] = $trans->_("Año");
         //loop
         for ($i = (int)date("Y"); $i >= 1930; $i--) {
             $years_array["$i"] = $i;
