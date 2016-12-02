@@ -139,8 +139,11 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
      * @param int $length - The buy order string length
      * @return string
      */
-    public static function newBuyOrderCode($length)
+    public static function newBuyOrderCode($length = null)
     {
+		if(is_null($length))
+			$length = static::$BUY_ORDER_CODE_LENGTH;
+
         $di   = \Phalcon\DI::getDefault();
         $code = $di->getShared("cryptify")->newAlphanumeric($length);
         //unique constrait
@@ -167,7 +170,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
         $checkout_object_class_name = AppModule::getClass("user_checkout_object");
 
         //generates buy order
-        $buy_order = self::newBuyOrderCode(static::$BUY_ORDER_CODE_LENGTH);
+        $buy_order = self::newBuyOrderCode();
         $checkoutObj->buy_order = $buy_order;
 
         //log statement
