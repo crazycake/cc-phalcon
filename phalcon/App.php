@@ -204,7 +204,7 @@ abstract class App extends AppModule implements AppLoader
 
         //3.- Composer libs auto loader
         if (!is_file(COMPOSER_PATH."autoload.php"))
-            throw new Exception("App::_autoloadClasses -> Composer libraries are not installed yet, run app.bash composer.");
+            throw new Exception("App::_autoloadClasses -> autoload composer file not found: ".COMPOSER_PATH."autoload.php");
 
         //autoload composer file
         require COMPOSER_PATH."autoload.php";
