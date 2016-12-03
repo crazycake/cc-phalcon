@@ -65,8 +65,7 @@ class TaskCore extends Task
         $module_name = $args[0];
 
         //set paths
-        $assets_path = WebCore::ASSETS_MIN_FOLDER_PATH;
-        $assets_path = PROJECT_PATH.$module_name."/public/".$assets_path."/";
+        $assets_path = PROJECT_PATH.$module_name."/public/assets/";
 
         if (!is_dir($assets_path))
             $this->colorize("Assets path not found: $assets_path", "ERROR", true);
