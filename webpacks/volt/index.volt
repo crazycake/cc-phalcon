@@ -127,7 +127,7 @@
         {% endif %}
 
         {# javascript disabled fallback #}
-        <noscript class="app-no-js app-fixed text-center">
+        <noscript>
             {{ trans._('Este sitio funciona con Javascript. Porfavor activa el motor de Javascript en tu navegador.') }}
         </noscript>
 
