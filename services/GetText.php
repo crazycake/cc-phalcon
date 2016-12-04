@@ -77,9 +77,9 @@ class GetText extends GetTextAdapter
 
         //set new lang
         $this->current_lang = $lang;
-        //sd($this->getDefaultDomain(), $this->getCategory(), $this->getDirectory(), $this->current_lang);
 
         $locale = self::LOCALES[$lang];
+        //sd($this->getDefaultDomain(), $this->getCategory(), $this->getDirectory(), $this->current_lang, $locale);
 
         //set environment vars
         $this->setLocale(LC_ALL, $locale);
