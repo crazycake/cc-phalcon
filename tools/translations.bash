@@ -18,7 +18,7 @@ APP_CORE_PATH=$PROJECT_PATH"/core/cc-phalcon/"
 APP_VIEWS_CACHE_PATH=$PROJECT_PATH"/storage/cache/"
 
 # translation filenames
-MO_FILE=$APP_NAMESPACE".mo"
+MO_FILE="app.mo"
 TEMP_FILE=".translations"
 
 # help output
