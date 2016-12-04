@@ -81,10 +81,6 @@ class GetText extends GetTextAdapter
 
         $locale = self::LOCALES[$lang];
 
-        //caso especial OSX
-        if(php_uname("s") == "Darwin")
-            $locale = str_replace("utf8", "UTF-8", $locale);
-
         //set environment vars
         $this->setLocale(LC_ALL, $locale);
     }
