@@ -380,7 +380,7 @@ abstract class WebCore extends MvcCore implements WebSecurity
 
         //css lazy loading properties
         if(isset($js_app->cssLazy) && $js_app->cssLazy)
-            $js_app->cssLazy = str_replace("app.", "lazy.", $this->view->getVar("css_url"));
+            $js_app->cssLazy = str_replace("/app", "/lazy", $this->view->getVar("css_url"));
 
         //set translations?
         if (class_exists("TranslationController"))
