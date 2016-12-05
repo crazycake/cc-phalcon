@@ -51,7 +51,7 @@ class GetText extends GetTextAdapter
             die("GetText Lib -> Invalid options: directory, domain & supported options are required.");
 
         //set class properties
-        $this->default_locale  = "en_US";
+        $this->default_locale  = self::LOCALES["en"];
         $this->current_lang    = substr($this->default_locale, 0, 2);
         $this->supported_langs = $options["supported"];
 
