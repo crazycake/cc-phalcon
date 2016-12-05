@@ -83,12 +83,6 @@ class GetText extends GetTextAdapter
 
         //set environment vars
         $this->setLocale(LC_ALL, $locale);
-
-        //NOTE: manual setup
-        //setlocale(LC_MESSAGES, $locale);
-        //bindtextdomain($this->getDefaultDomain(), $this->getDirectory());
-        //textdomain($this->getDefaultDomain());
-        //bind_textdomain_codeset($this->getDefaultDomain(), "UTF-8");
     }
 
     /**
