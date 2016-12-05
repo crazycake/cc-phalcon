@@ -25,7 +25,7 @@ CORE_SRC_TOOLS=$CORE_SRC_PATH"tools/"
 CORE_SRC_WEBPACKS=$CORE_SRC_PATH"webpacks/"
 
 # main app bash file
-ROOT_TOOL_FILES=("app.bash" "gulpfile.babel.js")
+ROOT_TOOL_FILES=("app.bash")
 
 # check if cc-phalcon symlink is present
 if [ ! -d $CORE_SRC_PATH ]; then
