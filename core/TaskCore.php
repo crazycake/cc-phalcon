@@ -78,6 +78,17 @@ class TaskCore extends Task
 
         $version_stripped = str_replace(".", "", $version);
 
+		//clean old files
+        $files = scandir($assets_path);
+
+        foreach ($files as $f) {
+
+            if(strpos($f, ".rev.") === false)
+                continue;
+
+            unlink($assets_path.$f);
+        }
+
         //APP CSS
         copy($assets_path."app.min.css", $assets_path."app-".$version_stripped.".rev.css");
         //APP JS
