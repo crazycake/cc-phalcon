@@ -151,12 +151,14 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
 		//loop throught items and substract Q
 		foreach ($objects as $obj) {
 
-			if (empty($obj->quantity))
-				continue;
-
+			//get object ORM class
 			$object_class = $obj->object_class;
 
-			$orm_object       = $object_class::findFirst(["id = ?1", "bind" => [1 => $obj->object_id]]);
+			$orm_object = $object_class::findFirst(["id = ?1", "bind" => [1 => $obj->object_id]]);
+
+			if(!$orm_object || empty($obj->quantity))
+				continue;
+
 			$current_quantity = $orm_object->quantity;
 			$updated_quantity = (int)($current_quantity - $obj->quantity);
 
