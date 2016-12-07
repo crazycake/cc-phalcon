@@ -134,7 +134,7 @@
         {# debug: output render time #}
         {% if constant("APP_ENV") != "production" %}
             <script>
-                console.log('Core -> PhalconPHP <?php echo \Phalcon\Version::get(); ?>. Page rendered in <?php echo number_format((float)(microtime(true) - APP_START), 3, ".", ""); ?> seconds.');
+                console.log('Core -> PhalconPHP <?php echo \Phalcon\Version::get(); ?>. Page rendered in <?php echo number_format((float)(microtime(true) - APP_TS), 3, ".", ""); ?> seconds.');
             </script>
         {% endif %}
 

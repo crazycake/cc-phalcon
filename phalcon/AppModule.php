@@ -75,7 +75,7 @@ abstract class AppModule
         define("CORE_PATH", PROJECT_PATH."core/");
         define("PUBLIC_PATH", PROJECT_PATH."public/");
         define("APP_PATH", PROJECT_PATH."app/");
-        define("APP_START", microtime(true));  //for debugging render time
+        define("APP_TS", microtime(true)); //for debugging render time
 
         //set modules config
         self::$modules_conf = $config["modules"];
