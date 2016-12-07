@@ -32,7 +32,7 @@ class TaskCore extends Task
         $this->colorize("Usage: \ncli.php main [param]", "OK");
         $this->colorize("--------------------", "NOTE");
         $this->colorize("appConfig: Outputs app configuration in JSON format", "WARNING");
-        $this->colorize("revAssets [module]: Generates JS & CSS bundles revision files", "WARNING");
+        $this->colorize("revAssets: Generates JS & CSS bundles revision files", "WARNING");
     }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
@@ -141,27 +141,6 @@ class TaskCore extends Task
             $this->output($output);
         else
             echo $output;
-    }
-
-    /**
-     * Validates module folder argument
-     * @param array $args - The args array
-     * @param int $index - The arg index to validate
-     * @param boolean $check_folder - Checks if module folder exists
-     */
-    protected function validateModuleArg($args = [], $index = 0, $check_folder = true)
-    {
-        if (empty($args) || !isset($args[$index]))
-            $this->colorize("The argument [module] is missing", "ERROR", true);
-
-        //set module
-        $module = PROJECT_PATH.$args[$index];
-
-        //check for folder
-        if ($check_folder && !is_dir($module))
-            $this->colorize("The input module folder ($module) was not found", "ERROR", true);
-
-        return $module;
     }
 
     /**

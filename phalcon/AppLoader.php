@@ -128,7 +128,7 @@ trait AppLoader
 
         //4.- Register phalcon loader
         $loader->register();
-        // /sd(get_included_files());
+        //sd(get_included_files());
     }
 
     /**
@@ -148,7 +148,7 @@ trait AppLoader
         $libraries = array_merge(self::$CORE_DEFAULT_LIBS, $libraries);
 
         //check if lib is runnning in phar file
-        $class_path = dirname(__DIR__);
+        $class_path = \Phar::running() ?: dirname(__DIR__);
 
         //set library path => namespaces
         $namespaces = [];

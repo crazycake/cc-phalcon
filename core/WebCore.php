@@ -332,8 +332,7 @@ abstract class WebCore extends MvcCore implements WebSecurity
      */
     private function _setAppAssets()
     {
-        $version   = $this->config->version;
-        $staticUrl = $this->config->staticUrl;
+        $version = $this->config->version;
 
         $css_url = $this->staticUrl("assets/app.css");
         $js_url  = $this->staticUrl("assets/app.js");
@@ -364,11 +363,11 @@ abstract class WebCore extends MvcCore implements WebSecurity
     {
         //set javascript global objects
         $js_app = (object)[
+            "dev"       => (APP_ENV === "production") ? 0 : 1,
+            "version"   => $this->config->version,
             "name"      => $this->config->name,
             "baseUrl"   => $this->baseUrl(),
             "staticUrl" => $this->staticUrl(),
-            "dev"       => (APP_ENV === "production") ? 0 : 1,
-            "version"   => $this->config->version
         ];
 
         //set custom properties

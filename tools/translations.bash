@@ -10,7 +10,7 @@ PROJECT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PROJECT_PATH="$(dirname "$PROJECT_PATH")"
 
 # core directory
-APP_PATH=$PROJECT_PATH"app/"
+APP_PATH=$PROJECT_PATH"/app/"
 APP_LANGS_PATH=$APP_PATH"langs/"
 APP_CORE_PATH=$PROJECT_PATH"/core/cc-phalcon/"
 APP_VIEWS_CACHE_PATH=$PROJECT_PATH"/storage/cache/"
