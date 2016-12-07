@@ -60,13 +60,13 @@ def main():
 	config  = json.loads(output)
 
 	#set properties
-	APP.NAMESPACE = config['app']['namespace']
+	APP.NAMESPACE = config['namespace']
 	#get from env vars
 	APP.ENV     = os.environ.get('APP_ENV')
-	APP.DB_HOST = os.environ.get('DB_HOST')
-	APP.DB_NAME = os.environ.get('DB_NAME')
-	APP.DB_USER = os.environ.get('DB_USER')
-	APP.DB_PASS = os.environ.get('DB_PASS')
+	APP.DB_HOST = "db"
+	APP.DB_NAME = "app"
+	APP.DB_USER = "root"
+	APP.DB_PASS = "dev"
 
 	print SCS.CYAN + APP.NAMESPACE + " [" + APP.ENV + "] DB: " + APP.DB_HOST
 
@@ -77,9 +77,9 @@ def main():
 		bucket_env = "prod"
 
 	#s3
-	APP.S3_BUCKET	  = config['app']['aws']['s3Bucket'] + "-" + bucket_env
-	APP.S3_ACCESS_KEY = config['app']['aws']['accessKey']
-	APP.S3_SECRET_KEY = config['app']['aws']['secretKey']
+	APP.S3_BUCKET	  = config['aws']['s3Bucket'] + "-" + bucket_env
+	APP.S3_ACCESS_KEY = config['aws']['accessKey']
+	APP.S3_SECRET_KEY = config['aws']['secretKey']
 
 	#dir
 	project_dir = os.path.dirname(os.path.realpath(__file__))
