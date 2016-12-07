@@ -296,7 +296,7 @@ class AppServices
 
             $view = new \Phalcon\Mvc\View();
             //set directory views
-            $view->setViewsDir(MODULE_PATH."dev/volt/");
+            $view->setViewsDir(PROJECT_PATH."ui/volt/");
             //register volt view engine
             $view->registerEngines($di_view_engines);
 
@@ -309,7 +309,7 @@ class AppServices
             //simpleView
             $view = new \Phalcon\Mvc\View\Simple();
             //set directory views
-            $view->setViewsDir(MODULE_PATH."dev/volt/");
+            $view->setViewsDir(PROJECT_PATH."ui/volt/");
             //register volt view engine
             $view->registerEngines($di_view_engines);
 

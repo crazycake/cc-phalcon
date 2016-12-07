@@ -70,12 +70,11 @@ abstract class AppModule
         //define APP contants
         define("PROJECT_PATH", $config["projectPath"]);
         define("MODULE_NAME", strtolower($mod_name));
-        define("MODULE_PATH", PROJECT_PATH.MODULE_NAME."/");
         define("STORAGE_PATH", PROJECT_PATH."storage/");
         define("COMPOSER_PATH", PROJECT_PATH."vendor/");
         define("CORE_PATH", PROJECT_PATH."core/");
-        define("PUBLIC_PATH", MODULE_PATH."public/");
-        define("APP_PATH", MODULE_PATH."app/");
+        define("PUBLIC_PATH", PROJECT_PATH."public/");
+        define("APP_PATH", PROJECT_PATH."app/");
         define("APP_START", microtime(true));  //for debugging render time
 
         //set modules config
