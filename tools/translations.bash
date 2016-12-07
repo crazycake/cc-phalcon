@@ -8,12 +8,10 @@ set -e
 # current path
 PROJECT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PROJECT_PATH="$(dirname "$PROJECT_PATH")"
-# App Name
-APP_NAME=${PWD##*/}
-APP_NAME="${APP_NAME/-webapp/}"
-APP_NAMESPACE="$(echo "$APP_NAME" | tr '[:upper:]' '[:lower:]')"
 
-# cc-phalcon directory
+# core directory
+APP_PATH=$PROJECT_PATH"app/"
+APP_LANGS_PATH=$APP_PATH"langs/"
 APP_CORE_PATH=$PROJECT_PATH"/core/cc-phalcon/"
 APP_VIEWS_CACHE_PATH=$PROJECT_PATH"/storage/cache/"
 
@@ -23,35 +21,11 @@ TEMP_FILE=".translations"
 
 # help output
 scriptHelp() {
-	echo -e "\033[93m WebApp Translations Script\nValid actions:\033[0m"
-	echo -e "\033[95m build <module>: build po files in app folder. \033[0m"
-    echo -e "\033[95m find <module>: Find for new translations in app folder. \033[0m"
-	echo -e "\033[93m * Module option can be '-b' or '-f' (backend or frontend). \033[0m"
+	echo -e "\033[93m WebApp translations script\nValid actions:\033[0m"
+	echo -e "\033[95m build: build po files in app folder. \033[0m"
+    echo -e "\033[95m find: find for new translations in app folder. \033[0m"
 	exit
 }
-
-# check machine
-if [ ! $APP_ENV = "local" ]; then
-	echo -e "\033[31mThis script is for local environment only.\033[0m"
-	exit
-# set module
-elif [ "$2" = "-b" ]; then
-	MODULE_PATH=$PROJECT_PATH"/backend/"
-elif [ "$2" = "-f" ]; then
-	MODULE_PATH=$PROJECT_PATH"/frontend/"
-else
-	echo -e "\033[31mInvalid module option.\033[0m"
-	scriptHelp
-fi
-
-# Module properties
-APP_PATH=$MODULE_PATH"app/"
-APP_LANGS_PATH=$APP_PATH"langs/"
-
-# check that directories exists
-if [ ! -d $MODULE_PATH ] || [ ! -d $APP_LANGS_PATH ]; then
-	exit
-fi
 
 # commands
 case "$1" in
@@ -63,6 +37,7 @@ build)
 
 	# generate .mo files in LC_MESSAGES subfolder for each lang code
 	find $APP_LANGS_PATH -type f -name '*.po' | while read PO_FILE ; do
+
 		CODE=`basename "$PO_FILE" .po`
 		TARGET_DIR="$APP_LANGS_PATH$CODE/LC_MESSAGES"
 		mkdir -p "$TARGET_DIR"

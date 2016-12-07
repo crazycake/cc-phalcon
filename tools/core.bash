@@ -1,5 +1,5 @@
 #! /bin/bash
-# core package installer
+# Core installer
 # author: Nicolas Pulido <nicolas.pulido@crazycake.cl>
 
 # interrupt if error raises
@@ -9,13 +9,10 @@ echo -e "\033[94mCore Package Installer \033[0m"
 # project paths
 PROJECT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PROJECT_PATH="$(dirname "$PROJECT_PATH")"
-
+# tools path
 TOOLS_PATH=$PROJECT_PATH"/.tools/"
-FRONTEND_PATH=$PROJECT_PATH"/frontend/"
-BACKEND_PATH=$PROJECT_PATH"/backend/"
-#destination path
+# destination path
 DEST_PATH=$PROJECT_PATH"/core/"
-
 # core source
 CORE_PROJECT_NAME="cc-phalcon"
 # symlink to core project
@@ -25,12 +22,11 @@ CORE_SRC_TOOLS=$CORE_SRC_PATH"tools/"
 CORE_SRC_WEBPACKS=$CORE_SRC_PATH"webpacks/"
 
 # main app bash file
-ROOT_TOOL_FILES=("app.bash")
+ROOT_TOOL_FILES=("cli")
 
 # check if cc-phalcon symlink is present
 if [ ! -d $CORE_SRC_PATH ]; then
-	echo -e "\033[31mCore project symlink folder not found ($CORE_SRC_PATH).\033[0m"
-	exit
+	echo -e "\033[31mCore project symlink folder not found ($CORE_SRC_PATH).\033[0m" && exit
 fi
 
 copyToolFiles() {
@@ -41,39 +37,28 @@ copyToolFiles() {
 	# copy tool files
 	find $CORE_SRC_TOOLS -maxdepth 1 -mindepth 1 -type f -print0 | while read -d $'\0' FILE; do
 
-		#get file props
+		# get file props
 		FILENAME=$(basename "$FILE")
 
 		echo -e "\033[96mCopying script file $FILENAME... \033[0m"
+
 		# exclude main app script file (project folder)
-		if [[ " ${ROOT_TOOL_FILES[@]} " =~ " ${FILENAME} " ]]; then
-	        cp $FILE "$PROJECT_PATH/"
-	    else
-			cp $FILE "$TOOLS_PATH/"
-		fi
+		[[ " ${ROOT_TOOL_FILES[@]} " =~ " ${FILENAME} " ]] && cp $FILE "$PROJECT_PATH/" || cp $FILE "$TOOLS_PATH/"
 
 	done
 }
 
 copyVoltFiles() {
 
-	if [ -d $CORE_SRC_WEBPACKS"volt/" ]; then
-
-		if [ -d $BACKEND_PATH"dev/volt/" ]; then
-			echo -e "\033[94mCopying backend volt files ... \033[0m"
-			cp -r $CORE_SRC_WEBPACKS"volt/" $BACKEND_PATH"dev/volt/"
-		fi
-
-		if [ -d $FRONTEND_PATH"dev/volt/" ]; then
-			echo -e "\033[94mCopying frontend volt files ... \033[0m"
-			cp -r $CORE_SRC_WEBPACKS"volt/" $FRONTEND_PATH"dev/volt/"
-		fi
+	if [ -d $PROJECT_PATH"ui/volt/" ]; then
+		echo -e "\033[94mCopying volt files ... \033[0m"
+		cp -r $CORE_SRC_WEBPACKS"volt/" $PROJECT_PATH"ui/volt/"
 	fi
 }
 
 copyWebpacks() {
 
-	#check src path
+	# check src path
 	if [ -d $CORE_SRC_WEBPACKS"dist/" ]; then
 
 		#copy webpack files

@@ -1,5 +1,5 @@
 #! /bin/bash
-# author: Nicolas Pulido <nicolas.pulido@crazycake.cl>
+# webapp CLI
 
 # stop script if an error occurs
 set -e
@@ -8,10 +8,6 @@ PROJECT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # app namespace
 APP_NAME=${PWD##*/}
-APP_NAME="${APP_NAME/-webapp/}"
-
-# module components paths
-MOD_NAME=""
 
 # app paths
 TOOLS_PATH=$PROJECT_PATH"/.tools/"
@@ -22,40 +18,16 @@ COMPOSER_PATH=$PROJECT_PATH"/vendor/"
 scriptHelp() {
 	echo -e "\033[93m"$APP_NAME" webapp CLI\033[0m"
 	echo -e "\033[94mDev commands:\033[0m"
-	echo -e "\033[95m cli: Executes PHP App CLI.\033[0m"
-	echo -e "\033[95m db: Executes DB migrations. Run command for help (phinx engine).\033[0m"
+	echo -e "\033[95m watch <option>: Runs watcher daemon. Option -m for mailing watcher daemon \033[0m"
+	echo -e "\033[95m db: Executes DB migrations (phinx engine).\033[0m"
 	echo -e "\033[95m clean: Cleans cache & logs (storage folder).\033[0m"
+	echo -e "\033[95m core: installs/updates core package (requires cc-phalcon project symlink). \033[0m"
 	echo -e "\033[95m build: build JS & CSS bundles and compile translations. \033[0m"
-	echo -e "\033[95m watch <module>: Runs watcher daemon for backend or frontend. Modules: -b or -f.\033[0m"
-	echo -e "\033[95m watch-mailing <module>: Runs mailing watcher daemon for backend or frontend. Modules: -b or -f.\033[0m"
-	echo -e "\033[95m core: Installs/Updates core package (Requires cc-phalcon project). \033[0m"
 	echo -e "\033[95m trans: Update translations po file. \033[0m"
-	echo -e "\033[95m aws-cli <option>: Install AWS CLI (Pip is required). Use -s for self-update, -c for configuration.\033[0m"
-	echo -e "\033[95m aws-cdn <module>: Syncs S3 CDN bucket with app assets. Modules: -b or -f.\033[0m"
+	echo -e "\033[95m php-cli: Executes app PHP CLI.\033[0m"
+	echo -e "\033[95m aws-cli <option>: Install AWS CLI (pip is required). Use -s for self-update, -c for configuration.\033[0m"
+	echo -e "\033[95m aws-cdn: Syncs S3 CDN bucket with app assets.\033[0m"
 	exit
-}
-
-# build process
-appBuild() {
-
-	#import phalcon builder bash file
-	source $TOOLS_PATH"builder.bash"
-	#call build task for deploy
-	buildTask
-}
-
-# handle module archument (frontend & backend)
-handleModuleArgument() {
-
-	#check arg
-	if [ "$1" = "-b" ]; then
-		MOD_NAME="backend"
-	elif [ "$1" = "-f" ]; then
-		MOD_NAME="frontend"
-	else
-		echo -e "\033[31mInvalid module option. Use -b or -f. \033[0m"
-		exit
-	fi
 }
 
 # commands
@@ -64,8 +36,8 @@ case "$1" in
 db)
 
 	if [ ! -f $COMPOSER_PATH"bin/phinx" ]; then
-		echo -e "\033[31mphinx library not found in composer project folder.\033[0m"
-		exit
+
+		echo -e "\033[31mphinx library not found in composer project folder.\033[0m" && exit
 	fi
 
 	echo -e "\033[95mRunning phinx command... \033[0m"
@@ -73,17 +45,11 @@ db)
 	php $COMPOSER_PATH"bin/phinx" "${@:2}"
 	;;
 
-cli)
-
-	echo -e "\033[95mRunning PHP App CLI... \033[0m"
-
-	php $PROJECT_PATH"/cli/cli.php" "main" "${@:2}"
-	;;
-
 clean)
 
 	# clean storage
 	if [ -d $STORAGE_PATH ]; then
+
 		find $STORAGE_PATH"cache" $STORAGE_PATH"logs" -type f \( ! -iname ".*" \) -print0 | xargs -0 sudo rm
 	fi
 
@@ -93,25 +59,28 @@ clean)
 
 build)
 
-	appBuild
+	# msg
+	echo -e "\033[95mGulp build tasks... \033[0m"
+
+	# gulp build task
+	gulp build
+
+	# translations
+	bash $TOOLS_PATH"translations.bash" build
 	;;
 
 watch)
 
-	handleModuleArgument "$2"
-
 	echo -e "\033[95mRunning gulp watch...\033[0m"
 
-	gulp watch -m $MOD_NAME
+	[[ "$2" = "-m" ]] && gulp watch-m || gulp watch
 	;;
 
-watch-mailing)
-
-	handleModuleArgument "$2"
+watch-m)
 
 	echo -e "\033[95mRunning gulp watch-mailing...\033[0m"
 
-	gulp watch-mailing -m $MOD_NAME
+	gulp watch-mailing
 	;;
 
 core)
@@ -121,8 +90,15 @@ core)
 
 trans)
 
-	bash $TOOLS_PATH"translations.bash" find -b
-	bash $TOOLS_PATH"translations.bash" find -f
+	bash $TOOLS_PATH"translations.bash" find
+	bash $TOOLS_PATH"translations.bash" find
+	;;
+
+cli)
+
+	echo -e "\033[95mRunning PHP App CLI... \033[0m"
+
+	php $PROJECT_PATH"/cli/cli.php" "main" "${@:2}"
 	;;
 
 aws-cli)
@@ -140,9 +116,11 @@ aws-cli)
 		aws configure
 
 	elif [ "$2" = "-s" ]; then
+
 		echo -e "\033[95mUpdating AWS CLI... \033[0m"
 		sudo pip install --upgrade awscli
 	else
+
 		echo -e "\033[95mInstalling AWS CLI... \033[0m"
 		sudo pip install awscli
 	fi
@@ -155,27 +133,25 @@ aws-cli)
 
 aws-cdn)
 
-	handleModuleArgument "$2"
-
 	#sync assets
-	SYNC_LOCAL_PATH="$PROJECT_PATH/$MOD_NAME/public/assets/"
-	SYNC_REMOTE_PATH="s3://$APP_NAME-cdn/$MOD_NAME/assets/"
+	SYNC_LOCAL_PATH="$PROJECT_PATH/public/assets/"
+	SYNC_REMOTE_PATH="s3://$APP_NAME-cdn/assets/"
 
 	echo -e "\033[95mBucket Syncing $SYNC_LOCAL_PATH -> $SYNC_REMOTE_PATH \033[0m"
 	#sync
 	aws s3 sync $SYNC_LOCAL_PATH $SYNC_REMOTE_PATH --delete --cache-control max-age=864000 --exclude '*' --include '*.rev.css' --include '*.rev.js'
 
 	#sync images
-	SYNC_LOCAL_PATH="$PROJECT_PATH/$MOD_NAME/public/images/"
-	SYNC_REMOTE_PATH="s3://$APP_NAME-cdn/$MOD_NAME/images/"
+	SYNC_LOCAL_PATH="$PROJECT_PATH/public/images/"
+	SYNC_REMOTE_PATH="s3://$APP_NAME-cdn/images/"
 
 	echo -e "\033[95mBucket Syncing $SYNC_LOCAL_PATH -> $SYNC_REMOTE_PATH \033[0m"
 	#sync
 	aws s3 sync $SYNC_LOCAL_PATH $SYNC_REMOTE_PATH --delete --cache-control max-age=864000 --exclude '*.htaccess' --exclude '*.DS_Store' --exclude '*.html'
 
 	#sync fonts
-	SYNC_LOCAL_PATH="$PROJECT_PATH/$MOD_NAME/public/fonts/"
-	SYNC_REMOTE_PATH="s3://$APP_NAME-cdn/$MOD_NAME/fonts/"
+	SYNC_LOCAL_PATH="$PROJECT_PATH/public/fonts/"
+	SYNC_REMOTE_PATH="s3://$APP_NAME-cdn/fonts/"
 
 	echo -e "\033[95mBucket Syncing $SYNC_LOCAL_PATH -> $SYNC_REMOTE_PATH \033[0m"
 	#sync
