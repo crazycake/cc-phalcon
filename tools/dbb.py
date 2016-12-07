@@ -2,6 +2,7 @@
 
 # -*- coding: utf-8 -*-
 """
+DB Backup
 Dumps MySQL database to be pushed to S3. DB root password is required as arg.
 Required libs: sudo pip install python-dotenv tinys3
 Edit crontab: sudo crontab -e

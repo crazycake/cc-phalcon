@@ -19,7 +19,7 @@ DEST_PATH=$PROJECT_PATH"/core/"
 # core source
 CORE_PROJECT_NAME="cc-phalcon"
 # symlink to core project
-CORE_SRC_PATH=$DEST_PATH$CORE_PROJECT_NAME"/"
+CORE_SRC_PATH="../$CORE_PROJECT_NAME/"
 # sub-paths
 CORE_SRC_TOOLS=$CORE_SRC_PATH"tools/"
 CORE_SRC_WEBPACKS=$CORE_SRC_PATH"webpacks/"
