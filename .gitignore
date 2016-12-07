@@ -6,7 +6,6 @@
 
 # OSX
 .DS_Store
-.ds_store
 
 # GIT
 !*.gitkeep
