@@ -75,13 +75,6 @@ watch)
 	[[ "$2" = "-m" ]] && gulp watch-m || gulp watch
 	;;
 
-watch-m)
-
-	echo -e "\033[95mRunning gulp watch-mailing...\033[0m"
-
-	gulp watch-mailing
-	;;
-
 core)
 
 	bash $TOOLS_PATH"core.bash"

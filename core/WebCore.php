@@ -318,12 +318,8 @@ abstract class WebCore extends MvcCore implements WebSecurity
      */
     private function _handleSSL()
     {
-        $enableSSL = $this->config->enableSSL;
-
-        if(APP_ENV !== "production" || !isset($_SERVER["HTTP_HOST"]) ||
-           $this->request->isSecureRequest() || empty($enableSSL)) {
+        if(APP_ENV !== "production" || $this->request->isSecureRequest() || empty($this->config->enableSSL))
             return;
-        }
 
         //if enabledSSL, force redirect for non-https request
         $url = "https://".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];

@@ -50,9 +50,9 @@ copyToolFiles() {
 
 copyVoltFiles() {
 
-	if [ -d $PROJECT_PATH"ui/volt/" ]; then
+	if [ -d $PROJECT_PATH"/ui/volt/" ]; then
 		echo -e "\033[94mCopying volt files ... \033[0m"
-		cp -r $CORE_SRC_WEBPACKS"volt/" $PROJECT_PATH"ui/volt/"
+		cp -r $CORE_SRC_WEBPACKS"volt/" $PROJECT_PATH"/ui/volt/"
 	fi
 }
 

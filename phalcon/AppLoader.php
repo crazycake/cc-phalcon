@@ -88,10 +88,11 @@ trait AppLoader
     }
 
     /**
-     * load classes
+     * Load classes
      * @access private
+     * @param array $config - The config array
      */
-    private function loadClasses()
+    private function loadClasses($config = [])
     {
         // 1. project dirs
         $dirs = [
@@ -100,7 +101,7 @@ trait AppLoader
             "models"      => APP_PATH."models/"
         ];
 
-        foreach ($this->config->loader as $dir) {
+        foreach ($config["loader"] as $dir) {
 
             $paths = explode("/", $dir, 2);
             //set directory path
@@ -116,7 +117,7 @@ trait AppLoader
         $loader->registerDirs($dirs);
 
         // 3. Register core static modules
-        $this->loadCoreLibraries($loader, $this->config->core);
+        $this->loadCoreLibraries($loader, $config["core"]);
 
         // 4. Composer libs auto loader
         if (!is_file(COMPOSER_PATH."autoload.php"))

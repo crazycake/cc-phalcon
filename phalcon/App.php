@@ -51,7 +51,7 @@ abstract class App
         define("APP_TS", microtime(true)); //for debugging render time
 
         //webapp directories (loader)
-        $this->loadClasses();
+        $this->loadClasses($config);
         //environment (loader)
         $this->setEnvironment();
         //set DI (services)
