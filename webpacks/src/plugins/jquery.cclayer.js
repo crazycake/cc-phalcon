@@ -234,19 +234,19 @@
 
 			//show with defined animation?
 			if (typeof options.onShowAnim == "function")
-				options.onShowAnim.call();
+				options.onShowAnim();
 			else
 				el.fadeIn("fast");
 
 			//call onShow function if set
 			if (typeof options.onShow === "function")
-				options.onShow.call();
+				options.onShow();
 		},
 		close: function(options, el) {
 
 			//close with defined animation?
 			if (typeof options.onCloseAnim == "function")
-				options.onCloseAnim.call();
+				options.onCloseAnim();
 			else
 				el.hide();
 
