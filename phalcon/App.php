@@ -65,88 +65,102 @@ abstract class App extends AppModule implements AppLoader
 
         switch (MODULE_NAME) {
 
-            case "cli":
-                //new cli app
-                $app = new \Phalcon\CLI\Console($this->di);
-                //loop through args
-                $arguments = [];
-
-                if (is_null($argv))
-                    die("Phalcon Console -> no args supplied\n");
-
-                //set args data
-                foreach ($argv as $k => $arg) {
-                    switch ($k) {
-                        case 0: break;
-                        case 1: $arguments["task"]        = $arg; break;
-                        case 2: $arguments["action"]      = $arg; break;
-                        default: $arguments["params"][$k] = $arg; break;
-                    }
-                }
-
-                //checks that array param was set
-                if (!isset($arguments["params"]))
-                    $arguments["params"] = [];
-
-                //order params
-                if (count($arguments["params"]) > 0) {
-                    $params = array_values($arguments["params"]);
-                    $arguments["params"] = $params;
-                }
-
-                //define global constants for the current task and action
-                define("CLI_TASK",   isset($argv[1]) ? $argv[1] : null);
-                define("CLI_ACTION", isset($argv[2]) ? $argv[2] : null);
-
-                //handle incoming arguments
-                $app->handle($arguments);
-                break;
-
-            case "api":
-                //new micro app
-                $app = new \Phalcon\Mvc\Micro($this->di);
-                //apply a routes function if param given (must be done before object instance)
-                if (is_callable($routes_fn))
-                    $routes_fn($app);
-
-                //Handle the request
-                echo $app->handle();
-                break;
-
-            default:
-                //apply a routes function if param given (must be done after object instance)
-                if (is_callable($routes_fn)) {
-                    //creates a router object (for use custom URL behavior use "false" param)
-                    $router = new \Phalcon\Mvc\Router();
-                    //Remove trailing slashes automatically
-                    $router->removeExtraSlashes(true);
-                    //apply a routes function
-                    $routes_fn($router);
-                    //Register the router in the DI
-                    $this->di->set("router", function() use (&$router) {
-                        return $router;
-                    });
-                }
-
-                //new mvc app
-                $app = new \Phalcon\Mvc\Application($this->di);
-                //set output
-                $output = $app->handle()->getContent();
-
-                //return output if argv is true
-                if ($argv)
-                    return $output;
-
-                //Handle the request
-                if (APP_ENV !== "local")
-                    ob_start([$this,"_minifyOutput"]); //call function
-
-                echo $output;
-                break;
+            case "cli" : $this->_startCli($argv);      break;
+            case "api" : $this->_startApi($routes_fn); break;
+            default    : $this->_startMvc($routes_fn); break;
         }
     }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
+
+	/**
+	 * Starts an CLI App
+	 * @param array $argv - Input arguments for CLI
+	 */
+	private function _startCli($argv = null)
+	{
+		//new cli app
+		$app = new \Phalcon\CLI\Console($this->di);
+		//loop through args
+		$arguments = [];
+
+		if (is_null($argv))
+			die("Phalcon Console -> no args supplied\n");
+
+		//set args data
+		foreach ($argv as $k => $arg) {
+			switch ($k) {
+				case 0: break;
+				case 1: $arguments["task"]        = $arg; break;
+				case 2: $arguments["action"]      = $arg; break;
+				default: $arguments["params"][$k] = $arg; break;
+			}
+		}
+
+		//checks that array param was set
+		if (!isset($arguments["params"]))
+			$arguments["params"] = [];
+
+		//order params
+		if (count($arguments["params"]) > 0) {
+			$params = array_values($arguments["params"]);
+			$arguments["params"] = $params;
+		}
+
+		//define global constants for the current task and action
+		define("CLI_TASK",   isset($argv[1]) ? $argv[1] : null);
+		define("CLI_ACTION", isset($argv[2]) ? $argv[2] : null);
+
+		//handle incoming arguments
+		$app->handle($arguments);
+	}
+
+    /**
+     * Starts an API App
+     * @param function $routes_fn - A routes function
+     */
+    private function _startApi($routes_fn = null)
+    {
+        //new micro app
+        $app = new \Phalcon\Mvc\Micro($this->di);
+        //apply a routes function if param given (must be done before object instance)
+        if (is_callable($routes_fn))
+            $routes_fn($app);
+
+        //Handle the request
+        echo $app->handle();
+    }
+
+    /**
+     * Starts an MVC App
+     * @param function $routes_fn - A routes function
+     */
+    private function _startMvc($routes_fn = null)
+    {
+        //call routes function?
+        if (is_callable($routes_fn)) {
+            //creates a router object (for use custom URL behavior use "false" param)
+            $router = new \Phalcon\Mvc\Router();
+            //Remove trailing slashes automatically
+            $router->removeExtraSlashes(true);
+            //apply a routes function
+            $routes_fn($router);
+            //Register the router in the DI
+            $this->di->set("router", function() use (&$router) {
+                return $router;
+            });
+        }
+
+        $app = new \Phalcon\Mvc\Application($this->di);
+        //set output
+        $output = $app->handle()->getContent();
+
+        //Handle the request
+        if (APP_ENV !== "local")
+            ob_start([$this,"_minifyOutput"]); //call function
+
+        echo $output;
+    }
 
     /**
      * Set App Dependency Injector
