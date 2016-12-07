@@ -10,7 +10,7 @@ namespace CrazyCake\Core;
 //imports
 use Phalcon\Exception;
 //core
-use CrazyCake\Phalcon\AppModule;
+use CrazyCake\Phalcon\App;
 
 /**
  * Common functions for API WS
@@ -26,19 +26,12 @@ abstract class WsCore extends MvcCore
     abstract protected function welcome();
 
     /**
-     * API version
-     */
-    public $version;
-
-    /**
      * on Construct event
      */
     protected function onConstruct()
     {
         parent::onConstruct();
 
-        //set API version
-        $this->version = AppModule::getProperty("version");
         // API Key Validation
         $this->_validateApiKey();
     }
@@ -162,7 +155,7 @@ abstract class WsCore extends MvcCore
                 unlink($filename);
         }
     }
-    
+
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
@@ -170,17 +163,14 @@ abstract class WsCore extends MvcCore
      */
     private function _validateApiKey()
     {
-        $api_key = AppModule::getProperty("key");
-        $enabled = AppModule::getProperty("keyEnabled");
-
-        if (!$enabled)
+        if (empty($this->config->key))
             return;
 
         //get API key from request headers
         $header_api_key = $this->request->getHeader(self::HEADER_API_KEY);
 
         //check if keys are equal
-        if ($api_key !== $header_api_key)
+        if ($this->config->key !== $header_api_key)
             $this->jsonResponse(498);
     }
 }

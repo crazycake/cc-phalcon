@@ -34,7 +34,7 @@ trait Localize
     {
         //get services
         $di       = \Phalcon\DI::getDefault();
-        $app_name = $di->getShared("config")->app->name;
+        $app_name = $di->getShared("config")->name;
 
         $data = [
             "ACCOUNT" => [
@@ -120,7 +120,7 @@ trait Localize
     {
         //get services
         $di       = \Phalcon\DI::getDefault();
-        $app_name = $di->getShared("config")->app->name;
+        $app_name = $di->getShared("config")->name;
 
         $data = [
             "ALERTS" => [

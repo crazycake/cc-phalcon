@@ -17,7 +17,7 @@ use Facebook\Helpers\FacebookJavaScriptHelper;
 use Facebook\Exceptions\FacebookSDKException;
 use Facebook\Exceptions\FacebookResponseException;
 //CrazyCake Libs
-use CrazyCake\Phalcon\AppModule;
+use CrazyCake\Phalcon\App;
 
 /**
  * Facebook Authentication
@@ -76,8 +76,8 @@ trait FacebookAuth
         if (is_null($this->fb)) {
 
             $this->fb = new \Facebook\Facebook([
-                "app_id"     => $this->config->app->facebook->appID,
-                "app_secret" => $this->config->app->facebook->appKey,
+                "app_id"     => $this->config->facebook->appID,
+                "app_secret" => $this->config->facebook->appKey,
                 //api version
                 "default_graph_version" => "v2.5"
             ]);
@@ -209,7 +209,7 @@ trait FacebookAuth
     {
         //check link perms
         if (empty($scope)) {
-            $scope = $this->config->app->facebook->appScope;
+            $scope = $this->config->facebook->appScope;
         }
 
         $route = [
@@ -229,7 +229,7 @@ trait FacebookAuth
         //get the url
         $url = $helper->getLoginUrl($callback, explode(",", $scope));
         //set property to config
-        $this->config->app->facebook->loginUrl = $url;
+        $this->config->facebook->loginUrl = $url;
     }
 
     /**
@@ -250,7 +250,7 @@ trait FacebookAuth
             list($fb_id, $short_live_fac) = $data;
 
             //find user on db
-            $user_facebook_class = AppModule::getClass("user_facebook");
+            $user_facebook_class = App::getClass("user_facebook");
             $user_fb = $user_facebook_class::getById($fb_id);
 
             if (!$user_fb || empty($short_live_fac))
@@ -343,7 +343,7 @@ trait FacebookAuth
             else if (!empty($data["hub_challenge"]) && !empty($data["hub_verify_token"])) {
 
                 //throw Exception for a invalid token
-                if ($data["hub_verify_token"] != $this->config->app->facebook->webhookToken)
+                if ($data["hub_verify_token"] != $this->config->facebook->webhookToken)
                     throw new Exception("Invalid Facebook Hub Token");
 
                 //send hub_challenge value
@@ -384,7 +384,7 @@ trait FacebookAuth
                 throw new Exception("Invalid Facebook Access Token");
 
             //validate permissions
-            $scope = empty($scope) ? $this->config->app->facebook->appScope : $scope;
+            $scope = empty($scope) ? $this->config->facebook->appScope : $scope;
             $perms = $this->_getAccesTokenPermissions(null, $this->user_session["id"], $scope);
 
             if (!$perms)
@@ -497,8 +497,8 @@ trait FacebookAuth
     private function __loginUser($fac = null)
     {
         //get model classmap names
-        $user_class          = AppModule::getClass("user");
-        $user_facebook_class = AppModule::getClass("user_facebook");
+        $user_class          = App::getClass("user");
+        $user_facebook_class = App::getClass("user_facebook");
 
         //the data response
         $login_data = [];
@@ -621,7 +621,7 @@ trait FacebookAuth
     protected function _invalidateAccessToken($fb_id = 0)
     {
         //get object class
-        $user_facebook_class = AppModule::getClass("user_facebook");
+        $user_facebook_class = App::getClass("user_facebook");
         //get user & update properties
         $user_fb = $user_facebook_class::getById($fb_id);
 
@@ -706,7 +706,7 @@ trait FacebookAuth
      */
     private function __setUserAccessToken($fac = null, $user_id = 0)
     {
-        $user_facebook_class = AppModule::getClass("user_facebook");
+        $user_facebook_class = App::getClass("user_facebook");
 
         //get stored fac if its null
         if (empty($fac)) {
@@ -737,8 +737,8 @@ trait FacebookAuth
      */
     private function __saveUser($user_id = null, $fb_id = null, $fac = null)
     {
-        $user_class          = AppModule::getClass("user");
-        $user_facebook_class = AppModule::getClass("user_facebook");
+        $user_class          = App::getClass("user");
+        $user_facebook_class = App::getClass("user_facebook");
 
         //Creates a Facebook User
         $user_fb             = new $user_facebook_class();
@@ -793,7 +793,7 @@ trait FacebookAuth
             return false;
 
         //set facebook app secret
-        $fb_app_key = $this->config->app->facebook->appKey;
+        $fb_app_key = $this->config->facebook->appKey;
 
         //set properties with list
         list($encoded_sig, $payload) = explode(".", $signed_request, 2);

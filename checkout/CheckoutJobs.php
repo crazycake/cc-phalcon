@@ -9,7 +9,7 @@ namespace CrazyCake\Checkout;
 //imports
 use Phalcon\Exception;
 //core
-use CrazyCake\Phalcon\AppModule;
+use CrazyCake\Phalcon\App;
 
 /**
  * Checkout Jobs for CLI
@@ -38,7 +38,7 @@ trait CheckoutJobs
      */
     public function userCheckoutCleanerAction()
     {
-        $user_checkout_class = AppModule::getClass("user_checkout");
+        $user_checkout_class = App::getClass("user_checkout");
 
         //delete pending checkouts with default expiration time
         $objs_deleted = $user_checkout_class::deleteExpired();

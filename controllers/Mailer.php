@@ -13,7 +13,7 @@ use Phalcon\Exception;
 use Pelago\Emogrifier;
 
 //core
-use CrazyCake\Phalcon\AppModule;
+use CrazyCake\Phalcon\App;
 
 /**
  * Simple Email Service Trait
@@ -60,8 +60,8 @@ trait Mailer
         //merge confs
         $conf = array_merge($defaults, $conf);
         //append class prefixes
-        $conf["user_token_entity"] = AppModule::getClass($conf["user_entity"])."Token";
-        $conf["user_entity"]       = AppModule::getClass($conf["user_entity"]);
+        $conf["user_token_entity"] = App::getClass($conf["user_entity"])."Token";
+        $conf["user_entity"]       = App::getClass($conf["user_entity"]);
 
         $this->mailer_conf = $conf;
 
@@ -84,7 +84,7 @@ trait Mailer
             "message" => "string"
         ], "POST");
 
-        $data["subject"] = "Contacto ".$this->config->app->name;
+        $data["subject"] = "Contacto ".$this->config->name;
 
         //send contact email
         $this->sendAdminMessage($data);
@@ -174,7 +174,7 @@ trait Mailer
     public function inlineHtml($template = "")
     {
         //set app var
-        $this->mailer_conf["app"] = $this->config->app;
+        $this->mailer_conf["config"] = $this->config;
 
         //get the view in mailing folder
         $html = $this->simpleView->render("mailing/$template", $this->mailer_conf);
@@ -206,9 +206,9 @@ trait Mailer
         //Sending a warning to admin users!
         $this->sendAdminMessage([
             "subject" => "Exception Notification Error",
-            "to"      => $this->config->app->emails->support,
-            "email"   => $this->config->app->emails->sender,
-            "name"    => $this->config->app->name." System",
+            "to"      => $this->config->emails->support,
+            "email"   => $this->config->emails->sender,
+            "name"    => $this->config->name." System",
             "message" => "A error occurred.".
                          "\nData:  ".(is_null($data) ? "empty" : json_encode($data, JSON_UNESCAPED_SLASHES)).
                          "\nTrace: ".$exception->getMessage()
@@ -226,8 +226,8 @@ trait Mailer
     		return false;
 
         //set message properties
-        $subject = isset($message_data["subject"]) ? $message_data["subject"] : $this->config->app->name;
-        $to      = isset($message_data["to"]) ? $message_data["to"] : $this->config->app->emails->contact;
+        $subject = isset($message_data["subject"]) ? $message_data["subject"] : $this->config->name;
+        $to      = isset($message_data["to"]) ? $message_data["to"] : $this->config->emails->contact;
 
         //add prefix "data" to each element in array
         $this->mailer_conf = array_combine( array_map(function($k) { return "data_".$k; }, array_keys($message_data)), $message_data);
@@ -256,17 +256,17 @@ trait Mailer
 
         //set default subject
         if (empty($subject))
-            $subject = $this->config->app->name;
+            $subject = $this->config->name;
 
         try {
 
             //service instance
-            $sendgrid = new \SendGrid($this->config->app->sendgrid->apiKey);
+            $sendgrid = new \SendGrid($this->config->sendgrid->apiKey);
             $message  = new \SendGrid\Email();
 
-            $message->setFrom($this->config->app->emails->sender)
-                    ->setFromName($this->config->app->name)
-                    ->setReplyTo($this->config->app->emails->support)
+            $message->setFrom($this->config->emails->sender)
+                    ->setFromName($this->config->name)
+                    ->setReplyTo($this->config->emails->support)
                     ->setSubject($subject)
                     ->setHtml($this->inlineHtml($template));
 

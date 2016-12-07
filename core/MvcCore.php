@@ -11,7 +11,7 @@ namespace CrazyCake\Core;
 use Phalcon\Mvc\Controller;
 use Phalcon\Exception;
 //core
-use CrazyCake\Phalcon\AppModule;
+use CrazyCake\Phalcon\App;
 use CrazyCake\Controllers\Requester;
 use CrazyCake\Controllers\Responser;
 
@@ -116,7 +116,7 @@ abstract class MvcCore extends Controller
     {
         //set base url
         if (empty($options["base_url"]))
-            $options["base_url"] = empty($options["module"]) ? $this->baseUrl() : AppModule::getUrl($options["module"]);
+            $options["base_url"] = empty($options["module"]) ? $this->baseUrl() : App::getUrl($options["module"]);
 
         //set uri
         if (empty($options["uri"]))
@@ -126,7 +126,7 @@ abstract class MvcCore extends Controller
         if (!empty($options["module"]) && $options["module"] == "api") {
 
             //set API key header name
-            $api_key_header_value = AppModule::getProperty("key", "api");
+            $api_key_header_value = $this->config->apiKey;
             $api_key_header_name  = str_replace("_", "-", WsCore::HEADER_API_KEY);
             $options["headers"]   = [$api_key_header_name => $api_key_header_value];
         }
@@ -274,7 +274,7 @@ abstract class MvcCore extends Controller
             throw new Exception("MvcCore::sendMailMessage -> method param is required.");
 
         //get the mailer controller name
-        $mailer_class = AppModule::getClass("mailer_controller");
+        $mailer_class = App::getClass("mailer_controller");
 
         //checks that a MailerController exists
         if (!class_exists($mailer_class))

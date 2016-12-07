@@ -11,7 +11,7 @@ namespace CrazyCake\Account;
 use Phalcon\Exception;
 
 //core
-use CrazyCake\Phalcon\AppModule;
+use CrazyCake\Phalcon\App;
 
 /**
  * Account Session Handler
@@ -56,7 +56,7 @@ trait AccountSession
         //merge confs
         $conf = array_merge($defaults, $conf);
         //append class prefixes
-        $conf["user_entity"] = AppModule::getClass($conf["user_entity"]);
+        $conf["user_entity"] = App::getClass($conf["user_entity"]);
 
         $this->account_session_conf = $conf;
 

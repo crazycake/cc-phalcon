@@ -7,7 +7,7 @@
 namespace CrazyCake\Facebook;
 
 //core
-use CrazyCake\Phalcon\AppModule;
+use CrazyCake\Phalcon\App;
 
 /**
  * Base Model Users Facebook
@@ -46,7 +46,7 @@ class BaseUserFacebook extends \CrazyCake\Models\Base
     public function initialize()
     {
         //get class
-        $user_class = AppModule::getClass("user", false);
+        $user_class = App::getClass("user", false);
         //model relations
         $this->hasOne("user_id", $user_class, "id");
     }

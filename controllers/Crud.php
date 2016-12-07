@@ -11,7 +11,7 @@ use Phalcon\Paginator\Adapter\Model as Paginator;
 use Phalcon\Mvc\Model\Resultset\Simple as Resultset;
 use Phalcon\Exception;
 //imports
-use CrazyCake\Phalcon\AppModule;
+use CrazyCake\Phalcon\App;
 
 /**
  * Base CRUD Controller
@@ -134,7 +134,7 @@ trait Crud
 
 		//find objects
 		$entity		= $this->crud_conf["entity"];
-		$class_name = AppModule::getClass($entity, false);
+		$class_name = App::getClass($entity, false);
 		//build query object
 		$query = $class_name::query();
 
@@ -218,7 +218,7 @@ trait Crud
             $this->onBeforeSave($data, "create");
 
 			//new object
-	        $object_class = AppModule::getClass($this->crud_conf["entity"]);
+	        $object_class = App::getClass($this->crud_conf["entity"]);
 	        $object 	  = new $object_class();
 
 			//set empty strings as null data
@@ -261,7 +261,7 @@ trait Crud
             $this->onBeforeSave($data, "update");
 
 			//get object
-	        $object_class = AppModule::getClass($this->crud_conf["entity"]);
+	        $object_class = App::getClass($this->crud_conf["entity"]);
 	        $object 	  = $object_class::getById($data["id"]);
 
 	        //check object exists
@@ -312,7 +312,7 @@ trait Crud
 		], "POST");
 
 		//find object
-		$object_class = AppModule::getClass($this->crud_conf["entity"]);
+		$object_class = App::getClass($this->crud_conf["entity"]);
 		$object 	  = $object_class::getById($data["id"]);
 
 		//orm deletion
@@ -341,7 +341,7 @@ trait Crud
 		//one level relation
 		if(count($namespaces) < 2) {
 
-			$class_name = AppModule::getClass($this->crud_conf["entity"], false);
+			$class_name = App::getClass($this->crud_conf["entity"], false);
 
 			return $class_name.".".$field;
 		}

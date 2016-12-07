@@ -9,7 +9,7 @@
 namespace CrazyCake\Account;
 
 //imports
-use CrazyCake\Phalcon\AppModule;
+use CrazyCake\Phalcon\App;
 use Phalcon\Exception;
 use CrazyCake\Helpers\ReCaptcha;
 
@@ -42,8 +42,8 @@ trait AccountPassRecovery
         //merge confs
         $conf = array_merge($defaults, $conf);
         //append class prefixes
-        $conf["user_token_entity"] = AppModule::getClass($conf["user_entity"])."Token";
-        $conf["user_entity"]       = AppModule::getClass($conf["user_entity"]);
+        $conf["user_token_entity"] = App::getClass($conf["user_entity"])."Token";
+        $conf["user_entity"]       = App::getClass($conf["user_entity"]);
 
         $this->account_pass_recovery_conf = $conf;
     }
@@ -114,7 +114,7 @@ trait AccountPassRecovery
         ], "POST");
 
         //google reCaptcha helper
-        $recaptcha = new ReCaptcha($this->config->app->google->reCaptchaKey);
+        $recaptcha = new ReCaptcha($this->config->google->reCaptchaKey);
 
         //check valid reCaptcha
         if (empty($data["g-recaptcha-response"]) || !$recaptcha->isValid($data["g-recaptcha-response"])) {

@@ -28,9 +28,9 @@
         {% endif %}
 
         {# define vars #}
-        {% set tag_title            = html_title is defined ? html_title : app.name %}
-        {% set tag_meta_description = html_description is defined ? html_description : app.name %}
-        {% set tag_meta_author      = html_author is defined ? html_author : app.name~' Team' %}
+        {% set tag_title            = html_title is defined ? html_title : config.name %}
+        {% set tag_meta_description = html_description is defined ? html_description : config.name %}
+        {% set tag_meta_author      = html_author is defined ? html_author : config.name~' Team' %}
         {% set tag_meta_robots      = html_disallow_robots is defined ? "noindex,nofollow" : "index,follow" %}
 
         {# descriptive metas #}
@@ -46,7 +46,7 @@
 
         {# Windows 8 #}
         {% if client is defined and client.platform == "Windows" %}
-            <meta name="application-name" content="{{ app.name }}" />
+            <meta name="application-name" content="{{ config.name }}" />
             <meta name="msapplication-TileColor" content="#efefef" />
             <meta name="msapplication-TileImage" content="{{ static_url('images/favicons/mstile.png') }}" />
         {% endif %}
@@ -111,10 +111,10 @@
         <script>core.ready();</script>
 
         {# GoogleAnalytics (Frontend only, async loading) #}
-        {% if app.google is defined and constant("MODULE_NAME") == "frontend" %}
+        {% if config.google is defined and constant("MODULE_NAME") == "frontend" %}
             <script>
                 window.ga=function(){ga.q.push(arguments)};ga.q=[];ga.l=+new Date;
-                ga('create','{{ app.google.analyticsUA }}','auto');
+                ga('create','{{ config.google.analyticsUA }}','auto');
                 ga('send','pageview')
             </script>
             <script src="//www.google-analytics.com/analytics.js" async defer></script>

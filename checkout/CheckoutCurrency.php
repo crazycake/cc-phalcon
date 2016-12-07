@@ -10,7 +10,7 @@ namespace CrazyCake\Checkout;
 use Phalcon\Exception;
 use Predis\Client as Redis;
 //core
-use CrazyCake\Phalcon\AppModule;
+use CrazyCake\Phalcon\App;
 use Carbon\Carbon;
 
 /**

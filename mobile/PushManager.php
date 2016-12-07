@@ -9,7 +9,7 @@ namespace CrazyCake\Mobile;
 //imports
 use Phalcon\Exception;
 //core
-use CrazyCake\Phalcon\AppModule;
+use CrazyCake\Phalcon\App;
 
 /**
  * Push Manager
@@ -41,7 +41,7 @@ trait PushManager
             throw new Exception("missing input params");
 
         //get model class
-        $push_class = AppModule::getClass("push_notification");
+        $push_class = App::getClass("push_notification");
 
         //check if subscriber exits
         $subscriber = $push_class::getSubscriber($data["service"], $data["uuid"]);
@@ -58,7 +58,7 @@ trait PushManager
                 $this->sendNotification([
                     "uuids"   => $data["uuid"],
                     "service" => $data["service"],
-                    "message" => $this->config->app->name." pending notification.",
+                    "message" => $this->config->name." pending notification.",
                     "payload" => $subscriber->payload
                 ]);
             }
@@ -101,7 +101,7 @@ trait PushManager
             throw new Exception("missing input params");
 
         //get model class
-        $push_class = AppModule::getClass("push_notification");
+        $push_class = App::getClass("push_notification");
 
         //check if subscriber exits
         $subscriber = $push_class::getSubscriber($data["service"], $data["uuid"]);
@@ -141,14 +141,14 @@ trait PushManager
 
             case "apn":
                 //set sandbox mode
-                $this->config->app->apn->sandbox = APP_ENV != "production" ? true : false;
+                $this->config->apn->sandbox = APP_ENV != "production" ? true : false;
                 //set apn client
-                $this->apn = new APN((array)$this->config->app->apn);
+                $this->apn = new APN((array)$this->config->apn);
                 break;
 
             case "gcm":
                 //set gcm client
-                $this->gcm = new GCM((array)$this->config->app->gcm);
+                $this->gcm = new GCM((array)$this->config->gcm);
                 break;
 
             default:
@@ -166,7 +166,7 @@ trait PushManager
         $this->_setClient("apn");
 
         //get model class
-        $push_class = AppModule::getClass("push_notification");
+        $push_class = App::getClass("push_notification");
         //set response data
         $successful_delivers = 0;
 		$failed_delivers 	 = 0;
@@ -228,7 +228,7 @@ trait PushManager
         $this->_setClient("gcm");
 
         //get model class
-        $push_class = AppModule::getClass("push_notification");
+        $push_class = App::getClass("push_notification");
         //set response data
         $successful_delivers = 0;
 		$failed_delivers 	 = 0;

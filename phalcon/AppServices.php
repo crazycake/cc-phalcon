@@ -26,23 +26,13 @@ class AppServices
     private $config;
 
     /**
-     * Module properties
-     * @var function
-     */
-    private $props;
-
-    /**
      * Constructor
      * @param object $loaderObj - The app loader instance
      */
-    public function __construct($loaderObj = null)
+    public function __construct($config)
     {
-        if (is_null($loaderObj))
-            throw new Exception("AppServices::__construct -> loader object is required.");
-
         //set class vars
-        $this->config = new \Phalcon\Config($loaderObj->app_conf);
-        $this->props  = $loaderObj::$modules_conf[MODULE_NAME];
+        $this->config = new \Phalcon\Config($config);
     }
 
     /**
@@ -123,7 +113,7 @@ class AppServices
             $url->setBaseUri(APP_BASE_URL);
 
             //get static url
-            $static_url = isset($this->props["staticUrl"]) ? $this->props["staticUrl"] : false;
+            $static_url = !empty($this->config->staticUrl) ? $this->config->staticUrl : false;
 
             //set static uri for assets, cdn only for production
             if (!$static_url || APP_ENV !== "production")
@@ -161,7 +151,7 @@ class AppServices
         $di->setShared("crypt", function() {
 
             $crypt = new \Phalcon\Crypt();
-            $crypt->setKey($this->config->app->cryptKey);
+            $crypt->setKey($this->config->cryptKey);
             return $crypt;
         });
 
@@ -169,7 +159,7 @@ class AppServices
         if (class_exists("\CrazyCake\Helpers\Cryptify")) {
 
             $di->setShared("cryptify", function() {
-                return new \CrazyCake\Helpers\Cryptify($this->config->app->cryptKey);
+                return new \CrazyCake\Helpers\Cryptify($this->config->cryptKey);
             });
         }
 
@@ -215,14 +205,14 @@ class AppServices
     private function _setTranslationService(&$di)
     {
         //check if langs are set
-        if (empty($this->config->app->langs))
+        if (empty($this->config->langs))
             return;
 
         $di->setShared("trans", function() {
 
             return new \CrazyCake\Services\GetText([
                 "domain"    => "app",
-                "supported" => (array)$this->config->app->langs,
+                "supported" => (array)$this->config->langs,
                 "directory" => APP_PATH."langs/"
             ]);
         });
@@ -254,7 +244,7 @@ class AppServices
                 "uniqueId" => MODULE_NAME
             ]);
             //set session name
-            $session->setName($this->config->app->namespace);
+            $session->setName($this->config->namespace);
             //start session
             if (!$session->isStarted())
                 $session->start();

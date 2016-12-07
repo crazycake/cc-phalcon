@@ -49,7 +49,7 @@ class GCM {
 		$di = DI::getDefault();
 
 		//set API key
-		$this->api_key = $di->getShared("config")->app->gcm["apiKey"];
+		$this->api_key = $di->getShared("config")->gcm["apiKey"];
 
 		if (!$this->api_key)
 			die("GCM lib -> API Key Required in app config [pushservices->gcmApiKey]");

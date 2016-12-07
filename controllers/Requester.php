@@ -13,7 +13,7 @@ use Phalcon\Exception;
 use GuzzleHttp\Client as GuzzleClient;  //Guzzle client for requests
 use GuzzleHttp\Promise;
 //core
-use CrazyCake\Phalcon\AppModule;
+use CrazyCake\Phalcon\App;
 
 /**
  * HTTP Request Handler

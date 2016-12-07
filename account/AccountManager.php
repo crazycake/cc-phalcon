@@ -11,7 +11,7 @@ namespace CrazyCake\Account;
 //imports
 use Phalcon\Exception;
 //core
-use CrazyCake\Phalcon\AppModule;
+use CrazyCake\Phalcon\App;
 
 /**
  * Account Manager for already loggedIn users
@@ -51,7 +51,7 @@ trait AccountManager
         //merge confs
         $conf = array_merge($defaults, $conf);
         //append class prefixes
-        $conf["user_entity"] = AppModule::getClass($conf["user_entity"]);
+        $conf["user_entity"] = App::getClass($conf["user_entity"]);
 
         //set configuration
         $this->account_manager_conf = $conf;

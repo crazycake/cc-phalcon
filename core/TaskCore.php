@@ -10,7 +10,7 @@ namespace CrazyCake\Core;
 use Phalcon\CLI\Task;
 use Phalcon\Exception;
 //core
-use CrazyCake\Phalcon\AppModule;
+use CrazyCake\Phalcon\App;
 use CrazyCake\Controllers\Requester;
 
 /**
@@ -28,7 +28,7 @@ class TaskCore extends Task
      */
     public function mainAction()
     {
-        $this->colorize($this->config->app->name." CLI App", "NOTE");
+        $this->colorize($this->config->name." CLI App", "NOTE");
         $this->colorize("Usage: \ncli.php main [param]", "OK");
         $this->colorize("--------------------", "NOTE");
         $this->colorize("appConfig: Outputs app configuration in JSON format", "WARNING");
@@ -60,23 +60,13 @@ class TaskCore extends Task
      */
     public function revAssetsAction($args = [])
     {
-        if (empty($args) || !in_array($args[0], ["frontend", "backend"]))
-            $this->colorize("Invalid module argument", "ERROR", true);
-
-        $module_name = $args[0];
-
         //set paths
-        $assets_path = PROJECT_PATH.$module_name."/public/assets/";
+        $assets_path = PROJECT_PATH."public/assets/";
 
         if (!is_dir($assets_path))
             $this->colorize("Assets path not found: $assets_path", "ERROR", true);
 
-        $version = AppModule::getProperty("version", $module_name);
-
-        if (!$version)
-            $this->colorize("Invalid version for $module_name", "ERROR", true);
-
-        $version_stripped = str_replace(".", "", $version);
+        $version_stripped = str_replace(".", "", $this->config->version);
 
 		//clean old files
         $files = scandir($assets_path);
@@ -98,7 +88,7 @@ class TaskCore extends Task
 			copy($assets_path."lazy.min.css", $assets_path."lazy-".$version_stripped.".rev.css");
 
         //print output
-        $this->colorize("Created revision assets: $version", "OK", true);
+        $this->colorize("Created revision assets: ".$this->config->version, "OK", true);
     }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
@@ -184,7 +174,7 @@ class TaskCore extends Task
         if (!empty($options["module"]) && $options["module"] == "api") {
 
             //set API key header name
-            $api_key_header_value = AppModule::getProperty("key", "api");
+            $api_key_header_value = $this->config->apiKey;
             $api_key_header_name  = str_replace("_", "-", WsCore::HEADER_API_KEY);
             $options["headers"]   = [$api_key_header_name => $api_key_header_value];
         }

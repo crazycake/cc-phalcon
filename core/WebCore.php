@@ -10,7 +10,7 @@ namespace CrazyCake\Core;
 //imports
 use Phalcon\Exception;
 //core
-use CrazyCake\Phalcon\AppModule;
+use CrazyCake\Phalcon\App;
 use CrazyCake\Helpers\UserAgent;
 
 /**
@@ -73,8 +73,8 @@ abstract class WebCore extends MvcCore implements WebSecurity
 
         //Set App common vars (this must be set before render any page)
         $this->view->setVars([
-            "app"    => $this->config->app, //app configuration vars
-            "client" => $this->client       //client object
+            "config" => $this->config, //app configuration vars
+            "client" => $this->client  //client object
         ]);
     }
 
@@ -259,8 +259,8 @@ abstract class WebCore extends MvcCore implements WebSecurity
      */
     private function _setLanguage()
     {
-        // get langs config (set by AppModule)
-        $langs = (array)$this->config->app->langs;
+        // get langs config (set by App)
+        $langs = (array)$this->config->langs;
 
         // set default lang if only one available
         if (count($langs) == 1) {
@@ -318,7 +318,7 @@ abstract class WebCore extends MvcCore implements WebSecurity
      */
     private function _handleSSL()
     {
-        $enableSSL = AppModule::getProperty("enableSSL");
+        $enableSSL = $this->config->enableSSL;
 
         if(APP_ENV !== "production" || !isset($_SERVER["HTTP_HOST"]) ||
            $this->request->isSecureRequest() || empty($enableSSL)) {
@@ -336,8 +336,8 @@ abstract class WebCore extends MvcCore implements WebSecurity
      */
     private function _setAppAssets()
     {
-        $version   = AppModule::getProperty("version");
-        $staticUrl = AppModule::getProperty("staticUrl");
+        $version   = $this->config->version;
+        $staticUrl = $this->config->staticUrl;
 
         $css_url = $this->staticUrl("assets/app.css");
         $js_url  = $this->staticUrl("assets/app.js");
@@ -368,11 +368,11 @@ abstract class WebCore extends MvcCore implements WebSecurity
     {
         //set javascript global objects
         $js_app = (object)[
-            "name"      => $this->config->app->name,
+            "name"      => $this->config->name,
             "baseUrl"   => $this->baseUrl(),
             "staticUrl" => $this->staticUrl(),
             "dev"       => (APP_ENV === "production") ? 0 : 1,
-            "version"   => AppModule::getProperty("version")
+            "version"   => $this->config->version
         ];
 
         //set custom properties

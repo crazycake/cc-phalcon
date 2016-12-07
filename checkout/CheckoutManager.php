@@ -11,7 +11,7 @@ namespace CrazyCake\Checkout;
 //imports
 use Phalcon\Exception;
 //core
-use CrazyCake\Phalcon\AppModule;
+use CrazyCake\Phalcon\App;
 
 /**
  * Checkout Manager
@@ -65,7 +65,7 @@ trait CheckoutManager
         $this->onlyAjax();
 
         //get class
-        $user_checkout_class = AppModule::getClass("user_checkout");
+        $user_checkout_class = App::getClass("user_checkout");
 
 		try {
 
@@ -140,8 +140,8 @@ trait CheckoutManager
 			$this->logger->debug("CheckoutManager::successCheckoutTask -> processing buy order: ".$data->buy_order);
 
             //set classes
-            $user_checkout_class        = AppModule::getClass("user_checkout");
-            $user_checkout_object_class = AppModule::getClass("user_checkout_object");
+            $user_checkout_class        = App::getClass("user_checkout");
+            $user_checkout_object_class = App::getClass("user_checkout_object");
 
             //get checkout & user
             $checkout = $user_checkout_class::findFirstByBuyOrder($data->buy_order);
@@ -169,7 +169,7 @@ trait CheckoutManager
 			$this->logger->debug("CheckoutManager::successCheckoutTask -> Exception: ".$e->getMessage());
 
             //get mailer controller
-            $mailer = AppModule::getClass("mailer_controller");
+            $mailer = App::getClass("mailer_controller");
             //send alert system mail message
             (new $mailer())->adminException($e, [
                 "action" => "successCheckoutTask",
@@ -199,7 +199,7 @@ trait CheckoutManager
             $checkout->amount = 0;
 
         //get module class name
-        $user_checkout_object_class = AppModule::getClass("user_checkout_object");
+        $user_checkout_object_class = App::getClass("user_checkout_object");
 
         //computed vars
         $classes = empty($checkout->objects_classes) ? [] : $checkout->objects_classes;

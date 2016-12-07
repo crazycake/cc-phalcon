@@ -9,23 +9,16 @@ namespace CrazyCake\Phalcon;
 use Phalcon\Exception;
 
 //required Files
-require "AppModule.php";
+require "AppLoader.php";
 require "AppServices.php";
 
 /**
  * Phalcon APP Loader [main file]
  */
-abstract class App extends AppModule implements AppLoader
+abstract class App
 {
-    /** const **/
-    const APP_CORE_NAMESPACE = "CrazyCake\\";
-    const APP_CORE_PROJECT   = "cc-phalcon";
-
-    /**
-     * App Core default libs
-     * @var array
-     */
-    protected static $CORE_DEFAULT_LIBS = ["services", "controllers", "core", "helpers", "models", "account"];
+    //trait
+    use AppLoader;
 
     /**
      * The App Dependency injector
@@ -34,23 +27,35 @@ abstract class App extends AppModule implements AppLoader
     private $di;
 
     /**
-     * Class loader
+     * Constructor
+     * @access public
+     * @param string $mod_name - The input module
      */
-    public function loadClasses()
+    public function __construct($mod_name = null)
     {
-        //load webapp directories
-        $this->_directoriesSetup();
-        //load clases
-        $this->_autoloadClasses();
-    }
+        //validations
+        if (empty($mod_name))
+            die("App::constructor -> a module name is required.");
 
-    /**
-     * DI loader
-     */
-    public function setDI()
-    {
-        //set DI services (requires composer)
-        $this->_setServices();
+        //set app configurations
+        $config = $this->config();
+
+        //define APP contants
+        define("PROJECT_PATH", $config["path"]);
+        define("MODULE_NAME", strtolower($mod_name));
+        define("STORAGE_PATH", PROJECT_PATH."storage/");
+        define("COMPOSER_PATH", PROJECT_PATH."vendor/");
+        define("CORE_PATH", PROJECT_PATH."core/");
+        define("PUBLIC_PATH", PROJECT_PATH."public/");
+        define("APP_PATH", PROJECT_PATH."app/");
+        define("APP_TS", microtime(true)); //for debugging render time
+
+        //webapp directories (loader)
+        $this->loadClasses();
+        //environment (loader)
+        $this->setEnvironment();
+        //set DI (services)
+        $this->di = (new AppServices($config))->getDI();
     }
 
     /**
@@ -163,119 +168,17 @@ abstract class App extends AppModule implements AppLoader
     }
 
     /**
-     * Set App Dependency Injector
-     * @access private
-     */
-    private function _setServices()
+    * Minifies HTML output
+    * @param string $buffer - The input buffer
+    */
+    private function _minifyOutput($buffer)
     {
-        //get DI preset services for module
-        $services = new AppServices($this);
-        $this->di = $services->getDI();
-    }
-
-    /**
-     * Set Directories configurations
-     * @access private
-     */
-    private function _directoriesSetup()
-    {
-        $app_dirs = [
-            "controllers" => APP_PATH."controllers/"
-        ];
-
-        $folders = self::getProperty("loader");
-
-        if ($folders) {
-
-            foreach ($folders as $dir) {
-
-                $paths = explode("/", $dir, 2);
-                //set directory path
-                $app_dirs[$dir] = count($paths) > 1 ? PROJECT_PATH.$paths[0]."/app/".$paths[1]."/" : APP_PATH.$dir."/";
-            }
-        }
-        //print_r($app_dirs); exit;
-
-        //inverted sort
-        arsort($app_dirs);
-        $this->app_conf["directories"] = $app_dirs;
-    }
-
-    /**
-     * Phalcon Auto Load Classes, Composer and Static Libs
-     * @access private
-     */
-    private function _autoloadClasses()
-    {
-        //1.- Load app directories (components)
-        $loader = new \Phalcon\Loader();
-        $loader->registerDirs($this->app_conf["directories"]);
-
-        $core_libs = self::getProperty("core");
-
-        //2.- Register core static modules
-        $this->_loadCoreLibraries($loader, $core_libs);
-
-        //3.- Composer libs auto loader
-        if (!is_file(COMPOSER_PATH."autoload.php"))
-            throw new Exception("App::_autoloadClasses -> autoload composer file not found: ".COMPOSER_PATH."autoload.php");
-
-        //autoload composer file
-        require COMPOSER_PATH."autoload.php";
-
-        //4.- Register phalcon loader
-        $loader->register();
-        //var_dump(get_included_files());exit;
-    }
-
-    /**
-     * Loads static libraries.
-     * Use Phar::running() to get path of current phar running
-     * Use get_included_files() to see all loaded classes
-     * @param object $loader - Phalcon loader object
-     * @param array $libraries - Libraries required
-     */
-    private function _loadCoreLibraries($loader = null, $libraries = [])
-    {
-        if (is_null($loader))
-            return;
-
-        if (!is_array($libraries))
-            $libraries = [];
-
-        //merge libraries with defaults
-        $libraries = array_merge(self::$CORE_DEFAULT_LIBS, $libraries);
-
-        //check if library was loaded from dev environment
-        $class_path = is_link(CORE_PATH.self::APP_CORE_PROJECT) ? CORE_PATH.self::APP_CORE_PROJECT : false;
-
-        //load classes directly form phar file
-        if (!$class_path)
-            $class_path = \Phar::running();
-
-        //set library path => namespaces
-        $namespaces = [];
-        foreach ($libraries as $lib) {
-            $namespaces[self::APP_CORE_NAMESPACE.ucfirst($lib)] = "$class_path/$lib/";
-        }
-        //var_dump($class_path, $namespaces);exit;
-
-        //register namespaces
-        $loader->registerNamespaces($namespaces);
-    }
-
-    /**
-     * Minifies HTML output
-     * @param string $buffer - The input buffer
-     */
-     private function _minifyOutput($buffer)
-     {
         $search  = ["/\>[^\S ]+/s", "/[^\S ]+\</s", "/(\s)+/s"];
         $replace = [">","<","\\1"];
 
         if (preg_match("/\<html/i",$buffer) == 1 && preg_match("/\<\/html\>/i",$buffer) == 1)
-            $buffer = preg_replace($search, $replace, $buffer);
+        $buffer = preg_replace($search, $replace, $buffer);
 
         return $buffer;
-     }
+    }
 }
