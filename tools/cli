@@ -83,7 +83,6 @@ core)
 trans)
 
 	bash $TOOLS_PATH"translations.bash" find
-	bash $TOOLS_PATH"translations.bash" find
 	;;
 
 php)
