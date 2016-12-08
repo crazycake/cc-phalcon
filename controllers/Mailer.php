@@ -297,7 +297,7 @@ trait Mailer
      */
     public function previewAction($view = null)
     {
-        if (APP_ENV == 'production' || empty($view))
+        if (APP_ENV == "production" || empty($view))
             $this->redirectToNotFound();
 
         $user_class = $this->mailer_conf["user_entity"];
