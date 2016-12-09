@@ -43,10 +43,10 @@ class StorageS3
      * Contructor
      * @param string $access - AWS access Key
      * @param string $secret - AWS secret key
-     * @param string $bucket - The AWS S3 bucket name
+     * @param string $bucket_prefix - The AWS S3 bucket name
      * @param boolean $autoenv - Automatically sets a env suffix for dev & production
      */
-    function __construct($access = "", $secret = "", $bucket = "", $autoenv = true)
+    function __construct($access = "", $secret = "", $bucket_prefix = "", $autoenv = true)
     {
         if (empty($access)) {
             throw new Exception("StorageS3::__construct -> param access is required and must be an non-empty value.");
@@ -54,8 +54,8 @@ class StorageS3
         else if (empty($secret)) {
             throw new Exception("StorageS3::__construct -> param secret is required and must be an non-empty value.");
         }
-        else if (empty($bucket)) {
-            throw new Exception("StorageS3::__construct -> param bucket is required and must be an non-empty value.");
+        else if (empty($bucket_prefix)) {
+            throw new Exception("StorageS3::__construct -> param bucket_prefix is required and must be an non-empty value.");
         }
 
         //set app AWS S3 bucket
@@ -66,7 +66,7 @@ class StorageS3
 
         $this->accessKey  = $access;
         $this->secretKey  = $secret;
-        $this->bucketName = $bucket.$suffix;
+        $this->bucketName = $bucket_prefix.$suffix;
 
         try {
             $this->s3 = new S3($this->accessKey, $this->secretKey);

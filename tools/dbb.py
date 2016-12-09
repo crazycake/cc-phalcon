@@ -77,7 +77,7 @@ def main():
 		bucket_env = "prod"
 
 	#s3
-	APP.S3_BUCKET	  = config['aws']['s3Bucket'] + "-" + bucket_env
+	APP.S3_BUCKET	  = config['aws']['bucketPrefix'] + "-" + bucket_env
 	APP.S3_ACCESS_KEY = config['aws']['accessKey']
 	APP.S3_SECRET_KEY = config['aws']['secretKey']
 
