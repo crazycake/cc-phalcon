@@ -108,6 +108,43 @@ abstract class MvcCore extends Controller
         return $uri;
     }
 
+	/**
+     * Sends a mail message to user asynchronously
+     * @param string $method - The Mailer method to call
+     * @param object $data - The data to be passed as args
+     * @return object response
+     */
+    protected function sendMailMessage($method = null, $data = null)
+    {
+        //simple input validation
+        if (empty($method))
+            throw new Exception("MvcCore::sendMailMessage -> method param is required.");
+
+        //get the mailer controller name
+        $mailer_class = App::getClass("mailer_controller");
+
+        //checks that a MailerController exists
+        if (!class_exists($mailer_class))
+            throw new Exception("MvcCore::sendMailMessage -> A Mailer Controller is required.");
+
+        $mailer = new $mailer_class();
+
+        //checks that a MailerController exists
+        if (!method_exists($mailer, $method))
+            throw new Exception("MvcCore::sendMailMessage -> Method $method is not defined in Mailer Controller.");
+
+        //call mailer class method (reflection)
+        $response = $mailer->{$method}($data);
+
+        if (is_array($response))
+            $response = json_encode($response);
+
+        //save response only for non production-environment
+        $this->logger->debug("MvcCore::sendMailMessage -> Queuing new Mailer Message [$method].");
+
+        return $response;
+    }
+
     /**
      * Sends an async tasks as another request. (MVC struct)
      * @param array $options - Options: module, controller, action, method, payload, socket, headers
@@ -206,95 +243,60 @@ abstract class MvcCore extends Controller
         if (empty($req_fields))
             return $data;
 
-        $invalid_data = false;
         //check require fields
         foreach ($req_fields as $field => $data_type) {
 
-            $is_optional_field = false;
-            //check if is a optional field
-            if (substr($field, 0, 1) === "@") {
-                $is_optional_field = true;
-                $field = substr($field, 1);
-            }
+            $value = $this->_validateField($data, $field, $data_type);
 
-            //validate field
-            if (!array_key_exists($field, $data)) {
-                //check if is an optional field
-                if (!$is_optional_field) {
-                    $invalid_data = true;
-                    break;
-                }
-                else {
-                    $data[$field] = null;
-                    continue;
-                }
-            }
+			if($value === false)
+                return $sendResponse(400);
 
-            //get value from data array
-            if (empty($data_type) || $data_type == "array") {
-                $value = $data[$field];
-            }
-            else if ($data_type == "json") {
-                $value = json_decode($data[$field]); //NULL if cannot be decoded
-            }
-            else {
-                //sanitize
-                $value = $this->filter->sanitize($data[$field], $data_type);
-                //lower case for email
-                if ($data_type == "email")
-                    $value = strtolower($value);
-            }
-
-            //check data (empty fn considers zero value )
-            if ($is_optional_field && (is_null($value) || $value == ""))
-                $data[$field] = null;
-            elseif (is_null($value) || $value == "")
-                $invalid_data = true;
-            else
-                $data[$field] = $value;
+            $data[$field] = $value;
         }
-
-        //check for invalid data
-        if ($invalid_data)
-            return $sendResponse(400);
 
         return $data;
     }
 
     /**
-     * Sends a mail message to user asynchronously
-     * @param string $method - The Mailer method to call
-     * @param object $data - The data to be passed as args
-     * @return object response
+     * Validates a request form field
      */
-    protected function sendMailMessage($method = null, $data = null)
-    {
-        //simple input validation
-        if (empty($method))
-            throw new Exception("MvcCore::sendMailMessage -> method param is required.");
+	private function _validateField($data, $field, $data_type)
+	{
+		$is_optional = false;
 
-        //get the mailer controller name
-        $mailer_class = App::getClass("mailer_controller");
+		//check if is a optional field
+		if (substr($field, 0, 1) === "@") {
+			$is_optional = true;
+			$field = substr($field, 1);
+		}
 
-        //checks that a MailerController exists
-        if (!class_exists($mailer_class))
-            throw new Exception("MvcCore::sendMailMessage -> A Mailer Controller is required.");
+		//validate field
+		if (!array_key_exists($field, $data))
+			return $is_optional ? null : false;
 
-        $mailer = new $mailer_class();
+		//set value from data array
+		if (empty($data_type) || $data_type == "array") {
+			$value = $data[$field];
+		}
+		else if ($data_type == "json") {
+			$value = json_decode($data[$field]); //NULL if cannot be decoded
+		}
+		else {
+			//sanitize
+			$value = $this->filter->sanitize($data[$field], $data_type);
+			//lower case for email
+			if ($data_type == "email")
+				$value = strtolower($value);
+		}
 
-        //checks that a MailerController exists
-        if (!method_exists($mailer, $method))
-            throw new Exception("MvcCore::sendMailMessage -> Method $method is not defined in Mailer Controller.");
+        //(empty fn considers zero value)
+        if (!$is_optional && (is_null($value) || $value == ""))
+			return false;
 
-        //call mailer class method (reflection)
-        $response = $mailer->{$method}($data);
+		//check optional field
+		if ($is_optional && (is_null($value) || $value == ""))
+			return null;
 
-        if (is_array($response))
-            $response = json_encode($response);
-
-        //save response only for non production-environment
-        $this->logger->debug("MvcCore::sendMailMessage -> Queuing new Mailer Message [$method].");
-
-        return $response;
-    }
+		return $value;
+	}
 }
