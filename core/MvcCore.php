@@ -251,6 +251,12 @@ abstract class MvcCore extends Controller
 			if($value === false)
                 return $sendResponse(400);
 
+            //optional fields
+            if($field[0] == "@") {
+                unset($data[$field]);
+                $field = substr($field, 1);
+            }
+
             $data[$field] = $value;
         }
 
