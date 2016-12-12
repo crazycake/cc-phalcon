@@ -66,7 +66,7 @@ class TaskCore extends Task
         if (!is_dir($assets_path))
             $this->colorize("Assets path not found: $assets_path", "ERROR", true);
 
-        $version_stripped = str_replace(".", "", $this->config->version);
+        $version_stripped = (int)str_replace(".", "", $this->config->version);
 
 		//clean old files
         $files = scandir($assets_path);
@@ -76,7 +76,11 @@ class TaskCore extends Task
             if(strpos($f, ".rev.") === false)
                 continue;
 
-            unlink($assets_path.$f);
+            //keep last version
+			if(strpos($f, "-".($version_stripped - 1)) === false) {
+				$this->colorize("Removing asset $assets_path$f", "NOTE");
+            	unlink($assets_path.$f);
+			}
         }
 
         //APP CSS
