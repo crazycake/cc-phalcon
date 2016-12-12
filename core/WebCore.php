@@ -340,7 +340,7 @@ abstract class WebCore extends MvcCore implements WebSecurity
         //set revision file for non local env
         if (!is_file(PUBLIC_PATH."assets/app.js")) {
 
-            $version = str_replace(".", "", $version);
+            $version = (int)str_replace(".", "", $version);
             $css_url = str_replace(".css", "-$version.rev.css", $css_url);
             $js_url  = str_replace(".js", "-$version.rev.js", $js_url);
             //$css_url = str_replace(".css", ".min.css", $css_url)."?v=".$version;
