@@ -60,9 +60,10 @@ build)
 
 	# msg
 	echo -e "\033[95mGulp build tasks... \033[0m"
-
 	# gulp build task
 	gulp build
+	# rev assets
+	php $PROJECT_PATH"/app/cli/cli.php" main revAssets
 
 	# translations
 	bash $TOOLS_PATH"translations.bash" build
