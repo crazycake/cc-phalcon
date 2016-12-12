@@ -258,7 +258,7 @@ abstract class MvcCore extends Controller
     }
 
     /**
-     * Validates a request form field
+     * Validates a request input field
      */
 	private function _validateField($data, $field, $data_type)
 	{
