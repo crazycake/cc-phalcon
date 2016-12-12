@@ -25,7 +25,7 @@ scriptHelp() {
 	echo -e "\033[95m trans: Update translations po file. \033[0m"
 	echo -e "\033[95m php: Executes App PHP CLI.\033[0m"
 	echo -e "\033[95m aws <option>: Install AWS CLI (pip is required). Use -s for self-update, -c for configuration.\033[0m"
-	echo -e "\033[95m aws-cdn <bucket>: Syncs S3 CDN bucket with app assets.\033[0m"
+	echo -e "\033[95m aws-sync <bucket>: Syncs S3 CDN bucket with app assets.\033[0m"
 	exit
 }
 
@@ -123,7 +123,7 @@ aws)
 	aws --version
 	;;
 
-aws-cdn)
+aws-sync)
 
 	if [ "$2" = "" ]; then
 		echo -e "\033[31mbucket name argument missing.\033[0m" && exit
