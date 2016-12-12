@@ -246,8 +246,14 @@ class AppServices
             //set session name
             $session->setName($this->config->namespace);
             //start session
-            if (!$session->isStarted())
+            if (!$session->isStarted()) {
+
+                //session time out
+				ini_set("session.gc_maxlifetime", 3600*4);
+    			session_set_cookie_params(3600*4);
+
                 $session->start();
+			}
 
             return $session;
         });
