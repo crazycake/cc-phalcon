@@ -25,7 +25,7 @@ scriptHelp() {
 	echo -e "\033[95m trans: Update translations po file. \033[0m"
 	echo -e "\033[95m php: Executes App PHP CLI.\033[0m"
 	echo -e "\033[95m aws <option>: Install AWS CLI (pip is required). Use -s for self-update, -c for configuration.\033[0m"
-	echo -e "\033[95m aws-sync <bucket>: Syncs S3 CDN bucket with app assets.\033[0m"
+	echo -e "\033[95m aws-sync <bucket> <profile>: Syncs S3 CDN bucket with app assets.\033[0m"
 	exit
 }
 
@@ -129,13 +129,17 @@ aws-sync)
 		echo -e "\033[31mbucket name argument missing.\033[0m" && exit
 	fi
 
+	if [ "$3" = "" ]; then
+		echo -e "\033[31mAWS profile argument missing (~/.aws/credentials).\033[0m" && exit
+	fi
+
 	#sync assets
 	SYNC_LOCAL_PATH="$PROJECT_PATH/public/assets/"
 	SYNC_REMOTE_PATH="s3://$2/assets/"
 
 	echo -e "\033[95mBucket Syncing $SYNC_LOCAL_PATH -> $SYNC_REMOTE_PATH \033[0m"
 	#sync
-	aws s3 sync $SYNC_LOCAL_PATH $SYNC_REMOTE_PATH --delete --cache-control max-age=864000 --exclude '*' --include '*.rev.css' --include '*.rev.js'
+	aws s3 sync $SYNC_LOCAL_PATH $SYNC_REMOTE_PATH --profile $3 --delete --cache-control max-age=864000 --exclude '*' --include '*.rev.css' --include '*.rev.js'
 
 	#sync images
 	SYNC_LOCAL_PATH="$PROJECT_PATH/public/images/"
@@ -143,7 +147,7 @@ aws-sync)
 
 	echo -e "\033[95mBucket Syncing $SYNC_LOCAL_PATH -> $SYNC_REMOTE_PATH \033[0m"
 	#sync
-	aws s3 sync $SYNC_LOCAL_PATH $SYNC_REMOTE_PATH --delete --cache-control max-age=864000 --exclude '*.htaccess' --exclude '*.DS_Store' --exclude '*.html'
+	aws s3 sync $SYNC_LOCAL_PATH $SYNC_REMOTE_PATH --profile $3 --delete --cache-control max-age=864000 --exclude '*.htaccess' --exclude '*.DS_Store' --exclude '*.html'
 
 	#sync fonts
 	SYNC_LOCAL_PATH="$PROJECT_PATH/public/fonts/"
@@ -151,7 +155,7 @@ aws-sync)
 
 	echo -e "\033[95mBucket Syncing $SYNC_LOCAL_PATH -> $SYNC_REMOTE_PATH \033[0m"
 	#sync
-	aws s3 sync $SYNC_LOCAL_PATH $SYNC_REMOTE_PATH --delete --cache-control max-age=864000 --exclude '*.htaccess' --exclude '*.DS_Store' --exclude '*.html'
+	aws s3 sync $SYNC_LOCAL_PATH $SYNC_REMOTE_PATH --profile $3 --delete --cache-control max-age=864000 --exclude '*.htaccess' --exclude '*.DS_Store' --exclude '*.html'
 	;;
 
 #default
