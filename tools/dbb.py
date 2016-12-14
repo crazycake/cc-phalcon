@@ -54,32 +54,24 @@ def main():
 	print SCS.CYAN + "Asking app configurations to CLI..." + SCS.END
 
 	#get app config from command line (webapp CLI)
-	command = subprocess.Popen("php "+project_dir+"/cli/cli.php main appConfig", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+	command = subprocess.Popen("php " + project_dir + "/app/cli/cli.php main appConfig", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 	output  = command.stdout.read()
 	#print output
 	config  = json.loads(output)
 
 	#set properties
-	APP.NAMESPACE = config['namespace']
+	APP.NAMESPACE 	  = config["namespace"]
+	APP.S3_BUCKET	  = config["aws"]["bucketPrefix"] + "-dbb"
+	APP.S3_ACCESS_KEY = config["aws"]["accessKey"]
+	APP.S3_SECRET_KEY = config["aws"]["secretKey"]
 	#get from env vars
-	APP.ENV     = os.environ.get('APP_ENV')
+	APP.ENV     = os.environ.get("APP_ENV")
 	APP.DB_HOST = "db"
 	APP.DB_NAME = "app"
 	APP.DB_USER = "root"
 	APP.DB_PASS = "dev"
 
 	print SCS.CYAN + APP.NAMESPACE + " [" + APP.ENV + "] DB: " + APP.DB_HOST
-
-	#environment
-	bucket_env = "dev"
-
-	if APP.ENV == "production":
-		bucket_env = "prod"
-
-	#s3
-	APP.S3_BUCKET	  = config['aws']['bucketPrefix'] + "-" + bucket_env
-	APP.S3_ACCESS_KEY = config['aws']['accessKey']
-	APP.S3_SECRET_KEY = config['aws']['secretKey']
 
 	#dir
 	project_dir = os.path.dirname(os.path.realpath(__file__))
@@ -119,7 +111,7 @@ def s3_upload_file(file, save_name):
 	conn = tinys3.Connection(APP.S3_ACCESS_KEY, APP.S3_SECRET_KEY, APP.S3_BUCKET)
 
 	# Uploading a single file and set private access
-	f = open(file, 'rb')
+	f = open(file, "rb")
 	conn.upload(save_name, f, public=False)
 
 # -------------------------------------------------------------------------------------------
