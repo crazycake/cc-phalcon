@@ -247,7 +247,6 @@ abstract class WebCore extends MvcCore implements WebSecurity
             "shortVersion" => $ua["short_version"],
             "isMobile"     => $ua["is_mobile"],
             "isLegacy"     => $ua["is_legacy"],
-            "isIE"         => ($ua["browser"] === "MSIE"), //explorer
             "requestedUri" => $this->getRequestedUri(),
             "protocol"     => isset($_SERVER["HTTPS"]) ? "https://" : "http://"
         ];

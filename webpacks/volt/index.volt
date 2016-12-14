@@ -5,7 +5,7 @@
  */
 ?>
 <!DOCTYPE html>
-<html{{ client is defined ? ' lang="'~client.lang~'"' : '' }}>
+<html lang="{{ client.lang }}">
     <head>
         {# charset #}
         <meta charset="utf-8" />
@@ -23,7 +23,7 @@
         {% endif %}
 
         {# InternetExplorer: force last version of render compatibility mod  #}
-        {% if client.isIE %}
+        {% if client.browser === "MSIE" %}
             <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         {% endif %}
 
@@ -45,7 +45,7 @@
         <link rel="apple-touch-icon" href="{{ static_url('images/favicons/apple-touch-icon.png') }}" />
 
         {# Windows 8 #}
-        {% if client is defined and client.platform == "Windows" %}
+        {% if client.platform == "Windows" %}
             <meta name="application-name" content="{{ config.name }}" />
             <meta name="msapplication-TileColor" content="#efefef" />
             <meta name="msapplication-TileImage" content="{{ static_url('images/favicons/mstile.png') }}" />
@@ -81,7 +81,7 @@
     </head>
     {# Flush the buffer (optimization) #}
     <?php  flush(); ?>
-    <body{{ html_body_class is defined ? ' class="'~html_body_class~'"' : '' }}>
+    <body class="{{ html_body_class is defined ? html_body_class : 'ua-'~client.browser|lower }}">
 
         {# app content wrapper #}
         {% if html_app_wrapper is defined and !html_app_wrapper %}
