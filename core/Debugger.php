@@ -1,6 +1,6 @@
 <?php
 /**
- * Core Trait
+ * Debugger Trait
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
@@ -10,7 +10,7 @@ namespace CrazyCake\Core;
  * Handles public actions for error pages
  * Requires a Frontend or Backend Module
  */
-trait Core
+trait Debugger
 {
     /**
      * Logs database query & statements with phalcon event manager

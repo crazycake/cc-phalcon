@@ -1,7 +1,6 @@
 <?php
 /**
- * Mvc Core Controller, includes basic and helper methods for web & ws core controllers.
- * Requires a Phalcon DI Factory Services
+ * Mvc Core Controller, includes basic and helper methods for WebCore & WsCore controllers.
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
@@ -29,7 +28,7 @@ interface WebSecurity
 abstract class MvcCore extends Controller
 {
     /* Traits */
-    use Core;
+    use Debugger;
     use Requester;
     use Responser;
 
