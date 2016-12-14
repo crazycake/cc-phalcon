@@ -58,7 +58,8 @@ trait CheckoutCurrency
             if (empty($value))
                 throw new Exception("Invalid value received from api chilean currency");
 
-            $this->_setRedisValue(self::$REDIS_KEY_USD_CLP_VALUE, $value);
+			$redis = $this->newRedisClient();
+            $redis->set(self::$REDIS_KEY_USD_CLP_VALUE, $value);
 
             $output = "[".date("d-m-Y H:i:s")."] storeDollarChileanPesoValue -> Stored value '$value' in Redis. \n";
             //print output
@@ -99,7 +100,7 @@ trait CheckoutCurrency
 
         //set value if is empty
 		if(empty($value) && $new_value = $this->apiChileanCurrencyRequest())
-            $this->_setRedisValue(self::$REDIS_KEY_USD_CLP_VALUE, $new_value);
+            $redis->set(self::$REDIS_KEY_USD_CLP_VALUE, $new_value);
 
 		return $redis->get(self::$REDIS_KEY_USD_CLP_VALUE) * $amount;
 	}
@@ -170,15 +171,4 @@ trait CheckoutCurrency
 
 		return null;
     }
-
-	/**
-	 * Sets redis value
-	 */
-	private function _setRedisValue($key, $value)
-    {
-		//redis service
-		$redis = $this->newRedisClient();
-		//set key
-		$redis->set($key, $value);
-	}
 }
