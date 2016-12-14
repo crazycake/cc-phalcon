@@ -68,8 +68,15 @@ abstract class WebCore extends MvcCore implements WebSecurity
     protected function initialize()
     {
         //Skip web core initialize for api module includes
-        if ($this->request->isAjax() || MODULE_NAME == "api")
+        if ($this->request->isAjax() || MODULE_NAME == "api") {
+
+			$di = new \Phalcon\Di();
+
+			if($this->$di->has("view"))
+                $this->view->disable();
+
             return;
+		}
 
         //Set App common vars (this must be set before render any page)
         $this->view->setVars([
