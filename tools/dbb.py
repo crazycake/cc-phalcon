@@ -78,7 +78,7 @@ def main():
 	project_dir = os.path.abspath(os.path.join(project_dir, os.pardir))
 
 	file_stamp  = time.strftime('%d-%m-%Y')
-	output 		= project_dir + "/db/dump_" + file_stamp + ".sql"
+	output 		= project_dir + "/storage/cache/dump_" + file_stamp + ".sql"
 
 	print SCS.CYAN + "Dumping DB..." + SCS.END
 	#exec commands
