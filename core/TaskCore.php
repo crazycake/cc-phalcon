@@ -83,13 +83,20 @@ class TaskCore extends Task
 			}
         }
 
-        //APP CSS
-        copy($assets_path."app.min.css", $assets_path."app-".$version_stripped.".rev.css");
+        if(!is_file($assets_path."app.min.js") || !is_file($assets_path."app.min.css"))
+            $this->colorize("Missing assets minified files.", "ERROR", true);
+
         //APP JS
         copy($assets_path."app.min.js", $assets_path."app-".$version_stripped.".rev.js");
+        //APP CSS
+        copy($assets_path."app.min.css", $assets_path."app-".$version_stripped.".rev.css");
 		//LAZY CSS
 		if(is_file($assets_path."lazy.min.css"))
 			copy($assets_path."lazy.min.css", $assets_path."lazy-".$version_stripped.".rev.css");
+
+		//remove min files
+        foreach(glob($assets_path."*.min.*") as $f)
+            unlink($f);
 
         //print output
         $this->colorize("Created revision assets: ".$this->config->version, "OK", true);
