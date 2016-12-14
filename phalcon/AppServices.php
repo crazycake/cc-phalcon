@@ -42,21 +42,21 @@ class AppServices
     public function getDI()
     {
         if (MODULE_NAME == "api")
-            return $this->_getMicroDI();
+            return $this->_getApiDI();
         else if (MODULE_NAME == "cli")
             return $this->_getCliDI();
 
         //frontend or backend
-        return $this->_getMvcDI();
+        return $this->_getWebDI();
     }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
-     * Set DI for Micro app (API)
+     * Set DI for API app (micro)
      * @access private
      */
-    private function _getMicroDI()
+    private function _getApiDI()
     {
         //Get a new Micro DI
         $di = new \Phalcon\DI\FactoryDefault();
@@ -67,7 +67,7 @@ class AppServices
     }
 
     /**
-     * Set DI for CLI app (Command Line)
+     * Set DI for CLI app
      * @access private
      */
     private function _getCliDI()
@@ -81,10 +81,10 @@ class AppServices
     }
 
     /**
-     * Set DI for MVC app (frontend, backend)
+     * Set DI for Web app (frontend, backend)
      * @access private
      */
-    private function _getMvcDI()
+    private function _getWebDI()
     {
         //Get a new Micro DI
         $di = new \Phalcon\DI\FactoryDefault();
