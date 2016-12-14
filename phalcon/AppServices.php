@@ -41,30 +41,13 @@ class AppServices
      */
     public function getDI()
     {
-        if (MODULE_NAME == "api")
-            return $this->_getApiDI();
-        else if (MODULE_NAME == "cli")
+        if (MODULE_NAME == "cli")
             return $this->_getCliDI();
 
-        //frontend or backend
-        return $this->_getWebDI();
+        return $this->_getDI();
     }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
-
-    /**
-     * Set DI for API app (micro)
-     * @access private
-     */
-    private function _getApiDI()
-    {
-        //Get a new Micro DI
-        $di = new \Phalcon\DI\FactoryDefault();
-        $this->_setCommonServices($di);
-        $this->_setDatabaseService($di);
-        $this->_setTranslationService($di);
-        return $di;
-    }
 
     /**
      * Set DI for CLI app
@@ -81,17 +64,20 @@ class AppServices
     }
 
     /**
-     * Set DI for Web app (frontend, backend)
+     * Set DI for Mvc app
      * @access private
      */
-    private function _getWebDI()
+    private function _getDI()
     {
         //Get a new Micro DI
         $di = new \Phalcon\DI\FactoryDefault();
         $this->_setCommonServices($di);
         $this->_setDatabaseService($di);
         $this->_setTranslationService($di);
-        $this->_setMvcServices($di);
+
+        if(MODULE_NAME !== "api")
+            $this->_setWebappServices($di);
+
         return $di;
     }
 
@@ -219,11 +205,11 @@ class AppServices
     }
 
     /**
-     * Set MvC Services
+     * Set Web Services
      * @access private
      * @param object $di - The DI object
      */
-    private function _setMvcServices(&$di)
+    private function _setWebappServices(&$di)
     {
         //Events Manager
         $di->setShared("dispatcher", function() {
