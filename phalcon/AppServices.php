@@ -44,7 +44,7 @@ class AppServices
         if (MODULE_NAME == "cli")
             return $this->_getCliDI();
 
-        return $this->_getDI();
+        return $this->_getDefaultDI();
     }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
@@ -67,7 +67,7 @@ class AppServices
      * Set DI for Mvc app
      * @access private
      */
-    private function _getDI()
+    private function _getDefaultDI()
     {
         //Get a new Micro DI
         $di = new \Phalcon\DI\FactoryDefault();
