@@ -58,7 +58,7 @@ trait AppLoader
         $base_url = "./";
 
         //Check for CLI execution & CGI execution
-        if (php_sapi_name() !== "cli") {
+        if (php_sapi_name() != "cli") {
 
             if (!isset($_REQUEST))
                 throw new Exception("App::setEnvironment -> Missing REQUEST data: ".json_encode($_SERVER)." && ".json_encode($_REQUEST));
@@ -72,7 +72,7 @@ trait AppLoader
                                $_SERVER["HTTP_HOST"].preg_replace("@/+$@", "", dirname($_SERVER["SCRIPT_NAME"]))."/";
 
 			//add missing slash
-	        if (substr($base_url, -1) !== "/") $base_url .= "/";
+	        if (substr($base_url, -1) != "/") $base_url .= "/";
         }
 
         //set environment consts & self vars

@@ -26,7 +26,7 @@ trait CheckoutJobs
      */
     protected function initCheckoutJobs()
     {
-		if (MODULE_NAME !== "cli")
+		if (MODULE_NAME != "cli")
 			return;
 
         $this->colorize("userCheckoutCleaner: Cleans expired user checkouts", "WARNING");

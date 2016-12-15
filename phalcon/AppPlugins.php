@@ -71,7 +71,7 @@ class ExceptionsPlugin extends \Phalcon\Mvc\User\Plugin
 			return false;
 		}
 
-		if (APP_ENV !== "production")
+		if (APP_ENV != "production")
 			die("App Exception: ".$exception->getMessage()." File: ".$exception->getFile().". Line: ".$exception->getLine());
 
 		//log error

@@ -75,7 +75,7 @@ class AppServices
         $this->_setDatabaseService($di);
         $this->_setTranslationService($di);
 
-        if(MODULE_NAME !== "api")
+        if(MODULE_NAME != "api")
             $this->_setWebappServices($di);
 
         return $di;
@@ -163,7 +163,7 @@ class AppServices
      */
     private function _setDatabaseService(&$di, $adapter = "mysql")
     {
-        if ($adapter !== "mysql")
+        if ($adapter != "mysql")
             throw new Exception("AppServices::setDatabaseService -> the adapter $adapter has not implemented yet.");
 
         //Database connection is created based in the parameters defined in the configuration file

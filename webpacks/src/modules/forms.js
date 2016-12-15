@@ -176,7 +176,7 @@ export default new function() {
         var fv = form.data("formValidation");
 
         //single field
-        if(field !== "all") {
+        if(field != "all") {
             fv.updateStatus(field, "NOT_VALIDATED");
             return;
         }
@@ -340,8 +340,8 @@ export default new function() {
         };
 
         //widget size
-        let size  = typeof selector.attr("data-size") !== "undefined" ? selector.attr("data-size") : "normal";
-        let theme = typeof selector.attr("data-theme") !== "undefined" ? selector.attr("data-theme") : "light";
+        let size  = typeof selector.attr("data-size") != "undefined" ? selector.attr("data-size") : "normal";
+        let theme = typeof selector.attr("data-theme") != "undefined" ? selector.attr("data-theme") : "light";
 
         //render reCaptcha through API call
         grecaptcha.render(APP.UI.sel_recaptcha.replace("#", ""), {

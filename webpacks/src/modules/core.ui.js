@@ -43,7 +43,7 @@ export default new function() {
     self.init = function() {
 
         //load UI module
-        if (typeof core.modules.ui !== "undefined")
+        if (typeof core.modules.ui != "undefined")
             core.modules.ui.init();
 
         //ajax setup
@@ -74,7 +74,7 @@ export default new function() {
         var handler = function(opts, show_loading) {
 
             //only for POST request
-            if (opts.type.toUpperCase() !== "POST") // && opts.type.toUpperCase() !== "GET"
+            if (opts.type.toUpperCase() != "POST")
                 return;
 
             //show loading?
@@ -562,7 +562,7 @@ export default new function() {
         var ext = url.slice(-4);
 
         //check extension
-        if(!force && ext !== ".png" && ext !== ".jpg")
+        if(!force && ext != ".png" && ext != ".jpg")
             return url;
 
         return url.replace(ext, "@2x"+ext);

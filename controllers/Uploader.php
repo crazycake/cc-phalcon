@@ -235,7 +235,7 @@ trait Uploader
                 $src = $this->uploader_conf["path"].$file;
 
                 //add missing slash to destination path?
-                if (substr($dest_path, -1) !== "/") $dest_path .= "/";
+                if (substr($dest_path, -1) != "/") $dest_path .= "/";
 
                 //append destination to array
                 $moved_files[$conf["key"]] = $dest_path.$file;

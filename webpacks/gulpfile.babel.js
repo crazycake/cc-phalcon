@@ -19,8 +19,8 @@ import gutil from "gulp-util";
 let environment = yargs.argv.e;
 let webpack_arg = yargs.argv.w;
 //check args
-environment = (typeof environment !== "undefined") ? environment : "production";
-webpack_arg = (typeof webpack_arg !== "undefined") ? webpack_arg : "webpack_core";
+environment = (typeof environment != "undefined") ? environment : "production";
+webpack_arg = (typeof webpack_arg != "undefined") ? webpack_arg : "webpack_core";
 
 //set consts
 const webpack_name =  webpack_arg;

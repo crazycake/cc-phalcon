@@ -20,7 +20,7 @@
 
 (function($) {
 
-	if (typeof $.cclayer !== "function")
+	if (typeof $.cclayer != "function")
 		throw new Error('ccdialog: cclayer jQuery plugin is required');
 
 	/** ------------------------------------------------------------------------------------------------
@@ -100,7 +100,7 @@
 				div_wrapper.width("90%");
 
 			//check if dialog must have buttons
-			if (typeof options.buttons !== "object")
+			if (typeof options.buttons != "object")
 				return;
 
 			//append buttons?
@@ -111,7 +111,7 @@
 
 				var btn = options.buttons[key];
 
-				if (typeof btn !== "object" || typeof btn.label == "undefined")
+				if (typeof btn != "object" || typeof btn.label == "undefined")
 					continue;
 
 				var button_element = $("<button>")

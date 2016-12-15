@@ -76,7 +76,7 @@ export default new function() {
 
             var mod = modules[i];
 
-            if (typeof mod.name !== "undefined")
+            if (typeof mod.name != "undefined")
                 self.modules[mod.name] = mod;
         }
     };
@@ -88,7 +88,7 @@ export default new function() {
     self.ready = function() {
 
         //load fast click for mobile
-        if (UA.isMobile && typeof FastClick !== "undefined")
+        if (UA.isMobile && typeof FastClick != "undefined")
             FastClick.attach(document.body);
 
         //load Foundation framework

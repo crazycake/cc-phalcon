@@ -174,7 +174,7 @@ class TaskCore extends Task
             $this->colorize("Base URL is required", "ERROR", true);
 
         //add missing slash
-        if (substr($options["base_url"], -1) !== "/")
+        if (substr($options["base_url"], -1) != "/")
             $options["base_url"] .= "/";
 
         //validate URL

@@ -593,7 +593,7 @@ class QRspec {
     public static function rsBlockNum2($spec)    { return $spec[3]; }
     public static function rsDataCodes2($spec)   { return $spec[4]; }
     public static function rsEccCodes2($spec)    { return $spec[2]; }
-    public static function rsDataLength($spec)   { return ($spec[0] * $spec[1]) + ($spec[3] * $spec[4]);    }
+    public static function rsDataLength($spec)   { return ($spec[0] * $spec[1]) + ($spec[3] * $spec[4]); }
     public static function rsEccLength($spec)    { return ($spec[0] + $spec[3]) * $spec[2]; }
 }
 
@@ -602,6 +602,6 @@ class QRspec {
  */
 class qrstr {
     public static function set(&$srctab, $x, $y, $repl, $replLen = false) {
-        $srctab[$y] = substr_replace($srctab[$y], ($replLen !== false)?substr($repl,0,$replLen):$repl, $x, ($replLen !== false)?$replLen:strlen($repl));
+        $srctab[$y] = substr_replace($srctab[$y], ($replLen !== false) ? substr($repl,0,$replLen) : $repl, $x, ($replLen !== false) ? $replLen : strlen($repl));
     }
 }
