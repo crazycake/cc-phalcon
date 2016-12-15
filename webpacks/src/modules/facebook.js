@@ -356,7 +356,7 @@ export default new function() {
 			//check if button has attribute
             var attr = $(this).attr(self.config.loaded_text_attr);
 
-            if (typeof attr === "undefined" || attr === false) {
+            if (typeof attr == "undefined" || attr === false) {
                 return;
 			}
 

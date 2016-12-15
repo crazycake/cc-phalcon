@@ -199,7 +199,7 @@ trait AccountAuth
         if (!$user || !$this->security->checkHash($data["pass"], $user->pass)) {
 
             //for API handle alerts & warning as errors
-            if(MODULE_NAME === "api")
+            if(MODULE_NAME == "api")
                 $this->jsonResponse(401, $this->account_auth_conf["trans"]["AUTH_FAILED"]);
             else
                 $this->jsonResponse(200, $this->account_auth_conf["trans"]["AUTH_FAILED"], "alert");
@@ -219,7 +219,7 @@ trait AccountAuth
             }
 
             //for API handle alerts & warning as errors,
-            if(MODULE_NAME === "api")
+            if(MODULE_NAME == "api")
                 $this->jsonResponse(401, $msg);
             else
                 $this->jsonResponse(200, $msg, "warning", $namespace); //browser custom handler

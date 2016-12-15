@@ -30,7 +30,7 @@ class Images
 		$new_url = preg_replace("/\\.([0-9a-z]+)(?:[\\?#]|$)/i", "_".$key.".$1?", $path);
 
         //remove single question marks
-        if(substr($new_url, -1) === "?")
+        if(substr($new_url, -1) == "?")
             $new_url = substr($new_url, 0, strlen($new_url) - 1);
 
         return $new_url;

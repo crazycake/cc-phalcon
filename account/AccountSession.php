@@ -168,7 +168,7 @@ trait AccountSession
             $uri = "account";
 
         //check for ajax request
-        if ($this->request->isAjax() || MODULE_NAME === "api") {
+        if ($this->request->isAjax() || MODULE_NAME == "api") {
             $this->jsonResponse(200, empty($payload) ? ["redirect" => $uri] : $payload);
         }
         else {

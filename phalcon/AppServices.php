@@ -102,7 +102,7 @@ class AppServices
             $static_url = !empty($this->config->staticUrl) ? $this->config->staticUrl : false;
 
             //set static uri for assets, cdn only for production
-            if (!$static_url || APP_ENV === "local")
+            if (!$static_url || APP_ENV == "local")
                 $static_url = APP_BASE_URL;
 
             $url->setStaticBaseUri($static_url);

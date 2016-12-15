@@ -196,13 +196,13 @@ abstract class MvcCore extends Controller
     protected function handleRequest($req_fields = [], $method = "GET", $check_csrf = true)
     {
         //check API module and set special settings
-        if (MODULE_NAME === "api")
+        if (MODULE_NAME == "api")
             $check_csrf = false;
 
         //set anoymous function for send response
         $sendResponse = function($code) {
 
-            if(MODULE_NAME === "api" || $this->request->isAjax())
+            if(MODULE_NAME == "api" || $this->request->isAjax())
                 $this->jsonResponse($code);
 
             //otherwise redirect to 400 page
@@ -270,7 +270,7 @@ abstract class MvcCore extends Controller
 		$is_optional = false;
 
 		//check if is a optional field
-		if (substr($field, 0, 1) === "@") {
+		if (substr($field, 0, 1) == "@") {
 			$is_optional = true;
 			$field = substr($field, 1);
 		}

@@ -119,7 +119,7 @@
 										.addClass("button-"+index)
 										.html(btn.label);
 
-				if (typeof btn.click === "function")
+				if (typeof btn.click == "function")
 					button_element.click(btn.click);
 				else
 					button_element.click(self.close);
@@ -143,7 +143,7 @@
 
 			var fn_onclose = null;
 			//check onClose function
-			if (typeof options.onClose === "function")
+			if (typeof options.onClose == "function")
 				fn_onclose = options.onClose;
 
 			//show modal

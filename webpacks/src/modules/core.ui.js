@@ -408,7 +408,7 @@ export default new function() {
 
         //foundation
         if (core.framework == "foundation")
-            return size === Foundation.MediaQuery.current;
+            return size == Foundation.MediaQuery.current;
 
         //bootstrap
         if (core.framework == "bootstrap") {
@@ -429,7 +429,7 @@ export default new function() {
             }
             $el.remove();
 
-            return size === env;
+            return size == env;
         }
 
         return false;
@@ -583,7 +583,7 @@ export default new function() {
         var new_url = url.replace(regex, "_" + key + ".$1?");
 
         //remove single question marks
-        if(new_url[new_url.length - 1] === "?")
+        if(new_url[new_url.length - 1] == "?")
             new_url = new_url.substring(0, new_url.length - 1);
 
         return new_url;

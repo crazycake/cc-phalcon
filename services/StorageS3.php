@@ -62,7 +62,7 @@ class StorageS3
         $suffix = "";
 
         if ($autoenv && defined("APP_ENV"))
-            $suffix = (APP_ENV === "production") ? "-prod" : "-dev";
+            $suffix = (APP_ENV == "production") ? "-prod" : "-dev";
 
         $this->accessKey  = $access;
         $this->secretKey  = $secret;

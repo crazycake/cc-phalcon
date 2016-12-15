@@ -26,7 +26,7 @@ export default new function() {
      */
     self.load = function(context) {
 
-        var forms = (typeof context === "undefined") ? $("form[data-validate]") : $("form[data-validate]", context);
+        var forms = (typeof context == "undefined") ? $("form[data-validate]") : $("form[data-validate]", context);
 
         if (!forms.length) return;
 
@@ -46,7 +46,7 @@ export default new function() {
                 var name = $(this).attr("name");
 
                 //skip undefined names
-                if (typeof name === "undefined") return;
+                if (typeof name == "undefined") return;
 
                 //set validators
                 options.fields[name] = {
@@ -124,7 +124,7 @@ export default new function() {
         if (form instanceof jQuery === false)
             form = $(form);
 
-        if (typeof form.data === "undefined" || typeof form.data("formValidation") === "undefined")
+        if (typeof form.data == "undefined" || typeof form.data("formValidation") == "undefined")
             throw new Error("Forms -> form object has no formValidation instance.");
 
         //check for input hidden fields that are required
@@ -261,7 +261,7 @@ export default new function() {
         //default validator
         var v = {validators : { notEmpty : {} }};
 
-        if (typeof validators_obj === "object")
+        if (typeof validators_obj == "object")
             v = {validators : validators_obj};
 
         //append required props
@@ -269,9 +269,9 @@ export default new function() {
 
         var form = field.closest("form");
 
-        if (typeof form === "undefined")
+        if (typeof form == "undefined")
             return console.warn("Forms -> addField: Cant find closest element form for field.", field);
-        else if (typeof form.data("formValidation") === "undefined")
+        else if (typeof form.data("formValidation") == "undefined")
             return;
 
         var fv = form.data("formValidation");

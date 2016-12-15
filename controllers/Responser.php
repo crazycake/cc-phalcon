@@ -97,7 +97,7 @@ trait Responser
             else {
 
                 //merge _ext properties for API
-                if (MODULE_NAME === "api")
+                if (MODULE_NAME == "api")
                     BaseResultset::mergeArbitraryProps($payload);
 
                 $response["payload"] = $payload;

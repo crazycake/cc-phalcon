@@ -52,7 +52,7 @@ trait AppLoader
         $env = getenv("APP_ENV") ?: "local"; //default to LOCAL
 
         //set APP debug environment
-        ini_set("display_errors", (int)$env === "local");
+        ini_set("display_errors", (int)$env == "local");
         error_reporting(E_ALL);
 
         $base_url = "./";

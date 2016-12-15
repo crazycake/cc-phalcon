@@ -205,7 +205,7 @@
 			}
 
 			//add "destroyed" event handler for "onClose" param
-			if (typeof options.onClose === "function")
+			if (typeof options.onClose == "function")
 				div_overlay.on("destroyed", options.onClose);
 
 			//finally append to body
@@ -239,7 +239,7 @@
 				el.fadeIn("fast");
 
 			//call onShow function if set
-			if (typeof options.onShow === "function")
+			if (typeof options.onShow == "function")
 				options.onShow();
 		},
 		close: function(options, el) {

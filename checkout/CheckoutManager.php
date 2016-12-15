@@ -150,7 +150,7 @@ trait CheckoutManager
                 throw new Exception("Invalid input checkout: ".json_encode($data));
 
 			//already process
-			if(APP_ENV !== "local" && $checkout->state == "success")
+			if(APP_ENV != "local" && $checkout->state == "success")
 				throw new Exception("Checkout already processed, buy order: ".$data->buy_order);
 
 			//1) update status of checkout

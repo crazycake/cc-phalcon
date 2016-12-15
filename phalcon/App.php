@@ -159,9 +159,9 @@ abstract class App
         $app = new \Phalcon\Mvc\Application($this->di);
         //set output
         $output = $app->handle()->getContent();
-        
+
         //Handle the request
-        if (APP_ENV !== "local")
+        if (APP_ENV != "local")
             ob_start([$this,"_minifyOutput"]); //call function
 
         echo $output;

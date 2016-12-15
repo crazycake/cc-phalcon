@@ -23,7 +23,7 @@
         {% endif %}
 
         {# InternetExplorer: force last version of render compatibility mod  #}
-        {% if client.browser === "MSIE" %}
+        {% if client.browser == "MSIE" %}
             <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         {% endif %}
 

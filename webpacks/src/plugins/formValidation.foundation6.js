@@ -56,7 +56,7 @@
                 field   = $field.attr('data-' + ns + '-field'),
                 row     = this.options.fields[field].row || this.options.row.selector;
 
-            if ('checkbox' === type || 'radio' === type) {
+            if ('checkbox' == type || 'radio' == type) {
                 var $next = $icon.next();
                 if ($next.is('label')) {
                     $icon.insertAfter($next);

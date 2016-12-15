@@ -213,7 +213,7 @@ abstract class WebCore extends MvcCore implements WebSecurity
         //get sent token (crsf key is the same always)
         $sent_token = $this->request->getPost($this->client->tokenKey);
 
-        return ($session_token === $sent_token) ? true : false;
+        return $session_token == $sent_token;
     }
 
     /**
@@ -369,7 +369,7 @@ abstract class WebCore extends MvcCore implements WebSecurity
     {
         //set javascript global objects
         $js_app = (object)[
-            "dev"       => (APP_ENV === "production") ? 0 : 1,
+            "dev"       => (APP_ENV == "production") ? 0 : 1,
             "version"   => $this->config->version,
             "name"      => $this->config->name,
             "baseUrl"   => $this->baseUrl(),

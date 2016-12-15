@@ -39,8 +39,9 @@ class QRimage {
         if ($filename === false) {
             Header("Content-type: image/png");
             ImagePng($image);
-        } else {
-            if ($saveandprint===TRUE){
+        }
+        else {
+            if ($saveandprint === true) {
                 ImagePng($image, $filename);
                 header("Content-type: image/png");
                 ImagePng($image);
