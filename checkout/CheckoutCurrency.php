@@ -39,7 +39,7 @@ trait CheckoutCurrency
 	{
         return new Redis([
 			"scheme" 	 => "tcp",
-			"host"   	 => "redis",
+			"host"   	 => getenv("REDIS_HOST") ?: "redis",
 			"port"   	 => 6379,
 			"persistent" => false
 		]);
