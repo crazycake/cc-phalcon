@@ -31,7 +31,7 @@ class AppServices
      */
     public function __construct($config)
     {
-        //set class vars
+        // set class vars
         $this->config = new \Phalcon\Config($config);
     }
 
@@ -55,7 +55,7 @@ class AppServices
      */
     private function _getCliDI()
     {
-        //Get a new Micro DI
+        // get a new Micro DI
         $di = new \Phalcon\DI\FactoryDefault\CLI();
         $this->_setCommonServices($di);
         $this->_setDatabaseService($di);
@@ -69,7 +69,7 @@ class AppServices
      */
     private function _getDefaultDI()
     {
-        //Get a new Micro DI
+        // get a new Micro DI
         $di = new \Phalcon\DI\FactoryDefault();
         $this->_setCommonServices($di);
         $this->_setDatabaseService($di);
@@ -88,20 +88,20 @@ class AppServices
      */
     private function _setCommonServices(&$di)
     {
-        //Set the config
+        // set the config
         $di->setShared("config", $this->config);
 
-        //The URL component is used to generate all kind of urls in the application
+        // the URL component is used to generate all kind of urls in the application
         $di->setShared("url", function() {
 
             $url = new \Phalcon\Mvc\Url();
-            //Base URL
+            // base URL
             $url->setBaseUri(APP_BASE_URL);
 
-            //get static url
+            // get static url
             $static_url = !empty($this->config->staticUrl) ? $this->config->staticUrl : false;
 
-            //set static uri for assets, cdn only for production
+            // set static uri for assets, cdn only for production
             if (!$static_url || APP_ENV == "local")
                 $static_url = APP_BASE_URL;
 
@@ -110,13 +110,13 @@ class AppServices
             return $url;
         });
 
-        //Logger adapter
+        // logger adapter
         $di->setShared("logger", function() {
 
-            //date now
+            // date now
             $log_file = date("d-m-Y");
 
-            //special case for cli (log is not saved as 'httpd user' as default)
+            // special case for cli (log is not saved as 'httpd user' as default)
             if(MODULE_NAME == "cli")
                 $log_file = "cli_".$log_file;
 
@@ -124,16 +124,16 @@ class AppServices
             return $logger;
         });
 
-        //Basic http security
+        // basic http security
         $di->setShared("security", function() {
 
             $security = new \Phalcon\Security();
-            //Set the password hashing factor to X rounds
+            // set the password hashing factor to X rounds
             $security->setWorkFactor(12);
             return $security;
         });
 
-        //Phalcon Crypt service
+        // phalcon Crypt service
         $di->setShared("crypt", function() {
 
             $crypt = new \Phalcon\Crypt();
@@ -141,7 +141,7 @@ class AppServices
             return $crypt;
         });
 
-        //Extended encryption, Cryptify adapter (cryptography helper)
+        // extended encryption, Cryptify adapter (cryptography helper)
         if (class_exists("\CrazyCake\Helpers\Cryptify")) {
 
             $di->setShared("cryptify", function() {
@@ -149,7 +149,7 @@ class AppServices
             });
         }
 
-        //Kint options
+        // kint options
         if (class_exists("\Kint")) {
             \Kint::$theme = "solarized";
         }
@@ -166,7 +166,7 @@ class AppServices
         if ($adapter != "mysql")
             throw new Exception("AppServices::setDatabaseService -> the adapter $adapter has not implemented yet.");
 
-        //Database connection is created based in the parameters defined in the configuration file
+        // database connection is created based in the parameters defined in the configuration file
         $di->setShared("db", function() {
 
     		$db_conf = [
@@ -190,7 +190,7 @@ class AppServices
      */
     private function _setTranslationService(&$di)
     {
-        //check if langs are set
+        // check if langs are set
         if (empty($this->config->langs))
             return;
 
@@ -211,7 +211,7 @@ class AppServices
      */
     private function _setWebappServices(&$di)
     {
-        //Events Manager
+        // events manager
         $di->setShared("dispatcher", function() {
 
             $eventsManager = new \Phalcon\Events\Manager;
@@ -223,38 +223,53 @@ class AppServices
             return $dispatcher;
         });
 
-        //Session Adapter
+        // session Adapter
         $di->setShared("session", function() {
 
-            $session = new \Phalcon\Session\Adapter\Files([
-                "uniqueId" => MODULE_NAME
-            ]);
-            //set session name
+            $expiration = 3600*4; //4 hours
+
+            //default session
+            if(empty($this->config->redisSession)) {
+
+                $session = new \Phalcon\Session\Adapter\Files([
+                    "uniqueId" => MODULE_NAME
+                ]);
+            }
+            //redis session (requires extension)
+            else {
+
+                $session = new \Phalcon\Session\Adapter\Redis([
+                    "uniqueId"   => MODULE_NAME,
+                    "host"       => getenv("REDIS_HOST") ?: "redis",
+                    "lifetime"   => $expiration,
+                    "prefix"     => "sid_"
+                ]);
+            }
+
+            // set session name (cookie)
             $session->setName($this->config->namespace);
-            //start session
+            // start session
             if (!$session->isStarted()) {
 
-                //session time out
-				ini_set("session.gc_maxlifetime", 3600*4);
-    			session_set_cookie_params(3600*4);
-
+                //session TTL
+                session_set_cookie_params($expiration);
                 $session->start();
-			}
+            }
 
             return $session;
         });
 
-        //Setting up the view component
+        // setting up the view component
         $di_view_engines = [
             ".volt" => function($view, $di_instance) {
-                //instance a new volt engine
+                // instance a new volt engine
                 $volt = new \Phalcon\Mvc\View\Engine\Volt($view, $di_instance);
-                //set volt engine options
+                // set volt engine options
                 $volt->setOptions([
                     "compiledPath"      => STORAGE_PATH."cache/",
                     "compiledSeparator" => "_",
                 ]);
-                //get compiler
+                // get compiler
                 $compiler = $volt->getCompiler();
 
                 //++ Binds some PHP functions to volt
@@ -273,7 +288,7 @@ class AppServices
             ".phtml" => "Phalcon\Mvc\View\Engine\Php",
         ];
 
-        //set view service
+        // set view service
         $di->setShared("view", function() use (&$di_view_engines) {
 
             $view = new \Phalcon\Mvc\View();
@@ -285,7 +300,7 @@ class AppServices
             return $view;
         });
 
-        //simple view service
+        // simple view service
         $di->setShared("simpleView", function() use (&$di_view_engines) {
 
             //simpleView
@@ -298,7 +313,7 @@ class AppServices
             return $view;
         });
 
-        //Cookies
+        // cookies
         $di->setShared("cookies", function() {
 
             $cookies = new \Phalcon\Http\Response\Cookies();
@@ -308,7 +323,7 @@ class AppServices
             return $cookies;
         });
 
-        //Flash messages
+        // flash messages
         $di->setShared("flash", function() {
 
             $flash = new \Phalcon\Flash\Session([
