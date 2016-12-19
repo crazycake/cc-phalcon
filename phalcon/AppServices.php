@@ -242,7 +242,7 @@ class AppServices
                     "uniqueId"   => MODULE_NAME,
                     "host"       => getenv("REDIS_HOST") ?: "redis",
                     "lifetime"   => $expiration,
-                    "prefix"     => "sid_"
+                    "prefix"     => "_SID_"
                 ]);
             }
 
