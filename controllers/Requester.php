@@ -1,7 +1,7 @@
 <?php
 /**
  * Requester Trait - Can make HTTP requests
- * Requires a Frontend or Backend Module with MvcCore
+ * Requires a Frontend or Backend Module with BaseCore
  * Requires Guzzle library (composer)
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */

@@ -15,7 +15,7 @@ use CrazyCake\Phalcon\App;
 /**
  * Common functions for API WS
  */
-abstract class WsCore extends MvcCore
+abstract class WsCore extends BaseCore
 {
     const HEADER_API_KEY         = "X_API_KEY"; //Phalcon HTTP header keys replace "_" to "-"
     const WS_RESPONSE_CACHE_PATH = STORAGE_PATH."cache/response/";

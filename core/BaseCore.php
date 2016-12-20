@@ -23,9 +23,9 @@ interface WebSecurity
 }
 
 /**
- * App Core for Web and Ws Cores
+ * App Base Core
  */
-abstract class MvcCore extends Controller
+abstract class BaseCore extends Controller
 {
     /* Traits */
     use Debugger;
@@ -117,20 +117,20 @@ abstract class MvcCore extends Controller
     {
         //simple input validation
         if (empty($method))
-            throw new Exception("MvcCore::sendMailMessage -> method param is required.");
+            throw new Exception("BaseCore::sendMailMessage -> method param is required.");
 
         //get the mailer controller name
         $mailer_class = App::getClass("mailer_controller");
 
         //checks that a MailerController exists
         if (!class_exists($mailer_class))
-            throw new Exception("MvcCore::sendMailMessage -> A Mailer Controller is required.");
+            throw new Exception("BaseCore::sendMailMessage -> A Mailer Controller is required.");
 
         $mailer = new $mailer_class();
 
         //checks that a MailerController exists
         if (!method_exists($mailer, $method))
-            throw new Exception("MvcCore::sendMailMessage -> Method $method is not defined in Mailer Controller.");
+            throw new Exception("BaseCore::sendMailMessage -> Method $method is not defined in Mailer Controller.");
 
         //call mailer class method (reflection)
         $response = $mailer->{$method}($data);
@@ -139,7 +139,7 @@ abstract class MvcCore extends Controller
             $response = json_encode($response);
 
         //save response only for non production-environment
-        $this->logger->debug("MvcCore::sendMailMessage -> Queuing new Mailer Message [$method].");
+        $this->logger->debug("BaseCore::sendMailMessage -> Queuing new Mailer Message [$method].");
 
         return $response;
     }

@@ -16,7 +16,7 @@ use CrazyCake\Helpers\UserAgent;
 /**
  * WebCore for backend or frontend modules
  */
-abstract class WebCore extends MvcCore implements WebSecurity
+abstract class WebCore extends BaseCore implements WebSecurity
 {
     /* consts */
     const JS_LOADER_FUNCTION = "core.loadModules";
