@@ -261,6 +261,7 @@ trait Requester
         $this->logger->debug("Requester::_socketAsync -> sending out request ".print_r($out, true));
 
         fwrite($socket, $out);
+        usleep(300000); //0.3s
         fclose($socket);
     }
 }
