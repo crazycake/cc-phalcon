@@ -76,8 +76,8 @@ class TaskCore extends Task
             if(strpos($f, ".rev.") === false)
                 continue;
 
-            //keep last version
-			if(strpos($f, "-".($version_stripped - 1)) === false) {
+            //keep last 2 versions
+			if(strpos($f, "-".($version_stripped - 2)) === false) {
 				$this->colorize("Removing asset $assets_path$f", "NOTE");
             	unlink($assets_path.$f);
 			}
