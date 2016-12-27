@@ -431,12 +431,11 @@ trait FacebookAuth
     public function getUserData($fac = null, $user_id = 0)
     {
         try {
-
             //get session using short access token or with saved access token
             $this->__setUserAccessToken($fac, $user_id);
 
             //get the graph-user object for the current user (validation)
-            $response = $this->fb->get("/me?fields=email,name,first_name,last_name,birthday,gender");
+            $response = $this->fb->get("/me?fields=email,name,first_name,last_name,gender,birthday,age_range,locale,timezone");
 
             if (!$response)
                 throw new Exception("Invalid facebook data from /me?fields= request.");
@@ -447,8 +446,15 @@ trait FacebookAuth
                 "fb_id"      => $fb_data->getField("id"),
                 "email"      => strtolower($fb_data->getField("email")),
                 "first_name" => $fb_data->getField("first_name"),
-                "last_name"  => $fb_data->getField("last_name")
+                "last_name"  => $fb_data->getField("last_name"),
+                "locale"     => $fb_data->getField("locale"),
+                "time_zone"  => $fb_data->getField("time_zone"),
+                "birthday"   => null
             ];
+
+            //get gender
+            $gender = $fb_data->getField("gender");
+            $properties["gender"] = $gender ?: null;
 
             //birthday
             $birthday = $fb_data->getField("birthday");
@@ -457,21 +463,18 @@ trait FacebookAuth
             if(is_string($birthday)) {
 
                 //is year YYYY format?
-                if(strlen($birthday) == 4) {
-                    $properties["birthday"] = $birthday."-00-00";
-                }
+                if(strlen($birthday) == 4) { $birthday = $birthday."-00-00"; }
                 //is MM/DD format?
-                else if(strlen($birthday) == 5) {
-                    $properties["birthday"] = "0000/".$birthday;
-                }
-            }
-            else {
-                $properties["birthday"] = null;
+                else if(strlen($birthday) == 5) { $birthday = "0000-".$birthday; }
+
+                $properties["birthday"] = str_replace("/", "-", $birthday);
             }
 
-            //get gender
-            $gender = $fb_data->getField("gender");
-            $properties["gender"] = $gender ? $gender : "undefined";
+            //age range
+            $age_range = $fb_data->getField("age_range");
+			$age_range = (isset($age_range["min"]) ? $age_range["min"] : "x")."-";
+			$age_range .= (isset($age_range["max"]) ? $age_range["max"] : "x");
+            $properties["age_range"] = $age_range;
 
             return $properties;
         }
