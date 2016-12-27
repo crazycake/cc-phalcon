@@ -17,7 +17,7 @@ use Facebook\Exceptions\FacebookResponseException;
 use CrazyCake\Phalcon\App;
 
 /**
- * FacebookAuthHelper
+ * Facebook Authentication
  */
 trait FacebookAuthHelper
 {
