@@ -435,7 +435,7 @@ trait FacebookAuth
             $this->__setUserAccessToken($fac, $user_id);
 
             //get the graph-user object for the current user (validation)
-            $response = $this->fb->get("/me?fields=email,name,first_name,last_name,gender,birthday,age_range,locale,timezone");
+            $response = $this->fb->get("/me?fields=email,name,first_name,last_name,gender,birthday,age_range,locale");
 
             if (!$response)
                 throw new Exception("Invalid facebook data from /me?fields= request.");
@@ -448,7 +448,6 @@ trait FacebookAuth
                 "first_name" => $fb_data->getField("first_name"),
                 "last_name"  => $fb_data->getField("last_name"),
                 "locale"     => $fb_data->getField("locale"),
-                "time_zone"  => $fb_data->getField("time_zone"),
                 "birthday"   => null
             ];
 
