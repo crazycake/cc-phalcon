@@ -34,7 +34,7 @@ trait Crud
     /**
      * Event on after save
      */
-    abstract protected function onAfterSave(&$data, $action);
+    abstract protected function onAfterSave(&$object, $data, $action);
 
 	/**
      * On Query
@@ -232,7 +232,7 @@ trait Crud
 			$this->_moveUploadedFiles($object);
 
 	        //call listener
-	        $this->onAfterSave($object, "create");
+	        $this->onAfterSave($object, $data, "create");
 
 			//send response
 	        $this->jsonResponse(200);
@@ -290,7 +290,7 @@ trait Crud
 			$this->_moveUploadedFiles($object);
 
 	        //call listener
-	        $this->onAfterSave($object, "update");
+	        $this->onAfterSave($object, $new_data, "update");
 
 			//send response
 	        $this->jsonResponse(200);
