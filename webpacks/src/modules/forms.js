@@ -235,7 +235,7 @@ export default new function() {
         if (form instanceof jQuery === false)
             form = $(form);
 
-        $('input[data-fv-excluded="false"]', form).val("1");
+        $('input[data-fv-validator="true"]', form).val("1");
     };
 
     /**
