@@ -133,14 +133,17 @@ trait Localize
         		"ACCESS_FORBIDDEN" => "Tu sesión ha caducado, porfavor <a href=\"./signIn\">ingresa nuevamente aquí</a>."
         	],
         	"ACTIONS" => [
-        		"LOADING"  => "cargando ...",
-        		"OK" 	   => "Ok",
-        		"ACCEPT"   => "Aceptar",
-        		"CANCEL"   => "Cancelar",
-        		"NOT_NOW"  => "Ahora No",
-        		"SEND" 	   => "Enviar",
-        		"GOT_IT"   => "Entendido",
-                "DELETE"   => "Eliminar"
+        		"LOADING"  	  => "cargando ...",
+				"REDIRECTING" => "redireccionado ...",
+        		"OK" 	   	  => "Ok",
+        		"ACCEPT"   	  => "Aceptar",
+        		"CANCEL"   	  => "Cancelar",
+        		"NOT_NOW"  	  => "Ahora No",
+        		"SEND" 	   	  => "Enviar",
+        		"GOT_IT"   	  => "Entendido",
+                "DELETE"   	  => "Eliminar",
+				"CONTINUE" 	  => "Continuar",
+				"ACTIVATE" 	  => "Activar"
         	],
         	"MAILER" => [
         		"SENT" => "¡Hemos recibido tu mensaje! Te responderemos a la brevedad."
