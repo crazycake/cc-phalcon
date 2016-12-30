@@ -120,19 +120,11 @@ trait CheckoutCurrency
 			if(method_exists($this, "colorize"))
 		        $this->colorize("Requesting: ".$api_url);
 
-	        //try both approaches
-	        if (ini_get("allow_url_fopen")) {
-
-	            $json = file_get_contents($api_url);
-				//sd($json);
-	        }
-	        else {
-
-	            $curl = curl_init($api_url);
-	            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-	            $json = curl_exec($curl);
-	            curl_close($curl);
-	        }
+            //curl request
+            $curl = curl_init($api_url);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+            $json = curl_exec($curl);
+            curl_close($curl);
 
 		    //get data
 		    $data = json_decode($json);
