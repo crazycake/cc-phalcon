@@ -113,41 +113,38 @@ trait CheckoutCurrency
     protected function apiChileanCurrencyRequest($indicator = "dolar")
     {
 		try {
-	        //get dollar value for today
+	        // get dollar value for today
 	        $api_url = self::$API_CURRENCY_URL."&currencies=CLP&source=USD&format=1";
 
-	        //print output for CLI
+	        // print output for CLI
 			if(method_exists($this, "colorize"))
 		        $this->colorize("Requesting: ".$api_url);
 
-            //curl request
+            // curl request
             $curl = curl_init($api_url);
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
             $json = curl_exec($curl);
             curl_close($curl);
 
-		    //get data
+		    // get data
 		    $data = json_decode($json);
 
-		    //check struct
-		    if (!$data || empty($data->success)) {
+		    // check struct
+		    if (!$data || empty($data->success))
+				throw new Exception("Invalid response struct o empty payload: ".json_encode($data, JSON_UNESCAPED_SLASHES));
 
-				if(method_exists($this, "colorize"))
-					$this->colorize("Invalid response struct o empty payload: ".json_encode($data, JSON_UNESCAPED_SLASHES), "WARNING");
-
-		        return null;
-			}
-
+            // get value
 		    $value = (float)($data->quotes->USDCLP);
 
-			//print output for CLI
+			// print output for CLI
 			if(method_exists($this, "colorize"))
 		    	$this->colorize("Saving value in Redis: ".$value);
 
 			return $value;
 		}
-		catch(Exception $e)  { $msg = $e->getMessage(); }
-		catch(\Exception $e) { $msg = $e->getMessage(); }
+		catch(Exception $e) {
+            $msg = $e->getMessage();
+        }
 
 		if(method_exists($this, "colorize"))
 			$this->colorize($msg, "ERROR");
