@@ -11,7 +11,6 @@ use Phalcon\Exception;
 use Predis\Client as Redis;
 //core
 use CrazyCake\Phalcon\App;
-use Carbon\Carbon;
 
 /**
  * Checkout Currency
@@ -22,7 +21,7 @@ trait CheckoutCurrency
      * API URL to get chilean currencies values
      * @var string
      */
-    private static $API_URL_CLP_CURRENCY = "http://www.mindicador.cl/";
+    private static $API_CURRENCY_URL = "http://apilayer.net/api/live?access_key=2ffe4397dee8b3c1a767dba701315f8e";
 
     /**
      * Redis key to store Dollar day value to CLP currency
@@ -111,18 +110,15 @@ trait CheckoutCurrency
      * @param  int $interval - horas iterativas
      * @return float - The value
      */
-    protected function apiChileanCurrencyRequest($indicator = "dolar", $interval = 12)
+    protected function apiChileanCurrencyRequest($indicator = "dolar")
     {
 		try {
-	        //subtract now 12 hours
-	        $date = (new Carbon())->subHours($interval);
-
 	        //get dollar value for today
-	        $api_url = self::$API_URL_CLP_CURRENCY."api/$indicator/".$date->format("d-m-Y");
+	        $api_url = self::$API_CURRENCY_URL."&currencies=CLP&source=USD&format=1";
 
 	        //print output for CLI
 			if(method_exists($this, "colorize"))
-		        $this->colorize("Requesting: ".$api_url." => Date: ".$date->format("d-m-Y H:i"));
+		        $this->colorize("Requesting: ".$api_url);
 
 	        //try both approaches
 	        if (ini_get("allow_url_fopen")) {
@@ -142,16 +138,15 @@ trait CheckoutCurrency
 		    $data = json_decode($json);
 
 		    //check struct
-		    if (!$data || !is_array($data->serie) || empty($data->serie)) {
+		    if (!$data || empty($data->success)) {
 
 				if(method_exists($this, "colorize"))
 					$this->colorize("Invalid response struct o empty payload: ".json_encode($data, JSON_UNESCAPED_SLASHES), "WARNING");
 
-		        return $this->apiChileanCurrencyRequest($indicator, $interval + 12);
+		        return null;
 			}
 
-		    $serie = current($data->serie);
-		    $value = (float)($serie->valor);
+		    $value = (float)($data->quotes->USDCLP);
 
 			//print output for CLI
 			if(method_exists($this, "colorize"))
@@ -159,12 +154,8 @@ trait CheckoutCurrency
 
 			return $value;
 		}
-		catch(Exception $e) {
-			$msg = $e->getMessage();
-		}
-		catch(\Exception $e) {
-			$msg = $e->getMessage();
-		}
+		catch(Exception $e)  { $msg = $e->getMessage(); }
+		catch(\Exception $e) { $msg = $e->getMessage(); }
 
 		if(method_exists($this, "colorize"))
 			$this->colorize($msg, "ERROR");
