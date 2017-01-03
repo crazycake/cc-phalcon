@@ -124,8 +124,9 @@ export default new function() {
         if (form instanceof jQuery === false)
             form = $(form);
 
+		//no form validation instance
         if (typeof form.data == "undefined" || typeof form.data("formValidation") == "undefined")
-            throw new Error("Forms -> form object has no formValidation instance.");
+            return true;
 
         //check for input hidden fields that are required
         var inputs_hidden = form.find("input[type='hidden'][data-fv-excluded='false']");
