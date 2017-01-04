@@ -120,7 +120,7 @@ trait CheckoutManager
      * POST Async checkout action
      * Logic tasks:
      * 1) Update status del checkout
-     * 2) Calls listener
+     * 2) Call listener
      */
     public function successCheckoutTaskAction()
     {
@@ -219,8 +219,8 @@ trait CheckoutManager
             $object_class = $props[1];
             $object_id    = $props[2];
 
-            $preffixed_object_class = "\\$object_class";
-            $object = $preffixed_object_class::getById($object_id);
+            $prefixed_object_class = "\\$object_class";
+            $object = $prefixed_object_class::getById($object_id);
             //var_dump($object_class, $object_id, $object->toArray());exit;
 
             //check that object is in stock (also validates object exists)
