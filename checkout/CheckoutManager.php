@@ -254,6 +254,10 @@ trait CheckoutManager
         $checkout->objects_classes = $classes;
         //update total Q
         $checkout->total_q = $total_q;
+
+        //payload?
+        if(!empty($data["payload"]))
+            $checkout->payload = $data["payload"];
     }
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
@@ -266,7 +270,7 @@ trait CheckoutManager
         //get form data
         $data = $this->handleRequest([
             "gateway"   => "string",
-            "@currency" => "string",
+            "@currency" => "string"
         ], "POST");
 
         if(empty($data["currency"]))
