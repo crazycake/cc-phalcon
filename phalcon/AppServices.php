@@ -278,6 +278,8 @@ class AppServices
                 $compiler->addFunction("replace", "str_replace");
                 //++ in_array
                 $compiler->addFunction("in_array", "in_array");
+				//++ strtotime
+				$compiler->addFunction("strtotime", "strtotime");
                 //++ resizedImagePath
                 $compiler->addFunction("resized_image_path", function($resolvedArgs, $exprArgs) {
                     return "CrazyCake\Helpers\Images::resizedImagePath(".$resolvedArgs.")";
