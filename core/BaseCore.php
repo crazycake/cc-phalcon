@@ -152,7 +152,7 @@ abstract class BaseCore extends Controller
     {
         //set base url
         if (empty($options["base_url"]))
-            $options["base_url"] = empty($options["module"]) ? $this->baseUrl() : App::getUrl($options["module"]);
+            $options["base_url"] = $this->baseUrl();
 
         //set uri
         if (empty($options["uri"]))
@@ -171,10 +171,8 @@ abstract class BaseCore extends Controller
         if (!empty($options["payload"])) {
 
             //skip encryption
-            if (isset($options["encrypt"]) && !$options["encrypt"])
-                $options["payload"] = (array)$options["payload"];
-            else
-                $options["payload"] = $this->cryptify->encryptData($options["payload"]);
+            $options["payload"] = empty($options["encrypt"]) ? (array)$options["payload"]
+                                                             : $this->cryptify->encryptData($options["payload"]);
         }
 
         //requester
