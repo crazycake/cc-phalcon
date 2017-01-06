@@ -9,7 +9,6 @@ namespace CrazyCake\Helpers;
 
 //imports
 use Phalcon\Exception;
-use Knp\Snappy\Pdf as PDFMaker; //PDF renderizer
 
 /**
  * PDF Helper
@@ -36,7 +35,7 @@ class PDF
         //OSX or UbuntuServer
         $this->wkhtmltopdf = (php_uname("s") == "Darwin") ? "/usr/local/bin/wkhtmltopdf" : "/usr/local/bin/wkhtmltopdf.sh";
         //instance with binary path
-        $this->snappy = new PDFMaker($this->wkhtmltopdf);
+        $this->snappy = new Knp\Snappy\Pdf($this->wkhtmltopdf);
         //set options
         $this->snappy->setOption("lowquality", false);
         $this->snappy->setOption("page-width", 700);
