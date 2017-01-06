@@ -37,6 +37,15 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
 	 */
 	public $quantity;
 
+	/**
+     * Initializer
+     */
+    public function afterFetch()
+    {
+        //model relations
+        $this->hasOne("object_id", $this->object_class, "id", ["alias" => "rel"]);
+    }
+
 	/** ------------------------------------------- § ------------------------------------------------ **/
 
 	/**
