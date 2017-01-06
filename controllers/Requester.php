@@ -38,11 +38,11 @@ trait Requester
     protected function newRequest($options = [])
     {
         // simple input validation
-        if (empty($options["base_url"]) || empty($options["uri"]))
+        if (empty($options["base_url"]))
             throw new Exception("Requester::newRequest -> base_url & uri method params are required.");
 
-        if (empty($options["payload"]))
-            $options["payload"] = "";
+        if (empty($options["uri"]))     $options["uri"] = "";
+        if (empty($options["payload"])) $options["payload"] = "";
 
         // set method, default is GET, value is uppercased
         $options["method"] = empty($options["method"]) ? "GET" : strtoupper($options["method"]);
