@@ -78,8 +78,12 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
     {
         //get class
         $user_class = App::getClass("user", false);
+
+        $user_checkout_object_class = App::getClass("user_checkout_object", false);
+
         //model relations
         $this->hasOne("user_id", $user_class, "id");
+        $this->hasMany("buy_order", $user_checkout_object_class, "buy_order");
     }
 
     /**
