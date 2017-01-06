@@ -171,8 +171,10 @@ abstract class BaseCore extends Controller
         if (!empty($options["payload"])) {
 
             //skip encryption
-            $options["payload"] = empty($options["encrypt"]) ? (array)$options["payload"]
-                                                             : $this->cryptify->encryptData($options["payload"]);
+            if (isset($options["encrypt"]) && !$options["encrypt"])
+                $options["payload"] = (array)$options["payload"];
+            else
+                $options["payload"] = $this->cryptify->encryptData($options["payload"]);
         }
 
         //requester

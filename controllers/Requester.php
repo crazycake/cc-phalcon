@@ -41,7 +41,7 @@ trait Requester
         if (empty($options["base_url"]))
             throw new Exception("Requester::newRequest -> base_url & uri method params are required.");
 
-        if (empty($options["uri"]))     $options["uri"] = "";
+        if (empty($options["uri"]))     $options["uri"]     = "";
         if (empty($options["payload"])) $options["payload"] = "";
 
         // set method, default is GET, value is uppercased
@@ -49,10 +49,6 @@ trait Requester
 
 		// get URL parts
         $url_parts = parse_url($options["base_url"].$options["uri"]);
-
-		// NOTE: temporary strip ports
-		if(isset($url_parts["port"]))
-			$options["base_url"] = str_replace(":".$url_parts["port"], "", $options["base_url"]);
 
 		// merge options
 		$options = array_merge($options, $url_parts);
@@ -216,6 +212,7 @@ trait Requester
             $errstr,
             self::$REQUEST_TIMEOUT
         );
+        //sd($options);
 
         // Data goes in the path for a GET request
         if ($options["method"] == "GET") {
