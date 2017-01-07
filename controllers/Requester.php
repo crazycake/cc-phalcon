@@ -146,8 +146,13 @@ trait Requester
         if (!empty($options["headers"]))
             $guzzle_options["headers"] = $options["headers"];
 
+        //set body?
+        if (!empty($options["body"]))
+            $guzzle_options["body"] = $options["body"];
+
         //set promise
         $promise = $client->requestAsync("POST", $options["uri"], $guzzle_options);
+
         //send promise
         $this->_sendPromise($promise, $options);
     }
