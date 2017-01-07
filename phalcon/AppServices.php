@@ -196,7 +196,7 @@ class AppServices
 
         $di->setShared("trans", function() {
 
-            return new \CrazyCake\Services\GetText([
+            return new \CrazyCake\Helpers\GetText([
                 "domain"    => "app",
                 "supported" => (array)$this->config->langs,
                 "directory" => APP_PATH."langs/"
