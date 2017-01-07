@@ -5,7 +5,6 @@
 		"core",
 		"controllers",
 		"models",
-		"services",
 		"account",
 		"helpers",
 		"qr",
