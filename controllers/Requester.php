@@ -151,6 +151,7 @@ trait Requester
             $guzzle_options["body"] = $options["body"];
 
         //set promise
+        //sd($guzzle_options);
         $promise = $client->requestAsync("POST", $options["uri"], $guzzle_options);
 
         //send promise
