@@ -90,7 +90,7 @@ abstract class BaseCore extends Controller
 		if(count($host_parts) > 1)
 			$host = current($host_parts);
 
-        return $host.":".$port;
+        return empty($port) ? $host : $host.":".$port;
     }
 
     /**
