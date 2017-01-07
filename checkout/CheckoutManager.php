@@ -57,7 +57,7 @@ trait CheckoutManager
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
-     * Ajax - Before user goes to payment gateway (or not), buy order must be generated.
+     * Ajax Action - Before user goes to payment gateway (or not), buy order must be generated.
      */
     public function buyOrderAction()
     {
@@ -98,7 +98,7 @@ trait CheckoutManager
     }
 
     /**
-     * Succesful checkout, Called when checkout was made succesfuly
+     * Method: Succesful checkout, Called when checkout was made succesfuly
      * @param string $buy_order - The buy order
      * @return object Checkout
      */
@@ -117,7 +117,7 @@ trait CheckoutManager
     }
 
     /**
-     * POST Async checkout action
+     * Action: POST Async checkout
      * Logic tasks:
      * 1) Update status del checkout
      * 2) Call listener
@@ -155,6 +155,7 @@ trait CheckoutManager
 
 			//1) update status of checkout
 			$checkout->update(["state" => "success"]);
+            //$this->logger->debug("CheckoutManager::successCheckoutTask -> checkout update message ".$checkout->messages(true));
 
 			//reduce object
 			$checkout = $checkout->reduce();
@@ -183,7 +184,7 @@ trait CheckoutManager
     }
 
     /**
-     * Parses objects checkout & set new props by reference
+     * Method: Parses objects checkout & set new props by reference
      * @param object $checkout - The checkout object
      * @param array $data - The received form data
      */
@@ -262,7 +263,7 @@ trait CheckoutManager
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
-     * Set checkout object
+     * Method: Set checkout object
      * @return object
      */
     private function setCheckoutObject()
