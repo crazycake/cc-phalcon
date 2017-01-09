@@ -10,7 +10,6 @@ namespace CrazyCake\Controllers;
 //imports
 use Phalcon\Exception;
 use Phalcon\Image\Adapter\GD;
-use CrazyCake\Phalcon\App;
 use CrazyCake\Helpers\Slug;
 use CrazyCake\Helpers\Images;
 

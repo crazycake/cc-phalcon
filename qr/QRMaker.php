@@ -10,8 +10,6 @@ namespace CrazyCake\Qr;
 
 //imports
 use Phalcon\Exception;
-//core
-use CrazyCake\Phalcon\App;
 
 /**
  * QR Maker Manager
