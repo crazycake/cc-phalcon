@@ -11,8 +11,6 @@ namespace CrazyCake\Helpers;
 //imports
 use Phalcon\DI;
 use Phalcon\Exception;
-//other imports
-use Hashids\Hashids;
 use Phalcon\Crypt;
 
 /**
@@ -31,14 +29,6 @@ class Cryptify
     private $crypt;
 
     /**
-     * HashIds Library Instance
-     * @var object
-     * @access private
-     * @link http://hashids.org/php/
-     */
-    private $hashids;
-
-    /**
      * constructor
      * @param string $key - The salt key
      */
@@ -53,9 +43,6 @@ class Cryptify
         $this->crypt->setKey($key);
         //set algorithm cipher
         $this->crypt->setCipher(self::DEFAULT_CIPHER);
-
-        //instance hashids library
-        $this->hashids = new Hashids($key);
     }
 
     /**
@@ -97,9 +84,8 @@ class Cryptify
             //remove null bytes in string
             $data = str_replace(chr(0), "", $decrypted_string);
 
-            if ($parse) {
+            if ($parse)
                 $data = is_string($parse) ? explode($parse, $data) : json_decode($data);
-            }
 
             return $data;
         }
@@ -127,7 +113,10 @@ class Cryptify
         if (empty($id) && $id != 0)
             return false;
 
-        return $this->hashids->encode($id);
+        //HashIds Library Instance
+        $hashids = new Hashids\Hashids($this->crypt->getKey());
+
+        return $hashids->encode($id);
     }
 
     /**
@@ -140,7 +129,9 @@ class Cryptify
         if (empty($hash))
             return false;
 
-        $data = $this->hashids->decode($hash);
+        //HashIds Library Instance
+        $hashids = new Hashids\Hashids($this->crypt->getKey());
+        $data    = $hashids->decode($hash);
 
         return count($data) > 0 ? $data[0] : false;
     }
