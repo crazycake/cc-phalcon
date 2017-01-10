@@ -68,7 +68,7 @@ abstract class BaseUser extends \CrazyCake\Models\Base
      * @static
      * @var array
      */
-    static $ACCOUNT_FLAGS = ["pending", "enabled", "disabled"];
+    static $ACCOUNT_FLAGS = ["pending", "enabled", "disabled", "unregistered"];
 
     /**
      * Initializer
@@ -77,16 +77,6 @@ abstract class BaseUser extends \CrazyCake\Models\Base
     {
         //Skips fields/columns on both INSERT/UPDATE operations
         $this->skipAttributes(["created_at"]);
-    }
-
-    /**
-     * After Fetch Event
-     */
-    public function afterFetch()
-    {
-        //hash user id
-        if (isset($this->id))
-            $this->id_hashed = $this->getDI()->getShared("cryptify")->encryptHashId($this->id);
     }
 
     /**

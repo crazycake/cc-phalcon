@@ -70,7 +70,7 @@ trait Uploader
         $this->headers = $this->request->getHeaders();
 
         //get session user id or temp dir
-        $subdir = ($user_session = $this->session->get("user")) ? $user_session["id_hashed"] : microtime();
+        $subdir = ($user_session = $this->session->get("user")) ? $user_session["id"] : microtime();
 
         //set upload path
         $this->uploader_conf["path"] = self::$ROOT_UPLOAD_PATH."temp/".$subdir."/";
