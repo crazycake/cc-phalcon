@@ -161,10 +161,8 @@ trait FacebookAuthHelper
                 if ($user->account_flag == "disabled")
                     throw new Exception($this->facebook_auth_conf["trans"]["ACCOUNT_DISABLED"]);
 
-                //update user flag if account was pending, or if account is disabled show a warning
-                if ($user->account_flag == "pending")
-                    $user->update(["account_flag" => "enabled"]);
-
+                //update user flag if account
+                $user->update(["account_flag" => "enabled"]);
                 //set auth state
                 $login_data["auth"] = "existing_user";
             }

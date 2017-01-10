@@ -279,6 +279,10 @@ trait AccountAuth
         //Save user, validations are applied in model
         $user = new $user_class();
 
+        //call abstract method
+        if(method_exists($this, "beforeRegisterUser"))
+            $this->beforeRegisterUser($user, $data);
+
         //if user dont exists, show error message
         if (!$user->save($data))
             $this->jsonResponse(200, $user->messages(), "alert");
