@@ -174,7 +174,7 @@ class AppServices
                 "port"     => 3306,
                 "dbname"   => "app",
                 "username" => getenv("MYSQL_USER") ?: "root",
-                "password" => "mysql24681214?",
+                "password" => getenv("MYSQL_PWD") ?: "mysql24681214?",
                 "options"  => [\PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"]
             ];
 
