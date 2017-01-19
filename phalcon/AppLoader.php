@@ -57,21 +57,24 @@ trait AppLoader
 
         $base_url = "./";
 
-        //Check for CLI execution & CGI execution
+        // check for CLI execution & CGI execution
         if (php_sapi_name() != "cli") {
 
             if (!isset($_REQUEST))
                 throw new Exception("App::setEnvironment -> Missing REQUEST data: ".json_encode($_SERVER)." && ".json_encode($_REQUEST));
 
-            //set localhost if host is not set
+            // set localhost if host is not set
             if (!isset($_SERVER["HTTP_HOST"]))
                 $_SERVER["HTTP_HOST"] = "localhost";
 
             //set base url
             $base_url = (isset($_SERVER["HTTPS"]) ? "https://" : "http://").
-                               $_SERVER["HTTP_HOST"].preg_replace("@/+$@", "", dirname($_SERVER["SCRIPT_NAME"]))."/";
+                               $_SERVER["HTTP_HOST"].preg_replace("@/+$@", "", dirname($_SERVER["SCRIPT_NAME"]));
 
-			//add missing slash
+            // append APP port
+            if(getenv("APP_PORT")) $base_url .= ":".getenv("APP_PORT");
+
+			// add missing slash
 	        if (substr($base_url, -1) != "/") $base_url .= "/";
         }
 
