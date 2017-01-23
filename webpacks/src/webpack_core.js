@@ -14,12 +14,13 @@ import "jquery";
 import "fg-loadcss";
 
 //plugins
-import "./plugins/jquery.extended";
-import "./plugins/jquery.cclayer";
-import "./plugins/jquery.ccdialog";
-import "./plugins/formValidation.popular";
-import "./plugins/formValidation.bootstrap4";
-import "./plugins/formValidation.foundation6";
+import "./plugins/jquery.extended.js";
+import "./plugins/jquery.cclayer.js";
+import "./plugins/jquery.ccdialog.js";
+import "./plugins/formValidation.popular.js";
+import "./plugins/formValidation.bootstrap4.js";
+import "./plugins/formValidation.foundation6.js";
+import "./plugins/formValidation.pure.js";
 
 //modules
 import core from "./modules/core.js";

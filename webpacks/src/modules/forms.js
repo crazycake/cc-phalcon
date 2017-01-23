@@ -85,8 +85,6 @@ export default new function() {
         //NOTE: hardcoded, drop support for bootstrap3
         if(framework == "bootstrap")
             framework += "4";
-        else
-            framework = "foundation";
 
          //set settings
          let opts = {

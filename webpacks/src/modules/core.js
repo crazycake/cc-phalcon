@@ -40,7 +40,7 @@ export default new function() {
      * @property framework ```Foundation, Bootstrap, none```
      * @type {string}
      */
-    self.framework = "none";
+    self.framework = "pure";
 
     /**
      * Server Date format
