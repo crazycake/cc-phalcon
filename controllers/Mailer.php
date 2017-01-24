@@ -86,7 +86,7 @@ trait Mailer
 
         $data["subject"] = "Contacto ".$this->config->name;
 
-		if (is_callable("onBeforeSendContact"))
+		if (method_exists($this, "onBeforeSendContact"))
 			$this->onBeforeSendContact($data);
 
         //send contact email
