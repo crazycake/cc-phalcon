@@ -188,6 +188,7 @@ export default new function() {
 
     /**
      * Enable or Disable form submit buttons
+     * @method enableSubmitButtons
      * @param  {Object} form - A form jQuery object or native element
      * @param  {Boolean} flag - The enable/disable flag, defaults to tue
      */
@@ -202,7 +203,7 @@ export default new function() {
 
     /**
      * Cleans a form and reset validation
-     * @method resetForm
+     * @method clean
      * @param  {Object} form - A form jQuery object or native element
      * @param  {Boolean} force - Selector clean up.
      */
@@ -280,6 +281,7 @@ export default new function() {
 
     /**
      * Set validator field pattern in data attribute
+     * @method setFieldPattern
      * @param  {object} field - The jQuery field object
      * @param  {object} validators - The validators object
      */
@@ -303,7 +305,7 @@ export default new function() {
 
     /**
      * Strips HTML from a given string
-     * @method recaptchaOnLoad
+     * @method stripHtml
      * @param  {string} string - An input string
      * @return {string}
      */

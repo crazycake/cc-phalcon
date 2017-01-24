@@ -249,7 +249,7 @@ export default new function() {
 
     /**
 	 * Deletes app from user facebook account
-	 * @method removeApp
+	 * @method delete
 	 * @param  {Function} fn_callback - The callback function
 	 */
 	self.delete = function(fn_callback) {

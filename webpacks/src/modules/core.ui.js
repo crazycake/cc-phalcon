@@ -38,7 +38,7 @@ export default new function() {
 
     /**
      * Core UI Init
-     * @method ready
+     * @method init
      */
     self.init = function() {
 
@@ -294,6 +294,7 @@ export default new function() {
 
     /**
      * Hides loading message
+     * @method hideLoading
      */
     self.hideLoading = function() {
 
@@ -323,6 +324,7 @@ export default new function() {
 
     /**
      * Hides a crated modal
+     * @method hideModal
      * @param  {object} element - The jquery element
      */
     self.hideModal = function(element) {
@@ -390,7 +392,7 @@ export default new function() {
 
     /**
      * Closes cclayer dialog
-     * @method closeDialog
+     * @method isOverlayVisible
      */
     self.isOverlayVisible = function() {
 
@@ -437,7 +439,7 @@ export default new function() {
 
     /**
      * Async loding image
-     * @method loadImage
+     * @method loadImages
      * @param  {Object} context - A jQuery element context (optional)
      */
     self.loadImages = function(context = false) {
@@ -519,6 +521,7 @@ export default new function() {
 
     /**
      * checks if display is retina
+     * @method isRetina
      * @return {Boolean}
      */
     self.isRetina = function() {
@@ -553,6 +556,7 @@ export default new function() {
 
 	/**
 	 * Return retina image path for URLs
+	 * @method retinaImagePath
 	 */
 	self.retinaImagePath = function(url = "", force = false) {
 
@@ -591,6 +595,7 @@ export default new function() {
 
     /**
      * Load Bootstrap tooltips
+     * @method loadTooltips
      */
     self.loadTooltips = function() {
 
