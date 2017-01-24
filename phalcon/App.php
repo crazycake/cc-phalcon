@@ -48,7 +48,7 @@ abstract class App
         define("CORE_PATH", PROJECT_PATH."core/");
         define("PUBLIC_PATH", PROJECT_PATH."public/");
         define("APP_PATH", PROJECT_PATH."app/");
-        define("APP_TS", microtime(true)); //for debugging render time
+        define("APP_ST", microtime(true)); //for debugging render time
 
         //webapp directories (loader)
         $this->loadClasses($config);
