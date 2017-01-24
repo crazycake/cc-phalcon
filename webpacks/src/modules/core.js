@@ -119,7 +119,7 @@ export default new function() {
     /**
      * Helper Get BaseUrl
      * @method baseUrl
-     * @param  {String} $uri - Append URI if defined
+     * @param  {String} uri - Append URI if defined
      * @return string
      */
      self.baseUrl = function(uri = "") {
@@ -130,7 +130,7 @@ export default new function() {
      /**
       * Helper Get StaticUrl
       * @method staticUrl
-      * @param  {String} $uri - Append URI if defined
+      * @param  {String} uri - Append URI if defined
       * @return string
       */
       self.staticUrl = function(uri = "") {
