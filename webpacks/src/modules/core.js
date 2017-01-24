@@ -64,7 +64,7 @@ export default new function() {
 
     /**
      * Set modules automatically for require function
-     * @method init
+     * @method setModules
      * @param {Array} modules - The required modules
      */
     self.setModules = function(modules = []) {
@@ -118,6 +118,7 @@ export default new function() {
 
     /**
      * Helper Get BaseUrl
+     * @method baseUrl
      * @param  {String} $uri - Append URI if defined
      * @return string
      */
@@ -128,6 +129,7 @@ export default new function() {
 
      /**
       * Helper Get StaticUrl
+      * @method staticUrl
       * @param  {String} $uri - Append URI if defined
       * @return string
       */
@@ -228,6 +230,7 @@ export default new function() {
 
     /**
      * Check if a module has binded
+     * @method hasBinded
      * @param  {String} Module - The module name
      * @return {Boolean}
      */
@@ -510,7 +513,7 @@ export default new function() {
 
     /**
      * Check if given URL is a resource URL
-     * @method isUrl
+     * @method isResourceUrl
      * @return {Boolean}
      */
     self.isResourceUrl = function(url = "") {
@@ -532,7 +535,7 @@ export default new function() {
 
     /**
      * App test methods
-     * @method debug
+     * @method test
      * @param  {String} option - The option string [ajax_timeout, ajax_loading, dom_events]
      * @param  {Object} object - A jQuery or HTML object element
      */
