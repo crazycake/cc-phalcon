@@ -25,8 +25,6 @@ export default new function() {
         sel_flash_messages : "#app-flash",
         sel_alert_box      : "div.app-alert",
         sel_tooltips       : '[data-toggle="tooltip"]',
-        //resources
-        img_fallback       : "images/icons/icon-image-fallback.png",
         //setting vars
         alert              : { position : "fixed", top : "5%", top_small : "0", live_time : 8000 },
         loading            : { position : "fixed", top : "25%", top_small : "25%" },
