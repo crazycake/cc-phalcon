@@ -1,7 +1,7 @@
 <?php
 /**
  * Forms Helper
- * Requires Dates for birthday selector
+ * Requires Imagick PHP extension
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
