@@ -9,7 +9,8 @@ namespace CrazyCake\Checkout;
 
 //imports
 use Phalcon\Exception;
-use Phalcon\Mvc\Model\Validator\InclusionIn;
+use Phalcon\Validation;
+use Phalcon\Validation\Validator\InclusionIn;
 //core
 use CrazyCake\Phalcon\App;
 
@@ -111,16 +112,15 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
      */
     public function validation()
     {
+		$validator = new Validation();
+
         //inclusion
-        $this->validate(new InclusionIn([
-            "field"   => "state",
+        $validator->add("state", new InclusionIn([
             "domain"  => self::$STATES,
             "message" => "Invalid state. States supported: ".implode(", ", self::$STATES)
         ]));
 
-        //check validations
-        if ($this->validationHasFailed() == true)
-            return false;
+        return $this->validate($validator);
     }
     /** ------------------------------------------- § ------------------------------------------------ **/
 

@@ -8,7 +8,8 @@ namespace CrazyCake\Account;
 
 //imports
 use Phalcon\Exception;
-use Phalcon\Mvc\Model\Validator\InclusionIn;
+use Phalcon\Validation;
+use Phalcon\Validation\Validator\InclusionIn;
 
 /**
  * Base User Tokens Model
@@ -61,16 +62,15 @@ class BaseUserToken extends \CrazyCake\Models\Base
      */
     public function validation()
     {
+		$validator = new Validation();
+
         //type
-        $this->validate(new InclusionIn([
-            "field"   => "type",
+        $$validator->add("type", new InclusionIn([
             "domain"  => array_keys(self::$TOKEN_EXPIRES_THRESHOLD),
             "message" => "Invalid token type."
         ]));
 
-        //check validations
-        if ($this->validationHasFailed() == true)
-            return false;
+        return $this->validate($validator);
     }
 
     /** ------------------------------------------- § ------------------------------------------------ **/

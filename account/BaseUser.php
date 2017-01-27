@@ -7,9 +7,10 @@
 namespace CrazyCake\Account;
 
 //imports
-use Phalcon\Mvc\Model\Validator\Email;
-use Phalcon\Mvc\Model\Validator\InclusionIn;
-use Phalcon\Mvc\Model\Validator\Uniqueness;
+use Phalcon\Validation;
+use Phalcon\Validation\Validator\Email;
+use Phalcon\Validation\Validator\InclusionIn;
+use Phalcon\Validation\Validator\Uniqueness;
 
 /**
  * Base User Model
@@ -108,29 +109,25 @@ abstract class BaseUser extends \CrazyCake\Models\Base
      */
     public function validation()
     {
+        $validator = new Validation();
+
         //email required
-        $this->validate(new Email([
-            "field"    => "email",
-            "required" => true,
+        $validator->add("email", new Email([
             "message"  => $this->getMessage("email_required")
         ]));
 
         //email unique
-        $this->validate(new Uniqueness([
-            "field"   => "email",
+        $validator->add("email", new Uniqueness([
             "message" => $this->getMessage("email_uniqueness")
         ]));
 
         //account flag
-        $this->validate(new InclusionIn([
-            "field"   => "account_flag",
+        $validator->add("account_flag", new InclusionIn([
             "domain"  => self::$ACCOUNT_FLAGS,
             "message" => 'Invalid user account flag. Flags supported: '.implode(", ", self::$ACCOUNT_FLAGS)
         ]));
 
-        //check validations
-        if ($this->validationHasFailed() == true)
-            return false;
+        return $this->validate($validator);
     }
 
     /** ------------------------------------------- § --------------------------------------------------  **/

@@ -7,7 +7,8 @@
 namespace CrazyCake\Mobile;
 
 //imports
-use Phalcon\Mvc\Model\Validator\InclusionIn;
+use Phalcon\Validation;
+use Phalcon\Validation\Validator\InclusionIn;
 use Phalcon\Exception;
 
 /**
@@ -62,15 +63,14 @@ class BasePushNotification extends \CrazyCake\Models\Base
      */
     public function validation()
     {
-        $this->validate(new InclusionIn([
-            "field"   => "service",
+        $validator = new Validation();
+        
+        $validator->add("service", new InclusionIn([
             "domain"  => self::$SERVICES,
             "message" => "Invalid service. Services supported: ".implode(", ", self::$SERVICES)
         ]));
 
-        //check validations
-        if ($this->validationHasFailed() == true)
-            return false;
+        return $this->validate($validator);
     }
 
     /**
