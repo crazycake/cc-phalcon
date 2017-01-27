@@ -344,6 +344,8 @@ class AppServices
                 "notice"  => "notice",
                 "warning" => "warning"
             ]);
+            // disable auto escape
+			$flash->setAutoescape(false);
 
             return $flash;
         });
