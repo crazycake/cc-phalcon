@@ -91,15 +91,17 @@ class AppServices
         // set the config
         $di->setShared("config", $this->config);
 
+        $conf = $this->config;
+
         // the URL component is used to generate all kind of urls in the application
-        $di->setShared("url", function() {
+        $di->setShared("url", function() use ($conf) {
 
             $url = new \Phalcon\Mvc\Url();
             // base URL
             $url->setBaseUri(APP_BASE_URL);
 
             // get static url
-            $static_url = !empty($this->config->staticUrl) ? $this->config->staticUrl : false;
+            $static_url = !empty($conf->staticUrl) ? $conf->staticUrl : false;
 
             // set static uri for assets, cdn only for production
             if (!$static_url || APP_ENV == "local")
@@ -134,10 +136,10 @@ class AppServices
         });
 
         // phalcon Crypt service
-        $di->setShared("crypt", function() {
+        $di->setShared("crypt", function() use ($conf) {
 
             $crypt = new \Phalcon\Crypt();
-            $crypt->setKey($this->config->cryptKey);
+            $crypt->setKey($conf->cryptKey);
             return $crypt;
         });
 
@@ -145,7 +147,7 @@ class AppServices
         if (class_exists("\CrazyCake\Helpers\Cryptify")) {
 
             $di->setShared("cryptify", function() {
-                return new \CrazyCake\Helpers\Cryptify($this->config->cryptKey);
+                return new \CrazyCake\Helpers\Cryptify($conf->cryptKey);
             });
         }
 
@@ -194,11 +196,13 @@ class AppServices
         if (empty($this->config->langs))
             return;
 
-        $di->setShared("trans", function() {
+        $conf = $this->config;
+
+        $di->setShared("trans", function() use ($conf) {
 
             return new \CrazyCake\Helpers\GetText([
                 "domain"    => "app",
-                "supported" => (array)$this->config->langs,
+                "supported" => (array)$conf->langs,
                 "directory" => APP_PATH."langs/"
             ]);
         });
@@ -223,13 +227,15 @@ class AppServices
             return $dispatcher;
         });
 
+        $conf = $this->config;
+
         // session Adapter
-        $di->setShared("session", function() {
+        $di->setShared("session", function() use ($conf) {
 
             $expiration = 3600*4; //4 hours
 
             //default session
-            if(empty($this->config->redisSession)) {
+            if(empty($conf->redisSession)) {
 
                 $session = new \Phalcon\Session\Adapter\Files([
                     "uniqueId" => MODULE_NAME
@@ -247,7 +253,7 @@ class AppServices
             }
 
             // set session name (cookie)
-            $session->setName($this->config->namespace);
+            $session->setName($conf->namespace);
             // start session
             if (!$session->isStarted()) {
 

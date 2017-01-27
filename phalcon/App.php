@@ -33,12 +33,12 @@ abstract class App
      */
     public function __construct($mod_name = null)
     {
-        //validations
-        if (empty($mod_name))
-            die("App::constructor -> a module name is required.");
-
         //set app configurations
         $config = $this->config();
+
+        //validations
+        if (empty($mod_name) || empty($config))
+            die("App::constructor -> a module name is required.");
 
         //define APP contants
         define("PROJECT_PATH", $config["path"]);

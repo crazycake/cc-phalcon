@@ -67,9 +67,10 @@ trait AppLoader
             if (!isset($_SERVER["HTTP_HOST"]))
                 $_SERVER["HTTP_HOST"] = "localhost";
 
+			$uri = $_SERVER["HTTP_HOST"].preg_replace("@/+$@", "", dirname($_SERVER["SCRIPT_NAME"]));
+
             //set base url
-            $base_url = (isset($_SERVER["HTTPS"]) ? "https://" : "http://").
-                               $_SERVER["HTTP_HOST"].preg_replace("@/+$@", "", dirname($_SERVER["SCRIPT_NAME"]));
+            $base_url = (getenv("APP_SCHEME") ?: "http")."://$uri";
 
             // append APP port
             if(getenv("APP_PORT")) $base_url .= ":".getenv("APP_PORT");

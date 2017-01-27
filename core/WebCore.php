@@ -324,7 +324,9 @@ abstract class WebCore extends BaseCore implements WebSecurity
      */
     private function _handleSSL()
     {
-        if(APP_ENV != "production" || $this->request->isSecureRequest() || empty($this->config->enableSSL))
+		$scheme = getenv("APP_SCHEME") ?: false;
+
+        if($this->request->isSecureRequest() || $https != "https")
             return;
 
         //if enabledSSL, force redirect for non-https request
