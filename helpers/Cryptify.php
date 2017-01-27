@@ -19,7 +19,7 @@ use Phalcon\Crypt;
 class Cryptify
 {
     /* consts */
-    const DEFAULT_CIPHER = "blowfish";
+    const DEFAULT_CIPHER = "aes-256-cfb";
 
     /**
      * Phalcon Crypt Library Instance

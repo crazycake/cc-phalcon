@@ -326,7 +326,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
     {
 		$scheme = getenv("APP_SCHEME") ?: false;
 
-        if($this->request->isSecureRequest() || $https != "https")
+        if($this->request->isSecure() || $scheme != "https")
             return;
 
         //if enabledSSL, force redirect for non-https request

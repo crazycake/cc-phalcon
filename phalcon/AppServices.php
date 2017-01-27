@@ -146,7 +146,7 @@ class AppServices
         // extended encryption, Cryptify adapter (cryptography helper)
         if (class_exists("\CrazyCake\Helpers\Cryptify")) {
 
-            $di->setShared("cryptify", function() {
+            $di->setShared("cryptify", function() use ($conf) {
                 return new \CrazyCake\Helpers\Cryptify($conf->cryptKey);
             });
         }
