@@ -61,9 +61,9 @@ def main():
 
 	#set properties
 	APP.NAMESPACE 	  = config["namespace"]
-	APP.S3_BUCKET	  = config["aws"]["bucketPrefix"] + "-dbb"
-	APP.S3_ACCESS_KEY = config["aws"]["accessKey"]
-	APP.S3_SECRET_KEY = config["aws"]["secretKey"]
+	APP.S3_BUCKET	  = config["aws"]["s3"]["bucketName"]
+	APP.S3_ACCESS_KEY = config["aws"]["s3"]["accessKey"]
+	APP.S3_SECRET_KEY = config["aws"]["s3"]["secretKey"]
 	#get from env vars
 	APP.ENV     = os.environ.get("APP_ENV")
 	APP.DB_HOST = "db"
