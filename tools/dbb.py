@@ -48,7 +48,6 @@ def main():
 	#set current path
 	project_dir = os.path.dirname(os.path.realpath(__file__))
 	project_dir = os.path.abspath(os.path.join(project_dir, os.pardir))
-	dotenv_file = os.path.join(project_dir, '.env')
 
 	print SCS.CYAN + "Project path:" + project_dir + SCS.END
 	print SCS.CYAN + "Asking app configurations to CLI..." + SCS.END
