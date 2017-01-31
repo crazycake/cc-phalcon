@@ -318,7 +318,7 @@ export default new function() {
             url      : url,
             data     : payload,
             dataType : "json",
-            timeout  : 14000 //timeout in seconds
+            timeout  : 30000 //timeout in seconds
         };
 
         if(APP.dev) { console.log("Core -> new promise request with payload:", payload); }
