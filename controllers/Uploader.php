@@ -215,19 +215,12 @@ trait Uploader
 
         $moved_files = [];
 
-        foreach ($this->uploader_conf["files"] as $conf) {
+        foreach ($this->uploader_conf["files"] as $key => $conf) {
 
             foreach ($uploaded_files as $file) {
 
-                if(empty($conf["key"])) {
-
-                    $this->logger->error("Couldn't move file ".$file.". Configuration exception: ".json_encode($conf));
-
-                    throw new Exception("Hay archivos aún cargándose, profavor inténtalo nuevamente.");
-                }
-
                 //check key if belongs
-                if(strpos($file, $conf["key"]) === false)
+                if(strpos($file, $key) === false)
                     continue;
 
                 //set source path
@@ -237,7 +230,7 @@ trait Uploader
                 if (substr($dest_path, -1) != "/") $dest_path .= "/";
 
                 //append destination to array
-                $moved_files[$conf["key"]] = $dest_path.$file;
+                $moved_files[$key] = $dest_path.$file;
 
                 //append fullpath
                 $dest = self::$ROOT_UPLOAD_PATH.$dest_path;
@@ -294,16 +287,11 @@ trait Uploader
         try {
 
             //get file config with file_key
-            $file_conf = array_filter($this->uploader_conf["files"], function($o) use ($file_key) {
-
-                return $o["key"] == $file_key;
-            });
+            $file_conf = $this->uploader_conf["files"][$file_key];
+            //sd($file_conf);
 
             if(empty($file_conf))
                 throw new Exception("Uploader file configuration missing for $file_key.");
-
-            //get first item
-            $file_conf = current($file_conf);
 
             //set defaults
             if(!isset($file_conf["max_size"]))
