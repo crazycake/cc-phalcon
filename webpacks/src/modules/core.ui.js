@@ -188,9 +188,7 @@ export default new function() {
                 return;
 
             div_alert.alive = false;
-            div_alert.fadeOut("fast", function() {
-                $(this).remove();
-            });
+            div_alert.fadeOut("fast", function() { $(this).remove(); });
         };
 
         //set anchor close click event

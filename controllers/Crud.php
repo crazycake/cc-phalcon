@@ -229,7 +229,7 @@ trait Crud
 	            throw new \Exception($object->messages(true));
 
 			//move uploaded files? (UploaderController)
-			$this->_moveUploadedFiles($object);
+			$data["uploaded"] = $this->_moveUploadedFiles($object);
 
 	        //call listener
 	        $this->onAfterSave($object, $data, "create");
@@ -287,7 +287,7 @@ trait Crud
 				throw new \Exception($object->messages(true));
 
 			//move uploaded files? (UploaderController)
-			$this->_moveUploadedFiles($object);
+			$new_data["uploaded"] = $this->_moveUploadedFiles($object);
 
 	        //call listener
 	        $this->onAfterSave($object, $new_data, "update");
@@ -442,7 +442,8 @@ trait Crud
 			$data[strtolower($key)."_url"] = $this->baseUrl("uploads/".$value);
 
 		//update object
-		if($data)
-			$object->update($data);
+		$object->update($data);
+
+        return $files;
 	}
 }
