@@ -68,15 +68,14 @@ trait AppLoader
                 $_SERVER["HTTP_HOST"] = "localhost";
 
             // set scheme and host
-            $base_url = (getenv("APP_SCHEME") ?: "http")."://".$_SERVER["HTTP_HOST"];
+            $host     = $_SERVER["HTTP_HOST"].preg_replace("@/+$@", "", dirname($_SERVER["SCRIPT_NAME"]));
+            $base_url = (getenv("APP_SCHEME") ?: "http")."://$host";
 
             //set port?
             $port = getenv("APP_PORT") ?: "";
 
             if(!empty($port))
             	$base_url = str_replace(":$port", "", $base_url).":$port";
-
-			$base_url .= preg_replace("@/+$@", "", dirname($_SERVER["SCRIPT_NAME"]));
 
 			// add missing slash
 	        if (substr($base_url, -1) != "/") $base_url .= "/";
