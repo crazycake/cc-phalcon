@@ -80,8 +80,6 @@ trait AppLoader
 
 			// add missing slash
 	        if (substr($base_url, -1) != "/") $base_url .= "/";
-
-            sd($base_url);
         }
 
         //set environment consts & self vars
