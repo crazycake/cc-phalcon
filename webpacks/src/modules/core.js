@@ -111,9 +111,6 @@ export default new function() {
             if (APP.dev) { console.log("Core -> loading CSS file (async)", APP.cssLazy); }
             loadCSS(APP.cssLazy);
         }
-
-        //core ready msg
-        if (APP.dev) { console.log("Core Ready!"); }
     };
 
     /**
