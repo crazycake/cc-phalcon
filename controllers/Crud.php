@@ -143,14 +143,14 @@ trait Crud
 			$query->conditions = $this->crud_conf["find"];
 
 		//default order
-		$query->order($this->_fieldToPhql("id")." DESC");
+		$query->orderBy($this->_fieldToPhql("id")." DESC");
 
 		if(!empty($data["sort"])) {
 			//parse sort data from js
 			$sort  = explode("|", $data["sort"], 2);
 			$order = $this->_fieldToPhql($sort[0])." ".strtoupper($sort[1]);
 			//set order
-			$query->order($order);
+			$query->orderBy($order);
 			//sd($order);
 		}
 
