@@ -48,6 +48,12 @@ export default new function() {
      */
     self.dateFormat =  "YYYY-MM-DD HH:mm:ss";
 
+	/**
+     * XHR Max Timeout (seconds)
+     * @type {int}
+     */
+	self.timeout = 30000;
+
     /**
      * @property window.core
      * @type {object}
@@ -315,7 +321,7 @@ export default new function() {
             url      : url,
             data     : payload,
             dataType : "json",
-            timeout  : 30000 //timeout in seconds
+            timeout  : self.timeout
         };
 
         if(APP.dev) { console.log("Core -> new promise request with payload:", payload); }
@@ -327,7 +333,7 @@ export default new function() {
             .fail(self.handleAjaxError)
         )
         //handle response
-        .then(function(data) {
+        .then((data) => {
 
             //handle ajax response
             if (!self.handleAjaxResponse(data, events))
@@ -345,7 +351,7 @@ export default new function() {
             //throw e;
         })
         //promise finisher
-        .finally(function() {
+        .finally(() => {
 
             if (_.isUndefined(submit_btn) || !submit_btn.length)
                 return true;
