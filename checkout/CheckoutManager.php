@@ -46,9 +46,8 @@ trait CheckoutManager
     public function initCheckoutManager($conf = [])
     {
         $defaults = [
-            "async"                => true,
-            "max_per_item_allowed" => 5,
-            "default_currency"     => "CLP"
+            "async"            => true,
+            "default_currency" => "CLP"
         ];
 
         $this->checkout_manager_conf = array_merge($defaults, $conf);
