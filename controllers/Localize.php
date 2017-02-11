@@ -48,8 +48,7 @@ trait Localize
             "AUTH" => [
                 "AUTH_FAILED"        => "El correo ó contraseña no son válidos.",
                 "ACCOUNT_PENDING"    => "Te hemos enviado un correo de activación. Haz click <a href=\"#\">aquí</a> si no has recibido este correo.",
-                "ACCOUNT_DISABLED"   => "Esta cuenta se encuentra desactivada por incumplimiento a nuestros términos y condiciones
-                                         porfavor comunícate con nuestro equipo.",
+                "ACCOUNT_DISABLED"   => "Esta cuenta se encuentra desactivada, porfavor comunícate con nuestro equipo.",
                 "ACCOUNT_NOT_FOUND"  => "Esta cuenta no se encuentra registrada.",
                 "INVALID_NAMES"      => "Tu nombre no parece ser válido.",
                 "RECAPTCHA_FAILED"   => "No hemos logrado verficar el reCaptcha, porfavor inténtalo de nuevo.",
@@ -96,8 +95,7 @@ trait Localize
                 "OAUTH_PERMS"      => "Debes aceptar los permisos de la aplicación en tu cuenta de Facebook.",
                 "SESSION_SWITCHED" => "Es posible que tengas abierta otra sesión de Facebook, intenta cerrando tu sesión actual de Facebook.",
                 "ACCOUNT_SWITCHED" => "Esta sesión de Facebook está vinculada a otra cuenta ".$app_name.", intenta con otra cuenta en Facebook.",
-                "ACCOUNT_DISABLED" => "Esta cuenta se encuentra desactivada por incumplimiento a nuestros términos y condiciones,
-                                        porfavor comunícate con nuestro equipo.",
+                "ACCOUNT_DISABLED" => "Esta cuenta se encuentra desactivada, porfavor comunícate con nuestro equipo.",
                 "INVALID_EMAIL"    => 'No hemos logrado obtener tu correo primario de Facebook, asegúrate de aceptar los permisos y validar
                                        tu correo primario en tu cuenta de Facebook.
                                        Haz <a href="'.\FacebookController::$FB_EMAIL_SETTINGS_URL.'" target="_blank">click aquí</a>
