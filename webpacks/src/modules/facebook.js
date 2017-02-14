@@ -132,7 +132,7 @@ export default new function() {
 			});
 
 			//Get Login Status
-			FB.getLoginStatus(function() {
+			FB.getLoginStatus(() => {
 				//click event
 				fb_buttons.click(function() {
 
@@ -171,7 +171,7 @@ export default new function() {
 		fb_buttons.prop("disabled", true);
 
 		//login event
-		FB.login(function(response) {
+		FB.login((response) => {
 
 			//enable button
 			fb_buttons.prop("disabled", false);
@@ -228,13 +228,13 @@ export default new function() {
 	self.logout = function(fn_callback) {
 
 		//1st check login status
-		FB.getLoginStatus(function(response) {
+		FB.getLoginStatus((response) => {
 			//check response
 			if (!response.authResponse)
 				return;
 
 			//logout call
-			FB.logout(function() {
+			FB.logout(() => {
 				//callback fn is a function?
 				if (_.isFunction(fn_callback))
 					fn_callback();
@@ -263,10 +263,10 @@ export default new function() {
 		//get request to server (jsonp)
 		$.ajax({
             type     : "GET",
-            url      : self.config.graph_url + user_id, //url
+            url      : self.config.graph_url + user_id,
             dataType : "jsonp",
-            success  : fn_callback,    //success fn
-            error    : function (e) {  //error fn
+            success  : fn_callback,
+            error    : (e) => {
 				var response = {};
 				response.error = e.status;
 				//call callback
@@ -332,9 +332,6 @@ export default new function() {
 		FB.ui({
 			method : "share",
 			href   : url
-		},
-        function() {
-			//...
 		});
 	};
 
@@ -345,7 +342,7 @@ export default new function() {
 	 */
 	self.toggleButtonText = function(buttons) {
 
-		//for each button...
+		// jquery for each button...
 		buttons.each(function() {
 
 			//check if button has attribute
