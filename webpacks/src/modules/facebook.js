@@ -83,7 +83,7 @@ export default new function() {
 		}
 
 		//click event for redirection strategy
-		fb_buttons.click(function() {
+		fb_buttons.click(() => {
 
 			//get action attribute
 			var action = $(this).attr("data-action");
@@ -124,7 +124,10 @@ export default new function() {
     self.getLibraryScript = function(fb_buttons) {
 
         //Load Facebook javascript SDK
-		$.getScript("//connect.facebook.net/" + self.config.lang + "/all.js", function() {
+		$.getScript("//connect.facebook.net/" + self.config.lang + "/all.js", () => {
+
+			if(APP.dev) { console.log("Facebook -> JS downloaded!"); }
+
 			//Init facebook SDK
 			FB.init({
                 appId   : self.config.id,          //Facebook app ID
@@ -135,9 +138,9 @@ export default new function() {
 			});
 
 			//Get Login Status
-			FB.getLoginStatus(function() {
+			FB.getLoginStatus(() => {
 				//click event
-				fb_buttons.click(function() {
+				fb_buttons.click(() => {
 
 					//get action attribute
 					var action = $(this).attr("data-action");
@@ -351,7 +354,7 @@ export default new function() {
 	self.toggleButtonText = function(buttons) {
 
 		//for each button...
-		buttons.each(function() {
+		buttons.each(() => {
 
 			//check if button has attribute
             var attr = $(this).attr(self.config.loaded_text_attr);

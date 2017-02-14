@@ -189,7 +189,7 @@ export default new function() {
 
             //check module exists
             if (_.isUndefined(self.modules[mod_name])) {
-                console.warn("Core -> Attempting to load an undefined view module (" + mod_name + ").");
+                console.warn("Core -> Attempting to load an undefined module (" + mod_name + ").");
                 continue;
             }
 
@@ -219,12 +219,10 @@ export default new function() {
             if(_.isUndefined(mod.vm.el))
                 mod.vm.el = "#vue-" + mod_name;
 
-            if (APP.dev) { console.log("Core -> Binding " + mod_name + " View Model", mod.vm); }
+            if(typeof Vue == "undefined")
+                return console.warn("Core -> Vue has not loaded!");
 
-            if(typeof Vue == "undefined") {
-                console.warn("Core -> Vue has not loaded!");
-                return;
-            }
+            if (APP.dev) { console.log("Core -> New Vue instance for module " + mod_name, mod.vm); }
 
             //set new Vue instance (object prop updated)
             mod.vm = new Vue(mod.vm);
