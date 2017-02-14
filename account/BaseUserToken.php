@@ -65,7 +65,7 @@ class BaseUserToken extends \CrazyCake\Models\Base
 		$validator = new Validation();
 
         //type
-        $$validator->add("type", new InclusionIn([
+        $validator->add("type", new InclusionIn([
             "domain"  => array_keys(self::$TOKEN_EXPIRES_THRESHOLD),
             "message" => "Invalid token type."
         ]));
