@@ -61,26 +61,22 @@ export default new function() {
             self.config.login_fn = self.loginUserByFacebook;
 
 		//append the "fb-root" div required by facebook
-		$("body").append("<div id='fb-root'></div>");
+		$("body").append('<div id="fb-root"></div>');
 
 		//set facebook jquery elements
 		var fb_buttons = $("." + self.config.dom_class);
 
 		//check if buttons exists
-		if (!fb_buttons.length) {
-			console.log("Facebook -> No buttons found with class " + self.config.dom_class);
-			return;
-		}
+		if (!fb_buttons.length)
+			return console.log("Facebook -> No buttons found with class " + self.config.dom_class);
 
 		//disable js sdk only for mobile
 		if (!core.modules.facebook.config.disable_js_sdk)
 			self.config.disable_js_sdk = UA.isMobile;
 
 		//For mobile use redirections pages, get library request
-		if (!self.config.disable_js_sdk) {
-			self.getLibraryScript(fb_buttons);
-			return;
-		}
+		if (!self.config.disable_js_sdk)
+			return self.getLibraryScript(fb_buttons);
 
 		//click event for redirection strategy
 		fb_buttons.click(() => {
@@ -94,10 +90,8 @@ export default new function() {
 				url = self.config.share_url.replace("<url>", $(this).attr("data-url"));
 
 			//validates url
-			if (!url.length) {
-				console.log("mod_facebook.js -> Invalid redirection URL.");
-				return;
-			}
+			if (!url.length)
+				return console.log("mod_facebook.js -> Invalid redirection URL.");
 
 			//facebook before redirection event
 			if (_.isFunction(self.config.before_redirection_fn))
@@ -146,10 +140,8 @@ export default new function() {
 					var action = $(this).attr("data-action");
 
 					//share actions
-					if (action == "share-url") {
-						self.shareUrl($(this).attr("data-url"));
-						return;
-					}
+					if (action == "share-url")
+						return self.shareUrl($(this).attr("data-url"));
 
 					//login actions
 					self.login(self.handleUserData, action);
@@ -359,9 +351,8 @@ export default new function() {
 			//check if button has attribute
             var attr = $(this).attr(self.config.loaded_text_attr);
 
-            if (typeof attr == "undefined" || attr === false) {
+            if (typeof attr == "undefined" || attr === false)
                 return;
-			}
 
 			//update text button (search for a one level span)
 			var text_element = $(this).children("span").length ? $(this).children("span") : $(this);
