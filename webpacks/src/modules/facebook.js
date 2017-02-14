@@ -79,7 +79,7 @@ export default new function() {
 			return self.getLibraryScript(fb_buttons);
 
 		//click event for redirection strategy
-		fb_buttons.click(() => {
+		fb_buttons.click(function() {
 
 			//get action attribute
 			var action = $(this).attr("data-action");
@@ -132,9 +132,9 @@ export default new function() {
 			});
 
 			//Get Login Status
-			FB.getLoginStatus(() => {
+			FB.getLoginStatus(function() {
 				//click event
-				fb_buttons.click(() => {
+				fb_buttons.click(function() {
 
 					//get action attribute
 					var action = $(this).attr("data-action");
@@ -346,7 +346,7 @@ export default new function() {
 	self.toggleButtonText = function(buttons) {
 
 		//for each button...
-		buttons.each(() => {
+		buttons.each(function() {
 
 			//check if button has attribute
             var attr = $(this).attr(self.config.loaded_text_attr);
