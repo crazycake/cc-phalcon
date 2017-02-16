@@ -28,7 +28,7 @@
 ---------------------------------------------------------------------------------------- */
 
 //Load Fonts
-@mixin app-font($name, $path, $weight: null, $style: null, $exts: eot woff2 woff ttf svg) {
+@mixin load-font($name, $path, $weight: null, $style: null, $exts: eot woff2 woff ttf svg) {
 
 	$src: null;
 	$font-path : "../fonts/" + $path + "/" + $path;
@@ -59,13 +59,13 @@
 }
 
 //background cover image (3rd argument to use custom background to small & medium screen)
-@mixin app-bg-cover($image-path, $attachment: fixed) {
+@mixin bg-cover($image-path, $attachment: fixed) {
 	background: url($image-path) no-repeat center center $attachment;
 	background-size: cover;
 }
 
 //background image retina support
-@mixin app-bg-retina($file, $type, $width, $height, $version:'0.1') {
+@mixin bg-retina($file, $type, $width, $height, $version:'0.1') {
 
 	background-image: url($file + '.' + $type + "?v=" + $version);
 
@@ -94,84 +94,43 @@
 	}
 }
 
-//mixin for RGBa background
-@mixin app-bg-color($factor: 0, $opacity: 0.95) {
-	background-color: rgb($factor, $factor, $factor);
-	background-color: rgba($factor, $factor, $factor, $opacity) !important;
-	transition: all 0.3s ease;
-}
-
-//sends a layer to background
-@mixin app-bg-fixed($height: 100%, $zindex: -1) {
-	position: fixed;
-	min-width: 100%;
-	min-height: $height;
-	top: 0;
-	left: 0;
-	z-index: $zindex;
-}
-
-//for box-spaced contents with a topbar
-@mixin app-stretch($padding-top: 0) {
-	min-height: 100%;
-	padding-top: $padding-top;
-}
-
-//bg loading for images
-@mixin app-loading-image($bg-color, $index, $width, $height, $ext: "gif") {
-	background: $bg-color;
-	@include app-bg-retina('../images/icons/icon-loading#{$index}', $ext, $width, $height);
-	background-repeat: no-repeat;
-	background-position: center center;
-}
-
 /* Placeholders
 ---------------------------------------------------------------------------------------- */
 
-//inline block property
-%app-inline-block {
-	display: inline-block;
-	vertical-align: top;
-}
-
-//inline block property
-%app-absolute-block {
+%absolute-block {
 	display: block;
 	position: absolute;
 	width: 100%;
 	height: 100%;
 }
 
-//center an element
-%app-center {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-//element centered in middle of screen (check safari!)
-%app-position-center {
+%absolute-center {
 	position: absolute;
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
 }
 
-//vertical align middle
-%app-align-middle {
+%block-center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+%align-middle {
 	position: relative;
 	top: 50%;
 	transform: translateY(-50%);
 }
 
-//text wrap with overflow hidden
-%app-text-ellipsis {
+%text-ellipsis {
 	overflow-x: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
 }
 
-%app-gpu {
+// browser gpu performance
+%use-gpu {
 	transform: translate3d(0, 0, 0);
 	backface-visibility: hidden;
     perspective: 1000;
@@ -184,25 +143,19 @@
 [v-cloak] { visibility: hidden; }
 
 //class helpers
-.app-invisible      { visibility: hidden; opacity: 0; }
-.app-absolute       { position: absolute; }
-.app-relative       { position: relative; }
-.app-width          { width: 100%; }
-.app-height         { height: 100%; }
-.app-hide           { display: none; }
-.app-table 			{ display: table; }
-.app-table-cell 	{ display: table-cell; vertical-align: middle; }
-.app-absolute-block { @extend %app-absolute-block; }
+.d-invisible   { visibility: hidden; opacity: 0; }
+.d-relative   { position: relative; }
+.d-none       { display: none; }
+.w-100        { width: 100%; }
+.h-100        { height: 100%; }
+.d-table      { display: table; }
+.d-table-cell { display: table-cell; vertical-align: middle; }
 
 //no-script fallback (uses classes fixed and center)
 noscript {
 	position: fixed;
 	display: block;
 	width: 100%;
-	padding: 12px;
+	padding: 1rem;
 	z-index: 9999;
-	background: #FEF1CC;
-	border-top: 2px solid #EBD085;
-	border-bottom: 2px solid #EBD085;
-	color: #985A35;
 }
