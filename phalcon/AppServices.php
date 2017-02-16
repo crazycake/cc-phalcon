@@ -246,7 +246,7 @@ class AppServices
 
                 $session = new \Phalcon\Session\Adapter\Redis([
                     "uniqueId"   => MODULE_NAME,
-                    "host"       => getenv("REDIS_HOST") ?: "redis-p",
+                    "host"       => getenv("REDIS_HOST") ?: "redis",
                     "lifetime"   => $expiration,
                     "prefix"     => "_SID_"
                 ]);
