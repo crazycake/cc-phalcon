@@ -111,7 +111,7 @@
         <script>core.ready();</script>
 
         {# GoogleAnalytics (Frontend only, async loading) #}
-        {% if config.google is defined and constant("MODULE_NAME") == "frontend" %}
+        {% if config.google is defined and config.google.analyticsUA is defined %}
             <script>
                 window.ga=function(){ga.q.push(arguments)};ga.q=[];ga.l=+new Date;
                 ga('create','{{ config.google.analyticsUA }}','auto');
