@@ -114,7 +114,7 @@ export default new function() {
         //css async loading
         if(!_.isUndefined(APP.cssLazy) && APP.cssLazy) {
 
-            if (APP.dev) { console.log("Core -> loading CSS file (async)", APP.cssLazy); }
+            console.log("Core -> loading CSS file (async)", APP.cssLazy);
             loadCSS(APP.cssLazy);
         }
     };
@@ -149,7 +149,7 @@ export default new function() {
      */
     self.initFoundation = function(element) {
 
-        if (APP.dev) { console.log("Core -> Initializing Foundation..."); }
+        console.log("Core -> Initializing Foundation...");
 
         //check default element
         if (typeof element == "undefined")
@@ -169,7 +169,7 @@ export default new function() {
      */
     self.initBootstrap = function() {
 
-        if (APP.dev) { console.log("Core -> Initializing Bootstrap..."); }
+        console.log("Core -> Initializing Bootstrap...");
 
         //set framework
         self.framework = "bootstrap";
@@ -222,7 +222,7 @@ export default new function() {
             if(typeof Vue == "undefined")
                 return console.warn("Core -> Vue has not loaded!");
 
-            if (APP.dev) { console.log("Core -> New Vue instance for module " + mod_name, mod.vm); }
+            console.log("Core -> New Vue instance for module " + mod_name, mod.vm);
 
             //set new Vue instance (object prop updated)
             mod.vm = new Vue(mod.vm);
@@ -322,7 +322,7 @@ export default new function() {
             timeout  : self.timeout
         };
 
-        if(APP.dev) { console.log("Core -> new promise request with payload:", payload); }
+        console.log("Core -> new promise request with payload:", payload);
 
         //make ajax request with promises
         return P.resolve(
@@ -344,7 +344,7 @@ export default new function() {
         })
         .catch(e => {
 
-            if(APP.dev) { console.log("Core -> [WARN] promise exception", e); }
+            console.warn("Core -> Promise exception", e);
 
             //throw e;
         })
@@ -376,7 +376,7 @@ export default new function() {
         if (_.isNull(data))
             return false;
 
-        if (APP.dev) { console.log("Core -> handleAjaxResponse: ", data); }
+        console.log("Core -> handleAjaxResponse: ", data);
 
         //check for error
         var response = data.response;
@@ -478,9 +478,7 @@ export default new function() {
             log     = "Core -> unknown error: " + text;
         }
 
-        //show log?
-        if (APP.dev && log.length) { console.log(log); }
-
+        console.warn(log);
         //show the alert message
         self.ui.showAlert(message, "warning");
     };

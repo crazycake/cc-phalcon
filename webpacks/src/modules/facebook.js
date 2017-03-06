@@ -120,7 +120,7 @@ export default new function() {
         //Load Facebook javascript SDK
 		$.getScript("//connect.facebook.net/" + self.config.lang + "/all.js", () => {
 
-			if(APP.dev) { console.log("Facebook -> JS downloaded!"); }
+			console.log("Facebook -> SDK loaded!");
 
 			//Init facebook SDK
 			FB.init({

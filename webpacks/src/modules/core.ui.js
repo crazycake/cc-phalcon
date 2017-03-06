@@ -459,7 +459,7 @@ export default new function() {
                 //set new src
                 obj[0].src = this.src;
 
-                if (APP.dev) { console.log("Core UI -> image loaded (async):", this.src); }
+                console.log("Core UI -> image loaded (async):", this.src);
             };
 
             //trigger download
@@ -544,7 +544,7 @@ export default new function() {
 
         objects.on("error", function() {
 
-            if (APP.dev) { console.log("Core UI -> failed loading image:", $(this).attr("src")); }
+            console.log("Core UI -> failed loading image:", $(this).attr("src"));
 
             $(this).attr("src", core.staticUrl(APP.UI.img_fallback));
         });

@@ -299,7 +299,7 @@ export default new function() {
             _.assign(validators, obj);
         }
         catch (e) {
-            if (APP.dev) { console.log("Form pattern error:", e); }
+            console.warn("Form pattern error:", e);
         }
     };
 
