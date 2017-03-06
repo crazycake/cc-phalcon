@@ -41,6 +41,10 @@ db)
 
 	echo -e "\033[95mRunning phinx command... \033[0m"
 
+	if [ ! -f $PROJECT_PATH"phinx.php" ]; then
+		echo -e "\033[31mphinx.php file not fount in project folder.\033[0m" && exit
+	fi
+
 	php $COMPOSER_PATH"bin/phinx" "${@:2}"
 	;;
 
