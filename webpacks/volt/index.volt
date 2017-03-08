@@ -14,10 +14,13 @@
         {% if client.isMobile %}
             <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
             {# apple metas #}
-            <meta name="apple-mobile-web-app-capable" content="yes">
-            <meta name="apple-mobile-web-app-status-bar-style" content="black">
+            <meta name="apple-mobile-web-app-capable" content="yes" />
+            <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+            <meta name="apple-mobile-web-app-title" content="{{ config.name }}" />
             {# android metas #}
-            <meta name="mobile-web-app-capable" content="yes">
+            <meta name="mobile-web-app-capable" content="yes" />
+            <meta name="application-name" content="{{ config.name }}" />
+
         {% else %}
             <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
         {% endif %}
@@ -46,7 +49,6 @@
 
         {# Windows 8 #}
         {% if client.platform == "Windows" %}
-            <meta name="application-name" content="{{ config.name }}" />
             <meta name="msapplication-TileColor" content="#efefef" />
             <meta name="msapplication-TileImage" content="{{ static_url('images/favicons/mstile.png') }}" />
         {% endif %}
