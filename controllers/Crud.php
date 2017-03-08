@@ -46,7 +46,7 @@ trait Crud
      * On list resultset
      * @param object $resultset - Phalcon DB resultset
      */
-    abstract protected function onListResultset(&$resultset);
+    abstract protected function onResultset(&$resultset);
 
     /**
 	 * Config var
@@ -64,15 +64,15 @@ trait Crud
     {
 		//default configurations
         $defaults = [
-			"id"	   	  => 0,
-            "entity"   	  => "",
-			"find"		  => [],
-            "dfields"  	  => [],
-            "sfields"  	  => [],
-			"cfields"  	  => [],
-			"actions"	  => true,
-            "entity_text" => "Colección",
-            "new_text" 	  => "Nuevo",
+			"pk"           => "id",         //primary key
+            "entity"   	   => "",           // entity in uppercase
+            "entity_lower" => "",           // entity in lowercase
+            "entity_text"  => "Colección",
+            "new_text" 	   => "Nuevo",
+            "dfields"  	   => [],
+            "sfields"  	   => [],
+			"cfields"  	   => [],
+			"actions"	   => ["update", "delete"]
         ];
 
         //merge confs
@@ -82,15 +82,12 @@ trait Crud
 		if(empty($conf["entity"]) || empty($conf["dfields"]) || empty($conf["sfields"]))
 			throw new \Exception("Crud requires entity, dfields & sfields options.");
 
-		//set entity lower case
-		$conf["entity"] = \Phalcon\Text::uncamelize($conf["entity"]);
+	    //set entity in lower case
+		$conf["entity_lower"] = \Phalcon\Text::uncamelize($conf["entity"]);
 
 		//init uploader?
-		if(isset($conf["uploader"])) {
-
-			$conf["uploader"]["entity"] = $conf["entity"];
+		if(isset($conf["uploader"]))
         	$this->initUploader($conf["uploader"]);
-		}
 
 		//finally set conf
         $this->crud_conf = $conf;
@@ -132,18 +129,11 @@ trait Crud
 			"@per_page" => "int"
 		], "GET");
 
-		//find objects
-		$entity		= $this->crud_conf["entity"];
-		$class_name = App::getClass($entity, false);
 		//build query object
-		$query = $class_name::query();
-
-		//conditions
-		if(isset($this->crud_conf["find"]))
-			$query->conditions = $this->crud_conf["find"];
+		$query = $this->modelsManager->createBuilder()->from($this->crud_conf["entity"]);
 
 		//default order
-		$query->orderBy($this->_fieldToPhql("id")." DESC");
+		$query->orderBy($this->_fieldToPhql($this->crud_conf["pk"])." DESC");
 
 		if(!empty($data["sort"])) {
 			//parse sort data from js
@@ -158,13 +148,14 @@ trait Crud
 		if(!empty($data["filter"])) {
 
 			//create filter syntax
-			$search_fields = isset($this->crud_conf["sfields"]) ? $this->crud_conf["sfields"] : ["id"];
+			$search_fields = isset($this->crud_conf["sfields"]) ? $this->crud_conf["sfields"] : [$this->crud_conf["pk"]];
 
 			//loop through search fields
 			foreach ($search_fields as $index => $fname) {
 
 				$condition = $this->_fieldToPhql($fname)." LIKE '%".$data["filter"]."%'";
 				//s($condition);
+
 				//1st condition
 				if(empty($index)) {
 					$query->where($condition);
@@ -176,14 +167,13 @@ trait Crud
 		}
 
 		//group results
-		$query->groupBy($this->_fieldToPhql("id"));
-
-		//listerner, on query
+		$query->groupBy($this->_fieldToPhql($this->crud_conf["pk"]));
+        //listener, on query
 		$this->onQuery($query);
 		//get pagination response
 		$result = $this->_getPaginationData($query, $data);
 		//listener
-		$this->onListResultset($result->data);
+		$this->onResultset($result->data);
 
 		//parse data array
 		if($result->data instanceof Resultset) {
@@ -218,7 +208,7 @@ trait Crud
             $this->onBeforeSave($data, "create");
 
 			//new object
-	        $object_class = App::getClass($this->crud_conf["entity"]);
+	        $object_class = $this->crud_conf["entity"];
 	        $object 	  = new $object_class();
 
 			//set empty strings as null data
@@ -260,9 +250,10 @@ trait Crud
             //call listener
             $this->onBeforeSave($data, "update");
 
-			//get object
-	        $object_class = App::getClass($this->crud_conf["entity"]);
-	        $object 	  = $object_class::getById($data["id"]);
+			//get object class
+	        $object_class = $this->crud_conf["entity"];
+            // get object by primary key
+	        $object = $object_class::findFirst([$this->crud_conf["pk"]." = '".$data[$this->crud_conf["pk"]]."'"]);
 
 	        //check object exists
 	        if(!$object)
@@ -272,7 +263,7 @@ trait Crud
 			$meta_data  = $object->getModelsMetaData();
 			$attributes = $meta_data->getAttributes($object);
 			//unset id
-			unset($attributes["id"]);
+			unset($attributes[$this->crud_conf["pk"]]);
 
 			//filter data
 			$new_data = array_filter($data,
@@ -308,20 +299,24 @@ trait Crud
 		$this->onlyAjax();
 
 		$data = $this->handleRequest([
-			"id" => "int"
+			$this->crud_conf["pk"] => "string" //number or string
 		], "POST");
 
-		//find object
-		$object_class = App::getClass($this->crud_conf["entity"]);
-		$object 	  = $object_class::getById($data["id"]);
+		//get object class
+        $object_class = $this->crud_conf["entity"];
+        // get object by primary key
+        $object = $object_class::findFirst([$this->crud_conf["pk"]." = '".$data[$this->crud_conf["pk"]]."'"]);
 
 		//orm deletion
 		if($object)
 			$object->delete();
 
 		//delete upload files?
-		if(isset($this->crud_conf["uploader"]))
-			$this->cleanUploadFolder(Uploader::$ROOT_UPLOAD_PATH.$this->crud_conf["entity"]."/".$data["id"]."/");
+		if(isset($this->crud_conf["uploader"])) {
+
+			$path = Uploader::$ROOT_UPLOAD_PATH.$this->crud_conf["entity_lower"]."/".$data[$this->crud_conf["pk"]]."/";
+			$this->cleanUploadFolder($path);
+        }
 
 		//send response
         $this->jsonResponse(200);
@@ -338,22 +333,18 @@ trait Crud
 	{
 		$namespaces = explode(".", $field);
 
-		//one level relation
-		if(count($namespaces) < 2) {
+		// one level
+		if(count($namespaces) <= 1)
+			return $this->crud_conf["entity"].".".$field;
 
-			$class_name = App::getClass($this->crud_conf["entity"], false);
+    	//two or more levels
+        $levels   = count($namespaces);
+        $entities = array_slice($namespaces, $levels - 2);
 
-			return $class_name.".".$field;
-		}
+        //syntax is always table.field
+        $field = \Phalcon\Text::camelize(current($entities)).".".end($entities);
 
-		//two or more levels
-		$levels   = count($namespaces);
-		$entities = array_slice($namespaces, $levels - 2);
-
-		//syntax is always table.field
-		$field = \Phalcon\Text::camelize(current($entities)).".".end($entities);
-
-		return $field;
+        return $field;
 	}
 
 	/**
@@ -365,15 +356,15 @@ trait Crud
 	 */
 	private function _getPaginationData($query, $data)
 	{
-		$entity		  = $this->crud_conf["entity"];
+		$entity_lower = $this->crud_conf["entity_lower"];
 		$per_page 	  = (int)$data["per_page"];
 		$current_page = (int)$data["page"];
 
 		//get total records
-		$total = $query->execute()->count();
+		$total = $query->getQuery()->execute()->count();
 
 		//baseUrl
-		$url = $this->baseUrl("$entity/list?page=");
+		$url = $this->baseUrl("$entity_lower/list?page=");
 		//limits
 		$from   = ($current_page == 1) ? 1 : ($per_page*$current_page - $per_page + 1);
 		$to     = $from + $per_page - 1;
@@ -385,10 +376,10 @@ trait Crud
 
 		//filtered resultset
 		$resultset = $query->limit($per_page, $from - 1)
-						   ->execute();
+                           ->getQuery()->execute();
 
 		//create response object
-		return (object)[
+		$response = (object)[
 			"total" 	    => $total,
 			"per_page" 		=> $per_page,
 			"current_page"  => $current_page,
@@ -401,6 +392,11 @@ trait Crud
 			//resultset
 			"data"			=> $resultset
 		];
+
+        if(APP_ENV == "local")
+            $response->phql = $query->getPhql();
+
+        return $response;
 	}
 
 	/**
@@ -431,7 +427,7 @@ trait Crud
 		if(!isset($this->crud_conf["uploader"]))
 			return;
 
-		$files = $this->moveUploadedFiles($this->crud_conf["entity"]."/".$object->id."/");
+		$files = $this->moveUploadedFiles($this->crud_conf["entity_lower"]."/".$object->id."/");
 
 		if(!$files)
 			return;
@@ -442,7 +438,7 @@ trait Crud
 			$data[strtolower($key)."_url"] = $this->baseUrl("uploads/".$value);
 
 		//update object
-		$object->update($data);
+         $object->update($data);
 
         return $files;
 	}
