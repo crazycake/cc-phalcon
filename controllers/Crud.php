@@ -67,8 +67,8 @@ trait Crud
 			"pk"           => "id",         //primary key
             "entity"   	   => "",           // entity in uppercase
             "entity_lower" => "",           // entity in lowercase
-            "entity_text"  => "Colección",
-            "new_text" 	   => "Nuevo",
+            "entity_label" => "Colección",
+            "new_label"    => "Nuevo",
             "dfields"  	   => [],
             "sfields"  	   => [],
 			"cfields"  	   => [],
@@ -390,7 +390,7 @@ trait Crud
 			"next_page_url" => $url.$next,
 			"prev_page_url" => $url.$before,
 			//resultset
-			"data"			=> $resultset
+			"data"			=> $resultset->jsonSerialize()
 		];
 
         if(APP_ENV == "local")
