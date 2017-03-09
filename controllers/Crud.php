@@ -42,12 +42,6 @@ trait Crud
      */
     abstract protected function onQuery(&$query);
 
-	/**
-     * On list resultset
-     * @param object $resultset - Phalcon DB resultset
-     */
-    abstract protected function onResultset(&$resultset);
-
     /**
 	 * Config var
 	 * @var array
@@ -172,8 +166,6 @@ trait Crud
 		$this->onQuery($query);
 		//get pagination response
 		$result = $this->_getPaginationData($query, $data);
-		//listener
-		$this->onResultset($result->data);
 
 		//parse data array
 		if($result->data instanceof Resultset) {
