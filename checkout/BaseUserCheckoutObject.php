@@ -174,10 +174,9 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
 			$state = $orm_object->state;
 
 			if ($updated_quantity <= 0) {
+
 				$updated_quantity = 0;
-				//check state and update if stocked output
-				if (in_array($orm_object->state, ["open", "invisible"]))
-					$state = "soldout";
+				$state = "closed";
 			}
 
 			//update record throught query (safer than ORM)
