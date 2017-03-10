@@ -162,10 +162,16 @@ trait Crud
 
 		//group results
 		$query->groupBy($this->_fieldToPhql($this->crud_conf["pk"]));
+
         //listener, on query
 		$this->onQuery($query);
+
 		//get pagination response
 		$result = $this->_getPaginationData($query, $data);
+
+        //optional listener
+        if(method_exists($this, "onResultset"))
+		      $this->onResultset($result->data);
 
 		//parse data array
 		if($result->data instanceof Resultset) {
