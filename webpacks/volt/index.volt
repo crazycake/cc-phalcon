@@ -83,7 +83,7 @@
     </head>
     {# Flush the buffer (optimization) #}
     <?php  flush(); ?>
-    <body class="{{ html_body_class is defined ? html_body_class : 'ua-'~client.browser|lower }}">
+    <body class="{{ 'ua-'~client.browser|lower }} {{ html_body_class is defined ? html_body_class : '' }}">
 
         {# app content wrapper #}
         {% if html_app_wrapper is defined and !html_app_wrapper %}
