@@ -151,7 +151,7 @@ export default new function() {
         var center_object = function() {
 
             //check if is mobile
-            if (self.checkScreenSize("small")) {
+            if (self.checkWindowSize("small")) {
 
                 div_alert.addClass("small-screen");
                 //center(x,y)
@@ -269,14 +269,14 @@ export default new function() {
         }
 
         //add special behavior for small screen
-        if (self.checkScreenSize("small"))
+        if (self.checkWindowSize("small"))
             loading_obj.addClass("small-screen");
 
 		//set content
         let content = _.isNull(text) ? APP.TRANS.ACTIONS.LOADING : text;
         loading_obj.html(content);
 
-        let top = self.checkScreenSize("small") ? APP.UI.loading.top_small : APP.UI.loading.top;
+        let top = self.checkWindowSize("small") ? APP.UI.loading.top_small : APP.UI.loading.top;
 
         if (typeof APP.UI.loading.center != "undefined" && APP.UI.loading.center)
             loading_obj.center(APP.UI.loading.position, top);
@@ -398,11 +398,11 @@ export default new function() {
     /**
      * Validates screen size is equal to given size.
      * @TODO: check screen size with Bootstrap
-     * @method checkScreenSize
+     * @method checkWindowSize
      * @param  {String} size - The Screen size: small, medium, large.
      * @return {Boolean}
      */
-    self.checkScreenSize = function(size) {
+    self.checkWindowSize = function(size) {
 
         //foundation
         if (core.framework == "foundation")
