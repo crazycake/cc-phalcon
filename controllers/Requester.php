@@ -107,7 +107,7 @@ trait Requester
         if (!empty($options["headers"]))
             $guzzle_options["headers"] = $options["headers"];
 
-        //check params
+        //check params for query strings
         if (isset($options["query-string"]) && $options["query-string"]) {
             $params = http_build_query($options["payload"]);
         }
@@ -231,7 +231,7 @@ trait Requester
             if (is_array($options["payload"])) {
                 $options["payload"] = http_build_query($options["payload"], "","&");
             }
-            //default behavior
+            //default behavior for string
             else {
                 $options["payload"] = "payload=".$options["payload"];
             }
