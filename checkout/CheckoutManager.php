@@ -109,29 +109,26 @@ trait CheckoutManager
         $this->asyncRequest([
             "controller" => "checkout",
             "action"     => "successCheckoutTask",
-            "method"     => "post",
+            "method"     => "get",
             "socket"     => $async,
             "payload"    => ["buy_order" => $buy_order]
         ]);
     }
 
     /**
-     * Action: POST Async checkout
+     * Action: GET Async checkout
      * Logic tasks:
      * 1) Update status del checkout
      * 2) Call listener
      */
-    public function successCheckoutTaskAction()
+    public function successCheckoutTaskAction($payload = "")
     {
         try {
 
-			//get post params
-			$data = $this->handleRequest([
-	            "payload" => "string",
-	        ], "POST", false);
+            $this->logger->debug("CheckoutManager::successCheckoutTask -> GET Data ".json_encode($payload));
 
             //decrypt data
-            $data = $this->cryptify->decryptData($data["payload"], true);
+            $data = $this->cryptify->decryptData($payload, true);
 
             if (is_null($data) || !isset($data->buy_order))
                 throw new Exception("Invalid decrypted data: ".json_encode($data));
