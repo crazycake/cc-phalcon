@@ -125,7 +125,7 @@ trait CheckoutManager
     {
         try {
 
-            $this->logger->debug("CheckoutManager::successCheckoutTask -> GET Data ".json_encode($payload));
+            $this->logger->debug("CheckoutManager::successCheckoutTask -> GET Payload ".json_encode($payload));
 
             //decrypt data
             $data = $this->cryptify->decryptData($payload, true);
