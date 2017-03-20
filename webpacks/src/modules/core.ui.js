@@ -405,11 +405,11 @@ export default new function() {
     self.checkWindowSize = function(size) {
 
         //foundation
-        if (core.framework == "foundation")
+        if (core.framework == "foundation") {
             return size == Foundation.MediaQuery.current;
-
+        }
         //bootstrap
-        if (core.framework == "bootstrap") {
+        else if (core.framework == "bootstrap") {
 
             var envs = ["xs", "sm", "md", "lg"];
             var env = "";
@@ -428,6 +428,11 @@ export default new function() {
             $el.remove();
 
             return size == env;
+        }
+        //listener on core modules ui [onCheckWindowSize]
+        else if(!_.isNil(self.modules.ui) && _.isFunction(self.modules.ui.onCheckWindowSize)) {
+
+            return self.modules.ui.onCheckWindowSize(size);
         }
 
         return false;

@@ -37,7 +37,7 @@ export default new function() {
     self.modules = {};
 
     /**
-     * @property framework ```Foundation, Bootstrap, none```
+     * @property framework ```foundation, bootstrap, pure```
      * @type {string}
      */
     self.framework = "pure";
