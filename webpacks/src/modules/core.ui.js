@@ -264,7 +264,7 @@ export default new function() {
 
         let top = self.checkWindowSize("small") ? APP.UI.loading.top_small : APP.UI.loading.top;
 
-        if (typeof APP.UI.loading.center != "undefined" && APP.UI.loading.center)
+        if (!_.isUndefined(APP.UI.loading.center) && APP.UI.loading.center)
             loading_obj.center(APP.UI.loading.position, top);
 
         //dont show for hidden flag (debug only)
