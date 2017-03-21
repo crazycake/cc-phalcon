@@ -345,7 +345,6 @@ export default new function() {
         .catch(e => {
 
             console.warn("Core -> Promise exception", e);
-
             //throw e;
         })
         //promise finisher
