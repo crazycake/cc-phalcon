@@ -104,29 +104,19 @@ export default new function() {
      * @param  {Function} on_click - The onClick callback function (optional).
      * @param  {Boolean} autohide - Autohides the alert after 8 seconds (optional).
      */
-    self.showAlert = function(payload, type, on_close, on_click, autohide) {
+    self.showAlert = function(payload = "", type = "info", on_close, on_click, autohide = true) {
 
         //set alert types
         var types = ["success", "warning", "info", "alert", "secondary"];
 
-        if (_.isUndefined(payload))
-            return;
-
-        //array filter
-        if (_.isArray(payload) && payload.length > 0)
-            payload = payload[0];
-
-        if (_.isUndefined(type) || _.indexOf(types, type) == -1)
+        if (_.indexOf(types, type) === -1)
             type = "info";
 
-        if (_.isUndefined(autohide))
-            autohide = true;
-
-        var wrapper_class    = APP.UI.sel_alert_box.replace("div.", "");
-        var identifier_class = _.uniqueId(wrapper_class); //unique ID
+        let wrapper_class = APP.UI.sel_alert_box.replace("div.", "");
+        let id_class      = _.uniqueId(wrapper_class); //unique ID
 
         //create elements and set classes
-        var div_alert    = $("<div data-alert>").addClass(wrapper_class + " " + identifier_class + " alert-box " + type);
+        var div_alert    = $("<div data-alert>").addClass(wrapper_class + " " + id_class + " alert-box " + type);
         var div_holder   = $("<div>").addClass("holder");
         var div_content  = $("<div>").addClass("content");
         var anchor_close = $("<a>").attr("href", "javascript:void(0)").addClass("close").html("&times");
@@ -150,12 +140,10 @@ export default new function() {
         //center object after appended to body, special case for mobile
         var center_object = function() {
 
-            //check if is mobile
+            //special case for mobile
             if (self.checkWindowSize("small")) {
 
-                div_alert.addClass("small-screen");
-                //center(x,y)
-                div_alert.center(APP.UI.alert.position, APP.UI.alert.top_small);
+                div_alert.addClass("small-screen").center(APP.UI.alert.position, APP.UI.alert.top_small);
                 return;
             }
 
@@ -176,9 +164,12 @@ export default new function() {
         //set center event on window resize
         $(window).resize(function() { center_object(); });
         //remove presents alerts
-        $(APP.UI.sel_alert_box).not("div."+identifier_class).fadeOut("fast");
+        $(APP.UI.sel_alert_box).not("div." + id_class).fadeOut("fast");
 
         var hide_alert = function() {
+
+            if(!div_alert.alive)
+                return;
 
             // bind onClose function if defined
             if (_.isFunction(on_close))
@@ -207,13 +198,8 @@ export default new function() {
                 });
         }
 
-        //autoclose after x seconds (check if item is alive)
-        _.delay(function() {
-
-            if (div_alert.alive)
-                hide_alert();
-
-        }, APP.UI.alert.live_time);
+        //autoclose after x seconds
+        _.delay(() => { hide_alert(); }, APP.UI.alert.live_time);
 
         return true;
     };
