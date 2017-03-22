@@ -260,7 +260,7 @@ trait CheckoutManager
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
-     * Method: Set checkout object
+     * Method: Set checkout object. CSRF validation skipped.
      * @return object
      */
     private function setCheckoutObject()
@@ -269,7 +269,7 @@ trait CheckoutManager
         $data = $this->handleRequest([
             "gateway"   => "string",
             "@currency" => "string"
-        ], "POST");
+        ], "POST", false);
 
         if(empty($data["currency"]))
             $data["currency"] = $this->checkout_manager_conf["default_currency"];
