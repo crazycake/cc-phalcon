@@ -53,7 +53,6 @@ trait Mailer
     {
         //defaults
         $defaults = [
-            //entities
             "user_entity" => "User"
         ];
 
@@ -85,7 +84,9 @@ trait Mailer
         ], "POST");
 
         $data["subject"] = "Contacto ".$this->config->name;
+        $data["to"]      = $this->config->emails->contact;
 
+        // call listener?
 		if (method_exists($this, "onBeforeSendContact"))
 			$this->onBeforeSendContact($data);
 
@@ -199,39 +200,35 @@ trait Mailer
      * Sends a system mail for exception alert
      * @param object $e - An exception object
      * @param object $data - Informative appended data
-     * @param object $to - receiver email (optional)
      */
-    public function adminException($e, $data = null, $to = false)
+    public function adminException($e, $data = [])
     {
         //Error on success checkout task
         if (isset($this->logger))
             $this->logger->error("Mailer::adminException -> something ocurred, err: ".$e->getMessage());
 
         //Sending a warning to admin users!
-        $this->sendAdminMessage([
+        $this->sendAdminMessage(array_merge([
             "subject" => "Exception Notification Error",
-            "to"      => $to ?: $this->config->emails->support,
+            "to"      => $this->config->emails->support,
             "email"   => $this->config->emails->sender,
-            "name"    => $this->config->name." System",
-            "message" => "A error occurred.".
+            "name"    => $this->config->name." webapp",
+            "message" => "An exception occurred.".
                          "\nData:  ".(is_null($data) ? "empty" : json_encode($data, JSON_UNESCAPED_SLASHES)).
                          "\nTrace: ".$e->getMessage()
-        ]);
+        ], $data));
     }
 
     /**
      * Async Handler - Sends contact email (always used)
-     * @param array $message_data - Must contains keys "name", "email" & "message"
+     * @param array $data - Must contains keys "name", "email" & "message"
      * @return json response
      */
-    public function sendAdminMessage($message_data = [])
+    public function sendAdminMessage($data = [])
     {
-    	if (empty($message_data))
-    		return false;
-
         //set message properties
         $subject = isset($message_data["subject"]) ? $message_data["subject"] : $this->config->name;
-        $to      = isset($message_data["to"]) ? $message_data["to"] : $this->config->emails->contact;
+        $to      = isset($message_data["to"]) ? $message_data["to"] : $this->config->emails->support;
 
         //add prefix "data" to each element in array
         $this->mailer_conf = array_combine( array_map(function($k) { return "data_".$k; }, array_keys($message_data)), $message_data);
