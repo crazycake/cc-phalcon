@@ -232,7 +232,7 @@ class AppServices
         // session Adapter
         $di->setShared("session", function() use ($conf) {
 
-            $expiration = 3600*4; //4 hours
+            $expiration = 3600*6; //6 hours
 
             //default session
             if(empty($conf->redisSession)) {
