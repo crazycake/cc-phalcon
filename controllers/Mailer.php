@@ -198,14 +198,16 @@ trait Mailer
 
     /**
      * Sends a system mail for exception alert
-     * @param object $e - An exception object
+     * @param mixed[object, string] $e - An exception object or string message
      * @param object $data - Informative appended data
      */
-    public function adminException($e, $data = [])
+    public function adminException($e = "", $data = [])
     {
+        $error = is_string($e) ? $e : $e->getMessage();
+
         //Error on success checkout task
         if (isset($this->logger))
-            $this->logger->error("Mailer::adminException -> something ocurred, err: ".$e->getMessage());
+            $this->logger->error("Mailer::adminException -> something ocurred, err: ".$error);
 
         //Sending a warning to admin users!
         $this->sendAdminMessage(array_merge([
@@ -215,7 +217,7 @@ trait Mailer
             "name"    => $this->config->name." webapp",
             "message" => "An exception occurred.".
                          "\nData:  ".(is_null($data) ? "empty" : json_encode($data, JSON_UNESCAPED_SLASHES)).
-                         "\nTrace: ".$e->getMessage()
+                         "\nException: ".$error
         ], $data));
     }
 
