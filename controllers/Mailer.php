@@ -199,8 +199,9 @@ trait Mailer
      * Sends a system mail for exception alert
      * @param object $e - An exception object
      * @param object $data - Informative appended data
+     * @param object $to - receiver email (optional)
      */
-    public function adminException($e, $data = null)
+    public function adminException($e, $data = null, $to = false)
     {
         //Error on success checkout task
         if (isset($this->logger))
@@ -209,7 +210,7 @@ trait Mailer
         //Sending a warning to admin users!
         $this->sendAdminMessage([
             "subject" => "Exception Notification Error",
-            "to"      => $this->config->emails->support,
+            "to"      => $to ?: $this->config->emails->support,
             "email"   => $this->config->emails->sender,
             "name"    => $this->config->name." System",
             "message" => "A error occurred.".
