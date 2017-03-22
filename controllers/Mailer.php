@@ -78,7 +78,7 @@ trait Mailer
     public function sendContactAction()
     {
         $data = $this->handleRequest([
-            "email"   => "email",
+            "email"   => "email", //user-sender
             "name"    => "string",
             "message" => "string"
         ], "POST");
@@ -211,7 +211,7 @@ trait Mailer
         $this->sendAdminMessage(array_merge([
             "subject" => "Exception Notification Error",
             "to"      => $this->config->emails->support,
-            "email"   => $this->config->emails->sender,
+            "email"   => $this->config->emails->sender, //user-sender
             "name"    => $this->config->name." webapp",
             "message" => "An exception occurred.".
                          "\nData:  ".(is_null($data) ? "empty" : json_encode($data, JSON_UNESCAPED_SLASHES)).
