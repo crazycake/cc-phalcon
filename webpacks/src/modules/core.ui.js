@@ -416,9 +416,9 @@ export default new function() {
             return size == env;
         }
         //listener on core modules ui [onCheckWindowSize]
-        else if(!_.isNil(self.modules.ui) && _.isFunction(self.modules.ui.onCheckWindowSize)) {
+        else if(!_.isNil(core.modules.ui) && _.isFunction(core.modules.ui.onCheckWindowSize)) {
 
-            return self.modules.ui.onCheckWindowSize(size);
+            return core.modules.ui.onCheckWindowSize(size);
         }
 
         return false;
