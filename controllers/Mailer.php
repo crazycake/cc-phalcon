@@ -229,11 +229,11 @@ trait Mailer
     public function sendAdminMessage($data = [])
     {
         //set message properties
-        $subject = isset($message_data["subject"]) ? $message_data["subject"] : $this->config->name;
-        $to      = isset($message_data["to"]) ? $message_data["to"] : $this->config->emails->support;
+        $subject = isset($data["subject"]) ? $data["subject"] : $this->config->name;
+        $to      = isset($data["to"]) ? $data["to"] : $this->config->emails->support;
 
         //add prefix "data" to each element in array
-        $this->mailer_conf = array_combine( array_map(function($k) { return "data_".$k; }, array_keys($message_data)), $message_data);
+        $this->mailer_conf = array_combine( array_map(function($k) { return "data_".$k; }, array_keys($data)), $data);
 
         //sends async email
         $this->sendMessage("contact", $subject, $to);
