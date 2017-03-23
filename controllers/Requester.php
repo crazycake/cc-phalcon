@@ -37,28 +37,25 @@ trait Requester
      */
     protected function newRequest($options = [])
     {
-        // simple input validation
-        if (empty($options["base_url"]))
-            throw new Exception("Requester::newRequest -> base_url & uri method params are required.");
-
-        if (empty($options["uri"]))     $options["uri"]     = "";
-        if (empty($options["payload"])) $options["payload"] = "";
-
-        // set method, default is GET, value is uppercased
-        $options["method"] = empty($options["method"]) ? "GET" : strtoupper($options["method"]);
+        $options = array_merge([
+            "base_url" => "",
+            "uri"      => "",
+            "payload"  => "",
+            "method"   => "GET",
+            "socket"   => false,
+        ], $options);
 
 		// get URL parts
         $url_parts = parse_url($options["base_url"].$options["uri"]);
-
 		// merge options
 		$options = array_merge($options, $url_parts);
-		// sd($options);
+		// sd($url_parts, $options);
 
         $this->logger->debug("Requester::newRequest -> Options: ".json_encode($options, JSON_UNESCAPED_SLASHES));
 
         try {
             // socket async call?
-            if (!empty($options["socket"]) && $options["socket"] === true)
+            if ($options["socket"])
                 return $this->_socketAsync($options);
 
 			// guzzle options
@@ -69,7 +66,7 @@ trait Requester
 
             $client = new GuzzleClient($guzzle_options);
 
-            // reflection function
+            // reflection method (get or post)
             $action = "_".strtolower($options["method"])."Request";
 
             return $this->$action($client, $options);
@@ -81,6 +78,7 @@ trait Requester
         $di = \Phalcon\DI::getDefault();
         $di->getShared("logger")->error("Requester::newRequest -> Options: ".json_encode($options, JSON_UNESCAPED_SLASHES).", Exception: ".$exception->getMessage().
                                         "\n".$exception->getLine()." ".$e->getFile());
+        return null;
     }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
@@ -131,6 +129,7 @@ trait Requester
         //curl options
         $verify_host = (!empty($options["verify_host"]) && $options["verify_host"]) ? 2 : false;
         $verify_peer = (!empty($options["verify_host"]) && $options["verify_host"]) ? true : false;
+
         //form params
         $form_params = is_array($options["payload"]) ? $options["payload"] : ["payload" => $options["payload"]];
 
@@ -173,9 +172,7 @@ trait Requester
             $logger = $di->getShared("logger");
 
             $body = $response->getBody();
-
-            if (method_exists($body, "getContents"))
-                $body = $body->getContents();
+            $body = method_exists($body, "getContents") ? $body->getContents() : "";
 
 			$logger->debug("Requester::_sendPromise -> response length: [".$response->getStatusCode()."] ".strlen($body));
 
@@ -206,7 +203,7 @@ trait Requester
         //sd($options);
 
         // Data goes in the path for a GET request
-        if ($options["method"] == "GET") {
+        if (strtoupper($options["method"]) == "GET") {
             $options["path"] .= $options["payload"];
             $length = 0;
         }
@@ -225,7 +222,7 @@ trait Requester
         }
 
         //set output
-        $out = $options["method"]." ".$options["path"]." HTTP/1.1\r\n";
+        $out = strtoupper($options["method"])." ".$options["path"]." HTTP/1.1\r\n";
         $out .= "Host: ".$options["host"]."\r\n";
         $out .= "User-Agent: AppLocalServer\r\n";
         $out .= "Content-Type: application/x-www-form-urlencoded\r\n";
@@ -242,9 +239,8 @@ trait Requester
         $out .= "Connection: Close\r\n\r\n";
 
         // Data goes in the request body for a POST request
-        if ($options["method"] == "POST" && !empty($options["payload"])) {
+        if (strtoupper($options["method"]) == "POST" && !empty($options["payload"]))
             $out .= $options["payload"];
-        }
 
         $this->logger->debug("Requester::_socketAsync -> sending out request ".print_r($out, true));
 
