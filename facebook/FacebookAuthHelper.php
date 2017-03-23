@@ -204,10 +204,9 @@ trait FacebookAuthHelper
 
             //queues an async request, extend access token (append fb userID and short live access token)
             $this->asyncRequest([
-                "controller" => "facebook",
-                "action"     => "extendAccessToken",
-                "socket"     => true,
-                "payload"    => $properties["fb_id"]."#".$fac->getValue()
+                "uri" 	  => "facebook/extendAccessToken",
+                "socket"  => true,
+                "payload" => $properties["fb_id"]."#".$fac->getValue()
             ]);
         }
         catch (FacebookResponseException $e) { $exception = $e; }

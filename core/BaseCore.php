@@ -150,16 +150,17 @@ abstract class BaseCore extends Controller
      */
     protected function asyncRequest($options = [])
     {
-        //set base url
-        if (empty($options["base_url"]))
-            $options["base_url"] = $this->baseUrl();
-
-        //set uri
-        if (empty($options["uri"]))
-            $options["uri"] = $options["controller"]."/".$options["action"]."/";
+		$options = array_merge([
+            "base_url" => $this->baseUrl(),
+            "uri"      => "",
+			"module"   => "",
+            "payload"  => "",
+            "method"   => "GET",
+            "socket"   => false,
+        ], $options);
 
         //special case for module cross requests
-        if (!empty($options["module"]) && $options["module"] == "api") {
+        if ($options["module"] == "api") {
 
             //set API key header name
             $api_key_header_value = $this->config->apiKey;
@@ -168,14 +169,8 @@ abstract class BaseCore extends Controller
         }
 
         //payload
-        if (!empty($options["payload"])) {
-
-            //skip encryption
-            if (isset($options["encrypt"]) && !$options["encrypt"])
-                $options["payload"] = (array)$options["payload"];
-            else
-                $options["payload"] = $this->cryptify->encryptData($options["payload"]);
-        }
+        if (!empty($options["payload"]))
+            $options["payload"] = $options["encrypt"] ? $this->cryptify->encryptData($options["payload"]) : (array)$options["payload"];
 
         //requester
         $this->newRequest($options);

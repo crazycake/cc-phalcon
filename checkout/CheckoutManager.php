@@ -107,11 +107,10 @@ trait CheckoutManager
 
         //triggers async request
         $this->asyncRequest([
-            "controller" => "checkout",
-            "action"     => "successCheckoutTask",
-            "method"     => "get",
-            "socket"     => $async,
-            "payload"    => ["buy_order" => $buy_order]
+            "uri" 	  => "checkout/successCheckoutTask",
+            "method"  => "GET",
+            "socket"  => $async,
+            "payload" => ["buy_order" => $buy_order]
         ]);
     }
 

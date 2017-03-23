@@ -45,39 +45,36 @@ trait Requester
             "socket"   => false,
         ], $options);
 
-		// get URL parts
-        $url_parts = parse_url($options["base_url"].$options["uri"]);
-		// merge options
-		$options = array_merge($options, $url_parts);
-		// sd($url_parts, $options);
-
-        $this->logger->debug("Requester::newRequest -> Options: ".json_encode($options, JSON_UNESCAPED_SLASHES));
-
         try {
+
+    		// merge options with parsed URL
+    		$options = array_merge($options, parse_url($options["base_url"].$options["uri"]));
+    		// sd($options);
+
+            $this->logger->debug("Requester::newRequest -> Options: ".json_encode($options, JSON_UNESCAPED_SLASHES));
+
             // socket async call?
             if ($options["socket"])
                 return $this->_socketAsync($options);
 
-			// guzzle options
-            $guzzle_options = [
+			// guzzle instance
+            $client = new GuzzleClient([
                 "base_uri" => $options["base_url"],
                 "timeout"  => self::$REQUEST_TIMEOUT
-            ];
-
-            $client = new GuzzleClient($guzzle_options);
+            ]);
 
             // reflection method (get or post)
             $action = "_".strtolower($options["method"])."Request";
 
             return $this->$action($client, $options);
         }
-        catch (Exception $e)  { $exception = $e; }
-        catch (\Exception $e) { $exception = $e; }
+        catch (Exception $e)  { $exc = $e; }
+        catch (\Exception $e) { $exc = $e; }
 
         // log error
         $di = \Phalcon\DI::getDefault();
-        $di->getShared("logger")->error("Requester::newRequest -> Options: ".json_encode($options, JSON_UNESCAPED_SLASHES).", Exception: ".$exception->getMessage().
-                                        "\n".$exception->getLine()." ".$e->getFile());
+        $di->getShared("logger")->error("Requester::newRequest -> Err: ".$exc->getMessage()."\n".$exc->getLine()." ".$e->getFile().". Options: ".print_r($options));
+
         return null;
     }
 
