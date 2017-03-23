@@ -174,7 +174,7 @@ abstract class BaseCore extends Controller
             $options["payload"] = $options["encrypt"] ? $this->cryptify->encryptData($options["payload"]) : (array)$options["payload"];
 
         //requester
-        $this->newRequest($options);
+        return $this->newRequest($options);
     }
 
     /**

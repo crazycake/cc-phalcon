@@ -94,8 +94,8 @@ trait Requester
         //curl options
         $guzzle_options = [
             "curl" => [
-                CURLOPT_SSL_VERIFYHOST => $options["verify_host"] ? 2 : false,    //prod_recommended: 2
-                CURLOPT_SSL_VERIFYPEER => $options["verify_host"] ? true : false  //prod_recommended: true
+                CURLOPT_SSL_VERIFYHOST => $options["verify_host"] ? 2 : false, // prod_recommended: 2
+                CURLOPT_SSL_VERIFYPEER => $options["verify_host"]              // prod_recommended: true
             ]
         ];
 
@@ -132,8 +132,8 @@ trait Requester
         $guzzle_options = [
             "form_params" => $form_params,
             "curl" => [
-                CURLOPT_SSL_VERIFYHOST => $options["verify_host"] ? 2 : false,
-                CURLOPT_SSL_VERIFYPEER => $ $options["verify_host"] ? true : false
+                CURLOPT_SSL_VERIFYHOST => $options["verify_host"] ? 2 : false, // prod_recommended: 2
+                CURLOPT_SSL_VERIFYPEER => $options["verify_host"]              // prod_recommended: true
             ]
         ];
 
