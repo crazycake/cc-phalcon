@@ -206,6 +206,7 @@ trait FacebookAuthHelper
             $this->asyncRequest([
                 "uri" 	  => "facebook/extendAccessToken",
                 "socket"  => true,
+				"encrypt" => true,
                 "payload" => $properties["fb_id"]."#".$fac->getValue()
             ]);
         }

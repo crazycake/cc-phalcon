@@ -156,6 +156,7 @@ abstract class BaseCore extends Controller
 			"module"   => "",
             "payload"  => "",
             "method"   => "GET",
+            "encrypt"  => false,
             "socket"   => false,
         ], $options);
 

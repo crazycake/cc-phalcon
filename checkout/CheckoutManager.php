@@ -104,12 +104,12 @@ trait CheckoutManager
     public function successCheckout($buy_order = "", $async = true)
     {
         $this->logger->debug("CheckoutManager::successCheckout -> $buy_order, async: ".(int)$async);
-
         //triggers async request
         $this->asyncRequest([
             "uri" 	  => "checkout/successCheckoutTask",
             "method"  => "GET",
             "socket"  => $async,
+			"encrypt" => true,
             "payload" => ["buy_order" => $buy_order]
         ]);
     }
@@ -120,16 +120,16 @@ trait CheckoutManager
      * 1) Update status del checkout
      * 2) Call listener
      */
-    public function successCheckoutTaskAction($payload = "")
+    public function successCheckoutTaskAction($encrypted_data = "")
     {
         try {
 
-            $this->logger->debug("CheckoutManager::successCheckoutTask -> GET Payload ".json_encode($payload));
+            $this->logger->debug("CheckoutManager::successCheckoutTask -> GET Data ".json_encode($encrypted_data));
 
             //decrypt data
-            $data = $this->cryptify->decryptData($payload, true);
+            $data = $this->cryptify->decryptData($encrypted_data, true);
 
-            if (is_null($data) || !isset($data->buy_order))
+            if (empty($data) || !isset($data->buy_order))
                 throw new Exception("Invalid decrypted data: ".json_encode($data));
 
 			$this->logger->debug("CheckoutManager::successCheckoutTask -> processing buy order: ".$data->buy_order);
