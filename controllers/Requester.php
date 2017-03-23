@@ -118,7 +118,7 @@ trait Requester
         //set promise
         $promise = $client->requestAsync("GET", $options["uri"].$params, $guzzle_options);
         //send promise
-        $this->_sendPromise($promise, $options["uri"]);
+        return $this->_sendPromise($promise, $options["uri"]);
     }
 
     /**
@@ -155,7 +155,7 @@ trait Requester
         $promise = $client->requestAsync("POST", $options["uri"], $guzzle_options);
 
         //send promise
-        $this->_sendPromise($promise, $options);
+        return $this->_sendPromise($promise, $options);
     }
 
     /**
@@ -177,31 +177,16 @@ trait Requester
             if (method_exists($body, "getContents"))
                 $body = $body->getContents();
 
-            //handle response (OK status)
-            if ($response->getStatusCode() == 200 && strpos($body, "<!DOCTYPE") === false) {
+			$logger->debug("Requester::_sendPromise -> response length: [".$response->getStatusCode()."] ".strlen($body));
 
-                $logger->debug("Requester::_sendPromise -> response: $body \nOptions: ".json_encode($options, JSON_UNESCAPED_SLASHES));
-            }
-            else {
-
-                if (isset($this->router)) {
-                    $controller_name = $this->router->getControllerName();
-                    $action_name     = $this->router->getActionName();
-                    $logger->error("Requester::_sendPromise -> Error on request: $controller_name -> $action_name. Options: ".json_encode($options, JSON_UNESCAPED_SLASHES));
-                }
-                else {
-                    $logger->error("Requester::_sendPromise -> An Error occurred on request. Options: ".json_encode($options, JSON_UNESCAPED_SLASHES));
-                }
-
-                //catch response for app errors
-                if (strpos($body, "<!DOCTYPE") === false)
-                    $logger->debug("Requester::_sendPromise -> Catched response: $body \nOptions: ".json_encode($options, JSON_UNESCAPED_SLASHES));
-                else
-                    $logger->debug("Requester::_sendPromise -> NOTE: Above response is a redirection webpage, check correct route and redirections.");
-            }
+            //catch response for app errors
+            if (strpos($body, "<!DOCTYPE") !== false)
+                $logger->debug("Requester::_sendPromise -> NOTE: Above response is a redirected page, check correct route and redirections.");
         });
         //force promise to be completed
         $promise->wait();
+
+        return $promise;
     }
 
     /**
