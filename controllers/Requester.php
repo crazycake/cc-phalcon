@@ -38,11 +38,13 @@ trait Requester
     protected function newRequest($options = [])
     {
         $options = array_merge([
-            "base_url" => "",
-            "uri"      => "",
-            "payload"  => "",
-            "method"   => "GET",
-            "socket"   => false,
+            "base_url"     => "",
+            "uri"          => "",
+            "payload"      => "",
+            "method"       => "GET",
+            "socket"       => false,
+            "verify_host"  => false,
+            "query-string" => false
         ], $options);
 
         try {
@@ -90,13 +92,10 @@ trait Requester
     private function _getRequest($client, $options = [])
     {
         //curl options
-        $verify_host = (!empty($options["verify_host"]) && $options["verify_host"]) ? 2 : false;    //prod_recommended: 2
-        $verify_peer = (!empty($options["verify_host"]) && $options["verify_host"]) ? true : false; //prod_recommended: true
-
         $guzzle_options = [
             "curl" => [
-                CURLOPT_SSL_VERIFYHOST => $verify_host,
-                CURLOPT_SSL_VERIFYPEER => $verify_peer
+                CURLOPT_SSL_VERIFYHOST => $options["verify_host"] ? 2 : false,    //prod_recommended: 2
+                CURLOPT_SSL_VERIFYPEER => $options["verify_host"] ? true : false  //prod_recommended: true
             ]
         ];
 
@@ -105,7 +104,7 @@ trait Requester
             $guzzle_options["headers"] = $options["headers"];
 
         //check params for query strings
-        if (isset($options["query-string"]) && $options["query-string"]) {
+        if ($options["query-string"] || is_array($options["payload"])) {
             $params = http_build_query($options["payload"]);
         }
         else {
@@ -114,6 +113,7 @@ trait Requester
 
         //set promise
         $promise = $client->requestAsync("GET", $options["uri"].$params, $guzzle_options);
+
         //send promise
         return $this->_sendPromise($promise, $options["uri"]);
     }
@@ -125,18 +125,15 @@ trait Requester
      */
     private function _postRequest($client, $options = [])
     {
-        //curl options
-        $verify_host = (!empty($options["verify_host"]) && $options["verify_host"]) ? 2 : false;
-        $verify_peer = (!empty($options["verify_host"]) && $options["verify_host"]) ? true : false;
-
         //form params (array or string)
         $form_params = is_array($options["payload"]) ? $options["payload"] : ["payload" => $options["payload"]];
 
+        //curl options
         $guzzle_options = [
             "form_params" => $form_params,
             "curl" => [
-                CURLOPT_SSL_VERIFYHOST => $verify_host,
-                CURLOPT_SSL_VERIFYPEER => $verify_peer
+                CURLOPT_SSL_VERIFYHOST => $options["verify_host"] ? 2 : false,
+                CURLOPT_SSL_VERIFYPEER => $ $options["verify_host"] ? true : false
             ]
         ];
 
@@ -149,7 +146,6 @@ trait Requester
             $guzzle_options["body"] = $options["body"];
 
         //set promise
-        //sd($guzzle_options);
         $promise = $client->requestAsync("POST", $options["uri"], $guzzle_options);
 
         //send promise
