@@ -204,7 +204,7 @@ trait FacebookAuthHelper
 
             //queues an async request, extend access token (append fb userID and short live access token)
             $this->asyncRequest([
-                "uri" 	  => "facebook/extendAccessToken",
+                "uri" 	  => "facebook/extendAccessToken/",
                 "socket"  => true,
 				"encrypt" => true,
                 "payload" => $properties["fb_id"]."#".$fac->getValue()
