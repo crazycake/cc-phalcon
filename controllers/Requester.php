@@ -73,7 +73,7 @@ trait Requester
 
         // log error
         $di = \Phalcon\DI::getDefault();
-        $di->getShared("logger")->error("Requester::newRequest -> Err: ".$exc->getMessage()."\n".$exc->getLine()." ".$e->getFile().". Options: ".print_r($options));
+        $di->getShared("logger")->error("Requester::newRequest -> Err: ".$exc->getMessage()."\n".$exc->getLine()." ".$e->getFile().". Options: ".print_r($options, true));
 
         return null;
     }
@@ -127,7 +127,7 @@ trait Requester
         $verify_host = (!empty($options["verify_host"]) && $options["verify_host"]) ? 2 : false;
         $verify_peer = (!empty($options["verify_host"]) && $options["verify_host"]) ? true : false;
 
-        //form params
+        //form params (array or string)
         $form_params = is_array($options["payload"]) ? $options["payload"] : ["payload" => $options["payload"]];
 
         $guzzle_options = [

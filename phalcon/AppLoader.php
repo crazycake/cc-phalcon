@@ -107,7 +107,7 @@ trait AppLoader
             //set directory path
             $dirs[$dir] = count($paths) > 1 ? PROJECT_PATH.$paths[0]."/".$paths[1]."/" : APP_PATH.$dir."/";
         }
-        //print_r($dirs); exit;
+        //die(print_r($dirs, true));
 
         //inverted sort
         arsort($dirs);
