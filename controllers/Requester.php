@@ -55,6 +55,7 @@ trait Requester
             if(!empty($url_pieces))
     		      $options = array_merge($options, $url_pieces);
 
+            //sd($options);
             $this->logger->debug("Requester::newRequest -> Options: ".json_encode($options, JSON_UNESCAPED_SLASHES));
 
             // socket async call?
@@ -157,7 +158,7 @@ trait Requester
     private function _sendPromise($promise = null, $options = [])
     {
         //handle promise
-        $promise->then(function ($response) use ($options) {
+        $promise->then(function($response) use ($promise, $options) {
 
             //set logger
             $di = \Phalcon\DI::getDefault();
@@ -166,11 +167,15 @@ trait Requester
             $body = $response->getBody();
             $body = method_exists($body, "getContents") ? $body->getContents() : "";
 
-			$logger->debug("Requester::_sendPromise -> response length: [".$response->getStatusCode()."] ".strlen($body));
+			$logger->debug("Requester::_sendPromise -> response length: [".$response->getStatusCode()."] ".strlen($body).
+                                                       "\nheaders: ".json_encode($response->getHeaders(), JSON_UNESCAPED_SLASHES));
 
             //catch response for app errors
             if (strpos($body, "<html") !== false)
                 $logger->debug("Requester::_sendPromise -> NOTE: Above response body has an HTML tag.");
+
+            // custom props
+            $promise->body = $body;
         });
         //force promise to be completed
         $promise->wait();

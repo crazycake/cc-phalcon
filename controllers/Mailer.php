@@ -7,7 +7,6 @@
 
 namespace CrazyCake\Controllers;
 
-
 //imports
 use Phalcon\Exception;
 use Pelago\Emogrifier;
@@ -203,11 +202,16 @@ trait Mailer
      */
     public function adminException($e = "", $data = [])
     {
-        $error = is_string($e) ? $e : $e->getMessage();
+        $error = is_string($e) ? $e : $e->getMessage()."\nFile: ".$e->getFile()." (".$e->getLine().")";
 
-        //Error on success checkout task
-        if (isset($this->logger))
-            $this->logger->error("Mailer::adminException -> something ocurred, err: ".$error);
+        $this->logger->debug("Mailer::adminException -> sending exception: $error");
+
+        $log = file_get_contents($this->logger->log(\Phalcon\Logger::DEBUG)->getPath());
+
+        if($log) {
+            $lines       = explode("\n", $log);
+            $log_history = implode("\n", array_slice($lines, -20));
+        }
 
         //Sending a warning to admin users!
         $this->sendAdminMessage(array_merge([
@@ -215,9 +219,8 @@ trait Mailer
             "to"      => $this->config->emails->support,
             "email"   => $this->config->emails->sender, //user-sender
             "name"    => $this->config->name." webapp",
-            "message" => "An exception occurred.".
-                         "\nData:  ".(is_null($data) ? "empty" : json_encode($data, JSON_UNESCAPED_SLASHES)).
-                         "\nException: ".$error
+            "message" => "\nException: ".$error.
+                         "\nLog History: ".$log_history
         ], $data));
     }
 
@@ -261,38 +264,29 @@ trait Mailer
         if (empty($subject))
             $subject = $this->config->name;
 
-        try {
+        //service instance
+        $sendgrid = new \SendGrid($this->config->sendgrid->apiKey);
+        $message  = new \SendGrid\Email();
 
-            //service instance
-            $sendgrid = new \SendGrid($this->config->sendgrid->apiKey);
-            $message  = new \SendGrid\Email();
+        $message->setFrom($this->config->emails->sender)
+                ->setFromName($this->config->name)
+                ->setReplyTo($this->config->emails->support)
+                ->setSubject($subject)
+                ->setHtml($this->inlineHtml($template));
 
-            $message->setFrom($this->config->emails->sender)
-                    ->setFromName($this->config->name)
-                    ->setReplyTo($this->config->emails->support)
-                    ->setSubject($subject)
-                    ->setHtml($this->inlineHtml($template));
+        //add recipients
+        foreach ($recipients as $email)
+            $message ->addTo($email);
 
-            //add recipients
-            foreach ($recipients as $email)
-                $message ->addTo($email);
+        //parse attachments
+        $this->_parseAttachments($attachments, $message);
+        //s($sendgrid, $message);exit;
 
-            //parse attachments
-            $this->_parseAttachments($attachments, $message);
-            //s($sendgrid, $message);exit;
+        //send email
+        $result = $sendgrid->send($message);
+        //s($result);
 
-            //send email
-            $result = $sendgrid->send($message);
-            //s($result);
-
-            return $result;
-        }
-        catch (Exception $e) {
-
-            $this->logger->error("Mailer::sendMessage -> An error occurred: ".$e->getMessage());
-
-            return false;
-        }
+        return $result;
     }
 
     /**

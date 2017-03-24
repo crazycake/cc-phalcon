@@ -168,8 +168,7 @@ trait CheckoutManager
             $mailer = App::getClass("mailer_controller");
             //send alert system mail message
             (new $mailer())->adminException($e, [
-                "action" => "successCheckoutTask",
-                "data"   => json_encode($data, JSON_UNESCAPED_SLASHES)
+                "action" => "successCheckoutTask"
             ]);
         }
         finally {
