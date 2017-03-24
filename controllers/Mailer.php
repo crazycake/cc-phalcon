@@ -219,8 +219,7 @@ trait Mailer
             "to"      => $this->config->emails->support,
             "email"   => $this->config->emails->sender, //user-sender
             "name"    => $this->config->name." webapp",
-            "message" => "\nException: ".$error.
-                         "\nLog History: ".$log_history
+            "message" => "$error\nLog History:\n".$log_history
         ], $data));
     }
 
