@@ -203,7 +203,7 @@ trait FacebookAuthHelper
                 $this->__saveUser($user->id, $properties["fb_id"], $fac);
 
             //queues an async request, extend access token (append fb userID and short live access token)
-            $this->asyncRequest([
+            $this->coreRequest([
                 "uri" 	  => "facebook/extendAccessToken/",
                 "socket"  => true,
 				"encrypt" => true,

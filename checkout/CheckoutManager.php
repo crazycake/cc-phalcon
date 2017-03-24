@@ -105,7 +105,7 @@ trait CheckoutManager
     {
         $this->logger->debug("CheckoutManager::successCheckout -> $buy_order, async: ".(int)$async);
         //triggers async request
-        $this->asyncRequest([
+        $this->coreRequest([
             "uri" 	  => "checkout/successCheckoutTask/",
             "method"  => "GET",
             "socket"  => $async,

@@ -158,7 +158,7 @@ class TaskCore extends Task
      * Async Request (CLI struct)
      * @param  array $options - The HTTP options
      */
-    protected function asyncRequest($options = [])
+    protected function coreRequest($options = [])
     {
 		$options = array_merge([
             "base_url" => "",

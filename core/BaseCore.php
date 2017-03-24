@@ -148,7 +148,7 @@ abstract class BaseCore extends Controller
      * Sends an async tasks as another request. (MVC struct)
      * @param array $options - Options: module, controller, action, method, payload, socket, headers
      */
-    protected function asyncRequest($options = [])
+    protected function coreRequest($options = [])
     {
 		$options = array_merge([
             "base_url" => $this->baseUrl(),
@@ -170,8 +170,8 @@ abstract class BaseCore extends Controller
         }
 
         //payload
-        if (!empty($options["payload"]))
-            $options["payload"] = $options["encrypt"] ? $this->cryptify->encryptData($options["payload"]) : (array)$options["payload"];
+        if (!empty($options["payload"]) && $options["encrypt"])
+            $options["payload"] = $this->cryptify->encryptData($options["payload"]);
 
         //requester
         return $this->newRequest($options);
@@ -218,7 +218,7 @@ abstract class BaseCore extends Controller
         //validate always CSRF Token (prevents also headless browsers, POST only and API module excluded)
         if ($check_csrf) {
             //check if method exists
-            if (method_exists($this, 'checkCsrfToken') && !$this->checkCsrfToken())
+            if (method_exists($this, "checkCsrfToken") && !$this->checkCsrfToken())
                 return $sendResponse(498);
         }
 
