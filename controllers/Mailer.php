@@ -202,7 +202,7 @@ trait Mailer
      */
     public function adminException($e = "", $data = [])
     {
-        $error = is_string($e) ? $e : $e->getMessage()."\nFile: ".$e->getFile()." (".$e->getLine().")";
+        $error = is_string($e) ? $e : $e->getMessage().". File: ".$e->getFile()." (".$e->getLine().")";
 
         $this->logger->debug("Mailer::adminException -> sending exception: $error");
 
@@ -215,7 +215,7 @@ trait Mailer
 
         //Sending a warning to admin users!
         $this->sendAdminMessage(array_merge([
-            "subject" => "Exception Notification Error",
+            "subject" => "Exception Notification",
             "to"      => $this->config->emails->support,
             "email"   => $this->config->emails->sender, //user-sender
             "name"    => $this->config->name." webapp",
