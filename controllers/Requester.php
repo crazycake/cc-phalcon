@@ -44,7 +44,8 @@ trait Requester
             "method"       => "GET",
             "socket"       => false,
             "verify_host"  => false,
-            "query-string" => false
+            "query-string" => false,
+            "timeout"      => self::$REQUEST_TIMEOUT
         ], $options);
 
         try {
