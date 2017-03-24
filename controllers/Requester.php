@@ -125,12 +125,9 @@ trait Requester
      */
     private function _postRequest($client, $options = [])
     {
-        //form params (array or string)
-        $form_params = is_array($options["payload"]) ? $options["payload"] : ["payload" => $options["payload"]];
-
         //curl options
         $guzzle_options = [
-            "form_params" => $form_params,
+            "form_params" => $options["payload"],
             "curl" => [
                 CURLOPT_SSL_VERIFYHOST => $options["verify_host"] ? 2 : false, // prod_recommended: 2
                 CURLOPT_SSL_VERIFYPEER => $options["verify_host"]              // prod_recommended: true
@@ -204,14 +201,11 @@ trait Requester
         }
         else {
 
-            //create a concatenated string
-            if (is_array($options["payload"])) {
+            //query string or body content
+            if (is_array($options["payload"]))
                 $options["payload"] = http_build_query($options["payload"], "","&");
-            }
-            //default behavior for string
-            else {
+            else
                 $options["payload"] = "payload=".$options["payload"];
-            }
 
             $length = strlen($options["payload"]);
         }
