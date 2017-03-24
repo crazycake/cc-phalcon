@@ -169,8 +169,8 @@ trait Requester
 			$logger->debug("Requester::_sendPromise -> response length: [".$response->getStatusCode()."] ".strlen($body));
 
             //catch response for app errors
-            if (strpos($body, "<!DOCTYPE") !== false)
-                $logger->debug("Requester::_sendPromise -> NOTE: Above response is a redirected page, check correct route and redirections.");
+            if (strpos($body, "<html") !== false)
+                $logger->debug("Requester::_sendPromise -> NOTE: Above response body has an HTML tag.");
         });
         //force promise to be completed
         $promise->wait();
