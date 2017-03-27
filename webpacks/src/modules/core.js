@@ -342,7 +342,7 @@ export default new function() {
             //set true value if payload is null
             return _.isNull(payload) ? true : payload;
         })
-        .catch(e => {
+        .catch((e) => {
 
             console.warn("Core -> Promise exception", e);
             //throw e;
