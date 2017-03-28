@@ -109,9 +109,6 @@
             <script>{{ js_loader }}</script>
         {% endif %}
 
-        {# App JS Core Event #}
-        <script>core.ready();</script>
-
         {# GoogleAnalytics (Frontend only, async loading) #}
         {% if config.google is defined and config.google.analyticsUA is defined %}
             <script>

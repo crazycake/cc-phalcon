@@ -69,57 +69,6 @@ export default new function() {
     //++ Methods ++
 
     /**
-     * Set modules automatically for require function
-     * @method setModules
-     * @param {Array} modules - The required modules
-     */
-    self.setModules = function(modules = []) {
-
-        if (!modules.length)
-            return;
-
-        for (var i = 0; i < modules.length; i++) {
-
-            var mod = modules[i];
-
-            if (typeof mod.name != "undefined")
-                self.modules[mod.name] = mod;
-        }
-    };
-
-    /**
-     * Core Ready Event, called automatically after loading modules.
-     * @method ready
-     */
-    self.ready = function() {
-
-        //load fast click for mobile
-        if (UA.isMobile && typeof FastClick != "undefined")
-            FastClick.attach(document.body);
-
-        //load Foundation framework
-        if (typeof Foundation != "undefined")
-            self.initFoundation();
-        //load Bootstrap framework
-        else if (typeof $().emulateTransitionEnd == "function")
-            self.initBootstrap();
-
-        //load forms module
-        if (!_.isUndefined(self.modules.forms))
-            self.modules.forms.load();
-
-        //load UI module
-        self.ui.init();
-
-        //css async loading
-        if(!_.isUndefined(APP.cssLazy) && APP.cssLazy) {
-
-            console.log("Core -> loading CSS file (async)", APP.cssLazy);
-            loadCSS(APP.cssLazy);
-        }
-    };
-
-    /**
      * Helper Get BaseUrl
      * @method baseUrl
      * @param  {String} uri - Append URI if defined
@@ -139,6 +88,114 @@ export default new function() {
       self.staticUrl = function(uri = "") {
 
          return APP.staticUrl + uri;
+      };
+
+      /**
+       * Set modules automatically for require function
+       * @method setModules
+       * @param {Array} modules - The required modules
+       */
+      self.setModules = function(modules = []) {
+
+          if (!modules.length)
+              return;
+
+          for (var i = 0; i < modules.length; i++) {
+
+              var mod = modules[i];
+
+              if (typeof mod.name != "undefined")
+                  self.modules[mod.name] = mod;
+          }
+      };
+
+      /**
+      * Initializer, if module has a viewModel binds it to DOM automatically
+      * @method start
+      * @param {Array} modules
+      */
+      self.start = function(modules = []) {
+
+          var mod_name, mod, data;
+
+          //1) call inits
+          for (mod_name in modules) {
+
+              //check module exists
+              if (_.isUndefined(self.modules[mod_name])) {
+                  console.warn("Core -> Attempting to load an undefined module (" + mod_name + ").");
+                  continue;
+              }
+
+              //get module
+              mod  = self.modules[mod_name];
+              data = modules[mod_name];
+
+              //check if module has init method & call it
+              if (_.isFunction(mod.init))
+                mod.init(data);
+          }
+
+          //2) load viewModels
+          for (mod_name in modules) {
+
+              //check module exists
+              if (_.isUndefined(self.modules[mod_name]))
+                continue;
+
+              //get module
+              mod = self.modules[mod_name];
+
+              //bind model to DOM?
+              if (!_.isObject(mod.vm))
+                continue;
+
+              if(_.isUndefined(mod.vm.el))
+                mod.vm.el = "#vue-" + mod_name;
+
+              if(typeof Vue == "undefined")
+                return console.warn("Core -> Vue has not loaded!");
+
+              console.log("Core -> New Vue instance for module " + mod_name, mod.vm);
+
+              //set new Vue instance (object prop updated)
+              mod.vm = new Vue(mod.vm);
+          }
+
+          //3) Core Ready
+          self.loadUI();
+      };
+
+      /**
+       * Core load UI, called automatically after loading modules.
+       * @method loadUI
+       */
+      self.loadUI = function() {
+
+          //load fast click for mobile
+          if (UA.isMobile && typeof FastClick != "undefined")
+              FastClick.attach(document.body);
+
+          //load Foundation framework
+          if (typeof Foundation != "undefined")
+              self.initFoundation();
+          //load Bootstrap framework
+          else if (typeof $().emulateTransitionEnd == "function")
+              self.initBootstrap();
+
+          //load forms module
+          if (!_.isUndefined(self.modules.forms))
+              self.modules.forms.load();
+
+          //load UI module
+          self.ui.init();
+
+          //css async loading
+          if(!_.isUndefined(APP.cssLazy) && APP.cssLazy) {
+
+              console.log("Core -> loading CSS file (async)", APP.cssLazy);
+              loadCSS(APP.cssLazy);
+          }
       };
 
     /**
@@ -173,60 +230,6 @@ export default new function() {
 
         //set framework
         self.framework = "bootstrap";
-    };
-
-    /**
-     * Loads App modules, if module has a viewModel binds it to DOM automatically
-     * @method loadModules
-     * @param {Array} modules
-     */
-    self.loadModules = function(modules = []) {
-
-        var mod_name, mod, data;
-
-        //1) call inits
-        for (mod_name in modules) {
-
-            //check module exists
-            if (_.isUndefined(self.modules[mod_name])) {
-                console.warn("Core -> Attempting to load an undefined module (" + mod_name + ").");
-                continue;
-            }
-
-            //get module
-            mod  = self.modules[mod_name];
-            data = modules[mod_name];
-
-            //check if module has init method & call it
-            if (_.isFunction(mod.init))
-                mod.init(data);
-        }
-
-        //2) load viewModels
-        for (mod_name in modules) {
-
-            //check module exists
-            if (_.isUndefined(self.modules[mod_name]))
-                continue;
-
-            //get module
-            mod = self.modules[mod_name];
-
-            //bind model to DOM?
-            if (!_.isObject(mod.vm))
-                continue;
-
-            if(_.isUndefined(mod.vm.el))
-                mod.vm.el = "#vue-" + mod_name;
-
-            if(typeof Vue == "undefined")
-                return console.warn("Core -> Vue has not loaded!");
-
-            console.log("Core -> New Vue instance for module " + mod_name, mod.vm);
-
-            //set new Vue instance (object prop updated)
-            mod.vm = new Vue(mod.vm);
-        }
     };
 
     /**
