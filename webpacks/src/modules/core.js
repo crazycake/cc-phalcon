@@ -164,6 +164,8 @@ export default new function() {
 
           //3) load UI
           self.loadUI();
+
+          console.debug("Core -> Started.");
       };
 
       /**
