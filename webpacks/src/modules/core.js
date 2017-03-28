@@ -162,7 +162,7 @@ export default new function() {
               mod.vm = new Vue(mod.vm);
           }
 
-          //3) Core Ready
+          //3) load UI
           self.loadUI();
       };
 
@@ -233,26 +233,6 @@ export default new function() {
     };
 
     /**
-     * Check if a module has binded
-     * @method hasBinded
-     * @param  {String} Module - The module name
-     * @return {Boolean}
-     */
-    self.hasBinded = function(mod_name = "") {
-
-        if (_.isUndefined(self.modules[mod_name]))
-            return false;
-
-        let module = self.modules[mod_name];
-
-        //null or undefined?
-        if(_.isNil(module.vm))
-            return false;
-
-        return _.isNil(module.vm.$el) ? false : true;
-    };
-
-    /**
      * Ajax request with form validation.
      * Validates a form, if valid, sends a promise request with Q lib.
      * @link https://github.com/kriskowal/q
@@ -260,14 +240,14 @@ export default new function() {
      * @param  {Object} request - A simple request object
      * @param  {Object} form - The form HTML object
      * @param  {Object} extended_data - An object to be extended as sending data (optional)
-     * @param  {Object} events - Event handler object
+     * @param  {Object} events - Alert Event handlers object
      * @return {Object} promise
      */
     self.ajaxRequest = function(request = null, form = null, extended_data = null, events = null) {
 
         //validation, request is required
         if (_.isNull(request))
-            throw new Error("Core -> ajaxRequest invalid inputs!");
+            throw new Error("Core -> ajaxRequest: invalid request input object");
 
         //define payload
         var payload = {};
@@ -297,7 +277,7 @@ export default new function() {
         if (_.isObject(extended_data)) {
 
             //check if element is null
-            if (_.isNull(form))
+            if (_.isNil(form))
                 _.assign(payload, extended_data); //considerar objetos livianos (selectionDirection error)
             else
                 payload.push({ name : "payload", value : JSON.stringify(extended_data) });  //serialized object struct
@@ -314,18 +294,17 @@ export default new function() {
         }
 
         //set url
-        let url = (typeof request.url != "undefined") ? request.url : self.baseUrl(request.uri);
+        let url = !_.isNil(request.url) ? request.url : self.baseUrl(request.uri);
         //set options
         var options = {
-            //request properties
-            type     : request.method,
             url      : url,
+            type     : request.method,
             data     : payload,
             dataType : "json",
             timeout  : self.timeout
         };
 
-        console.log("Core -> new promise request with payload:", payload);
+        console.log("Core -> new promise request ["+url+"] payload:", payload);
 
         //make ajax request with promises
         return P.resolve(
@@ -343,7 +322,7 @@ export default new function() {
             var payload = data.response.payload;
 
             //set true value if payload is null
-            return _.isNull(payload) ? true : payload;
+            return !_.isNull(payload) ? payload : true;
         })
         .catch((e) => {
 
