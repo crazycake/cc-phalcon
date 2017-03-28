@@ -19,7 +19,7 @@ use CrazyCake\Helpers\UserAgent;
 abstract class WebCore extends BaseCore implements WebSecurity
 {
     /* consts */
-    const JS_START_FUNCTION = "core.start";
+    const JS_LOADER_FUNCTION = "core.start";
 
     /**
      * Set App Javascript Properties for global scope
@@ -221,7 +221,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
      * @param array $modules - An array of modules => args
      * @param string $fn - The loader function name
      */
-    protected function loadJsModules($modules = [], $fn = self::JS_START_FUNCTION)
+    protected function loadJsModules($modules = [], $fn = self::JS_LOADER_FUNCTION)
     {
         //skip for legacy browsers
         if ($this->client->isLegacy || empty($modules))
