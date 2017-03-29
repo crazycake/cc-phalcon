@@ -79,7 +79,7 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
 			$checkout_object = (object)$obj->toArray();
 
 			//get object local props
-			$props = $object_class::findFirstById($obj->object_id);
+			$props = !class_exists($object_class) ?: $object_class::findFirstById($obj->object_id);
 
 			if (!$props) continue;
 
@@ -163,7 +163,7 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
 			//get object ORM class
 			$object_class = $obj->object_class;
 
-			$orm_object = $object_class::findFirst(["id = ?1", "bind" => [1 => $obj->object_id]]);
+			$orm_object = !class_exists($object_class) ?: $object_class::findFirst(["id = ?1", "bind" => [1 => $obj->object_id]]);
 
 			if(!$orm_object || empty($obj->quantity))
 				continue;
