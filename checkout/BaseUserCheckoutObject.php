@@ -51,10 +51,9 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
 	/**
 	 * Get checkout objects
 	 * @param  string $buy_order - Checkout buyOrder
-	 * @param  boolean $ids - Flag optional to get an array of object IDs
 	 * @return array
 	 */
-	public static function getCollection($buy_order, $ids = false)
+	public static function getCollection($buy_order = "")
 	{
 		$objects = self::find([
 			"columns"    => "object_class, object_id, quantity",
@@ -68,25 +67,15 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
 		foreach ($objects as $obj) {
 
 			$object_class = $obj->object_class;
-
-			//filter only to ids?
-			if ($ids) {
-				array_push($result, $obj->object_id);
-				continue;
-			}
-
 			//create a new object and clone common props
 			$checkout_object = (object)$obj->toArray();
-
 			//get object local props
 			$props = !class_exists($object_class) ?: $object_class::findFirstById($obj->object_id);
 
 			if (!$props) continue;
 
 			//extend custom flexible properties
-			$checkout_object->name = isset($props->name) ? $props->name : $props->_ext["name"];
-
-			//extedend common object props
+			$checkout_object->name 	   = isset($props->name) ? $props->name : $props->_ext["name"];
 			$checkout_object->price    = $props->price;
 			$checkout_object->currency = $props->currency;
 
