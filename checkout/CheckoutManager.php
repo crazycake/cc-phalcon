@@ -79,7 +79,7 @@ trait CheckoutManager
             //check if an error occurred
             if (!$checkout_orm) {
 
-                $this->logger->error("CheckoutManager::buyOrder -> failed saving checkout ".$checkout_orm->messages(true));
+                $this->logger->error("CheckoutManager::buyOrder -> failed saving checkout: ".json_encode($checkout, JSON_UNESCAPED_SLASHES));
                 throw new Exception($this->checkout_manager_conf["trans"]["ERROR_UNEXPECTED"]);
             }
 
@@ -224,7 +224,7 @@ trait CheckoutManager
             //var_dump($object_class, $object_id, $object->toArray());exit;
 
             //check that object is in stock (also validates object exists)
-            if (!is_null($object->quantity) &&
+            if (isset($object->quantity) && !is_null($object->quantity) &&
 				!$user_checkout_object_class::validateStock($object_class, $object_id, $q)) {
 
                 $this->logger->error("CheckoutManager::parseCheckoutObjects -> No stock for object $object_class, ID: $object_id, Q: $q.");

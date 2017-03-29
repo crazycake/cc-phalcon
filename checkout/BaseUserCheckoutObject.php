@@ -79,7 +79,7 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
 			$checkout_object = (object)$obj->toArray();
 
 			//get object local props
-			$props = $object_class::findFirstById($obj->object_id);
+			$props = !class_exists($object_class) ?: $object_class::findFirstById($obj->object_id);
 
 			if (!$props) continue;
 

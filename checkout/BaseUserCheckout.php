@@ -84,7 +84,9 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 
         //model relations
         $this->hasOne("user_id", $user_class, "id");
-        $this->hasMany("buy_order", $user_checkout_object_class, "buy_order");
+
+        if(class_exists($user_checkout_object_class))
+            $this->hasMany("buy_order", $user_checkout_object_class, "buy_order");
     }
 
     /**
@@ -213,7 +215,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
                 $props["buy_order"] = $buy_order;
 
                 if (!$checkoutObj->save($props))
-                    throw new Exception("A DB error ocurred saving in checkoutsObjects model.");
+                    throw new Exception("A DB error ocurred saving in checkoutsObjects model: ".$checkoutObj->messages(true));
             }
 
             //commit transaction
