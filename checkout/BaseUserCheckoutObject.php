@@ -86,7 +86,7 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
 		}
 
 	   return $result;
-   }
+	}
 
 	/**
 	 * Validates that checkout object is already in stock.
