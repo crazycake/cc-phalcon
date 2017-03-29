@@ -69,7 +69,7 @@ trait CheckoutManager
 		try {
 
 	        //get checkout object with parsed data
-	        $checkout = $this->setCheckoutObject();
+	        $checkout = $this->newCheckout();
 
 	        //call listeners
 	        $this->onBeforeBuyOrderCreation($checkout);
@@ -215,7 +215,12 @@ trait CheckoutManager
             $object_id    = $props[2];
 
             $prefixed_object_class = "\\$object_class";
-            $object = $prefixed_object_class::getById($object_id);
+
+            //create object if class dont exists
+			if(!class_exists($prefixed_object_class))
+				$object = new \stdClass();
+            else
+                $object = $prefixed_object_class::getById($object_id);
             //var_dump($object_class, $object_id, $object->toArray());exit;
 
             //check that object is in stock (also validates object exists)
@@ -232,8 +237,10 @@ trait CheckoutManager
 
             //update total Q
             $total_q += $q;
+
             //update amount
-            $checkout->amount += $q * $object->price;
+            if(!empty($object->price))
+                $checkout->amount += $q * $object->price;
 
             //create new checkout object without ORM props
             $checkout_object = (new $user_checkout_object_class())->reduce();
@@ -258,10 +265,10 @@ trait CheckoutManager
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
-     * Method: Set checkout object. CSRF validation skipped.
+     * New checkout object. CSRF validation skipped.
      * @return object
      */
-    private function setCheckoutObject()
+    private function newCheckout()
     {
         //get form data
         $data = $this->handleRequest([
@@ -286,13 +293,6 @@ trait CheckoutManager
         //parse checkout objects
         $this->parseCheckoutObjects($checkout, $data);
         //sd($checkout);
-
-        //weird error, no checkout objects
-        if (empty($checkout->objects)) {
-
-            $this->logger->error("CheckoutManager::setCheckoutObject -> empty checkout objects ".json_encode($checkout));
-            throw new Exception($this->checkout_manager_conf["trans"]["ERROR_UNEXPECTED"]);
-        }
 
         //check max objects allowed
         if ($checkout->total_q > $this->checkout_manager_conf["max_user_acquisition"]) {
