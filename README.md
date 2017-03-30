@@ -1,9 +1,9 @@
-CrazyCake Phalcon Libraries
-===========================
+CrazyCake Phalcon Core
+======================
 
 ## PhalconPHP
 
-Current Version: `2.0.x`
+Current Version: `3.1.x`
 
 ## Documentation
 
@@ -38,18 +38,4 @@ box build -v
 Listing phar file contents
 ```
 php box.phar info -l <filepath>
-```
-
-## NPM
-
-### Dependencies
-+ NodeJs with NPM as package manager [Homepage](https://nodejs.org/)
-+ Browserify as module builder [Homepage](http://browserify.org/)
-+ Gulp as task runner [Homepage](http://gulpjs.com/)
-+ Yuidoc JS as Doc builder [Homepage](http://yui.github.io/yuidoc/)
-
-NPM modules installation
-
-```
-bash app.bash -npm
 ```

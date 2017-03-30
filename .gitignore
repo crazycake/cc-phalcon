@@ -16,10 +16,3 @@
 
 # PhalconPHP Dev-tools
 .phalcon
-
-# Node & Webpacks
-node_modules
-.eslintrc
-
-# YuiDoc Themes
-!index.handlebars

@@ -1,5 +1,5 @@
 #! /bin/bash
-# Core installer
+# Core Task Runner Installer
 # author: Nicolas Pulido <nicolas.pulido@crazycake.cl>
 
 # interrupt if error raises
@@ -19,7 +19,7 @@ CORE_PROJECT_NAME="cc-phalcon"
 CORE_SRC_PATH="../$CORE_PROJECT_NAME/"
 # sub-paths
 CORE_SRC_TOOLS=$CORE_SRC_PATH"tools/"
-CORE_SRC_WEBPACKS=$CORE_SRC_PATH"webpacks/"
+CORE_SRC_VOLT=$CORE_SRC_PATH"volt/"
 
 # main app bash file
 ROOT_TOOL_FILES=("cli")
@@ -52,18 +52,7 @@ copyVoltFiles() {
 
 	if [ -d $PROJECT_PATH"/ui/volt/" ]; then
 		echo -e "\033[94mCopying volt files ... \033[0m"
-		cp -r $CORE_SRC_WEBPACKS"volt/" $PROJECT_PATH"/ui/volt/"
-	fi
-}
-
-copyWebpacks() {
-
-	# check src path
-	if [ -d $CORE_SRC_WEBPACKS"dist/" ]; then
-
-		#copy webpack files
-		echo -e "\033[94mCopying webpacks files to $DEST_PATH... \033[0m"
-		cp -R $CORE_SRC_WEBPACKS"dist/" $DEST_PATH
+		cp -r $CORE_SRC_VOLT $PROJECT_PATH"/ui/volt/"
 	fi
 }
 
@@ -84,10 +73,7 @@ copyToolFiles
 # 2) volt files
 copyVoltFiles
 
-# 3) webpacks folder & files (debug)
-copyWebpacks
-
-# 4) php phar core builder
+# 3) php phar core builder
 buildCorePhar
 
 # task done!
