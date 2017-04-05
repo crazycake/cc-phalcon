@@ -210,7 +210,7 @@ trait Mailer
 
         if($log) {
             $lines       = explode("\n", $log);
-            $log_history = implode("\n", array_slice($lines, -20));
+            $log_history = implode("\n", array_slice($lines, -8)); // last x lines
         }
 
         //Sending a warning to admin users!
