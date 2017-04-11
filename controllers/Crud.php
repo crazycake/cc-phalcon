@@ -58,15 +58,16 @@ trait Crud
     {
 		//default configurations
         $defaults = [
-			"pk"           => "id",         //primary key
-            "entity"   	   => "",           // entity in uppercase
-            "entity_lower" => "",           // entity in lowercase
-            "entity_label" => "Colección",
-            "new_label"    => "Nuevo",
-            "dfields"  	   => [],
-            "sfields"  	   => [],
-			"cfields"  	   => [],
-			"actions"	   => ["update", "delete"]
+			"pk"           	   => "id",         // primary key
+            "entity"   	   	   => "",           // entity in uppercase
+            "entity_lower" 	   => "",           // entity in lowercase
+			"entity_component" => "",   		// entity HTML component name
+            "entity_label" 	   => "Colección",
+            "new_label"    	   => "Nuevo",
+            "dfields"  	   	   => [],
+            "sfields"  	   	   => [],
+			"cfields"  	   	   => [],
+			"actions"	   	   => ["update", "delete"]
         ];
 
         //merge confs
@@ -77,7 +78,10 @@ trait Crud
 			throw new \Exception("Crud requires entity, dfields & sfields options.");
 
 	    //set entity in lower case
-		$conf["entity_lower"] = \Phalcon\Text::uncamelize($conf["entity"]);
+		$conf["entity_lower"]= \Phalcon\Text::uncamelize($conf["entity"]);
+
+		if(empty($conf["entity_component"]))
+			$conf["entity_component"] = $conf["entity_lower"];
 
 		//init uploader?
 		if(isset($conf["uploader"]))
