@@ -33,7 +33,7 @@
         {# define vars #}
         {% set tag_title            = html_title is defined ? html_title : config.name %}
         {% set tag_meta_description = html_description is defined ? html_description : config.name %}
-        {% set tag_meta_author      = html_author is defined ? html_author : config.name~' Team' %}
+        {% set tag_meta_author      = html_author is defined ? html_author : 'CrazyCake Technologies' %}
         {% set tag_meta_robots      = html_disallow_robots is defined ? "noindex,nofollow" : "index,follow" %}
 
         {# descriptive metas #}
