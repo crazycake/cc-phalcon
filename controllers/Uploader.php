@@ -73,7 +73,8 @@ trait Uploader
         $subdir = ($user_session = $this->session->get("user")) ? $user_session["id"] : microtime();
 
         //set upload path
-        $this->uploader_conf["path"] = self::$ROOT_UPLOAD_PATH."temp/".$subdir."/";
+        $root_path = $this->uploader_conf["root_path"] ?? self::$ROOT_UPLOAD_PATH;
+        $this->uploader_conf["path"] = $root_path."temp/".$subdir."/";
 
         //create dir if not exists
         if(!is_dir($this->uploader_conf["path"]))
