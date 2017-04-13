@@ -128,10 +128,10 @@ trait Localize
                                         <a href=\"javascript:location.reload();\">click aquí</a> para refrescarla.",
         		"NOT_FOUND" 	   => "Oops, el enlace está roto. Porfavor inténtalo más tarde.",
         		"BAD_REQUEST" 	   => "Lo sentimos, no hemos logrado procesar tu petición. Intenta refrescando esta página.",
-        		"ACCESS_FORBIDDEN" => "Tu sesión ha caducado, porfavor <a href=\"./signIn\">ingresa nuevamente aquí</a>."
+        		"ACCESS_FORBIDDEN" => "Tu sesión ha caducado, porfavor <a href=\"./signIn\">ingresa nuevamente aquí</a>.",
+        		"LOADING"  	       => "cargando ...",
         	],
         	"ACTIONS" => [
-        		"LOADING"  	  => "cargando ...",
 				"REDIRECTING" => "redireccionado ...",
         		"OK" 	   	  => "Ok",
         		"ACCEPT"   	  => "Aceptar",
