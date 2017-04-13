@@ -72,9 +72,12 @@ trait Uploader
         //get session user id or temp dir
         $subdir = ($user_session = $this->session->get("user")) ? $user_session["id"] : microtime();
 
-        //set upload path
-        $root_path = $this->uploader_conf["root_path"] ?? self::$ROOT_UPLOAD_PATH;
-        $this->uploader_conf["path"] = $root_path."temp/".$subdir."/";
+        //set upload root path
+        if(empty($this->uploader_conf["root_path"]))
+            $this->uploader_conf["root_path"] = self::$ROOT_UPLOAD_PATH;
+
+        //set upload save path
+        $this->uploader_conf["path"] = $this->uploader_conf["root_path"]."temp/".$subdir."/";
 
         //create dir if not exists
         if(!is_dir($this->uploader_conf["path"]))
@@ -184,7 +187,7 @@ trait Uploader
 
         //cleans folder
         array_map('unlink', glob($path."*"));
-        rmdir($path);
+        @rmdir($path);
     }
 
     /**
