@@ -130,9 +130,9 @@ trait Localize
         		"BAD_REQUEST" 	   => "Lo sentimos, no hemos logrado procesar tu petición. Intenta refrescando esta página.",
         		"ACCESS_FORBIDDEN" => "Tu sesión ha caducado, porfavor <a href=\"./signIn\">ingresa nuevamente aquí</a>.",
         		"LOADING"  	       => "cargando ...",
+				"REDIRECTING"      => "redireccionado ...",
         	],
         	"ACTIONS" => [
-				"REDIRECTING" => "redireccionado ...",
         		"OK" 	   	  => "Ok",
         		"ACCEPT"   	  => "Aceptar",
         		"CANCEL"   	  => "Cancelar",
