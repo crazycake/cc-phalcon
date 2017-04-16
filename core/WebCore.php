@@ -224,10 +224,10 @@ abstract class WebCore extends BaseCore implements WebSecurity
     protected function loadJsModules($modules = [], $fn = self::JS_LOADER_FUNCTION)
     {
         //skip for legacy browsers
-        if ($this->client->isLegacy || empty($modules))
+        if ($this->client->isLegacy)
             return;
 
-        $param  = json_encode($modules, JSON_UNESCAPED_SLASHES);
+        $param  = empty($modules) ? '' : json_encode($modules, JSON_UNESCAPED_SLASHES);
         $script = "$fn($param);";
         //send javascript vars to view as JSON enconded
         $this->view->setVar("js_loader", $script);
