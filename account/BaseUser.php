@@ -80,7 +80,7 @@ abstract class BaseUser extends \CrazyCake\Models\Base
         if (!is_null($this->pass))
             $this->pass = $this->getDI()->getShared("security")->hash($this->pass);
 
-        //set last login
+        //set dates
         $this->last_login = date("Y-m-d H:i:s");
         $this->created_at = date("Y-m-d H:i:s");
     }
