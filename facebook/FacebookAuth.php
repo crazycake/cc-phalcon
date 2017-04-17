@@ -204,7 +204,7 @@ trait FacebookAuth
      * @param boolean $validation - Validates given scope
      * @return string
      */
-    public function loadFacebookLoginURL($route = array(), $scope = null, $validation = false)
+    public function loadFacebookLoginURL($route = [], $scope = null, $validation = false)
     {
         //check link perms
         if (empty($scope)) {
