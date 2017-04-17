@@ -99,7 +99,7 @@ abstract class BaseCore extends Controller
         if (!class_exists("MailerController"))
             throw new Exception("BaseCore::sendMailMessage -> A Mailer Controller is required.");
 
-        $mailer = new MailerController();
+        $mailer = new \MailerController();
 
         //checks that a MailerController exists
         if (!method_exists($mailer, $method))
