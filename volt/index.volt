@@ -128,7 +128,7 @@
 
         {# javascript disabled fallback #}
         <noscript>
-            {{ trans._('Este sitio funciona con Javascript. Porfavor activa el motor de Javascript en tu navegador.') }}
+            {{ trans._('Este sitio funciona con Javascript. Por favor activa el motor de Javascript en tu navegador.') }}
         </noscript>
 
         {# debug: output render time #}
