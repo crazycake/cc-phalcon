@@ -33,30 +33,6 @@ abstract class BaseCore extends Controller
     use Responser;
 
     /**
-     * API codes
-     * @var array
-     */
-    protected $CODE;
-
-    /**
-     * Core text messages
-     * @var array
-     */
-    protected $MSG;
-
-    /**
-     * on Construct event
-     */
-    protected function onConstruct()
-    {
-        //set API Codes
-        $this->CODE = self::$RESPONSE_CODES;
-
-        //set message keys
-        $this->MSG = [];
-    }
-
-    /**
      * Base URL extended function
      * @param string $uri - A given URI
      * @return string - The static URL

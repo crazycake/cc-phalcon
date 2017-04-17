@@ -39,7 +39,7 @@ trait CheckoutManager
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
-     * This method must be call in constructor parent class.
+     * Initialize Trait.
      * TODO: implement defaults conf values.
      * @param array $conf - The config array
      */

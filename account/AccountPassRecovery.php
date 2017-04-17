@@ -27,7 +27,17 @@ trait AccountPassRecovery
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
-     * This method must be call in constructor parent class
+     * After Execute Route
+     */
+    protected function afterExecuteRoute()
+    {
+        parent::afterExecuteRoute();
+        //if loggedIn redirect to account
+        $this->redirectToAccount(true);
+    }
+
+    /**
+     * Initialize Trait
      * @param array $conf - The config array
      */
     public function initAccountPassRecovery($conf = [])
@@ -46,16 +56,6 @@ trait AccountPassRecovery
         $conf["user_entity"]       = App::getClass($conf["user_entity"]);
 
         $this->account_pass_recovery_conf = $conf;
-    }
-
-    /**
-     * Phalcon Initializer Event
-     */
-    protected function initialize()
-    {
-        parent::initialize();
-        //if loggedIn redirect to account
-        $this->redirectToAccount(true);
     }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */

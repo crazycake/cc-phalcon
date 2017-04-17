@@ -26,12 +26,10 @@ abstract class WsCore extends BaseCore
     abstract protected function welcome();
 
     /**
-     * on Construct event
+     * Before Execute Route event
      */
-    protected function onConstruct()
+    protected function beforeExecuteRoute()
     {
-        parent::onConstruct();
-
         // API Key Validation
         $this->_validateApiKey();
     }

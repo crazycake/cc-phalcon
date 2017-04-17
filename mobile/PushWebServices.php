@@ -21,16 +21,12 @@ trait PushWebServices
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
-     * Phalcon Constructor Event
+     * Initialize Event
      */
-    protected function onConstruct()
+    protected function initialize()
     {
-        //call parent construct 1st
-        parent::onConstruct();
-
         //extended error codes
-        $this->CODE["3600"] = "push notification error";
-        $this->CODE["3601"] = "invalid service";
+        $this->RCODES["3600"] = "push notification error";
     }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
@@ -51,7 +47,7 @@ trait PushWebServices
 
             //service validation
             if (!in_array($data["service"], self::$SERVICES))
-                $this->jsonResponse(3601);
+                $this->jsonResponse(405);
 
             //subscribe user
             $this->subscribe($data);
@@ -81,7 +77,7 @@ trait PushWebServices
 
             //service validation
             if (!in_array($data["service"], self::$SERVICES))
-                $this->jsonResponse(3601);
+                $this->jsonResponse(405);
 
             //send notification
             $response = $this->sendNotification($data);
@@ -109,7 +105,7 @@ trait PushWebServices
 
             //service validation
             if (!in_array($data["service"], self::$SERVICES))
-                $this->jsonResponse(3601);
+                $this->jsonResponse(405);
 
             //Notification received
             $this->notificationReceived($data);

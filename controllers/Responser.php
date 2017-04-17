@@ -29,7 +29,7 @@ trait Responser
 	/**
 	 * Response HTTP Codes
 	 */
-	public static $RESPONSE_CODES = [
+	public $RCODES = [
 		//success
 		"200" => "ok",
 		//client errors
@@ -43,7 +43,7 @@ trait Responser
 		"498" => "Invalid Token",
 		//server
 		"500" => "Internal Server Error",
-		"501" => "Unknown error",
+		"510" => "Unknown error",
 		//db related
 		"800" => "Empty result data",
 		//resources related
@@ -54,8 +54,7 @@ trait Responser
 
     /**
      * Sends a JSON response for APIs.
-     * The HTTP statusCode is always 200.
-     * Codes: ```200, 400, 404, 405, 498, 500, 501, 800, 900, 901, 902```
+     * The HTTP header status code is always 200.
      * @param string $code - The app message code.
      * @param object $payload - Payload to send
      * @param string $type - (optional) Append a type attr to the response. Example alert, warning.
@@ -65,8 +64,8 @@ trait Responser
     protected function jsonResponse($code = 200, $payload = null, $type = "", $namespace = "")
     {
         //if code is not identified, mark as unknown error
-        if (!isset($this->CODE[$code]))
-            $this->CODE[$code] = $this->CODE[501];
+        if (!isset($this->RCODES[$code]))
+            $this->RCODES[$code] = $this->RCODES[510];
 
         //set response
         $response = [
@@ -113,7 +112,7 @@ trait Responser
                 $response["message"] = $payload;
 
             //set error for non array
-            $response["error"] = is_object($payload) ? $payload : $this->CODE[$code];
+            $response["error"] = is_object($payload) ? $payload : $this->RCODES[$code];
         }
 
         //if a view service is set, disable rendering

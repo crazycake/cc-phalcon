@@ -35,7 +35,17 @@ trait AccountManager
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
-     * This method must be call in constructor parent class
+     * After Execute Route
+     */
+    protected function afterExecuteRoute()
+    {
+        parent::afterExecuteRoute();
+        //for auth required pages disable robots
+        $this->view->setVar("html_disallow_robots", true);
+    }
+
+    /**
+     * Initialize Trait
      * @param array $conf - The config array
      */
     public function initAccountManager($conf = [])
@@ -55,24 +65,6 @@ trait AccountManager
 
         //set configuration
         $this->account_manager_conf = $conf;
-    }
-
-    /**
-     * Phalcon Initializer Event
-     */
-    protected function initialize()
-    {
-        parent::initialize();
-
-        //if not logged In, set this URI to redirected after logIn
-        if (!$this->isLoggedIn())
-            $this->setRedirectionOnLoggedIn();
-
-        //check if user is logged in, if not dispatch to auth/logout
-        $this->requireLoggedIn();
-
-        //for auth required pages disable robots
-        $this->view->setVar("html_disallow_robots", true);
     }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */

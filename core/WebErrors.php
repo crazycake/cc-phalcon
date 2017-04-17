@@ -13,16 +13,16 @@ namespace CrazyCake\Core;
 trait WebErrors
 {
     /**
-     * Called if the event ‘beforeExecuteRoute’ is executed with success
+     * After Execute Route
      */
-    protected function initialize()
+    protected function afterExecuteRoute()
     {
-        parent::initialize();
+        parent::afterExecuteRoute();
 
         //disable robots
         $this->view->setVar("html_disallow_robots", true);
     }
-    
+
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
 	/**

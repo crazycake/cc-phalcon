@@ -43,12 +43,10 @@ abstract class WebCore extends BaseCore implements WebSecurity
     public $client;
 
     /**
-     * on Construct event
+     * BeforeExecuteRoute event
      */
-    protected function onConstruct()
+    protected function beforeExecuteRoute()
     {
-        parent::onConstruct();
-
         //set client object with its properties (User-Agent)
         $this->_setClient();
 
@@ -63,30 +61,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
     }
 
     /**
-     * Called if the event ‘beforeExecuteRoute’ is executed with success
-     */
-    protected function initialize()
-    {
-        //Skip web core initialize for api module includes
-        if ($this->request->isAjax() || MODULE_NAME == "api") {
-
-			$di = \Phalcon\DI::getDefault();
-
-			if($this->di->has("view"))
-                $this->view->disable();
-
-            return;
-		}
-
-        //Set App common vars (this must be set before render any page)
-        $this->view->setVars([
-            "config" => $this->config, //app configuration vars
-            "client" => $this->client  //client object
-        ]);
-    }
-
-    /**
-     * After Execute Route: Triggered after executing the controller/action method (before initialize event)
+     * After Execute Route: Triggered after executing the controller/action method
      */
     protected function afterExecuteRoute()
     {
@@ -96,8 +71,8 @@ abstract class WebCore extends BaseCore implements WebSecurity
 
         //set app assets
         $this->_setAppAssets();
-        //set javascript vars in view
-        $this->_setAppJsViewVars();
+        //set js,volt vars in view
+        $this->_setAppViewVars();
 
         //check browser is supported (child method)
         $supported = $this->checkBrowserSupport($this->client->browser, $this->client->shortVersion);
@@ -367,7 +342,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
      * Set javascript vars for rendering view, call child method for customization.
      * @access private
      */
-    private function _setAppJsViewVars()
+    private function _setAppViewVars()
     {
         //set javascript global objects
         $js_app = (object)[
@@ -391,6 +366,8 @@ abstract class WebCore extends BaseCore implements WebSecurity
 
         //send javascript vars to view as JSON enconded
         $this->view->setVars([
+            "config"    => $this->config, //app configuration vars
+            "client"    => $this->client,  //client object
             "js_app"    => json_encode($js_app, JSON_UNESCAPED_SLASHES),
             "js_client" => json_encode($this->client, JSON_UNESCAPED_SLASHES)
         ]);

@@ -64,7 +64,7 @@ trait FacebookAuth
     /* --------------------------------------------------- § -------------------------------------------------------- */
 
     /**
-     * This method must be call in constructor parent class
+     * Initialize Trait
      * @param array $conf - The config array
      */
     public function initFacebookAuth($conf = [])
