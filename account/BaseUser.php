@@ -72,15 +72,6 @@ abstract class BaseUser extends \CrazyCake\Models\Base
     static $ACCOUNT_FLAGS = ["pending", "enabled", "disabled", "unregistered"];
 
     /**
-     * Initializer
-     */
-    public function initialize()
-    {
-        //Skips fields/columns on both INSERT/UPDATE operations
-        $this->skipAttributes(["created_at"]);
-    }
-
-    /**
      * Before Validation Event [onCreate]
      */
     public function beforeValidationOnCreate()
@@ -91,6 +82,7 @@ abstract class BaseUser extends \CrazyCake\Models\Base
 
         //set last login
         $this->last_login = date("Y-m-d H:i:s");
+        $this->created_at = date("Y-m-d H:i:s");
     }
 
     /**

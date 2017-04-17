@@ -40,9 +40,9 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
 	/**
      * Initializer
      */
-    public function afterFetch()
+    public function initialize()
     {
-        //model relations
+        //set relation
         $this->hasOne("object_id", $this->object_class, "id", ["alias" => "rel"]);
     }
 
