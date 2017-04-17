@@ -364,12 +364,14 @@ abstract class WebCore extends BaseCore implements WebSecurity
         if (class_exists("TranslationController"))
             $js_app->TRANS = \TranslationController::getJsTranslations();
 
+        //set user agent
+        $js_app->UA = $this->client;
+
         //send javascript vars to view as JSON enconded
         $this->view->setVars([
             "config"    => $this->config, //app configuration vars
             "client"    => $this->client,  //client object
-            "js_app"    => json_encode($js_app, JSON_UNESCAPED_SLASHES),
-            "js_client" => json_encode($this->client, JSON_UNESCAPED_SLASHES)
+            "js_app"    => json_encode($js_app, JSON_UNESCAPED_SLASHES)
         ]);
     }
 }

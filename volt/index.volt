@@ -72,7 +72,6 @@
         {% if js_app is defined %}
             <script>
                 APP = {{ js_app }};
-                UA  = {{ js_client }};
             </script>
         {% else %}
             <script>
