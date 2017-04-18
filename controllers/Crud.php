@@ -78,7 +78,7 @@ trait Crud
 			throw new \Exception("Crud requires entity, dfields & sfields options.");
 
 	    //set entity in lower case
-		$conf["entity_lower"]= \Phalcon\Text::uncamelize($conf["entity"]);
+		$conf["entity_lower"] = \Phalcon\Text::uncamelize($conf["entity"]);
 
 		if(empty($conf["entity_component"]))
 			$conf["entity_component"] = $conf["entity_lower"];
