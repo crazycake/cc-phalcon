@@ -98,7 +98,6 @@ trait Crud
     {
 		//set layout
 		$this->view->setLayout("crud");
-		$this->view->pick("crud/index");
 
 		//listener
 		$this->onBeforeRenderIndex();
