@@ -94,8 +94,10 @@ class Images
                 if(isset($array["r"]))
                     $image->rotate($array["r"]);
 
-                //save image
-                $image->save($new_file, 100);
+                //save image (default 100%)
+				$quality = isset($array["q"]) ? $array["q"] : 100;
+
+                $image->save($new_file, $quality);
 
                 $saved++;
             }
