@@ -275,7 +275,7 @@ trait Mailer
 
         //add recipients
         foreach ($recipients as $email)
-            $message ->addTo($email);
+            $message->addTo($email);
 
         //parse attachments
         $this->_parseAttachments($attachments, $message);
