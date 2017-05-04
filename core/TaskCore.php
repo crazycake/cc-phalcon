@@ -66,7 +66,7 @@ class TaskCore extends Task
         if (!is_dir($assets_path))
             $this->colorize("Assets path not found: $assets_path", "ERROR", true);
 
-        $version_stripped = (int)str_replace(".", "", $this->config->version);
+        $version = str_replace(".", "", $this->config->version);
 
 		//clean old files
         $files = scandir($assets_path);
@@ -77,29 +77,30 @@ class TaskCore extends Task
                 continue;
 
             //keep last version
-			if(strpos($f, "-".($version_stripped - 1)) === false) {
-				$this->colorize("Removing asset $assets_path$f", "NOTE");
-            	unlink($assets_path.$f);
-			}
+			if(strpos($f, "-".$version[0]) !== false)
+				continue;
+
+            $this->colorize("Removing asset $assets_path$f", "NOTE");
+            unlink($assets_path.$f);
         }
 
         if(!is_file($assets_path."app.min.js") || !is_file($assets_path."app.min.css"))
             $this->colorize("Missing assets minified files.", "ERROR", true);
 
         //APP JS
-        copy($assets_path."app.min.js", $assets_path."app-".$version_stripped.".rev.js");
+        copy($assets_path."app.min.js", $assets_path."app-".$version.".rev.js");
         //APP CSS
-        copy($assets_path."app.min.css", $assets_path."app-".$version_stripped.".rev.css");
+        copy($assets_path."app.min.css", $assets_path."app-".$version.".rev.css");
 		//LAZY CSS
 		if(is_file($assets_path."lazy.min.css"))
-			copy($assets_path."lazy.min.css", $assets_path."lazy-".$version_stripped.".rev.css");
+			copy($assets_path."lazy.min.css", $assets_path."lazy-".$version.".rev.css");
 
 		//remove min files
         foreach(glob($assets_path."*.min.*") as $f)
             unlink($f);
 
         //print output
-        $this->colorize("Created revision assets: ".$this->config->version, "OK", true);
+        $this->colorize("Created revision assets for version: ".$this->config->version, "OK", true);
     }
 
     /* --------------------------------------------------- § -------------------------------------------------------- */
