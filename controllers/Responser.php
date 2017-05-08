@@ -120,7 +120,7 @@ trait Responser
             $this->view->disable(); //disable view output
 
         //outputs JSON response
-        $this->outputJsonResponse(["response" => $response]);
+        $this->outputJsonResponse($response);
     }
 
 	/**
