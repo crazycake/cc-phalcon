@@ -282,6 +282,8 @@ class AppServices
 
                 //++ str_replace
                 $compiler->addFunction("replace", "str_replace");
+                //++ preg_replace
+                $compiler->addFunction("preg_replace", "preg_replace");
 				//++ substr
                 $compiler->addFunction("substr", "substr");
                 //++ strrpos
