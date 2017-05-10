@@ -305,8 +305,8 @@ trait Mailer
         $this->mailer_conf["data_user"] = $user;
 
         //for contact template
-        $this->mailer_conf["data_name"]    = $user->first_name." ".$user->last_name;
-        $this->mailer_conf["data_email"]   = $user->email;
+        $this->mailer_conf["data_name"]    = $user ? $user->first_name." ".$user->last_name : "";
+        $this->mailer_conf["data_email"]   = $user ? $user->email : "caker@crazycake.tech";
         $this->mailer_conf["data_message"] = "This is an example message";
 
         //call listener
