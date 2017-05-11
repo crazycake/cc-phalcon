@@ -45,6 +45,40 @@ trait CheckoutCurrency
 	}
 
     /**
+     * Gets CLP to USD currency conversion value
+     * @param int $amount - The CLP amount
+     * @return float The USD value
+     */
+    public function chileanPesoToDollar($amount = 0)
+    {
+        $value = $this->dollarToChileanPeso();
+
+        //fallback
+        if (empty($value))
+            throw new Exception("Invalid chilean currency value stored in Redis. Run CLI to store value");
+
+        //apply conversion
+        return number_format((float)($amount / $value), 2, '.', '');
+    }
+
+    /**
+     * Get currency conversion USD to CLP
+     */
+	public function dollarToChileanPeso($amount = 1.00)
+	{
+		//redis service
+		$redis = $this->newRedisClient();
+
+		$value = $redis->get(self::$REDIS_KEY_USD_CLP_VALUE);
+
+        //set value if is empty
+		if(empty($value) && $new_value = $this->apiChileanCurrencyRequest())
+            $redis->set(self::$REDIS_KEY_USD_CLP_VALUE, $new_value);
+
+		return $redis->get(self::$REDIS_KEY_USD_CLP_VALUE) * $amount;
+	}
+
+    /**
      * CLI - Saves in Redis currency CLP - USD value conversion
      */
     protected function storeDollarChileanPesoValue()
@@ -69,40 +103,6 @@ trait CheckoutCurrency
             $this->logger->error("CheckoutJob::storeChileanPesoToDollarConversion -> failed retriving API data. Err: ".$e->getMessage());
         }
     }
-
-    /**
-     * Gets CLP to USD currency conversion value
-     * @param int $amount - The CLP amount
-     * @return float The USD value
-     */
-    protected function chileanPesoToDollar($amount = 0)
-    {
-        $value = $this->dollarToChileanPeso();
-
-        //fallback
-        if (empty($value))
-            throw new Exception("Invalid chilean currency value stored in Redis. Run CLI to store value");
-
-        //apply conversion
-        return number_format((float)($amount / $value), 2, '.', '');
-    }
-
-    /**
-     * Get currency conversion USD to CLP
-     */
-	protected function dollarToChileanPeso($amount = 1.00)
-	{
-		//redis service
-		$redis = $this->newRedisClient();
-
-		$value = $redis->get(self::$REDIS_KEY_USD_CLP_VALUE);
-
-        //set value if is empty
-		if(empty($value) && $new_value = $this->apiChileanCurrencyRequest())
-            $redis->set(self::$REDIS_KEY_USD_CLP_VALUE, $new_value);
-
-		return $redis->get(self::$REDIS_KEY_USD_CLP_VALUE) * $amount;
-	}
 
     /**
      * Calls API Chilean Currency to get indicator values
