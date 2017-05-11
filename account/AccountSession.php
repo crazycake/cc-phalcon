@@ -179,9 +179,9 @@ trait AccountSession
      * Set redirection URL for after loggedIn event
      * @param string $uri - The URL to be redirected
      */
-    protected function setRedirectionOnLoggedIn($uri = null)
+    protected function setRedirectionOnLoggedIn($uri = "")
     {
-        if (is_null($uri))
+        if (empty($uri))
             $uri = $this->getRequestedUri();
 
         $this->session->set("auth_redirect", $uri);
