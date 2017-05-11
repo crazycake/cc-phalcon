@@ -294,13 +294,6 @@ trait CheckoutManager
         $this->parseCheckoutObjects($checkout, $data);
         //sd($checkout);
 
-        //check max objects allowed
-        if ($checkout->total_q > $this->checkout_manager_conf["max_user_acquisition"]) {
-
-            throw new Exception(str_replace("{num}", $this->checkout_manager_conf["max_user_acquisition"],
-                                                     $this->checkout_manager_conf["trans"]["ERROR_MAX_TOTAL"]));
-        }
-
         return $checkout;
     }
 }
