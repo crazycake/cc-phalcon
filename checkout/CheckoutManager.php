@@ -87,7 +87,7 @@ trait CheckoutManager
             $checkout->buy_order = $checkout_orm->buy_order;
 
             if(method_exists($this, "onAfterBuyOrderCreation"))
-                $this->onAfterBuyOrderCreation($checkout_orm);
+                $this->onAfterBuyOrderCreation($checkout);
 
             //send JSON response
             return $this->jsonResponse(200, $checkout);
