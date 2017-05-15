@@ -48,7 +48,7 @@ class Images
         if(!is_file($file))
             return false;
 
-        $src     = realpath(dirname($file))."/";
+        $src     = dirname($file)."/";
         $resized = [];
 
         //loop resizer
