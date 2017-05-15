@@ -250,7 +250,7 @@ trait Uploader
 
                 //image resize
                 if(!empty($conf["resize"]))
-                    Images::resize($dest, $file, $conf["resize"]);
+                    Images::resize($dest.$file, $conf["resize"]);
             }
         }
 

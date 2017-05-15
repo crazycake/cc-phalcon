@@ -43,15 +43,14 @@ class Images
      * @param  array $conf - The key file configuration
      * @return int total saved
      */
-    public static function resize($src = "", $filename = "", $conf = [])
+    public static function resize($file = "", $conf = [])
     {
-        //full path file
-        $file = $src.$filename;
-
         if(!is_file($file))
             return false;
 
+        $src   = realpath(dirname($file))."/";
         $saved = 0;
+
 
         //loop resizer
         foreach ($conf as $key => $array) {
