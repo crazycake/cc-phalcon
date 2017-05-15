@@ -38,15 +38,15 @@ class Images
 
     /**
      * Resize input image with config params.
-     * @param  string $dest - The destination folder
+     * @param  string $src - The source folder
      * @param  string $file - The input filename
      * @param  array $conf - The key file configuration
      * @return int total saved
      */
-    public static function resize($dest = "", $filename = "", $conf = [])
+    public static function resize($src = "", $filename = "", $conf = [])
     {
         //full path file
-        $file = $dest.$filename;
+        $file = $src.$filename;
 
         if(!is_file($file))
             return false;
@@ -65,7 +65,7 @@ class Images
                 //get file name & ext
                 $ext      = pathinfo($file, PATHINFO_EXTENSION);
                 $new_name = basename($file, ".$ext")."_$key.".$ext;
-                $new_file = $dest.$new_name;
+                $new_file = $src.$new_name;
                 //s($file, $ext, $new_name, $new_file);exit;
 
                 //++ Resizes
