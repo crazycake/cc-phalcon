@@ -51,7 +51,6 @@ class Images
         $src   = realpath(dirname($file))."/";
         $saved = 0;
 
-
         //loop resizer
         foreach ($conf as $key => $array) {
 
