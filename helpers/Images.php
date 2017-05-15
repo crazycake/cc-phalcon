@@ -48,8 +48,8 @@ class Images
         if(!is_file($file))
             return false;
 
-        $src   = realpath(dirname($file))."/";
-        $saved = 0;
+        $src     = realpath(dirname($file))."/";
+        $resized = [];
 
         //loop resizer
         foreach ($conf as $key => $array) {
@@ -97,7 +97,7 @@ class Images
 
                 $image->save($new_file, $quality);
 
-                $saved++;
+                $resized[] = $new_file;
             }
             catch(\Exception $e) {
 
@@ -107,6 +107,6 @@ class Images
             }
         }
 
-        return $saved;
+        return $resized;
     }
 }
