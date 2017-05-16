@@ -24,14 +24,14 @@ trait AccountAuth
     /**
      * Event on user logged in
      */
-    abstract public function onLoggedIn($user_id);
+    abstract public function onLogin($user_id);
 
     /**
      * Disptach event on logged in
      * @param string $uri - target Uri
      * @param array $payload - Optional data
      */
-    abstract public function onLoggedInDispatch($uri = "account", $payload = null);
+    abstract public function onLoginDispatch($uri = "account", $payload = null);
 
     /**
      * Session Destructor with Autoredirection (logout)
@@ -155,9 +155,9 @@ trait AccountAuth
             $this->flash->success($this->account_auth_conf["trans"]["ACTIVATION_SUCCESS"]);
 
             //success login
-            $this->onLoggedIn($user_id);
+            $this->onLogin($user_id);
             //session
-            $this->onLoggedInDispatch();
+            $this->onLoginDispatch();
         }
         catch (Exception $e) {
 
@@ -233,10 +233,10 @@ trait AccountAuth
             $payload = $token_class::newTokenIfExpired($user->id, "access");
 
         //success login
-        $this->onLoggedIn($user->id);
+        $this->onLogin($user->id);
 
         //session controller, dispatch response
-        $this->onLoggedInDispatch("account", $payload);
+        $this->onLoginDispatch("account", $payload);
     }
 
     /**
@@ -292,7 +292,7 @@ trait AccountAuth
         //send activation account email
         $this->sendMailMessage("accountActivation", $user->id);
         //force redirection
-        $this->onLoggedInDispatch(false);
+        $this->onLoginDispatch(false);
     }
 
     /**

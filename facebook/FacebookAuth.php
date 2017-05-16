@@ -97,7 +97,7 @@ trait FacebookAuth
 
         try {
             //check signed request
-            if (!$this->__parseSignedRequest($data["signed_request"]))
+            if (!$this->_parseSignedRequest($data["signed_request"]))
                 return $this->jsonResponse(405);
 
             //call js helper
@@ -105,7 +105,7 @@ trait FacebookAuth
             $fac    = $helper->getAccessToken();
 
             //handle login
-            $response = $this->__loginUser($fac);
+            $response = $this->_loginUser($fac);
             $response["perms"] = null;
 
             //check perms
@@ -124,9 +124,9 @@ trait FacebookAuth
 
             //handle response, session controller
             if (isset($data["user_data"]) && $data["user_data"])
-                return $this->onLoggedInDispatch(false, $response);
+                return $this->onLoginDispatch(false, $response);
             else
-                return $this->onLoggedInDispatch();
+                return $this->onLoginDispatch();
         }
         catch (FacebookResponseException $e) { $exception = $e; }
         catch (FacebookSDKException $e)      { $exception = $e; }
@@ -161,7 +161,7 @@ trait FacebookAuth
                 throw new Exception($this->facebook_auth_conf["trans"]["OAUTH_REDIRECTED"]);
 
             //handle login
-            $response = $this->__loginUser($fac);
+            $response = $this->_loginUser($fac);
             $response["perms"] = null;
 
             //check perms
@@ -173,7 +173,7 @@ trait FacebookAuth
 
             //handle response automatically
             if (empty($route["controller"]))
-                return $this->onLoggedInDispatch();
+                return $this->onLoginDispatch();
 
             //Redirect
             $uri = $route["controller"]."/".$route["action"]."/".(empty($route["payload"]) ? "" : implode("/", $route["payload"]));
@@ -312,7 +312,7 @@ trait FacebookAuth
             /** 1.- User deleted tha app from his facebook account settings */
             if (!empty($data["signed_request"])) {
 
-                $fb_data = $this->__parseSignedRequest($data["signed_request"]);
+                $fb_data = $this->_parseSignedRequest($data["signed_request"]);
 
                 if (!$fb_data)
                     throw new Exception("invalid Facebook Signed Request: ".json_encode($fb_data));
@@ -432,7 +432,7 @@ trait FacebookAuth
     {
         try {
             //get session using short access token or with saved access token
-            $this->__setUserAccessToken($fac, $user_id);
+            $this->_setUserAccessToken($fac, $user_id);
 
             //get the graph-user object for the current user (validation)
             $response = $this->fb->get("/me?fields=email,name,first_name,last_name,gender,birthday,age_range,locale");

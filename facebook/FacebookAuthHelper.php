@@ -59,7 +59,7 @@ trait FacebookAuthHelper
     protected function _getAccesTokenPermissions($fac = null, $user_id = 0, $scope = false)
     {
         //get session using short access token or with saved access token
-        $this->__setUserAccessToken($fac, $user_id);
+        $this->_setUserAccessToken($fac, $user_id);
 
         try {
             $this->logger->debug("Facebook::_getAccesTokenPermissions -> checking fac perms for userID: $user_id,  scope: ".json_encode($scope));
@@ -105,15 +105,13 @@ trait FacebookAuthHelper
         return false;
     }
 
-    /* --------------------------------------------------- § -------------------------------------------------------- */
-
     /**
      * Logins a User with facebook access token,
      * If data has the signed_request property it will be checked automatically
      * @param object $fac - The access token object
      * @param mixed[string|array] $validation - Validates user fields
      */
-    private function __loginUser($fac = null)
+    protected function _loginUser($fac = null)
     {
         //get model classmap names
         $user_class          = App::getClass("user");
@@ -139,14 +137,14 @@ trait FacebookAuthHelper
             //check if user is already logged In, dont a have a FB, and he is attempting to login facebook with another account
             if ($user_session && $user_session["fb_id"] && $user_session["fb_id"] != $properties["fb_id"]) {
 
-                $this->logger->error("Facebook::__loginUser() -> App Session fb_id (".$user_session["fb_id"].") & sdk session (".$properties["fb_id"].") data not match.");
+                $this->logger->error("Facebook::_loginUser() -> App Session fb_id (".$user_session["fb_id"].") & sdk session (".$properties["fb_id"].") data not match.");
                 throw new Exception($this->facebook_auth_conf["trans"]["SESSION_SWITCHED"]);
             }
 
             //check if user is already logged In, have a FB user and is linked to another user
             if ($user_session && $user_fb && $user_fb->user_id != $user_session["id"]) {
 
-                $this->logger->error("Facebook::__loginUser() -> App Session fb_id (".$user_session["fb_id"].") & sdk session (".$properties["fb_id"].") data not match.");
+                $this->logger->error("Facebook::_loginUser() -> App Session fb_id (".$user_session["fb_id"].") & sdk session (".$properties["fb_id"].") data not match.");
                 throw new Exception($this->facebook_auth_conf["trans"]["ACCOUNT_SWITCHED"]);
             }
 
@@ -182,7 +180,7 @@ trait FacebookAuthHelper
                 else {
 
                     //user dont have an account, checking facebook email...
-                    if (!$this->__filterEmail($properties["email"], $properties["fb_id"]))
+                    if (!$this->_filterEmail($properties["email"], $properties["fb_id"]))
                         throw new Exception($this->facebook_auth_conf["trans"]["INVALID_EMAIL"]);
 
                     //check existing user with input email
@@ -200,7 +198,7 @@ trait FacebookAuthHelper
 
             //INSERT a new facebook user
             if (!$user_fb)
-                $this->__saveUser($user->id, $properties["fb_id"], $fac);
+                $this->_saveUser($user->id, $properties["fb_id"], $fac);
 
             //queues an async request, extend access token (append fb userID and short live access token)
             $this->coreRequest([
@@ -219,14 +217,15 @@ trait FacebookAuthHelper
         if ($exception) {
 
             $fb_id = (isset($properties) && is_array($properties)) ? $properties["fb_id"] : "undefined";
-            $this->logger->error("Facebook::__loginUser -> Exception: ".$exception->getMessage().". fb_id: ".$fb_id);
+            $this->logger->error("Facebook::_loginUser -> Exception: ".$exception->getMessage().". fb_id: ".$fb_id);
             throw new Exception($e->getMessage());
         }
 
+        //mark user as Logged In
+        $this->onLogin($user->id);
+
         //SAVES session if none error ocurred
         $login_data["properties"] = $properties;
-        //set php session as logged in
-        $this->onLoggedIn($user->id);
 
         return $login_data;
     }
@@ -237,7 +236,7 @@ trait FacebookAuthHelper
      * @param int $user_id - The user ID
      * @return mixed [boolean|string|object]
      */
-    private function __setUserAccessToken($fac = null, $user_id = 0)
+    protected function _setUserAccessToken($fac = null, $user_id = 0)
     {
         $user_facebook_class = App::getClass("user_facebook");
 
@@ -268,7 +267,7 @@ trait FacebookAuthHelper
      * @param object $fac - The access token object
      * @return array
      */
-    private function __saveUser($user_id = null, $fb_id = null, $fac = null)
+    protected function _saveUser($user_id = null, $fb_id = null, $fac = null)
     {
         $user_class          = App::getClass("user");
         $user_facebook_class = App::getClass("user_facebook");
@@ -282,7 +281,7 @@ trait FacebookAuthHelper
 
         if (!$user_fb->save()) {
 
-            $this->logger->error("Facebook::__saveUser() -> Error Insertion User Facebook data. userId -> ".$user_id.",
+            $this->logger->error("Facebook::_saveUser() -> Error Insertion User Facebook data. userId -> ".$user_id.",
                                   FBUserId -> ".$fb_id.", trace: ".$user_fb->messages(true));
 
             $user = $user_class::getById($user_id);
@@ -300,13 +299,13 @@ trait FacebookAuthHelper
      * @param int $fb_id - Facebook Id Optional
      * @return [type] [description]
      */
-    private function __filterEmail($email = "", $fb_id = 0)
+    protected function _filterEmail($email = "", $fb_id = 0)
     {
         //email validation
         if (!empty($email) && filter_var($email, FILTER_VALIDATE_EMAIL))
             return true;
 
-        $this->logger->error("Facebook::__loginUser() -> Facebook Session (".$fb_id.") invalid email: ".$email);
+        $this->logger->error("Facebook::_loginUser() -> Facebook Session (".$fb_id.") invalid email: ".$email);
 
         //invalidate email user
         $request = $this->fb->delete("/me/permissions");
@@ -320,7 +319,7 @@ trait FacebookAuthHelper
      * @param string $signed_request - Signed request received from Facebook API
      * @return mixed
      */
-    private function __parseSignedRequest($signed_request = null)
+    protected function _parseSignedRequest($signed_request = null)
     {
         if (is_null($signed_request))
             return false;
@@ -340,7 +339,7 @@ trait FacebookAuthHelper
         $data = json_decode($base64_decode_url($payload), true);
         //check algorithm
         if (strtoupper($data["algorithm"]) !== "HMAC-SHA256") {
-            $this->logger->error("Facebook::__parseSignedRequest -> Unknown algorithm. Expected HMAC-SHA256");
+            $this->logger->error("Facebook::_parseSignedRequest -> Unknown algorithm. Expected HMAC-SHA256");
             return false;
         }
         //adding the verification of the signed_request below
@@ -348,7 +347,7 @@ trait FacebookAuthHelper
         $signature    = $base64_decode_url($encoded_sig);
 
         if ($signature !== $expected_sig) {
-            $this->logger->error("Facebook::__parseSignedRequest -> Invalid JSON Signature!");
+            $this->logger->error("Facebook::_parseSignedRequest -> Invalid JSON Signature!");
             return false;
         }
 

@@ -114,7 +114,7 @@ trait AccountSession
      * Set user Session as logged in
      * @param int $user_id - The user ID
      */
-    protected function onLoggedIn($user_id)
+    protected function onLogin($user_id)
     {
         //get user data from DB
         $user_class = $this->account_session_conf["user_entity"];
@@ -153,7 +153,7 @@ trait AccountSession
      * @param string $uri - The URI to redirect after loggedIn
      * @param array $payload - Sends a payload response instead of redirection (optional)
      */
-    protected function onLoggedInDispatch($uri = "account", $payload = null)
+    protected function onLoginDispatch($uri = "account", $payload = null)
     {
         //check if redirection is set in session
         if ($uri && $this->session->has("auth_redirect")) {
@@ -179,7 +179,7 @@ trait AccountSession
      * Set redirection URL for after loggedIn event
      * @param string $uri - The URL to be redirected
      */
-    protected function setRedirectionOnLoggedIn($uri = "")
+    protected function setRedirectionOnLogin($uri = "")
     {
         if (empty($uri))
             $uri = $this->getRequestedUri();
