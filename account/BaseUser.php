@@ -86,17 +86,6 @@ abstract class BaseUser extends \CrazyCake\Models\Base
     }
 
     /**
-     * Before Validation Event [onUpdate]
-     */
-    public function beforeValidationOnUpdate()
-    {
-        parent::beforeValidationOnUpdate();
-
-        //set last login
-        $this->last_login = date("Y-m-d H:i:s");
-    }
-
-    /**
      * Validations
      */
     public function validation()
