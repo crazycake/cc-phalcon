@@ -250,10 +250,8 @@ abstract class WebCore extends BaseCore implements WebSecurity
         else {
 
             // load lang from session?
-            if($this->session->has("lang"))
-                $lang = $this->session->get("lang");
-            else
-                $lang = $this->request->getBestLanguage();
+            $lang = $this->session->has("lang") ? $this->session->get("lang") :
+                                                  $this->request->getBestLanguage();
         }
 
 		//filter lang
