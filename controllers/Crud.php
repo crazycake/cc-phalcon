@@ -170,24 +170,14 @@ trait Crud
 		$this->onQuery($query);
 
 		//get pagination response
-		$result = $this->_getPaginationData($query, $data);
+		$r = $this->_getPaginationData($query, $data);
 
         //optional listener
         if(method_exists($this, "onResultset"))
-		      $this->onResultset($result->data);
-
-		//parse data array
-		if($result->data instanceof Resultset) {
-
-	        $objects = [];
-	        foreach ($result->data as $obj)
-	            $objects[] = $obj->toArray();
-
-	         $result->data = $objects;
-		}
+		    $r->output->data = $this->onResultset($r->resultset);
 
 		//output json response
-		$this->outputJsonResponse($result);
+		$this->outputJsonResponse($r->output);
     }
 
     /**
@@ -380,7 +370,7 @@ trait Crud
                            ->getQuery()->execute();
 
 		//create response object
-		$response = (object)[
+		$output = (object)[
 			"total" 	    => $total,
 			"per_page" 		=> $per_page,
 			"current_page"  => $current_page,
@@ -394,10 +384,10 @@ trait Crud
 			"data"			=> $resultset->jsonSerialize()
 		];
 
-        if(APP_ENV == "local")
-            $response->phql = $query->getPhql();
+        if(APP_ENV != "production")
+            $output->phql = $query->getPhql();
 
-        return $response;
+        return (object)["output" => $output, "resultset" => $resultset];
 	}
 
 	/**
