@@ -174,7 +174,7 @@ trait Crud
 
         //optional listener
         if(method_exists($this, "onResultset"))
-		    $r->output->data = $this->onResultset($r->resultset);
+            $r->output->data = $this->onResultset($r->resultset);
 
 		//output json response
 		$this->outputJsonResponse($r->output);
