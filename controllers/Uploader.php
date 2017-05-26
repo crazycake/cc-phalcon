@@ -129,7 +129,7 @@ trait Uploader
             }
 
             //set file saved name
-            $namespace = $new_file["key"]."-".time();
+            $namespace = $new_file["key"]."-".time().uniqid();
             $save_name = $namespace.".".$new_file["ext"];
             //append resource url
             $new_file["url"]            = $this->baseUrl("uploads/temp/".$save_name);
