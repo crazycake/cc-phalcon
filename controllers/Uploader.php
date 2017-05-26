@@ -104,7 +104,6 @@ trait Uploader
     public function uploadAction()
     {
         $uploaded = [];
-        $failed   = [];
         $messages = [];
 
         //check if user has uploaded files
@@ -123,10 +122,9 @@ trait Uploader
             //validate file
             $new_file = $this->_validateUploadedFile($file, $this->headers[self::$HEADER_NAME]);
 
-            //check for failed uploads
+            //check for rejected uploads
             if ($new_file["message"]) {
                 array_push($messages, $new_file["message"]);
-                array_push($failed, $new_file);
                 continue;
             }
 
@@ -147,7 +145,6 @@ trait Uploader
 		//response
 		$this->jsonResponse(200, [
             "uploaded" => $uploaded,
-            "failed"   => $failed,
             "messages" => $messages,
         ]);
     }
