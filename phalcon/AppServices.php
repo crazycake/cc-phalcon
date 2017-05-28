@@ -58,7 +58,7 @@ class AppServices
         // get a new Micro DI
         $di = new \Phalcon\DI\FactoryDefault\CLI();
         $this->_setCommonServices($di);
-        $this->_setDatabaseService($di);
+        $this->_setDatabaseServices($di);
         $this->_setTranslationService($di);
         return $di;
     }
@@ -72,7 +72,7 @@ class AppServices
         // get a new Micro DI
         $di = new \Phalcon\DI\FactoryDefault();
         $this->_setCommonServices($di);
-        $this->_setDatabaseService($di);
+        $this->_setDatabaseServices($di);
         $this->_setTranslationService($di);
 
         if(MODULE_NAME != "api")
@@ -158,17 +158,14 @@ class AppServices
     }
 
     /**
-     * Set Database Service
+     * Set Database Services [MySQL, Mongo]
+     * NOTE: Mongo requires incubator library for new mongo PHP ext.
      * @access private
      * @param object $di - The DI object
-     * @param string $adapter - The DB adapter
      */
-    private function _setDatabaseService(&$di, $adapter = "mysql")
+    private function _setDatabaseServices(&$di)
     {
-        if ($adapter != "mysql")
-            throw new Exception("AppServices::setDatabaseService -> the adapter $adapter has not implemented yet.");
-
-        // database connection is created based in the parameters defined in the configuration file
+        // mysql adapter
         $di->setShared("db", function() {
 
     		$db_conf = [
@@ -181,6 +178,27 @@ class AppServices
             ];
 
             return new \Phalcon\Db\Adapter\Pdo\Mysql($db_conf);
+        });
+
+        // mongo adapter
+        if(!isset($this->config->mongoService) || !$this->config->mongoService)
+            return;
+
+        $di->setShared("mongo", function() {
+
+            $schema = getenv("MONGO_USER") ? sprintf("mongodb://%s:%s@%s",
+                                                getenv("MONGO_USER"),
+                                                getenv("MONGO_PWD"),
+                                                getenv("MONGO_HOST") ?: "mongo")
+                                           : "mongodb://".(getenv("MONGO_HOST") ?: "mongo");
+
+            $mongo = new \Phalcon\Db\Adapter\MongoDB\Client($schema);
+
+            return $mongo->selectDatabase(getenv("MONGO_DB") ?: "test");
+        });
+
+        $di->setShared("collectionManager", function() {
+            return new \Phalcon\Mvc\Collection\Manager();
         });
     }
 
