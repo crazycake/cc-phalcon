@@ -192,9 +192,9 @@ class AppServices
                                                 getenv("MONGO_HOST") ?: "mongo")
                                            : "mongodb://".(getenv("MONGO_HOST") ?: "mongo");
 
-            $mongo = new \Phalcon\Db\Adapter\MongoDB\Client($schema);
+            $mongo = new \MongoDB\Client($schema);
 
-            return $mongo->selectDatabase(getenv("MONGO_DB") ?: "test");
+            return $mongo->{getenv("MONGO_DB") ?: "test"};
         });
 
         $di->setShared("collectionManager", function() {
