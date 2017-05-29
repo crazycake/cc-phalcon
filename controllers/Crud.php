@@ -210,8 +210,11 @@ trait Crud
 	            throw new \Exception($object->messages(true));
 
 			//move uploaded files? (UploaderController)
-            if(!empty($this->crud_conf["uploader"]))
-			    $data["uploaded"] = $this->moveUploadedFiles($this->crud_conf["entity_lower"]."/".$this->crud_conf["pk"]."/");
+            if(!empty($this->crud_conf["uploader"])) {
+
+                $object_path = $this->crud_conf["entity_lower"]."/".$object->{$this->crud_conf["pk"]}."/";
+			    $data["uploaded"] = $this->moveUploadedFiles($object_path);
+            }
 
 	        //call listener
 	        $this->onAfterSave($object, $data, "create");
@@ -270,8 +273,11 @@ trait Crud
 				throw new \Exception($object->messages(true));
 
 			//move uploaded files? (UploaderController)
-			if(!empty($this->crud_conf["uploader"]))
-			    $new_data["uploaded"] = $this->moveUploadedFiles($this->crud_conf["entity_lower"]."/".$this->crud_conf["pk"]."/");
+			if(!empty($this->crud_conf["uploader"])) {
+
+                $object_path = $this->crud_conf["entity_lower"]."/".$object->{$this->crud_conf["pk"]}."/";
+			    $new_data["uploaded"] = $this->moveUploadedFiles($object_path);
+            }
 
 	        //call listener
 	        $this->onAfterSave($object, $new_data, "update");
