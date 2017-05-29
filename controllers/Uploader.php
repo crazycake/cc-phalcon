@@ -233,8 +233,11 @@ trait Uploader
                 //add missing slash to destination path?
                 if (substr($dest_path, -1) != "/") $dest_path .= "/";
 
+                if(!isset($moved_files[$key]))
+                    $moved_files[$key] = [];
+
                 //append destination to array
-                $moved_files[$key] = $dest_path.$file;
+                $moved_files[$key][] = $dest_path.$file;
 
                 //append fullpath
                 $dest = self::$ROOT_UPLOAD_PATH.$dest_path;
