@@ -210,7 +210,8 @@ trait Crud
 	            throw new \Exception($object->messages(true));
 
 			//move uploaded files? (UploaderController)
-			$data["uploaded"] = $this->_moveUploadedFiles($object);
+            if(!empty($this->crud_conf["uploader"]))
+			    $data["uploaded"] = $this->moveUploadedFiles($this->crud_conf["entity_lower"]."/".$this->crud_conf["pk"]."/");
 
 	        //call listener
 	        $this->onAfterSave($object, $data, "create");
@@ -269,7 +270,8 @@ trait Crud
 				throw new \Exception($object->messages(true));
 
 			//move uploaded files? (UploaderController)
-			$new_data["uploaded"] = $this->_moveUploadedFiles($object);
+			if(!empty($this->crud_conf["uploader"]))
+			    $new_data["uploaded"] = $this->moveUploadedFiles($this->crud_conf["entity_lower"]."/".$this->crud_conf["pk"]."/");
 
 	        //call listener
 	        $this->onAfterSave($object, $new_data, "update");
@@ -407,30 +409,4 @@ trait Crud
         //unset payload
         unset($data["payload"]);
     }
-
-	/**
-	 * Move Uploaded files with Uploaded
-	 * @param object $object - The entity object
-	 */
-	private function _moveUploadedFiles($object)
-	{
-		//move uploaded files? (UploaderController)
-		if(!isset($this->crud_conf["uploader"]))
-			return;
-
-		$files = $this->moveUploadedFiles($this->crud_conf["entity_lower"]."/".$object->id."/");
-
-		if(!$files)
-			return;
-
-		//save assets path as {key}_url prop
-		$data = [];
-		foreach ($files as $key => $value)
-			$data[strtolower($key)."_url"] = $this->baseUrl("uploads/".$value);
-
-		//update object
-         $object->update($data);
-
-        return $files;
-	}
 }
