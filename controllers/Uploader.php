@@ -270,7 +270,7 @@ trait Uploader
         //get file properties
         $file_name       = $file->getName();
         $file_name_array = explode(".", $file_name);
-        $file_ext        = end($file_name_array);
+        $file_ext        = strtolower(end($file_name_array));
         $file_cname      = str_replace(".".$file_ext, "", $file_name);
         $file_namespace  = Slug::generate($file_cname);
         $file_mimetype   = $file->getRealType();       //real file MIME type
