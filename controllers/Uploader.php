@@ -81,7 +81,7 @@ trait Uploader
 
         //create dir if not exists
         if(!is_dir($this->uploader_conf["path"]))
-            mkdir($this->uploader_conf["path"], 0755, true);
+            @mkdir($this->uploader_conf["path"], 0755, true);
 
         //set data for view
         $this->view->setVar("upload_files", $this->uploader_conf["files"]);
