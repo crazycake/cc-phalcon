@@ -120,11 +120,14 @@ trait AppLoader
         $this->loadCoreLibraries($loader, $config["core"]);
 
         // 4. Composer libs auto loader
-        if (!is_file(COMPOSER_PATH."autoload.php"))
-            die("App::loadClasses -> autoload composer file not found: ".COMPOSER_PATH."autoload.php");
+        if (is_file(COMPOSER_PATH."autoload.php")) {
+            require COMPOSER_PATH."autoload.php";
+        }
+        else {
 
-        //autoload composer file
-        require COMPOSER_PATH."autoload.php";
+            if(php_sapi_name() != "cli")
+                die("App::loadClasses -> autoload composer file not found: ".COMPOSER_PATH."autoload.php");
+        }
 
         //4.- Register phalcon loader
         $loader->register();
