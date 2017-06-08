@@ -324,8 +324,6 @@ abstract class WebCore extends BaseCore implements WebSecurity
             $version = str_replace(".", "", $version);
             $css_url = str_replace(".css", "-$version.rev.css", $css_url);
             $js_url  = str_replace(".js", "-$version.rev.js", $js_url);
-            //$css_url = str_replace(".css", ".min.css", $css_url)."?v=".$version;
-            //$js_url  = str_replace(".js", ".min.js", $js_url)."?v=".$version;
         }
         //s($css_url, $js_url);exit;
 
