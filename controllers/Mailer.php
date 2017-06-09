@@ -267,9 +267,11 @@ trait Mailer
         $sendgrid = new \SendGrid($this->config->sendgrid->apiKey);
         $message  = new \SendGrid\Email();
 
+        $support_email = !empty($this->config->emails->support) ? $this->config->emails->support : $this->config->emails->sender;
+
         $message->setFrom($this->config->emails->sender)
                 ->setFromName($this->config->name)
-                ->setReplyTo($this->config->emails->support)
+                ->setReplyTo($support_email)
                 ->setSubject($subject)
                 ->setHtml($this->inlineHtml($template));
 
