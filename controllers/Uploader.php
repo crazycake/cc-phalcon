@@ -260,6 +260,24 @@ trait Uploader
         return $moved_files;
     }
 
+    /**
+     * Sort files by numeric tag
+     * @param  array $files - The upload file array
+     */
+    public static function sortFilesByTag(&$files)
+    {
+        usort($files, function($a, $b) {
+
+            $tags1 = explode("_", $a);
+            $tags2 = explode("_", $b);
+
+            $t1 = isset($tags1[1]) ? intval($tags1[1]) : 0;
+            $t2 = isset($tags2[1]) ? intval($tags2[1]) : 0;
+
+            return $t1 > $t2;
+        });
+    }
+
     /** ------------------------------------------- § ------------------------------------------------ **/
 
     /**
