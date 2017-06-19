@@ -129,7 +129,7 @@ trait Uploader
             }
 
             //set file saved name
-            $namespace = $new_file["key"]."_".$new_file["num"]."_".round(microtime(true) * 1000);
+            $namespace = $new_file["key"]."_".$new_file["tag"]."_".round(microtime(true) * 1000);
             $save_name = $namespace.".".$new_file["ext"];
             //append resource url
             $new_file["url"]            = $this->baseUrl("uploads/temp/".$save_name);
@@ -277,16 +277,16 @@ trait Uploader
         $file_cname      = str_ireplace(".$file_ext", "", $file_name); //ignore case
         $file_mimetype   = $file->getRealType(); //real file MIME type
         $file_size       = (float)($file->getSize()); //set to KB unit
-        $file_num        = preg_replace("/[^0-9]/", "", Slug::generate($file_cname));
+        $file_tag        = preg_replace("/[^0-9]/", "", Slug::generate($file_cname));
 
         // limit namespace length
-        if(empty($file_num))
-            $file_num = "0";
+        if(empty($file_tag))
+            $file_tag = "0";
 
         //set array keys
         $new_file = [
             "name"    => $file_name,
-            "num"     => $file_num,
+            "tag"     => $file_tag,
             "size"    => $file_size,
             "key"     => $file_key,
             "ext"     => $file_ext,
