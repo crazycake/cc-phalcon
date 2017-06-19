@@ -70,7 +70,7 @@ trait Uploader
         $this->headers = $this->request->getHeaders();
 
         //get session user id or temp dir
-        $subdir = ($user_session = $this->session->get("user")) ? $user_session["id"] : microtime();
+        $subdir = ($user_session = $this->session->get("user")) ? $user_session["id"] : time();
 
         //set upload root path
         if(empty($this->uploader_conf["root_path"]))
@@ -129,7 +129,7 @@ trait Uploader
             }
 
             //set file saved name
-            $namespace = $new_file["key"]."-".time().uniqid();
+            $namespace = $new_file["key"]."_".$new_file["num"]."_".round(microtime(true) * 1000);
             $save_name = $namespace.".".$new_file["ext"];
             //append resource url
             $new_file["url"]            = $this->baseUrl("uploads/temp/".$save_name);
@@ -274,20 +274,24 @@ trait Uploader
         $file_name       = $file->getName();
         $file_name_array = explode(".", $file_name);
         $file_ext        = strtolower(end($file_name_array));
-        $file_cname      = str_replace(".".$file_ext, "", $file_name);
-        $file_namespace  = Slug::generate($file_cname);
-        $file_mimetype   = $file->getRealType();       //real file MIME type
-        $file_size       = (float)($file->getSize());  //set to KB unit
+        $file_cname      = str_ireplace(".$file_ext", "", $file_name); //ignore case
+        $file_mimetype   = $file->getRealType(); //real file MIME type
+        $file_size       = (float)($file->getSize()); //set to KB unit
+        $file_num        = preg_replace("/[^0-9]/", "", Slug::generate($file_cname));
+
+        // limit namespace length
+        if(empty($file_num))
+            $file_num = "0";
 
         //set array keys
         $new_file = [
-            "name"      => $file_name,
-            "namespace" => $file_namespace,
-            "size"      => $file_size,
-            "key"       => $file_key,
-            "ext"       => $file_ext,
-            "mime"      => $file_mimetype,
-            "message"   => false
+            "name"    => $file_name,
+            "num"     => $file_num,
+            "size"    => $file_size,
+            "key"     => $file_key,
+            "ext"     => $file_ext,
+            "mime"    => $file_mimetype,
+            "message" => false
         ];
         //s($this->uploader_conf);exit;
 
