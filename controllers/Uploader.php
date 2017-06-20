@@ -10,7 +10,6 @@ namespace CrazyCake\Controllers;
 use Phalcon\Exception;
 use Phalcon\Image\Adapter\GD;
 use CrazyCake\Helpers\Slug;
-use CrazyCake\Helpers\Images;
 
 /**
  * Uploader Adapter Handler.
@@ -28,6 +27,12 @@ trait Uploader
      * @var array
      */
     protected static $DEFAULT_FILE_TYPE = ["csv"];
+
+    /**
+     * Image API service URL
+     * @var string
+     */
+    protected static $IMG_API_URL = "http://imgapi/";
 
     /**
      * Header Name for file checking
@@ -252,11 +257,43 @@ trait Uploader
 
                 //image resize
                 if(!empty($conf["resize"]))
-                    Images::resize($dest.$file, $conf["resize"]);
+                    self::newResize($dest.$file, $conf["resize"]);
             }
         }
 
         return $moved_files;
+    }
+
+    /**
+     * New Resize Task
+     * @param  string $src - The source file
+     * @param  array $config - The config array
+     */
+    public static function newResize($src, $config)
+    {
+        $data = file_get_contents($src);
+        // new request to api
+        $data = [
+            "contents" => base64_encode($data),
+            "config"   => $config
+        ];
+        $body = json_encode($data);
+        $headers = [
+            "Content-Type: application/json",
+            "Content-Length: ".strlen($body),
+        ];
+
+        //curl call
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, self::$IMG_API_URL);
+        curl_setopt($ch, CURLOPT_PORT, 80);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        $result = curl_exec($ch);
+        curl_close($ch);
     }
 
     /**
