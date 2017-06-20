@@ -18,6 +18,7 @@ class Slug
 {
     /**
      * Creates a slug to be used for pretty URLs
+     * If iconv extension is enabled, replace utf8 chars to ascii.
      * @static
      * @link http://cubiq.org/the-perfect-php-clean-url-generator
      * @param string $string - The input string
