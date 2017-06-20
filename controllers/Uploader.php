@@ -211,17 +211,17 @@ trait Uploader
     }
 
     /**
-     * Move Uploaded files
-     * @param mixed[int|string] $dest_path - Can be an object ID or a path. If is numeric, ID gets encrypted.
+     * Store Uploaded files
+     * @param string $dest_path - The destination path
      */
-    protected function moveUploadedFiles($dest_path = "")
+    protected function storeUploadedFiles($dest_path = "")
     {
         $uploaded_files = $this->getUploadedFiles(false);
 
         if(empty($uploaded_files))
             return;
 
-        $moved_files = [];
+        $stored_files = [];
 
         foreach ($this->uploader_conf["files"] as $key => $conf) {
 
@@ -235,13 +235,14 @@ trait Uploader
                 $src = $this->uploader_conf["path"].$file;
 
                 //add missing slash to destination path?
-                if (substr($dest_path, -1) != "/") $dest_path .= "/";
+                if (substr($dest_path, -1) != "/")
+                    $dest_path .= "/";
 
-                if(!isset($moved_files[$key]))
-                    $moved_files[$key] = [];
+                if(!isset($stored_files[$key]))
+                    $stored_files[$key] = [];
 
                 //append destination to array
-                $moved_files[$key][] = $dest_path.$file;
+                $stored_files[$key][] = $dest_path.$file;
 
                 //append fullpath
                 $dest = self::$ROOT_UPLOAD_PATH.$dest_path;
@@ -255,26 +256,28 @@ trait Uploader
                 //unlink temp file
                 unlink($src);
 
-                //image resize
+                //resize image file?
                 if(!empty($conf["resize"]))
-                    self::newResize($dest.$file, $conf["resize"]);
+                    self::newResizeJob($dest.$file, $conf);
             }
         }
 
-        return $moved_files;
+        return $stored_files;
     }
 
     /**
-     * New Resize Task
+     * New Resize Job, files are stored automatically in S3.
      * @param  string $src - The source file
      * @param  array $config - The config array
      */
-    public static function newResize($src, $config)
+    public static function newResizeJob($src = "", $config = [])
     {
-        $data = file_get_contents($src);
+        if(!is_file($src))
+            throw new Exception("Uploader::newResize -> File not found!");
+
         // new request to api
         $data = [
-            "contents" => base64_encode($data),
+            "contents" => base64_encode(file_get_contents($src)),
             "config"   => $config
         ];
         $body = json_encode($data);
@@ -285,14 +288,15 @@ trait Uploader
 
         //curl call
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, self::$IMG_API_URL);
+        curl_setopt($ch, CURLOPT_URL, self::$IMG_API_URL."resize");
         curl_setopt($ch, CURLOPT_PORT, 80);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+        curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
         $result = curl_exec($ch);
+        var_dump($result);die;
         curl_close($ch);
     }
 

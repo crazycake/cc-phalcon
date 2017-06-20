@@ -213,7 +213,7 @@ trait Crud
             if(!empty($this->crud_conf["uploader"])) {
 
                 $object_path = $this->crud_conf["entity_lower"]."/".$object->{$this->crud_conf["pk"]}."/";
-			    $data["uploaded"] = $this->moveUploadedFiles($object_path);
+			    $data["uploaded"] = $this->storeUploadedFiles($object_path);
             }
 
 	        //call listener
@@ -276,7 +276,7 @@ trait Crud
 			if(!empty($this->crud_conf["uploader"])) {
 
                 $object_path = $this->crud_conf["entity_lower"]."/".$object->{$this->crud_conf["pk"]}."/";
-			    $new_data["uploaded"] = $this->moveUploadedFiles($object_path);
+			    $new_data["uploaded"] = $this->storeUploadedFiles($object_path);
             }
 
 	        //call listener
