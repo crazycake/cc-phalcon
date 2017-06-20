@@ -165,6 +165,10 @@ class AppServices
      */
     private function _setDatabaseServices(&$di)
     {
+        //skip db for db setting?
+        if(isset($this->config->db) && !$this->config->db)
+            return;
+
         // mysql adapter
         $di->setShared("db", function() {
 
