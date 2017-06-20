@@ -37,34 +37,32 @@ class Images
     /**
      * Resize input image with config params.
      * @param  string $src - The source folder
-     * @param  string $file - The input filename
+     * @param  string $filepath - The input filename
      * @param  array $conf - The key file configuration
      * @return int total saved
      */
-    public static function resize($file = "", $conf = [])
+    public static function resize($filepath = "", $conf = [])
     {
-        if(!is_file($file))
-            return false;
+        if(!is_file($filepath))
+            throw new Exception("Images::resize -> File not found: $filepath");
 
-        $src     = dirname($file)."/";
+        $src     = dirname($filepath)."/";
         $resized = [];
-
         //loop resizer
         foreach ($conf as $key => $array) {
 
-            //resize image with % keeping aspect ratio
             try {
 
                 //new image object from original file
-                $image    = new \Phalcon\Image\Adapter\Imagick($file);
+                $image    = new \Phalcon\Image\Adapter\Imagick($filepath);
                 $ratio    = $image->getWidth() / $image->getHeight();
                 //get file name & ext
-                $ext      = pathinfo($file, PATHINFO_EXTENSION);
-                $new_name = basename($file, ".$ext")."_$key.".$ext;
+                $ext      = pathinfo($filepath, PATHINFO_EXTENSION);
+                $new_name = basename($filepath, ".$ext")."_$key.".$ext;
                 $new_file = $src.$new_name;
-                //s($file, $ext, $new_name, $new_file);exit;
+                //s($filepath, $ext, $new_name, $new_file);exit;
 
-                //++ Resizes
+                //++ Resizes (keeping aspect ratio)
                 //percentage
                 if(isset($array["p"])) {
                     $image->resize($image->getWidth()*$array["p"]/100, $image->getHeight()*$array["p"]/100);

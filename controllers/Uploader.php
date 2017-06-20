@@ -258,7 +258,7 @@ trait Uploader
 
                 //resize image file?
                 if(!empty($conf["resize"]))
-                    self::newResizeJob($dest.$file, $conf);
+                    $this->newResizeJob($dest.$file, $conf["resize"]);
             }
         }
 
@@ -268,12 +268,17 @@ trait Uploader
     /**
      * New Resize Job, files are stored automatically in S3.
      * @param  string $src - The source file
-     * @param  array $config - The config array
+     * @param  array $resize_config - The resize config array
      */
-    public static function newResizeJob($src = "", $config = [])
+    public function newResizeJob($src = "", $resize_config = [])
     {
         if(!is_file($src))
             throw new Exception("Uploader::newResize -> File not found!");
+
+        $config = ["resize" => $resize_config];
+
+        if(!empty($this->config->aws->s3))
+            $config["s3"] = $this->config->aws->s3;
 
         // new request to api
         $data = [
@@ -288,7 +293,7 @@ trait Uploader
 
         //curl call
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, self::$IMG_API_URL."resize");
+        curl_setopt($ch, CURLOPT_URL, self::$IMG_API_URL."resize"); //SERVICE URL
         curl_setopt($ch, CURLOPT_PORT, 80);
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
@@ -296,8 +301,8 @@ trait Uploader
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
         $result = curl_exec($ch);
-        var_dump($result);die;
         curl_close($ch);
+        die($result);
     }
 
     /**
