@@ -2,7 +2,6 @@
 /**
  * Uploader Adapter
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
- * @link https://docs.phalconphp.com/en/latest/api/Phalcon_Image_Adapter_Imagick.html
  */
 
 namespace CrazyCake\Controllers;
