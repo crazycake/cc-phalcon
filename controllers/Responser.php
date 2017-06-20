@@ -10,8 +10,6 @@ namespace CrazyCake\Controllers;
 
 //imports
 use Phalcon\Exception;
-use GuzzleHttp\Client as GuzzleClient; //Guzzle client for requests
-use GuzzleHttp\Promise;
 //core
 use CrazyCake\Models\BaseResultset;
 
