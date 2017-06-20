@@ -1,6 +1,6 @@
 <?php
 /**
- * Forms Helper
+ * Images Helper
  * Requires Imagick PHP extension
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
@@ -9,14 +9,12 @@ namespace CrazyCake\Helpers;
 
 //imports
 use Phalcon\Exception;
-use Phalcon\Image\Adapter\Imagick as Image;
 
 /**
  * Form Helper
  */
 class Images
 {
-
 	/**
      * Get resized image path.
      * Example: ./media/dj/IMAGE1.jpg?v=5
@@ -58,7 +56,7 @@ class Images
             try {
 
                 //new image object from original file
-                $image    = new Image($file);
+                $image    = new \Phalcon\Image\Adapter\Imagick($file);
                 $ratio    = $image->getWidth() / $image->getHeight();
                 //get file name & ext
                 $ext      = pathinfo($file, PATHINFO_EXTENSION);

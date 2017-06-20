@@ -10,8 +10,6 @@ namespace CrazyCake\Controllers;
 
 //imports
 use Phalcon\Exception;
-use GuzzleHttp\Client as GuzzleClient;  //Guzzle client for requests
-use GuzzleHttp\Promise;
 //core
 use CrazyCake\Phalcon\App;
 
@@ -64,7 +62,7 @@ trait Requester
                 return $this->_socketAsync($options);
 
 			// guzzle instance
-            $client = new GuzzleClient([
+            $client = new \GuzzleHttp\Client([
                 "base_uri" => $options["base_url"],
                 "timeout"  => self::$REQUEST_TIMEOUT
             ]);
