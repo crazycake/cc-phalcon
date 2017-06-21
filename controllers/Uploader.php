@@ -269,7 +269,7 @@ trait Uploader
                     $conf["s3"]["bucketBaseUri"] .= strtolower($uri);
                 }
 
-                $this->newResizeJob($dest.$file, $conf);
+                $this->newResizeJob($dest_filepath, $conf);
             }
         }
 
