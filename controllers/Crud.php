@@ -213,6 +213,7 @@ trait Crud
             if(!empty($this->crud_conf["uploader"])) {
 
                 $uri = $this->crud_conf["entity_lower"]."/".$object->{$this->crud_conf["pk"]}."/";
+
 			    $data["uploaded"] = $this->saveUploadedFiles($uri);
             }
 
