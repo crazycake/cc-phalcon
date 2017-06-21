@@ -262,6 +262,7 @@ trait Uploader
 
                 if(!empty($this->config->aws->s3)) {
 
+                    $config["filename"] = $file;
                     $config["s3"] = $this->config->aws->s3;
                     $config["s3"]["bucketBaseUri"] .= strtolower($key)."/";
                 }
