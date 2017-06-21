@@ -219,7 +219,7 @@ trait Uploader
         $uploaded_files = $this->getUploadedFiles(false);
 
         if(empty($uploaded_files))
-            return;
+            return [];
 
         $saved_files = [];
 
@@ -255,21 +255,24 @@ trait Uploader
                 if(!isset($saved_files[$key]))
                     $saved_files[$key] = [];
 
-                //append destination to array
-                $saved_files[$key][] = $dest_filepath;
-
                 //resize image file?
-                if(empty($conf["resize"]))
-                    continue;
+                if(empty($conf["resize"])) {
 
+                    //append destination to array
+                    $saved_files[$key][] = $dest_filepath;
+                    continue;
+                }
+
+                //set amazon properties
                 if(!empty($this->config->aws->s3)) {
 
-                    $conf["filename"] = $file;
                     $conf["s3"] = $this->config->aws->s3;
                     $conf["s3"]["bucketBaseUri"] .= strtolower($uri);
                 }
 
-                $this->newResizeJob($dest_filepath, $conf);
+                $conf["filename"] = $file;
+                // new resize job
+                $saved_files[$key][] = $this->newResizeJob($dest_filepath, $conf);
             }
         }
 
@@ -308,7 +311,11 @@ trait Uploader
 
         $result = curl_exec($ch);
         curl_close($ch);
-        die($result);
+
+        //process result
+        $result = json_decode($result, true);
+
+        return $result["status"] == "ok" ? $result["payload"] : [];
     }
 
     /**
