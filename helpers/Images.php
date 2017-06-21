@@ -46,13 +46,17 @@ class Images
         if(!is_file($filepath))
             throw new Exception("Images::resize -> File not found: $filepath");
 
+        if(is_object($conf))
+          $conf = (array)$conf;
+
         $src     = dirname($filepath)."/";
         $resized = [];
         //loop resizer
-        foreach ($conf as $key => $array) {
+        foreach ($conf as $key => $resize) {
 
             try {
 
+				$resize = (array)$resize;
                 //new image object from original file
                 $image    = new \Phalcon\Image\Adapter\Imagick($filepath);
                 $ratio    = $image->getWidth() / $image->getHeight();
@@ -64,32 +68,32 @@ class Images
 
                 //++ Resizes (keeping aspect ratio)
                 //percentage
-                if(isset($array["p"])) {
-                    $image->resize($image->getWidth()*$array["p"]/100, $image->getHeight()*$array["p"]/100);
+                if(isset($resize["p"])) {
+                    $image->resize($image->getWidth()*$resize["p"]/100, $image->getHeight()*$resize["p"]/100);
                 }
                 //width px, keep ratio
-                else if(isset($array["w"])) {
-                    $image->resize($array["w"], $array["w"] / $ratio);
+                else if(isset($resize["w"])) {
+                    $image->resize($resize["w"], $resize["w"] / $ratio);
                 }
                 //height px, keep ratio
-                else if(isset($array["h"])) {
-                    $image->resize($array["h"] * $ratio, $array["h"]);
+                else if(isset($resize["h"])) {
+                    $image->resize($resize["h"] * $ratio, $resize["h"]);
                 }
                 //height px, keep ratio
-                else if(isset($array["c"])) {
-                    $image->crop($array["c"][0], $array["c"][1], $array["c"][2], $array["c"][3]);
+                else if(isset($resize["c"])) {
+                    $image->crop($resize["c"][0], $resize["c"][1], $resize["c"][2], $resize["c"][3]);
                 }
 
                 //++ EFXs
                 //blur
-                if(isset($array["b"]))
-                    $image->blur($array["b"]);
+                if(isset($resize["b"]))
+                    $image->blur($resize["b"]);
                 //rotate
-                if(isset($array["r"]))
-                    $image->rotate($array["r"]);
+                if(isset($resize["r"]))
+                    $image->rotate($resize["r"]);
 
                 //save image (default 100%)
-				$quality = isset($array["q"]) ? $array["q"] : 100;
+				$quality = isset($resize["q"]) ? $resize["q"] : 100;
 
                 $image->save($new_file, $quality);
 

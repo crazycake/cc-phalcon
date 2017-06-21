@@ -257,8 +257,16 @@ trait Uploader
                 unlink($src);
 
                 //resize image file?
-                if(!empty($conf["resize"]))
-                    $this->newResizeJob($dest.$file, $conf["resize"]);
+                if(empty($conf["resize"]))
+                    continue;
+
+                if(!empty($this->config->aws->s3)) {
+
+                    $config["s3"] = $this->config->aws->s3;
+                    $config["s3"]["bucketBaseUri"] .= strtolower($key)."/";
+                }
+
+                $this->newResizeJob($dest.$file, $conf);
             }
         }
 
@@ -268,17 +276,12 @@ trait Uploader
     /**
      * New Resize Job, files are stored automatically in S3.
      * @param  string $src - The source file
-     * @param  array $resize_config - The resize config array
+     * @param  array $config - The config array
      */
-    public function newResizeJob($src = "", $resize_config = [])
+    public function newResizeJob($src = "", $config = [])
     {
         if(!is_file($src))
-            throw new Exception("Uploader::newResize -> File not found!");
-
-        $config = ["resize" => $resize_config];
-
-        if(!empty($this->config->aws->s3))
-            $config["s3"] = $this->config->aws->s3;
+            throw new Exception("Uploader::newResizeJob -> File not found!");
 
         // new request to api
         $data = [
