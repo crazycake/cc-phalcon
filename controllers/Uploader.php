@@ -211,17 +211,17 @@ trait Uploader
     }
 
     /**
-     * Store Uploaded files
-     * @param string $dest_path - The destination path
+     * Saves & stores uploaded files
+     * @param string $uri - The file uri
      */
-    protected function storeUploadedFiles($dest_path = "")
+    protected function saveUploadedFiles($uri = "")
     {
         $uploaded_files = $this->getUploadedFiles(false);
 
         if(empty($uploaded_files))
             return;
 
-        $stored_files = [];
+        $saved_files = [];
 
         foreach ($this->uploader_conf["files"] as $key => $conf) {
 
@@ -231,30 +231,32 @@ trait Uploader
                 if(strpos($file, $key) === false)
                     continue;
 
-                //set source path
-                $src = $this->uploader_conf["path"].$file;
-
-                //add missing slash to destination path?
-                if (substr($dest_path, -1) != "/")
-                    $dest_path .= "/";
-
-                if(!isset($stored_files[$key]))
-                    $stored_files[$key] = [];
-
-                //append destination to array
-                $stored_files[$key][] = $dest_path.$file;
+                //add missing slash to uri?
+                if (!empty($uri) && substr($uri, -1) != "/")
+                    $uri .= "/";
 
                 //append fullpath
-                $dest = self::$ROOT_UPLOAD_PATH.$dest_path;
+                $dest_folder = self::$ROOT_UPLOAD_PATH.$uri;
 
                 //create folder?
-                if(!is_dir($dest))
-                    mkdir($dest, 0755, true);
+                if(!is_dir($dest_folder))
+                    mkdir($dest_folder, 0755, true);
 
+                //destination filepath
+                $dest_filepath = $dest_folder.$file;
+
+                //set source path
+                $src = $this->uploader_conf["path"].$file;
                 //copy file
-                copy($src, $dest.$file);
+                copy($src, $dest_filepath);
                 //unlink temp file
                 unlink($src);
+
+                if(!isset($saved_files[$key]))
+                    $saved_files[$key] = [];
+
+                //append destination to array
+                $saved_files[$key][] = $dest_filepath;
 
                 //resize image file?
                 if(empty($conf["resize"]))
@@ -262,16 +264,16 @@ trait Uploader
 
                 if(!empty($this->config->aws->s3)) {
 
-                    $config["filename"] = $file;
-                    $config["s3"] = $this->config->aws->s3;
-                    $config["s3"]["bucketBaseUri"] .= strtolower($key)."/";
+                    $conf["filename"] = $file;
+                    $conf["s3"] = $this->config->aws->s3;
+                    $conf["s3"]["bucketBaseUri"] .= strtolower($uri);
                 }
 
                 $this->newResizeJob($dest.$file, $conf);
             }
         }
 
-        return $stored_files;
+        return $saved_files;
     }
 
     /**

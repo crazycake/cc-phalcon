@@ -212,8 +212,8 @@ trait Crud
 			//move uploaded files? (UploaderController)
             if(!empty($this->crud_conf["uploader"])) {
 
-                $object_path = $this->crud_conf["entity_lower"]."/".$object->{$this->crud_conf["pk"]}."/";
-			    $data["uploaded"] = $this->storeUploadedFiles($object_path);
+                $uri = $this->crud_conf["entity_lower"]."/".$object->{$this->crud_conf["pk"]}."/";
+			    $data["uploaded"] = $this->saveUploadedFiles($uri);
             }
 
 	        //call listener
@@ -275,8 +275,9 @@ trait Crud
 			//move uploaded files? (UploaderController)
 			if(!empty($this->crud_conf["uploader"])) {
 
-                $object_path = $this->crud_conf["entity_lower"]."/".$object->{$this->crud_conf["pk"]}."/";
-			    $new_data["uploaded"] = $this->storeUploadedFiles($object_path);
+                $uri = $this->crud_conf["entity_lower"]."/".$object->{$this->crud_conf["pk"]}."/";
+
+			    $new_data["uploaded"] = $this->saveUploadedFiles($uri);
             }
 
 	        //call listener
