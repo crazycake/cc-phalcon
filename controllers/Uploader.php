@@ -311,6 +311,7 @@ trait Uploader
 
         $result = curl_exec($ch);
         curl_close($ch);
+        //sd($result);
 
         //process result
         $result = json_decode($result, true);

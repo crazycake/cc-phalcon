@@ -46,8 +46,8 @@ class Images
         if(!is_file($filepath))
             throw new Exception("Images::resize -> File not found: $filepath");
 
-        if(is_object($conf))
-          $conf = (array)$conf;
+		//make sure object is an array in all depths
+        $conf = json_decode(json_encode($conf), true);
 
         $src     = dirname($filepath)."/";
         $resized = [];
