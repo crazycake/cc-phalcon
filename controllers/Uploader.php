@@ -272,7 +272,7 @@ trait Uploader
 
                 $conf["filename"] = $file;
                 // new resize job
-                $saved_files[$key][] = $this->newImageApiJob($dest_filepath, $conf, "resize");
+                $saved_files[$key][] = $this->newImageApiJob("resize", $dest_filepath, $conf);
             }
         }
 
@@ -281,11 +281,11 @@ trait Uploader
 
     /**
      * New Image Api Job, files are stored automatically in S3.
+     * @param  string $api_uri - The img-api uri
      * @param  string $src - The source file
      * @param  array $config - The config array
-     * @param  string $api_uri - The img-api uri
      */
-    public function newImageApiJob($src = "", $config = [], $api_uri = "")
+    public function newImageApiJob($api_uri = "", $src = "", $config = [])
     {
         if(!is_file($src))
             throw new Exception("Uploader::newImageApiJob -> File not found!");
