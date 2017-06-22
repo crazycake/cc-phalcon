@@ -37,7 +37,7 @@ class TaskCore extends Task
 
 	/* --------------------------------------------------- § -------------------------------------------------------- */
 
-	 /**
+	/**
 	 * Outputs app configuration in JSON format
 	 * @param array $args - The args array, the 1st arg is the filter config property
 	 */
