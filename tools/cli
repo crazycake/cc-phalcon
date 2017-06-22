@@ -119,5 +119,5 @@ aws-sync)
 #default
 *)
 	scriptHelp
-    ;;
+		;;
 esac

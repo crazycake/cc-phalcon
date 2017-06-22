@@ -23,7 +23,7 @@ TEMP_FILE=".translations"
 scriptHelp() {
 	echo -e "\033[93m WebApp translations script\nValid actions:\033[0m"
 	echo -e "\033[95m build: build po files in app folder. \033[0m"
-    echo -e "\033[95m find: find for new translations in app folder. \033[0m"
+		echo -e "\033[95m find: find for new translations in app folder. \033[0m"
 	exit
 }
 
