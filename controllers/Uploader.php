@@ -242,24 +242,22 @@ trait Uploader
                 if(!is_dir($dest_folder))
                     mkdir($dest_folder, 0755, true);
 
-                //destination filepath
-                $dest_filepath = $dest_folder.$file;
-
-                //set source path
+                //set source/destination path
                 $src = $this->uploader_conf["path"].$file;
-                //copy file
-                copy($src, $dest_filepath);
-                //unlink temp file
+                $dst = $dest_folder.$file;
+
+                //copy file & unlink temp file
+                copy($src, $dst);
                 unlink($src);
 
                 if(!isset($saved_files[$key]))
                     $saved_files[$key] = [];
 
-                //resize image file?
-                if(empty($conf["resize"])) {
+                //skip buckets actions?
+                if(empty($this->config->aws->s3)) {
 
                     //append destination to array
-                    $saved_files[$key][] = $dest_filepath;
+                    $saved_files[$key][] = $dst;
                     continue;
                 }
 
@@ -270,9 +268,12 @@ trait Uploader
                     $conf["s3"]["bucketBaseUri"] .= strtolower($uri);
                 }
 
+                //jobs
+                $job = !empty($conf["resize"]) ? "resize" : "s3push";
+
                 $conf["filename"] = $file;
                 // new resize job
-                $saved_files[$key][] = $this->newImageApiJob("resize", $dest_filepath, $conf);
+                $saved_files[$key][] = $this->newImageApiJob($job, $dst, $conf);
             }
         }
 
@@ -280,8 +281,8 @@ trait Uploader
     }
 
     /**
-     * New Image Api Job, files are stored automatically in S3.
-     * @param  string $api_uri - The img-api uri
+     * New Image Api Job, files are stored automatically in S3 (curl request)
+     * @param  string $api_uri - The img-api uri job
      * @param  string $src - The source file
      * @param  array $config - The config array
      */
@@ -290,12 +291,12 @@ trait Uploader
         if(!is_file($src))
             throw new Exception("Uploader::newImageApiJob -> File not found!");
 
-        // new request to api
         $data = [
             "contents" => base64_encode(file_get_contents($src)),
             "config"   => $config
         ];
-        $body = json_encode($data);
+
+        $body    = json_encode($data);
         $headers = [
             "Content-Type: application/json",
             "Content-Length: ".strlen($body),
