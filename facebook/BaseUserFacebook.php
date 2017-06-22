@@ -14,48 +14,48 @@ use CrazyCake\Phalcon\App;
  */
 class BaseUserFacebook extends \CrazyCake\Models\Base
 {
-    /* properties */
+	/* properties */
 
-    /**
-     * @var int
-     */
-    public $user_id;
+	/**
+	 * @var int
+	 */
+	public $user_id;
 
-    /**
-     * facebook access token
-     * @var string
-     */
-    public $fac;
+	/**
+	 * facebook access token
+	 * @var string
+	 */
+	public $fac;
 
-    /**
-     * access token expiration
-     * @var string
-     */
-    public $expires_at;
+	/**
+	 * access token expiration
+	 * @var string
+	 */
+	public $expires_at;
 
-    /**
-     * @var string (timestamp)
-     */
-    public $created_at;
+	/**
+	 * @var string (timestamp)
+	 */
+	public $created_at;
 
-    /** ------------------------------------------- § ------------------------------------------------ **/
+	/** ------------------------------------------- § ------------------------------------------------ **/
 
-    /**
-     * Initializer
-     */
-    public function initialize()
-    {
-        //get class
-        $user_class = App::getClass("user", false);
-        //model relations
-        $this->hasOne("user_id", $user_class, "id");
-    }
+	/**
+	 * Initializer
+	 */
+	public function initialize()
+	{
+		//get class
+		$user_class = App::getClass("user", false);
+		//model relations
+		$this->hasOne("user_id", $user_class, "id");
+	}
 
-    /**
-     * Before Validation Event [onCreate, onUpdate]
-     */
-    public function beforeValidation()
-    {
-        $this->created_at = date("Y-m-d H:i:s");
-    }
+	/**
+	 * Before Validation Event [onCreate, onUpdate]
+	 */
+	public function beforeValidation()
+	{
+		$this->created_at = date("Y-m-d H:i:s");
+	}
 }

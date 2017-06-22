@@ -20,16 +20,16 @@ class GCM {
 	//consts
 	const API_SEND_ADDRESS = "https://android.googleapis.com/gcm/send";
 
-    protected $api_key    = "";
-    protected $payload    = [];
-    protected $data       = [];
-    protected $recepients = [];
-    protected $message    = "";
+	protected $api_key    = "";
+	protected $payload    = [];
+	protected $data       = [];
+	protected $recepients = [];
+	protected $message    = "";
 
-    public $status         = [];
-    public $message_status = [];
-    public $response_data   = null;
-    public $response_info   = null;
+	public $status         = [];
+	public $message_status = [];
+	public $response_data   = null;
+	public $response_info   = null;
 
 
 	protected $codes = [

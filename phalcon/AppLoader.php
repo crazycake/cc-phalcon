@@ -11,155 +11,155 @@ namespace CrazyCake\Phalcon;
  */
 trait AppLoader
 {
-    /** const **/
-    private static $CORE_NAMESPACE = "CrazyCake\\";
-    private static $CORE_PROJECT   = "cc-phalcon";
+	/** const **/
+	private static $CORE_NAMESPACE = "CrazyCake\\";
+	private static $CORE_PROJECT   = "cc-phalcon";
 
-    /**
-     * App Core default libs
-     * @var array
-     */
-    protected static $CORE_DEFAULT_LIBS = ["services", "controllers", "core", "helpers", "models", "account"];
+	/**
+	 * App Core default libs
+	 * @var array
+	 */
+	protected static $CORE_DEFAULT_LIBS = ["services", "controllers", "core", "helpers", "models", "account"];
 
-    /**
-     * Get Module Model Class Name
-     * A prefix can be set in module options
-     * @access public
-     * @param string $key - The class module name uncamelize, example: "some_class"
-     * @param boolean $prefix - Append prefix (double slash)
-     */
-    public static function getClass($key = "", $prefix = true)
-    {
-        //check for prefix in module settings
-        $class_name = \Phalcon\Text::camelize($key);
+	/**
+	 * Get Module Model Class Name
+	 * A prefix can be set in module options
+	 * @access public
+	 * @param string $key - The class module name uncamelize, example: "some_class"
+	 * @param boolean $prefix - Append prefix (double slash)
+	 */
+	public static function getClass($key = "", $prefix = true)
+	{
+		//check for prefix in module settings
+		$class_name = \Phalcon\Text::camelize($key);
 
-        //api special case (if class not exists append prefix.)
-        if (MODULE_NAME == "api" && !class_exists($class_name))
-            $class_name = "Ws$class_name";
+		//api special case (if class not exists append prefix.)
+		if (MODULE_NAME == "api" && !class_exists($class_name))
+			$class_name = "Ws$class_name";
 
-        return $prefix ? "\\$class_name" : $class_name;
-    }
+		return $prefix ? "\\$class_name" : $class_name;
+	}
 
-    /* --------------------------------------------------- § -------------------------------------------------------- */
+	/* --------------------------------------------------- § -------------------------------------------------------- */
 
-    /**
-     * Set Module Environment properties
-     * @access private
-     */
-    private function setEnvironment()
-    {
-        //get env-vars
-        $env = getenv("APP_ENV") ?: "local"; //default to LOCAL
+	/**
+	 * Set Module Environment properties
+	 * @access private
+	 */
+	private function setEnvironment()
+	{
+		//get env-vars
+		$env = getenv("APP_ENV") ?: "local"; //default to LOCAL
 
-        //set APP debug environment
-        ini_set("display_errors", (int)$env == "local");
-        error_reporting(E_ALL);
+		//set APP debug environment
+		ini_set("display_errors", (int)$env == "local");
+		error_reporting(E_ALL);
 
-        $base_url = "./";
+		$base_url = "./";
 
-        // check for CLI execution & CGI execution
-        if (php_sapi_name() != "cli") {
+		// check for CLI execution & CGI execution
+		if (php_sapi_name() != "cli") {
 
-            if (!isset($_REQUEST))
-                throw new Exception("App::setEnvironment -> Missing REQUEST data: ".json_encode($_SERVER)." && ".json_encode($_REQUEST));
+			if (!isset($_REQUEST))
+				throw new Exception("App::setEnvironment -> Missing REQUEST data: ".json_encode($_SERVER)." && ".json_encode($_REQUEST));
 
-            // set localhost if host is not set
-            if (!isset($_SERVER["HTTP_HOST"]))
-                $_SERVER["HTTP_HOST"] = "localhost";
+			// set localhost if host is not set
+			if (!isset($_SERVER["HTTP_HOST"]))
+				$_SERVER["HTTP_HOST"] = "localhost";
 
-            // set scheme and host
-            $host     = $_SERVER["HTTP_HOST"].preg_replace("@/+$@", "", dirname($_SERVER["SCRIPT_NAME"]));
-            $base_url = (getenv("APP_SCHEME") ?: "http")."://$host";
+			// set scheme and host
+			$host     = $_SERVER["HTTP_HOST"].preg_replace("@/+$@", "", dirname($_SERVER["SCRIPT_NAME"]));
+			$base_url = (getenv("APP_SCHEME") ?: "http")."://$host";
 
-            //set port?
-            $port = getenv("APP_PORT") ?: "";
+			//set port?
+			$port = getenv("APP_PORT") ?: "";
 
-            if(!empty($port))
-            	$base_url = str_replace(":$port", "", $base_url).":$port";
+			if(!empty($port))
+				$base_url = str_replace(":$port", "", $base_url).":$port";
 
 			// add missing slash
-	        if (substr($base_url, -1) != "/") $base_url .= "/";
-        }
+			if (substr($base_url, -1) != "/") $base_url .= "/";
+		}
 
-        //set environment consts & self vars
-        define("APP_ENV", $env);
-        define("APP_BASE_URL", $base_url);
-        //sd(APP_ENV, APP_BASE_URL);exit;
-    }
+		//set environment consts & self vars
+		define("APP_ENV", $env);
+		define("APP_BASE_URL", $base_url);
+		//sd(APP_ENV, APP_BASE_URL);exit;
+	}
 
-    /**
-     * Load classes
-     * @access private
-     * @param array $config - The config array
-     */
-    private function loadClasses($config = [])
-    {
-        // 1. project dirs
-        $dirs = [
-            "cli"         => APP_PATH."cli/",
-            "controllers" => APP_PATH."controllers/",
-            "models"      => APP_PATH."models/"
-        ];
+	/**
+	 * Load classes
+	 * @access private
+	 * @param array $config - The config array
+	 */
+	private function loadClasses($config = [])
+	{
+		// 1. project dirs
+		$dirs = [
+			"cli"         => APP_PATH."cli/",
+			"controllers" => APP_PATH."controllers/",
+			"models"      => APP_PATH."models/"
+		];
 
-        foreach ($config["loader"] as $dir) {
+		foreach ($config["loader"] as $dir) {
 
-            $paths = explode("/", $dir, 2);
-            //set directory path
-            $dirs[$dir] = count($paths) > 1 ? PROJECT_PATH.$paths[0]."/".$paths[1]."/" : APP_PATH.$dir."/";
-        }
-        //die(print_r($dirs, true));
+			$paths = explode("/", $dir, 2);
+			//set directory path
+			$dirs[$dir] = count($paths) > 1 ? PROJECT_PATH.$paths[0]."/".$paths[1]."/" : APP_PATH.$dir."/";
+		}
+		//die(print_r($dirs, true));
 
-        //inverted sort
-        arsort($dirs);
+		//inverted sort
+		arsort($dirs);
 
-        // 2. Load app directories (components)
-        $loader = new \Phalcon\Loader();
-        $loader->registerDirs($dirs);
+		// 2. Load app directories (components)
+		$loader = new \Phalcon\Loader();
+		$loader->registerDirs($dirs);
 
-        // 3. Register core static modules
-        $this->loadCoreLibraries($loader, $config["core"]);
+		// 3. Register core static modules
+		$this->loadCoreLibraries($loader, $config["core"]);
 
-        // 4. Composer libs auto loader
-        if (is_file(COMPOSER_PATH."autoload.php")) {
-            require COMPOSER_PATH."autoload.php";
-        }
-        else {
+		// 4. Composer libs auto loader
+		if (is_file(COMPOSER_PATH."autoload.php")) {
+			require COMPOSER_PATH."autoload.php";
+		}
+		else {
 
-            if(php_sapi_name() != "cli")
-                die("App::loadClasses -> autoload composer file not found: ".COMPOSER_PATH."autoload.php");
-        }
+			if(php_sapi_name() != "cli")
+				die("App::loadClasses -> autoload composer file not found: ".COMPOSER_PATH."autoload.php");
+		}
 
-        //4.- Register phalcon loader
-        $loader->register();
-        //sd(get_included_files());
-    }
+		//4.- Register phalcon loader
+		$loader->register();
+		//sd(get_included_files());
+	}
 
-    /**
-     * Loads static libraries.
-     * Use Phar::running() to get path of current phar running
-     * Use get_included_files() to see all loaded classes
-     * @access private
-     * @param object $loader - Phalcon loader object
-     * @param array $libraries - Libraries required
-     */
-    private function loadCoreLibraries($loader, $libraries = [])
-    {
-        if (!is_array($libraries))
-            $libraries = [];
+	/**
+	 * Loads static libraries.
+	 * Use Phar::running() to get path of current phar running
+	 * Use get_included_files() to see all loaded classes
+	 * @access private
+	 * @param object $loader - Phalcon loader object
+	 * @param array $libraries - Libraries required
+	 */
+	private function loadCoreLibraries($loader, $libraries = [])
+	{
+		if (!is_array($libraries))
+			$libraries = [];
 
-        //merge libraries with defaults
-        $libraries = array_merge(self::$CORE_DEFAULT_LIBS, $libraries);
+		//merge libraries with defaults
+		$libraries = array_merge(self::$CORE_DEFAULT_LIBS, $libraries);
 
-        //check if lib is runnning in phar file
-        $class_path = \Phar::running() ?: dirname(__DIR__);
+		//check if lib is runnning in phar file
+		$class_path = \Phar::running() ?: dirname(__DIR__);
 
-        //set library path => namespaces
-        $namespaces = [];
-        foreach ($libraries as $lib)
-            $namespaces[self::$CORE_NAMESPACE.ucfirst($lib)] = "$class_path/$lib/";
+		//set library path => namespaces
+		$namespaces = [];
+		foreach ($libraries as $lib)
+			$namespaces[self::$CORE_NAMESPACE.ucfirst($lib)] = "$class_path/$lib/";
 
-        //register namespaces
-        $loader->registerNamespaces($namespaces);
-        //var_dump($namespaces);exit;
-    }
+		//register namespaces
+		$loader->registerNamespaces($namespaces);
+		//var_dump($namespaces);exit;
+	}
 }

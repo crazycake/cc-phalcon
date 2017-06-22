@@ -71,9 +71,9 @@ class APN
 		$this->push_server 	   = $config["sandbox"] ? self::PUSH_GATEWAY_SANDBOX : self::PUSH_GATEWAY;
 		$this->feedback_server = $config["sandbox"] ? self::FEEDBACK_GATEWAY_SANDBOX : self::FEEDBACK_GATEWAY;
 
-        $this->key_cert_file = $config["sandbox"] ? $config["devPemFile"] : $config["prodPemFile"];
-        $this->passphrase    = $config["passphrase"];
-        $this->ca_cert_file  = $config["entrustCaCertFile"];
+		$this->key_cert_file = $config["sandbox"] ? $config["devPemFile"] : $config["prodPemFile"];
+		$this->passphrase    = $config["passphrase"];
+		$this->ca_cert_file  = $config["entrustCaCertFile"];
 
 		$this->timeout = self::CONECTION_TIMEOUT;
 		$this->expiry  = self::NOTIFICATION_EXPIRY;
@@ -137,7 +137,7 @@ class APN
 	{
 	   $body = [];
 
-	    //additional data
+		//additional data
 		if (is_array($this->data) && count($this->data))
 			$body = $this->data;
 
@@ -179,10 +179,10 @@ class APN
 		$this->_log("APN: sendPayloadSimple to ".$device_token);
 
 		$msg = chr(0) 							// command
-			 	. pack("n",32)					// token length
-			 	. pack("H*", $device_token)		// device token
-			 	. pack("n",strlen($payload))	// payload length
-			 	. $payload;						// payload
+				 . pack("n",32)					// token length
+				 . pack("H*", $device_token)		// device token
+				 . pack("n",strlen($payload))	// payload length
+				 . $payload;						// payload
 
 		$this->_log("APN: payload: ".$msg);
 		$this->_log("APN: payload length: ".strlen($msg));
@@ -437,22 +437,22 @@ class APN
 
 		$this->connectToFeedback();
 
-	    $feedback_tokens = [];
+		$feedback_tokens = [];
 
-	    //and read the data on the connection:
-	    while (!feof($this->feedback_stream)) {
+		//and read the data on the connection:
+		while (!feof($this->feedback_stream)) {
 
-	        $data = fread($this->feedback_stream, 38);
+			$data = fread($this->feedback_stream, 38);
 
-	        if (strlen($data)) {
-	        	//echo $data;
-	            $feedback_tokens[] = unpack("N1timestamp/n1length/H*devtoken", $data);
-	        }
-	    }
+			if (strlen($data)) {
+				//echo $data;
+				$feedback_tokens[] = unpack("N1timestamp/n1length/H*devtoken", $data);
+			}
+		}
 
 		$this->disconnectFeedback();
 
-	    return $feedback_tokens;
+		return $feedback_tokens;
 	}
 
 

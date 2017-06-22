@@ -15,126 +15,126 @@ use Phalcon\Exception;
  */
 class Forms
 {
-    /* consts */
-    const RUT_REGEX = "/^[0-9]+-[0-9kK]{1}/";
+	/* consts */
+	const RUT_REGEX = "/^[0-9]+-[0-9kK]{1}/";
 
-    /**
-     * Validates chilean rut
-     * @param string $rut - The input form rut (requires '-' token)
-     * @return boolean
-     */
-    public static function validateRut($input_rut = "")
-    {
-        $input_rut = str_replace(".", "", $input_rut);
+	/**
+	 * Validates chilean rut
+	 * @param string $rut - The input form rut (requires '-' token)
+	 * @return boolean
+	 */
+	public static function validateRut($input_rut = "")
+	{
+		$input_rut = str_replace(".", "", $input_rut);
 
-        if (!preg_match(self::RUT_REGEX, $input_rut))
-            return false;
+		if (!preg_match(self::RUT_REGEX, $input_rut))
+			return false;
 
-        $rut = explode("-", $input_rut);
+		$rut = explode("-", $input_rut);
 
-        //checks if rut is valid
-        return strtolower($rut[1]) == self::_validateRutVD($rut[0]);
-    }
+		//checks if rut is valid
+		return strtolower($rut[1]) == self::_validateRutVD($rut[0]);
+	}
 
-    /**
-     * Formats a rut
-     * @param  string $rut - The input rut
-     * @return string
-     */
-    public static function formatRut($rut)
-    {
-        $str = explode("-", $rut);
-	    return number_format($str[0], 0, "", ".").'-'.$str[1];
-    }
+	/**
+	 * Formats a rut
+	 * @param  string $rut - The input rut
+	 * @return string
+	 */
+	public static function formatRut($rut)
+	{
+		$str = explode("-", $rut);
+		return number_format($str[0], 0, "", ".").'-'.$str[1];
+	}
 
-    /**
-     * Formats price.
-     * @todo Complete other global currencys formats
-     * @static
-     * @param numeric $price - The price numeric value
-     * @param string $currency - The price currency
-     * @return string
-     */
-    public static function formatPrice($price, $currency)
-    {
-        $formatted = $price;
+	/**
+	 * Formats price.
+	 * @todo Complete other global currencys formats
+	 * @static
+	 * @param numeric $price - The price numeric value
+	 * @param string $currency - The price currency
+	 * @return string
+	 */
+	public static function formatPrice($price, $currency)
+	{
+		$formatted = $price;
 
-        switch ($currency) {
-            case "CLP":
-                $formatted = "$".str_replace(".00", "", number_format($formatted));
-                $formatted = str_replace(",", ".", $formatted);
-                break;
-            case "USD":
+		switch ($currency) {
+			case "CLP":
+				$formatted = "$".str_replace(".00", "", number_format($formatted));
+				$formatted = str_replace(",", ".", $formatted);
+				break;
+			case "USD":
 				$formatted = "$".$formatted;
-                break;
-            default:
-                break;
-        }
+				break;
+			default:
+				break;
+		}
 
-        return $formatted;
-    }
+		return $formatted;
+	}
 
-    /**
-     * Get birthday options form HTML select element
-     * @static
-     * @return array
-     */
-    public static function getBirthdaySelectors()
-    {
-        //get DI instance (static)
-        $di = \Phalcon\DI::getDefault();
+	/**
+	 * Get birthday options form HTML select element
+	 * @static
+	 * @return array
+	 */
+	public static function getBirthdaySelectors()
+	{
+		//get DI instance (static)
+		$di = \Phalcon\DI::getDefault();
 
-        if (!$di->has("trans"))
-            throw new Exception("Forms::getBirthdaySelectors -> no translate service adapter found.");
+		if (!$di->has("trans"))
+			throw new Exception("Forms::getBirthdaySelectors -> no translate service adapter found.");
 
-        $trans = $di->getShared("trans");
+		$trans = $di->getShared("trans");
 
-        //days
-        $days_array = [];
-        $days_array[""] = $trans->_("Día");
-        //loop
-        for ($i = 1; $i <= 31; $i++) {
-            $prefix = ($i <= 9) ? "0$i" : "$i";
-            $days_array[$prefix] = $i;
-        }
+		//days
+		$days_array = [];
+		$days_array[""] = $trans->_("Día");
+		//loop
+		for ($i = 1; $i <= 31; $i++) {
+			$prefix = ($i <= 9) ? "0$i" : "$i";
+			$days_array[$prefix] = $i;
+		}
 
-        //months
-        $months_array = [];
-        $months_array[""] = $trans->_("Mes");
-        //loop
-        for ($i = 1; $i <= 12; $i++) {
+		//months
+		$months_array = [];
+		$months_array[""] = $trans->_("Mes");
+		//loop
+		for ($i = 1; $i <= 12; $i++) {
 
-            $prefix = ($i <= 9) ? "0$i" : "$i";
-            //set month array
-            $months_array[$prefix] = ucfirst(strftime("%b", mktime(0, 0, 0, $i, 1)));
-        }
+			$prefix = ($i <= 9) ? "0$i" : "$i";
+			//set month array
+			$months_array[$prefix] = ucfirst(strftime("%b", mktime(0, 0, 0, $i, 1)));
+		}
 
-        //years
-        $years_array = [];
-        $years_array[""] = $trans->_("Año");
-        //loop
-        for ($i = (int)date("Y") - 5; $i >= 1930; $i--) {
-            $years_array["$i"] = $i;
-        }
+		//years
+		$years_array = [];
+		$years_array[""] = $trans->_("Año");
+		//loop
+		for ($i = (int)date("Y") - 5; $i >= 1930; $i--) {
+			$years_array["$i"] = $i;
+		}
 
-        return [$years_array, $months_array, $days_array];
-    }
+		return [$years_array, $months_array, $days_array];
+	}
 
-    /* --------------------------------------------------- § -------------------------------------------------------- */
+	/* --------------------------------------------------- § -------------------------------------------------------- */
 
-    /**
-     * Validates Rut Verification Digit
-     * @param  string $R - The input rut without VD
-     * @return mixed [int|string]
-     */
-    private static function _validateRutVD($R)
-    {
-        $M = 0;
-        $S = 1;
+	/**
+	 * Validates Rut Verification Digit
+	 * @param  string $R - The input rut without VD
+	 * @return mixed [int|string]
+	 */
+	private static function _validateRutVD($R)
+	{
+		$M = 0;
+		$S = 1;
 
-        for (; $R; $R = floor($R/10))
-            $S = ($S + ($R % 10) * (9 - ($M++ % 6))) % 11;
+		for (; $R; $R = floor($R/10))
+			$S = ($S + ($R % 10) * (9 - ($M++ % 6))) % 11;
 
-        return $S ? $S - 1 : "k";
-    }
+		return $S ? $S - 1 : "k";
+	}
 }

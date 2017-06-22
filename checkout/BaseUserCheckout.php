@@ -19,252 +19,252 @@ use CrazyCake\Phalcon\App;
  */
 class BaseUserCheckout extends \CrazyCake\Models\Base
 {
-    /* static vars */
-    public static $CHECKOUT_EXPIRES_THRESHOLD = 10;  //minutes
-    public static $BUY_ORDER_CODE_LENGTH      = 16;
+	/* static vars */
+	public static $CHECKOUT_EXPIRES_THRESHOLD = 10;  //minutes
+	public static $BUY_ORDER_CODE_LENGTH      = 16;
 
-    /* properties */
+	/* properties */
 
-    /*
-     * @var string
-     */
-    public $buy_order;
+	/*
+	 * @var string
+	 */
+	public $buy_order;
 
-    /**
-     * @var int
-     */
-    public $user_id;
+	/**
+	 * @var int
+	 */
+	public $user_id;
 
-    /**
-     * @var double
-     */
-    public $amount;
+	/**
+	 * @var double
+	 */
+	public $amount;
 
-    /**
-     * @var string
-     */
-    public $currency;
+	/**
+	 * @var string
+	 */
+	public $currency;
 
-    /**
-     * @var string
-     */
-    public $state;
+	/**
+	 * @var string
+	 */
+	public $state;
 
-    /*
-     * @var string
-     */
-    public $gateway;
+	/*
+	 * @var string
+	 */
+	public $gateway;
 
-    /**
-     * @var string
-     */
-    public $local_time;
+	/**
+	 * @var string
+	 */
+	public $local_time;
 
-    /**
-     * @var string
-     * The browser client
-     */
-    public $client;
+	/**
+	 * @var string
+	 * The browser client
+	 */
+	public $client;
 
-    /**
-     * @static
-     * @var array
-     */
-    static $STATES = ["pending", "failed", "overturn", "success"];
+	/**
+	 * @static
+	 * @var array
+	 */
+	static $STATES = ["pending", "failed", "overturn", "success"];
 
-    /**
-     * Initializer
-     */
-    public function initialize()
-    {
-        //get class
-        $user_class = App::getClass("user", false);
+	/**
+	 * Initializer
+	 */
+	public function initialize()
+	{
+		//get class
+		$user_class = App::getClass("user", false);
 
-        $user_checkout_object_class = App::getClass("user_checkout_object", false);
+		$user_checkout_object_class = App::getClass("user_checkout_object", false);
 
-        //model relations
-        $this->hasOne("user_id", $user_class, "id");
+		//model relations
+		$this->hasOne("user_id", $user_class, "id");
 
-        if(class_exists($user_checkout_object_class))
-            $this->hasMany("buy_order", $user_checkout_object_class, "buy_order");
-    }
+		if(class_exists($user_checkout_object_class))
+			$this->hasMany("buy_order", $user_checkout_object_class, "buy_order");
+	}
 
-    /**
-     * After Fetch Event
-     */
-    public function afterFetch()
-    {
-        //id is not relevant in the model meta data
-        $this->id = $this->buy_order;
-    }
+	/**
+	 * After Fetch Event
+	 */
+	public function afterFetch()
+	{
+		//id is not relevant in the model meta data
+		$this->id = $this->buy_order;
+	}
 
-    /**
-     * Before Validation Event [onCreate]
-     */
-    public function beforeValidationOnCreate()
-    {
-        //set default state
-        $this->state = self::$STATES[0];
-        //set server local time
-        $this->local_time = date("Y-m-d H:i:s");
-    }
+	/**
+	 * Before Validation Event [onCreate]
+	 */
+	public function beforeValidationOnCreate()
+	{
+		//set default state
+		$this->state = self::$STATES[0];
+		//set server local time
+		$this->local_time = date("Y-m-d H:i:s");
+	}
 
-    /**
-     * Validation
-     */
-    public function validation()
-    {
+	/**
+	 * Validation
+	 */
+	public function validation()
+	{
 		$validator = new Validation();
 
-        //inclusion
-        $validator->add("state", new InclusionIn([
-            "domain"  => self::$STATES,
-            "message" => "Invalid state. States supported: ".implode(", ", self::$STATES)
-        ]));
+		//inclusion
+		$validator->add("state", new InclusionIn([
+			"domain"  => self::$STATES,
+			"message" => "Invalid state. States supported: ".implode(", ", self::$STATES)
+		]));
 
-        return $this->validate($validator);
-    }
-    /** ------------------------------------------- § ------------------------------------------------ **/
+		return $this->validate($validator);
+	}
+	/** ------------------------------------------- § ------------------------------------------------ **/
 
-    /**
-     * Get the last user checkout
-     * @param  int $user_id - The User ID
-     * @param  string $state - The checkout state property
-     * @return mixed [string|object]
-     */
-    public static function getLast($user_id = 0, $state = "pending")
-    {
-        $conditions = "user_id = ?1 AND state = ?2";
-        $binding    = [1 => $user_id, 2 => $state];
+	/**
+	 * Get the last user checkout
+	 * @param  int $user_id - The User ID
+	 * @param  string $state - The checkout state property
+	 * @return mixed [string|object]
+	 */
+	public static function getLast($user_id = 0, $state = "pending")
+	{
+		$conditions = "user_id = ?1 AND state = ?2";
+		$binding    = [1 => $user_id, 2 => $state];
 
-        return self::findFirst([$conditions, "bind" => $binding, "order" => "local_time DESC"]);
-    }
+		return self::findFirst([$conditions, "bind" => $binding, "order" => "local_time DESC"]);
+	}
 
-    /**
-     * Generates a random code for a buy order
-     * @param int $length - The buy order string length
-     * @return string
-     */
-    public static function newBuyOrderCode($length = null)
-    {
+	/**
+	 * Generates a random code for a buy order
+	 * @param int $length - The buy order string length
+	 * @return string
+	 */
+	public static function newBuyOrderCode($length = null)
+	{
 		if(is_null($length))
 			$length = static::$BUY_ORDER_CODE_LENGTH;
 
-        $di   = \Phalcon\DI::getDefault();
-        $code = $di->getShared("cryptify")->newAlphanumeric($length);
-        //unique constrait
-        $exists = self::findFirstByBuyOrder($code);
+		$di   = \Phalcon\DI::getDefault();
+		$code = $di->getShared("cryptify")->newAlphanumeric($length);
+		//unique constrait
+		$exists = self::findFirstByBuyOrder($code);
 
-        return $exists ? $this->newBuyOrderCode($length) : $code;
-    }
+		return $exists ? $this->newBuyOrderCode($length) : $code;
+	}
 
-    /**
-     * Creates a new buy order
-     * @param object $checkoutObj -The checkout object
-     * @return mixed [object] - The checkout ORM object
-     */
-    public static function newBuyOrder($checkoutObj = null)
-    {
-        if (is_null($checkoutObj))
-            return false;
+	/**
+	 * Creates a new buy order
+	 * @param object $checkoutObj -The checkout object
+	 * @return mixed [object] - The checkout ORM object
+	 */
+	public static function newBuyOrder($checkoutObj = null)
+	{
+		if (is_null($checkoutObj))
+			return false;
 
-        //get DI reference (static)
-        $di = \Phalcon\DI::getDefault();
-        //get classes
-        $checkout_class_name = static::who();
-        //get checkouts objects class
-        $checkout_object_class_name = App::getClass("user_checkout_object");
+		//get DI reference (static)
+		$di = \Phalcon\DI::getDefault();
+		//get classes
+		$checkout_class_name = static::who();
+		//get checkouts objects class
+		$checkout_object_class_name = App::getClass("user_checkout_object");
 
-        //generates buy order
-        $buy_order = self::newBuyOrderCode();
-        $checkoutObj->buy_order = $buy_order;
+		//generates buy order
+		$buy_order = self::newBuyOrderCode();
+		$checkoutObj->buy_order = $buy_order;
 
-        //log statement
-        $di->getShared("logger")->debug("BaseUserCheckout::newBuyOrder -> Saving BuyOrder: $buy_order");
+		//log statement
+		$di->getShared("logger")->debug("BaseUserCheckout::newBuyOrder -> Saving BuyOrder: $buy_order");
 
-        try {
+		try {
 
-            //creates object with some checkout object props
-            $checkout = new $checkout_class_name();
+			//creates object with some checkout object props
+			$checkout = new $checkout_class_name();
 
-            //begin trx
-            $di->getShared("db")->begin();
+			//begin trx
+			$di->getShared("db")->begin();
 
-            //implode sub-arrays
-            $checkout_data = (array)$checkoutObj;
-            //unset checkout objects
-            unset($checkout_data["objects"]);
+			//implode sub-arrays
+			$checkout_data = (array)$checkoutObj;
+			//unset checkout objects
+			unset($checkout_data["objects"]);
 
-            foreach ($checkout_data as $key => $value) {
+			foreach ($checkout_data as $key => $value) {
 
-                if(is_array($value))
-                    $checkout_data[$key] = implode(",", $value);
-            }
-            //sd($checkout_data);
+				if(is_array($value))
+					$checkout_data[$key] = implode(",", $value);
+			}
+			//sd($checkout_data);
 
-            if (!$checkout->save($checkout_data))
-                throw new Exception("A DB error ocurred saving in checkouts model.");
+			if (!$checkout->save($checkout_data))
+				throw new Exception("A DB error ocurred saving in checkouts model.");
 
-            //save each checkout object
-            foreach ($checkoutObj->objects as $obj) {
+			//save each checkout object
+			foreach ($checkoutObj->objects as $obj) {
 
-                //creates an object
-                $checkoutObj = new $checkout_object_class_name();
-                //props
-                $props = (array)$obj;
-                $props["buy_order"] = $buy_order;
+				//creates an object
+				$checkoutObj = new $checkout_object_class_name();
+				//props
+				$props = (array)$obj;
+				$props["buy_order"] = $buy_order;
 
-                if (!$checkoutObj->save($props))
-                    throw new Exception("A DB error ocurred saving in checkoutsObjects model: ".$checkoutObj->messages(true));
-            }
+				if (!$checkoutObj->save($props))
+					throw new Exception("A DB error ocurred saving in checkoutsObjects model: ".$checkoutObj->messages(true));
+			}
 
-            //commit transaction
-            $di->getShared("db")->commit();
+			//commit transaction
+			$di->getShared("db")->commit();
 
-            return $checkout;
-        }
-        catch (Exception $e) {
-            $di->getShared("logger")->error("BaseUserCheckout::newBuyOrder -> An error ocurred: ".$e->getMessage());
-            $di->getShared("db")->rollback();
-            return false;
-        }
-    }
+			return $checkout;
+		}
+		catch (Exception $e) {
+			$di->getShared("logger")->error("BaseUserCheckout::newBuyOrder -> An error ocurred: ".$e->getMessage());
+			$di->getShared("db")->rollback();
+			return false;
+		}
+	}
 
-    /**
-     * Deletes expired pending checkouts
-     * Requires Carbon library
-     * @return int
-     */
-    public static function deleteExpired()
-    {
-        try {
-            //use carbon library to handle time
-            $now = new \Carbon\Carbon();
-            //substract time
-            $now->subMinutes(static::$CHECKOUT_EXPIRES_THRESHOLD);
-            //s($now->toDateTimeString());exit;
+	/**
+	 * Deletes expired pending checkouts
+	 * Requires Carbon library
+	 * @return int
+	 */
+	public static function deleteExpired()
+	{
+		try {
+			//use carbon library to handle time
+			$now = new \Carbon\Carbon();
+			//substract time
+			$now->subMinutes(static::$CHECKOUT_EXPIRES_THRESHOLD);
+			//s($now->toDateTimeString());exit;
 
-            //get expired objects
-            $conditions = "state = ?1 AND local_time < ?2";
-            $binding    = [1 => "pending", 2 => $now->toDateTimeString()];
-            //query
-            $objects = self::find([$conditions, "bind" => $binding]);
+			//get expired objects
+			$conditions = "state = ?1 AND local_time < ?2";
+			$binding    = [1 => "pending", 2 => $now->toDateTimeString()];
+			//query
+			$objects = self::find([$conditions, "bind" => $binding]);
 
-            $count = 0;
+			$count = 0;
 
-            if ($objects) {
-                //set count
-                $count = $objects->count();
-                //delete action
-                $objects->delete();
-            }
+			if ($objects) {
+				//set count
+				$count = $objects->count();
+				//delete action
+				$objects->delete();
+			}
 
-            //delete expired objects
-            return $count;
-        }
-        catch (Exception $e) {
-            //throw new Exception("BaseUserCheckout::deleteExpired -> error: ".$e->getMessage());
-            return 0;
-        }
-    }
+			//delete expired objects
+			return $count;
+		}
+		catch (Exception $e) {
+			//throw new Exception("BaseUserCheckout::deleteExpired -> error: ".$e->getMessage());
+			return 0;
+		}
+	}
 }

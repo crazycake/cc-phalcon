@@ -16,10 +16,10 @@ class ExceptionsPlugin extends \Phalcon\Mvc\User\Plugin
 	 * Constructor
 	 */
 	public function __construct()
-    {
+	{
 		if (!defined("APP_ENV"))
-            throw new Exception("ExceptionsPlugin::__construct -> APP_ENV is not defined.");
-    }
+			throw new Exception("ExceptionsPlugin::__construct -> APP_ENV is not defined.");
+	}
 
 	/**
 	 * This action is executed before a exception ocurrs.

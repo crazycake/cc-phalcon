@@ -38,13 +38,13 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
 	public $quantity;
 
 	/**
-     * Initializer
-     */
-    public function initialize()
-    {
-        //set relation
-        $this->hasOne("object_id", $this->object_class, "id", ["alias" => "rel"]);
-    }
+	 * Initializer
+	 */
+	public function initialize()
+	{
+		//set relation
+		$this->hasOne("object_id", $this->object_class, "id", ["alias" => "rel"]);
+	}
 
 	/** ------------------------------------------- § ------------------------------------------------ **/
 

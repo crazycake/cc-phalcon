@@ -38,23 +38,23 @@ class QRMaker
 			throw new Exception("QRMaker Library -> Cache path (".$cache_path.") not found.");
 		}
 
-        $this->init($log_path, $cache_path);
+		$this->init($log_path, $cache_path);
 
 		//load QR library
 		require_once "src/qrconf.php";
 	}
 
-    /**
-     * Init and define consts
+	/**
+	 * Init and define consts
 	 * @param string $log_path - The app log path
-     * @param string $cache_path - The app cache path
-     */
-    protected function init($log_path, $cache_path)
-    {
-        if (defined("QR_ASSETS_PATH"))
-            return;
+	 * @param string $cache_path - The app cache path
+	 */
+	protected function init($log_path, $cache_path)
+	{
+		if (defined("QR_ASSETS_PATH"))
+			return;
 
-        //use cache - more disk reads but less CPU power, masks and format templates are stored there
+		//use cache - more disk reads but less CPU power, masks and format templates are stored there
 		define("QR_CACHEABLE", (is_null($cache_path) ? false : true));
 		define("QR_CACHE_DIR", $cache_path."qr/");
 		define("QR_LOG_DIR", $log_path);
@@ -85,7 +85,7 @@ class QRMaker
 		define("QR_FIND_FROM_RANDOM", false);
 		//maximum allowed png image width (in pixels), tune to make sure GD and PHP can handle such big images
 		define("QR_PNG_MAXIMUM_SIZE",  self::QR_PNG_MAX_SIZE);
-    }
+	}
 
 	/**
 	 * Generates a QR code
@@ -215,42 +215,42 @@ class QRMaker
 	}
 
 	/**
-     * Extract assets inside the phar file
-     * @param string $cache_path - The app cache path, must end with a slash
-     * @param string $force_extract - Forces extraction not validating contents in given cache path
-     * @return mixed [boolean|string] - The absolute include cache path
-     */
-    private function _extractAssetsFromPhar($cache_path = null, $force_extract = false)
-    {
-        //check folders
-        if (is_null($cache_path) || !is_dir($cache_path))
-            throw new Exception("extractAssetsFromPhar -> assets and cache path must be valid paths.");
+	 * Extract assets inside the phar file
+	 * @param string $cache_path - The app cache path, must end with a slash
+	 * @param string $force_extract - Forces extraction not validating contents in given cache path
+	 * @return mixed [boolean|string] - The absolute include cache path
+	 */
+	private function _extractAssetsFromPhar($cache_path = null, $force_extract = false)
+	{
+		//check folders
+		if (is_null($cache_path) || !is_dir($cache_path))
+			throw new Exception("extractAssetsFromPhar -> assets and cache path must be valid paths.");
 
-        //set phar assets path
-        $output_path = $cache_path."qr/assets/";
+		//set phar assets path
+		$output_path = $cache_path."qr/assets/";
 
-        //get files in directory & exclude ".", ".." directories
-        $files = scandir(__DIR__."/assets");
+		//get files in directory & exclude ".", ".." directories
+		$files = scandir(__DIR__."/assets");
 
-        unset($files["."], $files[".."]);
+		unset($files["."], $files[".."]);
 
 		//skip if files were already copied
-	    if (!$force_extract && is_file($output_path.current($files)))
-            return $output_path;
+		if (!$force_extract && is_file($output_path.current($files)))
+			return $output_path;
 
 		$assets = [];
-        //fill the asset array
-        foreach ($files as $file)
-            array_push($assets, "qr/assets/".$file);
+		//fill the asset array
+		foreach ($files as $file)
+			array_push($assets, "qr/assets/".$file);
 
-        //instance a phar file object
-        $phar = new \Phar(\Phar::running());
+		//instance a phar file object
+		$phar = new \Phar(\Phar::running());
 		//sd($assets, $output_path);
 
-        //extract all files in a given directory
-        $phar->extractTo($cache_path, $assets, true);
+		//extract all files in a given directory
+		$phar->extractTo($cache_path, $assets, true);
 
-        //return path
-        return $output_path;
-    }
+		//return path
+		return $output_path;
+	}
 }
