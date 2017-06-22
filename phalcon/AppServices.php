@@ -173,7 +173,7 @@ class AppServices
 		$di->setShared("db", function() {
 
 			$db_conf = [
-				"host"     => getenv("MYSQL_HOST") ?: "db",
+				"host"     => getenv("MYSQL_HOST") ?: "mysql",
 				"port"     => 3306,
 				"dbname"   => "app",
 				"username" => getenv("MYSQL_USER") ?: "root",
