@@ -1,6 +1,6 @@
 {
 	"blacklist": [],
-    "directories": [
+	"directories": [
 		"phalcon",
 		"core",
 		"controllers",
@@ -12,8 +12,8 @@
 		"checkout",
 		"mobile"
 	],
-    "main"      : "autoload.php",
-    "output"    : "cc-phalcon.phar",
-    "shebang"   : false,
-    "stub"      : true
+	"main"    : "autoload.php",
+	"output"  : "cc-phalcon.phar",
+	"shebang" : false,
+	"stub"    : true
 }

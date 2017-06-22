@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <phpdoc>
-  <parser>
-    <target>data/output</target>
-  </parser>
-  <transformer>
-    <target>data/output</target>
-  </transformer>
-  <files>
-    <directory>.</directory>
-    <ignore>qr/src/*</ignore>
-    <ignore>soap/lib/*</ignore>
-  </files>
+	<parser>
+		<target>data/output</target>
+	</parser>
+	<transformer>
+		<target>data/output</target>
+	</transformer>
+	<files>
+		<directory>.</directory>
+		<ignore>qr/src/*</ignore>
+		<ignore>soap/lib/*</ignore>
+	</files>
 </phpdoc>
