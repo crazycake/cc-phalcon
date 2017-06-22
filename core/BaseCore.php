@@ -19,7 +19,7 @@ use CrazyCake\Controllers\Responser;
  */
 interface WebSecurity
 {
-    public function checkCsrfToken();
+	public function checkCsrfToken();
 }
 
 /**
@@ -27,38 +27,38 @@ interface WebSecurity
  */
 abstract class BaseCore extends Controller
 {
-    /* Traits */
-    use Debugger;
-    use Requester;
-    use Responser;
+	/* Traits */
+	use Debugger;
+	use Requester;
+	use Responser;
 
-    /**
-     * Base URL extended function
-     * @param string $uri - A given URI
-     * @return string - The static URL
-     */
-    protected function baseUrl($uri = "")
-    {
-        return APP_BASE_URL.$uri;
-    }
+	/**
+	 * Base URL extended function
+	 * @param string $uri - A given URI
+	 * @return string - The static URL
+	 */
+	protected function baseUrl($uri = "")
+	{
+		return APP_BASE_URL.$uri;
+	}
 
-    /**
-     * Static URL extended function
-     * @param string $uri - A given URI
-     * @return string - The static URL
-     */
-    protected function staticUrl($uri = "")
-    {
-        return $this->url->getStaticBaseUri().$uri;
-    }
+	/**
+	 * Static URL extended function
+	 * @param string $uri - A given URI
+	 * @return string - The static URL
+	 */
+	protected function staticUrl($uri = "")
+	{
+		return $this->url->getStaticBaseUri().$uri;
+	}
 
-    /**
-     * Host URL
-     * @param int $port - The host URL
-     * @return string - The host URL with port appended
-     */
-    protected function host($port = 80)
-    {
+	/**
+	 * Host URL
+	 * @param int $port - The host URL
+	 * @return string - The host URL with port appended
+	 */
+	protected function host($port = 80)
+	{
 		$host 		= $this->request->getHttpHost();
 		$host_parts = explode(":", $host);
 
@@ -66,174 +66,174 @@ abstract class BaseCore extends Controller
 		if(count($host_parts) > 1)
 			$host = current($host_parts);
 
-        return empty($port) ? $host : $host.":".$port;
-    }
-
-    /**
-     * Get the requested URI
-     */
-    protected function getRequestedUri()
-    {
-        $uri = $this->request->getUri();
-
-        //replaces '*/public/' or first '/'
-        $regex = "/^.*\/public\/(?=[^.]*$)|^\//";
-        $uri   = preg_replace($regex, "", $uri);
-
-        return $uri;
-    }
+		return empty($port) ? $host : $host.":".$port;
+	}
 
 	/**
-     * Sends a mail message to user asynchronously
-     * @param string $method - The Mailer method to call
-     * @param object $data - The data to be passed as args
-     * @return object response
-     */
-    protected function sendMailMessage($method = null, $data = null)
-    {
-        //simple input validation
-        if (empty($method))
-            throw new Exception("BaseCore::sendMailMessage -> method param is required.");
+	 * Get the requested URI
+	 */
+	protected function getRequestedUri()
+	{
+		$uri = $this->request->getUri();
 
-        //checks that a MailerController exists
-        if (!class_exists("MailerController"))
-            throw new Exception("BaseCore::sendMailMessage -> A Mailer Controller is required.");
+		//replaces '*/public/' or first '/'
+		$regex = "/^.*\/public\/(?=[^.]*$)|^\//";
+		$uri   = preg_replace($regex, "", $uri);
 
-        $mailer = new \MailerController();
+		return $uri;
+	}
 
-        //checks that a MailerController exists
-        if (!method_exists($mailer, $method))
-            throw new Exception("BaseCore::sendMailMessage -> Method $method is not defined in Mailer Controller.");
+	/**
+	 * Sends a mail message to user asynchronously
+	 * @param string $method - The Mailer method to call
+	 * @param object $data - The data to be passed as args
+	 * @return object response
+	 */
+	protected function sendMailMessage($method = null, $data = null)
+	{
+		//simple input validation
+		if (empty($method))
+			throw new Exception("BaseCore::sendMailMessage -> method param is required.");
 
-        //call mailer class method (reflection)
-        $response = $mailer->{$method}($data);
+		//checks that a MailerController exists
+		if (!class_exists("MailerController"))
+			throw new Exception("BaseCore::sendMailMessage -> A Mailer Controller is required.");
 
-        if (is_array($response))
-            $response = json_encode($response);
+		$mailer = new \MailerController();
 
-        //save response only for non production-environment
-        $this->logger->debug("BaseCore::sendMailMessage -> Queuing new Mailer Message [$method].");
+		//checks that a MailerController exists
+		if (!method_exists($mailer, $method))
+			throw new Exception("BaseCore::sendMailMessage -> Method $method is not defined in Mailer Controller.");
 
-        return $response;
-    }
+		//call mailer class method (reflection)
+		$response = $mailer->{$method}($data);
 
-    /**
-     * Sends an async tasks as another request. (MVC struct)
-     * @param array $options - Options: module, controller, action, method, payload, socket, headers
-     */
-    protected function coreRequest($options = [])
-    {
+		if (is_array($response))
+			$response = json_encode($response);
+
+		//save response only for non production-environment
+		$this->logger->debug("BaseCore::sendMailMessage -> Queuing new Mailer Message [$method].");
+
+		return $response;
+	}
+
+	/**
+	 * Sends an async tasks as another request. (MVC struct)
+	 * @param array $options - Options: module, controller, action, method, payload, socket, headers
+	 */
+	protected function coreRequest($options = [])
+	{
 		$options = array_merge([
-            "base_url" => $this->baseUrl(),
-            "uri"      => "",
+			"base_url" => $this->baseUrl(),
+			"uri"      => "",
 			"module"   => "",
-            "payload"  => "",
-            "method"   => "GET",
-            "encrypt"  => false,
-            "socket"   => false,
-        ], $options);
+			"payload"  => "",
+			"method"   => "GET",
+			"encrypt"  => false,
+			"socket"   => false,
+		], $options);
 
-        //special case for module cross requests
-        if ($options["module"] == "api") {
+		//special case for module cross requests
+		if ($options["module"] == "api") {
 
-            //set API key header name
-            $api_key_header_value = $this->config->apiKey;
-            $api_key_header_name  = str_replace("_", "-", WsCore::HEADER_API_KEY);
-            $options["headers"]   = [$api_key_header_name => $api_key_header_value];
-        }
+			//set API key header name
+			$api_key_header_value = $this->config->apiKey;
+			$api_key_header_name  = str_replace("_", "-", WsCore::HEADER_API_KEY);
+			$options["headers"]   = [$api_key_header_name => $api_key_header_value];
+		}
 
-        //payload
-        if (!empty($options["payload"]) && $options["encrypt"])
-            $options["payload"] = $this->cryptify->encryptData($options["payload"]);
+		//payload
+		if (!empty($options["payload"]) && $options["encrypt"])
+			$options["payload"] = $this->cryptify->encryptData($options["payload"]);
 
-        //requester
-        return $this->newRequest($options);
-    }
+		//requester
+		return $this->newRequest($options);
+	}
 
-    /**
-     * Handle the request params data validating required parameters.
-     * Also Check if get/post data is valid, if validation fails send an HTTP code, onSuccess returns a data array.
-     * Required field may have a ```@``` prefix to establish that is just an optional field to be sanitized.
-     * Types: ```string, email, int, float, alphanum, striptags, trim, lower, upper.```
-     * Example: ```{ $data, array( "@name" => "string"), POST }```
-     * @link   http://docs.phalconphp.com/en/latest/reference/filter.html#sanitizing-data
-     * @param array $req_fields - Required fields
-     * @param string $method - HTTP method: [GET, POST, MIXED], defaults to GET.
-     * @param boolean $check_csrf - Checks the form CSRF token
-     * @return array
-     */
-    protected function handleRequest($req_fields = [], $method = "GET", $check_csrf = true)
-    {
-        //check API module and set special settings
-        if (MODULE_NAME == "api")
-            $check_csrf = false;
+	/**
+	 * Handle the request params data validating required parameters.
+	 * Also Check if get/post data is valid, if validation fails send an HTTP code, onSuccess returns a data array.
+	 * Required field may have a ```@``` prefix to establish that is just an optional field to be sanitized.
+	 * Types: ```string, email, int, float, alphanum, striptags, trim, lower, upper.```
+	 * Example: ```{ $data, array( "@name" => "string"), POST }```
+	 * @link   http://docs.phalconphp.com/en/latest/reference/filter.html#sanitizing-data
+	 * @param array $req_fields - Required fields
+	 * @param string $method - HTTP method: [GET, POST, MIXED], defaults to GET.
+	 * @param boolean $check_csrf - Checks the form CSRF token
+	 * @return array
+	 */
+	protected function handleRequest($req_fields = [], $method = "GET", $check_csrf = true)
+	{
+		//check API module and set special settings
+		if (MODULE_NAME == "api")
+			$check_csrf = false;
 
-        //set anoymous function for send response
-        $sendResponse = function($code) {
+		//set anoymous function for send response
+		$sendResponse = function($code) {
 
-            if(MODULE_NAME == "api" || $this->request->isAjax())
-                $this->jsonResponse($code);
+			if(MODULE_NAME == "api" || $this->request->isAjax())
+				$this->jsonResponse($code);
 
-            //otherwise redirect to 400 page
-            $this->dispatcher->forward(["controller" => "error", "action" => "badRequest"]);
-            $this->dispatcher->dispatch();
-            return;
-        };
+			//otherwise redirect to 400 page
+			$this->dispatcher->forward(["controller" => "error", "action" => "badRequest"]);
+			$this->dispatcher->dispatch();
+			return;
+		};
 
-        //is post request? (method now allowed)
-        if ($method == "POST" && !$this->request->isPost())
-            return $sendResponse(405);
+		//is post request? (method now allowed)
+		if ($method == "POST" && !$this->request->isPost())
+			return $sendResponse(405);
 
-        //is get request? (method now allowed)
-        if ($method == "GET" && !$this->request->isGet())
-            return $sendResponse(405);
+		//is get request? (method now allowed)
+		if ($method == "GET" && !$this->request->isGet())
+			return $sendResponse(405);
 
-        //validate always CSRF Token (prevents also headless browsers, POST only and API module excluded)
-        if ($check_csrf) {
-            //check if method exists
-            if (method_exists($this, "checkCsrfToken") && !$this->checkCsrfToken())
-                return $sendResponse(498);
-        }
+		//validate always CSRF Token (prevents also headless browsers, POST only and API module excluded)
+		if ($check_csrf) {
+			//check if method exists
+			if (method_exists($this, "checkCsrfToken") && !$this->checkCsrfToken())
+				return $sendResponse(498);
+		}
 
-        //get params data: POST, GET, or mixed
-        if ($method == "POST")
-            $data = $this->request->getPost();
-        else if ($method == "GET")
-            $data = $this->request->get();
-        else
-            $data = array_merge($this->request->get(), $this->request->getPost());
+		//get params data: POST, GET, or mixed
+		if ($method == "POST")
+			$data = $this->request->getPost();
+		else if ($method == "GET")
+			$data = $this->request->get();
+		else
+			$data = array_merge($this->request->get(), $this->request->getPost());
 
-        //clean phalcon data for GET or MIXED method
-        if ($method != "POST")
-            unset($data["_url"]);
+		//clean phalcon data for GET or MIXED method
+		if ($method != "POST")
+			unset($data["_url"]);
 
-        //if no required fields given, return all POST or GET vars as array
-        if (empty($req_fields))
-            return $data;
+		//if no required fields given, return all POST or GET vars as array
+		if (empty($req_fields))
+			return $data;
 
-        //check require fields
-        foreach ($req_fields as $field => $data_type) {
+		//check require fields
+		foreach ($req_fields as $field => $data_type) {
 
-            $value = $this->_validateField($data, $field, $data_type);
+			$value = $this->_validateField($data, $field, $data_type);
 
 			if($value === false)
-                return $sendResponse(400);
+				return $sendResponse(400);
 
-            //optional fields
-            if($field[0] == "@") {
-                unset($data[$field]);
-                $field = substr($field, 1);
-            }
+			//optional fields
+			if($field[0] == "@") {
+				unset($data[$field]);
+				$field = substr($field, 1);
+			}
 
-            $data[$field] = $value;
-        }
+			$data[$field] = $value;
+		}
 
-        return $data;
-    }
+		return $data;
+	}
 
-    /**
-     * Validates a request input field
-     */
+	/**
+	 * Validates a request input field
+	 */
 	private function _validateField($data, $field, $data_type)
 	{
 		$is_optional = false;
@@ -263,8 +263,8 @@ abstract class BaseCore extends Controller
 				$value = strtolower($value);
 		}
 
-        //(empty fn considers zero value)
-        if (!$is_optional && (is_null($value) || $value == ""))
+		//(empty fn considers zero value)
+		if (!$is_optional && (is_null($value) || $value == ""))
 			return false;
 
 		//check optional field
