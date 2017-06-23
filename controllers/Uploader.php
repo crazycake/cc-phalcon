@@ -292,12 +292,10 @@ trait Uploader
 		if(!is_file($src))
 			throw new Exception("Uploader::newImageApiJob -> File not found!");
 
-		$data = [
+		$body = json_encode([
 			"contents" => base64_encode(file_get_contents($src)),
 			"config"   => $config
-		];
-
-		$body    = json_encode($data);
+		]);
 		$headers = [
 			"Content-Type: application/json",
 			"Content-Length: ".strlen($body),
@@ -314,12 +312,18 @@ trait Uploader
 
 		$result = curl_exec($ch);
 		curl_close($ch);
-		//sd($result);
+		//~sd($result);
 
 		//process result
 		$result = json_decode($result, true);
 
-		return $result["status"] == "ok" ? $result["payload"] : [];
+		if($result["status"] != "ok" || empty($result["payload"])) {
+
+			$this->logger->error("Uploader::newImageApiJob -> invalid/empty payload: ".json_encode($result, JSON_UNESCAPED_SLASHES));
+			return [];
+		}
+
+		return $result["payload"];
 	}
 
 	/**
@@ -328,6 +332,9 @@ trait Uploader
 	 */
 	public static function sortFilesByTag(&$files)
 	{
+		if(empty($files))
+			return;
+
 		usort($files, function($a, $b) {
 
 			$tags1 = explode("_", $a);

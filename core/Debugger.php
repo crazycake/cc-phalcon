@@ -46,9 +46,9 @@ trait Debugger
 		$object = (new \Phalcon\Debug\Dump())->toJson($object);
 
 		//print output
-		class_exists("\\Kint") ? s($object) : print_r($object);
+		class_exists("\\Kint") ? ~s($object) : var_dump($object);
 
-		if ($exit) exit;
+		if ($exit) die;
 
 		return $object;
 	}
