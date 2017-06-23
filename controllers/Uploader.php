@@ -226,6 +226,17 @@ trait Uploader
 
 		foreach ($this->uploader_conf["files"] as $key => $conf) {
 
+			//set amazon properties
+			if(!empty($this->config->aws->s3)) {
+
+				$conf["s3"] = $this->config->aws->s3;
+				$conf["s3"]["bucketBaseUri"] .= strtolower($uri);
+			}
+
+			//jobs
+			$job = !empty($conf["resize"]) ? "resize" : "s3push";
+
+			// loop through files
 			foreach ($uploaded_files as $file) {
 
 				//check key if belongs
@@ -255,23 +266,14 @@ trait Uploader
 					$saved_files[$key] = [];
 
 				//skip buckets actions?
-				if(empty($this->config->aws->s3)) {
+				if(!isset($conf["s3"])) {
 
 					//append destination to array
 					$saved_files[$key][] = $dst;
 					continue;
 				}
 
-				//set amazon properties
-				if(!empty($this->config->aws->s3)) {
-
-					$conf["s3"] = $this->config->aws->s3;
-					$conf["s3"]["bucketBaseUri"] .= strtolower($uri);
-				}
-
-				//jobs
-				$job = !empty($conf["resize"]) ? "resize" : "s3push";
-
+				//set filename
 				$conf["filename"] = $file;
 				// new resize job
 				$saved_files[$key][] = $this->newImageApiJob($job, $dst, $conf);
