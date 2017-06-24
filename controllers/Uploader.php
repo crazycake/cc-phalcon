@@ -230,7 +230,7 @@ trait Uploader
 			if(!empty($this->config->aws->s3)) {
 
 				$conf["s3"] = $this->config->aws->s3;
-				$conf["s3"]["bucketBaseUri"] .= strtolower($uri);
+				$conf["s3"]["bucketBaseUri"] = $conf["s3"]["bucketBaseUri"].strtolower($uri);
 			}
 
 			//jobs
