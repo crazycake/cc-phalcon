@@ -239,6 +239,8 @@ trait FacebookAuth
 	 */
 	public function extendAccessTokenAction($encrypted_data = "")
 	{
+		$this->logger->debug("Facebook::extendAccessTokenAction -> received encrypted_data: ".$encrypted_data);
+
 		if (empty($encrypted_data))
 			return $this->jsonResponse(405); //method not allowed
 
