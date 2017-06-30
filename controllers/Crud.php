@@ -309,8 +309,13 @@ trait Crud
 		$object = $object_class::findFirst([$this->crud_conf["pk"]." = '".$data[$this->crud_conf["pk"]]."'"]);
 
 		//orm deletion
-		if($object)
+		if($object) {
+
+			if(method_exists($this, "onBeforeDelete"))
+				$this->onBeforeDelete();
+
 			$object->delete();
+		}
 
 		//delete upload files?
 		if(isset($this->crud_conf["uploader"])) {
