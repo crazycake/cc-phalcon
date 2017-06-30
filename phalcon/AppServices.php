@@ -159,16 +159,29 @@ class AppServices
 
 	/**
 	 * Set Database Services [MySQL, Mongo]
-	 * NOTE: Mongo requires incubator library for new mongo PHP ext.
+	 * Uses PECL Driver
 	 * @access private
 	 * @param object $di - The DI object
 	 */
 	private function _setDatabaseServices(&$di)
 	{
-		//skip db for db setting?
-		if(isset($this->config->db) && !$this->config->db)
+		//mongo adapter
+		if(!empty($this->config->mongoService))
+			$this->_setMongoService($di);
+
+		//mysql adapter
+		if(isset($this->config->mysql) && !$this->config->mysql)
 			return;
 
+		$this->_setMysqlService($di);
+	}
+
+	/**
+	 * Set MySQL Service
+	 * @param object $di - The DI object
+	 */
+	private function _setMysqlService(&$di)
+	{
 		// mysql adapter
 		$di->setShared("db", function() {
 
@@ -183,11 +196,14 @@ class AppServices
 
 			return new \Phalcon\Db\Adapter\Pdo\Mysql($db_conf);
 		});
+	}
 
-		// mongo adapter
-		if(!isset($this->config->mongoService) || !$this->config->mongoService)
-			return;
-
+	/**
+	 * Set Mongo Service
+	 * @param object $di - The DI object
+	 */
+	private function _setMongoService(&$di)
+	{
 		$di->setShared("mongo", function() {
 
 			$schema = getenv("MONGO_USER") ? sprintf("mongodb://%s:%s@%s",
