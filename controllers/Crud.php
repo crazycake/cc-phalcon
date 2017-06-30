@@ -312,7 +312,7 @@ trait Crud
 		if($object) {
 
 			if(method_exists($this, "onBeforeDelete"))
-				$this->onBeforeDelete();
+				$this->onBeforeDelete($object);
 
 			$object->delete();
 		}
