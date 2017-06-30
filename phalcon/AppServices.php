@@ -214,7 +214,7 @@ class AppServices
 
 			$mongo = new \MongoDB\Client($schema);
 
-			return $mongo->{getenv("MONGO_DB") ?: "test"};
+			return $mongo->{getenv("MONGO_DB") ?: "app" };
 		});
 
 		$di->setShared("collectionManager", function() {
