@@ -47,6 +47,9 @@ abstract class WebCore extends BaseCore implements WebSecurity
 	 */
 	protected function beforeExecuteRoute()
 	{
+		//check enable SSL option and force it if enabled
+		$this->_handleSSL();
+
 		//set client object with its properties (User-Agent)
 		$this->_setClient();
 
@@ -55,9 +58,6 @@ abstract class WebCore extends BaseCore implements WebSecurity
 
 		//set CSRF
 		$this->_setCSRF();
-
-		//check enable SSL option and force it if enabled
-		$this->_handleSSL();
 	}
 
 	/**
@@ -297,9 +297,9 @@ abstract class WebCore extends BaseCore implements WebSecurity
 	 */
 	private function _handleSSL()
 	{
-		$scheme = getenv("APP_SCHEME") ?: false;
+		$ssl = getenv("APP_SSL") ?: false;
 
-		if($this->request->isSecure() || $scheme != "https")
+		if(!$ssl || $this->request->isSecure())
 			return;
 
 		//if enabledSSL, force redirect for non-https request
