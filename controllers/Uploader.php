@@ -333,6 +333,21 @@ trait Uploader
 	}
 
 	/**
+	 * Get upload local path
+	 * @param  string $url - The remote url upload
+	 */
+	public function getUploadLocalFilepath($url = "")
+	{
+		$uri = substr($url, strpos($url, $this->config->aws->s3->bucketBaseUri) +
+							strlen($this->config->aws->s3->bucketBaseUri));
+
+		$filepath = self::$ROOT_UPLOAD_PATH.$uri;
+		//~sd($filepath);
+
+		return $filepath;
+	}
+
+	/**
 	 * Sort files by numeric tag
 	 * @param  array $files - The upload file array
 	 */
