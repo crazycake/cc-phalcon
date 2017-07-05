@@ -229,8 +229,10 @@ trait Uploader
 			//set amazon properties
 			if(!empty($this->config->aws->s3)) {
 
-				$conf["s3"] = $this->config->aws->s3;
-				$conf["s3"]["bucketBaseUri"] = $conf["s3"]["bucketBaseUri"].strtolower($uri);
+				$conf["s3"] = (array)$this->config->aws->s3;
+
+				// set bucket base uri
+				$conf["s3"]["bucketBaseUri"] = $this->config->aws->s3->bucketBaseUri.strtolower($uri);
 			}
 
 			//jobs
@@ -276,6 +278,7 @@ trait Uploader
 				//set filename
 				$conf["filename"] = $file;
 				// new resize job
+
 				$saved_files[$key][] = $this->newImageApiJob($job, $dst, $conf);
 			}
 		}
@@ -302,6 +305,7 @@ trait Uploader
 			"Content-Type: application/json",
 			"Content-Length: ".strlen($body),
 		];
+		//~sd($api_uri, $src, $config);
 
 		//curl call
 		$ch = curl_init();
