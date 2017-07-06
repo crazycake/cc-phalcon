@@ -1001,34 +1001,6 @@ if (!class_exists('QrTagDotSquare', FALSE)){
 }
 
 /**
- * QrTagDotButterfly Class
- */
-if (!class_exists('QrTagDotButterfly', FALSE)){
-	class QrTagDotButterfly extends QrTagShape {
-
-		public function generate() {
-			$color = $this->hex2dec($this->color);
-
-			$font = QR_FONT_PATH_HAROP;
-			$letter = 'B';
-			$rect = $this->calculateTextBox($letter, $font, $this->size, 0);
-			$rect['width'] += 1;
-			$im = imagecreatetruecolor($rect['width'], $rect['width']);
-			imagesavealpha($im, true);
-			$trans_colour = imagecolorallocatealpha($im, 0, 0, 0, 127);
-			imagefill($im, 0, 0, $trans_colour);
-
-			$color = imagecolorallocate($im, $color[0], $color[1], $color[2]);
-
-			imagettftext($im, $this->size, 0, -$rect['width'] / 20, $rect['top'] + ($rect['width'] / 2) - ($rect['width'] / 2), $color, $font, $letter);
-			$this->size = $rect['width'];
-			$this->image = $im;
-			return $im;
-		}
-	}
-}
-
-/**
  * QrTagDot9 Class
  */
 if (!class_exists('QrTagDot9', FALSE)){

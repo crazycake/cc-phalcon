@@ -51,7 +51,6 @@ define("QR_FONT_PATH_EDGES", QR_ASSETS_PATH . 'edges.ttf');
 define("QR_FONT_PATH_FRAMES", QR_ASSETS_PATH . 'frames.ttf');
 define("QR_FONT_PATH_DOTS", QR_ASSETS_PATH . 'dots.ttf');
 define("QR_FONT_PATH_BDOTS", QR_ASSETS_PATH . 'bodydots.ttf');
-define("QR_FONT_PATH_HAROP", QR_ASSETS_PATH . 'harop.ttf');
 define("QR_FONT_PATH_SQUARETHINGS", QR_ASSETS_PATH . 'squarethings.ttf');
 
 //load files (relative paths)

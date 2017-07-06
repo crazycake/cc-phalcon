@@ -9,8 +9,7 @@
 		"helpers",
 		"qr",
 		"facebook",
-		"checkout",
-		"mobile"
+		"checkout"
 	],
 	"main"    : "autoload.php",
 	"output"  : "cc-phalcon.phar",
