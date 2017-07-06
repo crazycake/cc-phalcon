@@ -17,6 +17,7 @@ class BaseUserFacebook extends \CrazyCake\Models\Base
 	/* properties */
 
 	/**
+	 * The user ID
 	 * @var int
 	 */
 	public $user_id;
@@ -34,7 +35,8 @@ class BaseUserFacebook extends \CrazyCake\Models\Base
 	public $expires_at;
 
 	/**
-	 * @var string (timestamp)
+	 * datetime timestamp
+	 * @var string
 	 */
 	public $created_at;
 

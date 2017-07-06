@@ -18,7 +18,10 @@ use CrazyCake\Helpers\UserAgent;
  */
 abstract class WebCore extends BaseCore implements WebSecurity
 {
-	/* consts */
+	/**
+	 * Js loader function
+	 * @var string
+	 */
 	const JS_LOADER_FUNCTION = "core.start";
 
 	/**
@@ -38,7 +41,6 @@ abstract class WebCore extends BaseCore implements WebSecurity
 	/**
 	 * User agent properties
 	 * @var object
-	 * @access public
 	 */
 	public $client;
 
@@ -131,6 +133,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 
 	/**
 	 * Check for non Ajax request, redirects to notFound error page
+	 * @return boolean
 	 */
 	protected function onlyAjax()
 	{
@@ -176,7 +179,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 
 	/**
 	 * Validate CSRF token. One client token per session.
-	 * @access private
+	 * @return boolean
 	 */
 	public function checkCsrfToken()
 	{

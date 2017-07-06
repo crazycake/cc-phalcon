@@ -18,13 +18,15 @@ use Phalcon\Crypt;
  */
 class Cryptify
 {
-	/* consts */
+	/**
+	 * Default cipher algorithm
+	 * @var string
+	 */
 	const DEFAULT_CIPHER = "aes-256-cfb";
 
 	/**
 	 * Phalcon Crypt Library Instance
 	 * @var object
-	 * @access private
 	 */
 	private $crypt;
 

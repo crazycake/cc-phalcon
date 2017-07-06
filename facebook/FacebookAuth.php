@@ -37,7 +37,7 @@ trait FacebookAuth
 	abstract public function onAppDeauthorized($data = []);
 
 	/**
-	 * Config var
+	 * trait config var
 	 * @var array
 	 */
 	public $facebook_auth_conf;
@@ -57,6 +57,7 @@ trait FacebookAuth
 
 	/**
 	 * Facebook Email settings URL
+	 * @static
 	 * @var string
 	 */
 	public static $FB_EMAIL_SETTINGS_URL = "https://www.facebook.com/settings?tab=account&section=email&view";

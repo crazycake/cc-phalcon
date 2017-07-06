@@ -20,7 +20,7 @@ class Forms
 
 	/**
 	 * Validates chilean rut
-	 * @param string $rut - The input form rut (requires '-' token)
+	 * @param string $input_rut - The input form rut (requires '-' token)
 	 * @return boolean
 	 */
 	public static function validateRut($input_rut = "")
@@ -49,8 +49,8 @@ class Forms
 
 	/**
 	 * Formats price.
-	 * @todo Complete other global currencys formats
 	 * @static
+	 * @todo Complete other global currency formats
 	 * @param numeric $price - The price numeric value
 	 * @param string $currency - The price currency
 	 * @return string

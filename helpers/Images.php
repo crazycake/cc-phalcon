@@ -19,8 +19,8 @@ class Images
 	 * Get resized image path.
 	 * Example: ./media/dj/IMAGE1.jpg?v=5
 	 *          ./media/dj/IMAGE1_TH.jpg?v=5
-	 * @param  {string} url - An image URL
-	 * @param  {string} key - The suffix key to append
+	 * @param string $path - An image URL
+	 * @param string $key - The suffix key to append
 	 * @return string
 	 */
 	public static function resizedImagePath($path = "", $key = "TN")
@@ -36,9 +36,8 @@ class Images
 
 	/**
 	 * Resize input image with config params.
-	 * @param  string $src - The source folder
-	 * @param  string $filepath - The input filename
-	 * @param  array $conf - The key file configuration
+	 * @param string $filepath - The input filename
+	 * @param array $conf - The key file configuration
 	 * @return int total saved
 	 */
 	public static function resize($filepath = "", $conf = [])

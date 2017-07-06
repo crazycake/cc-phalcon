@@ -158,6 +158,7 @@ class TaskCore extends Task
 	/**
 	 * Async Request (CLI struct)
 	 * @param  array $options - The HTTP options
+	 * @return object - The requester object
 	 */
 	protected function coreRequest($options = [])
 	{

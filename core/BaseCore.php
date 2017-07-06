@@ -120,6 +120,7 @@ abstract class BaseCore extends Controller
 	/**
 	 * Sends an async tasks as another request. (MVC struct)
 	 * @param array $options - Options: module, controller, action, method, payload, socket, headers
+	 * @return object - The requester object
 	 */
 	protected function coreRequest($options = [])
 	{
@@ -233,6 +234,10 @@ abstract class BaseCore extends Controller
 
 	/**
 	 * Validates a request input field
+	 * @param array $data - The input data
+	 * @param string $field - The field name
+	 * @param string $data_type - The data type (int, string, array, json, email)
+	 * @return mixed
 	 */
 	private function _validateField($data, $field, $data_type)
 	{

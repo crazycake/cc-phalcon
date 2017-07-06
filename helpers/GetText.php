@@ -29,11 +29,13 @@ class GetText extends GetTextAdapter
 	protected $default_locale;
 
 	/**
+	 * Current set language
 	 * @var string
 	 */
 	protected $current_lang;
 
 	/**
+	 * The supported langs
 	 * @var array
 	 */
 	protected $supported_langs;
@@ -66,8 +68,7 @@ class GetText extends GetTextAdapter
 
 	/**
 	 * Sets the current language & GetTex lang files domain
-	 * @param string $new_lang - The new language
-	 * @return void
+	 * @param string $lang - The new language
 	 */
 	public function setLanguage($lang = "")
 	{

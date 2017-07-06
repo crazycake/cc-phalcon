@@ -17,7 +17,17 @@ use CrazyCake\Phalcon\App;
  */
 abstract class WsCore extends BaseCore
 {
-	const HEADER_API_KEY         = "X_API_KEY"; //Phalcon HTTP header keys replace "_" to "-"
+	/**
+	 * Header API Key name
+	 * Phalcon HTTP header keys replace "_" to "-"
+	 * @var string
+	 */
+	const HEADER_API_KEY = "X_API_KEY";
+
+	/**
+	 * Webservice response cache path
+	 * @var string
+	 */
 	const WS_RESPONSE_CACHE_PATH = STORAGE_PATH."cache/response/";
 
 	/**
