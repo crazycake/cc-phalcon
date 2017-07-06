@@ -1,9 +1,9 @@
 <?php
 /**
- * QRMaker: generates readable custom QR images
- * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
+ * QRMaker: generates readable custom QR images.
+ * TODO: move classes to img-api container
  * @link http://phpqrcode.sourceforge.net/
- * @package \CrazyCake\QR\
+ * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
 namespace CrazyCake\Qr;
@@ -16,9 +16,22 @@ use Phalcon\Exception;
  */
 class QRMaker
 {
-	/* consts */
-	const QR_LIB_NAMESPACE = "\\CrazyCake\\Qr\\"; //lib root path
+	/**
+	 * QR library namespace
+	 * @var string
+	 */
+	const QR_LIB_NAMESPACE = "\\CrazyCake\\Qr\\";
+
+	/**
+	 * QR high quality (debug only)
+	 * @var boolen
+	 */
 	const QR_HIGH_QUALITY  = true;
+
+	/**
+	 * QR PNG max size
+	 * @var int
+	 */
 	const QR_PNG_MAX_SIZE  = 1024;
 
 	/**
@@ -49,7 +62,7 @@ class QRMaker
 	 * @param string $log_path - The app log path
 	 * @param string $cache_path - The app cache path
 	 */
-	protected function init($log_path, $cache_path)
+	protected function init($log_path = "", $cache_path = "")
 	{
 		if (defined("QR_ASSETS_PATH"))
 			return;
@@ -89,9 +102,7 @@ class QRMaker
 
 	/**
 	 * Generates a QR code
-	 * @access private
-	 * @param  arrays $params
-	 * @return void
+	 * @param arrays $params - The input parameters
 	 */
 	public function generate($params = [])
 	{
@@ -205,8 +216,7 @@ class QRMaker
 
 	/**
 	 * Class Exists in Namespace
-	 * @access private
-	 * @param  string $class_name - A class name
+	 * @param string $class_name - A class name
 	 * @return string
 	 */
 	private function _class_exists($class_name)

@@ -1,5 +1,5 @@
 #! /bin/bash
-# Webapp getText script helper for finding translations & compiling po files
+# GetText helper script. Finds translations & compile po files.
 # author: Nicolas Pulido <nicolas.pulido@crazycake.cl>
 
 # interrupt if error raises

@@ -1,5 +1,6 @@
 #! /bin/bash
-# webapp CLI
+# CrazyCake Phalcon App CLI
+# author: Nicolas Pulido <nicolas.pulido@crazycake.cl>
 
 # stop script if an error occurs
 set -e

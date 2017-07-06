@@ -11,9 +11,17 @@ namespace CrazyCake\Phalcon;
  */
 trait AppLoader
 {
-	/** const **/
+	/**
+	 * Core namespace
+	 * @var string
+	 */
 	private static $CORE_NAMESPACE = "CrazyCake\\";
-	private static $CORE_PROJECT   = "cc-phalcon";
+
+	/**
+	 * Core project name
+	 * @var string
+	 */
+	private static $CORE_PROJECT = "cc-phalcon";
 
 	/**
 	 * App Core default libs
@@ -24,9 +32,9 @@ trait AppLoader
 	/**
 	 * Get Module Model Class Name
 	 * A prefix can be set in module options
-	 * @access public
 	 * @param string $key - The class module name uncamelize, example: "some_class"
 	 * @param boolean $prefix - Append prefix (double slash)
+	 * @return string
 	 */
 	public static function getClass($key = "", $prefix = true)
 	{
@@ -44,7 +52,6 @@ trait AppLoader
 
 	/**
 	 * Set Module Environment properties
-	 * @access private
 	 */
 	private function setEnvironment()
 	{
@@ -89,7 +96,6 @@ trait AppLoader
 
 	/**
 	 * Load classes
-	 * @access private
 	 * @param array $config - The config array
 	 */
 	private function loadClasses($config = [])
@@ -138,7 +144,6 @@ trait AppLoader
 	 * Loads static libraries.
 	 * Use Phar::running() to get path of current phar running
 	 * Use get_included_files() to see all loaded classes
-	 * @access private
 	 * @param object $loader - Phalcon loader object
 	 * @param array $libraries - Libraries required
 	 */

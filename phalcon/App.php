@@ -28,7 +28,6 @@ abstract class App
 
 	/**
 	 * Constructor
-	 * @access public
 	 * @param string $mod_name - The input module
 	 */
 	public function __construct($mod_name = null)
@@ -60,7 +59,6 @@ abstract class App
 
 	/**
 	 * Start app module execution
-	 * @access public
 	 * @param array $argv - Input arguments for CLI
 	 */
 	public function start($argv = null)

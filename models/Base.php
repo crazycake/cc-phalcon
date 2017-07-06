@@ -17,6 +17,7 @@ class Base extends \Phalcon\Mvc\Model
 	/* properties */
 
 	/**
+	 * The object ID
 	 * @var int
 	 */
 	public $id;
@@ -52,7 +53,7 @@ class Base extends \Phalcon\Mvc\Model
 	 * Find Override
 	 * @param array $params - The input params
 	 * @param boolean $reduce - Reduce object to native array
-	 * @return Simple\Resultset
+	 * @return object Simple\Resultset
 	 */
 	public static function find($params = null, $reduce = false)
 	{
@@ -70,7 +71,7 @@ class Base extends \Phalcon\Mvc\Model
 	 * FindFirst Override
 	 * @param array $params - The input params
 	 * @param boolean $reduce - Reduce object to native array
-	 * @return Object
+	 * @return object
 	 */
 	public static function findFirst($params = null, $reduce = false)
 	{
@@ -87,10 +88,9 @@ class Base extends \Phalcon\Mvc\Model
 	/**
 	 * Find Object by ID
 	 * @param int $id - The object ID
-	 * @param boolean $reduce - Reduce object to native array
 	 * @return Object
 	 */
-	public static function getById($id)
+	public static function getById($id = 0)
 	{
 		return self::findFirst(["id = ?1", "bind" => [1 => $id]]);
 	}

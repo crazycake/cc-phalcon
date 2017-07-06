@@ -1,5 +1,6 @@
 #! /bin/bash
 # cc-phalcon CLI tools
+# author: Nicolas Pulido <nicolas.pulido@crazycake.cl>
 
 # stop execution for exceptions
 set -e
@@ -30,7 +31,7 @@ scriptHelp() {
 #commands
 case "$1" in
 
-chmod)
+	chmod)
 	# print project dir
 	echo -e "\033[95mProject path: "$PROJECT_PATH" \033[0m"
 
@@ -42,9 +43,9 @@ chmod)
 
 	#task done!
 	echo -e "\033[92mDone! \033[0m"
-    ;;
+	;;
 
-build)
+	build)
 
 	cd $PROJECT_PATH
 	php box.phar build -v
@@ -52,7 +53,7 @@ build)
 	echo -e "\033[92mDone! \033[0m"
 	;;
 
-tree)
+	tree)
 
 	cd $PROJECT_PATH
 	php box.phar info -l $APP_NAMESPACE".phar"
@@ -60,14 +61,14 @@ tree)
 	echo -e "\033[92mDone! \033[0m"
 	;;
 
-docs)
+	docs)
 
 	#PHP
 	echo -e "\033[35mGenerating PHP Docs...\033[0m"
 	phpdoc -d $DOC_PHP_INPUT_PATH -t $DOC_PHP_OUTPUT_PATH
-    ;;
+	;;
 
-release)
+	release)
 
 	if [ "$2" = "" ] || [ "$3" = "" ] ; then
 		echo -e "\033[95mRelease and message params are required.\033[0m"
@@ -78,20 +79,20 @@ release)
 
 	git tag -a "$2" -m "$3"
 	git push origin master --tags
-    ;;
+	;;
 
-delete-tags)
+	delete-tags)
 
 	#loop through tags
 	for t in `git tag`
 	do
-	    git push origin :$t
-	    git tag -d $t
+		git push origin :$t
+		git tag -d $t
 	done
-    ;;
+	;;
 
-#default
-*)
+	#default
+	*)
 	scriptHelp
-    ;;
+	;;
 esac

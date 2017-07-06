@@ -1,9 +1,9 @@
 <?php
 /**
  * Phalcon App Services files (Dependency Injector)
- * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  * Phalcon Dependency Injection reference:
  * @link http://docs.phalconphp.com/en/latest/reference/di.html
+ * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
 namespace CrazyCake\Phalcon;
@@ -51,7 +51,6 @@ class AppServices
 
 	/**
 	 * Set DI for CLI app
-	 * @access private
 	 */
 	private function _getCliDI()
 	{
@@ -65,7 +64,6 @@ class AppServices
 
 	/**
 	 * Set DI for Mvc app
-	 * @access private
 	 */
 	private function _getDefaultDI()
 	{
@@ -83,7 +81,6 @@ class AppServices
 
 	/**
 	 * Set Common Services
-	 * @access private
 	 * @param object $di - The DI object
 	 */
 	private function _setCommonServices(&$di)
@@ -160,7 +157,6 @@ class AppServices
 	/**
 	 * Set Database Services [MySQL, Mongo]
 	 * Uses PECL Driver
-	 * @access private
 	 * @param object $di - The DI object
 	 */
 	private function _setDatabaseServices(&$di)
@@ -225,7 +221,6 @@ class AppServices
 	/**
 	 * Set Translation Service
 	 * GetText adapter (multi-lang support)
-	 * @access private
 	 * @param object $di - The DI object
 	 */
 	private function _setTranslationService(&$di)
@@ -248,7 +243,6 @@ class AppServices
 
 	/**
 	 * Set Web Services
-	 * @access private
 	 * @param object $di - The DI object
 	 */
 	private function _setWebappServices(&$di)
