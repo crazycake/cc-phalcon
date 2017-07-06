@@ -23,6 +23,7 @@ trait AccountAuth
 {
 	/**
 	 * Event on user logged in
+	 * @param int $user_id - The user id logged in
 	 */
 	abstract public function onLogin($user_id);
 
@@ -35,6 +36,7 @@ trait AccountAuth
 
 	/**
 	 * Session Destructor with Autoredirection (logout)
+	 * @param string $uri - The post redirection URI
 	 */
 	abstract public function onLogout($uri = "signIn");
 
