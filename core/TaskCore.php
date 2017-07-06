@@ -168,6 +168,7 @@ class TaskCore extends Task
 			"payload"  => "",
 			"method"   => "GET",
 			"socket"   => false,
+			"encrypt"  => false
 		], $options);
 
 		//check base url
