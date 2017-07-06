@@ -1,6 +1,6 @@
 <?php
 /**
- * Phalcon APP loader. Contains Loader classes & services wrap logic
+ * Phalcon APP main controller
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
@@ -13,7 +13,7 @@ require "AppLoader.php";
 require "AppServices.php";
 
 /**
- * Phalcon APP Loader [main file]
+ * Phalcon APP
  */
 abstract class App
 {

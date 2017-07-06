@@ -1,8 +1,9 @@
 <?php
 /**
  * Cryptify : helper that encrypts & decrypts sensitive data for URL format.
- * Also encrypts integers IDs
- * Uses Crypt Phalcon adapter and Hashids library
+ * Uses Crypt Phalcon adapter
+ * Optional library: Hashids
+ * @link https://github.com/ivanakimov/hashids.php
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
@@ -116,7 +117,7 @@ class Cryptify
 			return false;
 
 		//HashIds Library Instance
-		$hashids = new Hashids\Hashids($this->crypt->getKey());
+		$hashids = new \Hashids\Hashids($this->crypt->getKey());
 
 		return $hashids->encode($id);
 	}
@@ -132,7 +133,7 @@ class Cryptify
 			return false;
 
 		//HashIds Library Instance
-		$hashids = new Hashids\Hashids($this->crypt->getKey());
+		$hashids = new \Hashids\Hashids($this->crypt->getKey());
 		$data    = $hashids->decode($hash);
 
 		return count($data) > 0 ? $data[0] : false;

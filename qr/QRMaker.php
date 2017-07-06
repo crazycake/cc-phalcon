@@ -1,7 +1,7 @@
 <?php
 /**
- * QRMaker: generates readable custom QR images.
- * TODO: move classes to img-api container
+ * QRMaker, generates readable custom QR images.
+ * Uses custom fonts in assets folder
  * @link http://phpqrcode.sourceforge.net/
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */

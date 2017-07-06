@@ -1,7 +1,7 @@
 <?php
 /**
  * Facebook Helper Trait - Facebook php sdk v5.0
- * Requires a Frontend or Backend Module with CoreController and Session Trait
+ * Requires AccountSession
  * Open Graph v2.4
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */

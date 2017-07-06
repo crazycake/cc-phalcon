@@ -1,6 +1,6 @@
 <?php
 /**
- * CLI Task Controller: provides common functions for CLI tasks.
+ * CLI Task Controller, provides common functions for CLI tasks.
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 

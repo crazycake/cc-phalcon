@@ -1,7 +1,7 @@
 <?php
 /**
  * GetText Adapter
- * Requires: getText, see installed locales command with locale -a
+ * Requires getText, see installed locales command with locale -a (debian)
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 

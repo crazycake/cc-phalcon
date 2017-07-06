@@ -1,7 +1,7 @@
 <?php
 /**
  * Localize
- * Contains default controllers translations.
+ * Contains default translations.
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 

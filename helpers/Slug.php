@@ -1,10 +1,10 @@
 <?php
 /**
  * Slug Helper for namespaces
+ * @link http://cubiq.org/the-perfect-php-clean-url-generator
  * @author Andres Gutierrez <andres@phalconphp.com>
  * @author Nikolaos Dimopoulos <nikos@niden.net>
  * @contributor Nicolas Pulido <nicolas.pulido@crazycake.cl>
- * @link http://cubiq.org/the-perfect-php-clean-url-generator
  */
 
 namespace CrazyCake\Helpers;

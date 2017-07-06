@@ -1,6 +1,7 @@
 <?php
 /**
- * WS Controller : Core WebService controller, includes basic and helper methods for child controllers.
+ * WS Core Controller
+ * Core Webservice controller, basic and helper methods for child controllers.
  * Requires a Phalcon DI Factory Services
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */

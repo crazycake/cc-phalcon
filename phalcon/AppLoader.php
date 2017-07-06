@@ -1,6 +1,7 @@
 <?php
 /**
- * App Loader Trait. Contains Environment Loader Logic.
+ * App Loader Trait. Contains classes loader logic.
+ * Defines environment configs too
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 

@@ -1,7 +1,6 @@
 <?php
 /**
  * Responser Trait
- * Requires a Frontend or Backend Module with BaseCore
  * Requires Guzzle library (composer)
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */

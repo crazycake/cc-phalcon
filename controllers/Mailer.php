@@ -1,7 +1,7 @@
 <?php
 /**
  * Mailer Email Service Trait
- * Requires a Frontend or Backend Module with CoreController
+ * Requires WebCore
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
@@ -243,7 +243,7 @@ trait Mailer
 	}
 
 	/**
-	 *  Sends a message through sendgrid API
+	 * Sends a message through sendgrid API
 	 * @param string $template - The template name
 	 * @param string $subject - The mail subject
 	 * @param mixed(string|array) $recipients - The receiver emails

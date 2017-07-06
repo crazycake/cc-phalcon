@@ -1,6 +1,7 @@
 <?php
 /**
- * Mvc Core Controller, includes basic and helper methods for WebCore & WsCore controllers.
+ * Mvc Core Controller
+ * Includes basic and helper methods for WebCore & WsCore controllers.
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 

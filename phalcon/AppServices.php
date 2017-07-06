@@ -1,7 +1,6 @@
 <?php
 /**
  * Phalcon App Services files (Dependency Injector)
- * Phalcon Dependency Injection reference:
  * @link http://docs.phalconphp.com/en/latest/reference/di.html
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */

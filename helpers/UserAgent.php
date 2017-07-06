@@ -2,9 +2,9 @@
 /**
  * User Agent parser helper, see links for required libraries
  * Requires composer donatj/phpuseragentparser, mobiledetect/mobiledetectlib
- * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  * @link https://github.com/donatj/PhpUserAgent
  * @link https://github.com/serbanghita/Mobile-Detect/
+ * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
 namespace CrazyCake\Helpers;
