@@ -1,8 +1,7 @@
 <?php
 /**
  * Account Pass Trait
- * This class has common actions for account password controllers
- * Requires a Frontend or Backend Module
+ * Common actions for account operations
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
@@ -19,7 +18,7 @@ use CrazyCake\Helpers\ReCaptcha;
 trait AccountPassRecovery
 {
 	/**
-	 * Config var
+	 * Trait config
 	 * @var array
 	 */
 	public $account_pass_recovery_conf;

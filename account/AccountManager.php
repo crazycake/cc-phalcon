@@ -1,8 +1,7 @@
 <?php
 /**
  * Account Manager Trait
- * This class has common actions for account auth controllers
- * Requires a Frontend or Backend Module
+ * Common actions for account operations
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 

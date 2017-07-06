@@ -1,8 +1,7 @@
 <?php
 /**
  * Account Manager Trait
- * This class has common actions for account manager controllers
- * Requires a Frontend or Backend Module
+ * Common actions for account operations
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
@@ -29,7 +28,7 @@ trait AccountAuth
 
 	/**
 	 * Disptach event on logged in
-	 * @param string $uri - target Uri
+	 * @param string $uri - target uri
 	 * @param array $payload - Optional data
 	 */
 	abstract public function onLoginDispatch($uri = "account", $payload = null);
@@ -41,7 +40,7 @@ trait AccountAuth
 	abstract public function onLogout($uri = "signIn");
 
 	/**
-	 * Config var
+	 * trait config
 	 * @var array
 	 */
 	public $account_auth_conf;
@@ -334,7 +333,6 @@ trait AccountAuth
 
 		//send JSON response
 		$this->jsonResponse(200, $payload);
-		return;
 	}
 
 	/**

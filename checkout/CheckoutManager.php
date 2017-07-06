@@ -31,7 +31,7 @@ trait CheckoutManager
 	abstract public function onSuccessCheckout(&$checkout);
 
 	/**
-	 * Config var
+	 * trait config
 	 * @var array
 	 */
 	public $checkout_manager_conf;
@@ -40,7 +40,6 @@ trait CheckoutManager
 
 	/**
 	 * Initialize Trait.
-	 * TODO: implement defaults conf values.
 	 * @param array $conf - The config array
 	 */
 	public function initCheckoutManager($conf = [])
@@ -102,6 +101,7 @@ trait CheckoutManager
 	/**
 	 * Method: Succesful checkout, Called when checkout was made succesfuly
 	 * @param string $buy_order - The buy order
+	 * @param boolean $async - Socket async request method (don't wait response)
 	 * @return object Checkout
 	 */
 	public function successCheckout($buy_order = "", $async = true)
@@ -119,9 +119,11 @@ trait CheckoutManager
 
 	/**
 	 * Action: GET Async checkout
+	 * Data is encrypted for security
 	 * Logic tasks:
 	 * 1) Update status del checkout
 	 * 2) Call listener
+	 * @param string $encrypted_data - The encrypted hash string
 	 */
 	public function successCheckoutTaskAction($encrypted_data = "")
 	{

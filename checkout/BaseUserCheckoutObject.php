@@ -17,22 +17,26 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
 {
 	/* properties */
 
-	/*
+	/**
+	 * Buy order
 	 * @var string
 	 */
 	public $buy_order;
 
 	/**
+	 * Object class
 	 * @var string
 	 */
 	public $object_class;
 
 	/**
+	 * Object ID
 	 * @var string
 	 */
 	public $object_id;
 
 	/**
+	 * Quantity
 	 * @var int
 	 */
 	public $quantity;

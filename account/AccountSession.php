@@ -1,7 +1,7 @@
 <?php
 /**
  * Session Trait
- * Requires a Frontend or Backend Module
+ * Common actions for account operations
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
@@ -189,6 +189,7 @@ trait AccountSession
 
 	/**
 	 * Removes pending session redirection
+	 * @return boolean
 	 */
 	protected function removePendingRedirection()
 	{
@@ -318,6 +319,7 @@ trait AccountSession
 	/**
 	 * Destroy session custom objects stored in session
 	 * @param string $key - The key name of the session
+	 * @return boolean
 	 */
 	protected function destroySessionObjects($key = "session_objects")
 	{

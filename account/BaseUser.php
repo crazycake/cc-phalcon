@@ -38,26 +38,26 @@ abstract class BaseUser extends \CrazyCake\Models\Base
 	public $pass;
 
 	/**
+	 * User first name
 	 * @var string
-	 * user first name
 	 */
 	public $first_name;
 
 	/**
+	 * User last name
 	 * @var string
-	 * user last name
 	 */
 	public $last_name;
 
 	/**
-	 * @var string
 	 * datetime
+	 * @var string
 	 */
 	public $created_at;
 
 	/**
-	 * @var string
 	 * datetime
+	 * @var string
 	 */
 	public $last_login;
 
@@ -123,7 +123,7 @@ abstract class BaseUser extends \CrazyCake\Models\Base
 	 * @static
 	 * @param string $email - The user email
 	 * @param string $account_flag - The account flag value in self defined array
-	 * @return Users
+	 * @return object
 	 */
 	public static function getUserByEmail($email, $account_flag = null)
 	{

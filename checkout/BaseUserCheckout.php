@@ -20,53 +20,71 @@ use CrazyCake\Phalcon\App;
 class BaseUserCheckout extends \CrazyCake\Models\Base
 {
 	/* static vars */
+
+	/**
+	 * Pending checkouts expiration threshold, in minutes.
+	 * @var integer
+	 */
 	public static $CHECKOUT_EXPIRES_THRESHOLD = 10;  //minutes
-	public static $BUY_ORDER_CODE_LENGTH      = 16;
+
+	/**
+	 * Buy Order code length
+	 * @var integer
+	 */
+	public static $BUY_ORDER_CODE_LENGTH = 16;
 
 	/* properties */
 
-	/*
+	/**
+	 * Buy Order string
 	 * @var string
 	 */
 	public $buy_order;
 
 	/**
+	 * User ID
 	 * @var int
 	 */
 	public $user_id;
 
 	/**
+	 * Amount
 	 * @var double
 	 */
 	public $amount;
 
 	/**
+	 * Currency [USD, CLP, ...]
 	 * @var string
 	 */
 	public $currency;
 
 	/**
+	 * State
 	 * @var string
 	 */
 	public $state;
 
-	/*
+	/**
+	 * Gateway name
 	 * @var string
 	 */
 	public $gateway;
 
 	/**
+	 * local server time
 	 * @var string
 	 */
 	public $local_time;
 
 	/**
-	 * @var string
 	 * The browser client
+	 * @var string
 	 */
 	public $client;
 
 	/**
+	 * States possible values
 	 * @static
 	 * @var array
 	 */
@@ -231,7 +249,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 	}
 
 	/**
-	 * Deletes expired pending checkouts
+	 * Deletes expired pending checkouts.
 	 * Requires Carbon library
 	 * @return int
 	 */

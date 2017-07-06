@@ -63,6 +63,8 @@ trait CheckoutCurrency
 
 	/**
 	 * Get currency conversion USD to CLP
+	 * @param float $amount - The amount
+	 * @return float
 	 */
 	public function dollarToChileanPeso($amount = 1.00)
 	{
@@ -107,8 +109,7 @@ trait CheckoutCurrency
 	/**
 	 * Calls API Chilean Currency to get indicator values
 	 * @param  string $indicator - Values: [uf, ivp, dolar, dolar_intercambio, euro, ipc, utm, imacec, tpm, libra_cobre, tasa_desempleo]
-	 * @param  int $interval - horas iterativas
-	 * @return float - The value
+	 * @return float - The value, null if error raises.
 	 */
 	protected function apiChileanCurrencyRequest($indicator = "dolar")
 	{

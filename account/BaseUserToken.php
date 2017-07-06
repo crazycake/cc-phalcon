@@ -1,6 +1,6 @@
 <?php
 /**
- * Base Model User Tokens
+ * Base Model User Token
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
@@ -19,26 +19,26 @@ class BaseUserToken extends \CrazyCake\Models\Base
 	/* properties */
 
 	/**
-	 * @var intç
 	 * The user ID
+	 * @var int
 	 */
 	public $user_id;
 
 	/**
-	 * @var string
 	 * token hash
+	 * @var string
 	 */
 	public $token;
 
 	/**
-	 * @var string
 	 * Possible values: activation, access, pass.
+	 * @var string
 	 */
 	public $type;
 
 	/**
-	 * @var string
 	 * datetime
+	 * @var string
 	 */
 	public $created_at;
 
@@ -82,7 +82,6 @@ class BaseUserToken extends \CrazyCake\Models\Base
 	/**
 	 * Find First Token By Value and Type.
 	 * @static
-	 * @param int $user_id - The user ID
 	 * @param string $token - The token value
 	 * @param string $type - The token type
 	 * @return object
