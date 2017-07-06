@@ -26,12 +26,14 @@ trait Mailer
 
 	/**
 	 * Mailing CSS file
+	 * @static
 	 * @var string
 	 */
 	protected static $MAILER_CSS_FILE = PROJECT_PATH."ui/volt/mailing/css/app.css";
 
 	/**
 	 * Temporal path
+	 * @static
 	 * @var string
 	 */
 	protected static $MAILER_CACHE_PATH = STORAGE_PATH."cache/mailer/";

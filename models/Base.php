@@ -27,6 +27,7 @@ class Base extends \Phalcon\Mvc\Model
 	/**
 	 * Late static binding
 	 * @link http://php.net/manual/en/language.oop5.late-static-bindings.php
+	 * @static
 	 * @return string The current class name
 	 */
 	public static function who()
@@ -51,6 +52,7 @@ class Base extends \Phalcon\Mvc\Model
 
 	/**
 	 * Find Override
+	 * @static
 	 * @param array $params - The input params
 	 * @param boolean $reduce - Reduce object to native array
 	 * @return object Simple\Resultset
@@ -69,6 +71,7 @@ class Base extends \Phalcon\Mvc\Model
 
 	/**
 	 * FindFirst Override
+	 * @static
 	 * @param array $params - The input params
 	 * @param boolean $reduce - Reduce object to native array
 	 * @return object
@@ -87,6 +90,7 @@ class Base extends \Phalcon\Mvc\Model
 
 	/**
 	 * Find Object by ID
+	 * @static
 	 * @param int $id - The object ID
 	 * @return Object
 	 */

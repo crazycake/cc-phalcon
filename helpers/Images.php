@@ -19,6 +19,7 @@ class Images
 	 * Get resized image path.
 	 * Example: ./media/dj/IMAGE1.jpg?v=5
 	 *          ./media/dj/IMAGE1_TH.jpg?v=5
+	 * @static
 	 * @param string $path - An image URL
 	 * @param string $key - The suffix key to append
 	 * @return string
@@ -36,6 +37,7 @@ class Images
 
 	/**
 	 * Resize input image with config params.
+	 * @static
 	 * @param string $filepath - The input filename
 	 * @param array $conf - The key file configuration
 	 * @return int total saved

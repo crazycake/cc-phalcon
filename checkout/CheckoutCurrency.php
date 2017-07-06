@@ -19,12 +19,14 @@ trait CheckoutCurrency
 {
 	/**
 	 * API URL to get chilean currencies values
+	 * @static
 	 * @var string
 	 */
 	private static $API_CURRENCY_URL = "http://apilayer.net/api/live?access_key=2ffe4397dee8b3c1a767dba701315f8e";
 
 	/**
 	 * Redis key to store Dollar day value to CLP currency
+	 * @static
 	 * @var string
 	 */
 	private static $REDIS_KEY_USD_CLP_VALUE = "CHECKOUT_CURRENCY_USD_CLP";

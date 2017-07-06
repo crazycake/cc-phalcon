@@ -29,6 +29,7 @@ class BaseResultset extends Resultset
 
 	/**
 	 * Reduces a Resultset to native objects array
+	 * @static
 	 * @param object $resultset - Phalcon simple resultset
 	 * @param array $props - Filter properties, if empty array given filters all.
 	 * @return array
@@ -116,6 +117,4 @@ class BaseResultset extends Resultset
 		foreach ($result as &$obj)
 			$mergeProps($obj);
 	}
-
-	/* --------------------------------------------------- § -------------------------------------------------------- */
 }

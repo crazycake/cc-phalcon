@@ -15,11 +15,15 @@ use Phalcon\Exception;
  */
 class Forms
 {
-	/* consts */
+	/**
+	 * Regex for Rut
+	 * @var string
+	 */
 	const RUT_REGEX = "/^[0-9]+-[0-9kK]{1}/";
 
 	/**
 	 * Validates chilean rut
+	 * @static
 	 * @param string $input_rut - The input form rut (requires '-' token)
 	 * @return boolean
 	 */
@@ -38,6 +42,7 @@ class Forms
 
 	/**
 	 * Formats a rut
+	 * @static
 	 * @param  string $rut - The input rut
 	 * @return string
 	 */
@@ -124,6 +129,7 @@ class Forms
 
 	/**
 	 * Validates Rut Verification Digit
+	 * @static
 	 * @param  string $R - The input rut without VD
 	 * @return mixed [int|string]
 	 */

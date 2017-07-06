@@ -174,7 +174,6 @@ class QRMaker
 
 	/**
 	 * Embed Logo in QR Image
-	 * @access private
 	 * @param string $qr_path - The QR image path
 	 * @param string $embed_img_path - An image to be embedded in the input QR image
 	 * @param int $embed_img_width - The embed image width (optional)

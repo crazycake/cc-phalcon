@@ -13,18 +13,21 @@ trait AppLoader
 {
 	/**
 	 * Core namespace
+	 * @static
 	 * @var string
 	 */
 	private static $CORE_NAMESPACE = "CrazyCake\\";
 
 	/**
 	 * Core project name
+	 * @static
 	 * @var string
 	 */
 	private static $CORE_PROJECT = "cc-phalcon";
 
 	/**
 	 * App Core default libs
+	 * @static
 	 * @var array
 	 */
 	protected static $CORE_DEFAULT_LIBS = ["services", "controllers", "core", "helpers", "models", "account"];
@@ -32,6 +35,7 @@ trait AppLoader
 	/**
 	 * Get Module Model Class Name
 	 * A prefix can be set in module options
+	 * @static
 	 * @param string $key - The class module name uncamelize, example: "some_class"
 	 * @param boolean $prefix - Append prefix (double slash)
 	 * @return string

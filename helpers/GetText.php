@@ -15,7 +15,10 @@ use Phalcon\Translate\Adapter\Gettext as GetTextAdapter;
  */
 class GetText extends GetTextAdapter
 {
-	/** Consts **/
+	/**
+	 * available locales
+	 * @var array
+	 */
 	const LOCALES = [
 		"en" => "en_US.utf8",
 		"es" => "es_ES.utf8",

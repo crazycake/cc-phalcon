@@ -4,6 +4,7 @@
  * @author Andres Gutierrez <andres@phalconphp.com>
  * @author Nikolaos Dimopoulos <nikos@niden.net>
  * @contributor Nicolas Pulido <nicolas.pulido@crazycake.cl>
+ * @link http://cubiq.org/the-perfect-php-clean-url-generator
  */
 
 namespace CrazyCake\Helpers;
@@ -20,7 +21,6 @@ class Slug
 	 * Creates a slug to be used for pretty URLs
 	 * If iconv extension is enabled, replace utf8 chars to ascii.
 	 * @static
-	 * @link http://cubiq.org/the-perfect-php-clean-url-generator
 	 * @param string $string - The input string
 	 * @param array $replace - Placeholders to be replaced
 	 * @param string $delimiter - A delimiter

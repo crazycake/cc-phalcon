@@ -23,12 +23,14 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 
 	/**
 	 * Pending checkouts expiration threshold, in minutes.
+	 * @static
 	 * @var integer
 	 */
 	public static $CHECKOUT_EXPIRES_THRESHOLD = 10;  //minutes
 
 	/**
 	 * Buy Order code length
+	 * @static
 	 * @var integer
 	 */
 	public static $BUY_ORDER_CODE_LENGTH = 16;
