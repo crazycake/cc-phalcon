@@ -22,7 +22,7 @@ scriptHelp() {
 	echo -e "\033[95m chmod: Set correct permissions on directories and files for serve.\033[0m"
 	echo -e "\033[95m build: Builds phar file with default box.json file.\033[0m"
 	echo -e "\033[95m tree: Returns the file tree of phar file.\033[0m"
-	echo -e "\033[95m docs: Generates PHP Docs (PHP apigen library required).\033[0m"
+	echo -e "\033[95m docs: Generates PHP Docs (PHP doc library is required [phpdoc]).\033[0m"
 	echo -e "\033[95m release: Creates a new tag release. Required version and message.\033[0m"
 	echo -e "\033[95m delete-tags: Removes local and remote repository tags.\033[0m"
 	exit
@@ -65,7 +65,7 @@ case "$1" in
 
 	#PHP
 	echo -e "\033[35mGenerating PHP Docs...\033[0m"
-	phpdoc -d $DOC_PHP_INPUT_PATH -t $DOC_PHP_OUTPUT_PATH
+	phpdoc -d $DOC_PHP_INPUT_PATH -t $DOC_PHP_OUTPUT_PATH --template="responsive-twig"
 	;;
 
 	release)
