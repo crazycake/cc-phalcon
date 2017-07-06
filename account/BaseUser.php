@@ -39,26 +39,30 @@ abstract class BaseUser extends \CrazyCake\Models\Base
 
 	/**
 	 * @var string
+	 * user first name
 	 */
 	public $first_name;
 
 	/**
 	 * @var string
+	 * user last name
 	 */
 	public $last_name;
 
 	/**
 	 * @var string
+	 * datetime
 	 */
 	public $created_at;
 
 	/**
 	 * @var string
+	 * datetime
 	 */
 	public $last_login;
 
 	/**
-	 * values in ACCOUNT_FLAGS array
+	 * see ACCOUNT_FLAGS array for possible values
 	 * @var string
 	 */
 	public $account_flag;
@@ -66,6 +70,7 @@ abstract class BaseUser extends \CrazyCake\Models\Base
 	/* inclusion vars */
 
 	/**
+	 * Account Flags
 	 * @static
 	 * @var array
 	 */
