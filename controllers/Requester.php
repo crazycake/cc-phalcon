@@ -18,8 +18,16 @@ use CrazyCake\Phalcon\App;
  */
 trait Requester
 {
-	/** static vars */
-	protected static $REQUEST_TIMEOUT   = 30.0;
+	/**
+	 * Request timeout max value
+	 * @var float
+	 */
+	protected static $REQUEST_TIMEOUT = 30.0;
+
+	/**
+	 * HTTP Default port
+	 * @var integer
+	 */
 	protected static $HTTP_DEFAULT_PORT = 80;
 
 	/* --------------------------------------------------- § -------------------------------------------------------- */
@@ -32,6 +40,7 @@ trait Requester
 	 * +payload: The encrypted string params data
 	 * +method: The HTTP method (GET, POST)
 	 * +socket: Makes async call as socket connection
+	 * @return object - The request object
 	 */
 	protected function newRequest($options = [])
 	{
@@ -88,6 +97,7 @@ trait Requester
 	 * Do a GET request
 	 * @param object $client - The HTTP Guzzle client
 	 * @param array $options - The input options
+	 * @return object - The promise object
 	 */
 	private function _getRequest($client, $options = [])
 	{
@@ -122,6 +132,7 @@ trait Requester
 	 * Do a POST request
 	 * @param object $client - The HTTP Guzzle client
 	 * @param array $options - The input options
+	 * @return object - The promise object
 	 */
 	private function _postRequest($client, $options = [])
 	{
@@ -153,6 +164,7 @@ trait Requester
 	 * Logs Guzzle promise response
 	 * @param object $promise - The promise object
 	 * @param array $options - The input options
+	 * @return object - The promise object
 	 */
 	private function _sendPromise($promise = null, $options = [])
 	{

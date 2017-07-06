@@ -48,7 +48,7 @@ trait Uploader
 	public static $ROOT_UPLOAD_PATH = STORAGE_PATH."uploads/";
 
 	/**
-	 * Config var
+	 * trait config var
 	 * @var array
 	 */
 	protected $uploader_conf;
@@ -214,6 +214,7 @@ trait Uploader
 	/**
 	 * Saves & stores uploaded files
 	 * @param string $uri - The file uri
+	 * @return array - The saved uploaded files
 	 */
 	protected function saveUploadedFiles($uri = "")
 	{
@@ -288,9 +289,9 @@ trait Uploader
 
 	/**
 	 * New Image Api Job, files are stored automatically in S3 (curl request)
-	 * @param  string $api_uri - The img-api uri job
-	 * @param  string $src - The source file
-	 * @param  array $config - The config array
+	 * @param string $api_uri - The imgapi uri job
+	 * @param string $src - The source file
+	 * @param array $config - The config array
 	 */
 	public function newImageApiJob($api_uri = "", $src = "", $config = [])
 	{
@@ -334,7 +335,7 @@ trait Uploader
 
 	/**
 	 * Get upload local path
-	 * @param  string $url - The remote url upload
+	 * @param string $url - The remote url upload
 	 */
 	public function getUploadLocalFilepath($url = "")
 	{
@@ -349,7 +350,8 @@ trait Uploader
 
 	/**
 	 * Sort files by numeric tag
-	 * @param  array $files - The upload file array
+	 * @static
+	 * @param array $files - The upload file array
 	 */
 	public static function sortFilesByTag(&$files)
 	{

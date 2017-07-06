@@ -28,11 +28,16 @@ trait Crud
 
 	/**
 	 * Event on before save
+	 * @param array $data - The input data
+	 * @param string $action - defines the action, insert or update.
 	 */
 	abstract protected function onBeforeSave(&$data, $action);
 
 	/**
 	 * Event on after save
+	 * @param object $object - The orm object
+	 * @param array $data - The input data
+	 * @param string $action - defines the action, insert or update.
 	 */
 	abstract protected function onAfterSave(&$object, $data, $action);
 
@@ -43,7 +48,7 @@ trait Crud
 	abstract protected function onQuery(&$query);
 
 	/**
-	 * Config var
+	 * trait config
 	 * @var array
 	 */
 	protected $crud_conf;

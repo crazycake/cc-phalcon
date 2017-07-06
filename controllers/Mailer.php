@@ -37,7 +37,7 @@ trait Mailer
 	protected static $MAILER_CACHE_PATH = STORAGE_PATH."cache/mailer/";
 
 	/**
-	 * Config var
+	 * trait config
 	 * @var array
 	 */
 	public $mailer_conf;
@@ -101,7 +101,7 @@ trait Mailer
 	 * @param int $user_id - The user ID
 	 * @return json response
 	 */
-	public function accountActivation($user_id)
+	public function accountActivation($user_id = 0)
 	{
 		$user_class = $this->mailer_conf["user_entity"];
 		$user       = $user_class::getById($user_id);
@@ -137,7 +137,7 @@ trait Mailer
 	 * @param int $user_id - The user ID
 	 * @return json response
 	 */
-	public function passwordRecovery($user_id)
+	public function passwordRecovery($user_id = 0)
 	{
 		$user_class = $this->mailer_conf["user_entity"];
 		$user       = $user_class::getById($user_id);
@@ -292,6 +292,7 @@ trait Mailer
 
 	/**
 	 * View for debuging - Renders a mail message or a template
+	 * @param string $view - The input view
 	 */
 	public function previewAction($view = null)
 	{

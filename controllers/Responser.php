@@ -26,6 +26,7 @@ trait Responser
 
 	/**
 	 * Response HTTP Codes
+	 * @var array
 	 */
 	public $RCODES = [
 		//success
@@ -125,6 +126,7 @@ trait Responser
 	 * Sends a file to buffer output response
 	 * @param binary $data - The binary data to send
 	 * @param string $mime_type - The mime type
+	 * @return string - The response
 	 */
 	protected function sendFileToBuffer($data = null, $mime_type = 'application/json')
 	{
@@ -150,6 +152,8 @@ trait Responser
 
 	/**
 	 * Sets JSON response for output
+	 * @param array $response - The response
+	 * @return string - The response
 	 */
 	protected function outputJsonResponse($response = []) {
 
@@ -167,7 +171,8 @@ trait Responser
 
 	/**
 	 * Sends a simple text response
-	 * @param  mixed [string|array] $text - Any text string
+	 * @param mixed [string|array] $text - Any text string
+	 * @return string - The response
 	 */
 	protected function textResponse($text = "OK") {
 
