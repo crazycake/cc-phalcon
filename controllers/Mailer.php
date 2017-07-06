@@ -1,6 +1,6 @@
 <?php
 /**
- * Mailer - Email Service Trait
+ * Mailer Email Service Trait
  * Requires a Frontend or Backend Module with CoreController
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
@@ -10,7 +10,6 @@ namespace CrazyCake\Controllers;
 //imports
 use Phalcon\Exception;
 use Pelago\Emogrifier;
-
 //core
 use CrazyCake\Phalcon\App;
 
@@ -25,7 +24,7 @@ trait Mailer
 	abstract public function onRenderPreview();
 
 	/**
-	 * Mailing CSS file
+ 	 * Mailing CSS file
 	 * @static
 	 * @var string
 	 */
@@ -227,7 +226,7 @@ trait Mailer
 
 	/**
 	 * Async Handler - Sends contact email (always used)
-	 * @param array $data - Must contains keys "name", "email" & "message"
+	 * @param array $data - Must contains keys 'name', 'email' & 'message'
 	 * @return json response
 	 */
 	public function sendAdminMessage($data = [])
