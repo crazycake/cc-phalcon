@@ -9,6 +9,5 @@
 	<files>
 		<directory>.</directory>
 		<ignore>qr/src/*</ignore>
-		<ignore>soap/lib/*</ignore>
 	</files>
 </phpdoc>
