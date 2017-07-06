@@ -20,6 +20,7 @@ trait Mailer
 {
 	/**
 	 * Before render listener (debug)
+	 * @return void
 	 */
 	abstract public function onRenderPreview();
 

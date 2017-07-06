@@ -20,6 +20,10 @@ use CrazyCake\Controllers\Responser;
  */
 interface WebSecurity
 {
+	/**
+	 * Check CSRF Token value
+	 * @return boolean
+	 */
 	public function checkCsrfToken();
 }
 

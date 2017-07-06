@@ -33,6 +33,7 @@ abstract class WsCore extends BaseCore
 
 	/**
 	 * Welcome message for API server status
+	 * @return json response
 	 */
 	abstract protected function welcome();
 
