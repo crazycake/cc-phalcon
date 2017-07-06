@@ -20,6 +20,7 @@ trait Responser
 {
 	/**
 	 * JSON response struct
+	 * @static
 	 * @var string
 	 */
 	public static $JSON_RESPONSE_STRUCT = '{"response":{"code":"200","status":"ok","payload":@payload}}';

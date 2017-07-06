@@ -20,12 +20,14 @@ trait Requester
 {
 	/**
 	 * Request timeout max value
+	 * @static
 	 * @var float
 	 */
 	protected static $REQUEST_TIMEOUT = 30.0;
 
 	/**
 	 * HTTP Default port
+	 * @static
 	 * @var integer
 	 */
 	protected static $HTTP_DEFAULT_PORT = 80;
@@ -35,11 +37,11 @@ trait Requester
 	/**
 	 * Do a asynchronously request through Guzzle
 	 * @param array $options - Options:
-	 * +base_url: The request base URL
-	 * +uri: The request URI
-	 * +payload: The encrypted string params data
-	 * +method: The HTTP method (GET, POST)
-	 * +socket: Makes async call as socket connection
+	 * + base_url: The request base URL
+	 * + uri: The request URI
+	 * + payload: The encrypted string params data
+	 * + method: The HTTP method (GET, POST)
+	 * + socket: Makes async call as socket connection
 	 * @return object - The request object
 	 */
 	protected function newRequest($options = [])

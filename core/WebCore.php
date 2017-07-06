@@ -146,10 +146,9 @@ abstract class WebCore extends BaseCore implements WebSecurity
 	/**
 	 * Dispatch to Internal Error
 	 * @param string $title -  The error title message
-	 * @param string $message -  The human error message
+	 * @param string $message - The human error message
 	 * @param string $go_back_url - A go-back link URL
 	 * @param string $log_error - The debug message to log
-	 *
 	 */
 	protected function internalError($title = null, $message = null, $go_back_url = null, $log_error = "n/a")
 	{
@@ -215,7 +214,6 @@ abstract class WebCore extends BaseCore implements WebSecurity
 
 	/**
 	 * Set the client (user agent) object with its properties
-	 * @access private
 	 */
 	private function _setClient()
 	{
@@ -239,7 +237,6 @@ abstract class WebCore extends BaseCore implements WebSecurity
 
 	/**
 	 * Set app language for translations
-	 * @access private
 	 */
 	private function _setLanguage()
 	{
@@ -271,7 +268,6 @@ abstract class WebCore extends BaseCore implements WebSecurity
 
 	/**
 	 * Set CSRF token key and value
-	 * @access private
 	 */
 	private function _setCSRF()
 	{
@@ -296,7 +292,6 @@ abstract class WebCore extends BaseCore implements WebSecurity
 
 	/**
 	 * Handles SSL connections
-	 * @access private
 	 */
 	private function _handleSSL()
 	{
@@ -312,7 +307,6 @@ abstract class WebCore extends BaseCore implements WebSecurity
 
 	/**
 	 * Set app assets (app.css & app.js)
-	 * @access protected
 	 */
 	private function _setAppAssets()
 	{
@@ -339,7 +333,6 @@ abstract class WebCore extends BaseCore implements WebSecurity
 
 	/**
 	 * Set javascript vars for rendering view, call child method for customization.
-	 * @access private
 	 */
 	private function _setAppViewVars()
 	{

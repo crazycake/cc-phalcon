@@ -247,7 +247,7 @@ trait Mailer
 	 * @param string $subject - The mail subject
 	 * @param mixed(string|array) $recipients - The receiver emails
 	 * @param array $attachments - Array with sub-array(s) with content, type and name props
-	 * @return $result array
+	 * @return array - Resultset
 	 */
 	public function sendMessage($template, $subject, $recipients, $attachments = [])
 	{

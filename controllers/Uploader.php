@@ -19,30 +19,35 @@ trait Uploader
 {
 	/**
 	 * Default upload max size
+	 * @static
 	 * @var integer
 	 */
 	protected static $DEFAULT_MAX_SIZE = 5120; //KB
 
 	/**
 	 * Default upload file type
+	 * @static
 	 * @var array
 	 */
 	protected static $DEFAULT_FILE_TYPE = ["csv"];
 
 	/**
 	 * Image API service URL
+	 * @static
 	 * @var string
 	 */
 	protected static $IMG_API_URL = "http://imgapi/";
 
 	/**
 	 * Header Name for file checking
+	 * @static
 	 * @var string
 	 */
 	protected static $HEADER_NAME = "File-Key";
 
 	/**
 	 * Root upload path. Files are saved in a temporal public user folder.
+	 * @static
 	 * @var string
 	 */
 	public static $ROOT_UPLOAD_PATH = STORAGE_PATH."uploads/";
