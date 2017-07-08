@@ -100,7 +100,7 @@ trait Uploader
 	/**
 	 * Dispatch Event, cleans upload folder for non ajax requests
 	 */
-	protected function afterExecuteRoute()
+	public function afterExecuteRoute()
 	{
 		parent::afterExecuteRoute();
 

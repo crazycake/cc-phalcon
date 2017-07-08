@@ -15,7 +15,7 @@ trait WebErrors
 	/**
 	 * After Execute Route
 	 */
-	protected function afterExecuteRoute()
+	public function afterExecuteRoute()
 	{
 		parent::afterExecuteRoute();
 

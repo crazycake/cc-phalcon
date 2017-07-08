@@ -28,7 +28,7 @@ trait AccountPassRecovery
 	/**
 	 * After Execute Route
 	 */
-	protected function afterExecuteRoute()
+	public function afterExecuteRoute()
 	{
 		parent::afterExecuteRoute();
 		//if loggedIn redirect to account

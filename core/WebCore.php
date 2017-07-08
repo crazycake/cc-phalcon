@@ -47,7 +47,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 	/**
 	 * BeforeExecuteRoute event
 	 */
-	protected function beforeExecuteRoute()
+	public function beforeExecuteRoute()
 	{
 		//check enable SSL option and force it if enabled
 		$this->_handleSSL();
@@ -65,7 +65,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 	/**
 	 * After Execute Route: Triggered after executing the controller/action method
 	 */
-	protected function afterExecuteRoute()
+	public function afterExecuteRoute()
 	{
 		//Load view data only for non-ajax requests
 		if ($this->request->isAjax())

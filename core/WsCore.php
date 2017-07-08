@@ -40,7 +40,7 @@ abstract class WsCore extends BaseCore
 	/**
 	 * Before Execute Route event
 	 */
-	protected function beforeExecuteRoute()
+	public function beforeExecuteRoute()
 	{
 		// API Key Validation
 		$this->_validateApiKey();

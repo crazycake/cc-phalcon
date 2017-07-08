@@ -36,7 +36,7 @@ trait AccountManager
 	/**
 	 * After Execute Route
 	 */
-	protected function afterExecuteRoute()
+	public function afterExecuteRoute()
 	{
 		parent::afterExecuteRoute();
 		//for auth required pages disable robots
