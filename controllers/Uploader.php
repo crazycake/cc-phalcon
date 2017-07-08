@@ -439,31 +439,31 @@ trait Uploader
 				throw new Exception(str_replace("{file}", $file_name, $this->uploader_conf["trans"]["FILE_TYPE"]));
 
 			//validation: image size
-			if(empty($file_conf["isize"]))
-				continue;
+			if(!empty($file_conf["isize"])) {
 
-			$size  = $file_conf["isize"];
-			$image = new GD($file->getTempName());
+				$size  = $file_conf["isize"];
+				$image = new GD($file->getTempName());
 
-			//fixed width
-			if(isset($size["w"]) && $size["w"] != $image->getWidth())
-				throw new Exception(str_replace(["{file}", "{w}"], [$file_name, $size["w"]], $this->uploader_conf["trans"]["IMG_WIDTH"]));
+				//fixed width
+				if(isset($size["w"]) && $size["w"] != $image->getWidth())
+					throw new Exception(str_replace(["{file}", "{w}"], [$file_name, $size["w"]], $this->uploader_conf["trans"]["IMG_WIDTH"]));
 
-			//fixed height
-			if(isset($size["h"]) && $size["h"] != $image->getHeight())
-				throw new Exception(str_replace(["{file}", "{h}"], [$file_name, $size["h"]], $this->uploader_conf["trans"]["IMG_HEIGHT"]));
+				//fixed height
+				if(isset($size["h"]) && $size["h"] != $image->getHeight())
+					throw new Exception(str_replace(["{file}", "{h}"], [$file_name, $size["h"]], $this->uploader_conf["trans"]["IMG_HEIGHT"]));
 
-			//minimun width
-			if(isset($size["mw"]) && $image->getWidth() < $size["mw"])
-				throw new Exception(str_replace(["{file}", "{w}"], [$file_name, $size["mw"]], $this->uploader_conf["trans"]["IMG_MIN_WIDTH"]));
+				//minimun width
+				if(isset($size["mw"]) && $image->getWidth() < $size["mw"])
+					throw new Exception(str_replace(["{file}", "{w}"], [$file_name, $size["mw"]], $this->uploader_conf["trans"]["IMG_MIN_WIDTH"]));
 
-			//minimun width
-			if(isset($size["mh"]) && $image->getHeight() < $size["mh"])
-				throw new Exception(str_replace(["{file}", "{h}"], [$file_name, $size["mh"]], $this->uploader_conf["trans"]["IMG_MIN_HEIGHT"]));
+				//minimun width
+				if(isset($size["mh"]) && $image->getHeight() < $size["mh"])
+					throw new Exception(str_replace(["{file}", "{h}"], [$file_name, $size["mh"]], $this->uploader_conf["trans"]["IMG_MIN_HEIGHT"]));
 
-			//ratio
-			if(isset($size["r"]) && round($image->getWidth()/$image->getHeight(), 2) != eval("return round(".$size["r"].", 2);"))
-				throw new Exception(str_replace(["{file}", "{r}"], [$file_name, $size["r"]], $this->uploader_conf["trans"]["IMG_RATIO"]));
+				//ratio
+				if(isset($size["r"]) && round($image->getWidth()/$image->getHeight(), 2) != eval("return round(".$size["r"].", 2);"))
+					throw new Exception(str_replace(["{file}", "{r}"], [$file_name, $size["r"]], $this->uploader_conf["trans"]["IMG_RATIO"]));
+			}
 		}
 		catch (Exception $e) {
 
