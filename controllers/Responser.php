@@ -22,7 +22,7 @@ trait Responser
 	 * @static
 	 * @var string
 	 */
-	public static $JSON_RESPONSE_STRUCT = '{"response":{"code":"200","status":"ok","payload":@payload}}';
+	public static $JSON_RESPONSE_STRUCT = '{"code":"200","status":"ok","payload":@payload}';
 
 	/**
 	 * Response HTTP Codes
