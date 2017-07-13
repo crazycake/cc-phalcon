@@ -30,18 +30,17 @@
 			<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 		{% endif %}
 
-		{# define vars #}
-		{% set tag_title            = html_title is defined ? html_title : config.name %}
-		{% set tag_meta_description = html_description is defined ? html_description : config.name %}
-		{% set tag_meta_author      = html_author is defined ? html_author : 'CrazyCake Technologies' %}
-		{% set tag_meta_robots      = html_disallow_robots is defined ? "noindex,nofollow" : "index,follow" %}
+		{# description meta #}
+		<meta name="description" content="{{ html_description is defined ? html_description : config.name  }}" />
 
-		{# descriptive metas #}
-		<meta name="description" content="{{ tag_meta_description }}" />
-		<meta name="author" content="{{ tag_meta_author }}" />
-		<meta name="robots" content="{{ tag_meta_robots }}" />
+		{# author meta #}
+		<meta name="author" content="{{ html_author is defined ? html_author : 'CrazyCake Technologies' }}" />
+
+		{# robots meta #}
+		<meta name="robots" content="{{ html_disallow_robots is defined ? 'noindex,nofollow' : 'index,follow' }}" />
+
 		{# page title #}
-		<title>{{ tag_title }}</title>
+		<title>{{ html_title is defined ? html_title : config.name }}</title>
 
 		{# favicons #}
 		<link rel="icon" type="image/png" href="{{ static_url('images/favicons/favicon.png') }}" />
@@ -82,8 +81,7 @@
 	</head>
 	{# Flush the buffer (optimization) #}
 	<?php  flush(); ?>
-	{% set ua_class = 'ua-'~client.browser~' '~client.platform %}
-	<body class="{{ ua_class|lower }}{{ html_body_class is defined ? ' '~html_body_class : '' }}">
+	<body class="{{ 'ua-'~client.browser~' '~client.platform|lower }}{{ html_body_class is defined ? ' '~html_body_class : '' }}">
 
 		{# app content wrapper #}
 		{% if html_app_wrapper is defined and !html_app_wrapper %}
@@ -133,7 +131,7 @@
 		{# debug: output render time #}
 		{% if constant("APP_ENV") != "production" %}
 			<script>
-				console.log('Core -> PhalconPHP <?php echo \Phalcon\Version::get(); ?>. Page rendered in <?php echo number_format((float)(microtime(true) - APP_ST), 3, ".", ""); ?> seconds.');
+				console.log('Core -> PhalconPHP <?php echo \Phalcon\Version::get(); ?>, page rendered in <?php echo number_format((float)(microtime(true) - APP_ST), 3, ".", ""); ?> seconds.');
 			</script>
 		{% endif %}
 
