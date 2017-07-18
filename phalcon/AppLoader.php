@@ -1,7 +1,7 @@
 <?php
 /**
- * App Loader Trait. Contains classes loader logic.
- * Defines environment configs too
+ * App Loader Trait. Contains classes loader logic & environment setup
+ * Env vars: APP_ENV, APP_PORT, APP_SCHEME, APP_BPATH
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
@@ -61,21 +61,21 @@ trait AppLoader
 	private function setEnvironment()
 	{
 		//get env-vars
-		$env = getenv("APP_ENV") ?: "local"; //default to LOCAL
+		$env = getenv("APP_ENV") ?: "local"; //default to 'local'
 
-		//set APP debug environment
-		ini_set("display_errors", (int)$env == "local");
+		//display errors?
+		ini_set("display_errors", (int)$env != "production");
 		error_reporting(E_ALL);
 
-		$base_url = "./";
+		$base_url = false;
 
-		// check for CLI execution & CGI execution
+		// set BASE_URL for non CLI, CGI apps
 		if (php_sapi_name() != "cli") {
 
 			if (!isset($_REQUEST))
-				throw new Exception("App::setEnvironment -> Missing REQUEST data: ".json_encode($_SERVER)." && ".json_encode($_REQUEST));
+				throw new Exception("App::setEnvironment -> Missing REQUEST data: ".json_encode($_SERVER)." & ".json_encode($_REQUEST));
 
-			// set localhost if host is not set
+			// set default host
 			if (!isset($_SERVER["HTTP_HOST"]))
 				$_SERVER["HTTP_HOST"] = "localhost";
 
@@ -90,7 +90,15 @@ trait AppLoader
 				$base_url = str_replace(":$port", "", $base_url).":$port";
 
 			// add missing slash
-			if (substr($base_url, -1) != "/") $base_url .= "/";
+			if (substr($base_url, -1) != "/")
+				$base_url .= "/";
+
+			// remove default port 80 if set
+			$base_url = str_replace(":80/", "/", $base_url);
+
+			// add base path?
+			if(getenv("APP_BPATH"))
+				$base_url .= getenv("APP_BPATH")."/";
 		}
 
 		//set environment consts & self vars
