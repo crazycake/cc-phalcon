@@ -257,6 +257,7 @@ trait AccountAuth
 		//validate and filter request params data, second params are the required fields
 		$data = $this->handleRequest(array_merge($default_params, $setting_params), "POST");
 
+		//check data
 		if(empty($data["email"]) || empty($data["first_name"]) || empty($data["last_name"]))
 			$this->jsonResponse(400);
 
