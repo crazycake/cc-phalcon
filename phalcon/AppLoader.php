@@ -80,7 +80,7 @@ trait AppLoader
 				$_SERVER["HTTP_HOST"] = "localhost";
 
 			// set scheme and host
-			$scheme   = $_SERVER["HTTPS"] ?? "http";
+			$scheme   = $_SERVER["HTTP_X_FORWARDED_PROTO"] ?? "http"; //nginx https
 			$host     = $_SERVER["HTTP_HOST"].preg_replace("@/+$@", "", dirname($_SERVER["SCRIPT_NAME"]));
 			$base_url = "$scheme://$host";
 
