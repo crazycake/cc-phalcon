@@ -1,7 +1,7 @@
 <?php
 /**
  * App Loader Trait. Contains classes loader logic & environment setup
- * Env vars: APP_ENV, APP_PORT, APP_SCHEME, APP_BPATH
+ * Env vars: APP_ENV, APP_PORT
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
@@ -80,8 +80,9 @@ trait AppLoader
 				$_SERVER["HTTP_HOST"] = "localhost";
 
 			// set scheme and host
+			$scheme   = $_SERVER["HTTPS"] ?? "http";
 			$host     = $_SERVER["HTTP_HOST"].preg_replace("@/+$@", "", dirname($_SERVER["SCRIPT_NAME"]));
-			$base_url = (getenv("APP_SCHEME") ?: "http")."://$host";
+			$base_url = "$scheme://$host";
 
 			//set port?
 			$port = getenv("APP_PORT") ?: "";
@@ -95,10 +96,6 @@ trait AppLoader
 
 			// remove default port 80 if set
 			$base_url = str_replace(":80/", "/", $base_url);
-
-			// add base path?
-			if(getenv("APP_BPATH"))
-				$base_url .= getenv("APP_BPATH")."/";
 		}
 
 		//set environment consts & self vars
