@@ -64,7 +64,7 @@ trait AppLoader
 		$env = getenv("APP_ENV") ?: "local"; //default to 'local'
 
 		//display errors?
-		ini_set("display_errors", (int)$env != "production");
+		ini_set("display_errors", (int)($env != "production"));
 		error_reporting(E_ALL);
 
 		$base_url = false;
