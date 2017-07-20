@@ -251,10 +251,9 @@ trait Crud
 			//call listener
 			$this->onBeforeSave($data, "update");
 
-			//get object class
+			//get object class & get object by primary key
 			$object_class = $this->crud_conf["entity"];
-			// get object by primary key
-			$object = $object_class::findFirst([$this->crud_conf["pk"]." = '".$data[$this->crud_conf["pk"]]."'"]);
+			$object 	  = $object_class::findFirst([$this->crud_conf["pk"]." = '".$data[$this->crud_conf["pk"]]."'"]);
 
 			//check object exists
 			if(!$object)
@@ -284,6 +283,15 @@ trait Crud
 				$uri = $this->crud_conf["entity_lower"]."/".$object->{$this->crud_conf["pk"]}."/";
 
 				$new_data["uploaded"] = $this->saveUploadedFiles($uri);
+			}
+
+			//append non-model data
+			foreach ($data as $key => $value) {
+
+				if(isset($new_data[$key]))
+					continue;
+
+				$new_data[$key] = $value;
 			}
 
 			//call listener
