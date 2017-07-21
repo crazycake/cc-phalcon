@@ -1,9 +1,10 @@
 #! /bin/bash
-# CrazyCake Phalcon App CLI
+# CrazyCake Phalcon App CLI [dev only]
 # author: Nicolas Pulido <nicolas.pulido@crazycake.cl>
 
 # stop script if an error occurs
 set -e
+
 # set project path
 PROJECT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
@@ -40,7 +41,6 @@ clean)
 		find $STORAGE_PATH"cache" $STORAGE_PATH"logs" -type f \( ! -iname ".*" \) -print0 | xargs -0 sudo rm
 	fi
 
-	# task done!
 	echo -e "\033[92mDone! \033[0m"
 	;;
 
@@ -50,10 +50,13 @@ build)
 	echo -e "\033[95mGulp build tasks... \033[0m"
 	# gulp build task
 	gulp build
-	# rev assets
-	php $PROJECT_PATH"/app/cli/cli.php" main revAssets
 
-	# translations
+	echo -e "\033[95mExecuting container '$APP_NAME' tasks... \033[0m"
+
+	# rev assets in container
+	docker exec -it $APP_NAME bash -c 'php app/cli/cli.php main revAssets'
+
+	# translations (gettext)
 	bash $TOOLS_PATH"translations.bash" build
 	;;
 
@@ -62,7 +65,6 @@ watch)
 	echo -e "\033[95mRunning gulp watch...\033[0m"
 
 	[[ "$2" = "-m" ]] && gulp watch-m || gulp watch "${@:2}"
-
 	;;
 
 core)
@@ -72,6 +74,7 @@ core)
 
 trans)
 
+	# translations (gettext)
 	bash $TOOLS_PATH"translations.bash" find
 	;;
 
@@ -120,5 +123,5 @@ aws-sync)
 #default
 *)
 	scriptHelp
-		;;
+	;;
 esac
