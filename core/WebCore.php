@@ -217,14 +217,14 @@ abstract class WebCore extends BaseCore implements WebSecurity
 	 */
 	private function _handleHttps()
 	{
-		$https = getenv("APP_HTTPS_ONLY") ?: false;
+		$https  = getenv("APP_HTTPS_ONLY") ?: false;
+		$scheme = $_SERVER["HTTP_X_FORWARDED_PROTO"] ?? "http"; //elb headers
 
-		if(!$https || $this->request->isSecure())
+		if(!$https || $scheme == "https")
 			return;
 
 		//force redirect for non-https request
-		$url = str_replace("http:", "https:", $this->baseUrl());
-		$this->response->redirect($url);
+		$this->response->redirect(str_replace("http:", "https:", $this->baseUrl()));
 	}
 
 	/**
