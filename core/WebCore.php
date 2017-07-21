@@ -49,11 +49,11 @@ abstract class WebCore extends BaseCore implements WebSecurity
 	 */
 	public function beforeExecuteRoute()
 	{
-		//redirect non https?
-		$this->_handleHttps();
-
 		//set client object with its properties (User-Agent)
 		$this->_setClient();
+
+		//redirect non https?
+		$this->_handleHttps();
 
 		//set language translations
 		$this->_setLanguage();
