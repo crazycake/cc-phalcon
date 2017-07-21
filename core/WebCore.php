@@ -49,6 +49,9 @@ abstract class WebCore extends BaseCore implements WebSecurity
 	 */
 	public function beforeExecuteRoute()
 	{
+		//redirect non https?
+		$this->_handleHttps();
+
 		//set client object with its properties (User-Agent)
 		$this->_setClient();
 
@@ -208,6 +211,21 @@ abstract class WebCore extends BaseCore implements WebSecurity
 	}
 
 	/* --------------------------------------------------- § -------------------------------------------------------- */
+
+	/**
+	 * Handle HTTPS redirection
+	 */
+	private function _handleHttps()
+	{
+		$https = getenv("APP_HTTPS_ONLY") ?: false;
+
+		if(!$https || $this->request->isSecure())
+			return;
+
+		//force redirect for non-https request
+		$url = str_replace("http:", "https:", $this->baseUrl());
+		$this->response->redirect($url);
+	}
 
 	/**
 	 * Set the client (user agent) object with its properties
