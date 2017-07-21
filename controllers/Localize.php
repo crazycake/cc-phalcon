@@ -89,8 +89,8 @@ trait Localize
 			$fb_email_settings_url = "https://www.facebook.com/settings?tab=account&section=email&view";
 
 			$data["FACEBOOK"] = [
-				"SESSION_ERROR"    => "Ocurrió un problema con tu sesión de Facebook, por favor inténtalo nuevamente.
-									   Si aún se presenta este problema, prueba iniciando una nueva sesión en Facebook.",
+				"SESSION_ERROR"    => "Ocurrió un problema con tu sesión de Facebook, por favor inténtalo nuevamente. ".
+									  "Si aún se presenta este problema, prueba iniciando una nueva sesión en Facebook.",
 				"OAUTH_REDIRECTED" => "Ocurrió un problema con tu sesión de Facebook, por favor inténtalo nuevamente.",
 				"OAUTH_PERMS"      => "Debes aceptar los permisos de la aplicación en tu cuenta de Facebook.",
 				"SESSION_SWITCHED" => "Es posible que tengas abierta otra sesión de Facebook, intenta cerrando tu sesión actual de Facebook.",
@@ -122,26 +122,26 @@ trait Localize
 
 		$data = [
 			"ALERTS" => [
-				"INTERNAL_ERROR"   => "Oops, ha ocurrido un problema, solucionaremos esto a la brevedad.",
-				"SERVER_TIMEOUT"   => "Hemos perdido la comunicación, prueba revisando tu conexión a Internet.",
-				"CSRF" 			   => "Esta página ha estado inactiva por mucho tiempo, haz
-										<a href=\"javascript:location.reload();\">click aquí</a> para refrescarla.",
-				"NOT_FOUND" 	   => "Oops, el enlace está roto. Por favor inténtalo más tarde.",
+				"INTERNAL_ERROR" => "Ha ocurrido algo inesperado, porfavor inténtalo más tarde.",
+				"SERVER_TIMEOUT" => "Sin conexión, revisa tu conexión a Internet.",
+				"CSRF"           => "Esta página ha estado inactiva por mucho tiempo, haz ".
+									"<a href=\"javascript:location.reload();\">click aquí</a> para refrescarla.",
+				"NOT_FOUND" 	   => "Este enlace está roto, por favor inténtalo más tarde.",
 				"BAD_REQUEST" 	   => "Lo sentimos, no hemos logrado procesar tu petición. Intenta refrescando esta página.",
 				"ACCESS_FORBIDDEN" => "Tu sesión ha caducado, por favor <a href=\"./signIn\">ingresa nuevamente aquí</a>.",
 				"LOADING"  	       => "cargando ...",
 				"REDIRECTING"      => "redireccionado ...",
 			],
 			"ACTIONS" => [
-				"OK" 	   	  => "Ok",
-				"ACCEPT"   	  => "Aceptar",
-				"CANCEL"   	  => "Cancelar",
-				"NOT_NOW"  	  => "Ahora No",
-				"SEND" 	   	  => "Enviar",
-				"GOT_IT"   	  => "Entendido",
-				"DELETE"   	  => "Eliminar",
-				"CONTINUE" 	  => "Continuar",
-				"ACTIVATE" 	  => "Activar"
+				"OK"       => "Ok",
+				"ACCEPT"   => "Aceptar",
+				"CANCEL"   => "Cancelar",
+				"NOT_NOW"  => "Ahora No",
+				"SEND"     => "Enviar",
+				"GOT_IT"   => "Entendido",
+				"DELETE"   => "Eliminar",
+				"CONTINUE" => "Continuar",
+				"ACTIVATE" => "Activar"
 			],
 			"MAILER" => [
 				"SENT" => "¡Hemos recibido tu mensaje! Te responderemos a la brevedad."
