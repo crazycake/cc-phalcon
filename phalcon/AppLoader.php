@@ -63,6 +63,10 @@ trait AppLoader
 		//get env-vars
 		$env = getenv("APP_ENV") ?: "local"; //default to 'local'
 
+		//default timezone
+		if(getenv("TZ"))
+			date_default_timezone_set(getenv("TZ"));
+
 		//display errors?
 		ini_set("display_errors", (int)($env != "production"));
 		error_reporting(E_ALL);
