@@ -75,6 +75,15 @@ abstract class BaseCore extends Controller
 	}
 
 	/**
+	 * Get scheme
+	 * @return string - http or https
+	 */
+	protected function getScheme()
+	{
+		return $_SERVER["HTTP_X_FORWARDED_PROTO"] ?? "http"; //aws elb headers
+	}
+
+	/**
 	 * Get the requested URI
 	 */
 	protected function getRequestedUri()
