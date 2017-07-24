@@ -1,7 +1,7 @@
 <?php
 /**
  * App Loader Trait. Contains classes loader logic & environment setup
- * Env vars: APP_ENV, APP_PORT, APP_HTTPS_ONLY
+ * Env vars: APP_ENV, APP_PORT, APP_TZ, APP_HTTPS_ONLY
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
@@ -60,12 +60,11 @@ trait AppLoader
 	 */
 	private function setEnvironment()
 	{
+		//default timezone
+		date_default_timezone_set(getenv("APP_TZ") ?? "America/Santiago");
+
 		//get env-vars
 		$env = getenv("APP_ENV") ?: "local"; //default to 'local'
-
-		//default timezone
-		if(getenv("TZ"))
-			date_default_timezone_set(getenv("TZ"));
 
 		//display errors?
 		ini_set("display_errors", (int)($env != "production"));

@@ -72,7 +72,7 @@ abstract class BaseCore extends Controller
 			$host = current($host_parts);
 
 		$host_url = empty($port) ? $host : $host.":".$port;
-		$host_url = str_replace(":80/", "/", $host_url);
+		$host_url = str_replace(":80", "", $host_url);
 
 		return $host_url;
 	}
