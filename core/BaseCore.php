@@ -59,7 +59,7 @@ abstract class BaseCore extends Controller
 
 	/**
 	 * Host URL
-	 * @param int $port - The host URL
+	 * @param int $port - The input port
 	 * @return string - The host URL with port appended
 	 */
 	protected function host($port = 80)
@@ -71,7 +71,10 @@ abstract class BaseCore extends Controller
 		if(count($host_parts) > 1)
 			$host = current($host_parts);
 
-		return empty($port) ? $host : $host.":".$port;
+		$host_url = empty($port) ? $host : $host.":".$port;
+		$host_url = str_replace(":80/", "/", $base_url);
+
+		return $host_url;
 	}
 
 	/**
