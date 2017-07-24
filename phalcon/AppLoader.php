@@ -61,7 +61,7 @@ trait AppLoader
 	private function setEnvironment()
 	{
 		//default timezone
-		date_default_timezone_set(getenv("APP_TZ") ?? "America/Santiago");
+		date_default_timezone_set(getenv("APP_TZ") ?: "America/Santiago");
 
 		//get env-vars
 		$env = getenv("APP_ENV") ?: "local"; //default to 'local'
