@@ -49,8 +49,8 @@ class Images
 
 		//make sure object is an array in all depths
 		$conf = json_decode(json_encode($conf), true);
+		$src  = dirname($filepath)."/";
 
-		$src     = dirname($filepath)."/";
 		$resized = [];
 		//loop resizer
 		foreach ($conf as $key => $resize) {
@@ -80,12 +80,12 @@ class Images
 				else if(isset($resize["h"])) {
 					$image->resize($resize["h"] * $ratio, $resize["h"]);
 				}
-				//height px, keep ratio
-				else if(isset($resize["c"])) {
-					$image->crop($resize["c"][0], $resize["c"][1], $resize["c"][2], $resize["c"][3]);
-				}
 
-				//++ EFXs
+				//++ Modifiers
+
+				//crop
+				if(isset($resize["c"]))
+					$image->crop($resize["c"][0], $resize["c"][1], $resize["c"][2], $resize["c"][3]);
 				//blur
 				if(isset($resize["b"]))
 					$image->blur($resize["b"]);
@@ -94,7 +94,7 @@ class Images
 					$image->rotate($resize["r"]);
 
 				//save image (default 100%)
-				$quality = isset($resize["q"]) ? $resize["q"] : 100;
+				$quality = $resize["q"] ?? 100;
 
 				$image->save($new_file, $quality);
 
