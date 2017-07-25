@@ -66,7 +66,12 @@ class TaskCore extends Task
 		if (!is_dir($assets_path))
 			$this->colorize("Assets path not found: $assets_path", "ERROR", true);
 
-		$version = str_replace(".", "", $this->config->version);
+		if(!is_file($assets_path."app.min.js") || !is_file($assets_path."app.min.css"))
+			$this->colorize("Missing minified assets files.", "ERROR", true);
+
+		//decimal version
+		$ver = str_replace(".", "", $this->config->version);
+		$this->colorize("Ok, version $ver", "NOTE");
 
 		//clean old files
 		$files = scandir($assets_path);
@@ -76,24 +81,24 @@ class TaskCore extends Task
 			if(strpos($f, ".rev.") === false)
 				continue;
 
-			//keep last version
-			if(strpos($f, "-".$version[0]) !== false)
+			//keep 1st & 2nd-last versions only, get ony decimals
+			preg_match_all('/\d+/', $f, $file_ver);
+			$file_ver = $file_ver[0];
+
+			if((int)$ver - (int)$file_ver[0] <= 1)
 				continue;
 
 			$this->colorize("Removing asset $assets_path$f", "NOTE");
 			unlink($assets_path.$f);
 		}
 
-		if(!is_file($assets_path."app.min.js") || !is_file($assets_path."app.min.css"))
-			$this->colorize("Missing assets minified files.", "ERROR", true);
-
 		//APP JS
-		copy($assets_path."app.min.js", $assets_path."app-".$version.".rev.js");
+		copy($assets_path."app.min.js", $assets_path."app-".$ver.".rev.js");
 		//APP CSS
-		copy($assets_path."app.min.css", $assets_path."app-".$version.".rev.css");
+		copy($assets_path."app.min.css", $assets_path."app-".$ver.".rev.css");
 		//LAZY CSS
 		if(is_file($assets_path."lazy.min.css"))
-			copy($assets_path."lazy.min.css", $assets_path."lazy-".$version.".rev.css");
+			copy($assets_path."lazy.min.css", $assets_path."lazy-".$ver.".rev.css");
 
 		//remove min files
 		foreach(glob($assets_path."*.min.*") as $f)
