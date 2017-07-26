@@ -128,7 +128,6 @@ trait CheckoutManager
 	public function successCheckoutTaskAction($encrypted_data = "")
 	{
 		try {
-
 			$this->logger->debug("CheckoutManager::successCheckoutTask -> GET Data ".json_encode($encrypted_data));
 
 			//decrypt data
@@ -174,7 +173,7 @@ trait CheckoutManager
 
 			//send alert system mail message
 			(new $mailer())->adminException($e, [
-				"edata" => json_encode($checkout, JSON_UNESCAPED_SLASHES)
+				"edata" => !empty($data->buy_order) ? "buy_order: $data->buy_order" : "n/a"
 			]);
 		}
 		finally {
