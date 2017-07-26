@@ -208,20 +208,13 @@ trait Mailer
 
 		$this->logger->debug("Mailer::adminException -> sending exception: $error");
 
-		$log = file_get_contents($this->logger->log(\Phalcon\Logger::DEBUG)->getPath());
-
-		if($log) {
-			$lines       = explode("\n", $log);
-			$log_history = implode("\n", array_slice($lines, -8)); // last x lines
-		}
-
 		//Sending a warning to admin users!
 		$this->sendAdminMessage(array_merge([
-			"subject" => "Exception Notification",
+			"subject" => "Notificación Admin",
 			"to"      => $this->config->emails->support,
 			"email"   => $this->config->emails->sender, //user-sender
-			"name"    => $this->config->name." webapp",
-			"message" => "$error\nLog History:\n".$log_history
+			"name"    => $this->config->name." ".MODULE_NAME,
+			"message" => "$error\nData:\n".(!empty($data["edata"]) ? implode("\n", $data["edata"]) : "n/a")
 		], $data));
 	}
 
