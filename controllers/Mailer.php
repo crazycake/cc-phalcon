@@ -85,7 +85,8 @@ trait Mailer
 		], "POST");
 
 		$data["subject"] = "Contacto ".$this->config->name;
-		$data["to"]      = $this->config->emails->contact;
+		// contact (preference) or support
+		$data["to"] = $this->config->emails->contact ?? $this->config->emails->support;
 
 		// call listener?
 		if (method_exists($this, "onBeforeSendContact"))
@@ -206,16 +207,24 @@ trait Mailer
 	{
 		$error = is_string($e) ? $e : $e->getMessage().". File: ".$e->getFile()." (".$e->getLine().")";
 
-		$this->logger->debug("Mailer::adminException -> sending exception: $error");
+		$admin_emails = !empty($this->config->emails->admins) ? (array)$this->config->emails->admins : $this->config->emails->support;
 
-		//Sending a warning to admin users!
-		$this->sendAdminMessage(array_merge([
-			"subject" => "Notificación Admin",
-			"to"      => $this->config->emails->support,
-			"email"   => $this->config->emails->sender, //user-sender
-			"name"    => $this->config->name." ".MODULE_NAME,
-			"message" => "$error\nData:\n".(!empty($data["edata"]) ? implode("\n", $data["edata"]) : "n/a")
-		], $data));
+		if(!is_array($admin_emails))
+			$admin_emails = [$admin_emails];
+
+		// send to every admin
+		foreach ($admin_emails as $email) {
+
+			$this->logger->debug("Mailer::adminException -> sending exception: $error");
+			//Sending a warning to admin users!
+			$this->sendAdminMessage(array_merge([
+				"subject" => "Notificación Admin",
+				"to"      => $email,
+				"email"   => $this->config->emails->sender, //user-sender
+				"name"    => $this->config->name." ".MODULE_NAME,
+				"message" => "$error\nData:\n".(!empty($data["edata"]) ? implode("\n", $data["edata"]) : "n/a")
+			], $data));
+		}
 	}
 
 	/**

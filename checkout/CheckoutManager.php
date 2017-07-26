@@ -171,9 +171,10 @@ trait CheckoutManager
 
 			//get mailer controller
 			$mailer = App::getClass("mailer_controller");
+
 			//send alert system mail message
 			(new $mailer())->adminException($e, [
-				"action" => "successCheckoutTask"
+				"edata" => json_encode($checkout, JSON_UNESCAPED_SLASHES)
 			]);
 		}
 		finally {
