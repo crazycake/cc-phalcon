@@ -235,8 +235,8 @@ trait Mailer
 	public function sendAdminMessage($data = [])
 	{
 		//set message properties
-		$subject = isset($data["subject"]) ? $data["subject"] : $this->config->name;
-		$to      = isset($data["to"]) ? $data["to"] : $this->config->emails->support;
+		$subject = $data["subject"] ?? $this->config->name;
+		$to      = $data["to"] ?? $this->config->emails->support;
 
 		//add prefix "data" to each element in array
 		$this->mailer_conf = array_combine( array_map(function($k) { return "data_".$k; }, array_keys($data)), $data);
@@ -271,7 +271,7 @@ trait Mailer
 		$sendgrid = new \SendGrid($this->config->sendgrid->apiKey);
 		$message  = new \SendGrid\Email();
 
-		$support_email = !empty($this->config->emails->support) ? $this->config->emails->support : $this->config->emails->sender;
+		$support_email = $this->config->emails->support ?? $this->config->emails->sender;
 
 		$message->setFrom($this->config->emails->sender)
 				->setFromName($this->config->name)
