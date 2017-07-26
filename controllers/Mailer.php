@@ -179,7 +179,7 @@ trait Mailer
 	 */
 	public function inlineHtml($template = "")
 	{
-		//set app var
+		//set mailer sub config
 		$this->mailer_conf["config"] = $this->config;
 
 		//get the view in mailing folder
@@ -273,11 +273,12 @@ trait Mailer
 
 		$support_email = $this->config->emails->support ?? $this->config->emails->sender;
 
+		//set message properties
 		$message->setFrom($this->config->emails->sender)
 				->setFromName($this->config->name)
 				->setReplyTo($support_email)
 				->setSubject($subject)
-				->setHtml($this->inlineHtml($template));
+				->setHtml($this->inlineHtml($template)); //NOTE: inline html!
 
 		//add recipients
 		foreach ($recipients as $email)
