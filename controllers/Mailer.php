@@ -215,15 +215,17 @@ trait Mailer
 		// send to every admin
 		foreach ($admin_emails as $email) {
 
-			$this->logger->debug("Mailer::adminException -> sending exception [$email]: $error");
-			//Sending a warning to admin users!
-			$this->sendAdminMessage(array_merge([
+			$d = array_merge([
 				"subject" => "Admin message",
 				"to"      => $email,
 				"email"   => $this->config->emails->sender, //user-sender
 				"name"    => $this->config->name." ".MODULE_NAME,
 				"message" => "$error\nData:\n".(!empty($data["edata"]) ? implode("\n", $data["edata"]) : "n/a")
-			], $data));
+			], $data);
+
+			$this->logger->debug("Mailer::adminException -> sending exception [".$d["to"]."]: $error");
+			//Sending a warning to admin users!
+			$this->sendAdminMessage($d);
 		}
 	}
 
