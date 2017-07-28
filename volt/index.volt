@@ -100,7 +100,7 @@
 		</div>
 
 		{# APP JS #}
-		<script type="text/javascript" src="{{ js_url }}"></script>
+		<script src="{{ js_url }}" type="text/javascript"></script>
 
 		{# APP JS Module Loader #}
 		{% if js_loader is defined %}
@@ -120,7 +120,7 @@
 		{# reCaptcha plugin #}
 		{% if js_recaptcha is defined and js_recaptcha %}
 			<script>function recaptchaOnLoad(){ core.modules.forms.recaptchaOnLoad(); }</script>
-			<script src="{{ client.protocol }}www.google.com/recaptcha/api.js?onload=recaptchaOnLoad&amp;render=explicit&amp;hl={{ client.lang }}" async defer></script>
+			<script src="//www.google.com/recaptcha/api.js?onload=recaptchaOnLoad&amp;render=explicit&amp;hl={{ client.lang }}" async defer></script>
 		{% endif %}
 
 		{# javascript disabled fallback #}
