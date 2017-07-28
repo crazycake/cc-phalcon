@@ -220,7 +220,7 @@ trait Mailer
 				"to"      => $email,
 				"email"   => $this->config->emails->sender, //user-sender
 				"name"    => $this->config->name." ".MODULE_NAME,
-				"message" => "$error\nData:\n".(!empty($data["edata"]) ? implode("\n", $data["edata"]) : "n/a")
+				"message" => "$error\nData:\n".(empty($data["edata"]) ? "n/a" : json_encode($data["edata"], JSON_UNESCAPED_SLASHES))
 			], $data);
 
 			$this->logger->debug("Mailer::adminException -> sending exception [".$d["to"]."]: $error");
