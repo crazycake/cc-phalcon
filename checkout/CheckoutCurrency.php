@@ -98,9 +98,9 @@ trait CheckoutCurrency
 			$redis = $this->newRedisClient();
 			$redis->set(self::$REDIS_KEY_USD_CLP_VALUE, $value);
 
-			$output = "[".date("d-m-Y H:i:s")."] storeDollarChileanPesoValue -> Stored value '$value' in Redis. \n";
-			//print output
-			$this->output($output);
+			$this->logger->info("storeDollarChileanPesoValue -> Stored value '$value' in Redis.");
+
+			return $value;
 		}
 		catch (Exception $e) {
 

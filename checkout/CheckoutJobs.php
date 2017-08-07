@@ -17,11 +17,6 @@ use CrazyCake\Phalcon\App;
 trait CheckoutJobs
 {
 	/**
-	 * Implementation required
-	 */
-	abstract protected function storeDollarChileanPesoValue();
-
-	/**
 	 * Initializer
 	 */
 	protected function initCheckoutJobs()
@@ -30,7 +25,6 @@ trait CheckoutJobs
 			return;
 
 		$this->colorize("userCheckoutCleaner: Cleans expired user checkouts", "WARNING");
-		$this->colorize("storeDollarChileanPesoValue: API request & stores dollar CLP conversion value in Redis.", "WARNING");
 	}
 
 	/**
@@ -44,27 +38,9 @@ trait CheckoutJobs
 		$objs_deleted = $user_checkout_class::deleteExpired();
 
 		//rows affected
-		if ($objs_deleted) {
+		if ($objs_deleted)
+			$this->logger->info("CheckoutJobs::userCheckoutCleaner -> Expired Checkouts deleted: ".$objs_deleted);
 
-			$output = "[".date("d-m-Y H:i:s")."] userCheckoutCleaner -> Expired Checkouts deleted: ".$objs_deleted."\n";
-			$this->output($output);
-		}
-	}
-
-	/**
-	 * CLI - Saves in Redis currency CLP - USD value conversion
-	 */
-	public function storeDollarChileanPesoValueAction()
-	{
-		try {
-			//checkout currency
-			$output = $this->storeDollarChileanPesoValue();
-			//print output
-			$this->output($output);
-		}
-		catch (Exception $e) {
-
-			$this->logger->error("CheckoutJob::storeChileanPesoToDollarConversion -> failed retrieving API data. Err: ".$e->getMessage());
-		}
+		return $objs_deleted;
 	}
 }
