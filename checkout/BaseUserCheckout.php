@@ -26,7 +26,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 	 * @static
 	 * @var integer
 	 */
-	public static $CHECKOUT_EXPIRES_THRESHOLD = 2; //hours
+	public static $CHECKOUT_EXPIRES_THRESHOLD = 72; //hours
 
 	/**
 	 * Buy Order code length
