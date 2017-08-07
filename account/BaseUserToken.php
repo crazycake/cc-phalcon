@@ -50,10 +50,10 @@ class BaseUserToken extends \CrazyCake\Models\Base
 	 * @var integer
 	 */
 	public static $TOKEN_EXPIRES_THRESHOLD = [
-						"activation" => 60,
-						"access"     => 90,
-						"pass"       => 3
-				   ];
+		"activation" => 60,
+		"access"     => 90,
+		"pass"       => 3
+	];
 
 	/**
 	 * Token default length
@@ -232,7 +232,7 @@ class BaseUserToken extends \CrazyCake\Models\Base
 	public static function deleteExpired()
 	{
 		if(!class_exists("\Carbon"))
-			throw new Exception("PHP Carbon library missing");
+			return false;
 
 		//use carbon to manipulate days
 		try {
@@ -268,7 +268,8 @@ class BaseUserToken extends \CrazyCake\Models\Base
 			return $count;
 		}
 		catch (Exception $e) {
-			//throw new Exception("BaseUserToken::deleteExpiredTokens -> error: ".$e->getMessage());
+
+			$this->logger->warning("BaseUserToken::deleteExpiredTokens -> error: ".$e->getMessage());
 			return 0;
 		}
 	}
