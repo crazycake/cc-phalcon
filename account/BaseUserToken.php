@@ -231,7 +231,7 @@ class BaseUserToken extends \CrazyCake\Models\Base
 	 */
 	public static function deleteExpired()
 	{
-		if(!class_exists("\Carbon"))
+		if(!class_exists("\Carbon\Carbon"))
 			return false;
 
 		//use carbon to manipulate days

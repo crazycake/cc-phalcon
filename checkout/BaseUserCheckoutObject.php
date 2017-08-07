@@ -79,7 +79,7 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
 			if (!$props) continue;
 
 			//extend custom flexible properties
-			$checkout_object->name 	   = isset($props->name) ? $props->name : $props->_ext["name"];
+			$checkout_object->name     = isset($props->name) ? $props->name : $props->_ext["name"];
 			$checkout_object->price    = $props->price;
 			$checkout_object->currency = $props->currency;
 

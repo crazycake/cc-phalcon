@@ -352,7 +352,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 			$js_app->cssLazy = str_replace("/app", "/lazy", $this->view->getVar("css_url"));
 
 		//set translations?
-		if (class_exists("TranslationController"))
+		if (class_exists("\TranslationController"))
 			$js_app->TRANS = \TranslationController::getJsTranslations();
 
 		//set user agent
