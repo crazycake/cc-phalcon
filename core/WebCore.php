@@ -153,7 +153,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 	protected function internalError($title = null, $message = null, $go_back_url = null, $log_error = "n/a")
 	{
 		//log error
-		$this->logger->info("WebCore::internalError -> something ocurred (message: ".$message."). Error: ".$log_error);
+		$this->logger->debug("WebCore::internalError -> something ocurred (message: ".$message."). Error: ".$log_error);
 
 		//special case for ajax
 		if ($this->request->isAjax())

@@ -28,7 +28,7 @@ trait CheckoutJobs
 
 		//rows affected
 		if ($objs_deleted)
-			$this->logger->info("CheckoutJobs::userCheckoutCleaner -> Expired Checkouts deleted: ".$objs_deleted);
+			$this->logger->debug("CheckoutJobs::userCheckoutCleaner -> Expired Checkouts deleted: ".$objs_deleted);
 
 		return $objs_deleted;
 	}
