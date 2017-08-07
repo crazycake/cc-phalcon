@@ -258,7 +258,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 	public static function deleteExpired()
 	{
 		if(!class_exists("\Carbon"))
-			throw new Exception("PHP Carbon library missing");
+			return false;
 
 		try {
 
