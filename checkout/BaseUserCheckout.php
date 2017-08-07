@@ -26,7 +26,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 	 * @static
 	 * @var integer
 	 */
-	public static $CHECKOUT_EXPIRES_THRESHOLD = 7;  //days
+	public static $CHECKOUT_EXPIRES_THRESHOLD = 2; //hours
 
 	/**
 	 * Buy Order code length
@@ -265,12 +265,12 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 			//use carbon library to handle time
 			$now = new \Carbon\Carbon();
 			//substract time
-			$now->subDays(static::$CHECKOUT_EXPIRES_THRESHOLD);
+			$now->subHours(static::$CHECKOUT_EXPIRES_THRESHOLD);
 			//s($now->toDateTimeString());exit;
 
 			//get expired objects
-			$conditions = "state = ?1 AND local_time < ?2";
-			$binding    = [1 => "pending", 2 => $now->toDateTimeString()];
+			$conditions = "state = 'pending' AND local_time < ?1";
+			$binding    = [1 => $now->toDateTimeString()];
 			//query
 			$objects = self::find([$conditions, "bind" => $binding]);
 
