@@ -26,7 +26,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 	 * @static
 	 * @var integer
 	 */
-	public static $CHECKOUT_EXPIRES_THRESHOLD = 10;  //minutes
+	public static $CHECKOUT_EXPIRES_THRESHOLD = 7;  //days
 
 	/**
 	 * Buy Order code length
@@ -265,7 +265,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 			//use carbon library to handle time
 			$now = new \Carbon\Carbon();
 			//substract time
-			$now->subMinutes(static::$CHECKOUT_EXPIRES_THRESHOLD);
+			$now->subDays(static::$CHECKOUT_EXPIRES_THRESHOLD);
 			//s($now->toDateTimeString());exit;
 
 			//get expired objects
@@ -287,7 +287,8 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 			return $count;
 		}
 		catch (Exception $e) {
-			//throw new Exception("BaseUserCheckout::deleteExpired -> error: ".$e->getMessage());
+
+			$this->logger->error("BaseUserCheckout::deleteExpired -> failed, error:".$e->getMessage());
 			return 0;
 		}
 	}

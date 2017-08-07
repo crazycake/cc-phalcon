@@ -17,20 +17,9 @@ use CrazyCake\Phalcon\App;
 trait CheckoutJobs
 {
 	/**
-	 * Initializer
+	 * Users Checkouts cleaner (for expired checkout)
 	 */
-	protected function initCheckoutJobs()
-	{
-		if (MODULE_NAME != "cli")
-			return;
-
-		$this->colorize("userCheckoutCleaner: Cleans expired user checkouts", "WARNING");
-	}
-
-	/**
-	 * CLI - Users Checkouts cleaner (for expired checkout)
-	 */
-	public function userCheckoutCleanerAction()
+	public function userCheckoutCleanExpired()
 	{
 		$user_checkout_class = App::getClass("user_checkout");
 
