@@ -57,7 +57,7 @@ trait CheckoutCurrency
 
 		//fallback
 		if (empty($value))
-			throw new Exception("Invalid chilean currency value stored in Redis. Run CLI to store value");
+			throw new Exception("Invalid chilean currency value stored in Redis.");
 
 		//apply conversion
 		return number_format((float)($amount / $value), 2, '.', '');
@@ -105,6 +105,8 @@ trait CheckoutCurrency
 		catch (Exception $e) {
 
 			$this->logger->error("CheckoutJob::storeChileanPesoToDollarConversion -> failed retriving API data. Err: ".$e->getMessage());
+
+			return null;
 		}
 	}
 
