@@ -39,9 +39,9 @@ trait CheckoutCurrency
 	protected function newRedisClient()
 	{
 		return new Redis([
-			"scheme" 	 => "tcp",
-			"host"   	 => getenv("REDIS_HOST") ?: "redis",
-			"port"   	 => 6379,
+			"scheme"     => "tcp",
+			"host"       => getenv("REDIS_HOST") ?: "redis",
+			"port"       => 6379,
 			"persistent" => false
 		]);
 	}
