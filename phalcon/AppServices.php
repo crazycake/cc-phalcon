@@ -55,9 +55,10 @@ class AppServices
 	{
 		// get a new Micro DI
 		$di = new \Phalcon\DI\FactoryDefault\CLI();
-		$this->_setCommonServices($di);
+		$this->_setMainServices($di);
 		$this->_setDatabaseServices($di);
 		$this->_setTranslationService($di);
+
 		return $di;
 	}
 
@@ -68,21 +69,23 @@ class AppServices
 	{
 		// get a new Micro DI
 		$di = new \Phalcon\DI\FactoryDefault();
-		$this->_setCommonServices($di);
+		$this->_setMainServices($di);
 		$this->_setDatabaseServices($di);
 		$this->_setTranslationService($di);
+		$this->_setSessionService($di);
+		$this->_setViewService($di);
 
 		if(MODULE_NAME != "api")
-			$this->_setWebappServices($di);
+			$this->_setBrowserServices($di);
 
 		return $di;
 	}
 
 	/**
-	 * Set Common Services
+	 * Set Main services
 	 * @param object $di - The DI object
 	 */
-	private function _setCommonServices(&$di)
+	private function _setMainServices(&$di)
 	{
 		// set the config
 		$di->setShared("config", $this->config);
@@ -131,7 +134,7 @@ class AppServices
 			return $security;
 		});
 
-		// phalcon Crypt service
+		// phalcon crypt service
 		$di->setShared("crypt", function() use ($conf) {
 
 			$crypt = new \Phalcon\Crypt();
@@ -139,7 +142,7 @@ class AppServices
 			return $crypt;
 		});
 
-		// extended encryption, Cryptify adapter (cryptography helper)
+		// extended encryption, cryptify adapter (cryptography helper)
 		if (class_exists("\CrazyCake\Helpers\Cryptify")) {
 
 			$di->setShared("cryptify", function() use ($conf) {
@@ -241,29 +244,17 @@ class AppServices
 	}
 
 	/**
-	 * Set Web Services
+	 * Set session service
 	 * @param object $di - The DI object
 	 */
-	private function _setWebappServices(&$di)
+	private function _setSessionService(&$di)
 	{
-		// events manager
-		$di->setShared("dispatcher", function() {
-
-			$eventsManager = new \Phalcon\Events\Manager;
-			//Handle exceptions and not-found exceptions using ExceptionsPlugin
-			$eventsManager->attach("dispatch:beforeException", new ExceptionsPlugin);
-
-			$dispatcher = new \Phalcon\Mvc\Dispatcher;
-			$dispatcher->setEventsManager($eventsManager);
-			return $dispatcher;
-		});
-
 		$conf = $this->config;
 
-		// session Adapter
+		// session adapter
 		$di->setShared("session", function() use ($conf) {
 
-			$expiration = 3600*6; //6 hours
+			$expiration = 3600*($conf->sessionExpiration ?? 8); //hours
 
 			//default session
 			if(empty($conf->redisSession)) {
@@ -295,9 +286,16 @@ class AppServices
 
 			return $session;
 		});
+	}
 
+	/**
+	 * Set View services
+	 * @param object $di - The DI object
+	 */
+	private function _setViewService(&$di)
+	{
 		// setting up the view component
-		$di_view_engines = [
+		$view_engines = [
 			".volt" => function($view, $di_instance) {
 				// instance a new volt engine
 				$volt = new \Phalcon\Mvc\View\Engine\Volt($view, $di_instance);
@@ -333,29 +331,53 @@ class AppServices
 			".phtml" => "Phalcon\Mvc\View\Engine\Php",
 		];
 
-		// set view service
-		$di->setShared("view", function() use (&$di_view_engines) {
-
-			$view = new \Phalcon\Mvc\View();
-			//set directory views
-			$view->setViewsDir(PROJECT_PATH."ui/volt/");
-			//register volt view engine
-			$view->registerEngines($di_view_engines);
-
-			return $view;
-		});
-
-		// simple view service
-		$di->setShared("simpleView", function() use (&$di_view_engines) {
+		// simple view service (used for mailing templates)
+		$di->setShared("simpleView", function() use (&$view_engines) {
 
 			//simpleView
 			$view = new \Phalcon\Mvc\View\Simple();
 			//set directory views
 			$view->setViewsDir(PROJECT_PATH."ui/volt/");
 			//register volt view engine
-			$view->registerEngines($di_view_engines);
+			$view->registerEngines($view_engines);
 
 			return $view;
+		});
+
+		// skip api for view service
+		if(MODULE_NAME == "api")
+			return;
+
+		// set view service
+		$di->setShared("view", function() use (&$view_engines) {
+
+			$view = new \Phalcon\Mvc\View();
+			//set directory views
+			$view->setViewsDir(PROJECT_PATH."ui/volt/");
+			//register volt view engine
+			$view->registerEngines($view_engines);
+
+			return $view;
+		});
+	}
+
+	/**
+	 * Set Browser services
+	 * @param object $di - The DI object
+	 */
+	private function _setBrowserServices(&$di)
+	{
+		// dispatcher event manager
+		$di->setShared("dispatcher", function() {
+
+			$manager = new \Phalcon\Events\Manager;
+			//Handle exceptions and not-found exceptions using Exceptions Plugin
+			$manager->attach("dispatch:beforeException", new ExceptionsPlugin);
+
+			$dispatcher = new \Phalcon\Mvc\Dispatcher;
+			$dispatcher->setEventsManager($manager);
+
+			return $dispatcher;
 		});
 
 		// cookies
