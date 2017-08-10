@@ -45,6 +45,14 @@ abstract class WsCore extends BaseCore
 	}
 
 	/**
+	 * Unauthorize service (API KEY)
+	 */
+	public function unauthorize()
+	{
+		$this->jsonResponse(498);
+	}
+
+	/**
 	 * API key Validation
 	 */
 	public static function validateApiKey()
