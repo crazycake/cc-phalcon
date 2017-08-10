@@ -132,9 +132,9 @@ trait AccountSession
 		$session_data = [
 			"auth"         => true,
 			"id"           => $user->id,
-			"email"        => $user->email,
-			"first_name"   => $user->first_name,
-			"last_name"    => $user->last_name,
+			"email"        => $user->email ?? "",
+			"first_name"   => $user->first_name ?? "",
+			"last_name"    => $user->last_name ?? "",
 			"account_flag" => $user->account_flag,
 			"last_login"   => $last_login
 		];

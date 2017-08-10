@@ -270,7 +270,7 @@ class AppServices
 					"uniqueId" => MODULE_NAME,
 					"host"     => getenv("REDIS_HOST") ?: "redis",
 					"lifetime" => $expiration,
-					"prefix"   => "_SID_"
+					"prefix"   => "_".strtoupper($conf->namespace)."_"
 				]);
 			}
 
