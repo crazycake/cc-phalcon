@@ -49,7 +49,7 @@ trait AccountSession
 		$defaults = [
 			//entities
 			"user_entity" => "User",
-			"login_uri"   => "signIn",
+			"logged_in_uri" => "account",
 			//excluded user props to be saved in session
 			"user_session_filter_view" => ["id", "account_flag", "auth"]
 		];
@@ -156,7 +156,7 @@ trait AccountSession
 	 */
 	protected function onLoginDispatch($session_redirection = true, $payload = null)
 	{
-		$uri = $this->account_session_conf["login_uri"]; //default logged in uri
+		$uri = $this->account_session_conf["logged_in_uri"]; //default logged in uri
 
 		//check if redirection is set in session
 		if ($session_redirection && $this->session->has("auth_redirect")) {
@@ -344,7 +344,7 @@ trait AccountSession
 		if ($check_logged_in && !$this->isLoggedIn())
 			return;
 
-		$this->redirectTo($this->account_session_conf["login_uri"]);
+		$this->redirectTo($this->account_session_conf["logged_in_uri"]);
 	}
 
 	/* --------------------------------------------------- § -------------------------------------------------------- */
