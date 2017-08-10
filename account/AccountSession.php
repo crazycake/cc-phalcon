@@ -37,12 +37,6 @@ trait AccountSession
 	 */
 	protected $user_session;
 
-	/**
-	 * Default logged-in uri
-	 * @var string
-	 */
-	public static $DEFAULT_URI_AFTER_LOGIN = "account";
-
 	/* --------------------------------------------------- § -------------------------------------------------------- */
 
 	/**
@@ -55,6 +49,7 @@ trait AccountSession
 		$defaults = [
 			//entities
 			"user_entity" => "User",
+			"login_uri"   => "signIn",
 			//excluded user props to be saved in session
 			"user_session_filter_view" => ["id", "account_flag", "auth"]
 		];
@@ -161,7 +156,7 @@ trait AccountSession
 	 */
 	protected function onLoginDispatch($session_redirection = true, $payload = null)
 	{
-		$uri = static::$DEFAULT_URI_AFTER_LOGIN; //default logged in uri
+		$uri = $this->account_session_conf["login_uri"]; //default logged in uri
 
 		//check if redirection is set in session
 		if ($session_redirection && $this->session->has("auth_redirect")) {
@@ -349,7 +344,7 @@ trait AccountSession
 		if ($check_logged_in && !$this->isLoggedIn())
 			return;
 
-		$this->redirectTo(static::$DEFAULT_URI_AFTER_LOGIN);
+		$this->redirectTo($this->account_session_conf["login_uri"]);
 	}
 
 	/* --------------------------------------------------- § -------------------------------------------------------- */
@@ -361,11 +356,12 @@ trait AccountSession
 	 */
 	private function _setUserDataForView()
 	{
+		if($this->request->isAjax() || !isset($this->view))
+			return;
+
 		$filter = $this->account_session_conf["user_session_filter_view"];
 
 		//Load view data only for non-ajax requests, set user data var for view
-		if (!$this->request->isAjax()) {
-			$this->view->setVar("user_session", $this->getUserSession($filter));
-		}
+		$this->view->setVar("user_session", $this->getUserSession($filter));
 	}
 }
