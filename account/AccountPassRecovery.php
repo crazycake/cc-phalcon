@@ -21,7 +21,7 @@ trait AccountPassRecovery
 	 * Trait config
 	 * @var array
 	 */
-	public $account_pass_recovery_conf;
+	public $account_pass_conf;
 
 	/* --------------------------------------------------- § -------------------------------------------------------- */
 
@@ -44,6 +44,7 @@ trait AccountPassRecovery
 		//defaults
 		$defaults = [
 			"pass_min_length" => 8,
+			"redirection_uri" => "signIn",
 			//entities
 			"user_entity" => "User"
 		];
@@ -54,7 +55,7 @@ trait AccountPassRecovery
 		$conf["user_token_entity"] = App::getClass($conf["user_entity"])."Token";
 		$conf["user_entity"]       = App::getClass($conf["user_entity"]);
 
-		$this->account_pass_recovery_conf = $conf;
+		$this->account_pass_conf = $conf;
 	}
 
 	/* --------------------------------------------------- § -------------------------------------------------------- */
@@ -65,7 +66,7 @@ trait AccountPassRecovery
 	public function recoveryAction()
 	{
 		//view vars
-		$this->view->setVar("html_title", $this->account_pass_recovery_conf["trans"]["TITLE_RECOVERY"]);
+		$this->view->setVar("html_title", $this->account_pass_conf["trans"]["TITLE_RECOVERY"]);
 		$this->view->setVar("js_recaptcha", true); //load reCaptcha
 
 		//load javascript modules
@@ -83,11 +84,11 @@ trait AccountPassRecovery
 		//get decrypted data
 		try {
 			//handle the encrypted data with parent controller
-			$tokens_class = $this->account_pass_recovery_conf["user_token_entity"];
+			$tokens_class = $this->account_pass_conf["user_token_entity"];
 			$tokens_class::handleEncryptedValidation($encrypted_data);
 
 			//view vars
-			$this->view->setVar("html_title", $this->account_pass_recovery_conf["trans"]["TITLE_CREATE_PASS"]);
+			$this->view->setVar("html_title", $this->account_pass_conf["trans"]["TITLE_CREATE_PASS"]);
 			$this->view->setVar("edata", $encrypted_data); //pass to view the encrypted data
 
 			//load javascript modules
@@ -118,25 +119,25 @@ trait AccountPassRecovery
 		//check valid reCaptcha
 		if (empty($data["g-recaptcha-response"]) || !$recaptcha->isValid($data["g-recaptcha-response"])) {
 			//show error message
-			return $this->jsonResponse(200, $this->account_pass_recovery_conf["trans"]["RECAPTCHA_FAILED"], "alert");
+			return $this->jsonResponse(200, $this->account_pass_conf["trans"]["RECAPTCHA_FAILED"], "alert");
 		}
 
 		//check if user exists is a active account
-		$user_class = $this->account_pass_recovery_conf["user_entity"];
+		$user_class = $this->account_pass_conf["user_entity"];
 		$user       = $user_class::getUserByEmail($data["email"], "enabled");
 
 		//if user not exists, send message
 		if (!$user)
-			$this->jsonResponse(200, $this->account_pass_recovery_conf["trans"]["ACCOUNT_NOT_FOUND"], "alert");
+			$this->jsonResponse(200, $this->account_pass_conf["trans"]["ACCOUNT_NOT_FOUND"], "alert");
 
 		//send email message with password recovery steps
 		$this->sendMailMessage("passwordRecovery", $user->id);
 
 		//set a flash message to show on account controller
-		$this->flash->success(str_replace("{email}", $data["email"], $this->account_pass_recovery_conf["trans"]["PASS_MAIL_SENT"]));
+		$this->flash->success(str_replace("{email}", $data["email"], $this->account_pass_conf["trans"]["PASS_MAIL_SENT"]));
 
 		//send JSON response
-		$this->jsonResponse(200, ["redirect" => "signIn"]);
+		$this->jsonResponse(200, ["redirect" => $this->account_pass_conf["redirection_uri"]]);
 	}
 
 	/**
@@ -155,8 +156,8 @@ trait AccountPassRecovery
 
 		try {
 			//get model classes
-			$user_class   = $this->account_pass_recovery_conf["user_entity"];
-			$tokens_class = $this->account_pass_recovery_conf["user_token_entity"];
+			$user_class   = $this->account_pass_conf["user_entity"];
+			$tokens_class = $this->account_pass_conf["user_token_entity"];
 
 			$edata = $tokens_class::handleEncryptedValidation($data["edata"]);
 			list($user_id, $token_type, $token) = $edata;
@@ -168,8 +169,8 @@ trait AccountPassRecovery
 				throw new Exception("got an invalid user (id:" . $user_id . ") when validating encrypted data.");
 
 			//pass length
-			if (strlen($data["pass"]) < $this->account_pass_recovery_conf["pass_min_length"])
-				throw new Exception($this->account_pass_recovery_conf["trans"]["PASS_TOO_SHORT"]);
+			if (strlen($data["pass"]) < $this->account_pass_conf["pass_min_length"])
+				throw new Exception($this->account_pass_conf["trans"]["PASS_TOO_SHORT"]);
 
 			//save new account flag state
 			$user->update(["pass" => $this->security->hash($data["pass"])]);
@@ -180,7 +181,7 @@ trait AccountPassRecovery
 			$token->delete();
 
 			//set a flash message to show on account controller
-			$this->flash->success($this->account_pass_recovery_conf["trans"]["NEW_PASS_SAVED"]);
+			$this->flash->success($this->account_pass_conf["trans"]["NEW_PASS_SAVED"]);
 
 			//abstract parent controller
 			$this->onLogin($user->id);
@@ -191,6 +192,6 @@ trait AccountPassRecovery
 		}
 
 		//send JSON response
-		$this->jsonResponse(200, ["redirect" => "signIn"]);
+		$this->jsonResponse(200, ["redirect" => $this->account_pass_conf["redirection_uri"]]);
 	}
 }

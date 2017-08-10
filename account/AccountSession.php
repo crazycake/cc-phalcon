@@ -253,7 +253,7 @@ trait AccountSession
 	 * Event - Destroy user session data and redirect to home
 	 * @param string $uri - The URI to redirect
 	 */
-	protected function onLogout($uri = "signIn")
+	protected function onLogout($uri = "")
 	{
 		//unset all user session data
 		$this->session->remove("user");

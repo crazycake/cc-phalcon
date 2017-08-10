@@ -37,7 +37,7 @@ trait AccountAuth
 	 * Session Destructor with Autoredirection (logout)
 	 * @param string $uri - The post redirection URI
 	 */
-	abstract public function onLogout($uri = "signIn");
+	abstract public function onLogout($uri = "");
 
 	/**
 	 * trait config
