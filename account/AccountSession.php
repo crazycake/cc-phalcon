@@ -64,7 +64,7 @@ trait AccountSession
 		//set session var
 		$this->user_session = $this->getUserSession();
 		//set user data for view, filter is passed to exclude some properties
-		$this->_setUserDataForView();
+		$this->_passUserSessionToView($this->user_session);
 	}
 
 	/* --------------------------------------------------- § -------------------------------------------------------- */
@@ -201,26 +201,14 @@ trait AccountSession
 
 	/**
 	 * Get logged in user session data
-	 * @param array $filter - Filters sensitive data
 	 * @return array - The session array
 	 */
-	protected function getUserSession($filter = [])
+	protected function getUserSession()
 	{
 		if (!$this->isLoggedIn())
 			return false;
 
-		//get user session
-		$user_session = $this->session->get("user");
-
-		//filter unwanted props
-		if (!empty($filter)) {
-
-			foreach ($filter as $key)
-				unset($user_session[$key]);
-		}
-
-		//return session data
-		return $user_session;
+		return $this->session->get("user");
 	}
 
 	/**
@@ -350,18 +338,25 @@ trait AccountSession
 	/* --------------------------------------------------- § -------------------------------------------------------- */
 
 	/**
-	 * Set user data object for view
+	 * Pass user session to view
 	 * @access private
 	 * @param array $filter - A string array of properties to filter
 	 */
-	private function _setUserDataForView()
+	private function _passUserSessionToView($user_session = [])
 	{
 		if($this->request->isAjax() || !$this->di->has("view"))
 			return;
 
+		//filter some sensitive props?
 		$filter = $this->account_session_conf["user_session_filter_view"];
 
+		if (!empty($filter)) {
+
+			foreach ($filter as $key)
+				unset($user_session[$key]);
+		}
+
 		//Load view data only for non-ajax requests, set user data var for view
-		$this->view->setVar("user_session", $this->getUserSession($filter));
+		$this->view->setVar("user_session", $user_session);
 	}
 }
