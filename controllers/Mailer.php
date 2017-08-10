@@ -64,10 +64,6 @@ trait Mailer
 		$conf["user_entity"]       = App::getClass($conf["user_entity"]);
 
 		$this->mailer_conf = $conf;
-
-		//create dir if not exists
-		if(!is_dir(self::$MAILER_CACHE_PATH))
-			mkdir(self::$MAILER_CACHE_PATH, 0755);
 	}
 
 	/* --------------------------------------------------- § -------------------------------------------------------- */
@@ -342,6 +338,10 @@ trait Mailer
 	{
 		if(!isset($message) || !is_array($attachments) || empty($attachments))
 			return;
+
+		//create dir if not exists
+		if(!is_dir(self::$MAILER_CACHE_PATH))
+			mkdir(self::$MAILER_CACHE_PATH, 0755);
 
 		foreach ($attachments as $attachment) {
 
