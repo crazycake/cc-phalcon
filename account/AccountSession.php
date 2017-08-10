@@ -150,7 +150,7 @@ trait AccountSession
 
 	/**
 	 * Handles response on logged in event, check for pending redirection. Default uri is 'account'.
-	 * @param string $uri - The URI to redirect after loggedIn
+	 * @param string $uri - The URI to redirect after loggedIn, if false skips auth_redirection.
 	 * @param array $payload - Sends a payload response instead of redirection (optional)
 	 */
 	protected function onLoginDispatch($uri = "account", $payload = null)
@@ -168,7 +168,7 @@ trait AccountSession
 
 		//check for ajax request
 		if ($this->request->isAjax() || MODULE_NAME == "api") {
-			$this->jsonResponse(200, empty($payload) ? ["redirect" => $uri] : $payload);
+			$this->jsonResponse(200, !empty($payload) ? $payload : ["redirect" => $uri]);
 		}
 		else {
 			$this->redirectTo($uri);
