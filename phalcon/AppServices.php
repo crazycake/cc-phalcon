@@ -274,7 +274,7 @@ class AppServices
 				]);
 			}
 
-			// set session name (cookie)
+			// set session name (domain & cookie)
 			$session->setName($conf->namespace);
 			// start session
 			if (!$session->isStarted()) {
