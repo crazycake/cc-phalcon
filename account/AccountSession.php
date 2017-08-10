@@ -120,7 +120,7 @@ trait AccountSession
 	 * Set user Session as logged in
 	 * @param int $user_id - The user ID
 	 */
-	protected function onLogin($user_id = 0)
+	protected function onLogin($user_id)
 	{
 		//get user data from DB
 		$user_class = $this->account_session_conf["user_entity"];
