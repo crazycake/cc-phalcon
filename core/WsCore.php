@@ -20,10 +20,9 @@ abstract class WsCore extends BaseCore
 {
 	/**
 	 * Header API Key name
-	 * Phalcon HTTP header keys replace "_" to "-"
 	 * @var string
 	 */
-	const HEADER_API_KEY = "X_API_KEY";
+	const HEADER_API_KEY = "API-KEY";
 
 	/**
 	 * Webservice response cache path
