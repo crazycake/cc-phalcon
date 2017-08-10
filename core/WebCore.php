@@ -60,6 +60,10 @@ abstract class WebCore extends BaseCore implements WebSecurity
 
 		//set CSRF
 		$this->_setCSRF();
+
+		//for session initializer
+		if(method_exists($this, "onBeforeInitialize"))
+			$this->onBeforeInitialize();
 	}
 
 	/**
