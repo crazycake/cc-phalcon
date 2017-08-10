@@ -38,20 +38,27 @@ abstract class WsCore extends BaseCore
 	abstract protected function welcome();
 
 	/**
-	 * Before Execute Route event
-	 */
-	public function beforeExecuteRoute()
-	{
-		// API Key Validation
-		$this->_validateApiKey();
-	}
-
-	/**
 	 * Not found service catcher
 	 */
 	public function serviceNotFound()
 	{
 		$this->jsonResponse(404);
+	}
+
+	/**
+	 * API key Validation
+	 */
+	public static function validateApiKey()
+	{
+		$di      = \Phalcon\DI::getDefault();
+		$config  = $di->getShared("config");
+		$request = $di->getShared("request");
+
+		if (empty($config->key))
+			return true;
+
+		//check if keys are equal
+		return $config->key === $request->getHeader(self::HEADER_API_KEY);
 	}
 
 	/* --------------------------------------------------- § -------------------------------------------------------- */
@@ -164,23 +171,5 @@ abstract class WsCore extends BaseCore
 			if (is_file($filename))
 				unlink($filename);
 		}
-	}
-
-	/* --------------------------------------------------- § -------------------------------------------------------- */
-
-	/**
-	 * API key Validation
-	 */
-	private function _validateApiKey()
-	{
-		if (empty($this->config->key))
-			return;
-
-		//get API key from request headers
-		$header_api_key = $this->request->getHeader(self::HEADER_API_KEY);
-
-		//check if keys are equal
-		if ($this->config->key !== $header_api_key)
-			$this->jsonResponse(498);
 	}
 }
