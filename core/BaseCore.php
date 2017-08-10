@@ -173,7 +173,6 @@ abstract class BaseCore extends Controller
 	 * Also Check if get/post data is valid, if validation fails send an HTTP code, onSuccess returns a data array.
 	 * Required field may have a ```@``` prefix to establish that is just an optional field to be sanitized.
 	 * Types: ```string, email, int, float, alphanum, striptags, trim, lower, upper.```
-	 * Example: ```{ $data, array( "@name" => "string"), POST }```
 	 * @link   http://docs.phalconphp.com/en/latest/reference/filter.html#sanitizing-data
 	 * @param array $req_fields - Required fields
 	 * @param string $method - HTTP method: [GET, POST, MIXED], defaults to GET.
