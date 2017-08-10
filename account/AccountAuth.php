@@ -28,10 +28,10 @@ trait AccountAuth
 
 	/**
 	 * Disptach event on logged in
-	 * @param string $uri - target uri
+	 * @param boolean $session_redirection - enables session redirection
 	 * @param array $payload - Optional data
 	 */
-	abstract public function onLoginDispatch($uri = "account", $payload = null);
+	abstract public function onLoginDispatch($session_redirection = true, $payload = null);
 
 	/**
 	 * Session Destructor with Autoredirection (logout)
@@ -237,7 +237,7 @@ trait AccountAuth
 		$this->onLogin($user->id);
 
 		//session controller, dispatch response
-		$this->onLoginDispatch("account", $payload);
+		$this->onLoginDispatch(false, $payload);
 	}
 
 	/**
@@ -294,7 +294,7 @@ trait AccountAuth
 		//send activation account email
 		$this->sendMailMessage("accountActivation", $user->id);
 		//force redirection
-		$this->onLoginDispatch(false);
+		$this->onLoginDispatch();
 	}
 
 	/**

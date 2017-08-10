@@ -37,6 +37,12 @@ trait AccountSession
 	 */
 	protected $user_session;
 
+	/**
+	 * Default logged-in uri
+	 * @var string
+	 */
+	public static $DEFAULT_URI_AFTER_LOGIN = "account";
+
 	/* --------------------------------------------------- § -------------------------------------------------------- */
 
 	/**
@@ -101,7 +107,7 @@ trait AccountSession
 			return true;
 
 		//for ajax request sends a forbidden warning
-		if ($this->request->isAjax()) {
+		if ($this->request->isAjax() || MODULE_NAME == "api") {
 			$this->jsonResponse(403);
 		}
 		else {
@@ -114,7 +120,7 @@ trait AccountSession
 	 * Set user Session as logged in
 	 * @param int $user_id - The user ID
 	 */
-	protected function onLogin($user_id)
+	protected function onLogin($user_id = 0)
 	{
 		//get user data from DB
 		$user_class = $this->account_session_conf["user_entity"];
@@ -150,21 +156,20 @@ trait AccountSession
 
 	/**
 	 * Handles response on logged in event, check for pending redirection. Default uri is 'account'.
-	 * @param string $uri - The URI to redirect after loggedIn, if false skips auth_redirection.
+	 * @param boolean $session_redirection - Flag to enable session redirection (if set).
 	 * @param array $payload - Sends a payload response instead of redirection (optional)
 	 */
-	protected function onLoginDispatch($uri = "account", $payload = null)
+	protected function onLoginDispatch($session_redirection = true, $payload = null)
 	{
+		$uri = static::$DEFAULT_URI_AFTER_LOGIN; //default logged in uri
+
 		//check if redirection is set in session
-		if ($uri && $this->session->has("auth_redirect")) {
+		if ($session_redirection && $this->session->has("auth_redirect")) {
 			//get redirection uri from session
 			$uri = $this->session->get("auth_redirect");
 			//remove from session
 			$this->session->remove("auth_redirect");
 		}
-
-		if($uri === false)
-			$uri = "account";
 
 		//check for ajax request
 		if ($this->request->isAjax() || MODULE_NAME == "api") {
@@ -214,6 +219,7 @@ trait AccountSession
 
 		//filter unwanted props
 		if (!empty($filter)) {
+
 			foreach ($filter as $key)
 				unset($user_session[$key]);
 		}
@@ -251,6 +257,9 @@ trait AccountSession
 	{
 		//unset all user session data
 		$this->session->remove("user");
+
+		if ($this->request->isAjax() || MODULE_NAME == "api")
+			$this->jsonResponse(200);
 
 		//redirect to given url, login as default
 		$this->redirectTo($uri);
@@ -340,7 +349,7 @@ trait AccountSession
 		if ($check_logged_in && !$this->isLoggedIn())
 			return;
 
-		$this->redirectTo("account");
+		$this->redirectTo(static::$DEFAULT_URI_AFTER_LOGIN);
 	}
 
 	/* --------------------------------------------------- § -------------------------------------------------------- */
