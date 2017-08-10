@@ -115,7 +115,7 @@ trait Responser
 		}
 
 		//if a view service is set, disable rendering
-		if (isset($this->view))
+		if ($this->di->has("view"))
 			$this->view->disable(); //disable view output
 
 		//outputs JSON response
@@ -128,16 +128,14 @@ trait Responser
 	 * @param string $mime_type - The mime type
 	 * @return string - The response
 	 */
-	protected function sendFileToBuffer($data = null, $mime_type = 'application/json')
+	protected function sendFileToBuffer($data = null, $mime_type = "application/json")
 	{
 		//append struct as string if data type is JSON
-		if ($mime_type == 'application/json')
+		if ($mime_type == "application/json")
 			$data = str_replace("@payload", $data, self::$JSON_RESPONSE_STRUCT);
 
-		if (isset($this->view)) {
-			$this->view->disable();
-			//return false;
-		}
+		if ($this->di->has("view"))
+			$this->view->disable(); //disable view output
 
 		$this->response->setStatusCode(200, "OK");
 		$this->response->setContentType($mime_type);
@@ -158,7 +156,7 @@ trait Responser
 	protected function outputJsonResponse($response = []) {
 
 		//if a view service is set, disable rendering
-		if (isset($this->view))
+		if ($this->di->has("view"))
 			$this->view->disable(); //disable view output
 
 		//output the response
@@ -180,7 +178,7 @@ trait Responser
 			$text = json_encode($text, JSON_UNESCAPED_SLASHES);
 
 		//if a view service is set, disable rendering
-		if (isset($this->view))
+		if ($this->di->has("view"))
 			$this->view->disable(); //disable view output
 
 		//output the response

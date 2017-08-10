@@ -39,6 +39,7 @@ trait AccountManager
 	public function afterExecuteRoute()
 	{
 		parent::afterExecuteRoute();
+
 		//for auth required pages disable robots
 		$this->view->setVar("html_disallow_robots", true);
 	}

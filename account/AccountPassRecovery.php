@@ -66,8 +66,10 @@ trait AccountPassRecovery
 	public function recoveryAction()
 	{
 		//view vars
-		$this->view->setVar("html_title", $this->account_pass_conf["trans"]["TITLE_RECOVERY"]);
-		$this->view->setVar("js_recaptcha", true); //load reCaptcha
+		$this->view->setVars([
+			"html_title"   => $this->account_pass_conf["trans"]["TITLE_RECOVERY"],
+			"js_recaptcha" => true //load reCaptcha?
+		]);
 
 		//load javascript modules
 		$this->loadJsModules([
@@ -88,8 +90,10 @@ trait AccountPassRecovery
 			$tokens_class::handleEncryptedValidation($encrypted_data);
 
 			//view vars
-			$this->view->setVar("html_title", $this->account_pass_conf["trans"]["TITLE_CREATE_PASS"]);
-			$this->view->setVar("edata", $encrypted_data); //pass to view the encrypted data
+			$this->view->setVars([
+				"html_title" => $this->account_pass_conf["trans"]["TITLE_CREATE_PASS"],
+				"edata"      => $encrypted_data //pass to view the encrypted data
+			]);
 
 			//load javascript modules
 			$this->loadJsModules([

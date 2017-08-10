@@ -356,7 +356,7 @@ trait AccountSession
 	 */
 	private function _setUserDataForView()
 	{
-		if($this->request->isAjax() || !isset($this->view))
+		if($this->request->isAjax() || !$this->di->has("view"))
 			return;
 
 		$filter = $this->account_session_conf["user_session_filter_view"];
