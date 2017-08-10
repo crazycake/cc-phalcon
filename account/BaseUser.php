@@ -127,11 +127,11 @@ abstract class BaseUser extends \CrazyCake\Models\Base
 	 */
 	public static function getUserByEmail($email, $account_flag = null)
 	{
-		$bind = [1 => $email];
 		$conditions = "email = ?1"; //default condition
+		$bind       = [1 => $email];
 
 		//filter by account flag?
-		if (!is_null($account_flag) && in_array($account_flag, self::$ACCOUNT_FLAGS)) {
+		if ($account_flag && in_array($account_flag, self::$ACCOUNT_FLAGS)) {
 
 			$bind[2] = $account_flag;
 			$conditions .= " AND account_flag = ?2";
