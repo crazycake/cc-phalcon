@@ -138,6 +138,7 @@ trait Responser
 			$this->view->disable(); //disable view output
 
 		$this->response->setStatusCode(200, "OK");
+		$this->response->setHeader("Access-Control-Allow-Origin", "*");
 		$this->response->setContentType($mime_type);
 
 		//content must be set after content type
@@ -161,6 +162,7 @@ trait Responser
 
 		//output the response
 		$this->response->setStatusCode(200, "OK");
+		$this->response->setHeader("Access-Control-Allow-Origin", "*");
 		$this->response->setContentType("application/json"); //set JSON as Content-Type header
 		$this->response->setContent(json_encode($response, JSON_UNESCAPED_SLASHES));
 		$this->response->send();
@@ -183,6 +185,7 @@ trait Responser
 
 		//output the response
 		$this->response->setStatusCode(200, "OK");
+		$this->response->setHeader("Access-Control-Allow-Origin", "*");
 		$this->response->setContentType('text/html');
 		$this->response->setContent($text);
 		$this->response->send();
