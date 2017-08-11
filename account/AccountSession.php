@@ -145,6 +145,9 @@ trait AccountSession
 
 		//call abstract method
 		$session_data = array_merge($session_data, $this->onSessionSave($user));
+		//clean empty values
+		$session_data = array_filter($session_data, function($o) { return !empty($o); });
+
 		//save in session
 		$this->session->set("user", $session_data);
 	}
