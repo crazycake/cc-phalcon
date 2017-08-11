@@ -1,5 +1,6 @@
 #! /bin/bash
 # GetText helper script. Finds translations & compile po files.
+# Requires GetText installed.
 # author: Nicolas Pulido <nicolas.pulido@crazycake.cl>
 
 # interrupt if error raises
