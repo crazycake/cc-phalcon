@@ -23,7 +23,6 @@ scriptHelp() {
 	echo -e "\033[95m watch <option>: Runs watcher daemon. Options: -m [mailing] \033[0m"
 	echo -e "\033[95m build: build JS & CSS bundles and compile translations. \033[0m"
 	echo -e "\033[95m core: installs/updates core package (requires cc-phalcon project symlink). \033[0m"
-	echo -e "\033[95m composer: execute composer install in container. \033[0m"
 	echo -e "\033[95m trans: Update translations po file. \033[0m"
 	echo -e "\033[95m php: Executes App PHP CLI.\033[0m"
 	echo -e "\033[95m clean: Cleans cache & logs (storage folder).\033[0m"
@@ -60,12 +59,6 @@ build)
 core)
 
 	bash $TOOLS_PATH"core.bash"
-	;;
-
-composer)
-
-	# composer
-	docker exec -it $APP_NAME bash -c 'composer install --no-dev && composer dump-autoload --optimize --no-dev'
 	;;
 
 trans)
