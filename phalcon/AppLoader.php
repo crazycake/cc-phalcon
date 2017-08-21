@@ -64,7 +64,7 @@ trait AppLoader
 		date_default_timezone_set(getenv("APP_TZ") ?: "America/Santiago");
 
 		//get env-vars
-		$env = getenv("APP_ENV") ?: "staging"; //default to 'staging'
+		$env = getenv("APP_ENV") ?: "production"; //default to 'production'
 
 		//display errors?
 		ini_set("display_errors", (int)($env != "production"));
