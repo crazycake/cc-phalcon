@@ -122,7 +122,7 @@ trait Localize
 
 		$data = [
 			"ALERTS" => [
-				"INTERNAL_ERROR" => "Ha ocurrido algo inesperado, porfavor inténtalo más tarde.",
+				"INTERNAL_ERROR" => "Ha ocurrido algo inesperado, por favor inténtalo más tarde.",
 				"SERVER_TIMEOUT" => "Sin conexión. Revisa tu conexión a Internet e inténtalo de nuevo.",
 				"CSRF"           => "Esta página ha estado inactiva por mucho tiempo, haz ".
 									"<a href=\"javascript:location.reload();\">click aquí</a> para refrescarla.",
