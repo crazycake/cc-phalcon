@@ -7,7 +7,6 @@
 namespace CrazyCake\Controllers;
 
 //phalcon
-use Phalcon\Paginator\Adapter\Model as Paginator;
 use Phalcon\Mvc\Model\Resultset\Simple as Resultset;
 use Phalcon\Exception;
 //imports
