@@ -157,6 +157,7 @@ trait AccountManager
 			if (!empty($updating_data)) {
 
 				$user->update($updating_data);
+
 				//update session data
 				$this->updateUserSession($updating_data);
 				//update full name

@@ -93,7 +93,7 @@ abstract class BaseUser extends \CrazyCake\Models\Base
 	/**
 	 * Validations
 	 */
-	public function validation()
+	public function validationOnCreate()
 	{
 		$validator = new Validation();
 
