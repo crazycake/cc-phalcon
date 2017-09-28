@@ -219,16 +219,13 @@ trait CheckoutManager
 			$object_class = $props[1];
 			$object_id    = $props[2];
 
-			$prefixed_object_class = "\\$object_class";
+			$pf_object_class = "\\$object_class"; //prefixed class
 
 			//create object if class dont exists
-			if(!class_exists($prefixed_object_class))
-				$object = new \stdClass();
-			else
-				$object = $prefixed_object_class::getById($object_id);
+			$object = class_exists($pf_object_class) ? $pf_object_class::getById($object_id) : new \stdClass();
 			//var_dump($object_class, $object_id, $object->toArray());exit;
 
-			//check that object is in stock (also validates object exists)
+			//check that object is in stock
 			if (isset($object->quantity) && !is_null($object->quantity) &&
 				!$user_checkout_object_class::validateStock($object_class, $object_id, $q)) {
 
@@ -284,12 +281,9 @@ trait CheckoutManager
 		if(empty($data["currency"]))
 			$data["currency"] = $this->checkout_manager_conf["default_currency"];
 
-		//check user_id
-		$user_id = empty($this->user_session["id"]) ? null : $this->user_session["id"];
-
 		//create checkout object
 		$checkout = (object)[
-			"user_id"  => $user_id,
+			"user_id"  => $this->user_session["id"] ?? null,
 			"client"   => json_encode($this->client, JSON_UNESCAPED_SLASHES),
 			"gateway"  => $data["gateway"],
 			"currency" => $data["currency"]

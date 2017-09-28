@@ -79,9 +79,9 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
 			if (!$props) continue;
 
 			//extend custom flexible properties
-			$checkout_object->name     = isset($props->name) ? $props->name : $props->_ext["name"];
-			$checkout_object->price    = $props->price;
-			$checkout_object->currency = $props->currency;
+			$checkout_object->name     = $props->name ?? "";
+			$checkout_object->price    = $props->price ?? 0;
+			$checkout_object->currency = $props->currency ?? "CLP";
 
 			//UI props
 			$checkout_object->price_formatted = Forms::formatPrice($props->price, $props->currency);
@@ -89,7 +89,7 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
 			array_push($result, $checkout_object);
 		}
 
-	   return $result;
+		return $result;
 	}
 
 	/**
@@ -117,19 +117,20 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
 
 		//get pending checkouts items quantity
 		$objects = $user_checkout_class::getByPhql(
-		   //phql
-		   "SELECT SUM(quantity) AS q
+			//phql
+			"SELECT SUM(quantity) AS q
 			FROM $class_model AS objects
 			INNER JOIN $user_checkout_class AS checkout ON checkout.buy_order = objects.buy_order
 			WHERE objects.object_id = :object_id:
-				AND objects.object_class = :object_class:
-				AND checkout.state = 'pending'
+			AND objects.object_class = :object_class:
+			AND checkout.state = 'pending'
 			",
-		   //bindings
-		   ["object_id" => $object_id, "object_class" => $object_class]
-	   );
-	   //get sum quantity
-	   $checkout_q = $objects->getFirst()->q;
+			//bindings
+			["object_id" => $object_id, "object_class" => $object_class]
+		);
+
+		//get sum quantity
+		$checkout_q = $objects->getFirst()->q;
 
 		if (is_null($checkout_q))
 			$checkout_q = 0;
@@ -141,7 +142,7 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
 		if ($total <= 0)
 			return false;
 
-	   return ($total >= $q) ? true : false;
+		return ($total >= $q) ? true : false;
 	}
 
 	/**
