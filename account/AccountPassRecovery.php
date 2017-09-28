@@ -43,10 +43,11 @@ trait AccountPassRecovery
 	{
 		//defaults
 		$defaults = [
-			"pass_min_length" => 8,
-			"redirection_uri" => "signIn",
+			"pass_min_length"     => 8,
+			"redirection_uri"     => "signIn",
+			"recaptchaJsCallback" => "recaptchaOnLoad",
 			//entities
-			"user_entity" => "User"
+			"user_entity"         => "User"
 		];
 
 		//merge confs
@@ -68,7 +69,7 @@ trait AccountPassRecovery
 		//view vars
 		$this->view->setVars([
 			"html_title"   => $this->account_pass_conf["trans"]["TITLE_RECOVERY"],
-			"js_recaptcha" => true //load reCaptcha?
+			"js_recaptcha" => $this->account_pass_conf["recaptchaJsCallback"]
 		]);
 
 		//load javascript modules

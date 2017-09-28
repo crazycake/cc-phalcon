@@ -119,8 +119,7 @@
 
 		{# reCaptcha plugin #}
 		{% if js_recaptcha is defined and js_recaptcha %}
-			<script>function recaptchaOnLoad(){ core.modules.forms.recaptchaOnLoad(); }</script>
-			<script src="//www.google.com/recaptcha/api.js?onload=recaptchaOnLoad&amp;render=explicit&amp;hl={{ client.lang }}" async defer></script>
+			<script src="//www.google.com/recaptcha/api.js?onload={{ js_recaptcha }}&amp;render=explicit&amp;hl={{ client.lang }}" async defer></script>
 		{% endif %}
 
 		{# javascript disabled fallback #}
