@@ -79,7 +79,7 @@ trait CheckoutManager
 			if (!$checkout_orm) {
 
 				$this->logger->error("CheckoutManager::buyOrder -> failed saving checkout: ".json_encode($checkout, JSON_UNESCAPED_SLASHES));
-				throw new Exception($this->checkout_manager_conf["trans"]["ERROR_UNEXPECTED"]);
+				$this->jsonResponse(500);
 			}
 
 			//set buy order
@@ -224,14 +224,6 @@ trait CheckoutManager
 			//create object if class dont exists
 			$object = class_exists($pf_object_class) ? $pf_object_class::getById($object_id) : new \stdClass();
 			//var_dump($object_class, $object_id, $object->toArray());exit;
-
-			//check that object is in stock
-			if (isset($object->quantity) && !is_null($object->quantity) &&
-				!$user_checkout_object_class::validateStock($object_class, $object_id, $q)) {
-
-				$this->logger->error("CheckoutManager::parseCheckoutObjects -> No stock for object $object_class, ID: $object_id, Q: $q.");
-				throw new Exception(str_replace("{name}", $object->name, $this->checkout_manager_conf["trans"]["ERROR_NO_STOCK"]));
-			}
 
 			//append object class
 			if (!in_array($object_class, $classes))
