@@ -96,22 +96,17 @@ trait Mailer
 		$user_class = $this->mailer_conf["user_entity"];
 		$user       = $user_class::getById($user_id);
 
-		if (!$user)
-			$this->jsonResponse(403);
-
 		//get user token
 		$tokens_class = $this->mailer_conf["user_token_entity"];
 		$token        = $tokens_class::newTokenIfExpired($user_id, "activation");
 
-		if (!$token)
+		if (!$user || !$token)
 			$this->jsonResponse(500);
 
-		//create flux uri
-		$uri = "auth/activation/".$token->encrypted;
 		//set properties
 		$this->mailer_conf["user"]  = $user;
 		$this->mailer_conf["email"] = $user->email;
-		$this->mailer_conf["url"]   = $this->baseUrl($uri);
+		$this->mailer_conf["url"]   = $this->baseUrl("auth/activation/".$token->encrypted);
 
 		//set message properties
 		$subject = $this->mailer_conf["trans"]["SUBJECT_ACTIVATION"];
