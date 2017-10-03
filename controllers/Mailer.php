@@ -19,21 +19,13 @@ use CrazyCake\Phalcon\App;
 trait Mailer
 {
 	/**
-	 * Before render listener (debug)
-	 * @return void
-	 */
-	abstract public function onRenderPreview();
-
-	/**
  	 * Mailing CSS file
-	 * @static
 	 * @var string
 	 */
 	protected static $MAILER_CSS_FILE = PROJECT_PATH."ui/volt/mailing/css/app.css";
 
 	/**
 	 * Temporal path
-	 * @static
 	 * @var string
 	 */
 	protected static $MAILER_CACHE_PATH = STORAGE_PATH."cache/mailer/";
@@ -81,8 +73,7 @@ trait Mailer
 		], "POST");
 
 		$data["subject"] = "Contacto ".$this->config->name;
-		// contact (preference) or support
-		$data["to"] = $this->config->emails->contact ?? $this->config->emails->support;
+		$data["to"]      = $this->config->emails->contact ?? $this->config->emails->support;
 
 		// call listener?
 		if (method_exists($this, "onBeforeSendContact"))
@@ -118,13 +109,13 @@ trait Mailer
 		//create flux uri
 		$uri = "auth/activation/".$token->encrypted;
 		//set properties
-		$this->mailer_conf["data_user"]  = $user;
-		$this->mailer_conf["data_email"] = $user->email;
-		$this->mailer_conf["data_url"]   = $this->baseUrl($uri);
+		$this->mailer_conf["user"]  = $user;
+		$this->mailer_conf["email"] = $user->email;
+		$this->mailer_conf["url"]   = $this->baseUrl($uri);
 
 		//set message properties
 		$subject = $this->mailer_conf["trans"]["SUBJECT_ACTIVATION"];
-		$to      = $this->mailer_conf["data_email"];
+		$to      = $this->mailer_conf["email"];
 
 		//sends async email
 		$this->sendMessage("activation", $subject, $to);
@@ -134,35 +125,28 @@ trait Mailer
 	 * Async Handler - Sends mail for password recovery
 	 * Generates & sends a validation token
 	 * @param int $user_id - The user ID
-	 * @return json response
 	 */
 	public function passwordRecovery($user_id = 0)
 	{
 		$user_class = $this->mailer_conf["user_entity"];
 		$user       = $user_class::getById($user_id);
 
-		//if invalid user, send permission denied response
-		if (!$user)
-			$this->jsonResponse(403);
-
 		//get user token
 		$tokens_class = $this->mailer_conf["user_token_entity"];
 		$token        = $tokens_class::newTokenIfExpired($user_id, "pass");
 
-		if (!$token)
+		if (!$user || !$token)
 			$this->jsonResponse(500);
 
-		//create flux uri
-		$uri = "password/new/".$token->encrypted;
 		//set rendered view
-		$this->mailer_conf["data_user"]  = $user;
-		$this->mailer_conf["data_email"] = $user->email;
-		$this->mailer_conf["data_url"]   = $this->baseUrl($uri);
-		$this->mailer_conf["data_token_expiration"] = $tokens_class::$TOKEN_EXPIRES_THRESHOLD["pass"];
+		$this->mailer_conf["user"]       = $user;
+		$this->mailer_conf["email"]      = $user->email;
+		$this->mailer_conf["url"]        = $this->baseUrl("password/new/".$token->encrypted);
+		$this->mailer_conf["expiration"] = $tokens_class::$TOKEN_EXPIRES_THRESHOLD["pass"];
 
 		//set message properties
 		$subject = $this->mailer_conf["trans"]["SUBJECT_PASSWORD"];
-		$to      = $this->mailer_conf["data_email"];
+		$to      = $this->mailer_conf["email"];
 		//sends async email
 		$this->sendMessage("passwordRecovery", $subject, $to);
 	}
@@ -228,16 +212,12 @@ trait Mailer
 	/**
 	 * Async Handler - Sends contact email (always used)
 	 * @param array $data - Must contains keys 'name', 'email' & 'message'
-	 * @return json response
 	 */
 	public function sendAdminMessage($data = [])
 	{
 		//set message properties
 		$subject = $data["subject"] ?? $this->config->name;
 		$to      = $data["to"] ?? $this->config->emails->support;
-
-		//add prefix "data" to each element in array
-		$this->mailer_conf = array_combine( array_map(function($k) { return "data_".$k; }, array_keys($data)), $data);
 
 		//sends async email
 		$this->sendMessage("contact", $subject, $to);
@@ -291,39 +271,6 @@ trait Mailer
 		//s($result);
 
 		return $result;
-	}
-
-	/**
-	 * View for debuging - Renders a mail message or a template
-	 * @param string $view - The input view
-	 */
-	public function previewAction($view = null)
-	{
-		if (APP_ENV == "production" || empty($view))
-			$this->redirectToNotFound();
-
-		$user_class = $this->mailer_conf["user_entity"];
-
-		$user = $user_class::findFirst();
-
-		//set rendered view vars
-		$this->mailer_conf["data_url"]  = $this->baseUrl('fake/path');
-		$this->mailer_conf["data_user"] = $user;
-
-		//for contact template
-		$this->mailer_conf["data_name"]    = $user ? $user->first_name." ".$user->last_name : "";
-		$this->mailer_conf["data_email"]   = $user ? $user->email : "caker@crazycake.tech";
-		$this->mailer_conf["data_message"] = "This is an example message";
-
-		//call listener
-		$this->onRenderPreview();
-
-		//get HTML
-		$html_raw = $this->inlineHtml($view);
-		//render view
-		$this->view->disable();
-
-		echo $html_raw;
 	}
 
 	/* --------------------------------------------------- § -------------------------------------------------------- */
