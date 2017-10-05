@@ -45,7 +45,6 @@ trait CheckoutManager
 	public function initCheckoutManager($conf = [])
 	{
 		$defaults = [
-			"async"            => true,
 			"default_currency" => "CLP"
 		];
 
@@ -99,62 +98,32 @@ trait CheckoutManager
 	}
 
 	/**
-	 * Method: Succesful checkout, Called when checkout was made succesfuly
+	 * Succesful checkout, call when checkout is completed succesfuly
 	 * @param string $buy_order - The buy order
-	 * @param boolean $async - Socket async request method (don't wait response)
 	 * @return object Checkout
 	 */
-	public function successCheckout($buy_order = "", $async = true)
-	{
-		$this->logger->debug("CheckoutManager::successCheckout -> $buy_order, async: ".(int)$async);
-		//triggers async request
-		$this->coreRequest([
-			"uri"     => "checkout/successCheckoutTask/",
-			"method"  => "GET",
-			"socket"  => $async,
-			"encrypt" => true,
-			"payload" => ["buy_order" => $buy_order]
-		]);
-	}
-
-	/**
-	 * Action: GET Async checkout
-	 * Data is encrypted for security
-	 * Logic tasks:
-	 * 1) Update status del checkout
-	 * 2) Call listener
-	 * @param string $encrypted_data - The encrypted hash string
-	 */
-	public function successCheckoutTaskAction($encrypted_data = "")
+	public function successCheckout($buy_order = "")
 	{
 		try {
-			$this->logger->debug("CheckoutManager::successCheckoutTask -> GET Data ".json_encode($encrypted_data));
 
-			//decrypt data
-			$data = $this->cryptify->decryptData($encrypted_data, true);
-
-			if (empty($data) || !isset($data->buy_order))
-				throw new Exception("Invalid decrypted data: ".json_encode($data));
-
-			$this->logger->debug("CheckoutManager::successCheckoutTask -> processing buy order: ".$data->buy_order);
+			$this->logger->debug("CheckoutManager::successCheckout -> processing bo: ". $buy_order);
 
 			//set classes
 			$user_checkout_class        = App::getClass("user_checkout");
 			$user_checkout_object_class = App::getClass("user_checkout_object");
 
 			//get checkout & user
-			$checkout = $user_checkout_class::findFirstByBuyOrder($data->buy_order);
+			$checkout = $user_checkout_class::findFirstByBuyOrder($buy_order);
 
 			if (!$checkout)
-				throw new Exception("Invalid input checkout: ".json_encode($data));
+				throw new Exception("checkout not found! bo: ".$buy_order);
 
-			//already process
+			//skip already process for dev
 			if(APP_ENV != "local" && $checkout->state == "success")
-				throw new Exception("Checkout already processed, buy order: ".$data->buy_order);
+				throw new Exception("Checkout already processed, buy order: ".$buy_order);
 
 			//1) update status of checkout
 			$checkout->update(["state" => "success"]);
-			//$this->logger->debug("CheckoutManager::successCheckoutTask -> checkout update message ".$checkout->messages(true));
 
 			//reduce object
 			$checkout = $checkout->reduce();
@@ -162,18 +131,18 @@ trait CheckoutManager
 			$checkout->objects = $user_checkout_object_class::getCollection($checkout->buy_order);
 
 			//2) Call listener
-			$this->onSuccessCheckout($checkout, $this->checkout_manager_conf["async"]);
+			$this->onSuccessCheckout($checkout);
 		}
 		catch (Exception $e) {
 
-			$this->logger->debug("CheckoutManager::successCheckoutTask -> Exception: ".$e->getMessage());
+			$this->logger->debug("CheckoutManager::successCheckout -> Exception: ".$e->getMessage());
 
 			//get mailer controller
 			$mailer = App::getClass("mailer_controller");
 
 			//send alert system mail message
 			(new $mailer())->adminException($e, [
-				"edata" => !empty($data->buy_order) ? "buy_order: $data->buy_order" : "n/a"
+				"edata" => !empty($buy_order) ? "buy_order: $buy_order" : "n/a"
 			]);
 		}
 		finally {
