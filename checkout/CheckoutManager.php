@@ -127,7 +127,7 @@ trait CheckoutManager
 			//reduce object
 			$checkout = $checkout->reduce();
 			//set objects
-			$checkout->objects = $user_checkout_object_class::getCollection($checkout->buy_order);
+			$checkout->objects = $user_checkout_object_class::getCollection($buy_order);
 
 			//2) Call listener
 			$this->onSuccessCheckout($checkout);
