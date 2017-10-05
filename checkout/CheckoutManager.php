@@ -2,7 +2,6 @@
 /**
  * Checkout Trait
  * This class has common actions for checkout controllers
- * Requires a Frontend or Backend Module with CoreController and SessionTrait
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
