@@ -108,7 +108,7 @@ trait Localize
 		$data = array_merge($data, self::coreTranslations());
 
 		//return controller translations
-		return $data[strtoupper($controller)];
+		return $data[strtoupper($controller)] ?? [];
 	}
 
 	/**
