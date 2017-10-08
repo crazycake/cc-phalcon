@@ -74,6 +74,8 @@ trait Mailer
 
 		$data["subject"] = "Contacto ".$this->config->name;
 		$data["to"]      = $this->config->emails->contact ?? $this->config->emails->support;
+		//contents
+		$this->mailer_conf = array_merge($this->mailer_conf, $data);
 
 		// call listener?
 		if (method_exists($this, "onBeforeSendContact"))
@@ -245,13 +247,15 @@ trait Mailer
 		$message  = new \SendGrid\Email();
 
 		$support_email = $this->config->emails->support ?? $this->config->emails->sender;
+		$html = $this->inlineHtml($template);
+		//~sd($html);
 
 		//set message properties
 		$message->setFrom($this->config->emails->sender)
 				->setFromName($this->config->name)
 				->setReplyTo($support_email)
 				->setSubject($subject)
-				->setHtml($this->inlineHtml($template)); //NOTE: inline html!
+				->setHtml($html); //NOTE: inline html!
 
 		//add recipients
 		foreach ($recipients as $email)
