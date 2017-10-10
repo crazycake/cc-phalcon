@@ -157,21 +157,14 @@ trait CheckoutManager
 	 */
 	public function parseCheckoutObjects(&$checkout = null, $data = [])
 	{
-		if (empty($checkout) || empty($data))
-			return;
-
-		if (empty($checkout->objects));
-			$checkout->objects = [];
-
-		if (empty($checkout->amount))
-			$checkout->amount = 0;
-
 		//get module class name
 		$user_checkout_object_class = App::getClass("user_checkout_object");
 
-		//computed vars
-		$classes = empty($checkout->objects_classes) ? [] : $checkout->objects_classes;
-		$total_q = empty($checkout->total_q) ? 0 : $checkout->total_q;
+		$checkout->objects = [];
+		$checkout->amount  = 0;
+
+		$classes = [];
+		$total_q = 0;
 
 		//loop throught checkout items
 		foreach ($data as $key => $q) {
@@ -191,7 +184,7 @@ trait CheckoutManager
 
 			//create object if class dont exists
 			$object = class_exists($pf_object_class) ? $pf_object_class::getById($object_id) : new \stdClass();
-			//var_dump($object_class, $object_id, $object->toArray());exit;
+			//~sd($object_class, $object_id, $object->toArray());
 
 			//append object class
 			if (!in_array($object_class, $classes))
@@ -215,14 +208,10 @@ trait CheckoutManager
 			$checkout->objects[] = $checkout_object;
 		}
 
-		//set objectsClassName
+		//set objects class name
 		$checkout->objects_classes = $classes;
 		//update total Q
 		$checkout->total_q = $total_q;
-
-		//payload?
-		if(!empty($data["payload"]))
-			$checkout->payload = $data["payload"];
 	}
 	/* --------------------------------------------------- § -------------------------------------------------------- */
 
@@ -235,18 +224,17 @@ trait CheckoutManager
 		//get form data
 		$data = $this->handleRequest([
 			"gateway"   => "string",
-			"@currency" => "string"
+			"@currency" => "string",
+			"@payload"  => "string",
 		], "POST", false);
-
-		if(empty($data["currency"]))
-			$data["currency"] = $this->checkout_manager_conf["default_currency"];
 
 		//create checkout object
 		$checkout = (object)[
 			"user_id"  => $this->user_session["id"] ?? null,
-			"client"   => json_encode($this->client, JSON_UNESCAPED_SLASHES),
 			"gateway"  => $data["gateway"],
-			"currency" => $data["currency"]
+			"currency" => $data["currency"] ?? $this->checkout_manager_conf["default_currency"],
+			"payload"  => $data["payload"] ?? null,
+			"client"   => json_encode($this->client, JSON_UNESCAPED_SLASHES)
 		];
 
 		//parse checkout objects
