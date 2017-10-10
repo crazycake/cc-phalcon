@@ -177,9 +177,8 @@ trait CheckoutManager
 				continue;
 
 			//get object props
-			$object_class = $props[1];
-			$object_id    = $props[2];
-
+			$object_class    = $props[1];
+			$object_id       = $props[2];
 			$pf_object_class = "\\$object_class"; //prefixed class
 
 			//create object if class dont exists
@@ -223,9 +222,7 @@ trait CheckoutManager
 	{
 		//get form data
 		$data = $this->handleRequest([
-			"gateway"   => "string",
-			"@currency" => "string",
-			"@payload"  => "string",
+			"gateway" => "string"
 		], "POST", false);
 
 		//create checkout object
