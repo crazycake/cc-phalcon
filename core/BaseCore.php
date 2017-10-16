@@ -64,7 +64,7 @@ abstract class BaseCore extends Controller
 	 */
 	protected function host($port = 80)
 	{
-		$host 		= $this->request->getHttpHost();
+		$host       = $this->request->getHttpHost();
 		$host_parts = explode(":", $host);
 
 		//check if host already has binded a port
