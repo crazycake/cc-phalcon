@@ -14,7 +14,6 @@ APP_NAME=${PWD##*/}
 # app paths
 TOOLS_PATH=$PROJECT_PATH"/.tools/"
 STORAGE_PATH=$PROJECT_PATH"/storage/"
-COMPOSER_PATH=$PROJECT_PATH"/vendor/"
 
 # help output
 scriptHelp() {
@@ -76,11 +75,7 @@ php)
 
 clean)
 
-	# clean storage
-	if [ -d $STORAGE_PATH ]; then
-
-		find $STORAGE_PATH"cache" $STORAGE_PATH"logs" -type f \( ! -iname ".*" \) -print0 | xargs -0 sudo rm
-	fi
+	docker exec -it $APP_NAME bash -c 'find storage/cache storage/logs -type f \( ! -iname ".*" \) -print0 | xargs -0 rm'
 
 	echo -e "\033[92mDone! \033[0m"
 	;;
