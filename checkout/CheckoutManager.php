@@ -103,10 +103,9 @@ trait CheckoutManager
 	 */
 	public function successCheckout($buy_order = "")
 	{
+		$this->logger->debug("CheckoutManager::successCheckout -> processing bo: ". $buy_order);
+
 		try {
-
-			$this->logger->debug("CheckoutManager::successCheckout -> processing bo: ". $buy_order);
-
 			//set classes
 			$user_checkout_class        = App::getClass("user_checkout");
 			$user_checkout_object_class = App::getClass("user_checkout_object");
