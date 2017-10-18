@@ -67,9 +67,9 @@ trait Mailer
 	public function sendContactAction()
 	{
 		$data = $this->handleRequest([
-			"email"   => "email", //user-sender
-			"name"    => "string",
-			"message" => "string"
+			"email"    => "email",
+			"name"     => "string",
+			"@message" => "string"
 		], "POST");
 
 		$data["subject"] = "Contacto ".$this->config->name;
