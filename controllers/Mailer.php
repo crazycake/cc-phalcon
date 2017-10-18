@@ -66,6 +66,8 @@ trait Mailer
 	 */
 	public function sendContactAction()
 	{
+		$this->onlyAjax();
+
 		$data = $this->handleRequest([
 			"email"    => "email",
 			"name"     => "string",
