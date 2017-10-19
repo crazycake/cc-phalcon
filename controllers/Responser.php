@@ -30,7 +30,7 @@ trait Responser
 	 */
 	public $RCODES = [
 		//success
-		"200" => "ok",
+		"200" => "OK",
 		//client errors
 		"400" => "Bad Request, invalid GET or POST data",
 		"401" => "Unauthorized",
@@ -42,7 +42,6 @@ trait Responser
 		"498" => "Invalid Token",
 		//server
 		"500" => "Internal Server Error",
-		"510" => "Unknown error",
 		//db related
 		"800" => "Empty result data",
 		//resources related
@@ -62,9 +61,9 @@ trait Responser
 	 */
 	protected function jsonResponse($code = 200, $payload = null, $type = "", $namespace = "")
 	{
-		//if code is not identified, mark as unknown error
+		//if code is not identified, mark as not acceptable
 		if (!isset($this->RCODES[$code]))
-			$this->RCODES[$code] = $this->RCODES[510];
+			$this->RCODES[$code] = $this->RCODES[406];
 
 		//set response
 		$response = [

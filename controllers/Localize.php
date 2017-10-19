@@ -125,11 +125,11 @@ trait Localize
 			"ALERTS" => [
 				"INTERNAL_ERROR" => "Ha ocurrido algo inesperado, por favor inténtalo más tarde.",
 				"SERVER_TIMEOUT" => "Sin conexión. Revisa tu conexión a Internet e inténtalo de nuevo.",
-				"CSRF"           => "Esta página ha estado inactiva por mucho tiempo, haz ".
-									"<a href=\"javascript:location.reload();\">click aquí</a> para refrescarla.",
+				"CSRF"           => "Esta página ha estado inactiva por mucho tiempo, refréscala haciendo ".
+									"<a href=\"javascript:location.reload();\">click aquí</a>.",
 				"NOT_FOUND"        => "Este enlace está roto, por favor inténtalo más tarde.",
 				"BAD_REQUEST"      => "Lo sentimos, no hemos logrado procesar tu petición. Intenta refrescando esta página.",
-				"ACCESS_FORBIDDEN" => "Tu sesión ha caducado, por favor <a href=\"./signIn\">ingresa nuevamente aquí</a>.",
+				"ACCESS_FORBIDDEN" => "Tu sesión ha caducado, debes iniciar sesión nuevamente.",
 				"LOADING"          => "cargando ...",
 				"REDIRECTING"      => "redireccionado ...",
 			],
