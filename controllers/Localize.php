@@ -47,7 +47,7 @@ trait Localize
 			],
 			"AUTH" => [
 				"AUTH_FAILED"        => "El correo ó contraseña no son válidos.",
-				"ACCOUNT_PENDING"    => "Te hemos enviado un correo de activación. Haz click <a href=\"#\">aquí</a> si no has recibido este correo.",
+				"ACCOUNT_PENDING"    => "Te hemos enviado un correo de activación. Haz click <a href=\"#0\">aquí</a> si no has recibido este correo.",
 				"ACCOUNT_DISABLED"   => "Esta cuenta se encuentra desactivada, por favor comunícate con nuestro equipo.",
 				"ACCOUNT_NOT_FOUND"  => "Esta cuenta no se encuentra registrada.",
 				"INVALID_NAMES"      => "Tu nombre no parece ser válido.",

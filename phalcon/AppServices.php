@@ -152,7 +152,9 @@ class AppServices
 
 		// kint options
 		if (class_exists("\Kint")) {
-			\Kint::$theme = "solarized";
+
+			\Kint::$theme     = "solarized";
+			\Kint::$maxLevels = 0;
 		}
 	}
 
