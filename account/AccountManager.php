@@ -174,7 +174,7 @@ trait AccountManager
 			]);
 		}
 		catch (Exception $e) {
-			$this->jsonResponse(406, $e->getMessage(), "warning");
+			$this->jsonResponse(406, $e->getMessage());
 		}
 	}
 }

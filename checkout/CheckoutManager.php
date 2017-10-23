@@ -93,7 +93,7 @@ trait CheckoutManager
 		catch (\Exception $e) { $exception = $e->getMessage(); }
 
 		//sends an error message
-		$this->jsonResponse(200, $exception, "alert");
+		$this->jsonResponse(406, $exception);
 	}
 
 	/**

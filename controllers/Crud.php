@@ -228,7 +228,7 @@ trait Crud
 			$this->jsonResponse(200);
 		}
 		catch (\Exception $e) {
-			$this->jsonResponse(200, $e->getMessage(), "alert");
+			$this->jsonResponse(406, $e->getMessage());
 		}
 	}
 
@@ -300,7 +300,7 @@ trait Crud
 			$this->jsonResponse(200);
 		}
 		catch (\Exception $e) {
-			$this->jsonResponse(200, $e->getMessage(), "alert");
+			$this->jsonResponse(406, $e->getMessage());
 		}
 	}
 

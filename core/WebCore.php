@@ -161,7 +161,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 
 		//special case for ajax
 		if ($this->request->isAjax())
-			$this->jsonResponse(200, $message, "error");
+			$this->jsonResponse(500, $message);
 
 		//set title
 		if (!is_null($title))

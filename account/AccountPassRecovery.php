@@ -122,7 +122,7 @@ trait AccountPassRecovery
 
 		//check valid reCaptcha
 		if (empty($data["g-recaptcha-response"]) || !$recaptcha->isValid($data["g-recaptcha-response"]))
-			return $this->jsonResponse(406, $this->account_pass_conf["trans"]["RECAPTCHA_FAILED"], "alert");
+			return $this->jsonResponse(406, $this->account_pass_conf["trans"]["RECAPTCHA_FAILED"]);
 
 		//check if user exists is a active account
 		$user_class = $this->account_pass_conf["user_entity"];
@@ -130,7 +130,7 @@ trait AccountPassRecovery
 
 		//if user not exists, send message
 		if (!$user)
-			$this->jsonResponse(406, $this->account_pass_conf["trans"]["ACCOUNT_NOT_FOUND"], "alert");
+			$this->jsonResponse(406, $this->account_pass_conf["trans"]["ACCOUNT_NOT_FOUND"]);
 
 		//send email message with password recovery steps
 		$this->sendMailMessage("passwordRecovery", $user->id);

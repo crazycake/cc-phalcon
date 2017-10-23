@@ -199,7 +199,7 @@ trait AccountAuth
 
 		//check user & given hash with the one stored (wrong combination)
 		if (!$user || !$this->security->checkHash($data["pass"], $user->pass))
-			$this->jsonResponse(401, $this->account_auth_conf["trans"]["AUTH_FAILED"], "alert");
+			$this->jsonResponse(401, $this->account_auth_conf["trans"]["AUTH_FAILED"]);
 
 		//check user account flag
 		if ($user->account_flag != "enabled") {
@@ -210,7 +210,7 @@ trait AccountAuth
 					$this->account_auth_conf["trans"]["ACCOUNT_DISABLED"];
 
 			//for API handle alerts & warning as errors,
-			$this->jsonResponse(406, $msg, "warning"); //browser custom handler
+			$this->jsonResponse(406, $msg); //browser custom handler
 		}
 
 		//set payload
@@ -253,7 +253,7 @@ trait AccountAuth
 		if (strcspn($data["first_name"], $nums) != strlen($data["first_name"]) ||
 			strcspn($data["last_name"], $nums) != strlen($data["last_name"])) {
 
-			$this->jsonResponse(406, $this->account_auth_conf["trans"]["INVALID_NAMES"], "alert");
+			$this->jsonResponse(406, $this->account_auth_conf["trans"]["INVALID_NAMES"]);
 		}
 
 		//format to capitalized name
@@ -274,7 +274,7 @@ trait AccountAuth
 
 		//if user dont exists, show error message
 		if (!$user->save($data))
-			$this->jsonResponse(406, $user->messages(), "alert");
+			$this->jsonResponse(406, $user->messages());
 
 		//set a flash message to show on account controller
 		$this->flash->success(str_replace("{email}", $user->email, $this->account_auth_conf["trans"]["ACTIVATION_PENDING"]));
@@ -302,7 +302,7 @@ trait AccountAuth
 		//check valid reCaptcha
 		if (empty($data["g-recaptcha-response"]) || !$recaptcha->isValid($data["g-recaptcha-response"])) {
 			//show error message
-			return $this->jsonResponse(406, $this->account_auth_conf["trans"]["RECAPTCHA_FAILED"], "alert");
+			return $this->jsonResponse(406, $this->account_auth_conf["trans"]["RECAPTCHA_FAILED"]);
 		}
 
 		//get model classes
@@ -311,7 +311,7 @@ trait AccountAuth
 
 		//check if user exists is a pending account
 		if (!$user)
-			$this->jsonResponse(406, $this->account_auth_conf["trans"]["ACCOUNT_NOT_FOUND"], "alert");
+			$this->jsonResponse(406, $this->account_auth_conf["trans"]["ACCOUNT_NOT_FOUND"]);
 
 		//send email message with password recovery steps
 		$this->sendMailMessage("accountActivation", $user->id);
