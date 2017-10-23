@@ -46,7 +46,9 @@ trait Mailer
 	{
 		//defaults
 		$defaults = [
-			"user_entity" => "User"
+			"user_entity"    => "User",
+			"activation_uri" => "auth/activation/",
+			"password_uri"   => "password/new/"
 		];
 
 		//merge confs
@@ -110,7 +112,7 @@ trait Mailer
 		//set properties
 		$this->mailer_conf["user"]  = $user;
 		$this->mailer_conf["email"] = $user->email;
-		$this->mailer_conf["url"]   = $this->baseUrl("auth/activation/".$token->encrypted);
+		$this->mailer_conf["url"]   = $this->baseUrl($this->mailer_conf["activation_uri"].$token->encrypted);
 
 		//set message properties
 		$subject = $this->mailer_conf["trans"]["SUBJECT_ACTIVATION"];
@@ -140,7 +142,7 @@ trait Mailer
 		//set rendered view
 		$this->mailer_conf["user"]       = $user;
 		$this->mailer_conf["email"]      = $user->email;
-		$this->mailer_conf["url"]        = $this->baseUrl("password/new/".$token->encrypted);
+		$this->mailer_conf["url"]        = $this->baseUrl($this->mailer_conf["password_uri"].$token->encrypted);
 		$this->mailer_conf["expiration"] = $tokens_class::$TOKEN_EXPIRES_THRESHOLD["pass"];
 
 		//set message properties
