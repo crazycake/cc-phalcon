@@ -97,7 +97,6 @@ trait AccountManager
 
 		try {
 
-			//check if profile changed and save new data
 			$updating_data = [];
 
 			//check for password
@@ -175,7 +174,7 @@ trait AccountManager
 			]);
 		}
 		catch (Exception $e) {
-			$this->jsonResponse(200, $e->getMessage(), "warning");
+			$this->jsonResponse(406, $e->getMessage(), "warning");
 		}
 	}
 }

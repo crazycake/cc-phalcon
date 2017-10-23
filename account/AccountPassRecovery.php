@@ -43,11 +43,10 @@ trait AccountPassRecovery
 	{
 		//defaults
 		$defaults = [
-			"pass_min_length"     => 8,
-			"redirection_uri"     => "signIn",
-			"recaptchaJsCallback" => "recaptchaOnLoad",
-			//entities
-			"user_entity"         => "User"
+			"user_entity"           => "User",
+			"redirection_uri"       => "signIn",
+			"pass_min_length"       => 8,
+			"js_recaptcha_callback" => "recaptchaOnLoad"
 		];
 
 		//merge confs
@@ -69,7 +68,7 @@ trait AccountPassRecovery
 		//view vars
 		$this->view->setVars([
 			"html_title"   => $this->account_pass_conf["trans"]["TITLE_RECOVERY"],
-			"js_recaptcha" => $this->account_pass_conf["recaptchaJsCallback"]
+			"js_recaptcha" => $this->account_pass_conf["js_recaptcha_callback"]
 		]);
 
 		//load javascript modules
@@ -122,10 +121,8 @@ trait AccountPassRecovery
 		$recaptcha = new ReCaptcha($this->config->google->reCaptchaKey);
 
 		//check valid reCaptcha
-		if (empty($data["g-recaptcha-response"]) || !$recaptcha->isValid($data["g-recaptcha-response"])) {
-			//show error message
-			return $this->jsonResponse(200, $this->account_pass_conf["trans"]["RECAPTCHA_FAILED"], "alert");
-		}
+		if (empty($data["g-recaptcha-response"]) || !$recaptcha->isValid($data["g-recaptcha-response"]))
+			return $this->jsonResponse(406, $this->account_pass_conf["trans"]["RECAPTCHA_FAILED"], "alert");
 
 		//check if user exists is a active account
 		$user_class = $this->account_pass_conf["user_entity"];
@@ -133,7 +130,7 @@ trait AccountPassRecovery
 
 		//if user not exists, send message
 		if (!$user)
-			$this->jsonResponse(200, $this->account_pass_conf["trans"]["ACCOUNT_NOT_FOUND"], "alert");
+			$this->jsonResponse(406, $this->account_pass_conf["trans"]["ACCOUNT_NOT_FOUND"], "alert");
 
 		//send email message with password recovery steps
 		$this->sendMailMessage("passwordRecovery", $user->id);
