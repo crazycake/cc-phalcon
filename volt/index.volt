@@ -107,7 +107,7 @@
 			<script>{{ js_loader }}</script>
 		{% endif %}
 
-		{# GoogleAnalytics (Frontend only, async loading) #}
+		{# Google Analytics (async loading) #}
 		{% if config.google is defined and config.google.analyticsUA is defined %}
 			<script>
 				window.ga=function(){ga.q.push(arguments)};ga.q=[];ga.l=+new Date;
@@ -117,7 +117,7 @@
 			<script src="//www.google-analytics.com/analytics.js" async defer></script>
 		{% endif %}
 
-		{# reCaptcha plugin #}
+		{# recaptcha plugin #}
 		{% if js_recaptcha is defined and js_recaptcha %}
 			<script src="//www.google.com/recaptcha/api.js?onload={{ js_recaptcha }}&amp;render=explicit&amp;hl={{ client.lang }}" async defer></script>
 		{% endif %}
