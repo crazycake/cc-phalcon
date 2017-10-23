@@ -122,7 +122,7 @@ trait AccountSession
 		$user       = $user_class::getById($user_id);
 
 		if (!$user)
-			throw new Exception("User not found, cant set session auth");
+			throw new Exception("User not found, cant set session auth [$user_id]");
 
 		//update user state
 		$last_login = date("Y-m-d H:i:s");
