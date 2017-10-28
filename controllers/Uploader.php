@@ -236,9 +236,8 @@ trait Uploader
 			if(!empty($this->config->aws->s3)) {
 
 				$conf["s3"] = (array)$this->config->aws->s3;
-
 				// set bucket base uri
-				$conf["s3"]["bucketBaseUri"] = $this->config->aws->s3->bucketBaseUri.strtolower($uri);
+				$conf["s3"]["bucketBaseUri"] .= strtolower($uri);
 			}
 
 			//jobs
@@ -284,7 +283,6 @@ trait Uploader
 				//set filename
 				$conf["filename"] = $file;
 				// new resize job
-
 				$saved_files[$key][] = $this->newImageApiJob($job, $dst, $conf);
 			}
 		}
