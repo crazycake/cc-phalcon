@@ -180,7 +180,7 @@ trait Uploader
 		if(is_file($file_path))
 			unlink($file_path);
 
-		$this->jsonResponse(200);
+		$this->jsonResponse(200, ["file" => $file_path]);
 	}
 
 	/**
