@@ -134,7 +134,10 @@ trait Uploader
 
 			//check for rejected uploads
 			if ($new_file["message"]) {
+
 				array_push($messages, $new_file["message"]);
+				//remove temp file
+				unlink($file->getTempName());
 				continue;
 			}
 
