@@ -214,9 +214,11 @@ trait Uploader
 		$files = preg_grep('/^([^.])/', scandir($this->uploader_conf["path"]));
 
 		if(!$absolute_path)
-			return $files;
+			return array_values($files);
 
-		return array_map(function($f) { return $this->uploader_conf["path"].$f; }, $files);
+		$files = array_map(function($f) { return $this->uploader_conf["path"].$f; }, $files);
+
+		return array_values($files);
 	}
 
 	/**
@@ -243,7 +245,7 @@ trait Uploader
 				$conf["s3"]["bucketBaseUri"] .= strtolower($uri);
 			}
 
-			//jobs
+			//set job (img-api)
 			$job = !empty($conf["resize"]) ? "resize" : "s3push";
 
 			// loop through files
@@ -337,7 +339,7 @@ trait Uploader
 		if($result["status"] != "ok" || empty($result["payload"])) {
 
 			$this->logger->error("Uploader::newImageApiJob -> invalid/empty payload: ".json_encode($result, JSON_UNESCAPED_SLASHES));
-			return [];
+			return null;
 		}
 
 		return $result["payload"];
