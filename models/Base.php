@@ -132,17 +132,11 @@ class Base extends \Phalcon\Mvc\Model
 	 */
 	public static function getPropertyByQuery($sql = "SELECT 1", $prop = "id", $binds = [], $className = null)
 	{
-		if (is_null($binds))
-			$binds = [];
+		$result = self::getByQuery($sql, $binds, $className);
 
-		if (is_null($className))
-			$className = static::who();
+		$result = $result ? $result->getFirst() : null;
 
-		$object = new $className();
-		$result = new BaseResultset(null, $object, $object->getReadConnection()->query($sql, $binds));
-		$result = $result->getFirst();
-
-		return $result ? $result->{$prop} : null;
+		return $result->{$prop} ?? null;
 	}
 
 	/**
