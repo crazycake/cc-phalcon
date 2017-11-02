@@ -157,7 +157,7 @@ trait AccountSession
 	 * @param boolean $session_redirection - Flag to enable session redirection (if set).
 	 * @param array $payload - Sends a payload response instead of redirection (optional)
 	 */
-	protected function onLoginDispatch($session_redirection = true, $payload = null)
+	protected function setResponseOnLogin($session_redirection = true, $payload = null)
 	{
 		$uri = $this->account_session_conf["logged_in_uri"]; //default logged in uri
 

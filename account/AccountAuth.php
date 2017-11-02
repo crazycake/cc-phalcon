@@ -27,11 +27,11 @@ trait AccountAuth
 	abstract public function onLogin($user_id);
 
 	/**
-	 * Disptach event on logged in
+	 * Set response on logged in
 	 * @param boolean $session_redirection - enables session redirection
 	 * @param array $payload - Optional data
 	 */
-	abstract public function onLoginDispatch($session_redirection = true, $payload = null);
+	abstract public function setResponseOnLogin($session_redirection = true, $payload = null);
 
 	/**
 	 * Session Destructor with Autoredirection (logout)
@@ -75,51 +75,6 @@ trait AccountAuth
 	/* --------------------------------------------------- § -------------------------------------------------------- */
 
 	/**
-	 * View - Sign In (LogIn) action
-	 */
-	public function signInAction()
-	{
-		//if loggedIn redirect to account
-		$this->redirectToAccount(true);
-
-		//view vars
-		$this->view->setVars([
-			"html_title"   => $this->account_auth_conf["trans"]["TITLE_SIGN_IN"],
-			"js_recaptcha" => $this->account_auth_conf["js_recaptcha"] //load js reCaptcha?
-		]);
-
-		//call abstract method
-		if(method_exists($this, "beforeRenderSignInView"))
-			$this->beforeRenderSignInView();
-	}
-
-	/**
-	 * View - Sign Up (Register) action
-	 */
-	public function signUpAction()
-	{
-		//if loggedIn redirect to account
-		$this->redirectToAccount(true);
-
-		//view vars
-		$this->view->setVar("html_title", $this->account_auth_conf["trans"]["TITLE_SIGN_UP"]);
-
-		//check sign_up session data for auto completion field
-		$signup_session = $this->getSessionObjects("signup_session");
-
-		$this->view->setVar("signup_session", $signup_session);
-		$this->destroySessionObjects("signup_session");
-
-		//send birthday data for form
-		if (isset($this->account_auth_conf["required_fields"]["birthday"]))
-			$this->view->setVar("birthday_elements", Forms::getBirthdaySelectors());
-
-		//call abstract method
-		if(method_exists($this, "beforeRenderSignUpView"))
-			$this->beforeRenderSignUpView();
-	}
-
-	/**
 	 * Handler - Activation link handler, can dispatch to a view
 	 * @param string $encrypted_data - The encrypted data
 	 */
@@ -159,7 +114,7 @@ trait AccountAuth
 			//success login
 			$this->onLogin($user_id);
 			//session
-			$this->onLoginDispatch();
+			$this->setResponseOnLogin();
 		}
 		catch (Exception $e) {
 
@@ -224,7 +179,7 @@ trait AccountAuth
 		$this->onLogin($user->id);
 
 		//session controller, dispatch response
-		$this->onLoginDispatch(false, $payload);
+		$this->setResponseOnLogin(false, $payload);
 	}
 
 	/**
@@ -281,7 +236,7 @@ trait AccountAuth
 		//send activation account email
 		$this->sendMailMessage("accountActivation", $user->id);
 		//force redirection
-		$this->onLoginDispatch();
+		$this->setResponseOnLogin();
 	}
 
 	/**
