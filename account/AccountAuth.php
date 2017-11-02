@@ -285,45 +285,6 @@ trait AccountAuth
 	}
 
 	/**
-	 * Ajax [POST] - Resend activation mail message (fallback in case mail sending failed)
-	 */
-	public function resendActivationMailMessageAction()
-	{
-		$this->onlyAjax();
-
-		$data = $this->handleRequest([
-			"email"                 => "email",
-			"@g-recaptcha-response" => "string"
-		], "POST");
-
-		//google reCaptcha helper
-		$recaptcha = new ReCaptcha($this->config->google->reCaptchaKey);
-
-		//check valid reCaptcha
-		if (empty($data["g-recaptcha-response"]) || !$recaptcha->isValid($data["g-recaptcha-response"])) {
-			//show error message
-			return $this->jsonResponse(406, $this->account_auth_conf["trans"]["RECAPTCHA_FAILED"]);
-		}
-
-		//get model classes
-		$user_class = $this->account_auth_conf["user_entity"];
-		$user       = $user_class::getUserByEmail($data["email"], "pending");
-
-		//check if user exists is a pending account
-		if (!$user)
-			$this->jsonResponse(406, $this->account_auth_conf["trans"]["ACCOUNT_NOT_FOUND"]);
-
-		//send email message with password recovery steps
-		$this->sendMailMessage("accountActivation", $user->id);
-
-		//set payload
-		$payload = str_replace("{email}", $data["email"], $this->account_auth_conf["trans"]["ACTIVATION_PENDING"]);
-
-		//send JSON response
-		$this->jsonResponse(200, $payload);
-	}
-
-	/**
 	 * Access Token validation for API Auth
 	 * @param string $token - The input token
 	 * @return object - The token ORM object
