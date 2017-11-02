@@ -252,7 +252,7 @@ trait Crud
 
 			//get object class & get object by primary key
 			$object_class = $this->crud_conf["entity"];
-			$object 	  = $object_class::findFirst([$this->crud_conf["pk"]." = '".$data[$this->crud_conf["pk"]]."'"]);
+			$object       = $object_class::findFirst([$this->crud_conf["pk"]." = '".$data[$this->crud_conf["pk"]]."'"]);
 
 			//check object exists
 			if(!$object)
@@ -398,17 +398,17 @@ trait Crud
 
 		//create response object
 		$output = (object)[
-			"total" 	    => $total,
-			"per_page" 		=> $per_page,
+			"total"         => $total,
+			"per_page"      => $per_page,
 			"current_page"  => $current_page,
-			"last_page" 	=> $last,
-			"from" 			=> $from,
-			"to" 			=> $to,
+			"last_page"     => $last,
+			"from"          => $from,
+			"to"            => $to,
 			//urls
 			"next_page_url" => $url.$next,
 			"prev_page_url" => $url.$before,
 			//resultset
-			"data"			=> $resultset->jsonSerialize()
+			"data"          => $resultset->jsonSerialize()
 		];
 
 		if(APP_ENV != "production")
