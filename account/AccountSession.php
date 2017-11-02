@@ -153,7 +153,7 @@ trait AccountSession
 	}
 
 	/**
-	 * Handles response on logged in event, check for pending redirection. Default uri is 'account'.
+	 * Handles response on login event, check for pending redirection.
 	 * @param boolean $session_redirection - Flag to enable session redirection (if set).
 	 * @param array $payload - Sends a payload response instead of redirection (optional)
 	 */
