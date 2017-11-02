@@ -54,9 +54,6 @@ trait Localize
 				"RECAPTCHA_FAILED"   => "No hemos logrado verficar el reCaptcha, por favor inténtalo de nuevo.",
 				"ACTIVATION_SUCCESS" => "¡Tu cuenta ha sido activada!",
 				"ACTIVATION_PENDING" => "Te hemos enviado un correo a {email} para que actives tu cuenta.",
-				//text titles
-				"TITLE_SIGN_IN" => "Ingresa a ".$app_name,
-				"TITLE_SIGN_UP" => "Regístrate en ".$app_name
 			],
 			"MAILER" => [
 				"SUBJECT_ACTIVATION" => "Confirma tu cuenta",
