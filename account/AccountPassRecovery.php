@@ -82,8 +82,11 @@ trait AccountPassRecovery
 			$this->loadJsModules($this->account_pass_conf["js_modules"]);
 		}
 		catch (Exception $e) {
+
 			$this->logger->error("AccountPass::newAction -> Error in account activation (".$encrypted."). Err: ".$e->getMessage());
+
 			$this->dispatcher->forward(["controller" => "error", "action" => "expired"]);
+			$this->dispatcher->dispatch();
 		}
 	}
 
