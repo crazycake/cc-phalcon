@@ -46,6 +46,7 @@ trait AccountPassRecovery
 			"user_entity"           => "User",
 			"redirection_uri"       => "signIn",
 			"pass_min_length"       => 8,
+			"js_modules"            => ["passRecovery" => null],
 			"js_recaptcha_callback" => "recaptchaOnLoad"
 		];
 
@@ -61,29 +62,11 @@ trait AccountPassRecovery
 	/* --------------------------------------------------- § -------------------------------------------------------- */
 
 	/**
-	 * View - Password recovery Action (send instructions view)
-	 */
-	public function recoveryAction()
-	{
-		//view vars
-		$this->view->setVars([
-			"html_title"   => $this->account_pass_conf["trans"]["TITLE_RECOVERY"],
-			"js_recaptcha" => $this->account_pass_conf["js_recaptcha_callback"]
-		]);
-
-		//load javascript modules
-		$this->loadJsModules([
-			"passRecovery" => null
-		]);
-	}
-
-	/**
 	 * View - Set New password action (vista donde se crea una nueva contraseña)
 	 * @param string $encrypted_data - The encrypted data
 	 */
 	public function newAction($encrypted_data = null)
 	{
-		//get decrypted data
 		try {
 			//handle the encrypted data with parent controller
 			$tokens_class = $this->account_pass_conf["user_token_entity"];
@@ -91,14 +74,12 @@ trait AccountPassRecovery
 
 			//view vars
 			$this->view->setVars([
-				"html_title" => $this->account_pass_conf["trans"]["TITLE_CREATE_PASS"],
-				"edata"      => $encrypted_data //pass to view the encrypted data
+				"html_title" => $this->account_pass_conf["trans"]["CREATE_PASS"],
+				"edata"      => $encrypted_data //pass encrypted data to view
 			]);
 
-			//load javascript modules
-			$this->loadJsModules([
-				"passRecovery" => null
-			]);
+			//load js modules
+			$this->loadJsModules($this->account_pass_conf["js_modules"]);
 		}
 		catch (Exception $e) {
 			$this->logger->error("AccountPass::newAction -> Error in account activation, encrypted data (" . $encrypted_data . "). Err: " . $e->getMessage());
@@ -107,21 +88,15 @@ trait AccountPassRecovery
 	}
 
 	/**
-	 * Ajax - Send Recovery password email Message with further instructions
+	 * Send Recovery password email Message with further instructions
 	 */
-	public function sendRecoveryInstructionsAction()
+	public function sendRecoveryInstructions($email, $recaptcha = "")
 	{
-		//validate and filter request params data, second params are the required fields
-		$data = $this->handleRequest([
-			"email"                 => "email",
-			"@g-recaptcha-response" => "string",
-		], "POST");
-
 		//google reCaptcha helper
 		$recaptcha = new ReCaptcha($this->config->google->reCaptchaKey);
 
 		//check valid reCaptcha
-		if (empty($data["g-recaptcha-response"]) || !$recaptcha->isValid($data["g-recaptcha-response"]))
+		if (empty($email) || empty($recaptcha) || !$recaptcha->isValid($recaptcha))
 			return $this->jsonResponse(406, $this->account_pass_conf["trans"]["RECAPTCHA_FAILED"]);
 
 		//check if user exists is a active account
@@ -143,26 +118,19 @@ trait AccountPassRecovery
 	}
 
 	/**
-	 * Ajax - Saves a new password set by the user in the post-recovery password view
+	 * Saves a new password set by the user in the post-recovery password view
+	 * @param string $e_token - Encrypted token
+	 * @param string $pass - The input password
 	 */
-	public function saveNewPasswordAction()
+	public function saveNewPassword($e_token, $pass)
 	{
-		//validate and filter request params data, second params are the required fields
-		$data = $this->handleRequest([
-			"edata" => "string",
-			"pass"  => "string"
-		], "POST");
-
-		//validate encrypted data
-		$payload = false;
-
 		try {
 			//get model classes
 			$user_class   = $this->account_pass_conf["user_entity"];
 			$tokens_class = $this->account_pass_conf["user_token_entity"];
 
-			$edata = $tokens_class::handleEncryptedValidation($data["edata"]);
-			list($user_id, $token_type, $token) = $edata;
+			$e_token = $tokens_class::handleEncryptedValidation($data["edata"]);
+			list($user_id, $token_type, $token) = $e_token;
 
 			//get user
 			$user = $user_class::getById($user_id);
@@ -189,7 +157,7 @@ trait AccountPassRecovery
 			$this->onLogin($user->id);
 		}
 		catch (Exception $e) {
-			$this->logger->error("AccountPass::saveNewPasswordAction -> Error saving new password. Trace: ".$e->getMessage());
+			$this->logger->error("AccountPass::saveNewPassword -> Error saving new password. Trace: ".$e->getMessage());
 			return $this->jsonResponse($e->getMessage());
 		}
 

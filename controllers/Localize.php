@@ -42,7 +42,7 @@ trait Localize
 				"PASS_TOO_SHORT"     => "Debes ingresar una contraseña de al menos 8 caracteres.",
 				"PASS_DONT_MATCH"    => "Tu contraseña actual no es correcta.",
 				"NEW_PASS_EQUALS"    => "Tu nueva contraseña debe ser diferente a la actual.",
-				"INVALID_NAMES"      => "Tu nombre no parece ser válido.",
+				"INVALID_NAME"       => "Tu nombre no parece ser válido.",
 				"PROFILE_SAVED"      => "Los cambios han sido guardados."
 			],
 			"AUTH" => [
@@ -50,25 +50,23 @@ trait Localize
 				"ACCOUNT_PENDING"    => "Te hemos enviado un correo de activación. Haz click <a href=\"#0\">aquí</a> si no has recibido este correo.",
 				"ACCOUNT_DISABLED"   => "Esta cuenta se encuentra desactivada, por favor comunícate con nuestro equipo.",
 				"ACCOUNT_NOT_FOUND"  => "Esta cuenta no se encuentra registrada.",
-				"INVALID_NAMES"      => "Tu nombre no parece ser válido.",
-				"RECAPTCHA_FAILED"   => "No hemos logrado verficar el reCaptcha, por favor inténtalo de nuevo.",
 				"ACTIVATION_SUCCESS" => "¡Tu cuenta ha sido activada!",
 				"ACTIVATION_PENDING" => "Te hemos enviado un correo a {email} para que actives tu cuenta.",
+				"INVALID_NAME"       => "Tu nombre no parece ser válido.",
+				"RECAPTCHA_FAILED"   => "No hemos logrado verficar el reCaptcha, por favor inténtalo de nuevo."
 			],
 			"MAILER" => [
 				"SUBJECT_ACTIVATION" => "Confirma tu cuenta",
 				"SUBJECT_PASSWORD"   => "Recupera tu contraseña"
 			],
 			"PASSWORD" => [
-				"RECAPTCHA_FAILED"  => "No hemos logrado verficar el reCaptcha, por favor inténtalo de nuevo.",
 				"ACCOUNT_NOT_FOUND" => "Esta cuenta no se encuentra registrada o no ha sido activada.",
 				"PASS_MAIL_SENT"    => "Te hemos enviado un correo a {email} para recuperar tu contraseña.",
 				"NEW_PASS_SAVED"    => "Tu contraseña ha sido guardada.",
 				"PASS_TOO_SHORT"    => "Debes ingresar una contraseña de al menos 8 caracteres.",
 				"FORM_EXPIRED"      => "Este formulario ha expirado, prueba recuperando tu contraseña nuevamente.",
-				//text titles
-				"TITLE_RECOVERY"    => "Recupera tu contraseña",
-				"TITLE_CREATE_PASS" => "Crea una nueva contraseña"
+				"CREATE_PASS"       => "Crea tu nueva contraseñas",
+				"RECAPTCHA_FAILED"  => "No hemos logrado verficar el reCaptcha, por favor inténtalo de nuevo."
 			],
 			"UPLOADER" => [
 				"MAX_SIZE"       => "El archivo {file} excede el máximo tamaño permitido de {size}.",

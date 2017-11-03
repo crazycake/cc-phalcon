@@ -86,12 +86,13 @@ trait AccountManager
 		$user_class = $this->account_manager_conf["user_entity"];
 		//get user
 		$user = $user_class::getById($this->user_session["id"]);
+
 		//validate user
 		if (!$user)
 			$this->jsonResponse(404);
 
 		//get settings params
-		$setting_params = isset($this->account_manager_conf["required_fields"]) ? $this->account_manager_conf["required_fields"] : [];
+		$setting_params = $this->account_manager_conf["required_fields"] ?? [];
 		//validate and filter request params data, second params are the required fields
 		$data = $this->handleRequest(array_merge($default_params, $setting_params), "POST");
 
@@ -123,14 +124,14 @@ trait AccountManager
 
 			//check first & last name
 			if (strlen($data["first_name"]) < 3 || strlen($data["last_name"]) < 3)
-				throw new Exception($this->account_manager_conf["trans"]["INVALID_NAMES"]);
+				throw new Exception($this->account_manager_conf["trans"]["INVALID_NAME"]);
 
 			//check for a change
 			if ($data["first_name"] != $user->first_name) {
 
 				//validate name
 				if (strcspn($data["first_name"], "0123456789") != strlen($data["first_name"]))
-					throw new Exception($this->account_manager_conf["trans"]["INVALID_NAMES"]);
+					throw new Exception($this->account_manager_conf["trans"]["INVALID_NAME"]);
 
 				//format to capitalized name
 				$updating_data["first_name"] = mb_convert_case($data["first_name"], MB_CASE_TITLE, "UTF-8");
@@ -140,7 +141,7 @@ trait AccountManager
 
 				//validate name
 				if (strcspn($data["last_name"], "0123456789") != strlen($data["last_name"]))
-					throw new Exception($this->account_manager_conf["trans"]["INVALID_NAMES"]);
+					throw new Exception($this->account_manager_conf["trans"]["INVALID_NAME"]);
 
 				//format to capitalized name
 				$updating_data["last_name"] = mb_convert_case($data["last_name"], MB_CASE_TITLE, "UTF-8");
@@ -148,6 +149,7 @@ trait AccountManager
 
 			//call abstract method to do further updates
 			$new_updates = $this->beforeUpdateProfile($user, $data);
+
 			//merge updates
 			if (is_array($new_updates))
 				$updating_data = array_merge($updating_data, $new_updates);

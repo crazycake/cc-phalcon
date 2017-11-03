@@ -80,7 +80,7 @@ trait AccountAuth
 	 */
 	public function activationAction($encrypted_data = null)
 	{
-		//if user is already loggedIn redirect
+		//if user is already logged in redirect
 		$this->redirectToAccount(true);
 
 		//get decrypted data
@@ -208,7 +208,7 @@ trait AccountAuth
 		if (strcspn($data["first_name"], $nums) != strlen($data["first_name"]) ||
 			strcspn($data["last_name"], $nums) != strlen($data["last_name"])) {
 
-			$this->jsonResponse(406, $this->account_auth_conf["trans"]["INVALID_NAMES"]);
+			$this->jsonResponse(406, $this->account_auth_conf["trans"]["INVALID_NAME"]);
 		}
 
 		//format to capitalized name
@@ -233,9 +233,11 @@ trait AccountAuth
 
 		//set a flash message to show on account controller
 		$this->flash->success(str_replace("{email}", $user->email, $this->account_auth_conf["trans"]["ACTIVATION_PENDING"]));
+
 		//send activation account email
 		$this->sendMailMessage("accountActivation", $user->id);
-		//force redirection
+
+		//set response
 		$this->setResponseOnLogin();
 	}
 
