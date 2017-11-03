@@ -163,8 +163,10 @@ trait AccountPassRecovery
 			$this->jsonResponse(200, ["redirect" => $this->account_pass_conf["redirection_uri"]]);
 		}
 		catch (Exception $e) {
+
 			$this->logger->error("AccountPass::saveNewPassword -> failed saving new password. Trace: ".$e->getMessage());
-			return $this->jsonResponse(400, $e->getMessage());
+
+			$this->jsonResponse(400, $e->getMessage());
 		}
 	}
 }
