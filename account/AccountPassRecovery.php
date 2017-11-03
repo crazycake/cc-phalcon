@@ -75,7 +75,7 @@ trait AccountPassRecovery
 			//view vars
 			$this->view->setVars([
 				"html_title" => $this->account_pass_conf["trans"]["CREATE_PASS"],
-				"edata"      => $encrypted_data //pass encrypted data to view
+				"edata"      => $encrypted_data
 			]);
 
 			//load js modules
