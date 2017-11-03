@@ -158,13 +158,13 @@ trait AccountPassRecovery
 
 			//abstract parent controller
 			$this->onLogin($user->id);
+
+			// redirect response
+			$this->jsonResponse(200, ["redirect" => $this->account_pass_conf["redirection_uri"]]);
 		}
 		catch (Exception $e) {
 			$this->logger->error("AccountPass::saveNewPassword -> failed saving new password. Trace: ".$e->getMessage());
-			return $this->jsonResponse($e->getMessage());
+			return $this->jsonResponse(400, $e->getMessage());
 		}
-
-		//send JSON response
-		$this->jsonResponse(200, ["redirect" => $this->account_pass_conf["redirection_uri"]]);
 	}
 }
