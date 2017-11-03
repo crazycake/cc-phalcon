@@ -63,26 +63,26 @@ trait AccountPassRecovery
 
 	/**
 	 * View - Set New password action (vista donde se crea una nueva contraseña)
-	 * @param string $encrypted_data - The encrypted data
+	 * @param string $encrypted - The encrypted data
 	 */
-	public function newAction($encrypted_data = null)
+	public function newAction($encrypted = null)
 	{
 		try {
 			//handle the encrypted data with parent controller
 			$tokens_class = $this->account_pass_conf["user_token_entity"];
-			$tokens_class::handleEncryptedValidation($encrypted_data);
+			$tokens_class::handleEncryptedValidation($encrypted);
 
 			//view vars
 			$this->view->setVars([
 				"html_title" => $this->account_pass_conf["trans"]["CREATE_PASS"],
-				"edata"      => $encrypted_data
+				"hash"       => $encrypted
 			]);
 
 			//load js modules
 			$this->loadJsModules($this->account_pass_conf["js_modules"]);
 		}
 		catch (Exception $e) {
-			$this->logger->error("AccountPass::newAction -> Error in account activation (".$encrypted_data."). Err: ".$e->getMessage());
+			$this->logger->error("AccountPass::newAction -> Error in account activation (".$encrypted."). Err: ".$e->getMessage());
 			$this->dispatcher->forward(["controller" => "error", "action" => "expired"]);
 		}
 	}
@@ -119,18 +119,18 @@ trait AccountPassRecovery
 
 	/**
 	 * Saves a new password set by the user in the post-recovery password view
-	 * @param string $e_token - Encrypted token
+	 * @param string $hash - Encrypted token
 	 * @param string $pass - The input password
 	 */
-	public function saveNewPassword($e_token, $pass)
+	public function saveNewPassword($hash, $pass)
 	{
 		try {
 			//get model classes
 			$user_class   = $this->account_pass_conf["user_entity"];
 			$tokens_class = $this->account_pass_conf["user_token_entity"];
 
-			$e_token = $tokens_class::handleEncryptedValidation($data["edata"]);
-			list($user_id, $token_type, $token) = $e_token;
+			$hash = $tokens_class::handleEncryptedValidation($hash);
+			list($user_id, $token_type, $token) = $hash;
 
 			//get user
 			$user = $user_class::getById($user_id);
@@ -157,7 +157,7 @@ trait AccountPassRecovery
 			$this->onLogin($user->id);
 		}
 		catch (Exception $e) {
-			$this->logger->error("AccountPass::saveNewPassword -> Error saving new password. Trace: ".$e->getMessage());
+			$this->logger->error("AccountPass::saveNewPassword -> failed saving new password. Trace: ".$e->getMessage());
 			return $this->jsonResponse($e->getMessage());
 		}
 

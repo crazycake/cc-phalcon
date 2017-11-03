@@ -75,9 +75,9 @@ trait AccountAuth
 
 	/**
 	 * Handler - Activation link handler, can dispatch to a view
-	 * @param string $encrypted_data - The encrypted data
+	 * @param string $encrypted - The encrypted data
 	 */
-	public function activationAction($encrypted_data = null)
+	public function activationAction($encrypted = null)
 	{
 		//if user is already logged in redirect
 		$this->redirectToAccount(true);
@@ -89,7 +89,7 @@ trait AccountAuth
 			$token_class = $this->account_auth_conf["user_token_entity"];
 
 			//handle the encrypted data with parent controller
-			$data = $token_class::handleEncryptedValidation($encrypted_data);
+			$data = $token_class::handleEncryptedValidation($encrypted);
 			//assign values
 			list($user_id, $token_type, $token) = $data;
 
@@ -117,7 +117,7 @@ trait AccountAuth
 		}
 		catch (Exception $e) {
 
-			$data = $encrypted_data ? $this->cryptify->decryptData($encrypted_data) : "invalid hash";
+			$data = $encrypted ? $this->cryptify->decryptData($encrypted) : "invalid hash";
 
 			$this->logger->error("AccountAuth::activationAction -> Error in account activation, decrypted data (".$data."). Msg: ".$e->getMessage());
 			$this->dispatcher->forward(["controller" => "error", "action" => "expired"]);

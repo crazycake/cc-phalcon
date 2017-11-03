@@ -187,16 +187,16 @@ class BaseUserToken extends \CrazyCake\Models\Base
 	 * DI dependency injector must have cryptify service
 	 * UserTokens must be set in models
 	 * @static
-	 * @param string $encrypted_data - The encrypted data
+	 * @param string $encrypted - The encrypted data
 	 * @return array
 	 */
-	public static function handleEncryptedValidation($encrypted_data = null)
+	public static function handleEncryptedValidation($encrypted = null)
 	{
-		if (empty($encrypted_data))
+		if (empty($encrypted))
 			throw new Exception("got empty encrypted data");
 
 		$di   = \Phalcon\DI::getDefault();
-		$data = $di->getShared("cryptify")->decryptData($encrypted_data, "#");
+		$data = $di->getShared("cryptify")->decryptData($encrypted, "#");
 
 		//validate data (user_id, token_type and token)
 		if (count($data) < 3)
