@@ -107,11 +107,11 @@ class QRMaker
 	public function generate($params = [])
 	{
 		//new QrTag object
-		$qr = new QrTag();
+		$qr          = new QrTag();
 		//props
-		$qr->bgColor = isset($params["background_color"]) ? $params["background_color"] : "ffffff";
-		$qr->text 	 = isset($params["data"]) ? $params["data"] : "CrazyCake QR Code";
-		$qr->file 	 = isset($params["savename"]) ? $params["savename"] : die("QR Library -> (generate) must set param savename");
+		$qr->bgColor = $params["background_color"] ?? "ffffff";
+		$qr->text    = $params["data"] ?? "CrazyCake QR Code";
+		$qr->file    = $params["savename"] ?? die("QR Library -> (generate) must set param savename");
 
 		//shape dot object
 		if (isset($params["dot_shape_class"]) && $this->_class_exists($params["dot_shape_class"])) {
@@ -125,8 +125,8 @@ class QRMaker
 		}
 
 		//set shape dot
-		$dot_shape->color = isset($params["dot_shape_color"]) ? $params["dot_shape_color"] : "000000";
-		$dot_shape->size  = isset($params["dot_shape_size"]) ? $params["dot_shape_size"] : 14;
+		$dot_shape->color = $params["dot_shape_color"] ?? "000000";
+		$dot_shape->size  = $params["dot_shape_size"] ?? 14;
 
 		$qr->setDot($dot_shape);
 
@@ -142,7 +142,7 @@ class QRMaker
 		}
 
 		//set frame dot
-		$dot_frame->color = isset($params["dot_frame_color"]) ? $params["dot_frame_color"] : "000000";
+		$dot_frame->color = $params["dot_frame_color"] ?? "000000";
 		$qr->frameDot     = $dot_frame;
 
 		//main frame object
@@ -156,7 +156,7 @@ class QRMaker
 			$frame = new QrTagFrameSquare();
 		}
 
-		$dot_frame->color = isset($params["frame_color"]) ? $params["frame_color"] : "000000";
+		$dot_frame->color = $params["frame_color"] ?? "000000";
 		$qr->frame = $frame;
 	   //var_dump($qr);//exit;
 

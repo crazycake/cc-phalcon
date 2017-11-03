@@ -118,13 +118,12 @@ trait Localize
 
 		$data = [
 			"ALERTS" => [
-				"INTERNAL_ERROR" => "Ha ocurrido algo inesperado, por favor inténtalo más tarde.",
-				"SERVER_TIMEOUT" => "Sin conexión. Revisa tu conexión a Internet e inténtalo de nuevo.",
-				"CSRF"           => "Esta página ha estado inactiva por mucho tiempo, refréscala haciendo ".
-									"<a href=\"javascript:location.reload();\">click aquí</a>.",
+				"SERVER_ERROR"     => "Ha ocurrido algo inesperado, por favor inténtalo más tarde.",
+				"SERVER_TIMEOUT"   => "Sin conexión. Revisa tu conexión a Internet e inténtalo de nuevo.",
 				"NOT_FOUND"        => "Este enlace está roto, por favor inténtalo más tarde.",
-				"BAD_REQUEST"      => "Lo sentimos, no hemos logrado procesar tu petición. Intenta refrescando esta página.",
 				"ACCESS_FORBIDDEN" => "Tu sesión ha caducado, debes iniciar sesión nuevamente.",
+				"CSRF"             => "Esta página ha estado inactiva por mucho tiempo, refréscala haciendo ".
+										"<a href=\"javascript:location.reload();\">click aquí</a>.",
 				"LOADING"          => "cargando ...",
 				"REDIRECTING"      => "redireccionado ...",
 			],

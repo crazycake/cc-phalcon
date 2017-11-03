@@ -352,7 +352,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 		$this->setAppJsProperties($js_app);
 
 		//css lazy loading properties
-		if(isset($js_app->cssLazy) && $js_app->cssLazy)
+		if(!empty($js_app->cssLazy))
 			$js_app->cssLazy = str_replace("/app", "/lazy", $this->view->getVar("css_url"));
 
 		//set translations?

@@ -116,13 +116,13 @@ trait Uploader
 		$uploaded = [];
 		$messages = [];
 
-		//check if user has uploaded files
-		if (!$this->request->hasFiles())
-			$this->jsonResponse(901);
-
 		//check header
 		if(empty($this->headers[self::$HEADER_NAME]))
-			$this->jsonResponse(406);
+			$this->jsonResponse(404);
+
+		//check if user has uploaded files
+		if (!$this->request->hasFiles())
+			$this->jsonResponse(900);
 
 		// loop through uploaded files
 		$files = $this->request->getUploadedFiles();

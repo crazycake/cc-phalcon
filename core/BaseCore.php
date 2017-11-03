@@ -199,11 +199,11 @@ abstract class BaseCore extends Controller
 
 		//is post request? (method now allowed)
 		if ($method == "POST" && !$this->request->isPost())
-			return $sendResponse(405);
+			return $sendResponse(404);
 
 		//is get request? (method now allowed)
 		if ($method == "GET" && !$this->request->isGet())
-			return $sendResponse(405);
+			return $sendResponse(404);
 
 		//validate always CSRF Token (prevents also headless browsers, POST only and API module excluded)
 		if ($check_csrf) {
@@ -234,7 +234,7 @@ abstract class BaseCore extends Controller
 			$value = $this->_validateField($data, $field, $data_type);
 
 			if($value === false)
-				return $sendResponse(400);
+				return $sendResponse(404);
 
 			//optional fields
 			if($field[0] == "@") {

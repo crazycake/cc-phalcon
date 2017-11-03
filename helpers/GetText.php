@@ -52,7 +52,7 @@ class GetText extends GetTextAdapter
 	 */
 	public function __construct($options = [])
 	{
-		if (!is_array($options) || !isset($options["domain"]) || !isset($options["directory"]) || !is_array($options["supported"]))
+		if (!is_array($options) || empty($options["domain"]) || empty($options["directory"]) || !is_array($options["supported"]))
 			die("GetText Lib -> Invalid options: directory, domain & supported options are required.");
 
 		//set class properties

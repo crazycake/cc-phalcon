@@ -91,15 +91,15 @@ abstract class WsCore extends BaseCore
 			"$p$prop"  => "int"
 		], $method);
 
-		$value = isset($data[$prop]) ? $data[$prop] : null;
+		$value = $data[$prop] ?? null;
 
 		//get model data
 		$object = empty($value) ? null : $class_name::findFirst(["id = ?1", "bind" => [1 => $value]]);
 
 		if (!$optional && !$object)
-			$this->jsonResponse(400);
-		else
-			return $object;
+			$this->jsonResponse(404);
+
+		return $object;
 	}
 
 	/**

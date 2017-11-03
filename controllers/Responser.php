@@ -32,22 +32,15 @@ trait Responser
 		//success
 		"200" => "OK",
 		//client errors
-		"400" => "Bad Request, invalid GET or POST data",
+		"400" => "Bad Request",
 		"401" => "Unauthorized",
-		"403" => "Forbidden",
 		"404" => "Not Found",
-		"405" => "Method Not Allowed",
-		"406" => "Not Acceptable",
 		"408" => "Request Timeout",
 		"498" => "Invalid Token",
 		//server
 		"500" => "Internal Server Error",
-		//db related
 		"800" => "Empty result data",
-		//resources related
-		"900" => "Resource not found",
-		"901" => "No files attached",
-		"902" => "Invalid format of file attached"
+		"900" => "No files attached"
 	];
 
 	/**

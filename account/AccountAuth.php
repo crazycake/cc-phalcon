@@ -165,7 +165,7 @@ trait AccountAuth
 					$this->account_auth_conf["trans"]["ACCOUNT_DISABLED"];
 
 			//for API handle alerts & warning as errors,
-			$this->jsonResponse(406, $msg); //browser custom handler
+			$this->jsonResponse(400, $msg); //browser custom handler
 		}
 
 		//set payload
@@ -194,21 +194,21 @@ trait AccountAuth
 			"last_name"  => "string"
 		];
 
-		$setting_params = isset($this->account_auth_conf["required_fields"]) ? $this->account_auth_conf["required_fields"] : [];
+		$setting_params = $this->account_auth_conf["required_fields"] ?? [];
 
 		//validate and filter request params data, second params are the required fields
 		$data = $this->handleRequest(array_merge($default_params, $setting_params), "POST");
 
 		//check data
 		if(empty($data["email"]) || empty($data["first_name"]) || empty($data["last_name"]))
-			$this->jsonResponse(400);
+			$this->jsonResponse(404);
 
 		//validate names
 		$nums = "0123456789";
 		if (strcspn($data["first_name"], $nums) != strlen($data["first_name"]) ||
 			strcspn($data["last_name"], $nums) != strlen($data["last_name"])) {
 
-			$this->jsonResponse(406, $this->account_auth_conf["trans"]["INVALID_NAME"]);
+			$this->jsonResponse(400, $this->account_auth_conf["trans"]["INVALID_NAME"]);
 		}
 
 		//format to capitalized name
@@ -229,7 +229,7 @@ trait AccountAuth
 
 		//if user dont exists, show error message
 		if (!$user->save($data))
-			$this->jsonResponse(406, $user->messages());
+			$this->jsonResponse(400, $user->messages());
 
 		//set a flash message to show on account controller
 		$this->flash->success(str_replace("{email}", $user->email, $this->account_auth_conf["trans"]["ACTIVATION_PENDING"]));

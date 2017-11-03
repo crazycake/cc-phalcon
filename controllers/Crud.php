@@ -149,7 +149,7 @@ trait Crud
 		if(!empty($data["filter"])) {
 
 			//create filter syntax
-			$search_fields = isset($this->crud_conf["sfields"]) ? $this->crud_conf["sfields"] : [$this->crud_conf["pk"]];
+			$search_fields = $this->crud_conf["sfields"] ?? [$this->crud_conf["pk"]];
 
 			//loop through search fields
 			foreach ($search_fields as $index => $fname) {
@@ -228,7 +228,7 @@ trait Crud
 			$this->jsonResponse(200);
 		}
 		catch (\Exception $e) {
-			$this->jsonResponse(406, $e->getMessage());
+			$this->jsonResponse(400, $e->getMessage());
 		}
 	}
 
@@ -300,7 +300,7 @@ trait Crud
 			$this->jsonResponse(200);
 		}
 		catch (\Exception $e) {
-			$this->jsonResponse(406, $e->getMessage());
+			$this->jsonResponse(400, $e->getMessage());
 		}
 	}
 

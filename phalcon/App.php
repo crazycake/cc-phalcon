@@ -111,8 +111,8 @@ abstract class App
 		}
 
 		//define global constants for the current task and action
-		define("CLI_TASK",   isset($argv[1]) ? $argv[1] : null);
-		define("CLI_ACTION", isset($argv[2]) ? $argv[2] : null);
+		define("CLI_TASK",   $argv[1] ?? null);
+		define("CLI_ACTION", $argv[2] ?? null);
 
 		//handle incoming arguments
 		$app->handle($arguments);

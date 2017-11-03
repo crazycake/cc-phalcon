@@ -49,7 +49,7 @@ trait WebErrors
 	public function badRequestAction()
 	{
 		if ($this->request->isAjax())
-			$this->jsonResponse(400);
+			$this->jsonResponse(404);
 	}
 
 	/**

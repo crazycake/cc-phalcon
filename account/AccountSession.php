@@ -102,13 +102,11 @@ trait AccountSession
 			return true;
 
 		//for ajax request sends a forbidden warning
-		if ($this->request->isAjax() || MODULE_NAME == "api") {
-			$this->jsonResponse(403);
-		}
-		else {
-			$this->dispatcher->forward(["controller" => "auth", "action" => "logout"]);
-			$this->dispatcher->dispatch();
-		}
+		if ($this->request->isAjax() || MODULE_NAME == "api")
+			$this->jsonResponse(401);
+
+		$this->dispatcher->forward(["controller" => "auth", "action" => "logout"]);
+		$this->dispatcher->dispatch();
 	}
 
 	/**
