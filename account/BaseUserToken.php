@@ -192,8 +192,8 @@ class BaseUserToken extends \CrazyCake\Models\Base
 	 */
 	public static function handleEncryptedValidation($encrypted_data = null)
 	{
-		if (is_null($encrypted_data))
-			throw new Exception("sent input null encrypted_data");
+		if (empty($encrypted_data))
+			throw new Exception("got empty encrypted data");
 
 		$di   = \Phalcon\DI::getDefault();
 		$data = $di->getShared("cryptify")->decryptData($encrypted_data, "#");
