@@ -55,7 +55,6 @@ trait AccountAuth
 	{
 		//defaults
 		$defaults = [
-			"js_recaptcha" => false,
 			"oauth"        => false,
 			"logout_uri"   => "signIn",
 			//entities
