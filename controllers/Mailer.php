@@ -77,7 +77,7 @@ trait Mailer
 		], "POST");
 
 		$data["subject"] = "Contacto ".$this->config->name;
-		$data["to"]      = $this->config->emails->contact ?? $this->config->emails->support;
+		$data["to"]      = $this->config->emails->support ?? $this->config->emails->contact;
 		//contents
 		$this->mailer_conf = array_merge($this->mailer_conf, $data);
 
