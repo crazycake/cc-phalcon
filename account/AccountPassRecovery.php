@@ -82,7 +82,7 @@ trait AccountPassRecovery
 			$this->loadJsModules($this->account_pass_conf["js_modules"]);
 		}
 		catch (Exception $e) {
-			$this->logger->error("AccountPass::newAction -> Error in account activation, encrypted data (" . $encrypted_data . "). Err: " . $e->getMessage());
+			$this->logger->error("AccountPass::newAction -> Error in account activation (".$encrypted_data."). Err: ".$e->getMessage());
 			$this->dispatcher->forward(["controller" => "error", "action" => "expired"]);
 		}
 	}
@@ -136,7 +136,7 @@ trait AccountPassRecovery
 			$user = $user_class::getById($user_id);
 
 			if (!$user)
-				throw new Exception("got an invalid user (id:" . $user_id . ") when validating encrypted data.");
+				throw new Exception("got an invalid user (id:".$user_id.") when validating encrypted data.");
 
 			//pass length
 			if (strlen($data["pass"]) < $this->account_pass_conf["pass_min_length"])
