@@ -82,10 +82,9 @@ trait AccountManager
 			"@pass"         => "string"
 		];
 
-		//get model class name
+		//get model class name & user
 		$user_class = $this->account_manager_conf["user_entity"];
-		//get user
-		$user = $user_class::getById($this->user_session["id"]);
+		$user       = $user_class::getById($this->user_session["id"]);
 
 		//validate user
 		if (!$user)
@@ -122,25 +121,22 @@ trait AccountManager
 				$updating_data["pass"] = $this->security->hash($data["pass"]);
 			}
 
-			//check first & last name
-			if (strlen($data["first_name"]) < 3 || strlen($data["last_name"]) < 3)
-				throw new Exception($this->account_manager_conf["trans"]["INVALID_NAME"]);
-
-			//check for a change
+			//check for first_name change
 			if ($data["first_name"] != $user->first_name) {
 
-				//validate name
-				if (strcspn($data["first_name"], "0123456789") != strlen($data["first_name"]))
+				//validation
+				if (strlen($data["first_name"]) < 3 || strcspn($data["first_name"], "0123456789") != strlen($data["first_name"]))
 					throw new Exception($this->account_manager_conf["trans"]["INVALID_NAME"]);
 
 				//format to capitalized name
 				$updating_data["first_name"] = mb_convert_case($data["first_name"], MB_CASE_TITLE, "UTF-8");
 			}
 
+			//check for last_name change
 			if ($data["last_name"] != $user->last_name) {
 
-				//validate name
-				if (strcspn($data["last_name"], "0123456789") != strlen($data["last_name"]))
+				//validation
+				if (strlen($data["last_name"]) < 3 || strcspn($data["last_name"], "0123456789") != strlen($data["last_name"]))
 					throw new Exception($this->account_manager_conf["trans"]["INVALID_NAME"]);
 
 				//format to capitalized name
@@ -161,6 +157,7 @@ trait AccountManager
 
 				//update session data
 				$this->updateUserSession($updating_data);
+
 				//update full name
 				$updating_data["name"] = $user->first_name." ".$user->last_name;
 
