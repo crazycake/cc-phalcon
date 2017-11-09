@@ -169,8 +169,8 @@ trait AccountManager
 
 			//send response
 			$this->jsonResponse(200, [
-				"user" => $updating_data,
-				"msg"  => $this->account_manager_conf["trans"]["PROFILE_SAVED"]
+				"user"    => $updating_data,
+				"message" => $this->account_manager_conf["trans"]["PROFILE_SAVED"]
 			]);
 		}
 		catch (Exception $e) {
