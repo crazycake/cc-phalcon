@@ -122,7 +122,7 @@ trait AccountManager
 			}
 
 			//check for first_name change
-			if ($data["first_name"] != $user->first_name) {
+			if (!empty($data["first_name"]) && $data["first_name"] != $user->first_name) {
 
 				//validation
 				if (strlen($data["first_name"]) < 3 || strcspn($data["first_name"], "0123456789") != strlen($data["first_name"]))
@@ -133,7 +133,7 @@ trait AccountManager
 			}
 
 			//check for last_name change
-			if ($data["last_name"] != $user->last_name) {
+			if (!empty($data["last_name"]) && $data["last_name"] != $user->last_name) {
 
 				//validation
 				if (strlen($data["last_name"]) < 3 || strcspn($data["last_name"], "0123456789") != strlen($data["last_name"]))
