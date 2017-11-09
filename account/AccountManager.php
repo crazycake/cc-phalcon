@@ -158,8 +158,9 @@ trait AccountManager
 				//update session data
 				$this->updateUserSession($updating_data);
 
-				//update full name
-				$updating_data["name"] = $user->first_name." ".$user->last_name;
+				//set full name?
+				if(!empty($user->first_name) && !empty($user->last_name))
+					$updating_data["name"] = $user->first_name." ".$user->last_name;
 
 				//check if pass set
 				if (isset($updating_data["pass"]))
