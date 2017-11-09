@@ -100,7 +100,7 @@ class AppServices
 			$url->setBaseUri(APP_BASE_URL);
 
 			// get static url
-			$static_url = !empty($conf->staticUrl) ? $conf->staticUrl : false;
+			$static_url = $conf->staticUrl ?? false;
 
 			// set static uri for assets, cdn only for production
 			if (APP_ENV != "production" || !$static_url)
