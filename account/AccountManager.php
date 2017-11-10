@@ -34,17 +34,6 @@ trait AccountManager
 	/* --------------------------------------------------- § -------------------------------------------------------- */
 
 	/**
-	 * After Execute Route
-	 */
-	public function afterExecuteRoute()
-	{
-		parent::afterExecuteRoute();
-
-		//for auth required pages disable robots
-		$this->view->setVar("html_disallow_robots", true);
-	}
-
-	/**
 	 * Initialize Trait
 	 * @param array $conf - The config array
 	 */
@@ -65,6 +54,9 @@ trait AccountManager
 
 		//set configuration
 		$this->account_manager_conf = $conf;
+
+		//set view vars
+		$this->view->setVar("html_disallow_robots", true);
 	}
 
 	/* --------------------------------------------------- § -------------------------------------------------------- */
