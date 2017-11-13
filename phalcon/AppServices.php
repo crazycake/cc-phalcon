@@ -321,6 +321,8 @@ class AppServices
 				$compiler->addFunction("strrpos", "strrpos");
 				//++ strtotime
 				$compiler->addFunction("strtotime", "strtotime");
+				//++ number_format
+				$compiler->addFunction("number_format", "number_format");
 				//++ in_array
 				$compiler->addFunction("in_array", "in_array");
 				//++ resizedImagePath
