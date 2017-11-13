@@ -116,7 +116,7 @@ trait Requester
 
 		//check params for query strings
 		if ($options["query-string"] || is_array($options["payload"])) {
-			$params = http_build_query($options["payload"]);
+			$params = "?".http_build_query($options["payload"]);
 		}
 		else {
 			$params = "/".$options["payload"];
