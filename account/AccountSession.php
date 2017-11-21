@@ -228,6 +228,8 @@ trait AccountSession
 
 		//save in session
 		$this->session->set("user", $user_session);
+
+		$this->user_session = $this->getUserSession();
 	}
 
 	/**
