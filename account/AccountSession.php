@@ -223,11 +223,8 @@ trait AccountSession
 		$user_session = $this->session->get("user");
 
 		//update props
-		foreach ($data as $key => $value) {
-
-			if (isset($user_session[$key]))
-				$user_session[$key] = $value;
-		}
+		foreach ($data as $key => $value)
+			$user_session[$key] = $value;
 
 		//save in session
 		$this->session->set("user", $user_session);
