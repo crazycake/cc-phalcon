@@ -252,6 +252,38 @@ trait AccountAuth
 	}
 
 	/**
+	 * Sends activation mail message with recaptcha validation
+	 */
+	public function sendActivationMailMessage($email, $recaptcha)
+	{
+		//google reCaptcha helper
+		$recaptcher = new \CrazyCake\Helpers\ReCaptcha($this->config->google->reCaptchaKey);
+
+		//check valid reCaptcha
+		if (empty($email) || empty($recaptcha) || !$recaptcher->isValid($recaptcha)) {
+			//show error message
+			return $this->jsonResponse(400, $this->account_auth_conf["trans"]["RECAPTCHA_FAILED"]);
+		}
+
+		//get model classes
+		$user_class = $this->account_auth_conf["user_entity"];
+		$user       = $user_class::getUserByEmail($email, "pending");
+
+		//check if user exists is a pending account
+		if (!$user)
+			$this->jsonResponse(400, $this->account_auth_conf["trans"]["ACCOUNT_NOT_FOUND"]);
+
+		//send email message with password recovery steps
+		$this->sendMailMessage("accountActivation", $user->id);
+
+		//set payload
+		$payload = str_replace("{email}", $email, $this->account_auth_conf["trans"]["ACTIVATION_PENDING"]);
+
+		//send JSON response
+		$this->jsonResponse(200, $payload);
+	}
+
+	/**
 	 * Access Token validation for API Auth
 	 * @param string $token - The input token
 	 * @return object - The token ORM object

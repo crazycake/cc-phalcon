@@ -76,7 +76,7 @@ find)
 
 	# delete temp file
 	rm $TEMP_FILE
-	rm -rf $APP_STORAGE_PATH"cache" && mkdir -p $APP_STORAGE_PATH"cache"
+	rm -rf $APP_STORAGE_PATH"cache" && mkdir -p $APP_STORAGE_PATH"cache" && touch $APP_STORAGE_PATH"cache/.gitkeep"
 
 	# merge po file
 	find $APP_LANGS_PATH -mindepth 1 -maxdepth 1 -type d | while read CODE_DIR ; do
