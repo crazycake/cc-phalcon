@@ -115,12 +115,8 @@ trait AccountAuth
 
 			//success login
 			$this->onLogin($user_id);
-
 			//redirect/response
-			if (MODULE_NAME == "api")
-				$this->jsonResponse(200, ["message" => $this->account_auth_conf["trans"]["ACTIVATION_SUCCESS"]]);
-			else
-				$this->redirectTo($this->account_auth_conf["logout_uri"]);
+			$this->setResponseOnLogin();
 		}
 		catch (Exception $e) {
 
@@ -244,7 +240,11 @@ trait AccountAuth
 		$this->sendMailMessage("accountActivation", $user->id);
 
 		//set response
-		$this->setResponseOnLogin();
+		//redirect/response
+		if (MODULE_NAME == "api")
+			$this->jsonResponse(200, ["message" => $this->account_auth_conf["trans"]["ACTIVATION_PENDING"]]);
+		else
+			$this->redirectTo($this->account_auth_conf["logout_uri"]);
 	}
 
 	/**
