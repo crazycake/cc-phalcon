@@ -52,7 +52,7 @@ copyVoltFiles() {
 
 	if [ -d $PROJECT_PATH"/ui/volt/" ]; then
 		echo -e "\033[94mCopying volt files ... \033[0m"
-		cp -r $CORE_SRC_VOLT $PROJECT_PATH"/ui/volt/"
+		cp $CORE_SRC_VOLT"index.volt" $PROJECT_PATH"/ui/volt/"
 	fi
 }
 
