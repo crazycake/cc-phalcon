@@ -99,10 +99,10 @@ trait AccountPassRecovery
 	public function sendRecoveryInstructions($email, $recaptcha = "")
 	{
 		//google reCaptcha helper
-		$recaptcha = new ReCaptcha($this->config->google->reCaptchaKey);
+		$recaptcher = new ReCaptcha($this->config->google->reCaptchaKey);
 
 		//check valid reCaptcha
-		if (empty($email) || empty($recaptcha) || !$recaptcha->isValid($recaptcha))
+		if (empty($email) || empty($recaptcha) || !$recaptcher->isValid($recaptcha))
 			return $this->jsonResponse(400, $this->account_pass_conf["trans"]["RECAPTCHA_FAILED"]);
 
 		//check if user exists is a active account
@@ -135,8 +135,8 @@ trait AccountPassRecovery
 			$user_class   = $this->account_pass_conf["user_entity"];
 			$tokens_class = $this->account_pass_conf["user_token_entity"];
 
-			$hash = $tokens_class::handleEncryptedValidation($hash);
-			list($user_id, $token_type, $token) = $hash;
+			$decrypted = $tokens_class::handleEncryptedValidation($hash);
+			list($user_id, $token_type, $token) = $decrypted;
 
 			//get user
 			$user = $user_class::getById($user_id);
