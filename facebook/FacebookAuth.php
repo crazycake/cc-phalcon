@@ -103,7 +103,7 @@ trait FacebookAuth
 		try {
 			//check signed request
 			if (!$this->_parseSignedRequest($data["signed_request"]))
-				return $this->jsonResponse(405);
+				return $this->jsonResponse(400);
 
 			//call js helper
 			$helper = $this->fb->getJavaScriptHelper();
@@ -247,7 +247,7 @@ trait FacebookAuth
 		$this->logger->debug("Facebook::extendAccessTokenAction -> received encrypted_data: ".$encrypted_data);
 
 		if (empty($encrypted_data))
-			return $this->jsonResponse(405); //method not allowed
+			return $this->jsonResponse(400);
 
 		try {
 			//get encrypted facebook user id and short live access token
