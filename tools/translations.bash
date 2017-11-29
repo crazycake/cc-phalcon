@@ -11,10 +11,12 @@ PROJECT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PROJECT_PATH="$(dirname "$PROJECT_PATH")"
 
 # core directory
+# app namespace
+APP_NAME=${PWD##*/}
 APP_PATH=$PROJECT_PATH"/app/"
 APP_LANGS_PATH=$APP_PATH"langs/"
 APP_CORE_PATH=$PROJECT_PATH"/../cc-phalcon/"
-APP_VIEWS_CACHE_PATH=$PROJECT_PATH"/storage/cache/"
+APP_STORAGE_PATH=$PROJECT_PATH"/storage/"
 
 # translation filenames
 MO_FILE="app.mo"
@@ -53,10 +55,15 @@ build)
 # search and generate pot files
 find)
 
+	echo -e "\033[95mCoping cache volt files from container...  \033[0m"
+
+	# copy contianer cache files
+	docker cp $APP_NAME:"/var/www/storage/cache/" $APP_STORAGE_PATH
+
 	echo -e "\033[95mSearching for keyword 'trans' in project files...  \033[0m"
 
 	# find files (exclude some folders)
-	find $APP_CORE_PATH $APP_PATH $APP_VIEWS_CACHE_PATH -type f -name '*.php' > $TEMP_FILE
+	find $APP_CORE_PATH $APP_PATH $APP_STORAGE_PATH"cache/" -type f -name '*.php' > $TEMP_FILE
 
 	# generate pot file with xgettext
 	xgettext -o $APP_LANGS_PATH"trans.pot" \
@@ -69,6 +76,7 @@ find)
 
 	# delete temp file
 	rm $TEMP_FILE
+	rm -rf $APP_STORAGE_PATH"cache" && mkdir -p $APP_STORAGE_PATH"cache"
 
 	# merge po file
 	find $APP_LANGS_PATH -mindepth 1 -maxdepth 1 -type d | while read CODE_DIR ; do
