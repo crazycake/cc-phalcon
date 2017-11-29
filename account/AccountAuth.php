@@ -167,7 +167,7 @@ trait AccountAuth
 					$this->account_auth_conf["trans"]["ACCOUNT_DISABLED"];
 
 			//for API handle alerts & warning as errors,
-			$this->jsonResponse(400, $msg); //browser custom handler
+			$this->jsonResponse(400, $msg, "warning", "ACCOUNT_".strtoupper($user->account_flag));
 		}
 
 		//set payload
