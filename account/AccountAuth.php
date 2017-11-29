@@ -55,10 +55,10 @@ trait AccountAuth
 	{
 		//defaults
 		$defaults = [
-			"oauth"        => false,
-			"logout_uri"   => "signIn",
+			"oauth"      => false,
+			"logout_uri" => "signIn",
 			//entities
-			"user_entity"  => "User"
+			"user_entity" => "User"
 		];
 
 		//merge confs
@@ -115,8 +115,12 @@ trait AccountAuth
 
 			//success login
 			$this->onLogin($user_id);
-			//session
-			$this->setResponseOnLogin();
+
+			//redirect/response
+			if (MODULE_NAME == "api")
+				$this->jsonResponse(200, ["message" => $this->account_auth_conf["trans"]["ACTIVATION_SUCCESS"]]);
+			else
+				$this->redirectTo($this->account_auth_conf["logout_uri"]);
 		}
 		catch (Exception $e) {
 
