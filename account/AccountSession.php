@@ -48,7 +48,7 @@ trait AccountSession
 		//defaults
 		$defaults = [
 			//entities
-			"user_entity" => "User",
+			"user_entity"   => "User",
 			"logged_in_uri" => "account",
 			//excluded user props to be saved in session
 			"user_session_filter_view" => ["id", "account_flag", "auth"]
