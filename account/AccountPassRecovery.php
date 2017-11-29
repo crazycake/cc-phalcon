@@ -107,7 +107,7 @@ trait AccountPassRecovery
 
 		//check if user exists is a active account
 		$user_class = $this->account_pass_conf["user_entity"];
-		$user       = $user_class::getUserByEmail($data["email"], "enabled");
+		$user       = $user_class::getUserByEmail($email, "enabled");
 
 		//if user not exists, send message
 		if (!$user)
@@ -117,7 +117,7 @@ trait AccountPassRecovery
 		$this->sendMailMessage("passwordRecovery", $user->id);
 
 		//set a flash message to show on account controller
-		$this->flash->success(str_replace("{email}", $data["email"], $this->account_pass_conf["trans"]["PASS_MAIL_SENT"]));
+		$this->flash->success(str_replace("{email}", $email, $this->account_pass_conf["trans"]["PASS_MAIL_SENT"]));
 
 		//send JSON response
 		$this->jsonResponse(200, ["redirect" => $this->account_pass_conf["redirection_uri"]]);
@@ -145,11 +145,11 @@ trait AccountPassRecovery
 				throw new Exception("got an invalid user (id:".$user_id.") when validating encrypted data.");
 
 			//pass length
-			if (strlen($data["pass"]) < $this->account_pass_conf["pass_min_length"])
+			if (strlen($pass) < $this->account_pass_conf["pass_min_length"])
 				throw new Exception($this->account_pass_conf["trans"]["PASS_TOO_SHORT"]);
 
 			//save new account flag state
-			$user->update(["pass" => $this->security->hash($data["pass"])]);
+			$user->update(["pass" => $this->security->hash($pass)]);
 
 			//get token object
 			$token = $tokens_class::getTokenByUserAndValue($user_id, $token_type, $token);
