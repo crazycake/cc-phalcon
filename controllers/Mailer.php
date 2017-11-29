@@ -53,9 +53,13 @@ trait Mailer
 
 		//merge confs
 		$conf = array_merge($defaults, $conf);
+
 		//append class prefixes
 		$conf["user_token_entity"] = App::getClass($conf["user_entity"])."Token";
 		$conf["user_entity"]       = App::getClass($conf["user_entity"]);
+
+		if(empty($conf["trans"]))
+			$conf["trans"] = \TranslationController::getCoreTranslations("mailer");
 
 		$this->mailer_conf = $conf;
 	}

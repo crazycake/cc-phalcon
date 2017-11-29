@@ -70,6 +70,9 @@ trait Uploader
 	 */
 	protected function initUploader($conf = [])
 	{
+		if(empty($conf["trans"]))
+			$conf["trans"] = \TranslationController::getCoreTranslations("uploader");
+
 		//set conf
 		$this->uploader_conf = $conf;
 

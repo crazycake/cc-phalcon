@@ -52,6 +52,9 @@ trait AccountManager
 		//append class prefixes
 		$conf["user_entity"] = App::getClass($conf["user_entity"]);
 
+		if(empty($conf["trans"]))
+			$conf["trans"] = \TranslationController::getCoreTranslations("account");
+
 		//set configuration
 		$this->account_manager_conf = $conf;
 

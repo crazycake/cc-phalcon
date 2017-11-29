@@ -70,6 +70,10 @@ trait FacebookAuth
 	 */
 	public function initFacebookAuth($conf = [])
 	{
+		if(empty($conf["trans"]))
+			$conf["trans"] = \TranslationController::getCoreTranslations("facebook");
+
+		//set config
 		$this->facebook_auth_conf = $conf;
 
 		//set Facebook Object

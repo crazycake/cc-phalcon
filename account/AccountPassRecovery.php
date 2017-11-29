@@ -56,6 +56,9 @@ trait AccountPassRecovery
 		$conf["user_token_entity"] = App::getClass($conf["user_entity"])."Token";
 		$conf["user_entity"]       = App::getClass($conf["user_entity"]);
 
+		if(empty($conf["trans"]))
+			$conf["trans"] = \TranslationController::getCoreTranslations("password");
+
 		$this->account_pass_conf = $conf;
 	}
 
