@@ -243,8 +243,12 @@ trait AccountAuth
 		//redirect/response
 		if (MODULE_NAME == "api")
 			$this->jsonResponse(200, ["message" => $this->account_auth_conf["trans"]["ACTIVATION_PENDING"]]);
-		else
-			$this->redirectTo($this->account_auth_conf["logout_uri"]);
+
+		else if($this->request->isAjax())
+			$this->jsonResponse(200, ["redirect" => $this->account_auth_conf["logout_uri"]]);
+
+		// default behaviour
+		$this->redirectTo($this->account_auth_conf["logout_uri"]);
 	}
 
 	/**
