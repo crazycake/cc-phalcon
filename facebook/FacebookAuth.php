@@ -125,9 +125,9 @@ trait FacebookAuth
 
 			//handle response, session controller
 			if (isset($data["user_data"]) && $data["user_data"])
-				return $this->onLoginDispatch(false, $response);
+				return $this->setResponseOnLogin(false, $response);
 			else
-				return $this->onLoginDispatch();
+				return $this->setResponseOnLogin();
 		}
 		catch (FacebookResponseException $e) { $exception = $e; }
 		catch (FacebookSDKException $e)      { $exception = $e; }
@@ -174,7 +174,7 @@ trait FacebookAuth
 
 			//handle response automatically
 			if (empty($route["controller"]))
-				return $this->onLoginDispatch();
+				return $this->setResponseOnLogin();
 
 			//Redirect
 			$uri = $route["controller"]."/".$route["action"]."/".(empty($route["payload"]) ? "" : implode("/", $route["payload"]));
