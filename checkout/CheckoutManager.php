@@ -143,10 +143,6 @@ trait CheckoutManager
 				"edata" => !empty($buy_order) ? "buy_order: $buy_order" : "n/a"
 			]);
 		}
-		finally {
-			//send OK response
-			$this->jsonResponse(200);
-		}
 	}
 
 	/**
