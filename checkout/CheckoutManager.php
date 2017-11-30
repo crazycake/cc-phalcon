@@ -117,7 +117,7 @@ trait CheckoutManager
 				throw new Exception("checkout not found! bo: ".$buy_order);
 
 			//skip already process for dev
-			if(APP_ENV != "local" && $checkout->state == "success")
+			if($checkout->state == "success")
 				throw new Exception("Checkout already processed, buy order: ".$buy_order);
 
 			//1) update status of checkout
