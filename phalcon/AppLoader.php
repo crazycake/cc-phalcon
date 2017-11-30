@@ -1,7 +1,7 @@
 <?php
 /**
  * App Loader Trait. Contains classes loader logic & environment setup
- * Env vars: APP_ENV, APP_PORT, APP_TZ, APP_SERVICE_PATH, APP_HTTPS_ONLY
+ * Env vars: APP_ENV, APP_PORT, APP_TZ, APP_HTTPS_ONLY
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
@@ -96,12 +96,6 @@ trait AppLoader
 
 			// remove default port 80 if set
 			$base_url = str_replace(":80/", "/", $base_url);
-			//set service prefix path?
-			$base_url .= getenv("APP_SERVICE_PATH") ?: "";
-
-			// add missing slash?
-			if (substr($base_url, -1) != "/")
-				$base_url .= "/";
 		}
 
 		//set environment consts & self vars
