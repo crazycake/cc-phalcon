@@ -1,7 +1,7 @@
 <?php
 /**
  * App Loader Trait. Contains classes loader logic & environment setup
- * Env vars: APP_ENV, APP_PORT, APP_TZ, APP_HTTPS_ONLY
+ * Env vars: APP_ENV, APP_PORT, APP_TZ, APP_SERVICE_PATH, APP_HTTPS_ONLY
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
