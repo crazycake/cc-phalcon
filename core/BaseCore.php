@@ -73,6 +73,7 @@ abstract class BaseCore extends Controller
 
 		$host_url = empty($port) ? $host : $host.":".$port;
 
+		//remove default port if set
 		if(substr($host_url, -3) == ":80")
 			$host_url = substr($host_url, 0, strlen($host_url) - 3);
 

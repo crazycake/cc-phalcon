@@ -70,13 +70,10 @@ trait AppLoader
 		ini_set("display_errors", (int)($env != "production"));
 		error_reporting(E_ALL);
 
-		$base_url = false;
+		$base_url = null;
 
 		// set BASE_URL for non CLI, CGI apps
 		if (php_sapi_name() != "cli") {
-
-			if (!isset($_REQUEST))
-				throw new Exception("App::setEnvironment -> Missing {REQUEST} data: ".json_encode($_SERVER)." & ".json_encode($_REQUEST));
 
 			// set default host
 			if (!isset($_SERVER["HTTP_HOST"]))
@@ -93,18 +90,23 @@ trait AppLoader
 			if(!empty($port))
 				$base_url = str_replace(":$port", "", $base_url).":$port";
 
-			// add missing slash
+			// add missing slash?
 			if (substr($base_url, -1) != "/")
 				$base_url .= "/";
 
 			// remove default port 80 if set
 			$base_url = str_replace(":80/", "/", $base_url);
+			//set service prefix path?
+			$base_url .= getenv("APP_SERVICE_PATH") ?: "";
+
+			// add missing slash?
+			if (substr($base_url, -1) != "/")
+				$base_url .= "/";
 		}
 
 		//set environment consts & self vars
 		define("APP_ENV", $env);
 		define("APP_BASE_URL", $base_url);
-		//sd(APP_ENV, APP_BASE_URL);exit;
 	}
 
 	/**
