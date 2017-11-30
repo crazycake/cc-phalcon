@@ -76,7 +76,7 @@ trait AppLoader
 		if (php_sapi_name() != "cli") {
 
 			if (!isset($_REQUEST))
-				throw new Exception("App::setEnvironment -> Missing REQUEST data: ".json_encode($_SERVER)." & ".json_encode($_REQUEST));
+				throw new Exception("App::setEnvironment -> Missing {REQUEST} data: ".json_encode($_SERVER)." & ".json_encode($_REQUEST));
 
 			// set default host
 			if (!isset($_SERVER["HTTP_HOST"]))
