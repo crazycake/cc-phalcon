@@ -28,7 +28,7 @@ class TaskCore extends Task
 	 */
 	public function mainAction()
 	{
-		$this->colorize($this->config->name." CLI App", "NOTE");
+		$this->colorize($this->config->name." app CLI", "NOTE");
 		$this->colorize("Usage: main [param]", "OK");
 		$this->colorize("--------------------", "NOTE");
 		$this->colorize("appConfig: Outputs app configuration in JSON format", "WARNING");
@@ -151,7 +151,7 @@ class TaskCore extends Task
 				throw new Exception("CoreTask:_colorize -> invalid message type: ".$type);
 		}
 		//return output, chr(27) -> escape key
-		$output = chr(27).$open.$text.chr(27).$close."\n";
+		$output = $open.$text.$close."\n";
 
 		//echo output
 		if ($die)

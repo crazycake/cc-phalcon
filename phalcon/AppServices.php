@@ -206,9 +206,7 @@ class AppServices
 	{
 		$di->setShared("mongo", function() {
 
-			$schema = getenv("MONGO_HOST") ?: "mongodb://mongo";
-
-			$mongo = new \MongoDB\Client($schema);
+			$mongo = new \MongoDB\Client(getenv("MONGO_HOST") ?: "mongodb://mongo");
 
 			return $mongo->{getenv("MONGO_DB") ?: "app" };
 		});

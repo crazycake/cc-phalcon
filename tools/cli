@@ -22,6 +22,7 @@ scriptHelp() {
 	echo -e "\033[95m watch <option>: Runs watcher daemon. Options: -m [mailing] \033[0m"
 	echo -e "\033[95m build: build JS & CSS bundles and compile translations. \033[0m"
 	echo -e "\033[95m trans: Update translations po file. \033[0m"
+	echo -e "\033[95m php: Runs app php CLI. \033[0m"
 	echo -e "\033[95m clean: Cleans cache & logs (storage folder).\033[0m"
 	echo -e "\033[97m > admin commands \033[0m"
 	echo -e "\033[95m core: installs/updates core package (requires cc-phalcon project symlink). \033[0m"
@@ -59,6 +60,13 @@ trans)
 
 	# translations (gettext)
 	bash $TOOLS_PATH"translations.bash" find
+	;;
+
+php)
+
+	echo -e "\033[95mRunning app php CLI... \033[0m"
+
+	docker exec -it $APP_NAME bash -c 'php /var/www/app/cli/cli.php main "${@:2}"'
 	;;
 
 clean)
