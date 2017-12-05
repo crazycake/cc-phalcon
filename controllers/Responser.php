@@ -54,9 +54,9 @@ trait Responser
 	 */
 	protected function jsonResponse($code = 200, $payload = null, $type = "", $namespace = "")
 	{
-		//if code is not identified, mark as not acceptable
+		//if code is not identified set default
 		if (!isset($this->RCODES[$code]))
-			$this->RCODES[$code] = $this->RCODES[406];
+			$this->RCODES[$code] = $this->RCODES[400];
 
 		//set response
 		$response = [
