@@ -14,7 +14,7 @@ use \Phalcon\Mvc\Model\Resultset\Simple as Resultset;
  */
 class BaseResultset extends Resultset
 {
-	/* Resultset Methods
+	/* Methods
 	--------------------------------------------------- § -------------------------------------------------------- */
 
 	/**

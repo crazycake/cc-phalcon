@@ -1,6 +1,6 @@
 <?php
 /**
- * Base Model Users Checkouts
+ * Base Model Users Checkouts (Relational)
  * Requires Criptify Util library
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */

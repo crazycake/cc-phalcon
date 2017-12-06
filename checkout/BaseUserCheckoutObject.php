@@ -53,7 +53,7 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
 	/** ------------------------------------------- § ------------------------------------------------ **/
 
 	/**
-	 * Get checkout objects
+	 * Get checkout objects (Relational)
 	 * @param  string $buy_order - Checkout buyOrder
 	 * @return array
 	 */

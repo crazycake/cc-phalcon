@@ -1,6 +1,6 @@
 <?php
 /**
- * Base Model Users Facebook
+ * Base Model Users Facebook (Relational)
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
