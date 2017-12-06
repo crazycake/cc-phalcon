@@ -103,7 +103,7 @@ trait FacebookAuth
 		try {
 			//check signed request
 			if (!$this->_parseSignedRequest($data["signed_request"]))
-				return $this->jsonResponse(400);
+				return $this->jsonResponse(404);
 
 			//call js helper
 			$helper = $this->fb->getJavaScriptHelper();
@@ -247,7 +247,7 @@ trait FacebookAuth
 		$this->logger->debug("Facebook::extendAccessTokenAction -> received encrypted_data: ".$encrypted_data);
 
 		if (empty($encrypted_data))
-			return $this->jsonResponse(400);
+			return $this->jsonResponse(404);
 
 		try {
 			//get encrypted facebook user id and short live access token
@@ -260,7 +260,7 @@ trait FacebookAuth
 			$user_fb = $user_facebook_class::getById($fb_id);
 
 			if (!$user_fb || empty($short_live_fac))
-				$this->jsonResponse(400); //bad request
+				$this->jsonResponse(404);
 
 			//if a session error ocurred, get a new long live access token
 			$this->logger->log("Facebook::extendAccessTokenAction -> Requesting a new long live access token for fb_id: $user_fb->id");
@@ -291,7 +291,7 @@ trait FacebookAuth
 
 		//exception
 		$this->logger->error("Facebook::extendAccessToken -> Exception: ".$exception->getMessage().". fb_id: ".(isset($user_fb->id) ? $user_fb->id : "unknown"));
-		$this->jsonResponse(400);
+		$this->jsonResponse(404);
 	}
 
 	/**
