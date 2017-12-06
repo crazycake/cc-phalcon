@@ -128,8 +128,8 @@ trait FacebookAuth
 			$this->onSuccessAuth($route, $response);
 
 			//handle response, session controller
-			if (isset($data["user_data"]) && $data["user_data"])
-				return $this->setResponseOnLogin(false, $response);
+			if (!empty($data["user_data"]))
+				return $this->setResponseOnLogin($response);
 			else
 				return $this->setResponseOnLogin();
 		}

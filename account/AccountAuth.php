@@ -27,11 +27,10 @@ trait AccountAuth
 	abstract public function onLogin($user_id);
 
 	/**
-	 * Set response on logged in
-	 * @param boolean $session_redirection - enables session redirection
+	 * Set response on logged in (for session implementation)
 	 * @param array $payload - Optional data
 	 */
-	abstract public function setResponseOnLogin($session_redirection = true, $payload = null);
+	abstract public function setResponseOnLogin($payload = null);
 
 	/**
 	 * Session Destructor with Autoredirection (logout)
@@ -181,7 +180,7 @@ trait AccountAuth
 		$this->onLogin($user->id);
 
 		//session controller, dispatch response
-		$this->setResponseOnLogin(false, $payload);
+		$this->setResponseOnLogin($payload);
 	}
 
 	/**
