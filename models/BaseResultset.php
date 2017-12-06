@@ -82,9 +82,10 @@ class BaseResultset extends Resultset
 	 * Merge arbitrary props in _ext array property.
 	 * @static
 	 * @param array $result - The resultset array or a native array
+	 * @param string $field - The field with extentended props
 	 * @param array
 	 */
-	public static function mergeArbitraryProps(&$result = null)
+	public static function mergeArbitraryProps(&$result = null, $field = "ext")
 	{
 		if ($result instanceof Resultset)
 			$result = $this->toArray();
@@ -103,14 +104,14 @@ class BaseResultset extends Resultset
 
 			$props = [];
 
-			if (isset($object["_ext"]))
-				$props = $object["_ext"];
+			if (isset($object[field]))
+				$props = $object[field];
 
 			if (!is_null($props))
 				$object = array_merge($props, $object);
 
 			//unset unwanted props
-			unset($object["_ext"]);
+			unset($object[field]);
 		};
 
 		//loop & merge props
