@@ -201,9 +201,11 @@ trait Requester
 	 */
 	private function _socketAsync($options = [])
 	{
+		$protocol = $options["scheme"] == "https" ? "ssl://" : "";
+
 		//set socket to be opened
 		$socket = fsockopen(
-			$options["host"],
+			$protocol.$options["host"],
 			self::$HTTP_DEFAULT_PORT,
 			$errno,
 			$errstr,
