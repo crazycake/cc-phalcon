@@ -206,12 +206,12 @@ trait Requester
 		//set socket to be opened
 		$socket = fsockopen(
 			$protocol.$options["host"],
-			self::$HTTP_DEFAULT_PORT,
+			$options["port"] ?? self::$HTTP_DEFAULT_PORT,
 			$errno,
 			$errstr,
 			self::$REQUEST_TIMEOUT
 		);
-		//sd($options);
+		//~sd($options);
 
 		// Data goes in the path for a GET request
 		if (strtoupper($options["method"]) == "GET") {

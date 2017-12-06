@@ -150,7 +150,7 @@ class TaskCore extends Task
 			default:
 				throw new Exception("CoreTask:_colorize -> invalid message type: ".$type);
 		}
-		//return output, chr(27) -> escape key
+		//return output
 		$output = $open.$text.$close."\n";
 
 		//echo output
@@ -193,6 +193,10 @@ class TaskCore extends Task
 			$api_key_header_name  = str_replace("_", "-", WsCore::HEADER_API_KEY);
 			$options["headers"]   = [$api_key_header_name => $api_key_header_value];
 		}
+
+		//payload
+		if (!empty($options["payload"]) && $options["encrypt"])
+			$options["payload"] = $this->cryptify->encryptData($options["payload"]);
 
 		//requester
 		$this->newRequest($options);
