@@ -13,9 +13,10 @@ PROJECT_PATH="$(dirname "$PROJECT_PATH")"
 # core directory
 # app namespace
 APP_NAME=${PWD##*/}
-APP_PATH=$PROJECT_PATH"/app/"
-APP_LANGS_PATH=$APP_PATH"langs/"
+
 APP_CORE_PATH=$PROJECT_PATH"/../cc-phalcon/"
+APP_FILE_PATH=$PROJECT_PATH"/app/"
+APP_LANGS_PATH=$APP_FILE_PATH"langs/"
 APP_STORAGE_PATH=$PROJECT_PATH"/storage/"
 
 # translation filenames
@@ -55,28 +56,30 @@ build)
 # search and generate pot files
 find)
 
-	echo -e "\033[95mCoping cache volt files from container...  \033[0m"
+	echo -e "\033[95mCompiling volt files from container...  \033[0m"
 
+	# execute volt compailer in container
+	docker exec -it $APP_NAME bash -c 'php app/cli/cli.php main compileVolt'
 	# copy contianer cache files
 	docker cp $APP_NAME:"/var/www/storage/cache/" $APP_STORAGE_PATH
 
-	echo -e "\033[95mSearching for keyword 'trans' in project files...  \033[0m"
+	echo -e "\033[95mSearching for keyword 'trans' in php files...  \033[0m"
 
 	# find files (exclude some folders)
-	find $APP_CORE_PATH $APP_PATH $APP_STORAGE_PATH"cache/" -type f -name '*.php' > $TEMP_FILE
+	find $APP_CORE_PATH $APP_FILE_PATH $APP_STORAGE_PATH"cache/" -type f -name '*.php' > $TEMP_FILE
 
 	# generate pot file with xgettext
 	xgettext -o $APP_LANGS_PATH"trans.pot" \
-		-d $APP_PATH -L php --from-code=UTF-8 \
+		-d $APP_FILE_PATH -L php --from-code=UTF-8 \
 		-k'trans' -k'transPlural:1,2' \
 		--copyright-holder="CrazyCake" \
 		--package-name="crazycake" \
 		--package-version='`date -u +"%Y-%m-%dT%H:%M:%SZ"`' \
 		--no-wrap -f $TEMP_FILE
 
-	# delete temp file
+	# delete temp files
 	rm $TEMP_FILE
-	rm -rf $APP_STORAGE_PATH"cache" && mkdir -p $APP_STORAGE_PATH"cache" && touch $APP_STORAGE_PATH"cache/.gitkeep"
+	find $APP_STORAGE_PATH"cache/" -mindepth 1 -type f -name '*.php' -delete
 
 	# merge po file
 	find $APP_LANGS_PATH -mindepth 1 -maxdepth 1 -type d | while read CODE_DIR ; do

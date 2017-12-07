@@ -9,8 +9,10 @@ namespace CrazyCake\Core;
 //phalcon imports
 use Phalcon\CLI\Task;
 use Phalcon\Exception;
+use Phalcon\Mvc\View\Engine\Volt\Compiler as VoltCompiler;
 //core
 use CrazyCake\Phalcon\App;
+use CrazyCake\Phalcon\AppServices;
 use CrazyCake\Controllers\Requester;
 
 /**
@@ -33,6 +35,7 @@ class TaskCore extends Task
 		$this->colorize("--------------------", "NOTE");
 		$this->colorize("appConfig: Outputs app configuration in JSON format", "WARNING");
 		$this->colorize("revAssets: Generates JS & CSS bundles revision files", "WARNING");
+		$this->colorize("compileVolt: Compile volt files into cache folder", "WARNING");
 	}
 
 	/* --------------------------------------------------- § -------------------------------------------------------- */
@@ -106,6 +109,35 @@ class TaskCore extends Task
 
 		//print output
 		$this->colorize("Created revision assets for version: ".$this->config->version, "OK", true);
+	}
+
+	/**
+	 * Compiles all volt files
+	 * @param array $args - The args array
+	 */
+	public function compileVoltAction($args = [])
+	{
+		$conf = $this->config;
+
+		// new volt compiler
+		$compiler = new VoltCompiler();
+		$compiler->setOptions([
+			"compiledPath"      => STORAGE_PATH."cache/",
+			"compiledSeparator" => "_",
+		]);
+		// extend functions
+		AppServices::setVoltCompilerFunctions($compiler);
+
+		// get volt files
+		$files = $this->getDirectoryFiles(PROJECT_PATH."ui/volt/");
+
+		$i = 0;
+		foreach ($files as $file) {
+			$compiler->compile($file);
+			$i++;
+		}
+
+		$this->colorize("Compiled $i files.", "OK");
 	}
 
 	/* --------------------------------------------------- § -------------------------------------------------------- */
@@ -200,5 +232,31 @@ class TaskCore extends Task
 
 		//requester
 		$this->newRequest($options);
+	}
+
+	/**
+	 * Get all files in folder (recursive)
+	 * @param  string $dir - The input directories
+	 * @param  array $results - The recursive results
+	 * @return array - An array of files
+	 */
+	protected function getDirectoryFiles($dir, &$results = [])
+	{
+		$files = scandir($dir);
+
+		foreach($files as $key => $value) {
+
+			$path = realpath($dir."/".$value);
+
+			if($value == "." || $value == "..")
+				continue;
+
+			if(is_dir($path))
+				$this->getDirectoryFiles($path, $results);
+			else
+				$results[] = $path;
+		}
+
+		return $results;
 	}
 }

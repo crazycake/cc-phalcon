@@ -287,81 +287,6 @@ class AppServices
 	}
 
 	/**
-	 * Set View services
-	 * @param object $di - The DI object
-	 */
-	private function _setViewService(&$di)
-	{
-		// setting up the view component
-		$view_engines = [
-			".volt" => function($view, $di_instance) {
-				// instance a new volt engine
-				$volt = new \Phalcon\Mvc\View\Engine\Volt($view, $di_instance);
-				// set volt engine options
-				$volt->setOptions([
-					"compiledPath"      => STORAGE_PATH."cache/",
-					"compiledSeparator" => "_",
-				]);
-				// get compiler
-				$compiler = $volt->getCompiler();
-
-				//++ Binds some PHP functions to volt
-
-				//++ str_replace
-				$compiler->addFunction("replace", "str_replace");
-				//++ preg_replace
-				$compiler->addFunction("preg_replace", "preg_replace");
-				//++ substr
-				$compiler->addFunction("substr", "substr");
-				//++ strrpos
-				$compiler->addFunction("strrpos", "strrpos");
-				//++ strtotime
-				$compiler->addFunction("strtotime", "strtotime");
-				//++ number_format
-				$compiler->addFunction("number_format", "number_format");
-				//++ in_array
-				$compiler->addFunction("in_array", "in_array");
-				//++ resizedImagePath
-				$compiler->addFunction("resized_image_path", function($resolvedArgs, $exprArgs) {
-					return "CrazyCake\Helpers\Images::resizedImagePath(".$resolvedArgs.")";
-				});
-
-				return $volt;
-			},
-			".phtml" => "Phalcon\Mvc\View\Engine\Php",
-		];
-
-		// simple view service (used for mailing templates)
-		$di->setShared("simpleView", function() use (&$view_engines) {
-
-			//simpleView
-			$view = new \Phalcon\Mvc\View\Simple();
-			//set directory views
-			$view->setViewsDir(PROJECT_PATH."ui/volt/");
-			//register volt view engine
-			$view->registerEngines($view_engines);
-
-			return $view;
-		});
-
-		// skip api for view service
-		if(MODULE_NAME == "api")
-			return;
-
-		// set view service
-		$di->setShared("view", function() use (&$view_engines) {
-
-			$view = new \Phalcon\Mvc\View();
-			//set directory views
-			$view->setViewsDir(PROJECT_PATH."ui/volt/");
-			//register volt view engine
-			$view->registerEngines($view_engines);
-
-			return $view;
-		});
-	}
-
-	/**
 	 * Set Browser services
 	 * @param object $di - The DI object
 	 */
@@ -403,6 +328,89 @@ class AppServices
 			$flash->setAutoescape(false);
 
 			return $flash;
+		});
+	}
+
+	/**
+	 * Set View services
+	 * @param object $di - The DI object
+	 */
+	private function _setViewService(&$di)
+	{
+		// setting up the view component
+		$engines = [
+			".volt" => function($view, $di_instance) {
+
+				// instance a new volt engine
+				$volt = new \Phalcon\Mvc\View\Engine\Volt($view, $di_instance);
+				// set volt engine options
+				$volt->setOptions([
+					"compiledPath"      => STORAGE_PATH."cache/",
+					"compiledSeparator" => "_",
+				]);
+
+				// get compiler
+				$compiler = $volt->getCompiler();
+				// binds some PHP functions to volt
+				self::setVoltCompilerFunctions($compiler);
+
+				return $volt;
+			}
+		];
+
+		// simple view service (used for mailing templates)
+		$di->setShared("simpleView", function() use (&$engines) {
+
+			//simpleView
+			$view = new \Phalcon\Mvc\View\Simple();
+			//set directory views
+			$view->setViewsDir(PROJECT_PATH."ui/volt/");
+			//register volt view engine
+			$view->registerEngines($engines);
+
+			return $view;
+		});
+
+		// skip api for view service
+		if(MODULE_NAME == "api")
+			return;
+
+		// set view service
+		$di->setShared("view", function() use (&$engines) {
+
+			$view = new \Phalcon\Mvc\View();
+			//set directory views
+			$view->setViewsDir(PROJECT_PATH."ui/volt/");
+			//register volt view engine
+			$view->registerEngines($engines);
+
+			return $view;
+		});
+	}
+
+	/**
+	 * Sets volt compiler functions
+	 * @param object $compiler - The compiler object
+	 */
+	public static function setVoltCompilerFunctions(&$compiler)
+	{
+		//++ str_replace
+		$compiler->addFunction("replace", "str_replace");
+		//++ preg_replace
+		$compiler->addFunction("preg_replace", "preg_replace");
+		//++ substr
+		$compiler->addFunction("substr", "substr");
+		//++ strrpos
+		$compiler->addFunction("strrpos", "strrpos");
+		//++ strtotime
+		$compiler->addFunction("strtotime", "strtotime");
+		//++ number_format
+		$compiler->addFunction("number_format", "number_format");
+		//++ in_array
+		$compiler->addFunction("in_array", "in_array");
+		//++ resizedImagePath
+		$compiler->addFunction("resized_image_path", function($resolvedArgs, $exprArgs) {
+			return "CrazyCake\Helpers\Images::resizedImagePath(".$resolvedArgs.")";
 		});
 	}
 }
