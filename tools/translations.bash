@@ -10,7 +10,6 @@ set -e
 PROJECT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PROJECT_PATH="$(dirname "$PROJECT_PATH")"
 
-# core directory
 # app namespace
 APP_NAME=${PWD##*/}
 
