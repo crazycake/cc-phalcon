@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Facebook Trait - Facebook php sdk v5.0
  * Requires AccountSession
@@ -74,7 +75,9 @@ trait FacebookAuth
 			$conf["trans"] = \TranslationController::getCoreTranslations("facebook");
 
 		//set config
-		$this->facebook_auth_conf = $conf;
+		$this->facebook_auth_conf = array_merge([
+			"login_uri" => "signIn"
+		], $conf);
 
 		//set Facebook Object
 		if (is_null($this->fb)) {
@@ -149,21 +152,31 @@ trait FacebookAuth
 
 	/**
 	 * Handler - Login by redirect action via facebook login URL
-	 * @param string $encrypted_data - The encrypted route data
 	 * @return json response
 	 */
-	public function loginByRedirectAction($encrypted_data = "")
+	public function loginByRedirectAction()
 	{
 		try {
+
+			// get params
+			$get_params = $_GET;
+			//get route data
+			$route = $this->session->get("facebook-login");
+
+			$this->logger->debug("FacebookAuth::loginByRedirectAction -> got params ".print_r($get_params, true)."\n".print_r($route , true));
+
+			// validate facebook GET parameters
+			if(empty($get_params["code"]) || empty($get_params["state"]))
+				throw new Exception("Invalid facebook parameters: ".print_r($get_params, true));
+
 			//get helper object
 			$helper = $this->fb->getRedirectLoginHelper();
-			$fac    = $helper->getAccessToken();
+			$helper->getPersistentDataHandler()->set("state", $get_params["state"]);
 
-			//get decrypted params
-			$route = (array)$this->cryptify->decryptData($encrypted_data, true);
+			$fac = $helper->getAccessToken();
 
 			if (empty($route))
-				throw new Exception($this->facebook_auth_conf["trans"]["OAUTH_REDIRECTED"]);
+				throw new Exception("Invalid application token: $route");
 
 			//handle login
 			$response = $this->_loginUser($fac);
@@ -181,7 +194,9 @@ trait FacebookAuth
 				return $this->setResponseOnLogin();
 
 			//Redirect
-			$uri = $route["controller"]."/".$route["action"]."/".(empty($route["payload"]) ? "" : implode("/", $route["payload"]));
+			$uri = $route["controller"]."/".$route["action"]."/"
+					.(!empty($route["payload"]) ? implode("/", $route["payload"]) : "");
+
 			return $this->redirectTo($uri);
 		}
 		catch (FacebookResponseException $e) { $exception = $e; }
@@ -197,7 +212,11 @@ trait FacebookAuth
 
 		//set message
 		$msg = $this->facebook_auth_conf["trans"]["OAUTH_REDIRECTED"]."\n".$e->getMessage();
-		$this->view->setVar("error_message", $msg);
+
+		$this->view->setVars([
+			"error_message" => $msg,
+			"go_back_url"   => $this->baseUrl($this->facebook_auth_conf["login_uri"])
+		]);
 
 		$this->dispatcher->forward(["controller" => "error", "action" => "internal"]);
 	}
@@ -212,22 +231,19 @@ trait FacebookAuth
 	public function loadFacebookLoginURL($route = [], $scope = null, $validation = false)
 	{
 		//check link perms
-		if (empty($scope)) {
+		if (empty($scope))
 			$scope = $this->config->facebook->appScope;
-		}
 
-		$route = [
-			"controller" => isset($route["controller"]) ? $route["controller"] : null,
-			"action"     => isset($route["action"]) ? $route["action"] : null,
-			"payload"    => isset($route["payload"]) ? $route["payload"] : null,
-			"strategy"   => "redirection",
-			"validation" => $validation ? $scope : false
-		];
+		$this->session->set("facebook-login", [
+			"controller" => $route["controller"] ?? null,
+			"action"     => $route["action"] ?? null,
+			"payload"    => $route["payload"] ?? null,
+			"validation" => $validation ? $scope : false,
+			"strategy"   => "redirection"
+		]);
 
-		//encrypt data
-		$route = $this->cryptify->encryptData($route);
 		//set callback
-		$callback = $this->baseUrl("facebook/loginByRedirect/".$route);
+		$callback = $this->baseUrl("facebook/loginByRedirect/");
 		//set helper
 		$helper = $this->fb->getRedirectLoginHelper();
 		//get the url
