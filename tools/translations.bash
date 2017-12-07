@@ -79,6 +79,8 @@ find)
 	# delete temp files
 	rm $TEMP_FILE
 	find $APP_STORAGE_PATH"cache/" -mindepth 1 -type f -name '*.php' -delete
+	# also in container
+	docker exec -it $APP_NAME bash -c 'find storage/cache -type f \( ! -iname ".*" \) -print0 | xargs -0 rm'
 
 	# merge po file
 	find $APP_LANGS_PATH -mindepth 1 -maxdepth 1 -type d | while read CODE_DIR ; do
