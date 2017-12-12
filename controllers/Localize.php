@@ -64,7 +64,6 @@ trait Localize
 				"PASS_MAIL_SENT"    => "Te hemos enviado un correo a {email} para recuperar tu contraseña.",
 				"NEW_PASS_SAVED"    => "Tu contraseña ha sido guardada.",
 				"PASS_TOO_SHORT"    => "Debes ingresar una contraseña de al menos 8 caracteres.",
-				"FORM_EXPIRED"      => "Este formulario ha expirado, prueba recuperando tu contraseña nuevamente.",
 				"CREATE_PASS"       => "Crea tu nueva contraseñas",
 				"RECAPTCHA_FAILED"  => "No hemos logrado verficar el reCaptcha, por favor inténtalo de nuevo."
 			],
