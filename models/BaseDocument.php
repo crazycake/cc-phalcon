@@ -28,7 +28,7 @@ class BaseDocument
 	 * @static
 	 * @return string The current class name
 	 */
-	public static function who()
+	public static function entity()
 	{
 		return __CLASS__;
 	}

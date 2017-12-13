@@ -113,17 +113,17 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
 		//get classes
 		$user_checkout_class = App::getClass("user_checkout");
 		//get checkouts objects class
-		$class_model = static::who();
+		$entity = static::who();
 
 		//get pending checkouts items quantity
 		$objects = $user_checkout_class::getByPhql(
 			//phql
 			"SELECT SUM(quantity) AS q
-			FROM $class_model AS objects
-			INNER JOIN $user_checkout_class AS checkout ON checkout.buy_order = objects.buy_order
-			WHERE objects.object_id = :object_id:
-			AND objects.object_class = :object_class:
-			AND checkout.state = 'pending'
+			 FROM $entity AS objects
+			 INNER JOIN $user_checkout_class AS checkout ON checkout.buy_order = objects.buy_order
+			 WHERE objects.object_id = :object_id:
+			 AND objects.object_class = :object_class:
+			 AND checkout.state = 'pending'
 			",
 			//bindings
 			["object_id" => $object_id, "object_class" => $object_class]
@@ -176,8 +176,8 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
 			//update record throught query (safer than ORM)
 			self::executePhql(
 				"UPDATE $object_class
-					SET quantity = ?1, state = ?2
-					WHERE id = ?0
+				 SET quantity = ?1, state = ?2
+				 WHERE id = ?0
 				",
 				[$orm_object->id, $updated_quantity, $state]
 			);

@@ -26,12 +26,12 @@ class Base extends \Phalcon\Mvc\Model
 	---------------------------------------------- § -------------------------------------------------- */
 
 	/**
-	 * Late static binding
-	 * @link http://php.net/manual/en/language.oop5.late-static-bindings.php
+	 * Entity (class name)
 	 * @static
+	 * @link http://php.net/manual/en/language.oop5.late-static-bindings.php
 	 * @return string The current class name
 	 */
-	public static function who()
+	public static function entity()
 	{
 		return __CLASS__;
 	}
@@ -99,7 +99,7 @@ class Base extends \Phalcon\Mvc\Model
 			$binds = [];
 
 		if (is_null($className))
-			$className = static::who();
+			$className = static::entity();
 
 		$objects = new $className();
 		$result  = new BaseResultset(null, $objects, $objects->getReadConnection()->query($sql, $binds));

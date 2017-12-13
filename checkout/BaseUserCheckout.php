@@ -98,15 +98,15 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 	public function initialize()
 	{
 		//get class
-		$user_class = App::getClass("user", false);
+		$user_entity = App::getClass("user", false);
 
-		$user_checkout_object_class = App::getClass("user_checkout_object", false);
+		$user_checkout_object_entity = App::getClass("user_checkout_object", false);
 
 		//model relations
-		$this->hasOne("user_id", $user_class, "id");
+		$this->hasOne("user_id", $user_entity, "id");
 
-		if(class_exists($user_checkout_object_class))
-			$this->hasMany("buy_order", $user_checkout_object_class, "buy_order");
+		if(class_exists($user_checkout_object_entity))
+			$this->hasMany("buy_order", $user_checkout_object_entity, "buy_order");
 	}
 
 	/**
@@ -180,24 +180,24 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 
 	/**
 	 * Creates a new buy order
-	 * @param object $checkoutObj -The checkout object
+	 * @param object $checkout_obj -The checkout object
 	 * @return mixed [object] - The checkout ORM object
 	 */
-	public static function newBuyOrder($checkoutObj = null)
+	public static function newBuyOrder($checkout_obj = null)
 	{
-		if (is_null($checkoutObj))
+		if (is_null($checkout_obj))
 			return false;
 
 		//get DI reference (static)
 		$di = \Phalcon\DI::getDefault();
 		//get classes
-		$checkout_class_name = static::who();
+		$checkout_entity = static::who();
 		//get checkouts objects class
-		$checkout_object_class_name = App::getClass("user_checkout_object");
+		$checkout_object_entity = App::getClass("user_checkout_object");
 
 		//generates buy order
 		$buy_order = self::newBuyOrderCode();
-		$checkoutObj->buy_order = $buy_order;
+		$checkout_obj->buy_order = $buy_order;
 
 		//log statement
 		$di->getShared("logger")->debug("BaseUserCheckout::newBuyOrder -> Saving BuyOrder: $buy_order");
@@ -205,13 +205,13 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 		try {
 
 			//creates object with some checkout object props
-			$checkout = new $checkout_class_name();
+			$checkout = new $checkout_entity();
 
 			//begin trx
 			$di->getShared("db")->begin();
 
 			//implode sub-arrays
-			$checkout_data = (array)$checkoutObj;
+			$checkout_data = (array)$checkout_obj;
 			//unset checkout objects
 			unset($checkout_data["objects"]);
 
@@ -226,16 +226,16 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 				throw new Exception("A DB error ocurred saving in checkouts model.");
 
 			//save each checkout object
-			foreach ($checkoutObj->objects as $obj) {
+			foreach ($checkout_obj->objects as $obj) {
 
 				//creates an object
-				$checkoutObj = new $checkout_object_class_name();
+				$new_checkout_obj = new $checkout_object_entity();
 				//props
 				$props = (array)$obj;
 				$props["buy_order"] = $buy_order;
 
-				if (!$checkoutObj->save($props))
-					throw new Exception("A DB error ocurred saving in checkoutsObjects model: ".$checkoutObj->messages(true));
+				if (!$new_checkout_obj->save($props))
+					throw new Exception("A DB error ocurred saving in checkoutsObjects model: ".$new_checkout_obj->messages(true));
 			}
 
 			//commit transaction
@@ -257,10 +257,10 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 	 */
 	public static function deleteExpired()
 	{
-		if(!class_exists("\Carbon\Carbon"))
-			return false;
-
 		try {
+
+			if(!class_exists("\Carbon\Carbon"))
+				throw new Exception("Carbon library class not found.");
 
 			//use carbon library to handle time
 			$now = new \Carbon\Carbon();
