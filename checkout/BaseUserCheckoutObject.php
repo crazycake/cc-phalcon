@@ -1,6 +1,6 @@
 <?php
 /**
- * Base Model Users Checkouts Objects
+ * Base Model Users Checkouts Objects (Relational)
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
