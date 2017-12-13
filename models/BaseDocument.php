@@ -45,11 +45,8 @@ class BaseDocument
 		try { $object = $mongo->{$collection}->findOne(["_id" => new \MongoDB\BSON\ObjectId($id)]); }
 		catch (\Exception $e) { $object = false; }
 
-		if(!$object)
-			return null;
-
 		// return reduced object
-		return json_decode(json_encode($object->jsonSerialize()));
+		return $object ? $object->jsonSerialize() : null;
 	}
 
 

@@ -174,10 +174,10 @@ trait CheckoutManager
 			//get object props
 			$object_class   = $props[1];
 			$object_id      = $props[2];
-			$$object_entity = "\\$object_class";  //prefixed class
+			$object_entity = "\\$object_class";  //prefixed class
 
 			//create object if class dont exists
-			$object = class_exists($$object_entity) ? $$object_entity::getById($object_id) : new \stdClass();
+			$object = class_exists($object_entity) ? $object_entity::getById($object_id) : new \stdClass();
 			//~sd($object_class, $object_id, $object->toArray());
 
 			//append object class
