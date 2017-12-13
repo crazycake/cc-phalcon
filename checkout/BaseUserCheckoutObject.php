@@ -74,7 +74,7 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
 			//create a new object and clone common props
 			$checkout_object = (object)$obj->toArray();
 			//get object local props
-			$props = !class_exists($object_class) ?: $object_class::findFirstById($obj->object_id);
+			$props = !class_exists($object_class) ?: $object_class::getById($obj->object_id);
 
 			if (!$props) continue;
 
@@ -84,7 +84,7 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
 			$checkout_object->currency = $props->currency ?? "CLP";
 
 			//UI props
-			$checkout_object->price_formatted = Forms::formatPrice($props->price, $props->currency);
+			$checkout_object->price_formatted = Forms::formatPrice($checkout_object->price, $checkout_object->currency);
 
 			array_push($result, $checkout_object);
 		}
