@@ -19,13 +19,20 @@ class BaseDocument
 	 */
 	public static $COLLECTION = "";
 
+
+	/**
+	 * Default timezone
+	 * @var string
+	 */
+	public static $TIMEZONE = "America/Santiago";
+
 	/* Methods
 	---------------------------------------------- § -------------------------------------------------- */
 
 	/**
-	 * Late static binding
-	 * @link http://php.net/manual/en/language.oop5.late-static-bindings.php
+	 * Entity (class name)
 	 * @static
+	 * @link http://php.net/manual/en/language.oop5.late-static-bindings.php
 	 * @return string The current class name
 	 */
 	public static function entity()
@@ -62,6 +69,6 @@ class BaseDocument
 		else if(is_string($date))
 			$date = new \DateTime($date);
 
-		return new \MongoDB\BSON\UTCDateTime( $date->getTimestamp() * 1000 );
+		return new \MongoDB\BSON\UTCDateTime($date->getTimestamp() * 1000);
 	}
 }
