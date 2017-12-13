@@ -172,12 +172,12 @@ trait CheckoutManager
 				continue;
 
 			//get object props
-			$object_class    = $props[1];
-			$object_id       = $props[2];
-			$pf_object_class = "\\$object_class"; //prefixed class
+			$object_class   = $props[1];
+			$object_id      = $props[2];
+			$$object_entity = "\\$object_class";  //prefixed class
 
 			//create object if class dont exists
-			$object = class_exists($pf_object_class) ? $pf_object_class::getById($object_id) : new \stdClass();
+			$object = class_exists($$object_entity) ? $$object_entity::getById($object_id) : new \stdClass();
 			//~sd($object_class, $object_id, $object->toArray());
 
 			//append object class
@@ -192,7 +192,12 @@ trait CheckoutManager
 				$checkout->amount += $q * $object->price;
 
 			//create new checkout object without ORM props
-			$checkout_object = (new $user_checkout_object_class())->reduce();
+			$checkout_object = (new $user_checkout_object_class());
+
+			//reduce object?
+			if(method_exists($checkout_object, "reduce"))
+				$checkout_object = $checkout_object->reduce();
+
 			//props
 			$checkout_object->object_class = $object_class;
 			$checkout_object->object_id    = $object_id;

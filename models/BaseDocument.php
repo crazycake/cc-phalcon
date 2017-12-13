@@ -43,7 +43,7 @@ class BaseDocument
 		$collection = static::$COLLECTION;
 
 		try { $object = $mongo->{$collection}->findOne(["_id" => new \MongoDB\BSON\ObjectId($id)]); }
-		catch (Exception $e) { $object = false; }
+		catch (\Exception $e) { $object = false; }
 
 		if(!$object)
 			return null;
