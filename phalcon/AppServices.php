@@ -404,8 +404,6 @@ class AppServices
 		$compiler->addFunction("strrpos", "strrpos");
 		//++ strtotime
 		$compiler->addFunction("strtotime", "strtotime");
-		//++ gmdate
-		$compiler->addFunction("gmdate", "gmdate");
 		//++ number_format
 		$compiler->addFunction("number_format", "number_format");
 		//++ in_array
