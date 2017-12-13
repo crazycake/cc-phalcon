@@ -191,7 +191,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 		//get DI reference (static)
 		$di = \Phalcon\DI::getDefault();
 		//get classes
-		$checkout_entity = static::who();
+		$checkout_entity = static::entity();
 		//get checkouts objects class
 		$checkout_object_entity = App::getClass("user_checkout_object");
 

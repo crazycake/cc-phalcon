@@ -135,7 +135,7 @@ class BaseUserToken extends \CrazyCake\Models\Base
 	public static function newToken($user_id = 0, $type = "activation")
 	{
 		//Saves a new token
-		$entity = static::who();
+		$entity = static::entity();
 		$token  = new $entity();
 
 		$di   = \Phalcon\DI::getDefault();

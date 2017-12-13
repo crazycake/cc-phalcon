@@ -113,7 +113,7 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
 		//get classes
 		$user_checkout_class = App::getClass("user_checkout");
 		//get checkouts objects class
-		$entity = static::who();
+		$entity = static::entity();
 
 		//get pending checkouts items quantity
 		$objects = $user_checkout_class::getByPhql(
