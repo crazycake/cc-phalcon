@@ -24,13 +24,6 @@ trait Requester
 	 */
 	protected static $REQUEST_TIMEOUT = 30.0;
 
-	/**
-	 * HTTP Default port
-	 * @static
-	 * @var integer
-	 */
-	protected static $HTTP_DEFAULT_PORT = 80;
-
 	/* --------------------------------------------------- § -------------------------------------------------------- */
 
 	/**
@@ -201,12 +194,13 @@ trait Requester
 	 */
 	private function _socketAsync($options = [])
 	{
-		$protocol = $options["scheme"] == "https" ? "ssl://" : "";
+		$ssl      = $options["scheme"] == "https";
+		$protocol = $ssl ? "ssl://" : "";
 
 		//set socket to be opened
 		$socket = fsockopen(
 			$protocol.$options["host"],
-			$options["port"] ?? self::$HTTP_DEFAULT_PORT,
+			$options["port"] ?? ($ssl ? 443 : 80),
 			$errno,
 			$errstr,
 			self::$REQUEST_TIMEOUT
