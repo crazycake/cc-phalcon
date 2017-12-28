@@ -115,6 +115,8 @@ trait Requester
 			$params = "/".$options["payload"];
 		}
 
+		$di->getShared("logger")->debug("Requester::_getRequest [".$options["uri"]."] options: ".json_encode($guzzle_options, JSON_UNESCAPED_SLASHES));
+
 		//set promise
 		$promise = $client->requestAsync("GET", $options["uri"].$params, $guzzle_options);
 
