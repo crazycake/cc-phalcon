@@ -74,7 +74,7 @@ class TaskCore extends Task
 
 		//decimal version
 		$ver = str_replace(".", "", $this->config->version);
-		$this->colorize("Ok, version $ver", "NOTE");
+		$this->colorize("Current version: $ver", "NOTE");
 
 		//clean old files
 		$files = scandir($assets_path);
