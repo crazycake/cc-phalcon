@@ -95,6 +95,8 @@ trait Requester
 	 */
 	private function _getRequest($client, $options = [])
 	{
+		$di = \Phalcon\DI::getDefault();
+
 		//curl options
 		$guzzle_options = [
 			"curl" => [
@@ -115,7 +117,7 @@ trait Requester
 			$params = "/".$options["payload"];
 		}
 
-		$di->getShared("logger")->debug("Requester::_getRequest [".$options["uri"]."] options: ".json_encode($guzzle_options, JSON_UNESCAPED_SLASHES));
+		$di->getShared("logger")->debug("Requester::_getRequest [".$options["uri"]."] options: ".print_r($guzzle_options, true));
 
 		//set promise
 		$promise = $client->requestAsync("GET", $options["uri"].$params, $guzzle_options);
@@ -151,7 +153,7 @@ trait Requester
 		if (!empty($options["body"]))
 			$guzzle_options["body"] = $options["body"];
 
-		$di->getShared("logger")->debug("Requester::_postRequest [".$options["uri"]."] options: ".json_encode($guzzle_options, JSON_UNESCAPED_SLASHES));
+		$di->getShared("logger")->debug("Requester::_postRequest [".$options["uri"]."] options: ".print_r($guzzle_options, true));
 
 		//set promise
 		$promise = $client->requestAsync("POST", $options["uri"], $guzzle_options);
