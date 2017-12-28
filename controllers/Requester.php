@@ -130,6 +130,8 @@ trait Requester
 	 */
 	private function _postRequest($client, $options = [])
 	{
+		$di = \Phalcon\DI::getDefault();
+
 		//curl options
 		$guzzle_options = [
 			"form_params" => $options["payload"],
@@ -146,6 +148,8 @@ trait Requester
 		//set body?
 		if (!empty($options["body"]))
 			$guzzle_options["body"] = $options["body"];
+
+		$di->getShared("logger")->debug("Requester::_postRequest [".$options["uri"]."] options: ".json_encode($guzzle_options, JSON_UNESCAPED_SLASHES));
 
 		//set promise
 		$promise = $client->requestAsync("POST", $options["uri"], $guzzle_options);
