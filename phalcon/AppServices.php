@@ -204,17 +204,18 @@ class AppServices
 	 */
 	private function _setMongoService(&$di)
 	{
-		$di->setShared("mongo", function() {
+		$uri = getenv("MONGO_HOST") ? str_replace("+","=", getenv("MONGO_HOST")) : "mongodb://mongo";
 
-			$uri = getenv("MONGO_HOST") ? str_replace("+","=", getenv("MONGO_HOST")) : "mongodb://mongo";
+		$di->setShared("mongo", function() use ($uri) {
 
 			$mongo = new \MongoDB\Client($uri);
 
 			return $mongo->{getenv("MONGO_DB") ?: "app" };
 		});
 
-		$di->setShared("collectionManager", function() {
-			return new \Phalcon\Mvc\Collection\Manager();
+		$di->setShared("mongoManager", function() use ($uri) {
+
+			return new 	\MongoDB\Driver\Manager($uri);;
 		});
 	}
 
