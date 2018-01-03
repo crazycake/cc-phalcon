@@ -215,7 +215,7 @@ class AppServices
 
 		$di->setShared("mongoManager", function() use ($uri) {
 
-			return new 	\MongoDB\Driver\Manager($uri);;
+			return new 	\MongoDB\Driver\Manager($uri);
 		});
 	}
 
