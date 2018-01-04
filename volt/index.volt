@@ -73,14 +73,12 @@
 				APP = {{ js_app }};
 			</script>
 		{% else %}
-			<script>
-				console.log('Core -> (warning) javascript APP or UA scope vars are not defined.');
-			</script>
+			<script> console.log('Core -> (warning) javascript APP or UA scope vars are not defined.'); </script>
 		{% endif %}
 
 	</head>
 	{# Flush the buffer (optimization) #}
-	<?php  flush(); ?>
+	<?php flush(); ?>
 	<body class="{{ 'ua-'~client.browser|lower~' '~client.platform|lower }}{{ html_body_class is defined ? ' '~html_body_class : '' }}">
 
 		{# app content wrapper #}
@@ -108,7 +106,17 @@
 		{% endif %}
 
 		{# Google Analytics (async loading) #}
-		{% if config.google is defined and config.google.analyticsUA is defined %}
+		{% if config.google.analyticsUA is not empty %}
+			<script>
+				window.ga=function(){ga.q.push(arguments)};ga.q=[];ga.l=+new Date;
+				ga('create','{{ config.google.analyticsUA }}','auto');
+				ga('send','pageview')
+			</script>
+			<script src="//www.google-analytics.com/analytics.js" async defer></script>
+		{% endif %}
+
+		{# Google Tag Manager (async loading) #}
+		{% if config.google.analyticsUA is not empty %}
 			<script>
 				window.ga=function(){ga.q.push(arguments)};ga.q=[];ga.l=+new Date;
 				ga('create','{{ config.google.analyticsUA }}','auto');
@@ -118,7 +126,7 @@
 		{% endif %}
 
 		{# recaptcha plugin #}
-		{% if js_recaptcha is defined and js_recaptcha %}
+		{% if js_recaptcha is not empty %}
 			<script src="//www.google.com/recaptcha/api.js?onload={{ js_recaptcha }}&amp;render=explicit&amp;hl={{ client.lang }}" async defer></script>
 		{% endif %}
 
