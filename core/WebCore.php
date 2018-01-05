@@ -55,6 +55,13 @@ abstract class WebCore extends BaseCore implements WebSecurity
 		//redirect non https?
 		$this->_handleHttps();
 
+		//check browser is supported
+		if (!$this->checkBrowserSupport($this->client->browser, $this->client->shortVersion) &&
+			$this->router->getControllerName() != "error") {
+
+			return $this->redirectTo("error/oldBrowser");
+		}
+
 		//set language translations
 		$this->_setLanguage();
 
@@ -77,18 +84,8 @@ abstract class WebCore extends BaseCore implements WebSecurity
 
 		//set app assets
 		$this->_setAppAssets();
-		//set js,volt vars in view
+		//set js & volt vars in view
 		$this->_setAppViewVars();
-
-		//check browser is supported (child method)
-		$supported = $this->checkBrowserSupport($this->client->browser, $this->client->shortVersion);
-
-		//prevents loops
-		if (!$supported && !$this->dispatcher->getPreviousControllerName()) {
-
-			$this->dispatcher->forward(["controller" => "error", "action" => "oldBrowser"]);
-			$this->dispatcher->dispatch();
-		}
 	}
 
 	/* --------------------------------------------------- § -------------------------------------------------------- */
