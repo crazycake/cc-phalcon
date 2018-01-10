@@ -62,16 +62,16 @@ trait Crud
 	{
 		//default configurations
 		$defaults = [
-			"pk"           	   => "id",         // primary key
-			"entity"   	   	   => "",           // entity in uppercase
-			"entity_lower" 	   => "",           // entity in lowercase
-			"entity_component" => "",   		// entity HTML component name
-			"entity_label" 	   => "Colección",
-			"new_label"    	   => "Nuevo",
-			"dfields"  	   	   => [],
-			"sfields"  	   	   => [],
-			"cfields"  	   	   => [],
-			"actions"	   	   => ["update", "delete"]
+			"pk"               => "id",         // primary key
+			"entity"           => "",           // entity in uppercase
+			"entity_lower"     => "",           // entity in lowercase
+			"entity_component" => "",           // entity HTML component name
+			"entity_label"     => "Colección",
+			"new_label"        => "Nuevo",
+			"dfields"          => [],	//data fields, head row
+			"sfields"          => [],	//search fields
+			"cfields"          => [],	//custom fields
+			"actions"          => ["update", "delete"]
 		];
 
 		//merge confs
@@ -228,6 +228,7 @@ trait Crud
 			$this->jsonResponse(200);
 		}
 		catch (\Exception $e) {
+
 			$this->jsonResponse(400, $e->getMessage());
 		}
 	}
@@ -300,6 +301,7 @@ trait Crud
 			$this->jsonResponse(200);
 		}
 		catch (\Exception $e) {
+
 			$this->jsonResponse(400, $e->getMessage());
 		}
 	}
@@ -383,6 +385,7 @@ trait Crud
 
 		//baseUrl
 		$url = $this->baseUrl("$entity_lower/list?page=");
+
 		//limits
 		$from   = ($current_page == 1) ? 1 : ($per_page*$current_page - $per_page + 1);
 		$to     = $from + $per_page - 1;
@@ -394,7 +397,8 @@ trait Crud
 
 		//filtered resultset
 		$resultset = $query->limit($per_page, $from - 1)
-						   ->getQuery()->execute();
+							->getQuery()
+							->execute();
 
 		//create response object
 		$output = (object)[
