@@ -124,9 +124,9 @@ trait Crud
 		$this->onlyAjax();
 
 		$data = $this->handleRequest([
-			"@sort"   	=> "string",
-			"@filter" 	=> "string",
-			"@page" 	=> "int",
+			"@sort"     => "string",
+			"@filter"   => "string",
+			"@page"     => "int",
 			"@per_page" => "int"
 		], "GET");
 
