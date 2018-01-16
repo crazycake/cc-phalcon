@@ -76,6 +76,18 @@
 			<script> console.log('Core -> (warning) javascript APP or UA scope vars are not defined.'); </script>
 		{% endif %}
 
+
+		{# Google Tag Manager [HEAD] #}
+		{% if config.google.gtmUA is not empty %}
+			<script>
+				(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+				new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+				j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+				'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+			})(window,document,'script','dataLayer','{{ config.google.gtmUA }}');
+			</script>
+		{% endif %}
+
 	</head>
 	{# Flush the buffer (optimization) #}
 	<?php flush(); ?>
@@ -115,14 +127,12 @@
 			<script src="//www.google-analytics.com/analytics.js" async defer></script>
 		{% endif %}
 
-		{# Google Tag Manager (async loading) #}
-		{% if config.google.analyticsUA is not empty %}
-			<script>
-				window.ga=function(){ga.q.push(arguments)};ga.q=[];ga.l=+new Date;
-				ga('create','{{ config.google.analyticsUA }}','auto');
-				ga('send','pageview')
-			</script>
-			<script src="//www.google-analytics.com/analytics.js" async defer></script>
+		{# Google Tag Manager [BODY] #}
+		{% if config.google.gtmUA is not empty %}
+			<noscript>
+				<iframe src="https://www.googletagmanager.com/ns.html?id={{ gtmUA }}" height="0" width="0" style="display:none;visibility:hidden;">
+				</iframe>
+			</noscript>
 		{% endif %}
 
 		{# recaptcha plugin #}
