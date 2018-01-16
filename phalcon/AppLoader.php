@@ -46,10 +46,6 @@ trait AppLoader
 		//check for prefix in module settings
 		$class_name = \Phalcon\Text::camelize($key);
 
-		//api special case (if class not exists append prefix.)
-		if (MODULE_NAME == "api" && !class_exists($class_name))
-			$class_name = "Ws$class_name";
-
 		return $prefix ? "\\$class_name" : $class_name;
 	}
 
