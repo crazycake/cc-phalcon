@@ -132,7 +132,7 @@
 		{# Google Tag Manager [BODY] #}
 		{% if config.google.gtmUA is not empty %}
 			<noscript>
-				<iframe src="https://www.googletagmanager.com/ns.html?id={{ gtmUA }}" height="0" width="0" style="display:none;visibility:hidden;">
+				<iframe src="https://www.googletagmanager.com/ns.html?id={{ config.google.gtmUA }}" height="0" width="0" style="display:none;visibility:hidden;">
 				</iframe>
 			</noscript>
 		{% endif %}
