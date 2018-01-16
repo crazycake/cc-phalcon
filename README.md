@@ -5,10 +5,6 @@ CrazyCake Phalcon Core
 
 Current Version: `3.x`
 
-## Documentation
-
-[CrazyCake Docs](http://docs.crazycake.cl/)
-
 ## Box Project
 
 - Used for building PHP phar files.
