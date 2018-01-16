@@ -1,8 +1,8 @@
 # Linux
 *~
 *.bak
-*.gz
 *.log
+*.gz
 
 # OSX
 .DS_Store
@@ -12,6 +12,3 @@
 
 # PHP Phar files
 *.phar
-
-# PhalconPHP Dev-tools
-.phalcon
