@@ -12,3 +12,6 @@
 
 # PHP Phar files
 *.phar
+
+# docs
+.docs
