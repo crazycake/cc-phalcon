@@ -21,6 +21,16 @@ abstract class App
 	use AppLoader;
 
 	/**
+	 * Project Path
+	 */
+	protected static $PROJECT_PATH = __DIR__;
+
+	/**
+	 * Config function
+	 */
+	abstract protected function config();
+
+	/**
 	 * The App Dependency injector
 	 * @var object
 	 */
@@ -30,18 +40,11 @@ abstract class App
 	 * Constructor
 	 * @param string $mod_name - The input module
 	 */
-	public function __construct($mod_name = null)
+	public function __construct($mod_name = "frontend")
 	{
-		//set app configurations
-		$config = $this->config();
-
-		//validations
-		if (empty($mod_name) || empty($config))
-			die("App::constructor -> a module name is required.");
-
 		//define APP contants
-		define("PROJECT_PATH", $config["path"]);
 		define("MODULE_NAME", strtolower($mod_name));
+		define("PROJECT_PATH", static::$PROJECT_PATH);
 		define("STORAGE_PATH", PROJECT_PATH."storage/");
 		define("COMPOSER_PATH", PROJECT_PATH."vendor/");
 		define("CORE_PATH", PROJECT_PATH."core/");
@@ -49,10 +52,18 @@ abstract class App
 		define("APP_PATH", PROJECT_PATH."app/");
 		define("APP_ST", microtime(true)); //for debugging render time
 
-		//webapp directories (loader)
-		$this->loadClasses($config);
+		//composer libraries (no config required)
+		$this->loadComposer();
+
 		//environment (loader)
 		$this->setEnvironment();
+
+		//set app configurations
+		$config = $this->config();
+
+		//app classes (loader)
+		$this->loadClasses($config);
+
 		//set DI (services)
 		$this->di = (new AppServices($config))->getDI();
 	}

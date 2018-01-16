@@ -80,7 +80,7 @@ trait AppLoader
 				$_SERVER["HTTP_HOST"] = "localhost";
 
 			// set scheme and host
-			$scheme   = $_SERVER["HTTP_X_FORWARDED_PROTO"] ?? "http"; //elb headers
+			$scheme   = $_SERVER["HTTP_X_FORWARDED_PROTO"] ?? "http"; //aws elb headers
 			$host     = $_SERVER["HTTP_HOST"].preg_replace("@/+$@", "", dirname($_SERVER["SCRIPT_NAME"]));
 			$base_url = "$scheme://$host";
 
@@ -104,6 +104,15 @@ trait AppLoader
 	}
 
 	/**
+	 * Load composer libraries
+	 */
+	private function loadComposer()
+	{
+		if (is_file(COMPOSER_PATH."autoload.php"))
+			require COMPOSER_PATH."autoload.php";
+	}
+
+	/**
 	 * Load classes
 	 * @param array $config - The config array
 	 */
@@ -122,7 +131,6 @@ trait AppLoader
 			//set directory path
 			$dirs[$dir] = count($paths) > 1 ? PROJECT_PATH.$paths[0]."/".$paths[1]."/" : APP_PATH.$dir."/";
 		}
-		//die(print_r($dirs, true));
 
 		//inverted sort
 		arsort($dirs);
@@ -133,16 +141,6 @@ trait AppLoader
 
 		// 3. Register core static modules
 		$this->loadCoreLibraries($loader, $config["core"]);
-
-		// 4. Composer libs auto loader
-		if (is_file(COMPOSER_PATH."autoload.php")) {
-			require COMPOSER_PATH."autoload.php";
-		}
-		else {
-
-			if(php_sapi_name() != "cli")
-				die("App::loadClasses -> autoload composer file not found: ".COMPOSER_PATH."autoload.php");
-		}
 
 		//4.- Register phalcon loader
 		$loader->register();
