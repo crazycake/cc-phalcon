@@ -51,7 +51,7 @@ case "$1" in
 	build)
 
 	# download phar once
-	if [ ! -f $PROJECT_PATH"box.phar" ]; then
+	if [ ! -f $PROJECT_PATH"/box.phar" ]; then
 
 		echo -e "\033[94mDownloading box.phar ... \033[0m"
 		wget -O box.phar $BOX_PHAR_URL
@@ -74,7 +74,7 @@ case "$1" in
 	docs)
 
 	# download phar once
-	if [ ! -f $PROJECT_PATH"phpdoc.phar" ]; then
+	if [ ! -f $PROJECT_PATH"/phpdoc.phar" ]; then
 
 		echo -e "\033[94mDownloading phpdoc.phar ... \033[0m"
 		wget -O phpdoc.phar $PHPDOC_PHAR_URL
