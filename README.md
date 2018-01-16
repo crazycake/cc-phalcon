@@ -3,7 +3,7 @@ CrazyCake Phalcon Core
 
 ## PhalconPHP
 
-Current Version: `3.1.x`
+Current Version: `3.x`
 
 ## Documentation
 
