@@ -14,17 +14,17 @@ APP_NAMESPACE="$(echo "$APP_NAME" | tr '[:upper:]' '[:lower:]')"
 
 # Local documentation path.
 DOC_PHP_INPUT_PATH="./"
-DOC_PHP_OUTPUT_PATH=$PROJECT_PATH"/../cc-docs/cc-phalcon/php/"
+DOC_PHP_OUTPUT_PATH=$PROJECT_PATH"/.docs/"
 
 #script help function
 scriptHelp() {
 	echo -e "\033[93m"$APP_NAME" core Script\nValid actions:\033[0m"
-	echo -e "\033[95m chmod: Set correct permissions on directories and files for serve.\033[0m"
-	echo -e "\033[95m build: Builds phar file with default box.json file.\033[0m"
-	echo -e "\033[95m tree: Returns the file tree of phar file.\033[0m"
-	echo -e "\033[95m docs: Generates PHP Docs (PHP doc library is required [phpdoc]).\033[0m"
-	echo -e "\033[95m release: Creates a new tag release. Required version and message.\033[0m"
-	echo -e "\033[95m delete-tags: Removes local and remote repository tags.\033[0m"
+	echo -e "\033[96m chmod: Set correct permissions on directories and files for serve.\033[0m"
+	echo -e "\033[96m build: Builds phar file with default box.json file.\033[0m"
+	echo -e "\033[96m tree: Returns the file tree of phar file.\033[0m"
+	echo -e "\033[96m docs: Generates PHP Docs (PHP doc library is required [phpdoc]).\033[0m"
+	echo -e "\033[96m release: Creates a new tag release. Required version and message.\033[0m"
+	echo -e "\033[96m delete-tags: Removes local and remote repository tags.\033[0m"
 	exit
 }
 
