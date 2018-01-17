@@ -139,9 +139,7 @@ trait CheckoutManager
 			$mailer = App::getClass("mailer_controller");
 
 			//send alert system mail message
-			(new $mailer())->adminException($e, [
-				"edata" => "buy_order: ".$buy_order ?? "n/a"
-			]);
+			(new $mailer())->adminException($e, ["edata" => "buy_order: ".$buy_order ?? "n/a"]);
 		}
 	}
 
