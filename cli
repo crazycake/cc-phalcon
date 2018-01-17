@@ -58,7 +58,7 @@ case "$1" in
 	fi
 
 	# append version to autoload file
-	sed -i "s/@version .*/@version $(git rev-parse --short HEAD)/" autoload.php
+	sed -i "6s/.*/DEFINE('CORE_VERSION', '$(git rev-parse --short HEAD)');/" autoload.php
 
 	cd $PROJECT_PATH
 	php box.phar build -v
