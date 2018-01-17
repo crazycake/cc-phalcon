@@ -140,7 +140,7 @@ trait CheckoutManager
 
 			//send alert system mail message
 			(new $mailer())->adminException($e, [
-				"edata" => !empty($buy_order) ? "buy_order: $buy_order" : "n/a"
+				"edata" => "buy_order: ".$buy_order ?? "n/a"
 			]);
 		}
 	}

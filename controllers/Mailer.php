@@ -82,15 +82,16 @@ trait Mailer
 
 		$data["subject"] = "Contacto ".$this->config->name;
 		$data["to"]      = $this->config->emails->support;
-		//contents
+
+		//extend config
 		$this->mailer_conf = array_merge($this->mailer_conf, $data);
 
 		// call listener?
 		if (method_exists($this, "onBeforeSendContact"))
 			$this->onBeforeSendContact($data);
 
-		//send contact email
-		$this->sendAdminMessage($data);
+		//sends email
+		$this->sendMessage("contact", $data["subject"], $data["to"]);
 
 		//send JSON response
 		$this->jsonResponse(200);
@@ -190,42 +191,24 @@ trait Mailer
 	 */
 	public function adminException($e = "", $data = [])
 	{
-		$error = is_string($e) ? $e : $e->getMessage().". File: ".$e->getFile()." (".$e->getLine().")";
+		$error = is_string($e) ? $e : $e->getMessage().". File: ".$e->getFile()." [".$e->getLine()."]";
 
 		$admin_emails = !empty($this->config->emails->admins) ? (array)$this->config->emails->admins : $this->config->emails->support;
 
 		if(!is_array($admin_emails))
 			$admin_emails = [$admin_emails];
 
-		// send to every admin
-		foreach ($admin_emails as $email) {
+		$data["email"]   = $this->config->emails->sender;
+		$data["name"]    = $this->config->name." ".MODULE_NAME;
+		$data["message"] = "$error\nData:\n".(empty($data["edata"]) ? "n/a" : json_encode($data["edata"], JSON_UNESCAPED_SLASHES));
 
-			$d = array_merge([
-				"subject" => "Admin message",
-				"to"      => $email,
-				"email"   => $this->config->emails->sender, //user-sender
-				"name"    => $this->config->name." ".MODULE_NAME,
-				"message" => "$error\nData:\n".(empty($data["edata"]) ? "n/a" : json_encode($data["edata"], JSON_UNESCAPED_SLASHES))
-			], $data);
+		//extend config
+		$this->mailer_conf = array_merge($this->mailer_conf, $data);
 
-			$this->logger->debug("Mailer::adminException -> sending exception [".$d["to"]."]: $error");
-			//Sending a warning to admin users!
-			$this->sendAdminMessage($d);
-		}
-	}
+		$this->logger->debug("Mailer::adminException -> sending exception: ".json_encode($this->mailer_conf, JSON_UNESCAPED_SLASHES));
 
-	/**
-	 * Async Handler - Sends contact email (always used)
-	 * @param array $data - Must contains keys 'name', 'email' & 'message'
-	 */
-	public function sendAdminMessage($data = [])
-	{
-		//set message properties
-		$subject = $data["subject"] ?? $this->config->name;
-		$to      = $data["to"] ?? $this->config->emails->support;
-
-		//sends async email
-		$this->sendMessage("contact", $subject, $to);
+		//sends the message
+		$this->sendMessage("contact", "Admin message", $admin_emails);
 	}
 
 	/**
