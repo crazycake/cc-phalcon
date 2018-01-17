@@ -1,5 +1,6 @@
 <?php
 /**
- * cc-phalcon Autoload file
+ * autoload file
  */
+
 require "phalcon/App.php";

@@ -11,6 +11,7 @@ Current Version: `3.x`
 - Documentation [ref](http://box-project.org/)
 
 ### Commands
+
 Get phar box library
 ```
 curl -LSs https://box-project.github.io/box2/installer.php | php
