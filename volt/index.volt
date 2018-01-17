@@ -148,11 +148,9 @@
 		</noscript>
 
 		{# debug: output render time #}
-		{% if constant("APP_ENV") != "production" %}
-			<script>
-				console.log('Core -> PhalconPHP <?php echo \Phalcon\Version::get(); ?>, page rendered in <?php echo number_format((float)(microtime(true) - APP_ST), 3, ".", ""); ?> seconds.');
-			</script>
-		{% endif %}
+		<script>
+			console.log('Core -> Phalcon <?php echo \Phalcon\Version::get()." [".CORE_VERSION."], page rendered in ".number_format((float)(microtime(true) - APP_ST), 3, ".", "")." seconds."; ?>');
+		</script>
 
 	</body>
 </html>
