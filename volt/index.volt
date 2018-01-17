@@ -149,7 +149,7 @@
 
 		{# debug: output render time #}
 		<script>
-			console.log('Core -> Phalcon <?php echo \Phalcon\Version::get()." [".CORE_VERSION."], page rendered in ".number_format((float)(microtime(true) - APP_ST), 3, ".", "")." seconds."; ?>');
+			console.log('App {{ config.version }} - Phalcon <?php echo \Phalcon\Version::get()." [".CORE_VERSION."], rendered in ".number_format((float)(microtime(true) - APP_ST), 3, ".", "")." secs."; ?>');
 		</script>
 
 	</body>
