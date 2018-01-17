@@ -57,6 +57,9 @@ case "$1" in
 		wget -O box.phar $BOX_PHAR_URL
 	fi
 
+	# append version to autoload file
+	sed -i "s/@version .*/@version $(git rev-parse --short HEAD)/" autoload.php
+
 	cd $PROJECT_PATH
 	php box.phar build -v
 	# task done!
