@@ -48,7 +48,8 @@ trait Mailer
 		$defaults = [
 			"user_entity"    => "User",
 			"activation_uri" => "auth/activation/",
-			"password_uri"   => "password/new/"
+			"password_uri"   => "password/new/",
+			"from_name"      => $this->config->name,
 		];
 
 		//merge confs
@@ -237,16 +238,16 @@ trait Mailer
 		$sendgrid = new \SendGrid($this->config->sendgrid->apiKey);
 		$message  = new \SendGrid\Email();
 
-		$support_email = $this->config->emails->support ?? $this->config->emails->sender;
+		$reply_to = $this->config->emails->support ?? $this->config->emails->sender;
+
 		$html = $this->inlineHtml($template);
-		//~sd($html);
 
 		//set message properties
 		$message->setFrom($this->config->emails->sender)
-				->setFromName($this->config->name)
-				->setReplyTo($support_email)
+				->setFromName($this->mailer_conf["from_name"])
+				->setReplyTo($reply_to)
 				->setSubject($subject)
-				->setHtml($html); //NOTE: inline html!
+				->setHtml($html);
 
 		//add recipients
 		foreach ($recipients as $email)
@@ -254,11 +255,10 @@ trait Mailer
 
 		//parse attachments
 		$this->_parseAttachments($attachments, $message);
-		//s($sendgrid, $message);exit;
 
 		//send email
 		$result = $sendgrid->send($message);
-		//s($result);
+		//sd($sendgrid, $message, $result);
 
 		return $result;
 	}
