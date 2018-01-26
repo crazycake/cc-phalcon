@@ -222,7 +222,7 @@ trait Mailer
 	public function sendMessage($template, $subject, $recipients, $attachments = [])
 	{
 		//validation
-		if (empty($template) || empty($subject) || empty($recipients))
+		if (empty($template) || empty($recipients))
 			throw new Exception("Mailer::sendMessage -> Invalid params data for sending email");
 
 		//parse recipients
