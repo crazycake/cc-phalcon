@@ -260,6 +260,8 @@ trait Mailer
 		$result = $sendgrid->send($message);
 		//sd($sendgrid, $message, $result);
 
+		$this->logger->debug("Mailer::sendMessage -> email message sent to: ".json_encode($recipients, JSON_UNESCAPED_SLASHES)." "
+																			 .json_encode($result, JSON_UNESCAPED_SLASHES));
 		return $result;
 	}
 
