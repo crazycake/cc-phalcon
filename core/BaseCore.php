@@ -132,7 +132,7 @@ abstract class BaseCore extends Controller
 			$response = json_encode($response);
 
 		//save response only for non production-environment
-		$this->logger->debug("BaseCore::sendMailMessage -> Queuing new Mailer Message [$method].");
+		$this->logger->debug("BaseCore::sendMailMessage -> Queued new Mailer message [$method]: ".json_encode($data, JSON_UNESCAPED_SLASHES));
 
 		return $response;
 	}
