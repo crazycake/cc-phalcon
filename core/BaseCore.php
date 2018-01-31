@@ -126,15 +126,10 @@ abstract class BaseCore extends Controller
 			throw new Exception("BaseCore::sendMailMessage -> Method $method is not defined in Mailer Controller.");
 
 		//call mailer class method (reflection)
-		$response = $mailer->{$method}($data);
-
-		if (is_array($response))
-			$response = json_encode($response);
+		$mailer->{$method}($data);
 
 		//save response only for non production-environment
-		$this->logger->debug("BaseCore::sendMailMessage -> Queued new Mailer message [$method]: ".json_encode($data, JSON_UNESCAPED_SLASHES));
-
-		return $response;
+		$this->logger->debug("BaseCore::sendMailMessage -> Queued new Mailer message [$method] ".json_encode($data, JSON_UNESCAPED_SLASHES));
 	}
 
 	/**
