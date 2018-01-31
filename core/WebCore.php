@@ -119,6 +119,9 @@ abstract class WebCore extends BaseCore implements WebSecurity
 			$this->redirectToNotFound();
 		}
 
+		if($this->request->isAjax())
+			return false;
+
 		$this->response->redirect($url, true);
 		$this->response->send();
 		die();
