@@ -159,6 +159,7 @@ class Base extends \Phalcon\Mvc\Model
 			$binds = [];
 
 		$query = new PHQL($phql, \Phalcon\DI::getDefault());
+
 		//Executing with bound parameters
 		$status = $query->execute($binds);
 

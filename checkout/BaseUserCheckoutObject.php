@@ -157,7 +157,7 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
 			//get object ORM class
 			$object_class = $obj->object_class;
 
-			$orm_object = !class_exists($object_class) ?: $object_class::findFirst(["id = ?1", "bind" => [1 => $obj->object_id]]);
+			$orm_object = !class_exists($object_class) ?: $object_class::findFirstById($obj->object_id);
 
 			if(!$orm_object || empty($obj->quantity))
 				continue;
@@ -179,7 +179,7 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
 				 SET quantity = ?1, state = ?2
 				 WHERE id = ?0
 				",
-				[$orm_object->id, $updated_quantity, $state]
+				[(int)$orm_object->id, (int)$updated_quantity, $state]
 			);
 		}
 	}
