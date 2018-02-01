@@ -176,10 +176,10 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
 			//update record throught query (safer than ORM)
 			self::executePhql(
 				"UPDATE $object_class
-				 SET quantity = ?1, state = ?2
-				 WHERE id = ?0
+				 SET quantity = ?0, state = ?1
+				 WHERE id = ?2
 				",
-				[(int)$orm_object->id, (int)$updated_quantity, $state]
+				[(int)$updated_quantity, $state, (int)$orm_object->id]
 			);
 		}
 	}
