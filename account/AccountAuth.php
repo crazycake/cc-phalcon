@@ -55,6 +55,7 @@ trait AccountAuth
 		//defaults
 		$defaults = [
 			"oauth"      => false,
+			"login_uri"  => "signIn",
 			"logout_uri" => "signIn",
 			//entities
 			"user_entity" => "User"
@@ -218,6 +219,16 @@ trait AccountAuth
 
 		//get model classes
 		$user_class = $this->account_auth_conf["user_entity"];
+
+		// validate if user exists
+		if($user_class::findFirstByEmail($data["email"])) {
+
+			$msg = str_replace("{email}", $data["email"], $this->account_auth_conf["trans"]["ACCOUNT_EXISTS"]);
+			$msg = str_replace("{link}", $this->account_auth_conf["login_uri"], $msg);
+
+			$this->jsonResponse(400, $msg);
+		}
+
 		//set pending email confirmation status
 		$data["account_flag"] = "pending";
 

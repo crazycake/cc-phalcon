@@ -6,23 +6,11 @@
 
 namespace CrazyCake\Account;
 
-//imports
-use Phalcon\Validation;
-use Phalcon\Validation\Validator\Email;
-use Phalcon\Validation\Validator\InclusionIn;
-use Phalcon\Validation\Validator\Uniqueness;
-
 /**
  * Base User Model
  */
-abstract class BaseUser extends \CrazyCake\Models\Base
+class BaseUser extends \CrazyCake\Models\Base
 {
-	/**
-	 * Gets Model Message
-	 * @param string $key - The validation message key
-	 */
-	abstract protected function getMessage($key);
-
 	/* properties */
 
 	/**
@@ -88,32 +76,6 @@ abstract class BaseUser extends \CrazyCake\Models\Base
 		//set dates
 		$this->last_login = date("Y-m-d H:i:s");
 		$this->created_at = date("Y-m-d H:i:s");
-	}
-
-	/**
-	 * Validations
-	 */
-	public function validationOnCreate()
-	{
-		$validator = new Validation();
-
-		//email required
-		$validator->add("email", new Email([
-			"message"  => $this->getMessage("email_required")
-		]));
-
-		//email unique
-		$validator->add("email", new Uniqueness([
-			"message" => $this->getMessage("email_uniqueness")
-		]));
-
-		//account flag
-		$validator->add("account_flag", new InclusionIn([
-			"domain"  => self::$ACCOUNT_FLAGS,
-			"message" => 'Invalid user account flag. Flags supported: '.implode(", ", self::$ACCOUNT_FLAGS)
-		]));
-
-		return $this->validate($validator);
 	}
 
 	/** ------------------------------------------- § --------------------------------------------------  **/
