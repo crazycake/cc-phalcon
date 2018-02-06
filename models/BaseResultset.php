@@ -88,7 +88,7 @@ class BaseResultset extends Resultset
 	public static function mergeArbitraryProps(&$result = null, $field = "ext")
 	{
 		if ($result instanceof Resultset)
-			$result = $this->toArray();
+			$result = $result->toArray();
 
 		if (is_object($result))
 			$result = get_object_vars($result);
