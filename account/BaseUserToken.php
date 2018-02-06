@@ -269,7 +269,6 @@ class BaseUserToken extends \CrazyCake\Models\Base
 		}
 		catch (Exception $e) {
 
-			$this->logger->warning("BaseUserToken::deleteExpiredTokens -> error: ".$e->getMessage());
 			return 0;
 		}
 	}
