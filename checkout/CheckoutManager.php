@@ -53,7 +53,7 @@ trait CheckoutManager
 	/* --------------------------------------------------- § -------------------------------------------------------- */
 
 	/**
-	 * Ajax Action - Before user goes to payment gateway (or not), buy order must be generated.
+	 * Ajax Action - Before user goes to payment gateway, a buyorder is generated.
 	 */
 	public function buyOrderAction()
 	{
@@ -144,7 +144,7 @@ trait CheckoutManager
 	}
 
 	/**
-	 * Method: Parses objects checkout & set new props by reference
+	 * Method: Parses objects checkout & set new props by reference (validator & parser)
 	 * @param object $checkout - The checkout object
 	 * @param array $data - The received form data
 	 */
