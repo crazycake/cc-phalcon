@@ -175,7 +175,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 		//unique constrait
 		$exists = self::findFirstByBuyOrder($code);
 
-		return $exists ? $this->newBuyOrderCode($length) : $code;
+		return $exists ? self::newBuyOrderCode($length) : $code;
 	}
 
 	/**
@@ -288,7 +288,6 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 		}
 		catch (Exception $e) {
 
-			$this->logger->error("BaseUserCheckout::deleteExpired -> failed, error:".$e->getMessage());
 			return 0;
 		}
 	}
