@@ -32,13 +32,6 @@ trait Uploader
 	protected static $DEFAULT_FILE_TYPE = ["csv"];
 
 	/**
-	 * Image API service URL
-	 * @static
-	 * @var string
-	 */
-	protected static $IMG_API_URL = "http://imgapi/";
-
-	/**
 	 * Header Name for file checking
 	 * @static
 	 * @var string
@@ -319,8 +312,10 @@ trait Uploader
 			"Content-Length: ".strlen($body),
 		];
 
+		$host = (getenv("IMG_API_HOST") ?: "imgapi");
+
 		$options = [
-			CURLOPT_URL            => self::$IMG_API_URL.$api_uri, // SERVICE URL
+			CURLOPT_URL            => "http://".$host."/".$api_uri, // SERVICE URL
 			CURLOPT_PORT           => 80,
 			CURLOPT_POST           => 1,
 			CURLOPT_POSTFIELDS     => $body,
@@ -337,11 +332,12 @@ trait Uploader
 		//~sd($result);
 
 		//process result
-		$result = json_decode($result, true);
+		$response = json_decode($result, true);
 
-		if($result["status"] != "ok" || empty($result["payload"])) {
+		if($response["status"] != "ok" || empty($response["payload"])) {
 
-			$this->logger->error("Uploader::newImageApiJob -> invalid/empty payload: ".json_encode($result, JSON_UNESCAPED_SLASHES));
+			$this->logger->error("Uploader::newImageApiJob -> unexpected payload: ".json_encode($response, JSON_UNESCAPED_SLASHES)."\n"
+																					.print_r($options, true)."\n".print_r($result, true));
 			return null;
 		}
 
