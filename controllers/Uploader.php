@@ -334,14 +334,14 @@ trait Uploader
 		//process result
 		$response = json_decode($result, true);
 
-		if($response["status"] != "ok" || empty($response["payload"])) {
+		if(!$response || $response["status"] != "ok" || empty($response["payload"])) {
 
 			$this->logger->error("Uploader::newImageApiJob -> unexpected payload: ".json_encode($response, JSON_UNESCAPED_SLASHES).
 																					" ".$host."\n".print_r($result, true));
 			return null;
 		}
 
-		return $result["payload"];
+		return $response["payload"];
 	}
 
 	/**
