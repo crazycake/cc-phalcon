@@ -312,11 +312,12 @@ trait Uploader
 			"Content-Length: ".strlen($body),
 		];
 
-		$host = APP_ENV == "local" ? "imgapi" : (getenv("IMGAPI_HOST") ?: "imgapi");
+		$url       = APP_ENV == "local" || !getenv("IMGAPI_URL") ? "http://imgapi" : getenv("IMGAPI_URL");
+		$url_parts = parse_url($url);
 
 		$options = [
-			CURLOPT_URL            => "http://".$host."/".$api_uri, // SERVICE URL
-			CURLOPT_PORT           => 80,
+			CURLOPT_URL            => $url_parts["scheme"]."://".$url_parts["host"]."/".$api_uri, // SERVICE URL
+			CURLOPT_PORT           => $url_parts["port"] ?? 80,
 			CURLOPT_POST           => 1,
 			CURLOPT_POSTFIELDS     => $body,
 			CURLOPT_HTTPHEADER     => $headers,
@@ -334,14 +335,9 @@ trait Uploader
 		//process result
 		$response = json_decode($result, true);
 
-		if(!$response || $response["status"] != "ok" || empty($response["payload"])) {
+		$this->logger->debug("Uploader::newImageApiJob -> [$url] payload: ".json_encode($response, JSON_UNESCAPED_SLASHES)."\n".print_r($result, true));
 
-			$this->logger->error("Uploader::newImageApiJob -> unexpected payload: ".json_encode($response, JSON_UNESCAPED_SLASHES).
-																					" ".$host."\n".print_r($result, true));
-			return null;
-		}
-
-		return $response["payload"];
+		return $response["payload"] ?? null;
 	}
 
 	/**
