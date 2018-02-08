@@ -336,8 +336,8 @@ trait Uploader
 
 		if($response["status"] != "ok" || empty($response["payload"])) {
 
-			$this->logger->error("Uploader::newImageApiJob -> unexpected payload: ".json_encode($response, JSON_UNESCAPED_SLASHES)."\n"
-																					.print_r($options, true)."\n".print_r($result, true));
+			$this->logger->error("Uploader::newImageApiJob -> unexpected payload: ".json_encode($response, JSON_UNESCAPED_SLASHES).
+																					" ".$host."\n".print_r($result, true));
 			return null;
 		}
 
