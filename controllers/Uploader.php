@@ -312,7 +312,7 @@ trait Uploader
 			"Content-Length: ".strlen($body),
 		];
 
-		$host = (getenv("IMG_API_HOST") ?: "imgapi");
+		$host = APP_ENV == "local" ? "imgapi" : (getenv("IMGAPI_HOST") ?: "imgapi");
 
 		$options = [
 			CURLOPT_URL            => "http://".$host."/".$api_uri, // SERVICE URL
