@@ -312,7 +312,7 @@ trait Uploader
 			"Content-Length: ".strlen($body),
 		];
 
-		$url       = APP_ENV == "local" || !getenv("IMGAPI_URL") ? "http://imgapi" : getenv("IMGAPI_URL");
+		$url       = APP_ENV == "local" || !getenv("IMGAPI_URL") ? "http://imgapi/" : getenv("IMGAPI_URL");
 		$url_parts = parse_url($url);
 
 		$options = [
