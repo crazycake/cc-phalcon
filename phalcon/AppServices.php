@@ -405,6 +405,8 @@ class AppServices
 		$compiler->addFunction("strrpos", "strrpos");
 		//++ strtotime
 		$compiler->addFunction("strtotime", "strtotime");
+		//++ intval
+		$compiler->addFunction("intval", "intval");
 		//++ number_format
 		$compiler->addFunction("number_format", "number_format");
 		//++ in_array
