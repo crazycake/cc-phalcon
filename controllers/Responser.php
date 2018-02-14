@@ -80,7 +80,7 @@ trait Responser
 				$payload = get_object_vars($payload);
 
 			//check redirection action
-			if (is_array($payload) && isset($payload["redirect"])) {
+			if (!empty($payload["redirect"])) {
 				$response["redirect"] = $payload["redirect"];
 			}
 			//append payload
@@ -97,9 +97,7 @@ trait Responser
 		else {
 
 			//set payload as objectId for numeric data, for string set as error
-			if (is_numeric($payload))
-				$response["object_id"] = $payload;
-			else if (is_string($payload))
+			if (is_string($payload))
 				$response["message"] = $payload;
 
 			//set error for non array
