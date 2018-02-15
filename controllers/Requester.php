@@ -67,7 +67,7 @@ trait Requester
 			// guzzle instance
 			$client = new \GuzzleHttp\Client([
 				"base_uri" => $options["base_url"],
-				"timeout"  => self::$REQUEST_TIMEOUT
+				"timeout"  => $options["timeout"]
 			]);
 
 			// reflection method (get or post)
@@ -211,7 +211,7 @@ trait Requester
 			$options["port"] ?? ($ssl ? 443 : 80),
 			$errno,
 			$errstr,
-			self::$REQUEST_TIMEOUT
+			$options["timeout"]
 		);
 		//~sd($options);
 
