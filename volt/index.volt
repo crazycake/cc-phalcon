@@ -115,8 +115,15 @@
 		<script src="{{ js_url }}" type="text/javascript"></script>
 
 		{# APP JS Module Loader #}
-		{% if js_loader is defined %}
+		{% if js_loader is not empty %}
 			<script>{{ js_loader }}</script>
+		{% endif %}
+
+		{# JS Defer URLs #}
+		{% if js_defer is not empty %}
+			{% for defer in js_defer %}
+				<script defer src="{{ defer }}" type="text/javascript"></script>
+			{% endfor %}
 		{% endif %}
 
 		{# Google Analytics (async loading) #}
