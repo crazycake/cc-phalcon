@@ -104,10 +104,6 @@ trait Responser
 			$response["error"] = is_object($payload) ? $payload : $this->RCODES[$code];
 		}
 
-		//if a view service is set, disable rendering
-		if ($this->di->has("view"))
-			$this->view->disable(); //disable view output
-
 		//outputs JSON response
 		$this->outputJsonResponse($response);
 	}
