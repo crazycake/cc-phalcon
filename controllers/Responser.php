@@ -148,12 +148,12 @@ trait Responser
 
 		//if a view service is set, disable rendering
 		if ($this->di->has("view"))
-			$this->view->disable(); //disable view output
+			$this->view->disable();
 
 		//output the response
 		$this->response->setStatusCode(200, "OK");
 		$this->response->setHeader("Access-Control-Allow-Origin", "*");
-		$this->response->setContentType("application/json"); //set JSON as Content-Type header
+		$this->response->setContentType("application/json");
 		$this->response->setContent(json_encode($response, JSON_UNESCAPED_SLASHES));
 		$this->response->send();
 		die();
@@ -165,9 +165,6 @@ trait Responser
 	 * @return string - The response
 	 */
 	protected function outputTextResponse($text = "OK") {
-
-		if (is_array($text) || is_object($text))
-			$text = json_encode($text, JSON_UNESCAPED_SLASHES);
 
 		//if a view service is set, disable rendering
 		if ($this->di->has("view"))
