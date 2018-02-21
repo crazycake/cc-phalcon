@@ -382,7 +382,7 @@ trait FacebookAuth
 		}
 		finally {
 			
-			$this->outputTextResponse($data); //send data as text
+			$this->outputTextResponse(json_encode($data)); //send data as text
 		}
 	}
 
