@@ -164,7 +164,7 @@ trait Responser
 	 * @param mixed [string|array] $text - Any text string
 	 * @return string - The response
 	 */
-	protected function textResponse($text = "OK") {
+	protected function outputTextResponse($text = "OK") {
 
 		if (is_array($text) || is_object($text))
 			$text = json_encode($text, JSON_UNESCAPED_SLASHES);

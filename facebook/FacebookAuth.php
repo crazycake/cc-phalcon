@@ -381,8 +381,8 @@ trait FacebookAuth
 			$data = $e->getMessage();
 		}
 		finally {
-			//send data as text
-			$this->textResponse($data);
+			
+			$this->outputTextResponse($data); //send data as text
 		}
 	}
 
