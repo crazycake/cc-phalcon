@@ -177,6 +177,7 @@ class TaskCore extends Task
 				$open = "\033[35m"; //Magenta color
 				break;
 			case "NOTE":
+			case "INFO":
 				$open = "\033[94m"; //Blue color
 				break;
 			default:
