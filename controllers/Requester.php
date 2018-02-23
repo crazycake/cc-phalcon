@@ -123,7 +123,7 @@ trait Requester
 		$promise = $client->requestAsync("GET", $options["uri"].$params, $guzzle_options);
 
 		//send promise
-		return $this->_sendPromise($promise, $options["uri"]);
+		return $this->_sendPromise($promise, $options);
 	}
 
 	/**
@@ -171,7 +171,7 @@ trait Requester
 	private function _sendPromise($promise = null, $options = [])
 	{
 		//handle promise
-		$promise->then(function($response) use ($promise, $options) {
+		$promise->then(function($response) use ($promise) {
 
 			//set logger
 			$di = \Phalcon\DI::getDefault();
@@ -180,10 +180,10 @@ trait Requester
 			$body = $response->getBody();
 			$body = method_exists($body, "getContents") ? $body->getContents() : "";
 
-			$logger->debug("Requester::_sendPromise -> response length: [".$response->getStatusCode()."] ".strlen($body).
+			$logger->debug("Requester::_sendPromise -> received response, length: [".$response->getStatusCode()."] ".strlen($body).
 													   "\nheaders: ".json_encode($response->getHeaders(), JSON_UNESCAPED_SLASHES));
 
-			//catch response for app errors
+			//catch response for common app errors
 			if (strpos($body, "<html") !== false)
 				$logger->debug("Requester::_sendPromise -> NOTE: Above response body has an HTML tag.");
 
