@@ -61,9 +61,10 @@ case "$1" in
 	sed -i "6s/.*/DEFINE('CORE_VERSION', '$(git rev-parse --short HEAD)');/" autoload.php
 
 	cd $PROJECT_PATH
-	php box.phar build -v
+	# build, use -v for verbose
+	php box.phar build
 	# task done!
-	echo -e "\033[92mDone! \033[0m"
+	echo -e "\033[92mBuilded \033[0m"
 	;;
 
 	tree)

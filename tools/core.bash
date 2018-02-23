@@ -60,7 +60,7 @@ buildCorePhar() {
 
 	echo -e "\033[95mBuilding core phar file from $CORE_SRC_PATH... \033[0m"
 	cd $CORE_SRC_PATH
-	php box.phar build
+	./cli build
 	cp "$CORE_PROJECT_NAME.phar" "$DEST_PATH$CORE_PROJECT_NAME.phar"
 }
 
