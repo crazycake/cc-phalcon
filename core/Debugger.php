@@ -33,23 +33,4 @@ trait Debugger
 		// Assign the eventsManager to the db adapter instance
 		$this->db->setEventsManager($manager);
 	}
-
-	/**
-	 * Dump a phalcon object for debugging
-	 * For printing uses Kint library if available
-	 * @param object $object - Any object
-	 * @param boolean $exit - Flag for exit script execution
-	 * @return mixed
-	 */
-	protected function dump($object, $exit = true)
-	{
-		$object = (new \Phalcon\Debug\Dump())->toJson($object);
-
-		//print output
-		class_exists("\\Kint") ? ~s($object) : var_dump($object);
-
-		if ($exit) die;
-
-		return $object;
-	}
 }

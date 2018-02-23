@@ -107,7 +107,7 @@ class QRMaker
 	public function generate($params = [])
 	{
 		//new QrTag object
-		$qr          = new QrTag();
+		$qr = new QrTag();
 		//props
 		$qr->bgColor = $params["background_color"] ?? "ffffff";
 		$qr->text    = $params["data"] ?? "CrazyCake QR Code";

@@ -58,11 +58,8 @@ class ReCaptcha
 
 		$errors = $response->getErrorCodes();
 
-		if ($di->getShared("logger")) {
-
-			$logger = $di->getShared("logger");
-			$logger->error("ReCaptcha Helper -> Invalid reCaptcha response: ".json_encode($errors));
-		}
+		if ($di->getShared("logger"))
+			$di->getShared("logger")->error("ReCaptcha Helper -> Invalid reCaptcha response: ".json_encode($errors));
 
 		return false;
 	}

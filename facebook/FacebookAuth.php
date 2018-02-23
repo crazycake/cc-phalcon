@@ -63,7 +63,6 @@ trait FacebookAuth
 	 */
 	public static $FB_EMAIL_SETTINGS_URL = "https://www.facebook.com/settings?tab=account&section=email&view";
 
-	/* --------------------------------------------------- Â§ -------------------------------------------------------- */
 
 	/**
 	 * Initialize Trait

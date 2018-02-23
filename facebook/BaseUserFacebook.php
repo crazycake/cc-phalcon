@@ -40,7 +40,6 @@ class BaseUserFacebook extends \CrazyCake\Models\Base
 	 */
 	public $created_at;
 
-	/** ------------------------------------------- Â§ ------------------------------------------------ **/
 
 	/**
 	 * Initializer

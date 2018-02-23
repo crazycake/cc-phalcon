@@ -74,10 +74,10 @@ class UserAgent
 	{
 		//mark some browsers as legacy
 		if (($data["browser"] == "MSIE"    && $data["short_version"] < 11) ||
-			($data["browser"] == "Chrome"  && $data["short_version"] < 10) ||
-			($data["browser"] == "Firefox" && $data["short_version"] < 10) ||
-			($data["browser"] == "Safari"  && $data["short_version"] < 5)  ||
-			($data["browser"] == "Opera"   && $data["short_version"] < 5))
+			($data["browser"] == "Chrome"  && $data["short_version"] < 20) ||
+			($data["browser"] == "Firefox" && $data["short_version"] < 20) ||
+			($data["browser"] == "Safari"  && $data["short_version"] < 6)  ||
+			($data["browser"] == "Opera"   && $data["short_version"] < 6))
 		{
 			return true;
 		}
