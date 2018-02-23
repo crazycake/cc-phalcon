@@ -78,9 +78,8 @@ trait Requester
 		catch (Exception $e)  { $exc = $e; }
 		catch (\Exception $e) { $exc = $e; }
 
-		// log error
-		$di = \Phalcon\DI::getDefault();
-		$di->getShared("logger")->error("Requester::newRequest -> Err: ".$exc->getMessage()."\n".$exc->getLine()." ".$e->getFile().". Options: ".print_r($options, true));
+		$this->logger->error("Requester::newRequest -> Failed request: ".$exc->getMessage()."\n".$exc->getLine()." ".$e->getFile().
+							 "\nOptions: ".json_encode($options, JSON_UNESCAPED_SLASHES));
 
 		return null;
 	}
@@ -95,8 +94,6 @@ trait Requester
 	 */
 	private function _getRequest($client, $options = [])
 	{
-		$di = \Phalcon\DI::getDefault();
-
 		//curl options
 		$guzzle_options = [
 			"curl" => [
@@ -110,20 +107,21 @@ trait Requester
 			$guzzle_options["headers"] = $options["headers"];
 
 		//check params for query strings
-		if ($options["query-string"] || is_array($options["payload"])) {
-			$params = "?".http_build_query($options["payload"]);
-		}
-		else {
-			$params = "/".$options["payload"];
-		}
+		$query_string = $options["query-string"] || is_array($options["payload"]);
 
-		$di->getShared("logger")->debug("Requester::_getRequest [".$options["uri"]."] options: ".print_r($guzzle_options, true));
+		$params = $query_string ? "?".http_build_query($options["payload"]) : "/".$options["payload"];
+		
+		$this->logger->debug("Requester::_getRequest [".$options["uri"]."] options: ".print_r($guzzle_options, true));
 
-		//set promise
-		$promise = $client->requestAsync("GET", $options["uri"].$params, $guzzle_options);
+		//new promise
+		$response = $client->request("GET", $options["uri"].$params, $guzzle_options);
 
-		//send promise
-		return $this->_sendPromise($promise, $options);
+		$body = $response->getBody();
+
+		$this->logger->debug("Requester::_getRequest -> OK, received response [".$response->getStatusCode()."] length:  ".strlen($body).
+												  "\nHeaders: ".json_encode($response->getHeaders(), JSON_UNESCAPED_SLASHES));
+
+		return (string)$body;
 	}
 
 	/**
@@ -134,8 +132,6 @@ trait Requester
 	 */
 	private function _postRequest($client, $options = [])
 	{
-		$di = \Phalcon\DI::getDefault();
-
 		//curl options
 		$guzzle_options = [
 			"form_params" => $options["payload"],
@@ -153,48 +149,18 @@ trait Requester
 		if (!empty($options["body"]))
 			$guzzle_options["body"] = $options["body"];
 
-		$di->getShared("logger")->debug("Requester::_postRequest [".$options["uri"]."] options: ".print_r($guzzle_options, true));
+		$this->logger->debug("Requester::_postRequest [".$options["uri"]."] options: ".print_r($guzzle_options, true));
 
-		//set promise
-		$promise = $client->requestAsync("POST", $options["uri"], $guzzle_options);
+		$response = $client->request("POST", $options["uri"], $guzzle_options);
 
-		//send promise
-		return $this->_sendPromise($promise, $options);
+		$body = $response->getBody();
+
+		$this->logger->debug("Requester::_postRequest -> OK, received response [".$response->getStatusCode()."] length:  ".strlen($body).
+												   "\nHeaders: ".json_encode($response->getHeaders(), JSON_UNESCAPED_SLASHES));
+
+		return (string)$body;
 	}
 
-	/**
-	 * Logs Guzzle promise response
-	 * @param object $promise - The promise object
-	 * @param array $options - The input options
-	 * @return object - The promise object
-	 */
-	private function _sendPromise($promise = null, $options = [])
-	{
-		//handle promise
-		$promise->then(function($response) use ($promise) {
-
-			//set logger
-			$di = \Phalcon\DI::getDefault();
-			$logger = $di->getShared("logger");
-
-			$body = $response->getBody();
-			$body = method_exists($body, "getContents") ? $body->getContents() : "";
-
-			$logger->debug("Requester::_sendPromise -> received response, length: [".$response->getStatusCode()."] ".strlen($body).
-													   "\nheaders: ".json_encode($response->getHeaders(), JSON_UNESCAPED_SLASHES));
-
-			//catch response for common app errors
-			if (strpos($body, "<html") !== false)
-				$logger->debug("Requester::_sendPromise -> NOTE: Above response body has an HTML tag.");
-
-			// custom props
-			$promise->body = $body;
-		});
-		//force promise to be completed
-		$promise->wait();
-
-		return $promise;
-	}
 
 	/**
 	 * Simulates a socket async request without waiting for response

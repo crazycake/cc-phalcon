@@ -150,6 +150,7 @@ abstract class WsCore extends BaseCore
 
 		//get data for API struct
 		if (!$bust && is_file($json_file)) {
+			
 			$this->sendFileToBuffer(file_get_contents($json_file));
 			return;
 		}

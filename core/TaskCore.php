@@ -231,7 +231,7 @@ class TaskCore extends Task
 			$options["payload"] = $this->cryptify->encryptData($options["payload"]);
 
 		//requester
-		$this->newRequest($options);
+		return $this->newRequest($options);
 	}
 
 	/**
