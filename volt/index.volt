@@ -131,7 +131,7 @@
 			<script>
 				window.ga=function(){ga.q.push(arguments)};ga.q=[];ga.l=+new Date;
 				ga('create','{{ config.google.analyticsUA }}','auto');
-				ga('send','pageview')
+				ga('send','pageview');
 			</script>
 			<script src="//www.google-analytics.com/analytics.js" async defer></script>
 		{% endif %}
