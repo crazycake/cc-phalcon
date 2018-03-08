@@ -75,9 +75,9 @@ trait Responser
 		//success data
 		if ($code == 200) {
 
-			//if data is an object convert to array
+			//serialize object?
 			if (is_object($payload))
-				$payload = get_object_vars($payload);
+				$payload = json_decode(json_encode($payload), true);
 
 			//check redirection action
 			if (!empty($payload["redirect"])) {
