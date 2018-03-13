@@ -85,7 +85,7 @@ trait FacebookAuth
 				"app_id"     => $this->config->facebook->appID,
 				"app_secret" => $this->config->facebook->appKey,
 				//api version
-				"default_graph_version" => "v2.6"
+				"default_graph_version" => "v2.10"
 			]);
 		}
 	}
