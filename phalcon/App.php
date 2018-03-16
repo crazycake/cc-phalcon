@@ -26,7 +26,7 @@ abstract class App
 	/**
 	 * Config function
 	 */
-	abstract protected function config(): array;
+	abstract protected function config();
 
 	/**
 	 * The App Dependency injector
