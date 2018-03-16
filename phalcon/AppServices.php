@@ -7,9 +7,6 @@
 
 namespace CrazyCake\Phalcon;
 
-//phalcon
-use Phalcon\Exception;
-
 //import plugins
 require "AppPlugins.php";
 

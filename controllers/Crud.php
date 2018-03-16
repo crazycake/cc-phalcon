@@ -11,7 +11,6 @@ use Phalcon\Mvc\Model\Resultset\Simple as Resultset;
 use Phalcon\Exception;
 //imports
 use CrazyCake\Phalcon\App;
-
 /**
  * Base CRUD Controller
  */
@@ -227,7 +226,7 @@ trait Crud
 			//send response
 			$this->jsonResponse(200);
 		}
-		catch (\Exception $e) {
+		catch (\Exception | Exception $e) {
 
 			$this->jsonResponse(400, $e->getMessage());
 		}
@@ -300,7 +299,7 @@ trait Crud
 			//send response
 			$this->jsonResponse(200);
 		}
-		catch (\Exception $e) {
+		catch (\Exception | Exception $e) {
 
 			$this->jsonResponse(400, $e->getMessage());
 		}

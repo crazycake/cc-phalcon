@@ -100,7 +100,7 @@ class Images
 
 				$resized[] = $new_file;
 			}
-			catch(\Exception $e) {
+			catch(\Exception | Exception $e) {
 
 				$di = \Phalcon\DI::getDefault();
 

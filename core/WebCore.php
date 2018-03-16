@@ -7,8 +7,6 @@
 
 namespace CrazyCake\Core;
 
-//imports
-use Phalcon\Exception;
 //core
 use CrazyCake\Phalcon\App;
 use CrazyCake\Helpers\UserAgent;
@@ -331,9 +329,9 @@ abstract class WebCore extends BaseCore implements WebSecurity
 
 		//send javascript vars to view as JSON enconded
 		$this->view->setVars([
-			"config"    => $this->config, //app configuration vars
-			"client"    => $this->client,  //client object
-			"js_app"    => json_encode($js_app, JSON_UNESCAPED_SLASHES)
+			"config" => $this->config, //app configuration vars
+			"client" => $this->client,  //client object
+			"js_app" => json_encode($js_app, JSON_UNESCAPED_SLASHES)
 		]);
 	}
 }

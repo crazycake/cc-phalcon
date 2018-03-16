@@ -244,6 +244,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 			return $checkout;
 		}
 		catch (Exception $e) {
+
 			$di->getShared("logger")->error("BaseUserCheckout::newBuyOrder -> An error ocurred: ".$e->getMessage());
 			$di->getShared("db")->rollback();
 			return false;
@@ -286,7 +287,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 			//delete expired objects
 			return $count;
 		}
-		catch (Exception $e) {
+		catch (\Exception | Exception $e) {
 
 			return 0;
 		}

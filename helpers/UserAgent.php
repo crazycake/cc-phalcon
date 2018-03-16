@@ -10,7 +10,6 @@
 namespace CrazyCake\Helpers;
 
 //imports
-use Phalcon\Exception;
 use Mobile_Detect;
 
 /**
@@ -77,12 +76,11 @@ class UserAgent
 			($data["browser"] == "Chrome"  && $data["short_version"] < 20) ||
 			($data["browser"] == "Firefox" && $data["short_version"] < 20) ||
 			($data["browser"] == "Safari"  && $data["short_version"] < 6)  ||
-			($data["browser"] == "Opera"   && $data["short_version"] < 6))
-		{
+			($data["browser"] == "Opera"   && $data["short_version"] < 6)) {
+
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 }

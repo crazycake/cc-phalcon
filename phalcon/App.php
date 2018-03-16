@@ -6,8 +6,6 @@
 
 namespace CrazyCake\Phalcon;
 
-use Phalcon\Exception;
-
 //required Files
 require "AppLoader.php";
 require "AppServices.php";
@@ -28,7 +26,7 @@ abstract class App
 	/**
 	 * Config function
 	 */
-	abstract protected function config();
+	abstract protected function config(): array;
 
 	/**
 	 * The App Dependency injector

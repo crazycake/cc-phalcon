@@ -9,9 +9,6 @@
 
 namespace CrazyCake\Helpers;
 
-//imports
-use Phalcon\Exception;
-
 /**
  * Slug Helper
  */

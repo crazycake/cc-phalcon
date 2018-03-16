@@ -135,10 +135,8 @@ trait FacebookAuth
 			else
 				return $this->setResponseOnLogin();
 		}
-		catch (FacebookResponseException $e) { $exception = $e; }
-		catch (FacebookSDKException $e)      { $exception = $e; }
-		catch (Exception $e)                 { $exception = $e; }
-		catch (\Exception $e)                { $exception = $e; }
+		catch (FacebookResponseException | FacebookSDKException $e) { $exception = $e; }
+		catch (\Exception | Exception $e) { $exception = $e; }
 
 		//an exception ocurred
 		$msg = isset($exception) ? $exception->getMessage() : $this->facebook_auth_conf["trans"]["OAUTH_REDIRECTED"];
@@ -198,10 +196,8 @@ trait FacebookAuth
 
 			return $this->redirectTo($uri);
 		}
-		catch (FacebookResponseException $e) { $exception = $e; }
-		catch (FacebookSDKException $e)      { $exception = $e; }
-		catch (Exception $e)                 { $exception = $e; }
-		catch (\Exception $e)                { $exception = $e; }
+		catch (FacebookResponseException | FacebookSDKException $e) { $exception = $e; }
+		catch (\Exception | Exception $e) { $exception = $e; }
 
 		$this->logger->error("Facebook::loginByRedirectAction -> An error ocurred: ".$exception->getMessage());
 
@@ -299,10 +295,8 @@ trait FacebookAuth
 			//send JSON response with payload
 			return $this->jsonResponse(200, ["fb_id" => $user_fb->id]);
 		}
-		catch (FacebookResponseException $e) { $exception = $e; }
-		catch (FacebookSDKException $e)      { $exception = $e; }
-		catch (Exception $e)                 { $exception = $e; }
-		catch (\Exception $e)                { $exception = $e; }
+		catch (FacebookResponseException | FacebookSDKException $e) { $exception = $e; }
+		catch (\Exception | Exception $e) { $exception = $e; }
 
 		//exception
 		$this->logger->error("Facebook::extendAccessToken -> Exception: ".$exception->getMessage().". fb_id: ".(isset($user_fb->id) ? $user_fb->id : "unknown"));
@@ -499,10 +493,8 @@ trait FacebookAuth
 
 			return $properties;
 		}
-		catch (FacebookResponseException $e) { $exception = $e; }
-		catch (FacebookSDKException $e)      { $exception = $e; }
-		catch (Exception $e)                 { $exception = $e; }
-		catch (\Exception $e)                { $exception = $e; }
+		catch (FacebookResponseException | FacebookSDKException $e) { $exception = $e; }
+		catch (\Exception | Exception $e) { $exception = $e; }
 
 		//log exception
 		$this->logger->error("Facebook::getUserData -> Exception: ".$exception->getMessage().", userID: $user_id ");

@@ -89,8 +89,7 @@ trait CheckoutManager
 			//send JSON response
 			return $this->jsonResponse(200, $checkout);
 		}
-		catch (Exception $e)  { $exception = $e->getMessage(); }
-		catch (\Exception $e) { $exception = $e->getMessage(); }
+		catch (\Exception | Exception $e)  { $exception = $e->getMessage(); }
 
 		//sends an error message
 		$this->jsonResponse(400, $exception);
@@ -131,7 +130,7 @@ trait CheckoutManager
 			//2) Call listener
 			$this->onSuccessCheckout($checkout);
 		}
-		catch (Exception $e) {
+		catch (\Exception | Exception $e) {
 
 			$this->logger->debug("CheckoutManager::successCheckout -> Exception: ".$e->getMessage());
 

@@ -463,10 +463,7 @@ trait Uploader
 					throw new Exception(str_replace(["{file}", "{r}"], [$file_name, $size["r"]], $this->uploader_conf["trans"]["IMG_RATIO"]));
 			}
 		}
-		catch (Exception $e) {
-
-			$new_file["message"] = $e->getMessage();
-		}
+		catch (\Exception | Exception $e) { $new_file["message"] = $e->getMessage(); }
 
 		return $new_file;
 	}

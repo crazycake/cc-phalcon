@@ -95,10 +95,8 @@ trait FacebookAuthHelper
 
 			return $perms;
 		}
-		catch (FacebookResponseException $e) { $exception = $e; }
-		catch (FacebookSDKException $e)      { $exception = $e; }
-		catch (Exception $e)                 { $exception = $e; }
-		catch (\Exception $e)                { $exception = $e; }
+		catch (FacebookResponseException | FacebookSDKException $e) { $exception = $e; }
+		catch (\Exception | Exception $e) { $exception = $e; }
 
 		//log exception
 		$this->logger->debug("Facebook::_getAccesTokenPermissions -> Exception: ".$exception->getMessage().", userID: $user_id ");
@@ -209,10 +207,8 @@ trait FacebookAuthHelper
 				"encrypt"  => true
 			]);
 		}
-		catch (FacebookResponseException $e) { $exception = $e; }
-		catch (FacebookSDKException $e)      { $exception = $e; }
-		catch (Exception $e)                 { $exception = $e; }
-		catch (\Exception $e)                { $exception = $e; }
+		catch (FacebookResponseException | FacebookSDKException $e) { $exception = $e; }
+		catch (\Exception | Exception $e) { $exception = $e; }
 
 		//throw one exception type
 		if ($exception) {

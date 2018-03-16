@@ -102,7 +102,7 @@ trait CheckoutCurrency
 
 			return $value;
 		}
-		catch (Exception $e) {
+		catch (\Exception | Exception $e) {
 
 			$this->logger->error("CheckoutJob::storeChileanPesoToDollarConversion -> failed retriving API data. Err: ".$e->getMessage());
 
@@ -147,7 +147,7 @@ trait CheckoutCurrency
 
 			return $value;
 		}
-		catch(Exception $e) {
+		catch (\Exception | Exception $e) {
 			$msg = $e->getMessage();
 		}
 

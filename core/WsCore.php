@@ -8,8 +8,6 @@
 
 namespace CrazyCake\Core;
 
-//imports
-use Phalcon\Exception;
 //core
 use CrazyCake\Phalcon\App;
 

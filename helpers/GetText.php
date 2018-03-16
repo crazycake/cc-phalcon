@@ -8,7 +8,6 @@
 namespace CrazyCake\Helpers;
 
 //imports
-use Phalcon\Exception;
 use Phalcon\Translate\Adapter\Gettext as GetTextAdapter;
 /**
  * GetText Adapter Handler

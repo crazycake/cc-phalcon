@@ -75,8 +75,7 @@ trait Requester
 
 			return $this->$action($client, $options);
 		}
-		catch (Exception $e)  { $ex = $e; }
-		catch (\Exception $e) { $ex = $e; }
+		catch (\Exception | Exception $e) { $ex = $e; }
 
 		$this->logger->error("Requester::newRequest -> Failed request: ".$ex->getMessage()."\n".$ex->getLine()." ".$ex->getFile().
 							 "\nOptions: ".json_encode($options, JSON_UNESCAPED_SLASHES));
