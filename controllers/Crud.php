@@ -141,7 +141,6 @@ trait Crud
 			$order = $this->_fieldToPhql($sort[0])." ".strtoupper($sort[1]);
 			//set order
 			$query->orderBy($order);
-			//sd($order);
 		}
 
 		//filter param for search
@@ -195,7 +194,6 @@ trait Crud
 
 		//merge paylod if set
 		$this->_mergePayload($data);
-		//sd($data);
 
 		try {
 			//call listener

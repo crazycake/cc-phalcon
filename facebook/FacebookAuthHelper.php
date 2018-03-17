@@ -77,7 +77,6 @@ trait FacebookAuthHelper
 
 			//get perms array
 			$perms = $fb_data["data"];
-			//sd($fb_data);
 
 			//validate scope permissions
 			if ($scope) {
@@ -126,7 +125,6 @@ trait FacebookAuthHelper
 			//validate fb session properties
 			if (!$properties)
 				throw new Exception($this->facebook_auth_conf["trans"]["SESSION_ERROR"]);
-			//sd($properties);
 
 			//OK, check if user exists in user_facebook table & get session data
 			$user_session = $this->getUserSession(); //get app session

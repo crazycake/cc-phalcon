@@ -290,7 +290,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 			$css_url = str_replace(".css", "-$version.rev.css", $css_url);
 			$js_url  = str_replace(".js", "-$version.rev.js", $js_url);
 		}
-		//s($css_url, $js_url);exit;
+		//s($css_url, $js_url);
 
 		//set vars
 		$this->view->setVars([

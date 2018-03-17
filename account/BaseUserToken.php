@@ -246,7 +246,7 @@ class BaseUserToken extends \CrazyCake\Models\Base
 				$now = new \Carbon\Carbon();
 				//consider one hour early from date
 				$now->subDays($expiration);
-				//sd($now->toDateTimeString());
+				//s($now->toDateTimeString());
 
 				//get expired objects
 				$conditions = "created_at < ?1 AND type = ?2";

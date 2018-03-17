@@ -65,7 +65,6 @@ class Images
 				$ext      = pathinfo($filepath, PATHINFO_EXTENSION);
 				$new_name = basename($filepath, ".$ext")."_$key.".$ext;
 				$new_file = $src.$new_name;
-				//s($filepath, $ext, $new_name, $new_file);exit;
 
 				//++ Resizes (keeping aspect ratio)
 				//percentage

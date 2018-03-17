@@ -175,7 +175,7 @@ trait CheckoutManager
 
 			//create object if class dont exists
 			$object = class_exists($object_entity) ? $object_entity::getById($object_id) : new \stdClass();
-			//~sd($object_class, $object_id, $object->toArray());
+			//~s($object_class, $object_id, $object->toArray());
 
 			//append object class
 			if (!in_array($object_class, $classes))
@@ -233,7 +233,6 @@ trait CheckoutManager
 
 		//parse checkout objects
 		$this->parseCheckoutObjects($checkout, $data);
-		//sd($checkout);
 
 		return $checkout;
 	}

@@ -57,7 +57,6 @@ trait Requester
 			if(!empty($url_pieces))
 				  $options = array_merge($options, $url_pieces);
 
-			//sd($options);
 			$this->logger->debug("Requester::newRequest -> Options: ".json_encode($options, JSON_UNESCAPED_SLASHES));
 
 			// socket async call?
@@ -178,7 +177,6 @@ trait Requester
 			$errstr,
 			$options["timeout"]
 		);
-		//~sd($options);
 
 		// Data goes in the path for a GET request
 		if (strtoupper($options["method"]) == "GET") {

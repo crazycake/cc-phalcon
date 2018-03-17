@@ -323,14 +323,12 @@ trait Uploader
 			CURLOPT_HTTPHEADER     => $headers,
 			CURLOPT_RETURNTRANSFER => true
 		];
-		//~sd($api_uri, $src, $config, $options);
 
 		//curl call
 		$ch = curl_init();
 	 	curl_setopt_array($ch, $options);
 		$result = curl_exec($ch);
 		curl_close($ch);
-		//~sd($result);
 
 		//process result
 		$response = json_decode($result, true);
@@ -350,7 +348,6 @@ trait Uploader
 							strlen($this->config->aws->s3->bucketBaseUri));
 
 		$filepath = self::$ROOT_UPLOAD_PATH.$uri;
-		//~sd($filepath);
 
 		return $filepath;
 	}
@@ -410,13 +407,12 @@ trait Uploader
 			"mime"    => $file_mimetype,
 			"message" => false
 		];
-		//s($this->uploader_conf);exit;
+		//s($this->uploader_conf);
 
 		try {
 
 			//get file config with file_key
 			$file_conf = $this->uploader_conf["files"][$file_key];
-			//sd($file_conf);
 
 			if(empty($file_conf))
 				throw new Exception("Uploader file configuration missing for $file_key.");

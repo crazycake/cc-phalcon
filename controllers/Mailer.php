@@ -1,7 +1,6 @@
 <?php
 /**
- * Mailer Email Service Trait
- * Requires WebCore
+ * Mailer Service Trait, requires WebCore
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
@@ -14,7 +13,7 @@ use Pelago\Emogrifier;
 use CrazyCake\Phalcon\App;
 
 /**
- * Simple Email Service Trait
+ * Mailer Trait
  */
 trait Mailer
 {
@@ -23,12 +22,6 @@ trait Mailer
 	 * @var string
 	 */
 	protected static $MAILER_CSS_FILE = PROJECT_PATH."ui/volt/mailing/css/app.css";
-
-	/**
-	 * Temporal path
-	 * @var string
-	 */
-	protected static $MAILER_CACHE_PATH = STORAGE_PATH."cache/mailer/";
 
 	/**
 	 * trait config
@@ -123,8 +116,8 @@ trait Mailer
 		//set message properties
 		$subject = $this->mailer_conf["trans"]["SUBJECT_ACTIVATION"];
 		$to      = $this->mailer_conf["email"];
-
-		//sends async email
+		
+		//sends the message
 		$this->sendMessage("activation", $subject, $to);
 	}
 
@@ -154,7 +147,8 @@ trait Mailer
 		//set message properties
 		$subject = $this->mailer_conf["trans"]["SUBJECT_PASSWORD"];
 		$to      = $this->mailer_conf["email"];
-		//sends async email
+		
+		//sends the message
 		$this->sendMessage("passwordRecovery", $subject, $to);
 	}
 
@@ -224,7 +218,7 @@ trait Mailer
 	{
 		//validation
 		if (empty($template) || empty($recipients))
-			throw new Exception("Mailer::sendMessage -> Invalid params data for sending email");
+			throw new Exception("Mailer::sendMessage -> Invalid params data for sending mail");
 
 		//parse recipients
 		if (is_string($recipients))
@@ -236,32 +230,31 @@ trait Mailer
 
 		//service instance
 		$sendgrid = new \SendGrid($this->config->sendgrid->apiKey);
-		$message  = new \SendGrid\Email();
-
-		$reply_to = $this->config->emails->support ?? $this->config->emails->sender;
-
-		$html = $this->inlineHtml($template);
-
-		//set message properties
-		$message->setFrom($this->config->emails->sender)
-				->setFromName($this->mailer_conf["from_name"])
-				->setReplyTo($reply_to)
-				->setSubject($subject)
-				->setHtml($html);
-
+		//emails
+		$from     = new \SendGrid\Email($this->mailer_conf["from_name"],  $this->config->emails->sender);
+		$reply_to = new \SendGrid\ReplyTo($this->config->emails->support ?? $this->config->emails->sender, $this->mailer_conf["from_name"]);
+		//content
+		$content = new \SendGrid\Content("text/html", $this->inlineHtml($template));
+		//mail object
+		$mail = new \SendGrid\Mail($from, $subject, (new \SendGrid\Email(null, $recipients[0])), $content);
+		$mail->setReplyTo($reply_to);
+		
 		//add recipients
-		foreach ($recipients as $email)
-			$message->addTo($email);
+		foreach ($recipients as $i => $email) {
+
+			if(empty($i)) continue;
+
+			$mail->personalization[0]->addTo(new \SendGrid\Email(null, $email));
+		}
 
 		//parse attachments
-		$this->_parseAttachments($attachments, $message);
+		$this->_parseAttachments($attachments, $mail);
 
-		//send email
-		$result = $sendgrid->send($message);
-		//sd($sendgrid, $message, $result);
+		//send mail
+		$result = $sendgrid->client->mail()->send()->post($mail);
 
-		$this->logger->debug("Mailer::sendMessage -> email message sent to: ".json_encode($recipients, JSON_UNESCAPED_SLASHES)." "
-																			 .json_encode($result, JSON_UNESCAPED_SLASHES));
+		$this->logger->debug("Mailer::sendMessage -> mail message sent to: ".json_encode($recipients, JSON_UNESCAPED_SLASHES)." "
+																			 .json_encode($result->body() ?? null, JSON_UNESCAPED_SLASHES));
 		return $result;
 	}
 
@@ -270,30 +263,28 @@ trait Mailer
 	/**
 	 * Parse attachments to be sended to sendgrid API service
 	 * @param array $attachments - Attachments array
-	 * @param object $message - The sendgrid object
+	 * @param object $mail - The sendgrid mail object
 	 * @return array The parsed array data
 	 */
-	private function _parseAttachments($attachments = null, &$message)
+	private function _parseAttachments($attachments = null, &$mail)
 	{
-		if(!isset($message) || !is_array($attachments) || empty($attachments))
+		if(empty($attachments))
 			return;
-
-		//create dir if not exists
-		if(!is_dir(self::$MAILER_CACHE_PATH))
-			mkdir(self::$MAILER_CACHE_PATH, 0755);
 
 		foreach ($attachments as $attachment) {
 
-			if(!isset($attachment["name"]) || !isset($attachment["binary"]))
+			if(empty($attachment["name"]) || empty($attachment["binary"]))
 				continue;
 
-			$file_path = self::$MAILER_CACHE_PATH.$attachment["name"];
-
-			//save file to disk. NOTE: base64 encode not supported by API yet :(
-			file_put_contents($file_path, $attachment["binary"]);
-
 			//set attachment
-			$message->setAttachment($file_path);
+			$att = new \SendGrid\Attachment();
+			$att->setDisposition("attachment");
+			$att->setContentId($attachment["id"] ?? uniqid());
+			$att->setType($attachment["type"] ?? null);
+			$att->setContent($attachment["binary"]);
+			$att->setFilename($attachment["name"]);
+
+			$mail->addAttachment($at);
 		}
 	}
 }

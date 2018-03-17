@@ -8,7 +8,6 @@ namespace CrazyCake\Checkout;
 
 //imports
 use Phalcon\Exception;
-use Predis\Client as Redis;
 //core
 use CrazyCake\Phalcon\App;
 
@@ -38,12 +37,10 @@ trait CheckoutCurrency
 	 */
 	protected function newRedisClient()
 	{
-		return new Redis([
-			"scheme"     => "tcp",
-			"host"       => getenv("REDIS_HOST") ?: "redis",
-			"port"       => 6379,
-			"persistent" => false
-		]);
+		$redis = new \Redis();
+		$redis->connect(getenv("REDIS_HOST") ?: "redis");
+
+		return $redis;
 	}
 
 	/**
@@ -79,7 +76,10 @@ trait CheckoutCurrency
 		if(empty($value) && $new_value = $this->apiChileanCurrencyRequest())
 			$redis->set(self::$REDIS_KEY_USD_CLP_VALUE, $new_value);
 
-		return $redis->get(self::$REDIS_KEY_USD_CLP_VALUE) * $amount;
+		$value = $redis->get(self::$REDIS_KEY_USD_CLP_VALUE) * $amount;
+		$redis->close();
+
+		return $value;
 	}
 
 	/**
@@ -97,6 +97,7 @@ trait CheckoutCurrency
 
 			$redis = $this->newRedisClient();
 			$redis->set(self::$REDIS_KEY_USD_CLP_VALUE, $value);
+			$redis->close();
 
 			$this->logger->debug("storeDollarChileanPesoValue -> Stored value '$value' in Redis.");
 
@@ -147,9 +148,7 @@ trait CheckoutCurrency
 
 			return $value;
 		}
-		catch (\Exception | Exception $e) {
-			$msg = $e->getMessage();
-		}
+		catch (\Exception | Exception $e) { $msg = $e->getMessage(); }
 
 		if(method_exists($this, "colorize"))
 			$this->colorize($msg, "ERROR");

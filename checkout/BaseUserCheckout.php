@@ -220,7 +220,6 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 				if(is_array($value))
 					$checkout_data[$key] = implode(",", $value);
 			}
-			//sd($checkout_data);
 
 			if (!$checkout->save($checkout_data))
 				throw new Exception("A DB error ocurred saving in checkouts model.");
@@ -267,7 +266,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 			$now = new \Carbon\Carbon();
 			//substract time
 			$now->subHours(static::$CHECKOUT_EXPIRES_THRESHOLD);
-			//s($now->toDateTimeString());exit;
+			//s($now->toDateTimeString());
 
 			//get expired objects
 			$conditions = "state = 'pending' AND local_time < ?1";

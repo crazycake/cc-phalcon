@@ -140,7 +140,7 @@ trait AppLoader
 
 		//4.- Register phalcon loader
 		$loader->register();
-		//sd(get_included_files());
+		//s(get_included_files());
 	}
 
 	/**

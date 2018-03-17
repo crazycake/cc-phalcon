@@ -254,7 +254,6 @@ class QRMaker
 
 		//instance a phar file object
 		$phar = new \Phar(\Phar::running());
-		//sd($assets, $output_path);
 
 		//extract all files in a given directory
 		$phar->extractTo($cache_path, $assets, true);

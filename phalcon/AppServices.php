@@ -148,11 +148,8 @@ class AppServices
 		}
 
 		// kint options
-		if (class_exists("\Kint")) {
-
-			\Kint::$theme     = "solarized";
-			\Kint::$maxLevels = 0;
-		}
+		if (class_exists("\Kint"))
+			\Kint::$max_depth = 0;
 	}
 
 	/**
