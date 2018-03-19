@@ -105,9 +105,9 @@ trait Uploader
 	}
 
 	/**
-	 * Action - Uploads a file
+	 * Uploads a file
 	 */
-	public function uploadAction()
+	public function upload()
 	{
 		$uploaded = [];
 		$messages = [];
@@ -151,6 +151,16 @@ trait Uploader
 			array_push($uploaded, $new_file);
 		}
 
+		return [$uploaded, $messages];
+	}
+
+	/**
+	 * Action - Uploads a file
+	 */
+	public function uploadAction()
+	{
+		list($uploaded, $messages) = $this->upload();
+		
 		//response
 		$this->jsonResponse(200, [
 			"uploaded" => $uploaded,
