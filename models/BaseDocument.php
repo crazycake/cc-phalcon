@@ -20,18 +20,11 @@ class BaseDocument
 	public static $COLLECTION = "";
 
 
-	/**
-	 * Default timezone
-	 * @var string
-	 */
-	public static $TIMEZONE = "America/Santiago";
-
 	/* Methods
 	---------------------------------------------- § -------------------------------------------------- */
 
 	/**
 	 * Entity (class name)
-	 * @static
 	 * @link http://php.net/manual/en/language.oop5.late-static-bindings.php
 	 * @return string The current class name
 	 */
