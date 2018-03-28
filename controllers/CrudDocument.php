@@ -248,7 +248,10 @@ trait CrudDocument
 		foreach ($payload as $key => &$value) {
 			
 			if(is_numeric($value))
-				$value = is_float($value) ? floatval($value) : intval($value); 
+				$value = is_float($value) ? floatval($value) : intval($value);
+
+			else if(empty($value))
+				$value = null;
 		}
 
 		//always set a createdAt timestamp
