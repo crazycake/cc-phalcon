@@ -102,7 +102,7 @@ trait CrudDocument
 
 		//optional listener
 		if(method_exists($this, "onBeforeQuery"))
-			$this->onBeforeQuery($query, $opts);
+			$this->onBeforeQuery($query, $opts, $data);
 
 		// collection
 		$collection = $this->mongo->getDatabaseName().".".$this->crud_conf["collection"];
