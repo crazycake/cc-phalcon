@@ -226,7 +226,7 @@ trait CrudDocument
 
 		//optional listener
 		if(method_exists($this, "onBeforeDelete"))
-			$this->onBeforeDelete($object_id);
+			$this->onBeforeDelete($data);
 
 		$this->mongo->{$this->crud_conf["collection"]}->deleteOne(["_id" => $object_id]);
 
@@ -240,6 +240,43 @@ trait CrudDocument
 
 		// ok response
 		$this->jsonResponse(200);
+	}
+
+	/**
+	 * Ajax - Delete Image
+	 */
+	public function deleteImageAction()
+	{
+		$this->onlyAjax();
+
+		$data = $this->handleRequest([
+			"id"   => "string",
+			"prop" => "string",
+			"url"  => "string",
+		], "POST");
+
+		//optional listener
+		if(method_exists($this, "onBeforeDeleteImage"))
+			$this->onBeforeDeleteImage($data);
+		
+		//set object id
+		$object_id = new \MongoDB\BSON\ObjectID($data["id"]);
+		$prop      = $data["prop"];
+
+		$object = $this->mongo->{$this->crud_conf["collection"]}->findOne(["_id" => $object_id]);
+
+		if(empty($object))
+			$this->jsonResponse(400);
+
+		//arrays
+		$cmd = is_array($object->{$prop}) ? ['$pull' => ["$prop" => $data["url"]]] : ['$set' => ["$prop" => null]]; 
+
+		$this->mongo->{$this->crud_conf["collection"]}->updateOne(["_id" => $object_id], $cmd);
+
+		//get updated value
+		$value = $this->mongo->{$this->crud_conf["collection"]}->findOne(["_id" => $object_id]);
+
+		$this->jsonResponse(200, ["prop" => "$prop", "value" => $value->{$prop}]);
 	}
 
 	/**
