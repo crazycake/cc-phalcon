@@ -100,12 +100,15 @@ trait CrudDocument
 
 		$this->logger->debug("CrudDocument::list -> new request: ". json_encode($query)." => ".json_encode($opts));
 
-		$collection = $this->mongo->getDatabaseName().".".$this->crud_conf["collection"];
-		//~s($collection);
+		//optional listener
+		if(method_exists($this, "onBeforeQuery"))
+			$this->onBeforeQuery($query, $opts);
 
+		// collection
+		$collection = $this->mongo->getDatabaseName().".".$this->crud_conf["collection"];
 		//query
-		$resultset = $this->mongoManager->executeQuery($collection, new \MongoDB\Driver\Query($query, $opts));
-		$items     = $resultset ? $resultset->toArray() : [];
+		$resultset  = $this->mongoManager->executeQuery($collection, new \MongoDB\Driver\Query($query, $opts));
+		$items      = $resultset ? $resultset->toArray() : [];
 
 		//get unfiltered items
 		unset($opts["limit"], $opts["skip"], $opts["sort"]);
@@ -113,8 +116,8 @@ trait CrudDocument
 		$totalItems = count($resultset ? $resultset->toArray() : []);
 
 		//optional listener
-		if(method_exists($this, "onResultset"))
-			$this->onResultset($items);
+		if(method_exists($this, "onAfterQuery"))
+			$this->onAfterQuery($items);
 
 		$response = ["items" => $items, "totalItems" => $totalItems];
 
