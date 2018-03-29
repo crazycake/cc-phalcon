@@ -268,8 +268,11 @@ trait CrudDocument
 		if(empty($object))
 			$this->jsonResponse(400);
 
+		//check if is array
+		$is_array = $object->{$prop} instanceof \MongoDB\Model\BSONArray;
+
 		//arrays
-		$cmd = is_array($object->{$prop}) ? ['$pull' => ["$prop" => $data["url"]]] : ['$set' => ["$prop" => null]]; 
+		$cmd = $is_array ? ['$pull' => ["$prop" => $data["url"]]] : ['$set' => ["$prop" => null]]; 
 
 		$this->mongo->{$this->crud_conf["collection"]}->updateOne(["_id" => $object_id], $cmd);
 
