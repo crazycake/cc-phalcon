@@ -98,6 +98,7 @@ class Cryptify
 			$di = \Phalcon\DI::getDefault();
 
 			if ($di->getShared("logger")) {
+				
 				$logger = $di->getShared("logger");
 				$logger->error("Cryptify -> Failed decryptData: ".$hash.". Err: ".$e->getMessage());
 			}

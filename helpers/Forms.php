@@ -65,13 +65,16 @@ class Forms
 		$formatted = $price;
 
 		switch ($currency) {
+
 			case "CLP":
 				$formatted = "$".str_replace(".00", "", number_format($formatted));
 				$formatted = str_replace(",", ".", $formatted);
 				break;
+
 			case "USD":
 				$formatted = "$".$formatted;
 				break;
+
 			default:
 				break;
 		}
@@ -95,18 +98,18 @@ class Forms
 		$trans = $di->getShared("trans");
 
 		//days
-		$days_array = [];
+		$days_array     = [];
 		$days_array[""] = $trans->_("Día");
-		//loop
+		
 		for ($i = 1; $i <= 31; $i++) {
 			$prefix = ($i <= 9) ? "0$i" : "$i";
 			$days_array[$prefix] = $i;
 		}
 
 		//months
-		$months_array = [];
+		$months_array     = [];
 		$months_array[""] = $trans->_("Mes");
-		//loop
+		
 		for ($i = 1; $i <= 12; $i++) {
 
 			$prefix = ($i <= 9) ? "0$i" : "$i";
@@ -115,12 +118,11 @@ class Forms
 		}
 
 		//years
-		$years_array = [];
+		$years_array     = [];
 		$years_array[""] = $trans->_("Año");
-		//loop
-		for ($i = (int)date("Y") - 5; $i >= 1930; $i--) {
+		
+		for ($i = (int)date("Y") - 5; $i >= 1930; $i--)
 			$years_array["$i"] = $i;
-		}
 
 		return [$years_array, $months_array, $days_array];
 	}
