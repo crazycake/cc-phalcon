@@ -106,7 +106,7 @@ abstract class BaseCore extends Controller
 	/**
 	 * Sends a mail message to user asynchronously
 	 * @param string $method - The Mailer method to call
-	 * @param object $data - The data to be passed as args
+	 * @param mixed $data - The data to be passed as args
 	 * @return object response
 	 */
 	protected function sendMailMessage($method = null, $data = null)
