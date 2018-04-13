@@ -33,9 +33,9 @@ trait AccountToken
 	/** ------------------------------------------- § ------------------------------------------------ **/
 
 	/**
-	 * Set Redis client
+	 * Returns a new redis client
 	 */
-	protected function newRedisClient()
+	protected static function newRedisClient()
 	{
 		$redis = new \Redis();
 		$redis->connect(getenv("REDIS_HOST") ?: "redis");
@@ -51,7 +51,7 @@ trait AccountToken
 	 */
 	public static function getToken($user_id, $type)
 	{
-		$redis = $this->newRedisClient();
+		$redis = self::newRedisClient();
 
 		$token = $redis->get($user_id."#".$type);
 		$redis->close();
@@ -66,10 +66,9 @@ trait AccountToken
 	 */
 	public static function newToken($user_id, $type)
 	{
-		$redis = $this->newRedisClient();
+		$redis = self::newRedisClient();
 
-		$di      = \Phalcon\DI::getDefault();
-		$token   = $di->getShared("cryptify")->newHash(static::$TOKEN_LENGTH);
+		$token   = (\Phalcon\DI::getDefault())->getShared("cryptify")->newHash(static::$TOKEN_LENGTH);
 		$expires = static::$TOKEN_EXPIRES[$type];
 
 		$redis->set($user_id."#".$type, $token);
@@ -93,8 +92,7 @@ trait AccountToken
 			$token = self::newToken($user_id, $type);
 
 		//append encrypted data
-		$di        = \Phalcon\DI::getDefault();
-		$encrypted = $di->getShared("cryptify")->encryptData($user_id."#".$type."#".$token);
+		$encrypted = (\Phalcon\DI::getDefault())->getShared("cryptify")->encryptData($user_id."#".$type."#".$token);
 
 		return $encrypted;
 	}
@@ -107,7 +105,7 @@ trait AccountToken
 	 */
 	public static function deleteToken($user_id, $type)
 	{
-		$redis = $this->newRedisClient();
+		$redis = self::newRedisClient();
 
 		$redis->del($user_id."#".$type);
 		$redis->close();
@@ -123,8 +121,7 @@ trait AccountToken
 		if (empty($encrypted))
 			throw new Exception("got empty encrypted data");
 
-		$di   = \Phalcon\DI::getDefault();
-		$data = $di->getShared("cryptify")->decryptData($encrypted, "#");
+		$data = (\Phalcon\DI::getDefault())->getShared("cryptify")->decryptData($encrypted, "#");
 
 		//validate data (user_id, token_type and token)
 		if (count($data) < 3)
