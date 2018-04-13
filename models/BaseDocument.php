@@ -66,15 +66,15 @@ class BaseDocument
 	}
 
 	/**
-	 * Inserts a new object
-	 * @param Object $object
+	 * Inserts a new document
+	 * @param Mixed $data - The input data
 	 */
-	public static function insert($object)
+	public static function insert($data)
 	{
 		$mongo      = (\Phalcon\DI::getDefault())->getShared("mongo");
 		$collection = static::$COLLECTION;
 
-		$insertion = $mongo->{$collection}->insertOne($object);
+		$insertion = $mongo->{$collection}->insertOne($data);
 		$object_id = $insertion->getInsertedId();
 
 		return self::getById($object_id);

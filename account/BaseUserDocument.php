@@ -18,21 +18,21 @@ class BaseUserDocument extends \CrazyCake\Models\BaseDocument
 	static $FLAGS = ["pending", "enabled", "disabled"];
 
 	/**
-	 * Inserts a new object
+	 * Inserts a new document
 	 * @override
-	 * @param Object $object
+	 * @param Mixed $data - The input data
 	 * @return Mixed
 	 */
-	public static function insert(&$user)
+	public static function insert($data)
 	{
 		//set password hash
-		if (!is_null($user->pass))
-			$user->pass = (\Phalcon\DI::getDefault())->getShared("security")->hash($user->pass);
+		if (!empty($data["pass"]))
+			$data["pass"] = (\Phalcon\DI::getDefault())->getShared("security")->hash($data["pass"]);
 
 		//set timestamp
-		$user->createdAt = $self::toIsoDate();
+		$data["createdAt"] = $self::toIsoDate();
 
-		return parent::insert($user);
+		return parent::insert($data);
 	}
 
 	/**
