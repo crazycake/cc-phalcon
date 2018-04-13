@@ -195,7 +195,7 @@ trait FacebookAuthHelper
 			if (!$user_fb)
 				$this->_saveUser($user->id, $properties["fb_id"], $fac);
 
-			//queues an async request, extend access token (append fb userID and short live access token)
+			//extend access token (append fb userID and short live access token)
 			$this->coreRequest([
 				"base_url" => "http://localhost/",
 				"uri" 	   => "facebook/extendAccessToken/",
