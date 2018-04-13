@@ -236,7 +236,7 @@ trait AccountAuth
 		$this->sendMailMessage("accountActivation", [
 			"user"  => $user,
 			"email" => $user->email,
-			"url"   => $this->baseUrl($this->account_pass_conf["activation_uri"].$token_chain)
+			"url"   => $this->baseUrl($this->account_auth_conf["activation_uri"].$token_chain)
 		]);
 
 		//redirect/response
