@@ -203,6 +203,8 @@ trait AccountAuth
 			$this->jsonResponse(400, $msg);
 		}
 
+		//remove CSRF key
+		unset($data[$this->client->tokenKey]);
 		//set pending email confirmation status
 		$data["flag"] = "pending";
 

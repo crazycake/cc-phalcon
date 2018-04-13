@@ -18,9 +18,12 @@ class BaseUserDocument extends \CrazyCake\Models\BaseDocument
 	static $FLAGS = ["pending", "enabled", "disabled"];
 
 	/**
-	 * Before On Create event
+	 * Inserts a new object
+	 * @override
+	 * @param Object $object
+	 * @return Mixed
 	 */
-	public function beforeOnCreate(&$user)
+	public static function insert(&$user)
 	{
 		//set password hash
 		if (!is_null($user->pass))
@@ -28,9 +31,9 @@ class BaseUserDocument extends \CrazyCake\Models\BaseDocument
 
 		//set timestamp
 		$user->createdAt = $self::toIsoDate();
-	}
 
-	/** ------------------------------------------- § --------------------------------------------------  **/
+		return parent::insert($user);
+	}
 
 	/**
 	 * Find User by email
