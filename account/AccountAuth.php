@@ -24,9 +24,9 @@ trait AccountAuth
 
 	/**
 	 * Event on user logged in (session)
-	 * @param Int $user_id - The user id logged in
+	 * @param Object $user - The user object
 	 */
-	abstract public function onLoggedIn($user_id);
+	abstract public function newUserSession($user);
 
 	/**
 	 * Set response on logged in (session)
@@ -36,9 +36,8 @@ trait AccountAuth
 
 	/**
 	 * Session Destructor with autoredirection (session)
-	 * @param String $uri - The post redirection URI
 	 */
-	abstract public function removeUserSession($uri = "");
+	abstract public function removeUserSession();
 
 	/**
 	 * trait config
@@ -110,7 +109,7 @@ trait AccountAuth
 			$this->flash->success($this->account_auth_conf["trans"]["ACTIVATION_SUCCESS"]);
 
 			//success login
-			$this->onLoggedIn($user);
+			$this->newUserSession($user);
 			//redirect/response
 			$this->setResponseOnLoggedIn();
 		}
@@ -175,7 +174,7 @@ trait AccountAuth
 		}
 
 		//success login
-		$this->onLoggedIn($user);
+		$this->newUserSession($user);
 
 		//session controller, dispatch response
 		$this->setResponseOnLoggedIn();

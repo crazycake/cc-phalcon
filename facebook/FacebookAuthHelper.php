@@ -217,7 +217,7 @@ trait FacebookAuthHelper
 		}
 
 		//mark user as Logged In
-		$this->onLoggedIn($user->id);
+		$this->newUserSession($user);
 
 		//SAVES session if none error ocurred
 		$login_data["properties"] = $properties;
