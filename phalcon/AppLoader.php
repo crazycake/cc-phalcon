@@ -159,6 +159,7 @@ trait AppLoader
 
 		//set library path => namespaces
 		$namespaces = [];
+		
 		foreach ($libraries as $lib)
 			$namespaces[self::$CORE_NAMESPACE.ucfirst($lib)] = "$class_path/$lib/";
 

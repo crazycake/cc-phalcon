@@ -1,7 +1,6 @@
 <?php
 /**
- * Core Controller, includes basic and helper methods for child controllers.
- * Requires a Phalcon DI Factory Services
+ * Core Controller
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
@@ -99,9 +98,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 		if (!empty($params)) {
 
 			//anonymous function
-			$parser = function (&$item, $key) {
-				$item = $key."=".$item;
-			};
+			$parser = function (&$item, $key) { $item = $key."=".$item; };
 
 			array_walk($params, $parser);
 			$uri .= "?".implode("&", $params);
@@ -226,16 +223,11 @@ abstract class WebCore extends BaseCore implements WebSecurity
 		// get langs config (set by App)
 		$langs = (array)$this->config->langs;
 
-		// set default lang if only one available
-		if (count($langs) == 1) {
+		// set default lang if only one available, otherwise check lang from session
+		if (count($langs) == 1)
 			$lang = current($langs);
-		}
-		else {
-
-			// load lang from session?
-			$lang = $this->session->has("lang") ? $this->session->get("lang") :
-												  $this->request->getBestLanguage();
-		}
+		else
+			$lang = $this->session->has("lang") ? $this->session->get("lang") : $this->request->getBestLanguage();
 
 		//filter lang
 		$lang = substr(trim(strtolower($lang)), 0, 2);

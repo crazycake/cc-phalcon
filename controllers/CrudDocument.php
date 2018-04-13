@@ -107,8 +107,8 @@ trait CrudDocument
 		// collection
 		$collection = $this->mongo->getDatabaseName().".".$this->crud_conf["collection"];
 		//query
-		$resultset  = $this->mongoManager->executeQuery($collection, new \MongoDB\Driver\Query($query, $opts));
-		$items      = $resultset ? $resultset->toArray() : [];
+		$resultset = $this->mongoManager->executeQuery($collection, new \MongoDB\Driver\Query($query, $opts));
+		$items     = $resultset ? $resultset->toArray() : [];
 
 		//get unfiltered items
 		unset($opts["limit"], $opts["skip"], $opts["sort"]);

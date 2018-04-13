@@ -20,11 +20,13 @@ abstract class App
 
 	/**
 	 * Project Path
+	 * @var String
 	 */
 	protected static $PROJECT_PATH = __DIR__;
 
 	/**
 	 * Config function
+	 * @var Array
 	 */
 	abstract protected function config();
 
@@ -129,7 +131,7 @@ abstract class App
 
 	/**
 	 * Starts an API App
-	 * @param function $routes_fn - A routes function
+	 * @param Function $routes_fn - A routes function
 	 */
 	private function _startApi($routes_fn = null)
 	{
@@ -145,7 +147,7 @@ abstract class App
 
 	/**
 	 * Starts an MVC App
-	 * @param function $routes_fn - A routes function
+	 * @param Function $routes_fn - A routes function
 	 */
 	private function _startMvc($routes_fn = null)
 	{

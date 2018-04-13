@@ -65,6 +65,6 @@ trait WebErrors
 	 */
 	public function expiredAction()
 	{
-		//...
+
 	}
 }

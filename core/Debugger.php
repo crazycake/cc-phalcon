@@ -14,13 +14,13 @@ trait Debugger
 {
 	/**
 	 * Logs database query & statements with phalcon event manager
-	 * @param String $logFile - The log file name
+	 * @param String $file - The log file name
 	 */
-	protected function dblog($logFile = "db.log")
+	protected function dblog($file = "db.log")
 	{
 		//Listen all the database events
 		$manager = new \Phalcon\Events\Manager();
-		$logger  = new \Phalcon\Logger\Adapter\File(STORAGE_PATH."logs/".$logFile);
+		$logger  = new \Phalcon\Logger\Adapter\File(STORAGE_PATH."logs/".$file);
 
 		$manager->attach('db', function ($event, $connection) use ($logger) {
 			//log SQL
