@@ -47,7 +47,7 @@ trait Translations
 				"PASS_DONT_MATCH"    => "Tu contraseña actual no es correcta.",
 				"NEW_PASS_EQUALS"    => "Tu nueva contraseña debe ser diferente a la actual.",
 				"NEW_PASS_SAVED"     => "Tu contraseña ha sido guardada.",
-				"PASS_MAIL_SENT"     => "Te hemos enviado un correo a {email} para recuperar tu contraseña.",
+				"PASS_MAIL_SENT"     => "Te hemos enviado un correo a {email} para recuperar tu contraseña."
 			],
 			"MAILER" => [
 				"SUBJECT_ACTIVATION" => "Confirma tu cuenta",
@@ -60,14 +60,12 @@ trait Translations
 				"IMG_HEIGHT"     => "La imagen {file} tiene un alto distinto de {h}px.",
 				"IMG_MIN_WIDTH"  => "La imagen {file} debe tener un ancho de al menos {w}px.",
 				"IMG_MIN_HEIGHT" => "La imagen {file} debe tener una altura de al menos {h}px.",
-				"IMG_RATIO"      => "La imagen {file} debe tener un ratio de {r}.",
+				"IMG_RATIO"      => "La imagen {file} debe tener un ratio de {r}."
 			]
 		];
 
 		//facebook
 		if(class_exists("\FacebookController")) {
-
-			$fb_email_settings_url = "https://www.facebook.com/settings?tab=account&section=email&view";
 
 			$data["FACEBOOK"] = [
 				"SESSION_ERROR"    => "Ocurrió un problema con tu sesión de Facebook, por favor inténtalo nuevamente. ".
@@ -105,7 +103,7 @@ trait Translations
 				"CSRF"             => "Esta página ha estado inactiva por mucho tiempo, refréscala haciendo ".
 										"<a href=\"javascript:location.reload();\">click aquí</a>.",
 				"LOADING"          => "cargando ...",
-				"REDIRECTING"      => "redireccionado ...",
+				"REDIRECTING"      => "redireccionado ..."
 			],
 			"ACTIONS" => [
 				"OK"       => "Ok",
