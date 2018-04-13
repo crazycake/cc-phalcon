@@ -30,7 +30,7 @@ class BaseUserDocument extends \CrazyCake\Models\BaseDocument
 			$data["pass"] = (\Phalcon\DI::getDefault())->getShared("security")->hash($data["pass"]);
 
 		//set timestamp
-		$data["createdAt"] = $self::toIsoDate();
+		$data["createdAt"] = self::toIsoDate();
 
 		return parent::insert($data);
 	}
