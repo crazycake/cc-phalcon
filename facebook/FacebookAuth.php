@@ -1,9 +1,7 @@
 <?php
-
 /**
  * Facebook Trait - Facebook php sdk v5.0
  * Requires AccountSession
- * Open Graph v2.4
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
@@ -128,10 +126,7 @@ trait FacebookAuth
 			$this->onSuccessAuth($route, $response);
 
 			//handle response, session controller
-			if (!empty($data["user_data"]))
-				return $this->setResponseOnLoggedIn($response);
-			else
-				return $this->setResponseOnLoggedIn();
+			return $this->setResponseOnLoggedIn(!empty($data["user_data"]) ? $response : null);
 		}
 		catch (FacebookResponseException | FacebookSDKException $e) { $exception = $e; }
 		catch (\Exception | Exception $e) { $exception = $e; }
@@ -151,7 +146,6 @@ trait FacebookAuth
 	public function loginByRedirectAction()
 	{
 		try {
-
 			// get params
 			$get_params = $_GET;
 			//get route data
@@ -264,7 +258,7 @@ trait FacebookAuth
 
 			//find user on db
 			$user_facebook_class = App::getClass("user_facebook");
-			$user_fb = $user_facebook_class::getById($fb_id);
+			$user_fb             = $user_facebook_class::getById($fb_id);
 
 			if (!$user_fb || empty($short_live_fac))
 				$this->jsonResponse(404);
@@ -295,7 +289,7 @@ trait FacebookAuth
 		catch (\Exception | Exception $e) { $exception = $e; }
 
 		//exception
-		$this->logger->error("Facebook::extendAccessToken -> exception: ".$exception->getMessage().". fb_id: ".(isset($user_fb->id) ? $user_fb->id : "unknown"));
+		$this->logger->error("Facebook::extendAccessToken -> exception: ".$exception->getMessage().". fb_id: ".($user_fb->id ?? "unknown"));
 		$this->jsonResponse(404);
 	}
 

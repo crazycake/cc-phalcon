@@ -2,7 +2,6 @@
 /**
  * Facebook Helper Trait - Facebook php sdk v5.0
  * Requires AccountSession
- * Open Graph v2.4
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
@@ -98,7 +97,7 @@ trait FacebookAuthHelper
 		catch (\Exception | Exception $e) { $exception = $e; }
 
 		//log exception
-		$this->logger->debug("Facebook::_getAccesTokenPermissions -> Exception: ".$exception->getMessage().", userID: $user_id ");
+		$this->logger->debug("Facebook::_getAccesTokenPermissions -> Exception: ".$exception->getMessage().", userID: $user_id");
 		return false;
 	}
 
@@ -276,8 +275,8 @@ trait FacebookAuthHelper
 
 		if (!$user_fb->save()) {
 
-			$this->logger->error("Facebook::_saveUser() -> Error Insertion User Facebook data. userId -> ".$user_id.",
-								  FBUserId -> ".$fb_id.", trace: ".$user_fb->messages(true));
+			$this->logger->error("Facebook::_saveUser() -> Error Insertion User Facebook data. userId -> $user_id,
+								  fb_id -> $fb_id, exception: ".$user_fb->messages(true));
 
 			$user = $user_class::getById($user_id);
 			$user->delete();
@@ -300,7 +299,7 @@ trait FacebookAuthHelper
 		if (!empty($email) && filter_var($email, FILTER_VALIDATE_EMAIL))
 			return true;
 
-		$this->logger->error("Facebook::_loginUser() -> Facebook Session (".$fb_id.") invalid email: ".$email);
+		$this->logger->error("Facebook::_loginUser() -> Facebook Session [$fb_id] invalid email: ".$email);
 
 		//invalidate email user
 		$request = $this->fb->delete("/me/permissions");
