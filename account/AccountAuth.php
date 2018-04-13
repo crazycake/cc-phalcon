@@ -156,7 +156,7 @@ trait AccountAuth
 		if($this->account_auth_conf["user_key"] == "email")
 			$user = $entity::getUserByEmail($data["email"]);
 		else
-			$user = $this->getLoginUser($data);
+			$user = $this->getLoginUser($data); //must implement
 
 		//check user & given hash with the one stored (wrong combination)
 		if (!$user || !$this->security->checkHash($data["pass"], $user->pass))
