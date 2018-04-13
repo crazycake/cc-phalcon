@@ -46,7 +46,7 @@ class Forms
 	{
 		//validate names
 		$nums = "0123456789";
-		
+
 		if (strcspn($name, $nums) != strlen($name))
 			return false;
 
