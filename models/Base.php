@@ -166,7 +166,8 @@ class Base extends \Phalcon\Mvc\Model
 	public static function insert($data)
 	{
 		// ORM save
-		$object = new self();
+		$entity = static::entity();
+		$object = new $entity();
 		$object->save($data);
 
 		// DB ORM errors?
