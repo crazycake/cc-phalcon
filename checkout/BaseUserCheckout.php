@@ -23,15 +23,13 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 
 	/**
 	 * Pending checkouts expiration threshold, in minutes.
-	 * @static
-	 * @var integer
+	 * @var Integer
 	 */
 	public static $CHECKOUT_EXPIRES_THRESHOLD = 72; //hours
 
 	/**
 	 * Buy Order code length
-	 * @static
-	 * @var integer
+	 * @var Integer
 	 */
 	public static $BUY_ORDER_CODE_LENGTH = 16;
 
@@ -39,56 +37,55 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 
 	/**
 	 * Buy Order string
-	 * @var string
+	 * @var String
 	 */
 	public $buy_order;
 
 	/**
 	 * User ID
-	 * @var int
+	 * @var Int
 	 */
 	public $user_id;
 
 	/**
 	 * Amount
-	 * @var double
+	 * @var Float
 	 */
 	public $amount;
 
 	/**
-	 * Currency [USD, CLP, ...]
-	 * @var string
+	 * Currency [USD, CLP]
+	 * @var String
 	 */
 	public $currency;
 
 	/**
 	 * State
-	 * @var string
+	 * @var String
 	 */
 	public $state;
 
 	/**
 	 * Gateway name
-	 * @var string
+	 * @var String
 	 */
 	public $gateway;
 
 	/**
 	 * local server time
-	 * @var string
+	 * @var String
 	 */
 	public $local_time;
 
 	/**
 	 * The browser client
-	 * @var string
+	 * @var String
 	 */
 	public $client;
 
 	/**
 	 * States possible values
-	 * @static
-	 * @var array
+	 * @var Array
 	 */
 	static $STATES = ["pending", "failed", "overturn", "success"];
 
@@ -148,9 +145,9 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 
 	/**
 	 * Get the last user checkout
-	 * @param  int $user_id - The User ID
-	 * @param  string $state - The checkout state property
-	 * @return mixed [string|object]
+	 * @param Int $user_id - The User ID
+	 * @param String $state - The checkout state property
+	 * @return Mixed
 	 */
 	public static function getLast($user_id = 0, $state = "pending")
 	{
@@ -162,8 +159,8 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 
 	/**
 	 * Generates a random code for a buy order
-	 * @param int $length - The buy order string length
-	 * @return string
+	 * @param Int $length - The buy order string length
+	 * @return String
 	 */
 	public static function newBuyOrderCode($length = null)
 	{
@@ -180,8 +177,8 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 
 	/**
 	 * Creates a new buy order
-	 * @param object $checkout_obj -The checkout object
-	 * @return mixed [object] - The checkout ORM object
+	 * @param Object $checkout_obj -The checkout object
+	 * @return Mixed - The checkout ORM object
 	 */
 	public static function newBuyOrder($checkout_obj = null)
 	{
@@ -253,7 +250,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 	/**
 	 * Deletes expired pending checkouts.
 	 * Requires Carbon library
-	 * @return int
+	 * @return Int
 	 */
 	public static function deleteExpired()
 	{

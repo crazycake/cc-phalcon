@@ -26,47 +26,45 @@ trait FacebookAuth
 
 	/**
 	 * Listener - On success auth
-	 * @param object $route - The app route object
-	 * @param object $response - The received response
+	 * @param Object $route - The app route object
+	 * @param Object $response - The received response
 	 */
 	abstract public function onSuccessAuth(&$route, $response);
 
 	/**
 	 * Listener - On app deauthorized
-	 * @param object $data - The response data
+	 * @param Object $data - The response data
 	 */
 	abstract public function onAppDeauthorized($data = []);
 
 	/**
 	 * trait config var
-	 * @var array
+	 * @var Array
 	 */
 	public $facebook_auth_conf;
 
 	/**
 	 * Lib var
-	 * @var object
+	 * @var Object
 	 */
 	public $fb;
 
 	/**
 	 * Facebook URI user image
-	 * @static
-	 * @var string
+	 * @var String
 	 */
 	public static $FB_USER_IMAGE_URI = "graph.facebook.com/<fb_id>/picture?type=<size>";
 
 	/**
 	 * Facebook Email settings URL
-	 * @static
-	 * @var string
+	 * @var String
 	 */
 	public static $FB_EMAIL_SETTINGS_URL = "https://www.facebook.com/settings?tab=account&section=email&view";
 
 
 	/**
 	 * Initialize Trait
-	 * @param array $conf - The config array
+	 * @param Array $conf - The config array
 	 */
 	public function initFacebookAuth($conf = [])
 	{
@@ -131,9 +129,9 @@ trait FacebookAuth
 
 			//handle response, session controller
 			if (!empty($data["user_data"]))
-				return $this->setResponseOnLogin($response);
+				return $this->setResponseOnLoggedIn($response);
 			else
-				return $this->setResponseOnLogin();
+				return $this->setResponseOnLoggedIn();
 		}
 		catch (FacebookResponseException | FacebookSDKException $e) { $exception = $e; }
 		catch (\Exception | Exception $e) { $exception = $e; }
@@ -149,7 +147,6 @@ trait FacebookAuth
 
 	/**
 	 * Handler - Login by redirect action via facebook login URL
-	 * @return json response
 	 */
 	public function loginByRedirectAction()
 	{
@@ -188,7 +185,7 @@ trait FacebookAuth
 
 			//handle response automatically
 			if (empty($route["controller"]))
-				return $this->setResponseOnLogin();
+				return $this->setResponseOnLoggedIn();
 
 			//Redirect
 			$uri = $route["controller"]."/".$route["action"]."/"
@@ -218,10 +215,10 @@ trait FacebookAuth
 
 	/**
 	 * GetFacebookLogin URL
-	 * @param array $route - Custom Route (optional)
-	 * @param string $scope - Custom scope
-	 * @param boolean $validation - Validates given scope
-	 * @return string
+	 * @param Array $route - Custom Route (optional)
+	 * @param String $scope - Custom scope
+	 * @param Boolean $validation - Validates given scope
+	 * @return String
 	 */
 	public function loadFacebookLoginURL($route = [], $scope = null, $validation = false)
 	{
@@ -250,8 +247,7 @@ trait FacebookAuth
 	/**
 	 * Async (GET) - Extended Facebook Access Token (LongLive Token)
 	 * FAC means Facebook Access Token
-	 * @param string $encrypted_data - The encrypted data, struct: {user_id#fac}
-	 * @return json response
+	 * @param String $encrypted_data - The encrypted data, struct: {user_id#fac}
 	 */
 	public function extendAccessTokenAction($encrypted_data = "")
 	{
@@ -274,7 +270,7 @@ trait FacebookAuth
 				$this->jsonResponse(404);
 
 			//if a session error ocurred, get a new long live access token
-			$this->logger->log("Facebook::extendAccessTokenAction -> Requesting a new long live access token for fb_id: $user_fb->id");
+			$this->logger->debug("Facebook::extendAccessTokenAction -> requesting a new long live access token for fb_id: $user_fb->id");
 
 			//get new long live fac
 			$client = $this->fb->getOAuth2Client();
@@ -299,15 +295,15 @@ trait FacebookAuth
 		catch (\Exception | Exception $e) { $exception = $e; }
 
 		//exception
-		$this->logger->error("Facebook::extendAccessToken -> Exception: ".$exception->getMessage().". fb_id: ".(isset($user_fb->id) ? $user_fb->id : "unknown"));
+		$this->logger->error("Facebook::extendAccessToken -> exception: ".$exception->getMessage().". fb_id: ".(isset($user_fb->id) ? $user_fb->id : "unknown"));
 		$this->jsonResponse(404);
 	}
 
 	/**
 	 * WebHook - Deauthorize a facebook user
 	 * If a valid signed request is given fb user will be removed
-	 * @param string $params - Params
-	 * @return mixed [boolean|array]
+	 * @param String $params - Params
+	 * @return Mixed
 	 */
 	public function deauthorizeAction()
 	{
@@ -382,7 +378,7 @@ trait FacebookAuth
 	/**
 	 * Ajax (GET) - Check if user facebook link is valid with scope perms
 	 * Requires be logged In
-	 * @param boolean $scope Optional for custom scope
+	 * @param Boolean $scope Optional for custom scope
 	 */
 	public function checkLinkAppStateAction($scope = null)
 	{
@@ -440,9 +436,9 @@ trait FacebookAuth
 
 	/**
 	 * Handler - Get user facebook properties
-	 * @param object $fac - The facebook access token
-	 * @param int $user_id - The user ID
-	 * @return array
+	 * @param Object $fac - The facebook access token
+	 * @param Int $user_id - The user ID
+	 * @return Array
 	 */
 	public function getUserData($fac = null, $user_id = 0)
 	{
@@ -497,7 +493,7 @@ trait FacebookAuth
 		catch (\Exception | Exception $e) { $exception = $e; }
 
 		//log exception
-		$this->logger->error("Facebook::getUserData -> Exception: ".$exception->getMessage().", userID: $user_id ");
+		$this->logger->error("Facebook::getUserData -> [$user_id] err: ".$exception->getMessage());
 		return null;
 	}
 }

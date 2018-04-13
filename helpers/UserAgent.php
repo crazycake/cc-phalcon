@@ -19,13 +19,13 @@ class UserAgent
 {
 	/**
 	 * input User Agent
-	 * @var string
+	 * @var String
 	 */
 	private $user_agent;
 
 	/**
 	 * Constructor
-	 * @param string $u_agent - The client user agent
+	 * @param String $u_agent - The client user agent
 	 */
 	public function __construct($u_agent = null)
 	{
@@ -34,7 +34,7 @@ class UserAgent
 
 	/**
 	 * Parses a user agent string into its important parts
-	 * @return array an array with browser, version and platform keys
+	 * @return Array an array with browser, version and platform keys
 	 */
 	public function parseUserAgent()
 	{
@@ -66,8 +66,8 @@ class UserAgent
 
 	/**
 	 * Check if user agent is legacy
-	 * @param array $data - The UA data
-	 * @return boolean
+	 * @param Array $data - The UA data
+	 * @return Boolean
 	 */
 	private function _isUserAgentLegacy($data = [])
 	{

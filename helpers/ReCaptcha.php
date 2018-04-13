@@ -17,13 +17,13 @@ class ReCaptcha
 {
 	/**
 	 * Google recaptcha client
-	 * @var object
+	 * @var Object
 	 */
 	protected $recaptcha;
 
 	/**
 	 * Constructor
-	 * @param string $secret_key - The reCaptcha secret key
+	 * @param String $secret_key - The reCaptcha secret key
 	 * @throws Exception
 	 */
 	public function __construct($secret_key = null)
@@ -37,8 +37,8 @@ class ReCaptcha
 
 	/**
 	 * Verifies that recaptcha value is valid with Google reCaptcha API
-	 * @param string $gRecaptchaResponse - The reCaptcha response
-	 * @return bool
+	 * @param String $gRecaptchaResponse - The reCaptcha response
+	 * @return Boolean
 	 */
 	public function isValid($gRecaptchaResponse = null)
 	{
@@ -49,9 +49,9 @@ class ReCaptcha
 			return false;
 
 		//get remote address
-		$remoteIp = $di->getShared("request")->getServerAddress();
+		$ip = $di->getShared("request")->getServerAddress();
 		//verify response
-		$response = $this->recaptcha->verify($gRecaptchaResponse, $remoteIp);
+		$response = $this->recaptcha->verify($gRecaptchaResponse, $ip);
 
 		if ($response->isSuccess())
 			return true;

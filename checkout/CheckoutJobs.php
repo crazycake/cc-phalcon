@@ -21,10 +21,10 @@ trait CheckoutJobs
 	 */
 	public function userCheckoutCleanExpired()
 	{
-		$user_checkout_class = App::getClass("user_checkout");
+		$entity = App::getClass("user_checkout");
 
 		//delete pending checkouts with default expiration time
-		$objs_deleted = $user_checkout_class::deleteExpired();
+		$objs_deleted = $entity::deleteExpired();
 
 		//rows affected
 		if ($objs_deleted)

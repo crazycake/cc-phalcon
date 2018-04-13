@@ -1,7 +1,6 @@
 <?php
 /**
  * Forms Helper
- * Requires Dates for birthday selector
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
@@ -17,15 +16,14 @@ class Forms
 {
 	/**
 	 * Regex for Rut
-	 * @var string
+	 * @var String
 	 */
 	const RUT_REGEX = "/^[0-9]+-[0-9kK]{1}/";
 
 	/**
 	 * Validates chilean rut
-	 * @static
-	 * @param string $input_rut - The input form rut (requires '-' token)
-	 * @return boolean
+	 * @param String $input_rut - The input form rut (requires '-' token)
+	 * @return Boolean
 	 */
 	public static function validateRut($input_rut = "")
 	{
@@ -41,10 +39,24 @@ class Forms
 	}
 
 	/**
+	 * Validates name and filter weird chars from string.
+	 * @return Mixed
+	 */
+	public static function validateName($name = "")
+	{
+		//validate names
+		$nums = "0123456789";
+		if (strcspn($name, $nums) != strlen($name))
+			return false;
+
+		//format to capitalized name
+		return mb_convert_case($name, MB_CASE_TITLE, "UTF-8");
+	}
+
+	/**
 	 * Formats a rut
-	 * @static
 	 * @param  string $rut - The input rut
-	 * @return string
+	 * @return String
 	 */
 	public static function formatRut($rut)
 	{
@@ -54,11 +66,10 @@ class Forms
 
 	/**
 	 * Formats price.
-	 * @static
 	 * @todo Complete other global currency formats
 	 * @param numeric $price - The price numeric value
-	 * @param string $currency - The price currency
-	 * @return string
+	 * @param String $currency - The price currency
+	 * @return String
 	 */
 	public static function formatPrice($price, $currency)
 	{
@@ -84,18 +95,11 @@ class Forms
 
 	/**
 	 * Get birthday options form HTML select element
-	 * @static
-	 * @return array
+	 * @return Array
 	 */
 	public static function getBirthdaySelectors()
 	{
-		//get DI instance (static)
-		$di = \Phalcon\DI::getDefault();
-
-		if (!$di->has("trans"))
-			throw new Exception("Forms::getBirthdaySelectors -> no translate service adapter found.");
-
-		$trans = $di->getShared("trans");
+		$trans = (\Phalcon\DI::getDefault())->getShared("trans");
 
 		//days
 		$days_array     = [];
@@ -131,9 +135,8 @@ class Forms
 
 	/**
 	 * Validates Rut Verification Digit
-	 * @static
-	 * @param  string $R - The input rut without VD
-	 * @return mixed [int|string]
+	 * @param String $R - The input rut without VD
+	 * @return Mixed [int|string]
 	 */
 	private static function _validateRutVD($R)
 	{

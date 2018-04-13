@@ -14,7 +14,7 @@ trait Debugger
 {
 	/**
 	 * Logs database query & statements with phalcon event manager
-	 * @param string $logFile - The log file name
+	 * @param String $logFile - The log file name
 	 */
 	protected function dblog($logFile = "db.log")
 	{

@@ -19,19 +19,19 @@ trait CheckoutManager
 {
 	/**
 	 * Listener - Before Inster a new Buy Order record
-	 * @param object $checkout - The checkout object
+	 * @param Object $checkout - The checkout object
 	 */
 	abstract public function onBeforeBuyOrderCreation(&$checkout);
 
 	/**
 	 * Listener - Success checkout Task completed
-	 * @param object $checkout - The checkout object
+	 * @param Object $checkout - The checkout object
 	 */
 	abstract public function onSuccessCheckout(&$checkout);
 
 	/**
 	 * trait config
-	 * @var array
+	 * @var Array
 	 */
 	public $checkout_manager_conf;
 
@@ -39,7 +39,7 @@ trait CheckoutManager
 
 	/**
 	 * Initialize Trait.
-	 * @param array $conf - The config array
+	 * @param Array $conf - The config array
 	 */
 	public function initCheckoutManager($conf = [])
 	{
@@ -97,8 +97,8 @@ trait CheckoutManager
 
 	/**
 	 * Succesful checkout, call when checkout is completed succesfuly
-	 * @param string $buy_order - The buy order
-	 * @return object Checkout
+	 * @param String $buy_order - The buy order
+	 * @return Object Checkout
 	 */
 	public function successCheckout($buy_order = "")
 	{
@@ -144,8 +144,8 @@ trait CheckoutManager
 
 	/**
 	 * Method: Parses objects checkout & set new props by reference (validator & parser)
-	 * @param object $checkout - The checkout object
-	 * @param array $data - The received form data
+	 * @param Object $checkout - The checkout object
+	 * @param Array $data - The received form data
 	 */
 	public function parseCheckoutObjects(&$checkout = null, $data = [])
 	{
@@ -213,7 +213,7 @@ trait CheckoutManager
 
 	/**
 	 * New checkout object. CSRF validation skipped.
-	 * @return object
+	 * @return Object
 	 */
 	private function newCheckout()
 	{

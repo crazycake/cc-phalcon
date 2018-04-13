@@ -16,7 +16,7 @@ class GetText extends GetTextAdapter
 {
 	/**
 	 * available locales
-	 * @var array
+	 * @var Array
 	 */
 	const LOCALES = [
 		"en" => "en_US.utf8",
@@ -26,25 +26,25 @@ class GetText extends GetTextAdapter
 
 	/**
 	 * Default UNIX system locale (use locale -a)
-	 * @var string
+	 * @var String
 	 */
 	protected $default_locale;
 
 	/**
 	 * Current set language
-	 * @var string
+	 * @var String
 	 */
 	protected $current_lang;
 
 	/**
 	 * The supported langs
-	 * @var array
+	 * @var Array
 	 */
 	protected $supported_langs;
 
 	/**
 	 * Class constructor.
-	 * @param array $options - Required options:
+	 * @param Array $options - Required options:
 	 *     (string) directory
 	 *     (string) domain
 	 *     (array) supported
@@ -70,7 +70,7 @@ class GetText extends GetTextAdapter
 
 	/**
 	 * Sets the current language & GetTex lang files domain
-	 * @param string $lang - The new language
+	 * @param String $lang - The new language
 	 */
 	public function setLanguage($lang = "")
 	{
@@ -90,7 +90,7 @@ class GetText extends GetTextAdapter
 
 	/**
 	 * Get current language
-	 * @return string
+	 * @return String
 	 */
 	public function getLanguage()
 	{

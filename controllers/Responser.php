@@ -19,14 +19,13 @@ trait Responser
 {
 	/**
 	 * JSON response struct
-	 * @static
-	 * @var string
+	 * @var String
 	 */
 	public static $JSON_RESPONSE_STRUCT = '{"code":"200","status":"ok","payload":@payload}';
 
 	/**
 	 * Response HTTP Codes
-	 * @var array
+	 * @var Array
 	 */
 	public $RCODES = [
 		//success
@@ -46,11 +45,11 @@ trait Responser
 	/**
 	 * Sends a JSON response for APIs.
 	 * The HTTP header status code is always 200.
-	 * @param string $code - The app message code.
-	 * @param object $payload - Payload to send
-	 * @param string $type - (optional) Append a type attr to the response. Example alert, warning.
-	 * @param string $namespace - (optional) Append a type namespace to the response.
-	 * @return string - The response
+	 * @param String $code - The app message code.
+	 * @param Object $payload - Payload to send
+	 * @param String $type - (optional) Append a type attr to the response. Example alert, warning.
+	 * @param String $namespace - (optional) Append a type namespace to the response.
+	 * @return String - The response
 	 */
 	protected function jsonResponse($code = 200, $payload = null, $type = "", $namespace = "")
 	{
@@ -80,18 +79,10 @@ trait Responser
 				$payload = json_decode(json_encode($payload), true);
 
 			//check redirection action
-			if (!empty($payload["redirect"])) {
+			if (!empty($payload["redirect"]))
 				$response["redirect"] = $payload["redirect"];
-			}
-			//append payload
-			else {
-
-				//merge _ext properties for API
-				if (MODULE_NAME == "api")
-					BaseResultset::mergeArbitraryProps($payload);
-
-				$response["payload"] = $payload;
-			}
+			else
+				$response["payload"] = $payload; //append payload
 		}
 		//error data
 		else {
@@ -110,9 +101,9 @@ trait Responser
 
 	/**
 	 * Sends a file to buffer output response
-	 * @param binary $data - The binary data to send
-	 * @param string $mime_type - The mime type
-	 * @return string - The response
+	 * @param Binary $data - The binary data to send
+	 * @param String $mime_type - The mime type
+	 * @return String - The response
 	 */
 	protected function sendFileToBuffer($data = null, $mime_type = "application/json")
 	{
@@ -137,8 +128,8 @@ trait Responser
 
 	/**
 	 * Sets JSON response for output
-	 * @param array $response - The response
-	 * @return string - The response
+	 * @param Array $response - The response
+	 * @return String - The response
 	 */
 	protected function outputJsonResponse($response = []) {
 
@@ -157,8 +148,8 @@ trait Responser
 
 	/**
 	 * Sends a simple text response
-	 * @param mixed [string|array] $text - Any text string
-	 * @return string - The response
+	 * @param Mixed $text - Any text string
+	 * @return String - The response
 	 */
 	protected function outputTextResponse($text = "OK") {
 

@@ -22,7 +22,7 @@ interface WebSecurity
 {
 	/**
 	 * Check CSRF Token value
-	 * @return boolean
+	 * @return Boolean
 	 */
 	public function checkCsrfToken();
 }
@@ -39,8 +39,8 @@ abstract class BaseCore extends Controller
 
 	/**
 	 * Base URL extended function
-	 * @param string $uri - A given URI
-	 * @return string - The static URL
+	 * @param String $uri - A given URI
+	 * @return String - The static URL
 	 */
 	protected function baseUrl($uri = "")
 	{
@@ -49,8 +49,8 @@ abstract class BaseCore extends Controller
 
 	/**
 	 * Static URL extended function
-	 * @param string $uri - A given URI
-	 * @return string - The static URL
+	 * @param String $uri - A given URI
+	 * @return String - The static URL
 	 */
 	protected function staticUrl($uri = "")
 	{
@@ -59,8 +59,8 @@ abstract class BaseCore extends Controller
 
 	/**
 	 * Host URL
-	 * @param int $port - The input port
-	 * @return string - The host URL with port appended
+	 * @param Int $port - The input port
+	 * @return String - The host URL with port appended
 	 */
 	protected function host($port = 80)
 	{
@@ -82,7 +82,7 @@ abstract class BaseCore extends Controller
 
 	/**
 	 * Get scheme
-	 * @return string - http or https
+	 * @return String - http or https
 	 */
 	protected function getScheme()
 	{
@@ -105,9 +105,9 @@ abstract class BaseCore extends Controller
 
 	/**
 	 * Sends a mail message to user asynchronously
-	 * @param string $method - The Mailer method to call
-	 * @param mixed $data - The data to be passed as args
-	 * @return object response
+	 * @param String $method - The Mailer method to call
+	 * @param Mixed $data - The data to be passed as args
+	 * @return Object
 	 */
 	protected function sendMailMessage($method = null, $data = null)
 	{
@@ -134,8 +134,8 @@ abstract class BaseCore extends Controller
 
 	/**
 	 * Sends an async tasks as another request. (MVC struct)
-	 * @param array $options - Options: module, controller, action, method, payload, socket, headers
-	 * @return object - The requester object
+	 * @param Array $options - Options: module, controller, action, method, payload, socket, headers
+	 * @return Object - The requester object
 	 */
 	protected function coreRequest($options = [])
 	{
@@ -172,10 +172,10 @@ abstract class BaseCore extends Controller
 	 * Required field may have a ```@``` prefix to establish that is just an optional field to be sanitized.
 	 * Types: ```string, email, int, float, alphanum, striptags, trim, lower, upper.```
 	 * @link   http://docs.phalconphp.com/en/latest/reference/filter.html#sanitizing-data
-	 * @param array $req_fields - Required fields
-	 * @param string $method - HTTP method: [GET, POST, MIXED], defaults to GET.
-	 * @param boolean $check_csrf - Checks the form CSRF token
-	 * @return array
+	 * @param Array $req_fields - Required fields
+	 * @param String $method - HTTP method: [GET, POST, MIXED], defaults to GET.
+	 * @param Boolean $check_csrf - Checks the form CSRF token
+	 * @return Array
 	 */
 	protected function handleRequest($req_fields = [], $method = "GET", $check_csrf = true)
 	{
@@ -248,10 +248,10 @@ abstract class BaseCore extends Controller
 
 	/**
 	 * Validates a request input field
-	 * @param array $data - The input data
-	 * @param string $field - The field name
-	 * @param string $data_type - The data type (int, string, array, json, email)
-	 * @return mixed
+	 * @param Array $data - The input data
+	 * @param String $field - The field name
+	 * @param String $data_type - The data type (int, string, array, json, email)
+	 * @return Mixed
 	 */
 	private function _validateField($data, $field, $data_type)
 	{

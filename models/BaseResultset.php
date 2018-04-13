@@ -19,8 +19,8 @@ class BaseResultset extends Resultset
 
 	/**
 	 * Reduces a Resultset to native objects array
-	 * @param array $props - Filter properties, if empty array given filters all.
-	 * @return array
+	 * @param Array $props - Filter properties, if empty array given filters all.
+	 * @return Array
 	 */
 	public function reduce($props = null) {
 
@@ -29,10 +29,9 @@ class BaseResultset extends Resultset
 
 	/**
 	 * Reduces a Resultset to native objects array
-	 * @static
-	 * @param object $resultset - Phalcon simple resultset
-	 * @param array $props - Filter properties, if empty array given filters all.
-	 * @return array
+	 * @param Object $resultset - Phalcon simple resultset
+	 * @param Array $props - Filter properties, if empty array given filters all.
+	 * @return Array
 	 */
 	public static function reduceResultset($resultset = null, $props = null) {
 
@@ -41,6 +40,7 @@ class BaseResultset extends Resultset
 
 		//objects
 		$objects = [];
+		
 		foreach ($resultset as $obj)
 			$objects[] = method_exists($obj, "reduce") ? $obj->reduce($props) : (object)$obj->toArray($props);
 
@@ -48,9 +48,9 @@ class BaseResultset extends Resultset
 	}
 
 	/**
-	 * Returns an array of Ids of current resultSet object
-	 * @param array $field - The object field name
-	 * @return array of Ids
+	 * Returns an array of Ids of current resultset object
+	 * @param Array $field - The object field name
+	 * @return Array of Ids
 	 */
 	public function toIdsArray($field = "id")
 	{
@@ -59,11 +59,10 @@ class BaseResultset extends Resultset
 
 	/**
 	 * Returns an array of distinct ids of given objects
-	 * @static
-	 * @param array $result - The resultSet array or a simple array
-	 * @param array $field - The object field name
-	 * @param boolean $unique - Flag for non repeated values
-	 * @return array of Ids
+	 * @param Array $result - The resultSet array or a simple array
+	 * @param Array $field - The object field name
+	 * @param Boolean $unique - Flag for non repeated values
+	 * @return Array of Ids
 	 */
 	public static function getIdsArray($result, $field = "id", $unique = true)
 	{
@@ -80,10 +79,9 @@ class BaseResultset extends Resultset
 
 	/**
 	 * Merge arbitrary props in _ext array property.
-	 * @static
-	 * @param array $result - The resultset array or a native array
-	 * @param string $field - The field with extentended props
-	 * @param array
+	 * @param Array $result - The resultset array or a native array
+	 * @param String $field - The field with extentended props
+	 * @param Array
 	 */
 	public static function mergeArbitraryProps(&$result = null, $field = "ext")
 	{

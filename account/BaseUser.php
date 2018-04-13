@@ -15,54 +15,53 @@ class BaseUser extends \CrazyCake\Models\Base
 
 	/**
 	 * The user primary email
-	 * @var string
+	 * @var String
 	 */
 	public $email;
 
 	/**
 	 * For social networks auths this field is optional
-	 * @var string
+	 * @var String
 	 */
 	public $pass;
 
 	/**
 	 * User first name
-	 * @var string
+	 * @var String
 	 */
 	public $first_name;
 
 	/**
 	 * User last name
-	 * @var string
+	 * @var String
 	 */
 	public $last_name;
 
 	/**
 	 * datetime
-	 * @var string
+	 * @var String
 	 */
 	public $created_at;
 
 	/**
 	 * datetime
-	 * @var string
+	 * @var String
 	 */
 	public $last_login;
 
 	/**
-	 * see ACCOUNT_FLAGS array for possible values
-	 * @var string
+	 * FLAGS array for possible values
+	 * @var String
 	 */
-	public $account_flag;
+	public $flag;
 
 	/* inclusion vars */
 
 	/**
 	 * Account Flags
-	 * @static
-	 * @var array
+	 * @var Array
 	 */
-	static $ACCOUNT_FLAGS = ["pending", "enabled", "disabled", "unregistered"];
+	static $FLAGS = ["pending", "enabled", "disabled"];
 
 	/**
 	 * Before Validation Event [onCreate]
@@ -82,21 +81,20 @@ class BaseUser extends \CrazyCake\Models\Base
 
 	/**
 	 * Find User by email
-	 * @static
-	 * @param string $email - The user email
-	 * @param string $account_flag - The account flag value in self defined array
-	 * @return object
+	 * @param String $email - The user email
+	 * @param String $flag - The account flag value in self defined array
+	 * @return Object
 	 */
-	public static function getUserByEmail($email, $account_flag = null)
+	public static function getUserByEmail($email, $flag = null)
 	{
-		$conditions = "email = ?1"; //default condition
-		$bind       = [1 => $email];
+		$conditions = "email = ?0"; //default condition
+		$bind       = [$email];
 
 		//filter by account flag?
-		if ($account_flag && in_array($account_flag, self::$ACCOUNT_FLAGS)) {
+		if ($flag) {
 
-			$bind[2] = $account_flag;
-			$conditions .= " AND account_flag = ?2";
+			$bind[] = $flag;
+			$conditions .= " AND flag = ?1";
 		}
 
 		return self::findFirst([$conditions, "bind" => $bind]);

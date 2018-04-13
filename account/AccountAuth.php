@@ -1,7 +1,6 @@
 <?php
 /**
- * Account Manager Trait
- * Common actions for account operations
+ * Account Auth Trait, common actions for account authorization (login, register with activation)
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
@@ -20,27 +19,30 @@ use CrazyCake\Helpers\ReCaptcha;
  */
 trait AccountAuth
 {
-	/**
-	 * Event on user logged in
-	 * @param int $user_id - The user id logged in
-	 */
-	abstract public function onLogin($user_id);
+	// Traits
+	use AccountToken;
 
 	/**
-	 * Set response on logged in (for session implementation)
-	 * @param array $payload - Optional data
+	 * Event on user logged in (session)
+	 * @param Int $user_id - The user id logged in
 	 */
-	abstract public function setResponseOnLogin($payload = null);
+	abstract public function onLoggedIn($user_id);
 
 	/**
-	 * Session Destructor with Autoredirection (logout)
-	 * @param string $uri - The post redirection URI
+	 * Set response on logged in (session)
+	 * @param Array $payload - Optional data
 	 */
-	abstract public function onLogout($uri = "");
+	abstract public function setResponseOnLoggedIn($payload = null);
+
+	/**
+	 * Session Destructor with autoredirection (session)
+	 * @param String $uri - The post redirection URI
+	 */
+	abstract public function removeUserSession($uri = "");
 
 	/**
 	 * trait config
-	 * @var array
+	 * @var Array
 	 */
 	public $account_auth_conf;
 
@@ -48,27 +50,28 @@ trait AccountAuth
 
 	/**
 	 * Initialize Trait
-	 * @param array $conf - The config array
+	 * @param Array $conf - The config array
 	 */
 	public function initAccountAuth($conf = [])
 	{
 		//defaults
 		$defaults = [
-			"oauth"      => false,
-			"login_uri"  => "signIn",
-			"logout_uri" => "signIn",
+			"login_uri"      => "signIn",
+			"logout_uri"     => "signIn",
+			"activation_uri" => "auth/activation/",
 			//entities
-			"user_entity" => "User"
+			"user_entity" => "User",
+			"user_key"    => "email"
 		];
 
 		//merge confs
 		$conf = array_merge($defaults, $conf);
-		//append class prefixes
-		$conf["user_token_entity"] = App::getClass($conf["user_entity"])."Token";
-		$conf["user_entity"]       = App::getClass($conf["user_entity"]);
+
+		//append class prefix
+		$conf["user_entity"] = App::getClass($conf["user_entity"]);
 
 		if(empty($conf["trans"]))
-			$conf["trans"] = \TranslationController::getCoreTranslations("auth");
+			$conf["trans"] = \TranslationController::getCoreTranslations("account");
 
 		//set configuration
 		$this->account_auth_conf = $conf;
@@ -78,51 +81,44 @@ trait AccountAuth
 
 	/**
 	 * Handler - Activation link handler, can dispatch to a view
-	 * @param string $encrypted - The encrypted data
+	 * @param String $encrypted - The encrypted data
 	 */
-	public function activationAction($encrypted = null)
+	public function activationAction($encrypted)
 	{
 		//if user is already logged in redirect
-		$this->redirectToAccount(true);
+		$this->redirectLoggedIn(true);
 
-		//get decrypted data
 		try {
-			//get model classes
-			$user_class  = $this->account_auth_conf["user_entity"];
-			$token_class = $this->account_auth_conf["user_token_entity"];
+			//get user entity
+			$entity = $this->account_auth_conf["user_entity"];
 
 			//handle the encrypted data with parent controller
-			$data = $token_class::handleEncryptedValidation($encrypted);
-			//assign values
-			list($user_id, $token_type, $token) = $data;
+			list($user_id, $token_type, $token) = self::handleEncryptedValidation($encrypted);
 
-			//check user-flag if is really pending
-			$user = $user_class::getById($user_id);
+			//check user pending flag
+			$user = $entity::getById($user_id);
 
-			if (!$user || $user->account_flag != "pending")
-				throw new Exception("user (id: ".$user->id.") dont have a pending account flag.");
+			if (!$user || $user->flag != "pending")
+				throw new Exception("missing 'pending' flag for user [$user->id].");
 
 			//save new account flag state
-			$user->update(["account_flag" => "enabled"]);
-
-			//get token object and remove it
-			$token = $token_class::getTokenByUserAndValue($user_id, $token_type, $token);
-			//delete user token
-			$token->delete();
+			$entity::updateProperty($user_id, "flag", "enabled");
+			//remove activation token
+			$this->deleteToken($user_id, "activation");
 
 			//set a flash message to show on account controller
 			$this->flash->success($this->account_auth_conf["trans"]["ACTIVATION_SUCCESS"]);
 
 			//success login
-			$this->onLogin($user_id);
+			$this->onLoggedIn($user);
 			//redirect/response
-			$this->setResponseOnLogin();
+			$this->setResponseOnLoggedIn();
 		}
 		catch (Exception $e) {
 
 			$data = $encrypted ? $this->cryptify->decryptData($encrypted) : "invalid hash";
 
-			$this->logger->error("AccountAuth::activationAction -> Error in account activation, decrypted data (".$data."). Msg: ".$e->getMessage());
+			$this->logger->error("AccountAuth::activationAction -> Error in account activation, decrypted data [$data]: ".$e->getMessage());
 			$this->dispatcher->forward(["controller" => "error", "action" => "expired"]);
 		}
 	}
@@ -133,55 +129,56 @@ trait AccountAuth
 	public function logoutAction()
 	{
 		//handled by session controller
-		$this->onLogout($this->account_auth_conf["logout_uri"]);
+		$this->removeUserSession();
+
+		if ($this->request->isAjax() || MODULE_NAME == "api")
+			$this->jsonResponse(200);
+
+		//redirect to given url, login as default
+		$this->redirectTo($this->account_auth_conf["logout_uri"]);
 	}
 
 	/**
-	 * Mixed [Normal & XHR] - Login user by email & pass
+	 * Login user by email & pass (POST / XHR)
 	 */
 	public function loginAction()
 	{
-		//validate and filter request params data, second params are the required fields
-		$data = $this->handleRequest([
-			"email" => "email",
-			"pass"  => "string"
-		], "POST");
-
 		//get model classes
-		$user_class  = $this->account_auth_conf["user_entity"];
-		$token_class = $this->account_auth_conf["user_token_entity"];
+		$entity = $this->account_auth_conf["user_entity"];
+		$params = ["pass" => "string"];
+
+		if($this->account_auth_conf["user_key"] == "email") 
+			$params = ["email" => "email"];
+
+		//validate and filter request params data, second params are the required fields
+		$data = $this->handleRequest($params, "POST");
 
 		//find this user
-		$user = $user_class::getUserByEmail($data["email"]);
+		if($this->account_auth_conf["user_key"] == "email")
+			$user = $entity::getUserByEmail($data["email"]);
+		else
+			$user = $this->getLoginUser($data);
 
 		//check user & given hash with the one stored (wrong combination)
 		if (!$user || !$this->security->checkHash($data["pass"], $user->pass))
 			$this->jsonResponse(400, $this->account_auth_conf["trans"]["AUTH_FAILED"]);
 
 		//check user account flag
-		if ($user->account_flag != "enabled") {
+		if ($user->flag != "enabled") {
 
 			//set message
-			$msg = $user->account_flag == "pending" ?
-					$this->account_auth_conf["trans"]["ACCOUNT_PENDING"] :
-					$this->account_auth_conf["trans"]["ACCOUNT_DISABLED"];
+			$namespace = "STATE_".strtoupper($user->flag);
+			$message   = $this->account_auth_conf["trans"][$namespace];
 
 			//for API handle alerts & warning as errors,
-			$this->jsonResponse(400, $msg, "warning", "ACCOUNT_".strtoupper($user->account_flag));
+			$this->jsonResponse(400, $message, "warning", $namespace);
 		}
 
-		//set payload
-		$payload = null;
-
-		//for api oauth
-		if($this->account_auth_conf["oauth"])
-			$payload = $token_class::newTokenIfExpired($user->id, "access");
-
 		//success login
-		$this->onLogin($user->id);
+		$this->onLoggedIn($user);
 
 		//session controller, dispatch response
-		$this->setResponseOnLogin($payload);
+		$this->setResponseOnLoggedIn();
 	}
 
 	/**
@@ -189,39 +186,17 @@ trait AccountAuth
 	 */
 	public function registerAction()
 	{
-		$default_params = [
-			"email"      => "email",
-			"pass"       => "string",
-			"first_name" => "string",
-			"last_name"  => "string"
-		];
+		//params
+		$data = $this->handleRequest([
+			"email" => "email",
+			"pass"  => "string"
+		], "POST");
 
-		$setting_params = $this->account_auth_conf["required_fields"] ?? [];
-
-		//validate and filter request params data, second params are the required fields
-		$data = $this->handleRequest(array_merge($default_params, $setting_params), "POST");
-
-		//check data
-		if(empty($data["email"]) || empty($data["first_name"]) || empty($data["last_name"]))
-			$this->jsonResponse(404);
-
-		//validate names
-		$nums = "0123456789";
-		if (strcspn($data["first_name"], $nums) != strlen($data["first_name"]) ||
-			strcspn($data["last_name"], $nums) != strlen($data["last_name"])) {
-
-			$this->jsonResponse(400, $this->account_auth_conf["trans"]["INVALID_NAME"]);
-		}
-
-		//format to capitalized name
-		$data["first_name"] = mb_convert_case($data["first_name"], MB_CASE_TITLE, "UTF-8");
-		$data["last_name"]  = mb_convert_case($data["last_name"], MB_CASE_TITLE, "UTF-8");
-
-		//get model classes
-		$user_class = $this->account_auth_conf["user_entity"];
+		//get user entity
+		$entity = $this->account_auth_conf["user_entity"];
 
 		// validate if user exists
-		if($user_class::findFirstByEmail($data["email"])) {
+		if($entity::getUserByEmail($data["email"])) {
 
 			$msg = str_replace("{email}", $data["email"], $this->account_auth_conf["trans"]["ACCOUNT_EXISTS"]);
 			$msg = str_replace("{link}", $this->account_auth_conf["login_uri"], $msg);
@@ -230,26 +205,34 @@ trait AccountAuth
 		}
 
 		//set pending email confirmation status
-		$data["account_flag"] = "pending";
+		$data["flag"] = "pending";
+		//new user
+		$user = new $entity($data);
 
-		//Save user, validations are applied in model
-		$user = new $user_class();
-
-		//call abstract method
+		//event trigger
 		if(method_exists($this, "beforeRegisterUser"))
-			$this->beforeRegisterUser($user, $data);
+			$this->beforeRegisterUser($user);
 
-		//if user dont exists, show error message
-		if (!$user->save($data))
-			$this->jsonResponse(400, $user->messages());
+		//if user not exists, show error message
+		if (!$entity::insert($user)) {
+
+			$this->logger->error("AccountAuth::registerAction -> failed inserting user ".json_encode(data));
+			$this->jsonResponse(400);
+		}
 
 		//set a flash message to show on account controller
 		$this->flash->success(str_replace("{email}", $user->email, $this->account_auth_conf["trans"]["ACTIVATION_PENDING"]));
 
-		//send activation account email
-		$this->sendMailMessage("accountActivation", $user->id);
+		//hash sensitive data
+		$token_chain = self::newTokenChainCrypt($user->id ?? (string)$user->_id, "activation");
 
-		//set response
+		//send activation account email
+		$this->sendMailMessage("accountActivation", [
+			"user"  => $user,
+			"email" => $user->email,
+			"url"   => $this->baseUrl($this->account_pass_conf["activation_uri"].$token_chain)
+		]);
+
 		//redirect/response
 		if (MODULE_NAME == "api")
 			$this->jsonResponse(200, ["message" => $this->account_auth_conf["trans"]["ACTIVATION_PENDING"]]);
@@ -263,6 +246,8 @@ trait AccountAuth
 
 	/**
 	 * Sends activation mail message with recaptcha validation
+	 * @param String $email - The user email
+	 * @param String $recaptcha - reCaptcha string
 	 */
 	public function sendActivationMailMessage($email, $recaptcha)
 	{
@@ -276,15 +261,22 @@ trait AccountAuth
 		}
 
 		//get model classes
-		$user_class = $this->account_auth_conf["user_entity"];
-		$user       = $user_class::getUserByEmail($email, "pending");
+		$entity = $this->account_auth_conf["user_entity"];
+		$user   = $entity::getUserByEmail($email, "pending");
 
 		//check if user exists is a pending account
 		if (!$user)
 			$this->jsonResponse(400, $this->account_auth_conf["trans"]["ACCOUNT_NOT_FOUND"]);
 
-		//send email message with password recovery steps
-		$this->sendMailMessage("accountActivation", $user->id);
+		//hash sensitive data
+		$token_chain = self::newTokenChainCrypt($user->id ?? (string)$user->_id, "activation");
+
+		//send activation account email
+		$this->sendMailMessage("accountActivation", [
+			"user"  => $user,
+			"email" => $user->email,
+			"url"   => $this->baseUrl($this->account_pass_conf["activation_uri"].$token_chain)
+		]);
 
 		//set payload
 		$payload = str_replace("{email}", $email, $this->account_auth_conf["trans"]["ACTIVATION_PENDING"]);
@@ -295,8 +287,8 @@ trait AccountAuth
 
 	/**
 	 * Access Token validation for API Auth
-	 * @param string $token - The input token
-	 * @return object - The token ORM object
+	 * @param String $token - The input token
+	 * @return Object - The token ORM object
 	 */
 	protected function validateAccessToken($token = "")
 	{
@@ -306,8 +298,7 @@ trait AccountAuth
 				"token" => "string"
 			], "MIXED");
 
-			$token_class = $this->account_auth_conf["user_token_entity"];
-			$token       = $token_class::getTokenByValue($data["token"], "access");
+			$token = self::getToken($data["token"], "access");
 
 			if(!$token)
 				throw new Exception("Invalid token");
@@ -315,6 +306,7 @@ trait AccountAuth
 			return $token;
 		}
 		catch(Exception $e) {
+
 			$this->jsonResponse(401, $e->getMessage());
 		}
 	}

@@ -18,19 +18,18 @@ abstract class WsCore extends BaseCore
 {
 	/**
 	 * Header API Key name
-	 * @var string
+	 * @var String
 	 */
 	const HEADER_API_KEY = "API-KEY";
 
 	/**
 	 * Webservice response cache path
-	 * @var string
+	 * @var String
 	 */
 	const WS_RESPONSE_CACHE_PATH = STORAGE_PATH."cache/response/";
 
 	/**
 	 * Welcome message for API server status
-	 * @return json response
 	 */
 	abstract protected function welcome();
 
@@ -70,10 +69,10 @@ abstract class WsCore extends BaseCore
 
 	/**
 	 * Handles id property validation from a given object
-	 * @param string $prop - The object property name
-	 * @param boolean $optional - Parameter optional flag
-	 * @param boolean $method - HTTP method, default is GET
-	 * @return mixed [object|boolean]
+	 * @param String $prop - The object property name
+	 * @param Boolean $optional - Parameter optional flag
+	 * @param Boolean $method - HTTP method, default is GET
+	 * @return Mixed [object|boolean]
 	 */
 	protected function handleIdInput($prop = "object_id", $optional = false, $method = "GET")
 	{
@@ -102,10 +101,10 @@ abstract class WsCore extends BaseCore
 
 	/**
 	 * Validate search number & offset parameters
-	 * @param int $input_num - Input number
-	 * @param int $input_off - Input offset
-	 * @param int $max_num - Maximum number
-	 * @return array
+	 * @param Int $input_num - Input number
+	 * @param Int $input_off - Input offset
+	 * @param Int $max_num - Maximum number
+	 * @return Array
 	 */
 	protected function handleLimitInput($input_num = null, $input_off = null, $max_num = null)
 	{
@@ -132,9 +131,9 @@ abstract class WsCore extends BaseCore
 
 	/**
 	 * Handles a cache response
-	 * @param string $key - The key for saving cached data
-	 * @param mixed $data - The data to be cached or served
-	 * @param boolean $bust - Forces a cache update
+	 * @param String $key - The key for saving cached data
+	 * @param Mixed $data - The data to be cached or served
+	 * @param Boolean $bust - Forces a cache update
 	 */
 	protected function handleCacheResponse($key = "response", $data = null, $bust = false)
 	{

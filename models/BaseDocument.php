@@ -1,6 +1,6 @@
 <?php
 /**
- * BaseDocument Model (No SQL)
+ * BaseDocument Model (NoSQL)
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
@@ -15,7 +15,7 @@ class BaseDocument
 
 	/**
 	 * The colelction name [required]
-	 * @var string
+	 * @var String
 	 */
 	public static $COLLECTION = "";
 
@@ -26,7 +26,7 @@ class BaseDocument
 	/**
 	 * Entity (class name)
 	 * @link http://php.net/manual/en/language.oop5.late-static-bindings.php
-	 * @return string The current class name
+	 * @return String The current class name
 	 */
 	public static function entity()
 	{
@@ -35,7 +35,7 @@ class BaseDocument
 
 	/**
 	 * Get by Id
-	 * @param string $id - The document ID
+	 * @param String $id - The document ID
 	 */
 	public static function getById($id)
 	{
@@ -49,10 +49,37 @@ class BaseDocument
 		return $object ? $object->jsonSerialize() : null;
 	}
 
+	/**
+	 * Updates a property
+	 * @param Int $id - The object id
+	 * @param String $prop - The property name
+	 * @param Mixed $value - The value
+	 */
+	public static function updateProperty($id, $prop, $value)
+	{
+		$mongo      = (\Phalcon\DI::getDefault())->getShared("mongo");
+		$collection = static::$COLLECTION;
+
+		return $this->mongo->{$collection}->updateOne(["_id" => new \MongoDB\BSON\ObjectId($id)], ['$set' => ["$prop" => $value]]); 
+	}
+
+	/**
+	 * Inserts a new object
+	 * @param Object $object
+	 */
+	public static function insert($object)
+	{
+		$mongo      = (\Phalcon\DI::getDefault())->getShared("mongo");
+		$collection = static::$COLLECTION;
+
+		$insertion = $mongo->{$collection}->insertOne($object);
+
+		return $insertion;
+	}
 
 	/**
 	 * To ISO date helper
-	 * @param [DateTime] $date
+	 * @param DateTime $date
 	 */
 	public static function toIsoDate($date = null)
 	{

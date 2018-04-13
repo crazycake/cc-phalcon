@@ -18,25 +18,25 @@ class BaseUserFacebook extends \CrazyCake\Models\Base
 
 	/**
 	 * The user ID
-	 * @var int
+	 * @var Int
 	 */
 	public $user_id;
 
 	/**
 	 * facebook access token
-	 * @var string
+	 * @var String
 	 */
 	public $fac;
 
 	/**
 	 * access token expiration
-	 * @var string
+	 * @var String
 	 */
 	public $expires_at;
 
 	/**
 	 * datetime timestamp
-	 * @var string
+	 * @var String
 	 */
 	public $created_at;
 

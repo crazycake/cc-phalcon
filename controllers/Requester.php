@@ -19,8 +19,7 @@ trait Requester
 {
 	/**
 	 * Request timeout max value
-	 * @static
-	 * @var float
+	 * @var Float
 	 */
 	protected static $REQUEST_TIMEOUT = 30.0;
 
@@ -28,13 +27,13 @@ trait Requester
 
 	/**
 	 * Do a asynchronously request through Guzzle
-	 * @param array $options - Options:
+	 * @param Array $options - Options:
 	 * + base_url: The request base URL
 	 * + uri: The request URI
 	 * + payload: The encrypted string params data
 	 * + method: The HTTP method (GET, POST)
 	 * + socket: Makes async call as socket connection
-	 * @return object - The request object
+	 * @return Object - The request object
 	 */
 	protected function newRequest($options = [])
 	{
@@ -86,9 +85,9 @@ trait Requester
 
 	/**
 	 * Do a GET request
-	 * @param object $client - The HTTP Guzzle client
-	 * @param array $options - The input options
-	 * @return object - The promise object
+	 * @param Object $client - The HTTP Guzzle client
+	 * @param Array $options - The input options
+	 * @return Object - The promise object
 	 */
 	private function _getRequest($client, $options = [])
 	{
@@ -124,9 +123,9 @@ trait Requester
 
 	/**
 	 * Do a POST request
-	 * @param object $client - The HTTP Guzzle client
-	 * @param array $options - The input options
-	 * @return object - The promise object
+	 * @param Object $client - The HTTP Guzzle client
+	 * @param Array $options - The input options
+	 * @return Object - The promise object
 	 */
 	private function _postRequest($client, $options = [])
 	{
@@ -162,7 +161,7 @@ trait Requester
 
 	/**
 	 * Simulates a socket async request without waiting for response
-	 * @param array $options - The input options
+	 * @param Array $options - The input options
 	 */
 	private function _socketAsync($options = [])
 	{

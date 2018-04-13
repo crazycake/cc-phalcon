@@ -6,7 +6,6 @@
 
 namespace CrazyCake\Core;
 
-//phalcon imports
 use Phalcon\CLI\Task;
 use Phalcon\Exception;
 use Phalcon\Mvc\View\Engine\Volt\Compiler as VoltCompiler;
@@ -26,7 +25,6 @@ class TaskCore extends Task
 
 	/**
 	 * Main Action Executer
-	 * @return void
 	 */
 	public function mainAction()
 	{
@@ -42,7 +40,7 @@ class TaskCore extends Task
 
 	/**
 	 * Outputs app configuration in JSON format
-	 * @param array $args - The args array, the 1st arg is the filter config property
+	 * @param Array $args - The args array, the 1st arg is the filter config property
 	 */
 	public function appConfigAction($args = [])
 	{
@@ -59,7 +57,7 @@ class TaskCore extends Task
 
 	/**
 	 * Generates revision assets names inside public assets module folder
-	 * @param array $args - The input params
+	 * @param Array $args - The input params
 	 */
 	public function revAssetsAction($args = [])
 	{
@@ -113,7 +111,7 @@ class TaskCore extends Task
 
 	/**
 	 * Compiles all volt files
-	 * @param array $args - The args array
+	 * @param Array $args - The args array
 	 */
 	public function compileVoltAction($args = [])
 	{
@@ -144,8 +142,8 @@ class TaskCore extends Task
 
 	/**
 	 * Print Output and finish script
-	 * @param string $output - The text message
-	 * @param boolean $json_encode - Sends json encoded output
+	 * @param String $output - The text message
+	 * @param Boolean $json_encode - Sends json encoded output
 	 */
 	protected function output($output = "OK", $json_encode = false)
 	{
@@ -157,9 +155,9 @@ class TaskCore extends Task
 
 	/**
 	 * Print Output with Colors
-	 * @param string $text - The text message
-	 * @param string $type - Options: ["OK", "ERROR", "WARNING", "NOTE"]
-	 * @param boolean $die - Flag to stop script execution
+	 * @param String $text - The text message
+	 * @param String $type - Options: ["OK", "ERROR", "WARNING", "NOTE"]
+	 * @param Boolean $die - Flag to stop script execution
 	 */
 	protected function colorize($text = "", $type = "OK", $die = false)
 	{
@@ -195,8 +193,8 @@ class TaskCore extends Task
 
 	/**
 	 * Async Request (CLI struct)
-	 * @param  array $options - The HTTP options
-	 * @return object - The requester object
+	 * @param Array $options - The HTTP options
+	 * @return Object - The requester object
 	 */
 	protected function coreRequest($options = [])
 	{
@@ -237,9 +235,9 @@ class TaskCore extends Task
 
 	/**
 	 * Get all files in folder (recursive)
-	 * @param  string $dir - The input directories
-	 * @param  array $results - The recursive results
-	 * @return array - An array of files
+	 * @param String $dir - The input directories
+	 * @param Array $results - The recursive results
+	 * @return Array - An array of files
 	 */
 	protected function getDirectoryFiles($dir, &$results = [])
 	{

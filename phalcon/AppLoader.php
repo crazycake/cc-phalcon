@@ -14,32 +14,28 @@ trait AppLoader
 {
 	/**
 	 * Core namespace
-	 * @static
-	 * @var string
+	 * @var String
 	 */
 	private static $CORE_NAMESPACE = "CrazyCake\\";
 
 	/**
 	 * Core project name
-	 * @static
-	 * @var string
+	 * @var String
 	 */
 	private static $CORE_PROJECT = "cc-phalcon";
 
 	/**
 	 * App Core default libs
-	 * @static
-	 * @var array
+	 * @var Array
 	 */
 	protected static $CORE_DEFAULT_LIBS = ["services", "controllers", "core", "helpers", "models", "account"];
 
 	/**
 	 * Get Module Model Class Name
 	 * A prefix can be set in module options
-	 * @static
-	 * @param string $key - The class module name uncamelize, example: "some_class"
-	 * @param boolean $prefix - Append prefix (double slash)
-	 * @return string
+	 * @param String $key - The class module name uncamelize, example: "some_class"
+	 * @param Boolean $prefix - Append prefix (double slash)
+	 * @return String
 	 */
 	public static function getClass($key = "", $prefix = true)
 	{
@@ -110,7 +106,7 @@ trait AppLoader
 
 	/**
 	 * Load classes
-	 * @param array $config - The config array
+	 * @param Array $config - The config array
 	 */
 	private function loadClasses($config = [])
 	{
@@ -147,8 +143,8 @@ trait AppLoader
 	 * Loads static libraries.
 	 * Use Phar::running() to get path of current phar running
 	 * Use get_included_files() to see all loaded classes
-	 * @param object $loader - Phalcon loader object
-	 * @param array $libraries - Libraries required
+	 * @param Object $loader - Phalcon loader object
+	 * @param Array $libraries - Libraries required
 	 */
 	private function loadCoreLibraries($loader, $libraries = [])
 	{

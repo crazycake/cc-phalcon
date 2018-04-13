@@ -1,7 +1,6 @@
 <?php
 /**
- * Session Trait
- * Common actions for account operations
+ * Session Trait, common actions for account session
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
@@ -20,20 +19,20 @@ trait AccountSession
 {
 	/**
 	 * Set user Session as logged in
-	 * @param object $user - The user ORM object
-	 * @return array
+	 * @param Object $user - A user object
+	 * @return Array
 	 */
 	abstract protected function onSessionSave($user);
 
 	/**
 	 * Config var
-	 * @var array
+	 * @var Array
 	 */
 	public $account_session_conf;
 
 	/**
 	 * Stores user session as array for direct access
-	 * @var array
+	 * @var Array
 	 */
 	protected $user_session;
 
@@ -41,17 +40,16 @@ trait AccountSession
 
 	/**
 	 * Initialize Trait
-	 * @param array $conf - The config array
+	 * @param Array $conf - The config array
 	 */
 	public function initAccountSession($conf = [])
 	{
 		//defaults
 		$defaults = [
 			//entities
-			"user_entity"   => "User",
-			"logged_in_uri" => "account",
-			//excluded user props to be saved in session
-			"user_session_filter_view" => ["id", "account_flag", "auth"]
+			"user_entity"        => "User",
+			"logged_in_uri"      => "account",
+			"ignored_properties" => ["pass"]
 		];
 
 		//merge confs
@@ -64,14 +62,14 @@ trait AccountSession
 		//set session var
 		$this->user_session = $this->getUserSession();
 		//set user data for view, filter is passed to exclude some properties
-		$this->_passUserSessionToView($this->user_session);
+		$this->_setUserSessionForView($this->user_session);
 	}
 
 	/* --------------------------------------------------- § -------------------------------------------------------- */
 
 	/**
 	 * Check that user is logged in
-	 * @return boolean
+	 * @return Boolean
 	 */
 	protected function isLoggedIn()
 	{
@@ -81,15 +79,15 @@ trait AccountSession
 		//get user session
 		$user_session = $this->session->get("user");
 
-		if (!is_array($user_session) || !isset($user_session["id"]) || !isset($user_session["auth"]))
+		if (empty($user_session) || empty($user_session["id"]) || empty($user_session["auth"]))
 			return false;
 
 		$user_class = $this->account_session_conf["user_entity"];
 
-		if ($user_class::getById($user_session["id"]) == false)
+		if (!$user_class::getById($user_session["id"]))
 			return false;
 
-		return $user_session["auth"] ? true : false;
+		return true;
 	}
 
 	/**
@@ -101,119 +99,52 @@ trait AccountSession
 		if ($this->isLoggedIn())
 			return true;
 
-		//for ajax request sends a forbidden warning
+		//for ajax request or API mode sends a forbidden warning
 		if ($this->request->isAjax() || MODULE_NAME == "api")
 			$this->jsonResponse(401);
 
+		//forward to logout
 		$this->dispatcher->forward(["controller" => "auth", "action" => "logout"]);
 		$this->dispatcher->dispatch();
 	}
 
 	/**
-	 * Set user Session as logged in
-	 * @param int $user_id - The user ID
+	 * Stores a new user session
+	 * @param Object $user - User object
 	 */
-	protected function onLogin($user_id)
+	protected function newUserSession($user)
 	{
-		//get user data from DB
-		$user_class = $this->account_session_conf["user_entity"];
-		$user       = $user_class::getById($user_id);
-
-		if (!$user)
-			throw new Exception("User not found, cant set session auth [$user_class -> $user_id]");
-
-		//update user state
-		$last_login = date("Y-m-d H:i:s");
-		$user->update(["last_login" => $last_login]);
-
 		//set user data
-		$session_data = [
-			"auth"         => true,
-			"id"           => $user->id,
-			"email"        => $user->email ?? "",
-			"first_name"   => $user->first_name ?? "",
-			"last_name"    => $user->last_name ?? "",
-			"account_flag" => $user->account_flag,
-			"last_login"   => $last_login
-		];
+		$session_data         = json_decode(json_encode($user));
+		$session_data["auth"] = true;
 
-		//optional props
-		if(isset($user->role))
-			$session_data["role"] = $user->role;
+		//mongo ID special case
+		if(!empty($session_data["_id"])) {
+
+			$session_data["id"] = (string)$session_data["_id"];
+			unset($session_data["_id"]);
+		}
 
 		//call abstract method
 		$session_data = array_merge($session_data, $this->onSessionSave($user));
-		//clean empty values
-		$session_data = array_filter($session_data, function($o) { return !empty($o); });
 
 		//save in session
 		$this->session->set("user", $session_data);
 	}
 
 	/**
-	 * Handles response on login event, check for pending redirection.
-	 * @param array $payload - Sends a payload response instead of redirection (optional)
-	 */
-	protected function setResponseOnLogin($payload = null)
-	{
-		$uri = $this->account_session_conf["logged_in_uri"]; //default logged in uri
-
-		//check if redirection is set in session
-		if ($this->session->has("auth_redirect")) {
-			//get redirection uri from session & remove from session
-			$uri = $this->session->get("auth_redirect");
-			$this->session->remove("auth_redirect");
-		}
-
-		//check for ajax request
-		if ($this->request->isAjax() || MODULE_NAME == "api") {
-			$this->jsonResponse(200, !empty($payload) ? $payload : ["redirect" => $uri]);
-		}
-		else {
-			$this->redirectTo($uri);
-		}
-	}
-
-	/**
-	 * Set redirection URL for after loggedIn event
-	 * @param string $uri - The URL to be redirected
-	 */
-	protected function setRedirectionOnLogin($uri = "")
-	{
-		if (empty($uri))
-			$uri = $this->getRequestedUri();
-
-		$this->session->set("auth_redirect", $uri);
-	}
-
-	/**
-	 * Removes pending session redirection
-	 * @return boolean
-	 */
-	protected function removePendingRedirection()
-	{
-		if (!$this->session->has("auth_redirect"))
-			return false;
-
-		return $this->session->remove("auth_redirect");
-	}
-
-	/**
 	 * Get logged in user session data
-	 * @return array - The session array
+	 * @return Array - The session array
 	 */
 	protected function getUserSession()
 	{
-		if (!$this->isLoggedIn())
-			return false;
-
-		return $this->session->get("user");
+		return $this->isLoggedIn() ? $this->session->get("user") : false;
 	}
 
 	/**
 	 * Update user session data
-	 * @param array $data - Input user data array
-	 * @return boolean
+	 * @param Array $data - Input user data array
+	 * @return Boolean
 	 */
 	protected function updateUserSession($data = [])
 	{
@@ -231,101 +162,66 @@ trait AccountSession
 	}
 
 	/**
-	 * Event - Destroy user session data and redirect to home
-	 * @param string $uri - The URI to redirect
+	 * Event - Destroy user session data
 	 */
-	protected function onLogout($uri = "")
+	protected function removeUserSession()
 	{
 		//unset all user session data
 		$this->session->remove("user");
+	}
 
+	/**
+	 * Handles response on login event, check for pending redirection.
+	 * @param Array $payload - Sends a payload response instead of redirection (optional)
+	 */
+	protected function setResponseOnLoggedIn($payload = null)
+	{
+		$uri = $this->account_session_conf["logged_in_uri"]; //default logged in uri
+
+		//check if redirection is set in session
+		if ($this->session->has("auth_redirect")) {
+			
+			//get redirection uri from session & remove from session
+			$uri = $this->session->get("auth_redirect");
+			$this->session->remove("auth_redirect");
+		}
+
+		//check for ajax request
 		if ($this->request->isAjax() || MODULE_NAME == "api")
-			$this->jsonResponse(200);
-
-		//redirect to given url, login as default
+			return $this->jsonResponse(200, !empty($payload) ? $payload : ["redirect" => $uri]);
+		
 		$this->redirectTo($uri);
 	}
 
 	/**
-	 * Add a new custom object to user session
-	 * @param string $key - The key name of the session (required)
-	 * @param string $obj - The object (required)
-	 * @param string $index - The index of the array (optional)
-	 * @return boolean
+	 * Set redirection URL for after loggedIn event
+	 * @param String $uri - The URL to be redirected
 	 */
-	protected function addSessionObject($key = "session_objects", $obj = null, $index = null)
+	protected function setRedirectionOnLoggedIn($uri = "")
 	{
-		if (is_null($obj))
-			return false;
+		if (empty($uri))
+			$uri = $this->getRequestedUri();
 
-		//get array stored in session
-		$objects = [];
-		if ($this->session->has($key))
-			$objects = $this->session->get($key);
-
-		//push object to array
-		if (is_null($index))
-			array_push($objects, $obj);
-		else
-			$objects[$index] = $obj;
-
-		//save in session
-		$this->session->set($key, $objects);
-		return true;
+		$this->session->set("auth_redirect", $uri);
 	}
 
 	/**
-	 * Get custom objects stored in session
-	 * @param string $key - The key name of the session
-	 * @return mixed [boolean|array]
+	 * Removes pending session redirection
+	 * @return Boolean
 	 */
-	protected function getSessionObjects($key = "session_objects")
+	protected function removeRedirectionOnLoggedIn()
 	{
-		if (!$this->session->has($key))
+		if (!$this->session->has("auth_redirect"))
 			return false;
 
-		return $this->session->get($key);
+		return $this->session->remove("auth_redirect");
 	}
 
 	/**
-	 * Removes custom session object
-	 * @param string $key - The key name of the session
-	 * @param string $index - The index in array to be removed
-	 * @return boolean
+	 * Redirect to logged_in URI
+	 * @param Boolean $check_logged_in - Checks if user is logged in, if not skips redirect
 	 */
-	protected function removeSessionObject($key = "session_objects", $index = null)
-	{
-		if (!$this->session->has($key) || is_null($index))
-			return false;
-
-		$objects = $this->getSessionObjects($key);
-		//unset
-		unset($objects[$index]);
-		//save again in session
-		$this->session->set($key, $objects);
-		return true;
-	}
-
-	/**
-	 * Destroy session custom objects stored in session
-	 * @param string $key - The key name of the session
-	 * @return boolean
-	 */
-	protected function destroySessionObjects($key = "session_objects")
-	{
-		//check if data exists
-		if (!$this->session->has($key))
-			return false;
-
-		$this->session->remove($key);
-		return true;
-	}
-
-	/**
-	 * Redirect to account controller, cames from a loggedIn
-	 * @param boolean $check_logged_in - Checks if user is logged in, if not skips redirect
-	 */
-	protected function redirectToAccount($check_logged_in = false)
+	protected function redirectLoggedIn($check_logged_in = false)
 	{
 		if ($check_logged_in && !$this->isLoggedIn())
 			return;
@@ -336,23 +232,20 @@ trait AccountSession
 	/* --------------------------------------------------- § -------------------------------------------------------- */
 
 	/**
-	 * Pass user session to view
+	 * Forwards user session to view
 	 * @access private
-	 * @param array $filter - A string array of properties to filter
+	 * @param Array $filter - A string array of properties to filter
 	 */
-	private function _passUserSessionToView($user_session = [])
+	private function _setUserSessionForView($user_session = [])
 	{
 		if($this->request->isAjax() || !$this->di->has("view"))
 			return;
 
 		//filter some sensitive props?
-		$filter = $this->account_session_conf["user_session_filter_view"];
+		$filter = $this->account_session_conf["ignored_properties"];
 
-		if (!empty($filter)) {
-
-			foreach ($filter as $key)
-				unset($user_session[$key]);
-		}
+		foreach ($filter as $key)
+			unset($user_session[$key]);
 
 		//Load view data only for non-ajax requests, set user data var for view
 		$this->view->setVar("user_session", $user_session);

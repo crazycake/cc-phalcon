@@ -19,25 +19,25 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
 
 	/**
 	 * Buy order
-	 * @var string
+	 * @var String
 	 */
 	public $buy_order;
 
 	/**
 	 * Object class
-	 * @var string
+	 * @var String
 	 */
 	public $object_class;
 
 	/**
 	 * Object ID
-	 * @var string
+	 * @var String
 	 */
 	public $object_id;
 
 	/**
 	 * Quantity
-	 * @var int
+	 * @var Int
 	 */
 	public $quantity;
 
@@ -54,8 +54,8 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
 
 	/**
 	 * Get checkout objects (Relational)
-	 * @param  string $buy_order - Checkout buyOrder
-	 * @return array
+	 * @param String $buy_order - Checkout buyOrder
+	 * @return Array
 	 */
 	public static function getCollection($buy_order = "")
 	{
@@ -95,10 +95,10 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
 	/**
 	 * Validates that checkout object is already in stock.
 	 * Sums to q the number of checkout object presents in a pending checkout state.
-	 * @param string $object_class - The object class
-	 * @param int $object_id - The object id
-	 * @param int $q - The quantity to validate
-	 * @return boolean
+	 * @param String $object_class - The object class
+	 * @param Int $object_id - The object id
+	 * @param Int $q - The quantity to validate
+	 * @return Boolean
 	 */
 	public static function validateStock($object_class = "", $object_id = 0, $q = 0)
 	{
@@ -147,7 +147,7 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
 
 	/**
 	 * Substract Checkout objects quantity for processed checkouts
-	 * @param array $objects - The checkout objects array (getCollection returned array)
+	 * @param Array $objects - The checkout objects array (getCollection returned array)
 	 */
 	public static function substractStock($objects)
 	{

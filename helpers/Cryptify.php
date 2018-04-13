@@ -21,19 +21,19 @@ class Cryptify
 {
 	/**
 	 * Default cipher algorithm
-	 * @var string
+	 * @var String
 	 */
 	const DEFAULT_CIPHER = "aes-256-cfb";
 
 	/**
 	 * Phalcon Crypt Library Instance
-	 * @var object
+	 * @var Object
 	 */
 	private $crypt;
 
 	/**
 	 * constructor
-	 * @param string $key - The salt key
+	 * @param String $key - The salt key
 	 */
 	public function __construct($key = null)
 	{
@@ -50,8 +50,8 @@ class Cryptify
 
 	/**
 	 * Encrypts data, example: to be passed in a GET request
-	 * @param mixed [string|array] $data - The input data to encrypt
-	 * @return string - The encrypted string hash
+	 * @param Mixed [string|array] $data - The input data to encrypt
+	 * @return String - The encrypted string hash
 	 */
 	public function encryptData($data = null)
 	{
@@ -72,9 +72,9 @@ class Cryptify
 
 	/**
 	 * Decrypts hashed data
-	 * @param string $hash - The encrypted text
-	 * @param mixed [boolean|string] $parse - Parses the string from a token (explode) or parses a json (optional)
-	 * @return mixed string|array - The decrypted string
+	 * @param String $hash - The encrypted text
+	 * @param Mixed [boolean|string] $parse - Parses the string from a token (explode) or parses a json (optional)
+	 * @return Mixed string|array - The decrypted string
 	 */
 	public function decryptData($hash = "", $parse = false)
 	{
@@ -97,11 +97,8 @@ class Cryptify
 			//get DI instance (static)
 			$di = \Phalcon\DI::getDefault();
 
-			if ($di->getShared("logger")) {
-				
-				$logger = $di->getShared("logger");
-				$logger->error("Cryptify -> Failed decryptData: ".$hash.". Err: ".$e->getMessage());
-			}
+			if ($di->getShared("logger"))
+				$di->getShared("logger")->error("Cryptify -> decryptData failed [$hash]: ".$e->getMessage());
 
 			return null;
 		}
@@ -109,8 +106,8 @@ class Cryptify
 
 	/**
 	 * Encrypts a numeric ID and returns the hash
-	 * @param int $id - A numeric ID
-	 * @return string
+	 * @param Int $id - A numeric ID
+	 * @return String
 	 */
 	public function encryptHashId($id)
 	{
@@ -125,8 +122,8 @@ class Cryptify
 
 	/**
 	 * Decrypt a numeric ID and returns the hash
-	 * @param string $hash - An encrypted ID
-	 * @return mixed [string|boolean]
+	 * @param String $hash - An encrypted ID
+	 * @return Mixed [string|boolean]
 	 */
 	public function decryptHashId($hash)
 	{
@@ -142,9 +139,9 @@ class Cryptify
 
 	/**
 	 * Generates a random Hash
-	 * @param  int $length - The hash length, max length 20.
-	 * @param  string $seed - The string seed
-	 * @return string
+	 * @param Int $length - The hash length, max length 20.
+	 * @param String $seed - The string seed
+	 * @return String
 	 */
 	public function newHash($length = 20, $seed = "")
 	{
@@ -170,8 +167,8 @@ class Cryptify
 
 	/**
 	 * Generates a random alphanumeric code
-	 * @param int $length - The code length
-	 * @return string
+	 * @param Int $length - The code length
+	 * @return String
 	 */
 	public function newAlphanumeric($length = 8)
 	{

@@ -26,28 +26,28 @@ trait Crud
 
 	/**
 	 * Event on before save
-	 * @param array $data - The input data
-	 * @param string $action - defines the action, insert or update.
+	 * @param Array $data - The input data
+	 * @param String $action - defines the action, insert or update.
 	 */
 	abstract protected function onBeforeSave(&$data, $action);
 
 	/**
 	 * Event on after save
-	 * @param object $object - The orm object
-	 * @param array $data - The input data
-	 * @param string $action - defines the action, insert or update.
+	 * @param Object $object - The orm object
+	 * @param Array $data - The input data
+	 * @param String $action - defines the action, insert or update.
 	 */
 	abstract protected function onAfterSave(&$object, $data, $action);
 
 	/**
 	 * On Query
-	 * @param object $query - The Query object
+	 * @param Object $query - The Query object
 	 */
 	abstract protected function onQuery(&$query);
 
 	/**
 	 * trait config
-	 * @var array
+	 * @var Array
 	 */
 	protected $crud_conf;
 
@@ -55,7 +55,7 @@ trait Crud
 
 	/**
 	 * Initialize Trait
-	 * @param array $conf - The config array
+	 * @param Array $conf - The config array
 	 */
 	protected function initCrud($conf = [])
 	{
@@ -67,9 +67,9 @@ trait Crud
 			"entity_component" => "",           // entity HTML component name
 			"entity_label"     => "Colección",
 			"new_label"        => "Nuevo",
-			"dfields"          => [],	//data fields, head row
-			"sfields"          => [],	//search fields
-			"cfields"          => [],	//custom fields
+			"dfields"          => [],	        //data fields, head row
+			"sfields"          => [],	        //search fields
+			"cfields"          => [],	        //custom fields
 			"actions"          => ["update", "delete"]
 		];
 
@@ -344,7 +344,7 @@ trait Crud
 	/**
 	 * Handles builder syntax (active record)
 	 * Also push joins relations in array if query will need them
-	 * @param string $field - Any field name.
+	 * @param String $field - Any field name.
 	 */
 	private function _fieldToPhql($field = "")
 	{
@@ -366,10 +366,9 @@ trait Crud
 
 	/**
 	 * Get Pagination Data.
-	 * NOTE: Se descarto el paginator de Phalcon (en favor de EagerLoding + afterFetch).
-	 * @param  object $query - The query builder object
-	 * @param  array $data - A data array
-	 * @return stdClass object
+	 * @param Object $query - The query builder object
+	 * @param Array $data - A data array
+	 * @return Object
 	 */
 	private function _getPaginationData($query, $data)
 	{
@@ -420,7 +419,7 @@ trait Crud
 
 	/**
 	 * Merges payload key with data array
-	 * @param  array $data - The input data
+	 * @param Array $data - The input data
 	 */
 	private function _mergePayload(&$data)
 	{

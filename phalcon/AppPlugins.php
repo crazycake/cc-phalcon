@@ -17,7 +17,7 @@ class ExceptionsPlugin extends \Phalcon\Mvc\User\Plugin
 	 * @param Event $event - The Phalcon event
 	 * @param Dispatcher $dispatcher - The Phalcon dispatcher
 	 * @param Exception $exception - Any exception
-	 * @return boolean
+	 * @return Boolean
 	 */
 	public function beforeException(\Phalcon\Events\Event $event, \Phalcon\Mvc\Dispatcher $dispatcher, \Exception $exception)
 	{

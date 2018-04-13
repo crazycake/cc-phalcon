@@ -18,27 +18,27 @@ abstract class WebCore extends BaseCore implements WebSecurity
 {
 	/**
 	 * Js loader function
-	 * @var string
+	 * @var String
 	 */
 	const JS_LOADER_FUNCTION = "core.start";
 
 	/**
 	 * Set App Javascript Properties for global scope
-	 * @param object $js_app - The javascript app object reference
+	 * @param Object $js_app - The javascript app object reference
 	 */
 	abstract protected function setAppJsProperties(&$js_app);
 
 	/**
 	 * Checks Browser Support
-	 * @param string $browser - The browser family [MSIE, Chrome, Firefox, Opera, Safari]
-	 * @param int $version - The browser short version
+	 * @param String $browser - The browser family [MSIE, Chrome, Firefox, Opera, Safari]
+	 * @param Int $version - The browser short version
 	 *
 	 */
 	abstract protected function checkBrowserSupport($browser, $version);
 
 	/**
 	 * User agent properties
-	 * @var object
+	 * @var Object
 	 */
 	public $client;
 
@@ -90,8 +90,8 @@ abstract class WebCore extends BaseCore implements WebSecurity
 
 	/**
 	 * Redirect to given uri as GET method
-	 * @param string $uri - The URI to redirect
-	 * @param array $params - The GET params (optional)
+	 * @param String $uri - The URI to redirect
+	 * @param Array $params - The GET params (optional)
 	 */
 	protected function redirectTo($uri = "", $params = [])
 	{
@@ -135,7 +135,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 
 	/**
 	 * Check for non Ajax request, redirects to notFound error page
-	 * @return boolean
+	 * @return Boolean
 	 */
 	protected function onlyAjax()
 	{
@@ -147,7 +147,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 
 	/**
 	 * Validate CSRF token. One client token per session.
-	 * @return boolean
+	 * @return Boolean
 	 */
 	public function checkCsrfToken()
 	{
@@ -164,8 +164,8 @@ abstract class WebCore extends BaseCore implements WebSecurity
 
 	/**
 	 * Loads javascript modules. This method must be called once.
-	 * @param array $modules - An array of modules => args
-	 * @param string $fn - The loader function name
+	 * @param Array $modules - An array of modules => args
+	 * @param String $fn - The loader function name
 	 */
 	protected function loadJsModules($modules = [], $fn = self::JS_LOADER_FUNCTION)
 	{

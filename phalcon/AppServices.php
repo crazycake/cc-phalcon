@@ -17,13 +17,13 @@ class AppServices
 {
 	/**
 	 * Phalcon config object
-	 * @var object
+	 * @var Object
 	 */
 	private $config;
 
 	/**
 	 * Constructor
-	 * @param object $loaderObj - The app loader instance
+	 * @param Object $loaderObj - The app loader instance
 	 */
 	public function __construct($config)
 	{
@@ -33,7 +33,7 @@ class AppServices
 
 	/**
 	 * Get the DI
-	 * @return object - The Dependency Injector
+	 * @return Object - The Dependency Injector
 	 */
 	public function getDI()
 	{
@@ -80,7 +80,7 @@ class AppServices
 
 	/**
 	 * Set Main services
-	 * @param object $di - The DI object
+	 * @param Object $di - The DI object
 	 */
 	private function _setMainServices(&$di)
 	{
@@ -155,7 +155,7 @@ class AppServices
 	/**
 	 * Set Database Services [MySQL, Mongo]
 	 * Uses PECL Driver
-	 * @param object $di - The DI object
+	 * @param Object $di - The DI object
 	 */
 	private function _setDatabaseServices(&$di)
 	{
@@ -172,7 +172,7 @@ class AppServices
 
 	/**
 	 * Set MySQL Service
-	 * @param object $di - The DI object
+	 * @param Object $di - The DI object
 	 */
 	private function _setMysqlService(&$di)
 	{
@@ -194,7 +194,7 @@ class AppServices
 
 	/**
 	 * Set Mongo Service
-	 * @param object $di - The DI object
+	 * @param Object $di - The DI object
 	 */
 	private function _setMongoService(&$di)
 	{
@@ -216,7 +216,7 @@ class AppServices
 	/**
 	 * Set Translation Service
 	 * GetText adapter (multi-lang support)
-	 * @param object $di - The DI object
+	 * @param Object $di - The DI object
 	 */
 	private function _setTranslationService(&$di)
 	{
@@ -238,7 +238,7 @@ class AppServices
 
 	/**
 	 * Set session service
-	 * @param object $di - The DI object
+	 * @param Object $di - The DI object
 	 */
 	private function _setSessionService(&$di)
 	{
@@ -283,7 +283,7 @@ class AppServices
 
 	/**
 	 * Set Browser services
-	 * @param object $di - The DI object
+	 * @param Object $di - The DI object
 	 */
 	private function _setBrowserServices(&$di)
 	{
@@ -328,7 +328,7 @@ class AppServices
 
 	/**
 	 * Set View services
-	 * @param object $di - The DI object
+	 * @param Object $di - The DI object
 	 */
 	private function _setViewService(&$di)
 	{
@@ -385,7 +385,7 @@ class AppServices
 
 	/**
 	 * Sets volt compiler functions
-	 * @param object $compiler - The compiler object
+	 * @param Object $compiler - The compiler object
 	 */
 	public static function setVoltCompilerFunctions(&$compiler)
 	{

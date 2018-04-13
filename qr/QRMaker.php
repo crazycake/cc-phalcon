@@ -18,26 +18,26 @@ class QRMaker
 {
 	/**
 	 * QR library namespace
-	 * @var string
+	 * @var String
 	 */
 	const QR_LIB_NAMESPACE = "\\CrazyCake\\Qr\\";
 
 	/**
 	 * QR high quality (debug only)
-	 * @var boolen
+	 * @var Boolen
 	 */
 	const QR_HIGH_QUALITY  = true;
 
 	/**
 	 * QR PNG max size
-	 * @var int
+	 * @var Int
 	 */
 	const QR_PNG_MAX_SIZE  = 1024;
 
 	/**
 	 * constructor
-	 * @param string $log_path - Log directory path, required
-	 * @param string $cache_path - Cache directory path, required
+	 * @param String $log_path - Log directory path, required
+	 * @param String $cache_path - Cache directory path, required
 	 */
 	function __construct($log_path, $cache_path = null)
 	{
@@ -45,10 +45,10 @@ class QRMaker
 			throw new Exception("QRMaker Library -> Log path parameters are required.");
 		}
 		else if (!is_dir($log_path)){
-			throw new Exception("QRMaker Library -> Log path (".$log_path.") not found.");
+			throw new Exception("QRMaker Library -> Log path ($log_path) not found.");
 		}
 		else if (!is_dir($cache_path)) {
-			throw new Exception("QRMaker Library -> Cache path (".$cache_path.") not found.");
+			throw new Exception("QRMaker Library -> Cache path ($cache_path) not found.");
 		}
 
 		$this->init($log_path, $cache_path);
@@ -59,8 +59,8 @@ class QRMaker
 
 	/**
 	 * Init and define consts
-	 * @param string $log_path - The app log path
-	 * @param string $cache_path - The app cache path
+	 * @param String $log_path - The app log path
+	 * @param String $cache_path - The app cache path
 	 */
 	protected function init($log_path = "", $cache_path = "")
 	{
@@ -68,7 +68,7 @@ class QRMaker
 			return;
 
 		//use cache - more disk reads but less CPU power, masks and format templates are stored there
-		define("QR_CACHEABLE", (is_null($cache_path) ? false : true));
+		define("QR_CACHEABLE", !is_null($cache_path));
 		define("QR_CACHE_DIR", $cache_path."qr/");
 		define("QR_LOG_DIR", $log_path);
 
@@ -78,12 +78,7 @@ class QRMaker
 
 		//Check if library is running from a Phar file, if does, assets must be copied to cache folder.
 		//For reading assets from a phar directly, see: http://php.net/manual/en/phar.webphar.php
-		if (\Phar::running()) {
-			define("QR_ASSETS_PATH", $this->_extractAssetsFromPhar($cache_path));
-		}
-		else {
-			define("QR_ASSETS_PATH", __DIR__."/assets/");
-		}
+		define("QR_ASSETS_PATH", \Phar::running() ? $this->_extractAssetsFromPhar($cache_path) : __DIR__."/assets/");
 
 		//if true, estimates best mask (spec. default, but extremally slow; set to false to significant performance boost but (propably) worst quality code
 		if (self::QR_HIGH_QUALITY) {
@@ -102,7 +97,7 @@ class QRMaker
 
 	/**
 	 * Generates a QR code
-	 * @param arrays $params - The input parameters
+	 * @param Arrays $params - The input parameters
 	 */
 	public function generate($params = [])
 	{
@@ -174,11 +169,11 @@ class QRMaker
 
 	/**
 	 * Embed Logo in QR Image
-	 * @param string $qr_path - The QR image path
-	 * @param string $embed_img_path - An image to be embedded in the input QR image
-	 * @param int $embed_img_width - The embed image width (optional)
-	 * @param int $embed_img_height - The embed image height (optional)
-	 * @return string
+	 * @param String $qr_path - The QR image path
+	 * @param String $embed_img_path - An image to be embedded in the input QR image
+	 * @param Int $embed_img_width - The embed image width (optional)
+	 * @param Int $embed_img_height - The embed image height (optional)
+	 * @return String
 	 */
 	private function _embedLogo($qr_path, $embed_img_path, $embed_img_width = 90, $embed_img_height = 90)
 	{
@@ -215,8 +210,8 @@ class QRMaker
 
 	/**
 	 * Class Exists in Namespace
-	 * @param string $class_name - A class name
-	 * @return string
+	 * @param String $class_name - A class name
+	 * @return String
 	 */
 	private function _class_exists($class_name)
 	{
@@ -225,9 +220,9 @@ class QRMaker
 
 	/**
 	 * Extract assets inside the phar file
-	 * @param string $cache_path - The app cache path, must end with a slash
-	 * @param string $force_extract - Forces extraction not validating contents in given cache path
-	 * @return mixed [boolean|string] - The absolute include cache path
+	 * @param String $cache_path - The app cache path, must end with a slash
+	 * @param String $force_extract - Forces extraction not validating contents in given cache path
+	 * @return Mixed [boolean|string] - The absolute include cache path
 	 */
 	private function _extractAssetsFromPhar($cache_path = null, $force_extract = false)
 	{

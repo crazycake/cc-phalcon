@@ -9,29 +9,29 @@ namespace CrazyCake\Qr;
 abstract class QrTagShape {
 
 	/**
-	 * @var int
+	 * @var Int
 	 */
 	public $size = 0;
 
 	/**
-	 * @var int
+	 * @var Int
 	 */
 	public $markerSize = 0;
 
 	/**
-	 * @var string hex color
+	 * @var String hex color
 	 */
 	public $color = '000000'; //black
 
 	/**
-	 * @var string hex color
+	 * @var String hex color
 	 */
 	public $bgColor = 'ffffff'; //white
 	public $bgColorRGB = array(255, 255, 255);
 
 	/**
 	 *
-	 * @param int $size
+	 * @param Int $size
 	 */
 	public function __construct() {
 
@@ -44,8 +44,8 @@ abstract class QrTagShape {
 	public abstract function generate();
 
 	/**
-	 * @param string $color
-	 * @return array
+	 * @param String $color
+	 * @return Array
 	 */
 	public static function hex2dec($color) {
 		return array(hexdec(substr($color, 0, 2)), hexdec(substr($color, 2, 2)), hexdec(substr($color, 4, 2)));
@@ -53,11 +53,11 @@ abstract class QrTagShape {
 
 	/**
 	 *
-	 * @param string $text
-	 * @param string $fontFile
-	 * @param int $fontSize
-	 * @param int $fontAngle
-	 * @return array
+	 * @param String $text
+	 * @param String $fontFile
+	 * @param Int $fontSize
+	 * @param Int $fontAngle
+	 * @return Array
 	 */
 	function calculateTextBox($text, $fontFile, $fontSize, $fontAngle) {
 		/*         * **********

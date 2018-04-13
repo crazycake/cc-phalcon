@@ -21,7 +21,7 @@ trait CrudDocument
 
 	/**
 	 * trait config
-	 * @var array
+	 * @var Array
 	 */
 	protected $crud_conf;
 
@@ -29,7 +29,7 @@ trait CrudDocument
 
 	/**
 	 * Initialize Trait
-	 * @param array $conf - The config array
+	 * @param Array $conf - The config array
 	 */
 	protected function initCrud($conf = [])
 	{

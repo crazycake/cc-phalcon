@@ -18,7 +18,7 @@ class Base extends \Phalcon\Mvc\Model
 
 	/**
 	 * The object ID
-	 * @var int
+	 * @var Int
 	 */
 	public $id;
 
@@ -27,9 +27,8 @@ class Base extends \Phalcon\Mvc\Model
 
 	/**
 	 * Entity (class name)
-	 * @static
 	 * @link http://php.net/manual/en/language.oop5.late-static-bindings.php
-	 * @return string The current class name
+	 * @return String The current class name
 	 */
 	public static function entity()
 	{
@@ -38,10 +37,9 @@ class Base extends \Phalcon\Mvc\Model
 
 	/**
 	 * Find Override
-	 * @static
-	 * @param array $params - The input params
-	 * @param boolean $reduce - Reduce object to native array
-	 * @return object Simple\Resultset
+	 * @param Array $params - The input params
+	 * @param Boolean $reduce - Reduce object to native array
+	 * @return Array
 	 */
 	public static function find($params = null, $reduce = false)
 	{
@@ -57,10 +55,9 @@ class Base extends \Phalcon\Mvc\Model
 
 	/**
 	 * FindFirst Override
-	 * @static
-	 * @param array $params - The input params
-	 * @param boolean $reduce - Reduce object to native array
-	 * @return object
+	 * @param Array $params - The input params
+	 * @param Boolean $reduce - Reduce object to native array
+	 * @return Object
 	 */
 	public static function findFirst($params = null, $reduce = false)
 	{
@@ -76,8 +73,7 @@ class Base extends \Phalcon\Mvc\Model
 
 	/**
 	 * Find Object by ID
-	 * @static
-	 * @param int $id - The object ID
+	 * @param Int $id - The object ID
 	 * @return Object
 	 */
 	public static function getById($id = 0)
@@ -87,21 +83,20 @@ class Base extends \Phalcon\Mvc\Model
 
 	/**
 	 * Get a Resulset by SQL query.
-	 * @static
-	 * @param string $sql - The SQL string
-	 * @param array $binds - The query bindings (optional)
-	 * @param string $className - A different class name than self (optional)
-	 * @return mixed
+	 * @param String $sql - The SQL string
+	 * @param Array $binds - The query bindings (optional)
+	 * @param String $entity - The table entity
+	 * @return Mixed
 	 */
-	public static function getByQuery($sql = "SELECT 1", $binds = [], $className = null)
+	public static function getByQuery($sql = "SELECT 1", $binds = [], $entity = null)
 	{
 		if (is_null($binds))
 			$binds = [];
 
-		if (is_null($className))
-			$className = static::entity();
+		if (is_null($entity))
+			$entity = static::entity();
 
-		$objects = new $className();
+		$objects = new $entity();
 		$result  = new BaseResultset(null, $objects, $objects->getReadConnection()->query($sql, $binds));
 
 		return empty($result->count()) ? false : $result;
@@ -109,16 +104,15 @@ class Base extends \Phalcon\Mvc\Model
 
 	/**
 	 * Get an object property value by executing a SQL query
-	 * @static
-	 * @param string $sql - The SQL string
-	 * @param string $prop - The object property
-	 * @param array $binds - The query bindings (optional)
-	 * @param string $className - A different class name than self (optional)
-	 * @return object
+	 * @param String $sql - The SQL string
+	 * @param String $prop - The object property
+	 * @param Array $binds - The query bindings (optional)
+	 * @param String $entity - The table entity
+	 * @return Object
 	 */
-	public static function getPropertyByQuery($sql = "SELECT 1", $prop = "id", $binds = [], $className = null)
+	public static function getPropertyByQuery($sql = "SELECT 1", $prop = "id", $binds = [], $entity = null)
 	{
-		$result = self::getByQuery($sql, $binds, $className);
+		$result = self::getByQuery($sql, $binds, $entity);
 
 		$result = $result ? $result->getFirst() : null;
 
@@ -127,10 +121,9 @@ class Base extends \Phalcon\Mvc\Model
 
 	/**
 	 * Get Objects by PHQL language
-	 * @static
-	 * @param string $sql - The PHQL query string
-	 * @param array $binds - The binding params array
-	 * @return array
+	 * @param String $sql - The PHQL query string
+	 * @param Array $binds - The binding params array
+	 * @return Array
 	 */
 	public static function getByPhql($phql = "SELECT 1", $binds = [])
 	{
@@ -148,10 +141,9 @@ class Base extends \Phalcon\Mvc\Model
 
 	/**
 	 * Executes a PHQL Query, used for INSERT, UPDATE, DELETE
-	 * @static
-	 * @param string $phql - The PHQL query string
-	 * @param array $binds - The binding params array
-	 * @return boolean
+	 * @param String $phql - The PHQL query string
+	 * @param Array $binds - The binding params array
+	 * @return Boolean
 	 */
 	public static function executePhql($phql = "SELECT 1", $binds = [])
 	{
@@ -167,9 +159,45 @@ class Base extends \Phalcon\Mvc\Model
 	}
 
 	/**
+	 * Inserts a new object
+	 * @param Object $object
+	 * @return Mixed
+	 */
+	public static function insert($object)
+	{
+		// ORM save
+		$object->save();
+
+		// DB ORM errors?
+		if(!empty($object->messages())) {
+
+			$this->getDI()->getShared("logger")->error("Base::insert -> failed insertion ".json_encode($object->messages()));
+			return false;
+		}
+
+		return $object;
+	}
+
+	/**
+	 * Updates a property
+	 * @param Int $id - The object id
+	 * @param String $prop - The property name
+	 * @param Mixed $value - The value
+	 */
+	public static function updateProperty($id, $prop, $value)
+	{
+		$entity = static::entity();
+
+		return self::executePhql(
+			"UPDATE $entity SET $prop = ?1 WHERE id = ?0",
+			[(int)$id, $value]
+		); 
+	}
+
+	/**
 	 * Reduces a model object losing ORM properties
-	 * array $props - Filter properties. if empty array given filters all.
-	 * @return object
+	 * @param Array $props - Filter properties, if empty array given filters all.
+	 * @return Object
 	 */
 	public function reduce($props = null) {
 
@@ -178,15 +206,15 @@ class Base extends \Phalcon\Mvc\Model
 
 	/**
 	 * Get all messages from a created or updated object
-	 * @param boolean $format - Returns a joined string
-	 * @return mixed [array|string]
+	 * @param Boolean $format - Returns a joined string
+	 * @return Mixed [array|string]
 	 */
 	public function messages($format = false)
 	{
 		$data = [];
 
 		if (!method_exists($this, "getMessages"))
-			return ($data[0] = "Unknown ORM Error");
+			return $data;
 
 		foreach ($this->getMessages() as $msg)
 			array_push($data, $msg->getMessage());

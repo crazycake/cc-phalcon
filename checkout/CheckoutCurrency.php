@@ -18,15 +18,13 @@ trait CheckoutCurrency
 {
 	/**
 	 * API URL to get chilean currencies values
-	 * @static
-	 * @var string
+	 * @var String
 	 */
 	private static $API_CURRENCY_URL = "http://apilayer.net/api/live?access_key=2ffe4397dee8b3c1a767dba701315f8e";
 
 	/**
 	 * Redis key to store Dollar day value to CLP currency
-	 * @static
-	 * @var string
+	 * @var String
 	 */
 	private static $REDIS_KEY_USD_CLP_VALUE = "CHECKOUT_CURRENCY_USD_CLP";
 
@@ -45,8 +43,8 @@ trait CheckoutCurrency
 
 	/**
 	 * Gets CLP to USD currency conversion value
-	 * @param int $amount - The CLP amount
-	 * @return float The USD value
+	 * @param Int $amount - The CLP amount
+	 * @return Float The USD value
 	 */
 	public function chileanPesoToDollar($amount = 0)
 	{
@@ -62,8 +60,8 @@ trait CheckoutCurrency
 
 	/**
 	 * Get currency conversion USD to CLP
-	 * @param float $amount - The amount
-	 * @return float
+	 * @param Float $amount - The amount
+	 * @return Float
 	 */
 	public function dollarToChileanPeso($amount = 1.00)
 	{
@@ -113,8 +111,8 @@ trait CheckoutCurrency
 
 	/**
 	 * Calls API Chilean Currency to get indicator values
-	 * @param  string $indicator - Values: [uf, ivp, dolar, dolar_intercambio, euro, ipc, utm, imacec, tpm, libra_cobre, tasa_desempleo]
-	 * @return float - The value, null if error raises.
+	 * @param  String $indicator - Values: [uf, ivp, dolar, dolar_intercambio, euro, ipc, utm, imacec, tpm, libra_cobre, tasa_desempleo]
+	 * @return Float - The value, null if error raises.
 	 */
 	protected function apiChileanCurrencyRequest($indicator = "dolar")
 	{
@@ -129,6 +127,7 @@ trait CheckoutCurrency
 			// curl request
 			$curl = curl_init($api_url);
 			curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+
 			$json = curl_exec($curl);
 			curl_close($curl);
 

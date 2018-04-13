@@ -23,7 +23,7 @@ trait FacebookAuthHelper
 {
 	/**
 	 * Invalidates a facebook user
-	 * @param int $fb_id - The Facebook user ID
+	 * @param Int $fb_id - The Facebook user ID
 	 */
 	protected function _invalidateAccessToken($fb_id = 0)
 	{
@@ -51,10 +51,10 @@ trait FacebookAuthHelper
 
 	/**
 	 * Get Access Token permissions
-	 * @param object $fac - The facebook access token
-	 * @param int $user_id - The user ID
-	 * @param mixed [boolean, string, array] $scope - If value is set then validates also the granted perms
-	 * @return mixed [boolean|array] - False if perms validation fail
+	 * @param Object $fac - The facebook access token
+	 * @param Int $user_id - The user ID
+	 * @param Mixed [boolean, string, array] $scope - If value is set then validates also the granted perms
+	 * @return Mixed [boolean|array] - False if perms validation fail
 	 */
 	protected function _getAccesTokenPermissions($fac = null, $user_id = 0, $scope = false)
 	{
@@ -105,8 +105,8 @@ trait FacebookAuthHelper
 	/**
 	 * Logins a User with facebook access token,
 	 * If data has the signed_request property it will be checked automatically
-	 * @param object $fac - The access token object
-	 * @param mixed[string|array] $validation - Validates user fields
+	 * @param Object $fac - The access token object
+	 * @param Mixed[string|array] $validation - Validates user fields
 	 */
 	protected function _loginUser($fac = null)
 	{
@@ -145,18 +145,18 @@ trait FacebookAuthHelper
 			}
 
 			//check if user has already a account registered by email
-			$user = $user_fb ? $user_fb->user : null;
-			//var_dump($properties["fb_id"], $user_fb);exit;
+			$user = $user_fb->user ?? null;
+			//s($properties["fb_id"], $user_fb);exit;
 
 			//if user has already a facebook link....
 			if ($user) {
 
 				//disabled account
-				if ($user->account_flag == "disabled")
+				if ($user->flag == "disabled")
 					throw new Exception($this->facebook_auth_conf["trans"]["ACCOUNT_DISABLED"]);
 
 				//update user flag if account
-				$user->update(["account_flag" => "enabled"]);
+				$user->update(["flag" => "enabled"]);
 				//set auth state
 				$login_data["auth"] = "existing_user";
 			}
@@ -164,8 +164,8 @@ trait FacebookAuthHelper
 			else {
 
 				//set account flag as active & auth state
-				$properties["account_flag"] = "enabled";
-				$login_data["auth"]         = "new_user";
+				$properties["flag"] = "enabled";
+				$login_data["auth"] = "new_user";
 
 				//check if user is already logged in
 				if ($user_session) {
@@ -217,7 +217,7 @@ trait FacebookAuthHelper
 		}
 
 		//mark user as Logged In
-		$this->onLogin($user->id);
+		$this->onLoggedIn($user->id);
 
 		//SAVES session if none error ocurred
 		$login_data["properties"] = $properties;
@@ -227,9 +227,9 @@ trait FacebookAuthHelper
 
 	/**
 	 * Set the facebook Access Token
-	 * @param object $fac - The facebook access token object (optional)
-	 * @param int $user_id - The user ID
-	 * @return mixed [boolean|string|object]
+	 * @param Object $fac - The facebook access token object (optional)
+	 * @param Int $user_id - The user ID
+	 * @return Mixed [boolean|string|object]
 	 */
 	protected function _setUserAccessToken($fac = null, $user_id = 0)
 	{
@@ -257,10 +257,10 @@ trait FacebookAuthHelper
 
 	/**
 	 * Parse given user facebook session data to save in Database
-	 * @param int $user_id - The user ID
-	 * @param int $fb_id - The facebook user ID
-	 * @param object $fac - The access token object
-	 * @return array
+	 * @param Int $user_id - The user ID
+	 * @param Int $fb_id - The facebook user ID
+	 * @param Object $fac - The access token object
+	 * @return Array
 	 */
 	protected function _saveUser($user_id = null, $fb_id = null, $fac = null)
 	{
@@ -290,9 +290,9 @@ trait FacebookAuthHelper
 
 	/**
 	 * Validate Facebook Email
-	 * @param string $email - The props email
-	 * @param int $fb_id - Facebook Id Optional
-	 * @return [type] [description]
+	 * @param String $email - The props email
+	 * @param Int $fb_id - Facebook Id Optional
+	 * @return Boolean [description]
 	 */
 	protected function _filterEmail($email = "", $fb_id = 0)
 	{
@@ -311,8 +311,8 @@ trait FacebookAuthHelper
 	/**
 	 * Parse facebook signed request got from Javascript SDK
 	 * @link https://developers.facebook.com/docs/games/canvas/login
-	 * @param string $signed_request - Signed request received from Facebook API
-	 * @return mixed
+	 * @param String $signed_request - Signed request received from Facebook API
+	 * @return Mixed
 	 */
 	protected function _parseSignedRequest($signed_request = null)
 	{
@@ -334,6 +334,7 @@ trait FacebookAuthHelper
 		$data = json_decode($base64_decode_url($payload), true);
 		//check algorithm
 		if (strtoupper($data["algorithm"]) !== "HMAC-SHA256") {
+
 			$this->logger->error("Facebook::_parseSignedRequest -> Unknown algorithm. Expected HMAC-SHA256");
 			return false;
 		}
@@ -342,6 +343,7 @@ trait FacebookAuthHelper
 		$signature    = $base64_decode_url($encoded_sig);
 
 		if ($signature !== $expected_sig) {
+			
 			$this->logger->error("Facebook::_parseSignedRequest -> Invalid JSON Signature!");
 			return false;
 		}

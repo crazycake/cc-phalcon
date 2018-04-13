@@ -19,47 +19,43 @@ trait Uploader
 {
 	/**
 	 * Default upload max size
-	 * @static
-	 * @var integer
+	 * @var Integer
 	 */
 	protected static $DEFAULT_MAX_SIZE = 3072; //KB
 
 	/**
 	 * Default upload file type
-	 * @static
-	 * @var array
+	 * @var Array
 	 */
 	protected static $DEFAULT_FILE_TYPE = ["csv"];
 
 	/**
 	 * Header Name for file checking
-	 * @static
-	 * @var string
+	 * @var String
 	 */
 	protected static $HEADER_NAME = "File-Key";
 
 	/**
 	 * Root upload path. Files are saved in a temporal public user folder.
-	 * @static
-	 * @var string
+	 * @var String
 	 */
 	public static $ROOT_UPLOAD_PATH = STORAGE_PATH."uploads/";
 
 	/**
 	 * trait config var
-	 * @var array
+	 * @var Array
 	 */
 	protected $uploader_conf;
 
 	/**
 	 * Request headers
-	 * @var array
+	 * @var Array
 	 */
 	private $headers;
 
 	/**
 	 * Initialize Trait
-	 * @param array $conf - The config array
+	 * @param Array $conf - The config array
 	 */
 	protected function initUploader($conf = [])
 	{
@@ -194,7 +190,7 @@ trait Uploader
 
 	/**
 	 * Cleans upload folder
-	 * @param string $path - The target path to delete
+	 * @param String $path - The target path to delete
 	 */
 	protected function cleanUploadFolder($path = "")
 	{
@@ -211,8 +207,8 @@ trait Uploader
 
 	/**
 	 * Gets uploaded files in temp directory
-	 * @param boolean $absolute_path - Append absolute path to each image
-	 * @return string
+	 * @param Boolean $absolute_path - Append absolute path to each image
+	 * @return String
 	 */
 	protected function getUploadedFiles($absolute_path = true)
 	{
@@ -229,8 +225,8 @@ trait Uploader
 
 	/**
 	 * Saves & stores uploaded files
-	 * @param string $uri - The file uri
-	 * @return array - The saved uploaded files
+	 * @param String $uri - The file uri
+	 * @return Array - The saved uploaded files
 	 */
 	protected function saveUploadedFiles($uri = "")
 	{
@@ -303,9 +299,9 @@ trait Uploader
 
 	/**
 	 * New Image Api Job, files are stored automatically in S3 (curl request)
-	 * @param string $api_uri - The imgapi uri job
-	 * @param string $src - The source file
-	 * @param array $config - The config array
+	 * @param String $api_uri - The imgapi uri job
+	 * @param String $src - The source file
+	 * @param Array $config - The config array
 	 */
 	public function newImageApiJob($api_uri = "", $src = "", $config = [])
 	{
@@ -350,7 +346,7 @@ trait Uploader
 
 	/**
 	 * Get upload local path
-	 * @param string $url - The remote url upload
+	 * @param String $url - The remote url upload
 	 */
 	public function getUploadLocalFilepath($url = "")
 	{
@@ -364,8 +360,7 @@ trait Uploader
 
 	/**
 	 * Sort files by numeric tag
-	 * @static
-	 * @param array $files - The upload file array
+	 * @param Array $files - The upload file array
 	 */
 	public static function sortFilesByTag(&$files)
 	{
@@ -388,9 +383,9 @@ trait Uploader
 
 	/**
 	 * Validate uploaded file
-	 * @param $file object - The phalcon uploaded file
-	 * @param $file_key string - The file key
-	 * @return array
+	 * @param String $file object - The phalcon uploaded file
+	 * @param String $file_key string - The file key
+	 * @return Array
 	 */
 	private function _validateUploadedFile($file, $file_key = "")
 	{

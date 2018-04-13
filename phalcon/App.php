@@ -30,13 +30,13 @@ abstract class App
 
 	/**
 	 * The App Dependency injector
-	 * @var object
+	 * @var Object
 	 */
 	private $di;
 
 	/**
 	 * Constructor
-	 * @param string $mod_name - The input module
+	 * @param String $mod_name - The input module
 	 */
 	public function __construct($mod_name = "frontend")
 	{
@@ -68,7 +68,7 @@ abstract class App
 
 	/**
 	 * Start app module execution
-	 * @param array $argv - Input arguments for CLI
+	 * @param Array $argv - Input arguments for CLI
 	 */
 	public function start($argv = null)
 	{
@@ -87,7 +87,7 @@ abstract class App
 
 	/**
 	 * Starts an CLI App
-	 * @param array $argv - Input arguments for CLI
+	 * @param Array $argv - Input arguments for CLI
 	 */
 	private function _startCli($argv = null)
 	{
@@ -176,7 +176,7 @@ abstract class App
 
 	/**
 	* Minifies HTML output
-	* @param string $buffer - The input buffer
+	* @param String $buffer - The input buffer
 	*/
 	private function _minifyOutput($buffer)
 	{

@@ -19,13 +19,13 @@ trait Mailer
 {
 	/**
  	 * Mailing CSS file
-	 * @var string
+	 * @var String
 	 */
 	protected static $MAILER_CSS_FILE = PROJECT_PATH."ui/volt/mailing/css/app.css";
 
 	/**
 	 * trait config
-	 * @var array
+	 * @var Array
 	 */
 	public $mailer_conf;
 
@@ -33,24 +33,21 @@ trait Mailer
 
 	/**
 	 * Initialize Trait
-	 * @param array $conf - The config array
+	 * @param Array $conf - The config array
 	 */
 	public function initMailer($conf = [])
 	{
 		//defaults
 		$defaults = [
-			"user_entity"    => "User",
-			"activation_uri" => "auth/activation/",
-			"password_uri"   => "password/new/",
-			"from_name"      => $this->config->name,
+			"user_entity" => "User",
+			"from_name"   => $this->config->name
 		];
 
 		//merge confs
 		$conf = array_merge($defaults, $conf);
 
 		//append class prefixes
-		$conf["user_token_entity"] = App::getClass($conf["user_entity"])."Token";
-		$conf["user_entity"]       = App::getClass($conf["user_entity"]);
+		$conf["user_entity"] = App::getClass($conf["user_entity"]);
 
 		if(empty($conf["trans"]))
 			$conf["trans"] = \TranslationController::getCoreTranslations("mailer");
@@ -93,25 +90,12 @@ trait Mailer
 
 	/**
 	 * Async Handler - Sends mail for account activation (email validation)
-	 * @param int $user_id - The user ID
-	 * @return json response
+	 * @param Array $data - The array
 	 */
-	public function accountActivation($user_id = 0)
+	public function accountActivation($data = [])
 	{
-		$user_class = $this->mailer_conf["user_entity"];
-		$user       = $user_class::getById($user_id);
-
-		//get user token
-		$tokens_class = $this->mailer_conf["user_token_entity"];
-		$token        = $tokens_class::newTokenIfExpired($user_id, "activation");
-
-		if (!$user || !$token)
-			$this->jsonResponse(500);
-
-		//set properties
-		$this->mailer_conf["user"]  = $user;
-		$this->mailer_conf["email"] = $user->email;
-		$this->mailer_conf["url"]   = $this->baseUrl($this->mailer_conf["activation_uri"].$token->encrypted);
+		//merge mailer conf
+		$this->mailer_conf = array_merge($this->mailer_conf, $data);
 
 		//set message properties
 		$subject = $this->mailer_conf["trans"]["SUBJECT_ACTIVATION"];
@@ -123,26 +107,12 @@ trait Mailer
 
 	/**
 	 * Async Handler - Sends mail for password recovery
-	 * Generates & sends a validation token
-	 * @param int $user_id - The user ID
+	 * @param Array $data - The array
 	 */
-	public function passwordRecovery($user_id = 0)
+	public function passwordRecovery($data = [])
 	{
-		$user_class = $this->mailer_conf["user_entity"];
-		$user       = $user_class::getById($user_id);
-
-		//get user token
-		$tokens_class = $this->mailer_conf["user_token_entity"];
-		$token        = $tokens_class::newTokenIfExpired($user_id, "pass");
-
-		if (!$user || !$token)
-			$this->jsonResponse(500);
-
-		//set rendered view
-		$this->mailer_conf["user"]       = $user;
-		$this->mailer_conf["email"]      = $user->email;
-		$this->mailer_conf["url"]        = $this->baseUrl($this->mailer_conf["password_uri"].$token->encrypted);
-		$this->mailer_conf["expiration"] = $tokens_class::$TOKEN_EXPIRES_THRESHOLD["pass"];
+		//merge mailer conf
+		$this->mailer_conf = array_merge($this->mailer_conf, $data);
 
 		//set message properties
 		$subject = $this->mailer_conf["trans"]["SUBJECT_PASSWORD"];
@@ -154,9 +124,9 @@ trait Mailer
 
 	/**
 	 * Generates a new HTML styled with inline CSS as style attribute
-	 * DI dependency injector must have simpleView service
-	 * @param string $template - The mail template view
-	 * @return string
+	 * DI must have simpleView service
+	 * @param String $template - The mail template view
+	 * @return String
 	 */
 	public function inlineHtml($template = "")
 	{
@@ -181,8 +151,8 @@ trait Mailer
 
 	/**
 	 * Sends a system mail for exception alert
-	 * @param mixed[object, string] $e - An exception object or string message
-	 * @param object $data - Informative appended data
+	 * @param Mixed $e - An exception object or string message
+	 * @param Object $data - Informative appended data
 	 */
 	public function adminException($e = "", $data = [])
 	{
@@ -208,11 +178,11 @@ trait Mailer
 
 	/**
 	 * Sends a message through sendgrid API
-	 * @param string $template - The template name
-	 * @param string $subject - The mail subject
-	 * @param mixed(string|array) $recipients - The receiver emails
-	 * @param array $attachments - Array with sub-array(s) with content, type and name props
-	 * @return array - Resultset
+	 * @param String $template - The template name
+	 * @param String $subject - The mail subject
+	 * @param Mixed $recipients - The receiver emails
+	 * @param Array $attachments - Array with sub-array(s) with content, type and name props
+	 * @return Resultset
 	 */
 	public function sendMessage($template, $subject, $recipients, $attachments = [])
 	{
@@ -262,9 +232,9 @@ trait Mailer
 
 	/**
 	 * Parse attachments to be sended to sendgrid API service
-	 * @param array $attachments - Attachments array
-	 * @param object $mail - The sendgrid mail object
-	 * @return array The parsed array data
+	 * @param Array $attachments - Attachments array
+	 * @param Object $mail - The sendgrid mail object
+	 * @return Array The parsed array data
 	 */
 	private function _parseAttachments($attachments = null, &$mail)
 	{
