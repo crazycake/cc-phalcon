@@ -163,15 +163,16 @@ class Base extends \Phalcon\Mvc\Model
 	 * @param Object $object
 	 * @return Mixed
 	 */
-	public static function insert($object)
+	public static function insert($data)
 	{
 		// ORM save
-		$object->save();
+		$object = new self();
+		$object->save($data);
 
 		// DB ORM errors?
 		if(!empty($object->messages())) {
 
-			$this->getDI()->getShared("logger")->error("Base::insert -> failed insertion ".json_encode($object->messages()));
+			(\Phalcon\DI::getDefault())->getShared("logger")->error("Base::insert -> failed insertion ".json_encode($object->messages()));
 			return false;
 		}
 

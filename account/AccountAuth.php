@@ -197,7 +197,7 @@ trait AccountAuth
 		// validate if user exists
 		if($entity::getUserByEmail($data["email"])) {
 
-			$msg = str_replace("{email}", $data["email"], $this->account_auth_conf["trans"]["ACCOUNT_EXISTS"]);
+			$msg = str_replace("{email}", $data["email"], $this->account_auth_conf["trans"]["EMAIL_EXISTS"]);
 			$msg = str_replace("{link}", $this->account_auth_conf["login_uri"], $msg);
 
 			$this->jsonResponse(400, $msg);
@@ -205,15 +205,16 @@ trait AccountAuth
 
 		//set pending email confirmation status
 		$data["flag"] = "pending";
-		//new user
-		$user = new $entity($data);
 
 		//event trigger
 		if(method_exists($this, "beforeRegisterUser"))
-			$this->beforeRegisterUser($user);
+			$this->beforeRegisterUser($data);
+		
+		//insert user
+		$user = $entity::insert($data);
 
 		//if user not exists, show error message
-		if (!$entity::insert($user)) {
+		if (!$user) {
 
 			$this->logger->error("AccountAuth::registerAction -> failed inserting user ".json_encode(data));
 			$this->jsonResponse(400);
