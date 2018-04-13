@@ -247,7 +247,7 @@ trait AccountAuth
 	/**
 	 * Sends activation mail message with recaptcha validation
 	 * @param String $email - The user email
-	 * @param String $recaptcha - reCaptcha string
+	 * @param String $recaptcha - The reCaptcha challenge
 	 */
 	public function sendActivationMailMessage($email, $recaptcha)
 	{

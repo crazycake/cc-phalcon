@@ -97,6 +97,8 @@ trait AccountPassword
 
 	/**
 	 * Send Recovery password email message with further instructions
+	 * @param String $email - The user email
+	 * @param String $recaptcha - The reCaptcha challenge
 	 */
 	public function sendRecoveryInstructions($email, $recaptcha = "")
 	{
