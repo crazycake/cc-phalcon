@@ -65,24 +65,6 @@ trait Translations
 			]
 		];
 
-		//facebook
-		if(class_exists("\FacebookController")) {
-
-			$data["FACEBOOK"] = [
-				"SESSION_ERROR"    => "Ocurrió un problema con tu sesión de Facebook, por favor inténtalo nuevamente. ".
-									  "Si aún se presenta este problema, prueba iniciando una nueva sesión en Facebook.",
-				"OAUTH_REDIRECTED" => "Ocurrió un problema con tu sesión de Facebook, por favor inténtalo nuevamente.",
-				"OAUTH_PERMS"      => "Debes aceptar los permisos de la aplicación en tu cuenta de Facebook.",
-				"SESSION_SWITCHED" => "Es posible que tengas abierta otra sesión de Facebook, intenta cerrando tu sesión actual de Facebook.",
-				"ACCOUNT_SWITCHED" => "Esta sesión de Facebook está vinculada a otra cuenta, intenta usando otra cuenta de Facebook.",
-				"ACCOUNT_DISABLED" => "Esta cuenta se encuentra desactivada, por favor comunícate con nuestro equipo.",
-				"INVALID_EMAIL"    => 'No hemos logrado obtener tu correo primario de Facebook, asegúrate de aceptar los permisos y validar
-									   tu correo primario en tu cuenta de Facebook.
-									   Haz <a href="'.\FacebookController::$FB_EMAIL_SETTINGS_URL.'" target="_blank">click aquí</a>
-									   para configurar tu correo primario.'
-			];
-		}
-
 		//call handler
 		$data = array_merge($data, self::coreTranslations());
 
