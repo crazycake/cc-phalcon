@@ -23,7 +23,6 @@ class ExceptionsPlugin extends \Phalcon\Mvc\User\Plugin
 	{
 		//log error
 		$di = $dispatcher->getDI();
-		//var_dump($di->getShared("session")->getName(), $exception, $exception->getCode(), $di);exit;
 
 		//Handle Phalcon exceptions
 		if ($exception instanceof \Phalcon\Mvc\Dispatcher\Exception) {
