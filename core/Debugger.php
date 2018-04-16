@@ -23,6 +23,7 @@ trait Debugger
 		$logger  = new \Phalcon\Logger\Adapter\File(STORAGE_PATH."logs/".$file);
 
 		$manager->attach('db', function ($event, $connection) use ($logger) {
+			
 			//log SQL
 			if ($event->getType() == 'beforeQuery') {
 
