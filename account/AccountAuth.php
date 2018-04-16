@@ -172,7 +172,7 @@ trait AccountAuth
 			//for API handle alerts & warning as errors,
 			$this->jsonResponse(400, $message, "warning", $namespace);
 		}
-
+		
 		//success login
 		$this->newUserSession($user);
 

@@ -115,21 +115,26 @@ trait AccountSession
 	protected function newUserSession($user)
 	{
 		//set user data
-		$session_data         = json_decode(json_encode($user));
-		$session_data["auth"] = true;
+		$user_session         = json_decode(json_encode($user), true);
+		$user_session["auth"] = true;
 
 		//mongo ID special case
-		if(!empty($session_data["_id"])) {
+		if(!empty($user_session["_id"])) {
 
-			$session_data["id"] = (string)$session_data["_id"];
-			unset($session_data["_id"]);
+			$user_session["id"] = current($user_session["_id"]);
+			unset($user_session["_id"]);
 		}
 
+		$filter = $this->account_session_conf["ignored_properties"];
+
+		foreach ($filter as $key)
+			unset($user_session[$key]);
+
 		//call abstract method
-		$session_data = array_merge($session_data, $this->onSessionSave($user));
+		$user_session = array_merge($user_session, $this->onSessionSave($user));
 
 		//save in session
-		$this->session->set("user", $session_data);
+		$this->session->set("user", $user_session);
 	}
 
 	/**
