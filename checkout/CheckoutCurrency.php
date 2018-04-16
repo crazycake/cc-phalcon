@@ -8,8 +8,6 @@ namespace CrazyCake\Checkout;
 
 //imports
 use Phalcon\Exception;
-//core
-use CrazyCake\Phalcon\App;
 
 /**
  * Checkout Currency

@@ -11,8 +11,9 @@ namespace CrazyCake\Checkout;
 use Phalcon\Exception;
 use Phalcon\Validation;
 use Phalcon\Validation\Validator\InclusionIn;
-//core
+
 use CrazyCake\Phalcon\App;
+use CrazyCake\Helpers\Forms;
 
 /**
  * Base User Checkouts
@@ -25,7 +26,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 	 * Pending checkouts expiration threshold, in minutes.
 	 * @var Integer
 	 */
-	public static $CHECKOUT_EXPIRES_THRESHOLD = 72; //hours
+	public static $CHECKOUT_EXPIRATION = 72; //hours
 
 	/**
 	 * Buy Order code length
@@ -95,15 +96,14 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 	public function initialize()
 	{
 		//get class
-		$user_entity = App::getClass("user", false);
-
-		$user_checkout_object_entity = App::getClass("user_checkout_object", false);
+		$user_entity   = str_replace("Checkout", "", static::entity());
+		$object_entity = static::entity()."Object";
 
 		//model relations
 		$this->hasOne("user_id", $user_entity, "id");
 
-		if(class_exists($user_checkout_object_entity))
-			$this->hasMany("buy_order", $user_checkout_object_entity, "buy_order");
+		if(class_exists(App::getClass($object_entity))
+			$this->hasMany("buy_order", $object_entity, "buy_order");
 	}
 
 	/**
@@ -136,7 +136,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 		//inclusion
 		$validator->add("state", new InclusionIn([
 			"domain"  => self::$STATES,
-			"message" => "Invalid state. States supported: ".implode(", ", self::$STATES)
+			"message" => "Invalid state, supported: ".implode(", ", self::$STATES)
 		]));
 
 		return $this->validate($validator);
@@ -187,21 +187,20 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 		//get DI reference (static)
 		$di = \Phalcon\DI::getDefault();
 		//get classes
-		$checkout_entity = static::entity();
-		//get checkouts objects class
-		$checkout_object_entity = App::getClass("user_checkout_object");
+		$entity        = App::getClass(static::entity());
+		$object_entity = $entity."Object";
 
 		//generates buy order
 		$buy_order = self::newBuyOrderCode();
 		$checkout_obj->buy_order = $buy_order;
 
 		//log statement
-		$di->getShared("logger")->debug("BaseUserCheckout::newBuyOrder -> Saving BuyOrder: $buy_order");
+		$di->getShared("logger")->debug("BaseUserCheckout::newBuyOrder -> saving BuyOrder: $buy_order");
 
 		try {
 
 			//creates object with some checkout object props
-			$checkout = new $checkout_entity();
+			$checkout = new $entity();
 
 			//begin trx
 			$di->getShared("db")->begin();
@@ -224,7 +223,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 			foreach ($checkout_obj->objects as $obj) {
 
 				//creates an object
-				$new_checkout_obj = new $checkout_object_entity();
+				$new_checkout_obj = new $object_entity();
 				//props
 				$props = (array)$obj;
 				$props["buy_order"] = $buy_order;
@@ -247,6 +246,60 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 	}
 
 	/**
+	 * Get checkout by buy order (Relational)
+	 * @param String $buy_order - Checkout buyOrder
+	 * @return Object
+	 */
+	public static getByBuyOrder($buy_order)
+	{
+		return self::findFirstByBuyOrder($buy_order);
+	}
+
+	/**
+	 * Get checkout objects (Relational)
+	 * @param String $buy_order - Checkout buyOrder
+	 * @return Array
+	 */
+	public static function getObjects($buy_order = "")
+	{
+		//get checkouts objects class
+		$entity        = App::getClass(static::entity());
+		$object_entity = $entity."Object";
+
+		$objects = $object_entity::find([
+			"columns"    => "object_class, object_id, quantity",
+			"conditions" => "buy_order = ?1",
+			"bind"       => [1 => $buy_order]
+		]);
+
+		$result = [];
+
+		//loop through objects
+		foreach ($objects as $obj) {
+
+			$object_class = $obj->object_class;
+			//create a new object and clone common props
+			$checkout_object = (object)$obj->toArray();
+			//get object local props
+			$props = !class_exists($object_class) ?: $object_class::getById($obj->object_id);
+
+			if (!$props) continue;
+
+			//extend custom flexible properties
+			$checkout_object->name     = $props->name ?? "";
+			$checkout_object->price    = $props->price ?? 0;
+			$checkout_object->currency = $props->currency ?? "CLP";
+
+			//UI props
+			$checkout_object->price_formatted = Forms::formatPrice($checkout_object->price, $checkout_object->currency);
+
+			array_push($result, $checkout_object);
+		}
+
+		return $result;
+	}
+
+	/**
 	 * Deletes expired pending checkouts.
 	 * Requires Carbon library
 	 * @return Int
@@ -261,7 +314,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 			//use carbon library to handle time
 			$now = new \Carbon\Carbon();
 			//substract time
-			$now->subHours(static::$CHECKOUT_EXPIRES_THRESHOLD);
+			$now->subHours(static::$CHECKOUT_EXPIRATION);
 			//s($now->toDateTimeString());
 
 			//get expired objects

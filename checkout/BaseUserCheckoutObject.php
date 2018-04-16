@@ -6,10 +6,6 @@
 
 namespace CrazyCake\Checkout;
 
-//imports
-use CrazyCake\Phalcon\App;
-use CrazyCake\Helpers\Forms;
-
 /**
  * Base User Checkouts objects
  */
@@ -53,46 +49,6 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
 	/** ------------------------------------------- § ------------------------------------------------ **/
 
 	/**
-	 * Get checkout objects (Relational)
-	 * @param String $buy_order - Checkout buyOrder
-	 * @return Array
-	 */
-	public static function getCollection($buy_order = "")
-	{
-		$objects = self::find([
-			"columns"    => "object_class, object_id, quantity",
-			"conditions" => "buy_order = ?1",
-			"bind"       => [1 => $buy_order]
-		]);
-
-		$result = [];
-
-		//loop through objects
-		foreach ($objects as $obj) {
-
-			$object_class = $obj->object_class;
-			//create a new object and clone common props
-			$checkout_object = (object)$obj->toArray();
-			//get object local props
-			$props = !class_exists($object_class) ?: $object_class::getById($obj->object_id);
-
-			if (!$props) continue;
-
-			//extend custom flexible properties
-			$checkout_object->name     = $props->name ?? "";
-			$checkout_object->price    = $props->price ?? 0;
-			$checkout_object->currency = $props->currency ?? "CLP";
-
-			//UI props
-			$checkout_object->price_formatted = Forms::formatPrice($checkout_object->price, $checkout_object->currency);
-
-			array_push($result, $checkout_object);
-		}
-
-		return $result;
-	}
-
-	/**
 	 * Validates that checkout object is already in stock.
 	 * Sums to q the number of checkout object presents in a pending checkout state.
 	 * @param String $object_class - The object class
@@ -111,16 +67,15 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
 			return false;
 
 		//get classes
-		$user_checkout_class = App::getClass("user_checkout");
-		//get checkouts objects class
-		$entity = static::entity();
+		$entity 		 = static::entity();
+		$checkout_entity = str_replace("Object", "", $entity);
 
 		//get pending checkouts items quantity
-		$objects = $user_checkout_class::getByPhql(
+		$objects = $checkout_entity::getByPhql(
 			//phql
 			"SELECT SUM(quantity) AS q
 			 FROM $entity AS objects
-			 INNER JOIN $user_checkout_class AS checkout ON checkout.buy_order = objects.buy_order
+			 INNER JOIN $checkout_entity AS checkout ON checkout.buy_order = objects.buy_order
 			 WHERE objects.object_id = :object_id:
 			 AND objects.object_class = :object_class:
 			 AND checkout.state = 'pending'
@@ -157,7 +112,7 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
 			//get object ORM class
 			$object_class = $obj->object_class;
 
-			$orm_object = !class_exists($object_class) ?: $object_class::findFirstById($obj->object_id);
+			$orm_object = !class_exists($object_class) ?: $object_class::getById($obj->object_id);
 
 			if(!$orm_object || empty($obj->quantity))
 				continue;
