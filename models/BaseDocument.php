@@ -66,6 +66,19 @@ class BaseDocument
 	}
 
 	/**
+	 * Updates an array of properties
+	 * @param Int $id - The object id
+	 * @param Array $prop - The properties
+	 */
+	public static function updateProperties($id, $props)
+	{
+		$mongo      = (\Phalcon\DI::getDefault())->getShared("mongo");
+		$collection = static::$COLLECTION;
+
+		return $this->mongo->{$collection}->updateOne(["_id" => new \MongoDB\BSON\ObjectId($id)], ['$set' => $props]); 
+	}
+
+	/**
 	 * Inserts a new document
 	 * @param Mixed $data - The input data
 	 */
