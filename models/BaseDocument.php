@@ -58,8 +58,6 @@ class BaseDocument
 	{
 		$mongo = (\Phalcon\DI::getDefault())->getShared("mongo");
 
-		$object_id = $id instanceof \MongoDB\BSON\ObjectId ? $id : new \MongoDB\BSON\ObjectId($id);
-
 		try { $object = $mongo->{static::$COLLECTION}->findOne($props); }
 		catch (\Exception $e) { $object = false; }
 
