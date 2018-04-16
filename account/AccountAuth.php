@@ -85,7 +85,7 @@ trait AccountAuth
 	public function activationAction($encrypted)
 	{
 		//if user is already logged in redirect
-		$this->redirectLoggedIn(true);
+		$this->redirectLoggedIn();
 
 		try {
 			//get user entity

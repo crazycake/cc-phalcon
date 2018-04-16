@@ -34,7 +34,7 @@ trait AccountPassword
 	{
 		parent::afterExecuteRoute();
 		//if loggedIn redirect
-		$this->redirectLoggedIn(true);
+		$this->redirectLoggedIn();
 	}
 
 	/**
