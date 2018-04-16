@@ -167,8 +167,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 		if(is_null($length))
 			$length = static::$BUY_ORDER_CODE_LENGTH;
 
-		$di   = \Phalcon\DI::getDefault();
-		$code = $di->getShared("cryptify")->newAlphanumeric($length);
+		$code = (\Phalcon\DI::getDefault())->getShared("cryptify")->newAlphanumeric($length);
 		//unique constrait
 		$exists = self::findFirstByBuyOrder($code);
 

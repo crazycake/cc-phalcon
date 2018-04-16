@@ -258,13 +258,7 @@ class AppServices
 
 			// set session name (domain & cookie)
 			$session->setName($conf->namespace);
-			// start session
-			if (!$session->isStarted()) {
-
-				//session TTL
-				session_set_cookie_params($expiration);
-				$session->start();
-			}
+			$session->start();
 
 			return $session;
 		});
