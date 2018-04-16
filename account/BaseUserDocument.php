@@ -43,15 +43,14 @@ class BaseUserDocument extends \CrazyCake\Models\BaseDocument
 	 */
 	public static function getUserByEmail($email, $flag = null)
 	{
-		$mongo      = (\Phalcon\DI::getDefault())->getShared("mongo");
-		$collection = static::$COLLECTION;
+		$mongo = (\Phalcon\DI::getDefault())->getShared("mongo");
 
 		$query = ["email" => $email];
 
 		if($flag)
 			$query["flag"] = $flag;
 
-		try { $object = $mongo->{$collection}->findOne($query); }
+		try { $object = $mongo->{static::$COLLECTION}->findOne($query); }
 		catch (\Exception $e) { $object = false; }
 
 		// return reduced object

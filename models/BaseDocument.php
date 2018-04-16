@@ -39,12 +39,28 @@ class BaseDocument
 	 */
 	public static function getById($id)
 	{
-		$mongo      = (\Phalcon\DI::getDefault())->getShared("mongo");
-		$collection = static::$COLLECTION;
+		$mongo = (\Phalcon\DI::getDefault())->getShared("mongo");
 
 		$object_id = $id instanceof \MongoDB\BSON\ObjectId ? $id : new \MongoDB\BSON\ObjectId($id);
 
-		try { $object = $mongo->{$collection}->findOne(["_id" => $object_id]); }
+		try { $object = $mongo->{static::$COLLECTION}->findOne(["_id" => $object_id]); }
+		catch (\Exception $e) { $object = false; }
+
+		// return reduced object
+		return $object ? $object->jsonSerialize() : null;
+	}
+
+	/**
+	 * Get by Properties
+	 * @param Array $props - Properties (associative array)
+	 */
+	public static function getByProperties($props)
+	{
+		$mongo = (\Phalcon\DI::getDefault())->getShared("mongo");
+
+		$object_id = $id instanceof \MongoDB\BSON\ObjectId ? $id : new \MongoDB\BSON\ObjectId($id);
+
+		try { $object = $mongo->{static::$COLLECTION}->findOne($props); }
 		catch (\Exception $e) { $object = false; }
 
 		// return reduced object
@@ -59,12 +75,11 @@ class BaseDocument
 	 */
 	public static function updateProperty($id, $prop, $value)
 	{
-		$mongo      = (\Phalcon\DI::getDefault())->getShared("mongo");
-		$collection = static::$COLLECTION;
+		$mongo = (\Phalcon\DI::getDefault())->getShared("mongo");
 
 		$object_id = $id instanceof \MongoDB\BSON\ObjectId ? $id : new \MongoDB\BSON\ObjectId($id);
 
-		return $mongo->{$collection}->updateOne(["_id" => $object_id], ['$set' => ["$prop" => $value]]); 
+		return $mongo->{static::$COLLECTION}->updateOne(["_id" => $object_id], ['$set' => ["$prop" => $value]]); 
 	}
 
 	/**
@@ -74,12 +89,11 @@ class BaseDocument
 	 */
 	public static function updateProperties($id, $props)
 	{
-		$mongo      = (\Phalcon\DI::getDefault())->getShared("mongo");
-		$collection = static::$COLLECTION;
+		$mongo = (\Phalcon\DI::getDefault())->getShared("mongo");
 
 		$object_id = $id instanceof \MongoDB\BSON\ObjectId ? $id : new \MongoDB\BSON\ObjectId($id);
 
-		return $mongo->{$collection}->updateOne(["_id" => $object_id], ['$set' => $props]); 
+		return $mongo->{static::$COLLECTION}->updateOne(["_id" => $object_id], ['$set' => $props]); 
 	}
 
 	/**
@@ -88,10 +102,9 @@ class BaseDocument
 	 */
 	public static function insert($data)
 	{
-		$mongo      = (\Phalcon\DI::getDefault())->getShared("mongo");
-		$collection = static::$COLLECTION;
+		$mongo = (\Phalcon\DI::getDefault())->getShared("mongo");
 
-		$insertion = $mongo->{$collection}->insertOne($data);
+		$insertion = $mongo->{static::$COLLECTION}->insertOne($data);
 		$object_id = $insertion->getInsertedId();
 
 		return self::getById($object_id);
