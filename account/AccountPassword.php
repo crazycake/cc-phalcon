@@ -183,14 +183,14 @@ trait AccountPassword
 	/**
 	 * Updates user password
 	 * @param String $new_pass - The new password
-	 * @param String $current_pass - The current user password
+	 * @param String $current_pass - The current user password (input verification)
 	 */
 	public function updatePassword($new_pass, $current_pass)
 	{
 		try {
 			//get model class name & user
 			$entity = $this->account_password_conf["user_entity"];
-			$user   = $entity::getById($user_id);
+			$user   = $entity::getById($this->user_session["id"]);
 
 			if (empty($new_pass) && empty($current_pass))
 				return;
@@ -201,7 +201,7 @@ trait AccountPassword
 			if (strlen($new_pass) < $this->account_password_conf["password_min_length"])
 				throw new Exception($this->account_password_conf["trans"]["PASS_TOO_SHORT"]);
 
-			//check current pass
+			//check current pass input
 			if (!$this->security->checkHash($current_pass, $user->pass))
 				throw new Exception($this->account_password_conf["trans"]["PASS_DONT_MATCH"]);
 
@@ -211,6 +211,8 @@ trait AccountPassword
 
 			//saves new pass
 			$entity::updateProperty($this->user_session["id"], "pass", $this->security->hash($new_pass));
+
+			return true;
 		}
 		catch (Exception $e) {
 
