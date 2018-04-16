@@ -142,7 +142,7 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
 		if ($total <= 0)
 			return false;
 
-		return ($total >= $q) ? true : false;
+		return $total >= $q;
 	}
 
 	/**

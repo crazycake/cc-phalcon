@@ -390,6 +390,7 @@ class AppServices
 		$compiler->addFunction("in_array", "in_array");
 		//++ resizedImagePath
 		$compiler->addFunction("resized_image_path", function($resolvedArgs, $exprArgs) {
+			
 			return "CrazyCake\Helpers\Images::resizedImagePath(".$resolvedArgs.")";
 		});
 	}
