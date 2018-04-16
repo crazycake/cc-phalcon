@@ -250,10 +250,11 @@ class AppServices
 			$expiration = 3600*($conf->sessionExpiration ?? 8); //hours
 
 			$session = new \Phalcon\Session\Adapter\Redis([
-				"uniqueId" => MODULE_NAME,
-				"host"     => getenv("REDIS_HOST") ?: "redis",
-				"lifetime" => $expiration,
-				"prefix"   => "_".strtoupper($conf->namespace)."_"
+				"uniqueId"   => MODULE_NAME,
+				"host"       => getenv("REDIS_HOST") ?: "redis",
+				"lifetime"   => $expiration,
+				"prefix"     => "_".strtoupper($conf->namespace)."_",
+				"persistent" => false
 			]);
 
 			// set session name (domain & cookie)
