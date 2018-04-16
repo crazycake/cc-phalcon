@@ -62,7 +62,9 @@ class BaseDocument
 		$mongo      = (\Phalcon\DI::getDefault())->getShared("mongo");
 		$collection = static::$COLLECTION;
 
-		return $this->mongo->{$collection}->updateOne(["_id" => new \MongoDB\BSON\ObjectId($id)], ['$set' => ["$prop" => $value]]); 
+		$object_id = $id instanceof \MongoDB\BSON\ObjectId ? $id : new \MongoDB\BSON\ObjectId($id);
+		
+		return $this->mongo->{$collection}->updateOne(["_id" => $object_id], ['$set' => ["$prop" => $value]]); 
 	}
 
 	/**
@@ -75,7 +77,9 @@ class BaseDocument
 		$mongo      = (\Phalcon\DI::getDefault())->getShared("mongo");
 		$collection = static::$COLLECTION;
 
-		return $this->mongo->{$collection}->updateOne(["_id" => new \MongoDB\BSON\ObjectId($id)], ['$set' => $props]); 
+		$object_id = $id instanceof \MongoDB\BSON\ObjectId ? $id : new \MongoDB\BSON\ObjectId($id);
+
+		return $this->mongo->{$collection}->updateOne(["_id" => $object_id], ['$set' => $props]); 
 	}
 
 	/**
