@@ -102,7 +102,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 		//model relations
 		$this->hasOne("user_id", $user_entity, "id");
 
-		if(class_exists(App::getClass($object_entity))
+		if(class_exists(App::getClass($object_entity)))
 			$this->hasMany("buy_order", $object_entity, "buy_order");
 	}
 
@@ -250,7 +250,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 	 * @param String $buy_order - Checkout buyOrder
 	 * @return Object
 	 */
-	public static getByBuyOrder($buy_order)
+	public static function getByBuyOrder($buy_order)
 	{
 		return self::findFirstByBuyOrder($buy_order);
 	}
