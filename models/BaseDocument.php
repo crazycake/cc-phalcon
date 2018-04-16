@@ -63,8 +63,8 @@ class BaseDocument
 		$collection = static::$COLLECTION;
 
 		$object_id = $id instanceof \MongoDB\BSON\ObjectId ? $id : new \MongoDB\BSON\ObjectId($id);
-		
-		return $this->mongo->{$collection}->updateOne(["_id" => $object_id], ['$set' => ["$prop" => $value]]); 
+
+		return $mongo->{$collection}->updateOne(["_id" => $object_id], ['$set' => ["$prop" => $value]]); 
 	}
 
 	/**
@@ -79,7 +79,7 @@ class BaseDocument
 
 		$object_id = $id instanceof \MongoDB\BSON\ObjectId ? $id : new \MongoDB\BSON\ObjectId($id);
 
-		return $this->mongo->{$collection}->updateOne(["_id" => $object_id], ['$set' => $props]); 
+		return $mongo->{$collection}->updateOne(["_id" => $object_id], ['$set' => $props]); 
 	}
 
 	/**
