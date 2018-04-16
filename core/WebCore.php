@@ -236,9 +236,8 @@ abstract class WebCore extends BaseCore implements WebSecurity
 		$this->client->lang = $lang;
 
 		// set translation service
-		if(!is_null($this->trans)) {
+		if(!is_null($this->trans))
 			$this->trans->setLanguage($lang);
-		}
 	}
 
 	/**
