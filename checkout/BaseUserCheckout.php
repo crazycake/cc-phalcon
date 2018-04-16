@@ -239,7 +239,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 		}
 		catch (Exception $e) {
 
-			$di->getShared("logger")->error("BaseUserCheckout::newBuyOrder -> An error ocurred: ".$e->getMessage());
+			$di->getShared("logger")->error("BaseUserCheckout::newBuyOrder -> exception: ".$e->getMessage());
 			$di->getShared("db")->rollback();
 			return false;
 		}

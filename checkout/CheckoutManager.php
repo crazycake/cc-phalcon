@@ -50,7 +50,7 @@ trait CheckoutManager
 	public function initCheckoutManager($conf = [])
 	{
 		$defaults = [
-			"checkout_entity"  => "UserCheckout",
+			"checkout_entity"  => "user_checkout",
 			"default_currency" => "CLP"
 		];
 
@@ -181,7 +181,7 @@ trait CheckoutManager
 			$object_id    = $props[2];
 
 			//create object if class dont exists
-			$object = class_exists($object_entity) ? $object_entity::getById($object_id) : new \stdClass();
+			$object = class_exists($object_class) ? $object_class::getById($object_id) : new \stdClass();
 
 			//append object class
 			if (!in_array($object_class, $classes))

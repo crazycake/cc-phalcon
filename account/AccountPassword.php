@@ -45,11 +45,10 @@ trait AccountPassword
 	{
 		//defaults
 		$defaults = [
-			"user_entity"           => "User",
+			"user_entity"           => "user",
 			"redirection_uri"       => "signIn",
 			"password_uri"          => "password/new/",
 			"password_min_length"   => 8,
-			// javascript modules
 			"js_modules"            => ["passRecovery" => null],
 			"js_recaptcha_callback" => "recaptchaOnLoad"
 		];

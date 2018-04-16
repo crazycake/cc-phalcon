@@ -24,7 +24,7 @@ trait CheckoutJobs
 	public function initCheckoutJobs($conf = [])
 	{
 		$defaults = [
-			"checkout_entity" => "UserCheckout"
+			"checkout_entity" => "user_checkout"
 		];
 
 		$conf = array_merge($defaults, $conf);

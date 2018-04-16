@@ -55,12 +55,11 @@ trait AccountAuth
 	{
 		//defaults
 		$defaults = [
+			"user_entity"    => "user",
+			"user_key"       => "email",
 			"login_uri"      => "signIn",
 			"logout_uri"     => "signIn",
-			"activation_uri" => "auth/activation/",
-			//entities
-			"user_entity" => "User",
-			"user_key"    => "email"
+			"activation_uri" => "auth/activation/"
 		];
 
 		//merge confs

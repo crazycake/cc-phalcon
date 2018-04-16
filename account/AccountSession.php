@@ -46,8 +46,7 @@ trait AccountSession
 	{
 		//defaults
 		$defaults = [
-			//entities
-			"user_entity"        => "User",
+			"user_entity"        => "user",
 			"logged_in_uri"      => "account",
 			"ignored_properties" => ["pass"]
 		];

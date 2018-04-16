@@ -50,6 +50,7 @@ class QRMaker
 		else if (!is_dir($cache_path))
 			throw new Exception("QRMaker Library -> Cache path ($cache_path) not found.");
 
+		// init class
 		$this->init($log_path, $cache_path);
 
 		//load QR library
@@ -108,7 +109,7 @@ class QRMaker
 		$qr->file    = $params["savename"] ?? die("QR Library -> (generate) must set param savename");
 
 		//shape dot object
-		if (isset($params["dot_shape_class"]) && $this->_class_exists($params["dot_shape_class"])) {
+		if (!empty($params["dot_shape_class"]) && $this->_classExists($params["dot_shape_class"])) {
 
 			$class     = self::QR_LIB_NAMESPACE.$params["dot_shape_class"];
 			$dot_shape = new $class();
@@ -125,7 +126,7 @@ class QRMaker
 		$qr->setDot($dot_shape);
 
 		//frame dot object
-		if (isset($params["dot_frame_class"]) && $this->_class_exists($params["dot_frame_class"])) {
+		if (!empty($params["dot_frame_class"]) && $this->_classExists($params["dot_frame_class"])) {
 
 			$class     = self::QR_LIB_NAMESPACE.$params["dot_frame_class"];
 			$dot_frame = new $class();
@@ -140,7 +141,7 @@ class QRMaker
 		$qr->frameDot     = $dot_frame;
 
 		//main frame object
-		if (isset($params["frame_class"]) && $this->_class_exists($params["frame_class"])) {
+		if (!empty($params["frame_class"]) && $this->_classExists($params["frame_class"])) {
 
 			$class = self::QR_LIB_NAMESPACE.$params["frame_class"];
 			$frame = new $class();
@@ -158,7 +159,7 @@ class QRMaker
 		$qr->generate();
 
 		//embed image?
-		if ( isset($params["embed_logo"]) )
+		if (!empty($params["embed_logo"]))
 			$this->_embedLogo($params["savename"], $params["embed_logo"]);
 
 		return;
@@ -212,7 +213,7 @@ class QRMaker
 	 * @param String $class_name - A class name
 	 * @return String
 	 */
-	private function _class_exists($class_name)
+	private function _classExists($class_name)
 	{
 		return class_exists(self::QR_LIB_NAMESPACE.$class_name);
 	}

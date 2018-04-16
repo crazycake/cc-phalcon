@@ -39,7 +39,7 @@ trait Mailer
 	{
 		//defaults
 		$defaults = [
-			"user_entity" => "User",
+			"user_entity" => "user",
 			"from_name"   => $this->config->name
 		];
 
