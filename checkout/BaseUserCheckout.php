@@ -12,7 +12,6 @@ use Phalcon\Exception;
 use Phalcon\Validation;
 use Phalcon\Validation\Validator\InclusionIn;
 
-use CrazyCake\Phalcon\App;
 use CrazyCake\Helpers\Forms;
 
 /**
@@ -102,7 +101,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 		//model relations
 		$this->hasOne("user_id", $user_entity, "id");
 
-		if(class_exists(App::getClass($object_entity)))
+		if(class_exists("\\".$object_entity))
 			$this->hasMany("buy_order", $object_entity, "buy_order");
 	}
 
@@ -187,7 +186,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 		//get DI reference (static)
 		$di = \Phalcon\DI::getDefault();
 		//get classes
-		$entity        = App::getClass(static::entity());
+		$entity        = "\\".static::entity();
 		$object_entity = $entity."Object";
 
 		//generates buy order
@@ -263,7 +262,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 	public static function getObjects($buy_order = "")
 	{
 		//get checkouts objects class
-		$entity        = App::getClass(static::entity());
+		$entity        = "\\".static::entity();
 		$object_entity = $entity."Object";
 
 		$objects = $object_entity::find([
