@@ -181,7 +181,7 @@ trait CheckoutManager
 			$object_id    = $props[2];
 
 			//create object if class dont exists
-			$object = class_exists($object_class) ? $object_class::getById($object_id) : new \stdClass();
+			$object = class_exists($object_class) ? $object_class::getById($object_id) : null;
 
 			//append object class
 			if (!in_array($object_class, $classes))
