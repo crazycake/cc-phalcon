@@ -66,6 +66,23 @@ class BaseDocument
 	}
 
 	/**
+	 * Get Distinct Property Values
+	 * @param String $prop - property name
+	 * @param Mixed $case - case flag [UPPER, LOWER]
+	 */
+	public static function getDistinctValues($prop, $case = false)
+	{
+		$mongo = (\Phalcon\DI::getDefault())->getShared("mongo");
+
+		$values = $mongo->{static::$COLLECTION}->distinct($prop);
+
+		foreach ($values as &$v)
+			$v = empty($case) ? $v : ($case == "UPPER" ? strtoupper($v) : strtolower($v));
+
+		return $values ?? [];
+	}
+
+	/**
 	 * Updates a property
 	 * @param Int $id - The object id
 	 * @param String $prop - The property name
