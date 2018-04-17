@@ -79,7 +79,12 @@ class BaseDocument
 		foreach ($values as &$v)
 			$v = empty($case) ? $v : ($case == "UPPER" ? strtoupper($v) : strtolower($v));
 
-		return $values ?? [];
+		if(!$values)
+			return [];
+
+		sort($values);
+
+		return $values;
 	}
 
 	/**
@@ -138,5 +143,19 @@ class BaseDocument
 			$date = new \DateTime($date);
 
 		return new \MongoDB\BSON\UTCDateTime($date->getTimestamp() * 1000);
+	}
+
+	/**
+	 * Recursively flatten multidimensional array to one dimension (helper)
+	 * @param Array $array - An input array
+	 * @return Array
+	 */
+	public static function flattenArray($array) {
+
+		return !is_array($array) ? [$array] : array_reduce($array, function ($c, $a) {
+
+			return array_merge($c, static::flattenArray($a));
+
+		}, []);
 	}
 }
