@@ -130,10 +130,12 @@ trait CheckoutManager
 				throw new Exception("Checkout already processed, buy order: ".$buy_order);
 
 			//1) update status of checkout
-			$checkout->update(["state" => "success"]);
+			$entity::updateState($buy_order, "success");
 
 			//reduce object
-			$checkout = $checkout->reduce();
+			if(method_exists($checkout, "reduce"))
+				$checkout = $checkout->reduce();
+
 			//set objects
 			$checkout->objects = $entity::getObjects($buy_order);
 

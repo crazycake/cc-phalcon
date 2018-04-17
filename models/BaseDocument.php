@@ -36,14 +36,16 @@ class BaseDocument
 	/**
 	 * Get by Id
 	 * @param Mixed $id - The document ID (String or ObjectId)
+	 * @param String $key - The key index (defaults to 'id')
 	 */
-	public static function getById($id)
+	public static function getById($id, $key = "_id")
 	{
 		$mongo = (\Phalcon\DI::getDefault())->getShared("mongo");
 
-		$object_id = $id instanceof \MongoDB\BSON\ObjectId ? $id : new \MongoDB\BSON\ObjectId($id);
+		if($key == "_id")
+			$id = $id instanceof \MongoDB\BSON\ObjectId ? $id : new \MongoDB\BSON\ObjectId($id);
 
-		try { $object = $mongo->{static::$COLLECTION}->findOne(["_id" => $object_id]); }
+		try { $object = $mongo->{static::$COLLECTION}->findOne(["$key" => $id]); }
 		catch (\Exception $e) { $object = false; }
 
 		// return reduced object
@@ -89,31 +91,35 @@ class BaseDocument
 
 	/**
 	 * Updates a property
-	 * @param Int $id - The object id
+	 * @param Int $id - The object id value
 	 * @param String $prop - The property name
 	 * @param Mixed $value - The value
+	 * @param String $key - The key index
 	 */
-	public static function updateProperty($id, $prop, $value)
+	public static function updateProperty($id, $prop, $value, $key = "_id")
 	{
 		$mongo = (\Phalcon\DI::getDefault())->getShared("mongo");
 
-		$object_id = $id instanceof \MongoDB\BSON\ObjectId ? $id : new \MongoDB\BSON\ObjectId($id);
+		if($key == "_id")
+			$id = $id instanceof \MongoDB\BSON\ObjectId ? $id : new \MongoDB\BSON\ObjectId($id);
 
-		return $mongo->{static::$COLLECTION}->updateOne(["_id" => $object_id], ['$set' => ["$prop" => $value]]); 
+		return $mongo->{static::$COLLECTION}->updateOne([$key => $id], ['$set' => ["$prop" => $value]]); 
 	}
 
 	/**
 	 * Updates an array of properties
-	 * @param Int $id - The object id
+	 * @param Int $id - The object id value
 	 * @param Array $prop - The properties
+	 * @param String $key - The key index
 	 */
-	public static function updateProperties($id, $props)
+	public static function updateProperties($id, $props, $key = "_id")
 	{
 		$mongo = (\Phalcon\DI::getDefault())->getShared("mongo");
 
-		$object_id = $id instanceof \MongoDB\BSON\ObjectId ? $id : new \MongoDB\BSON\ObjectId($id);
+		if($key == "_id")
+			$id = $id instanceof \MongoDB\BSON\ObjectId ? $id : new \MongoDB\BSON\ObjectId($id);
 
-		return $mongo->{static::$COLLECTION}->updateOne(["_id" => $object_id], ['$set' => $props]); 
+		return $mongo->{static::$COLLECTION}->updateOne([$key => $id, ['$set' => $props]); 
 	}
 
 	/**

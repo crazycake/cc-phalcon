@@ -74,11 +74,12 @@ class Base extends \Phalcon\Mvc\Model
 	/**
 	 * Find Object by ID
 	 * @param Int $id - The object ID
+	 * @param String $key - The key index (defaults to 'id')
 	 * @return Object
 	 */
-	public static function getById($id = 0)
+	public static function getById($id = 0, $key = "id")
 	{
-		return self::findFirst(["id = ?1", "bind" => [1 => $id]]);
+		return self::findFirst(["$key = ?1", "bind" => [1 => $id]]);
 	}
 
 	/**
@@ -185,13 +186,14 @@ class Base extends \Phalcon\Mvc\Model
 	 * @param Int $id - The object id
 	 * @param String $prop - The property name
 	 * @param Mixed $value - The value
+	 * @param String $key - The key index
 	 */
-	public static function updateProperty($id, $prop, $value)
+	public static function updateProperty($id, $prop, $value, $key = "id")
 	{
 		$entity = static::entity();
 
 		return self::executePhql(
-			"UPDATE $entity SET $prop = ?1 WHERE id = ?0",
+			"UPDATE $entity SET $prop = ?1 WHERE $key = ?0",
 			[(int)$id, $value]
 		); 
 	}

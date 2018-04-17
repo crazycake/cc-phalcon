@@ -299,6 +299,21 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 	}
 
 	/**
+	 * Updates checkout state
+	 * @param String $buy_order - Checkout buyOrder
+	 * @param String $state - Input state
+	 */
+	public static function updateState($buy_order, $state)
+	{
+		//get class
+		$entity = "\\".static::entity();
+
+		if(in_array($state, static::$STATES))
+			$entity::updateProperty($buy_order, "state", $state, "buy_order");
+	}
+
+
+	/**
 	 * Deletes expired pending checkouts.
 	 * Requires Carbon library
 	 * @return Int
