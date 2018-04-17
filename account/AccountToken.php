@@ -74,7 +74,7 @@ trait AccountToken
 		$key = "TOKEN_$type_$user_id";
 
 		$redis->set($key, $token);
-		$redis->expire($key, 10); //$expires * 86400
+		$redis->expire($key, $expires * 86400);
 		$redis->close();
 
 		return $token;
