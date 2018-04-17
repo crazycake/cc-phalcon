@@ -193,7 +193,7 @@ class Base extends \Phalcon\Mvc\Model
 
 		return self::executePhql(
 			"UPDATE $entity SET $prop = ?1 WHERE $key = ?0",
-			[(int)$id, $value]
+			[$id, $value]
 		); 
 	}
 

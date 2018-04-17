@@ -87,7 +87,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 	 * States possible values
 	 * @var Array
 	 */
-	static $STATES = ["pending", "failed", "overturn", "success"];
+	public static $STATES = ["pending", "failed", "overturn", "success"];
 
 	/**
 	 * Initializer
@@ -120,7 +120,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 	public function beforeValidationOnCreate()
 	{
 		//set default state
-		$this->state = self::$STATES[0];
+		$this->state = static::$STATES[0];
 		//set server local time
 		$this->local_time = date("Y-m-d H:i:s");
 	}
@@ -134,8 +134,8 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 
 		//inclusion
 		$validator->add("state", new InclusionIn([
-			"domain"  => self::$STATES,
-			"message" => "Invalid state, supported: ".implode(", ", self::$STATES)
+			"domain"  => static::$STATES,
+			"message" => "Invalid state, supported: ".implode(", ", static::$STATES)
 		]));
 
 		return $this->validate($validator);
