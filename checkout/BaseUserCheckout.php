@@ -143,20 +143,6 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 	/** ------------------------------------------- § ------------------------------------------------ **/
 
 	/**
-	 * Get the last user checkout
-	 * @param Int $user_id - The User ID
-	 * @param String $state - The checkout state property
-	 * @return Mixed
-	 */
-	public static function getLast($user_id = 0, $state = "pending")
-	{
-		$conditions = "user_id = ?1 AND state = ?2";
-		$binding    = [1 => $user_id, 2 => $state];
-
-		return self::findFirst([$conditions, "bind" => $binding, "order" => "local_time DESC"]);
-	}
-
-	/**
 	 * Generates a random code for a buy order
 	 * @param Int $length - The buy order string length
 	 * @return String
@@ -299,6 +285,20 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 	}
 
 	/**
+	 * Get the last user checkout
+	 * @param Int $user_id - The User ID
+	 * @param String $state - The checkout state property
+	 * @return Mixed
+	 */
+	public static function getLast($user_id = 0, $state = "pending")
+	{
+		$conditions = "user_id = ?1 AND state = ?2";
+		$binding    = [1 => $user_id, 2 => $state];
+
+		return self::findFirst([$conditions, "bind" => $binding, "order" => "local_time DESC"]);
+	}
+
+	/**
 	 * Updates checkout state
 	 * @param String $buy_order - Checkout buyOrder
 	 * @param String $state - Input state
@@ -311,7 +311,6 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 		if(in_array($state, static::$STATES))
 			$entity::updateProperty($buy_order, "state", $state, "buy_order");
 	}
-
 
 	/**
 	 * Deletes expired pending checkouts.

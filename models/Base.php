@@ -74,12 +74,11 @@ class Base extends \Phalcon\Mvc\Model
 	/**
 	 * Find Object by ID
 	 * @param Int $id - The object ID
-	 * @param String $key - The key index (defaults to 'id')
 	 * @return Object
 	 */
-	public static function getById($id = 0, $key = "id")
+	public static function getById($id = 0)
 	{
-		return self::findFirst(["$key = ?1", "bind" => [1 => $id]]);
+		return self::findFirst(["id = ?1", "bind" => [1 => $id]]);
 	}
 
 	/**

@@ -36,16 +36,14 @@ class BaseDocument
 	/**
 	 * Get by Id
 	 * @param Mixed $id - The document ID (String or ObjectId)
-	 * @param String $key - The key index (defaults to 'id')
 	 */
-	public static function getById($id, $key = "_id")
+	public static function getById($id)
 	{
 		$mongo = (\Phalcon\DI::getDefault())->getShared("mongo");
 
-		if($key == "_id")
-			$id = $id instanceof \MongoDB\BSON\ObjectId ? $id : new \MongoDB\BSON\ObjectId($id);
+		$id = $id instanceof \MongoDB\BSON\ObjectId ? $id : new \MongoDB\BSON\ObjectId($id);
 
-		try { $object = $mongo->{static::$COLLECTION}->findOne(["$key" => $id]); }
+		try { $object = $mongo->{static::$COLLECTION}->findOne(["_id" => $id]); }
 		catch (\Exception $e) { $object = false; }
 
 		// return reduced object
@@ -119,7 +117,7 @@ class BaseDocument
 		if($key == "_id")
 			$id = $id instanceof \MongoDB\BSON\ObjectId ? $id : new \MongoDB\BSON\ObjectId($id);
 
-		return $mongo->{static::$COLLECTION}->updateOne([$key => $id, ['$set' => $props]); 
+		return $mongo->{static::$COLLECTION}->updateOne([$key => $id], ['$set' => $props]); 
 	}
 
 	/**
