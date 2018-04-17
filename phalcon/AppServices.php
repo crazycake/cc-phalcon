@@ -254,7 +254,8 @@ class AppServices
 				"host"       => getenv("REDIS_HOST") ?: "redis",
 				"lifetime"   => $expiration,
 				"prefix"     => "_".strtoupper($conf->namespace)."_",
-				"persistent" => false
+				"persistent" => false,
+				"index"      => 1
 			]);
 
 			// set session name (domain & cookie)
