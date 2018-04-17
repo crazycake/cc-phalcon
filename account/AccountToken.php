@@ -71,8 +71,10 @@ trait AccountToken
 		$token   = (\Phalcon\DI::getDefault())->getShared("cryptify")->newHash(static::$TOKEN_LENGTH);
 		$expires = static::$TOKEN_EXPIRES[$type];
 
-		$redis->set("TOKEN_$type_$user_id", $token);
-		$redis->expire($user_id."#".$type, 10); //$expires * 86400
+		$key = "TOKEN_$type_$user_id";
+
+		$redis->set($key, $token);
+		$redis->expire($key, 10); //$expires * 86400
 		$redis->close();
 
 		return $token;
