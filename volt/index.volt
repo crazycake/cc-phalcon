@@ -13,13 +13,23 @@
 		{# viewport #}
 		{% if client.isMobile %}
 			<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no,minimal-ui" />
+
 			{# apple metas #}
 			<meta name="apple-mobile-web-app-capable" content="yes" />
 			<meta name="apple-mobile-web-app-status-bar-style" content="black" />
 			<meta name="apple-mobile-web-app-title" content="{{ config.name }}" />
+
 			{# android metas #}
 			<meta name="mobile-web-app-capable" content="yes" />
 			<meta name="application-name" content="{{ config.name }}" />
+			{# PWA metas #}
+			{% if metas['theme_color'] is not empty %}
+				<meta name="theme-color" content="{{ metas['theme_color'] }}" />
+			{% endif %}
+
+			{% if metas['manifest'] is not empty %}
+				<link rel="manifest" href="{{ url('manifest.json') }}" />
+			{% endif %}
 
 		{% else %}
 			<meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
@@ -31,16 +41,16 @@
 		{% endif %}
 
 		{# description meta #}
-		<meta name="description" content="{{ html_description is defined ? html_description : config.name  }}" />
+		<meta name="description" content="{{ metas['description'] is not empty ? metas['description'] : config.name  }}" />
 
 		{# author meta #}
-		<meta name="author" content="{{ html_author is defined ? html_author : 'CrazyCake Technologies' }}" />
+		<meta name="author" content="{{ metas['author'] is not empty ? metas['author'] : 'CrazyCake Technologies' }}" />
 
 		{# robots meta #}
-		<meta name="robots" content="{{ html_disallow_robots is defined ? 'noindex,nofollow' : 'index,follow' }}" />
+		<meta name="robots" content="{{ metas['disallow_robots'] is not empty ? 'noindex,nofollow' : 'index,follow' }}" />
 
 		{# page title #}
-		<title>{{ html_title is defined ? html_title : config.name }}</title>
+		<title>{{ metas['title'] is not empty ? metas['title'] : config.name }}</title>
 
 		{# favicons #}
 		<link rel="icon" type="image/png" href="{{ static_url('images/favicons/favicon.png') }}" />
@@ -48,12 +58,12 @@
 
 		{# Windows 8 #}
 		{% if client.platform == "Windows" %}
-			<meta name="msapplication-TileColor" content="#efefef" />
+			<meta name="msapplication-TileColor" content="{{ metas['ms_tile_color'] is not empty ? metas['ms_tile_color'] : '#EDEDED' }}" />
 			<meta name="msapplication-TileImage" content="{{ static_url('images/favicons/mstile.png') }}" />
 		{% endif %}
 
 		{# custom metas #}
-		{% if html_metas is defined %}
+		{% if metas['custom'] is not empty %}
 			{{ partial("templates/metas") }}
 		{% endif %}
 
@@ -75,7 +85,6 @@
 		{% else %}
 			<script> console.log('Core -> (warning) javascript APP or UA scope vars are not defined.'); </script>
 		{% endif %}
-
 
 		{# Google Tag Manager [HEAD] #}
 		{% if config.google.gtmUA is not empty %}
@@ -156,7 +165,7 @@
 
 		{# debug: output render time #}
 		<script>
-			console.log('App {{ config.version }} - Phalcon <?php echo \Phalcon\Version::get()." [".CORE_VERSION."], rendered in ".number_format((float)(microtime(true) - APP_ST), 3, ".", "")." secs."; ?>');
+			console.log('App {{ config.version }} - Engine <?php echo \Phalcon\Version::get()." [".CORE_VERSION."], rendered in ".number_format((float)(microtime(true) - APP_ST), 3, ".", "")." secs."; ?>');
 		</script>
 
 	</body>
