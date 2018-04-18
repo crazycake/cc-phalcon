@@ -76,10 +76,8 @@ trait AccountPassword
 			//handle the encrypted data with parent controller
 			self::handleEncryptedValidation($encrypted);
 
-			//view vars
-			$this->view->setVars([
-				"hash" => $encrypted
-			]);
+			//send hash to view
+			$this->view->setVar("hash", $encrypted);
 
 			//load js modules
 			$this->loadJsModules($this->account_password_conf["js_modules"]);
