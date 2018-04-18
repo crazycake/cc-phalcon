@@ -22,7 +22,10 @@
 			{# android metas #}
 			<meta name="mobile-web-app-capable" content="yes" />
 			<meta name="application-name" content="{{ config.name }}" />
-			{# PWA manifest #}
+			{# PWA metas #}
+			{% if metas['theme_color'] is not empty %}
+				<meta name="theme-color" content="{{ metas['theme_color'] }}" />
+			{% endif %}
 			{% if metas['manifest'] is not empty %}
 				<link rel="manifest" href="{{ url('manifest.json') }}" />
 			{% endif %}
