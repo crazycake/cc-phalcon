@@ -78,8 +78,7 @@ trait AccountPassword
 
 			//view vars
 			$this->view->setVars([
-				"html_title" => $this->account_password_conf["trans"]["CREATE_PASS"],
-				"hash"       => $encrypted
+				"hash" => $encrypted
 			]);
 
 			//load js modules
