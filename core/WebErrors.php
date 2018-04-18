@@ -20,7 +20,7 @@ trait WebErrors
 		parent::afterExecuteRoute();
 
 		//disable robots
-		$this->view->setVar("html_disallow_robots", true);
+		$this->view->setVar("metas", ["disallow_robots" => true]);
 	}
 
 	/* --------------------------------------------------- § -------------------------------------------------------- */
