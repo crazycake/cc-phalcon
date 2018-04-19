@@ -23,7 +23,7 @@ scriptHelp() {
 	echo -e "\033[95m build: build JS & CSS bundles and compile translations. \033[0m"
 	echo -e "\033[95m trans: Update translations po file. \033[0m"
 	echo -e "\033[95m php: Runs app php CLI. \033[0m"
-	echo -e "\033[95m clean: Cleans cache & logs (storage folder).\033[0m"
+	echo -e "\033[95m clean: Cleans cache, logs and rev assets (js, css).\033[0m"
 	echo -e "\033[97m > admin commands \033[0m"
 	echo -e "\033[95m core: installs/updates core package (requires cc-phalcon project symlink). \033[0m"
 	echo -e "\033[95m aws-sync <bucket> <profile>: Syncs S3 CDN bucket with app assets (requires AWS CLI).\033[0m"
@@ -43,7 +43,7 @@ watch)
 build)
 
 	# msg
-	echo -e "\033[95mGulp build tasks... \033[0m"
+	echo -e "\033[95mGulp build task... \033[0m"
 	# gulp build task
 	gulp build
 
@@ -74,6 +74,8 @@ php)
 clean)
 
 	docker exec -it $APP_NAME bash -c 'find storage/cache storage/logs -type f \( ! -iname ".*" \) -print0 | xargs -0 rm'
+
+	docker exec -it $APP_NAME bash -c 'find public/assets -type f \( -iname "*.rev.*" \) -print0 | xargs -0 rm'
 
 	echo -e "\033[92mDone! \033[0m"
 	;;
