@@ -36,7 +36,7 @@ trait CrudDocument
 		//default configurations
 		$defaults = [
 			"collection"  => "",
-			"fetch_limit" => 300,
+			"fetch_limit" => 300
 		];
 
 		//merge confs
@@ -44,7 +44,7 @@ trait CrudDocument
 
 		//set default fields?
 		if(empty($conf["collection"]))
-			throw new \Exception("Crud requires a collection argument.");
+			throw new Exception("Crud requires a collection argument.");
 
 		//init uploader?
 		if(isset($conf["uploader"]))
@@ -149,7 +149,16 @@ trait CrudDocument
 		//insert
 		if(is_null($object_id)) {
 
-			$object    = $this->mongo->{$this->crud_conf["collection"]}->insertOne($payload);
+			try { $object = $this->mongo->{$this->crud_conf["collection"]}->insertOne($payload); }
+			catch(\Exception | Exception $e) {
+
+				if(method_exists($this, "onSaveException"))
+					$this->onSaveException($e, $payload);
+
+				$this->logger->error("CrudDocument::saveAction -> insert exception: ".$e->getMessage());
+				$this->jsonResponse(500);
+			}
+
 			$object_id = $object->getInsertedId();
 		}
 		//update
@@ -170,7 +179,7 @@ trait CrudDocument
 
 		//get saved object
 		try { $object = $this->mongo->{$this->crud_conf["collection"]}->findOne(["_id" => $object_id]); }
-		catch(Exception $e) { $object = null; }
+		catch(\Exception | Exception $e) { $object = null; }
 
 		//auto-move uploaded files? (UploaderController)
 		if(!empty($this->crud_conf["uploader"])) {
@@ -203,7 +212,7 @@ trait CrudDocument
 		$id = (new \Phalcon\Filter())->sanitize($id, "string");
 		
 		try { $object = $this->mongo->{$this->crud_conf["collection"]}->findOne(["_id" => (new \MongoDB\BSON\ObjectId($id))]); }
-		catch(Exception $e) { $object = null; }
+		catch(\Exception | Exception $e) { $object = null; }
 
 		//optional listener
 		if(method_exists($this, "onGet"))
