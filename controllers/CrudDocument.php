@@ -152,10 +152,11 @@ trait CrudDocument
 			try { $object = $this->mongo->{$this->crud_conf["collection"]}->insertOne($payload); }
 			catch(\Exception | Exception $e) {
 
+				$this->logger->error("CrudDocument::saveAction -> insert exception: ".$e->getMessage());
+
 				if(method_exists($this, "onSaveException"))
 					$this->onSaveException($e, $payload);
 
-				$this->logger->error("CrudDocument::saveAction -> insert exception: ".$e->getMessage());
 				$this->jsonResponse(500);
 			}
 
@@ -173,7 +174,14 @@ trait CrudDocument
 					continue;
 				}
 
-				$this->mongo->{$this->crud_conf["collection"]}->updateOne(["_id" => $object_id], ['$set' => ["$key" => $value]]);
+				try { $this->mongo->{$this->crud_conf["collection"]}->updateOne(["_id" => $object_id], ['$set' => ["$key" => $value]]); }
+				catch(\Exception | Exception $e) {
+
+					$this->logger->error("CrudDocument::saveAction -> update exception: ".$e->getMessage());
+					
+					if(method_exists($this, "onSaveException"))
+						$this->onSaveException($e, $payload);
+				}
 			}
 		}
 
