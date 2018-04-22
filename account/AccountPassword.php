@@ -45,12 +45,11 @@ trait AccountPassword
 	{
 		//defaults
 		$defaults = [
-			"user_entity"           => "user",
-			"redirection_uri"       => "signIn",
-			"password_uri"          => "password/new/",
-			"password_min_length"   => 8,
-			"js_modules"            => ["passRecovery" => null],
-			"js_recaptcha_callback" => "recaptchaOnLoad"
+			"user_entity"         => "user",
+			"redirection_uri"     => "signIn",
+			"password_uri"        => "password/new/",
+			"password_min_length" => 8,
+			"js_modules"          => ["passRecovery" => null],
 		];
 
 		//merge confs

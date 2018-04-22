@@ -33,7 +33,7 @@ trait Translations
 		$data = [
 			"ACCOUNT" => [
 				"AUTH_FAILED"        => "El correo ó contraseña no son válidos.",
-				"STATE_PENDING"      => "Te hemos enviado un correo de activación. Haz click <a href=\"#0\">aquí</a> si no has recibido este correo.",
+				"STATE_PENDING"      => "Te hemos enviado un correo de activación. Haz click <a href=\"./#activation\">aquí</a> si no has recibido este correo.",
 				"STATE_DISABLED"     => "Esta cuenta se encuentra desactivada, por favor comunícate con nuestro equipo.",
 				"NOT_FOUND"          => "Esta cuenta no se encuentra registrada o no ha sido activada.",
 				"EMAIL_EXISTS"       => "El correo {email} ya se encuentra registrado, ingresa con tu correo <a href=\"{link}\">aquí</a>.",
