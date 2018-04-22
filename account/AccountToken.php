@@ -53,7 +53,7 @@ trait AccountToken
 	{
 		$redis = self::newRedisClient();
 
-		$token = $redis->get("TOKEN_$type_$user_id");
+		$token = $redis->get("TOKEN_".$type."_".$user_id);
 		$redis->close();
 		
 		return $token;
@@ -71,7 +71,7 @@ trait AccountToken
 		$token   = (\Phalcon\DI::getDefault())->getShared("cryptify")->newHash(static::$TOKEN_LENGTH);
 		$expires = static::$TOKEN_EXPIRES[$type];
 
-		$key = "TOKEN_$type_$user_id";
+		$key = "TOKEN_".$type."_".$user_id;
 
 		$redis->set($key, $token);
 		$redis->expire($key, $expires * 86400);
@@ -109,7 +109,7 @@ trait AccountToken
 	{
 		$redis = self::newRedisClient();
 
-		$redis->del("TOKEN_$type_$user_id");
+		$redis->del("TOKEN_".$type."_".$user_id);
 		$redis->close();
 	}
 
