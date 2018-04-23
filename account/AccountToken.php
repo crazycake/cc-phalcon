@@ -94,9 +94,9 @@ trait AccountToken
 			$token = self::newToken($user_id, $type);
 
 		//append encrypted data
-		$encrypted = (\Phalcon\DI::getDefault())->getShared("cryptify")->encryptData($user_id."#".$type."#".$token);
+		$hash = (\Phalcon\DI::getDefault())->getShared("cryptify")->encryptData($user_id."#".$type."#".$token);
 
-		return $encrypted;
+		return $hash;
 	}
 
 	/**
@@ -114,16 +114,16 @@ trait AccountToken
 	}
 
 	/**
-	 * Validates user & temp-token data. Input data is encrypted with cryptify lib. Returns decrypted data.
-	 * @param String $encrypted - The encrypted data
+	 * Validates user & temp-token data. Hash is an encrypted strig with user_id & token.
+	 * @param String $hash - The hash data
 	 * @return Boolean
 	 */
-	public static function handleEncryptedValidation($encrypted)
+	public static function validateHash($hash = "")
 	{
-		if (empty($encrypted))
-			throw new Exception("got empty encrypted data");
+		if (empty($hash))
+			throw new Exception("got empty hash");
 
-		$data = (\Phalcon\DI::getDefault())->getShared("cryptify")->decryptData($encrypted, "#");
+		$data = (\Phalcon\DI::getDefault())->getShared("cryptify")->decryptData($hash, "#");
 
 		//validate data (user_id, token_type and token)
 		if (count($data) < 3)

@@ -78,10 +78,10 @@ trait AccountAuth
 	/* --------------------------------------------------- § -------------------------------------------------------- */
 
 	/**
-	 * Handler - Activation link handler, can dispatch to a view
-	 * @param String $encrypted - The encrypted data
+	 * Action - Activation link handler, can dispatch to a view
+	 * @param String $hash - The encrypted hash
 	 */
-	public function activationAction($encrypted)
+	public function activationAction($hash = "")
 	{
 		//if user is already logged in redirect
 		$this->redirectLoggedIn();
@@ -90,8 +90,8 @@ trait AccountAuth
 			//get user entity
 			$entity = $this->account_auth_conf["user_entity"];
 
-			//handle the encrypted data with parent controller
-			list($user_id, $token_type, $token) = self::handleEncryptedValidation($encrypted);
+			//handle the hash data with parent controller
+			list($user_id, $token_type, $token) = self::validateHash($hash);
 
 			//check user pending flag
 			$user = $entity::getById($user_id);
@@ -114,7 +114,7 @@ trait AccountAuth
 		}
 		catch (Exception $e) {
 
-			$data = $encrypted ? $this->cryptify->decryptData($encrypted) : "invalid hash";
+			$data = $hash ? $this->cryptify->decryptData($hash) : "invalid hash";
 
 			$this->logger->error("AccountAuth::activationAction -> Error in account activation, decrypted data [$data]: ".$e->getMessage());
 			$this->dispatcher->forward(["controller" => "error", "action" => "expired"]);
@@ -122,7 +122,7 @@ trait AccountAuth
 	}
 
 	/**
-	 * Handler - Logout
+	 * Action - Logout
 	 */
 	public function logoutAction()
 	{

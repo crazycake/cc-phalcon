@@ -47,9 +47,8 @@ trait AccountPassword
 		$defaults = [
 			"user_entity"         => "user",
 			"redirection_uri"     => "signIn",
-			"password_uri"        => "password/new/",
+			"password_uri"        => "password",
 			"password_min_length" => 8,
-			"js_modules"          => ["passRecovery" => null],
 		];
 
 		//merge confs
@@ -64,31 +63,6 @@ trait AccountPassword
 	}
 
 	/* --------------------------------------------------- § -------------------------------------------------------- */
-
-	/**
-	 * View - Set New password action (vista donde se crea una nueva contraseña)
-	 * @param String $encrypted - The encrypted data
-	 */
-	public function newAction($encrypted = null)
-	{
-		try {
-			//handle the encrypted data with parent controller
-			self::handleEncryptedValidation($encrypted);
-
-			//send hash to view
-			$this->view->setVar("hash", $encrypted);
-
-			//load js modules
-			$this->loadJsModules($this->account_password_conf["js_modules"]);
-		}
-		catch (Exception $e) {
-
-			$this->logger->error("AccountPassword::newAction -> Error in account activation [$encrypted]: ".$e->getMessage());
-
-			$this->dispatcher->forward(["controller" => "error", "action" => "expired"]);
-			$this->dispatcher->dispatch();
-		}
-	}
 
 	/**
 	 * Send Recovery password email message with further instructions
@@ -131,22 +105,48 @@ trait AccountPassword
 	}
 
 	/**
+	 * View - Set New password action (vista donde se crea una nueva contraseña)
+	 * @param String $hash - The encrypted data as hash
+	 */
+	public function newPasswordView($hash = null)
+	{
+		//if loggedIn redirect to account
+		$this->redirectLoggedIn();
+
+		try {
+			//handle the encrypted data with parent controller
+			self::validateHash($hash);
+
+			//saves hash in session
+			$this->session->set("passwordHash", $hash);
+		}
+		catch (Exception $e) {
+
+			$this->logger->error("AccountPassword::newPasswordView -> exception in new password view [$hash]: ".$e->getMessage());
+
+			$this->dispatcher->forward(["controller" => "error", "action" => "expired"]);
+			$this->dispatcher->dispatch();
+		}
+	}
+
+	/**
 	 * Saves a new password set by the user in the post-recovery password view
-	 * @param String $hash - Encrypted token (hash)
 	 * @param String $password - The input password
 	 */
-	public function saveNewPassword($hash, $password)
+	public function saveNewPassword($password)
 	{
 		try {
 
-			list($user_id, $token_type, $token) = self::handleEncryptedValidation($hash);
+			$hash = $this->session->get("passwordHash");
+
+			list($user_id, $token_type, $token) = self::validateHash($hash);
 
 			//get user
 			$entity = $this->account_password_conf["user_entity"];
 			$user   = $entity::getById($user_id);
 
 			if (!$user)
-				throw new Exception("got an invalid user [$user_id] when validating encrypted data.");
+				throw new Exception("got an invalid user [$user_id] when validating hash.");
 
 			//pass length
 			if (strlen($password) < $this->account_password_conf["password_min_length"])
