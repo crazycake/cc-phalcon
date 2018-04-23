@@ -225,9 +225,6 @@ trait AccountAuth
 			$this->jsonResponse(400);
 		}
 
-		//set a flash message to show on account controller
-		$this->flash->success(str_replace("{email}", $user->email, $this->account_auth_conf["trans"]["ACTIVATION_PENDING"]));
-
 		//hash sensitive data
 		$token_chain = self::newTokenChainCrypt($user->id ?? (string)$user->_id, "activation");
 
@@ -238,15 +235,15 @@ trait AccountAuth
 			"url"   => $this->baseUrl($this->account_auth_conf["activation_uri"].$token_chain)
 		]);
 
+		//set a flash message to show on account controller
+		$message = str_replace("{email}", $user->email, $this->account_auth_conf["trans"]["ACTIVATION_PENDING"]);
+		$this->flash->success($message);
+
 		//redirect/response
 		if (MODULE_NAME == "api")
-			$this->jsonResponse(200, ["message" => $this->account_auth_conf["trans"]["ACTIVATION_PENDING"]]);
+			$this->jsonResponse(200, ["message" => $message]);
 
-		else if($this->request->isAjax())
-			$this->jsonResponse(200, ["redirect" => $this->account_auth_conf["logout_uri"]]);
-
-		// default behaviour
-		$this->redirectTo($this->account_auth_conf["logout_uri"]);
+		$this->jsonResponse(200, ["redirect" => $this->account_auth_conf["logout_uri"]]);
 	}
 
 	/**
@@ -254,13 +251,13 @@ trait AccountAuth
 	 * @param String $email - The user email
 	 * @param String $recaptcha - The reCaptcha challenge
 	 */
-	public function sendActivationMailMessage($email, $recaptcha)
+	public function sendActivationMailMessage($email, $recaptcha = "")
 	{
 		//google reCaptcha helper
 		$recaptcher = new \CrazyCake\Helpers\ReCaptcha($this->config->google->reCaptchaKey);
 
 		//check valid reCaptcha
-		if (empty($email) || empty($recaptcha) || !$recaptcher->isValid($recaptcha)) {
+		if (empty($email) || !$recaptcher->isValid($recaptcha)) {
 			//show error message
 			return $this->jsonResponse(400, $this->account_auth_conf["trans"]["RECAPTCHA_FAILED"]);
 		}
@@ -280,14 +277,14 @@ trait AccountAuth
 		$this->sendMailMessage("accountActivation", [
 			"user"  => $user,
 			"email" => $user->email,
-			"url"   => $this->baseUrl($this->account_pass_conf["activation_uri"].$token_chain)
+			"url"   => $this->baseUrl($this->account_auth_conf["activation_uri"].$token_chain)
 		]);
 
-		//set payload
-		$payload = str_replace("{email}", $email, $this->account_auth_conf["trans"]["ACTIVATION_PENDING"]);
+		//set a flash message to show on account controller
+		$message = str_replace("{email}", $user->email, $this->account_auth_conf["trans"]["ACTIVATION_PENDING"]);
 
-		//send JSON response
-		$this->jsonResponse(200, $payload);
+		//redirect/response
+		$this->jsonResponse(200, ["message" => $message]);
 	}
 
 	/**
