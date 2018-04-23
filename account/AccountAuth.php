@@ -237,7 +237,7 @@ trait AccountAuth
 
 		//set a flash message to show on account controller
 		$message = str_replace("{email}", $user->email, $this->account_auth_conf["trans"]["ACTIVATION_PENDING"]);
-		$this->flash->success($message);
+		$this->flash->success(str_replace($user->email, "<i>".$user->email."</i>", $message));
 
 		//redirect/response
 		if (MODULE_NAME == "api")

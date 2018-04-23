@@ -47,7 +47,7 @@ trait AccountPassword
 		$defaults = [
 			"user_entity"         => "user",
 			"redirection_uri"     => "signIn",
-			"password_uri"        => "password",
+			"password_uri"        => "password/create/{hash}/#/new",
 			"password_min_length" => 8,
 		];
 
@@ -87,13 +87,14 @@ trait AccountPassword
 			$this->jsonResponse(400, $this->account_password_conf["trans"]["NOT_FOUND"]);
 
 		//hash sensitive data
-		$token_chain = self::newTokenChainCrypt($user->id ?? (string)$user->_id, "pass");
+		$token_chain  = self::newTokenChainCrypt($user->id ?? (string)$user->_id, "pass");
+		$password_uri = str_replace("{hash}", $token_chain, $this->account_password_conf["password_uri"]);
 
 		//sends the message
 		$this->sendMailMessage("passwordRecovery", [
 			"user"       => $user,
 			"email"      => $user->email,
-			"url"        => $this->baseUrl($this->account_password_conf["password_uri"].$token_chain),
+			"url"        => $this->baseUrl($password_uri),
 			"expiration" => self::$TOKEN_EXPIRES["pass"]
 		]);
 
