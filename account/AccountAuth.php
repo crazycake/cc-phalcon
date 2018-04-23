@@ -268,7 +268,7 @@ trait AccountAuth
 
 		//check if user exists is a pending account
 		if (!$user)
-			$this->jsonResponse(400, $this->account_auth_conf["trans"]["ACCOUNT_NOT_FOUND"]);
+			$this->jsonResponse(400, $this->account_auth_conf["trans"]["NOT_FOUND"]);
 
 		//hash sensitive data
 		$token_chain = self::newTokenChainCrypt($user->id ?? (string)$user->_id, "activation");

@@ -110,7 +110,7 @@ trait AccountPassword
 
 		//if user not exists, send message
 		if (!$user)
-			$this->jsonResponse(400, $this->account_password_conf["trans"]["ACCOUNT_NOT_FOUND"]);
+			$this->jsonResponse(400, $this->account_password_conf["trans"]["NOT_FOUND"]);
 
 		//hash sensitive data
 		$token_chain = self::newTokenChainCrypt($user->id ?? (string)$user->_id, "pass");
