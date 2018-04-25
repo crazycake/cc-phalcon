@@ -162,7 +162,7 @@ trait AccountAuth
 		if($this->account_auth_conf["recaptcha_login"]) {
 
 			$recaptcher = new ReCaptcha($this->config->google->reCaptchaKey);
-			$recaptcha  = $data["g-recaptcha-response"];
+			$recaptcha  = $data["g-recaptcha-response"] ?? null;
 
 			//check valid reCaptcha
 			if (empty($recaptcha) || !$recaptcher->isValid($recaptcha))
