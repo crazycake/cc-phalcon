@@ -55,11 +55,12 @@ trait AccountAuth
 	{
 		//defaults
 		$defaults = [
-			"user_entity"    => "user",
-			"user_key"       => "email",
-			"login_uri"      => "signIn",
-			"logout_uri"     => "signIn",
-			"activation_uri" => "auth/activation/"
+			"user_entity"     => "user",
+			"user_key"        => "email",
+			"login_uri"       => "signIn",
+			"logout_uri"      => "signIn",
+			"activation_uri"  => "auth/activation/",
+			"recaptcha_login" => false
 		];
 
 		//merge confs
@@ -156,6 +157,17 @@ trait AccountAuth
 			$user = $entity::getUserByEmail($data["email"]);
 		else
 			$user = $this->getLoginUser($data); //must implement
+
+		//recaptcha challenge?
+		if($this->account_auth_conf["recaptcha_login"]) {
+
+			$recaptcher = new ReCaptcha($this->config->google->reCaptchaKey);
+			$recaptcha  = $data["g-recaptcha-response"];
+
+			//check valid reCaptcha
+			if (empty($recaptcha) || !$recaptcher->isValid($recaptcha))
+				return $this->jsonResponse(400, $this->account_auth_conf["trans"]["RECAPTCHA_FAILED"]);
+		}
 
 		//check user & given hash with the one stored (wrong combination)
 		if (!$user || !$this->security->checkHash($data["pass"], $user->pass))
@@ -254,7 +266,7 @@ trait AccountAuth
 	public function sendActivationMailMessage($email, $recaptcha = "")
 	{
 		//google reCaptcha helper
-		$recaptcher = new \CrazyCake\Helpers\ReCaptcha($this->config->google->reCaptchaKey);
+		$recaptcher = new ReCaptcha($this->config->google->reCaptchaKey);
 
 		//check valid reCaptcha
 		if (empty($email) || !$recaptcher->isValid($recaptcha)) {
