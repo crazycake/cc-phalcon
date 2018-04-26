@@ -252,7 +252,7 @@ trait Mailer
 			$att->setDisposition("attachment");
 			$att->setContentId($attachment["id"] ?? uniqid());
 			$att->setType($attachment["type"] ?? null);
-			$att->setContent($attachment["binary"]);
+			$att->setContent(base64_encode($attachment["binary"]));
 			$att->setFilename($attachment["name"]);
 
 			$mail->addAttachment($att);
