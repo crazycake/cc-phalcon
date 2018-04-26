@@ -255,7 +255,7 @@ trait Mailer
 			$att->setContent($attachment["binary"]);
 			$att->setFilename($attachment["name"]);
 
-			$mail->addAttachment($at);
+			$mail->addAttachment($att);
 		}
 	}
 }
