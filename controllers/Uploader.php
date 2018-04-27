@@ -460,7 +460,7 @@ trait Uploader
 					throw new Exception(str_replace(["{file}", "{h}"], [$file_name, $size["mh"]], $this->uploader_conf["trans"]["IMG_MIN_HEIGHT"]));
 
 				//ratio
-				if(isset($size["r"]) && round($image->getWidth()/$image->getHeight(), 2) != eval("return round(".$size["r"].", 2);"))
+				if(isset($size["r"]) && round($image->getWidth()/$image->getHeight(), 2) != round($size["r"], 2))
 					throw new Exception(str_replace(["{file}", "{r}"], [$file_name, $size["r"]], $this->uploader_conf["trans"]["IMG_RATIO"]));
 			}
 		}
