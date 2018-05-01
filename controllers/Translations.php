@@ -61,7 +61,7 @@ trait Translations
 				"IMG_HEIGHT"     => "La imagen {file} tiene un alto distinto de {h}px.",
 				"IMG_MIN_WIDTH"  => "La imagen {file} debe tener un ancho de al menos {w}px.",
 				"IMG_MIN_HEIGHT" => "La imagen {file} debe tener una altura de al menos {h}px.",
-				"IMG_RATIO"      => "La imagen {file} debe tener un ratio de {r}."
+				"IMG_RATIO"      => "La imagen {file} debe tener un ratio {r}."
 			]
 		];
 
