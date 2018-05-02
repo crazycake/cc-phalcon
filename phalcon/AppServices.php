@@ -164,10 +164,8 @@ class AppServices
 			$this->_setMongoService($di);
 
 		//mysql adapter
-		if(isset($this->config->mysqlService) && !$this->config->mysqlService)
-			return;
-
-		$this->_setMysqlService($di);
+		if(!empty($this->config->mysqlService))
+			$this->_setMysqlService($di);
 	}
 
 	/**
