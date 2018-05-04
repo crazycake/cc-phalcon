@@ -40,7 +40,7 @@
 		{% endif %}
 
 		{# description meta #}
-		<meta name="description" content="{{ metas['description'] is not empty ? metas['description'] : config.name  }}" />
+		<meta name="description" content="{{ metas['description'] is not empty ? metas['description'] : config.name }}" />
 
 		{# author meta #}
 		<meta name="author" content="{{ metas['author'] is not empty ? metas['author'] : 'CrazyCake Technologies' }}" />
