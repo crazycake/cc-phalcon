@@ -152,6 +152,7 @@ trait AccountAuth
 		//validate and filter request params data, second params are the required fields
 		$data = $this->handleRequest($params, "POST");
 
+
 		//find this user
 		if($this->account_auth_conf["user_key"] == "email")
 			$user = $entity::getUserByEmail($data["email"]);
