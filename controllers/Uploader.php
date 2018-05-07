@@ -79,7 +79,8 @@ trait Uploader
 			$this->uploader_conf["root_path"] = self::$ROOT_UPLOAD_PATH;
 
 		//set upload save path
-		$this->uploader_conf["path"] = $this->uploader_conf["root_path"]."temp/".$subdir."/";
+		$this->uploader_conf["path"]     = $this->uploader_conf["root_path"]."temp/".$subdir."/";
+		$this->uploader_conf["path_url"] = $this->baseUrl("uploads/temp/".$subdir."/");
 
 		//create dir if not exists
 		if(!is_dir($this->uploader_conf["path"]))
@@ -137,7 +138,7 @@ trait Uploader
 			$namespace = $new_file["key"]."_".$new_file["tag"]."_".round(microtime(true) * 1000);
 			$save_name = $namespace.".".$new_file["ext"];
 			//append resource url
-			$new_file["url"]            = $this->baseUrl("uploads/temp/".$save_name);
+			$new_file["url"]            = $this->uploader_conf["path_url"].$save_name;
 			$new_file["save_name"]      = $save_name;
 			$new_file["save_namespace"] = $namespace;
 
