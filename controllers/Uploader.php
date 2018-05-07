@@ -161,7 +161,7 @@ trait Uploader
 		//response
 		$this->jsonResponse(200, [
 			"uploaded" => $uploaded,
-			"messages" => $messages,
+			"messages" => $messages
 		]);
 	}
 
@@ -177,16 +177,26 @@ trait Uploader
 			"uploaded_file" => "array"
 		], "POST");
 
-		$file = $data["uploaded_file"];
-
 		//get file path
-		$file_path = $this->uploader_conf["path"].$file["save_name"];
+		$file_path = $this->uploader_conf["path"].$data["uploaded_file"]["save_name"];
 
 		//check if exists
 		if (is_file($file_path))
 			unlink($file_path);
 
 		$this->jsonResponse(200, ["file" => $file_path]);
+	}
+
+	/**
+	 * Ajax - Removes all files in uploader folder
+	 */
+	public function removeAllUploadedFilesAction()
+	{
+		$this->onlyAjax();
+
+		$this->cleanUploadFolder();
+
+		$this->jsonResponse(200);
 	}
 
 	/**
@@ -203,7 +213,6 @@ trait Uploader
 
 		//cleans folder
 		array_map('unlink', glob($path."*"));
-		@rmdir($path);
 	}
 
 	/**
