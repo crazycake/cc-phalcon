@@ -413,6 +413,8 @@ trait Uploader
 			"mime"    => $file_mimetype,
 			"message" => false
 		];
+
+		if($new_file["extension"] == "jpeg") $new_file["extension"] == "jpg";
 		//s($this->uploader_conf);
 
 		try {
