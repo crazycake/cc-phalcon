@@ -188,7 +188,7 @@ trait Uploader
 	}
 
 	/**
-	 * Ajax - Removes all files in uploader folder
+	 * Ajax Action - Removes all files in uploader folder
 	 */
 	public function removeAllUploadedFilesAction()
 	{
@@ -212,7 +212,7 @@ trait Uploader
 			return;
 
 		//cleans folder
-		array_map('unlink', glob($path."*"));
+		array_map(function($f) { @unlink($f); }, glob($path."*"));
 	}
 
 	/**
