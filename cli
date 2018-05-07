@@ -57,14 +57,16 @@ case "$1" in
 		wget -O box.phar $BOX_PHAR_URL
 	fi
 
+	VER=$(git rev-parse --short HEAD)
+
 	# append version to autoload file
-	sed -i "6s/.*/DEFINE('CORE_VERSION', '$(git rev-parse --short HEAD)');/" autoload.php
+	sed -i "6s/.*/DEFINE('CORE_VERSION', '$VER');/" autoload.php
 
 	cd $PROJECT_PATH
 	# build, use -v for verbose
 	php box.phar build
 	# task done!
-	echo -e "\033[92mBuilded \033[0m"
+	echo -e "\033[92mBuilded $VER \033[0m"
 	;;
 
 	tree)
