@@ -394,6 +394,14 @@ trait Uploader
 		$file_name       = $file->getName();
 		$file_name_array = explode(".", $file_name);
 		$file_ext        = strtolower(end($file_name_array));
+
+		// change special extensions
+		if($file_ext == "jpeg") {
+
+			$file_name = str_replace(".jpeg", ".jpg", $file_name);
+			$file_ext = "jpg";
+		}
+
 		$file_cname      = str_ireplace(".$file_ext", "", $file_name); //ignore case
 		$file_mimetype   = $file->getRealType(); //real file MIME type
 		$file_size       = (float)($file->getSize()); //set to KB unit
@@ -413,9 +421,6 @@ trait Uploader
 			"mime"    => $file_mimetype,
 			"message" => false
 		];
-
-		if($new_file["extension"] == "jpeg") $new_file["extension"] == "jpg";
-		//s($this->uploader_conf);
 
 		try {
 
