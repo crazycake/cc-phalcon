@@ -47,7 +47,7 @@ class BaseUserDocument extends \CrazyCake\Models\BaseDocument
 
 		$query = ["email" => $email];
 
-		if($flag)
+		if ($flag)
 			$query["flag"] = $flag;
 
 		try { $object = $mongo->{static::$COLLECTION}->findOne($query); }

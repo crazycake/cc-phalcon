@@ -35,7 +35,7 @@ class BaseResultset extends Resultset
 	 */
 	public static function reduceResultset($resultset = null, $props = null) {
 
-		if(!$resultset)
+		if (!$resultset)
 			return [];
 
 		//objects

@@ -118,7 +118,7 @@ trait AccountSession
 		$user_session["auth"] = true;
 
 		//mongo ID special case
-		if(!empty($user_session["_id"])) {
+		if (!empty($user_session["_id"])) {
 
 			$user_session["id"] = current($user_session["_id"]);
 			unset($user_session["_id"]);
@@ -243,7 +243,7 @@ trait AccountSession
 	 */
 	private function _setUserSessionForView($user_session = [])
 	{
-		if($this->request->isAjax() || !$this->di->has("view"))
+		if ($this->request->isAjax() || !$this->di->has("view"))
 			return;
 
 		//filter some sensitive props?

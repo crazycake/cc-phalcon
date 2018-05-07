@@ -67,7 +67,7 @@ class TaskCore extends Task
 		if (!is_dir($assets_path))
 			$this->colorize("Assets path not found: $assets_path", "ERROR", true);
 
-		if(!is_file($assets_path."app.min.js") || !is_file($assets_path."app.min.css"))
+		if (!is_file($assets_path."app.min.js") || !is_file($assets_path."app.min.css"))
 			$this->colorize("Missing minified assets files.", "ERROR", true);
 
 		//decimal version
@@ -79,14 +79,14 @@ class TaskCore extends Task
 
 		foreach ($files as $f) {
 
-			if(strpos($f, ".rev.") === false)
+			if (strpos($f, ".rev.") === false)
 				continue;
 
 			//keep 1st & 2nd-last versions only, get ony decimals
 			preg_match_all('/\d+/', $f, $file_ver);
 			$file_ver = $file_ver[0];
 
-			if((int)$ver - (int)$file_ver[0] <= 1)
+			if ((int)$ver - (int)$file_ver[0] <= 1)
 				continue;
 
 			$this->colorize("Removing asset $assets_path$f", "NOTE");
@@ -98,11 +98,11 @@ class TaskCore extends Task
 		//APP CSS
 		copy($assets_path."app.min.css", $assets_path."app-".$ver.".rev.css");
 		//LAZY CSS
-		if(is_file($assets_path."lazy.min.css"))
+		if (is_file($assets_path."lazy.min.css"))
 			copy($assets_path."lazy.min.css", $assets_path."lazy-".$ver.".rev.css");
 
 		//remove min files
-		foreach(glob($assets_path."*.min.*") as $f)
+		foreach (glob($assets_path."*.min.*") as $f)
 			unlink($f);
 
 		//print output
@@ -247,10 +247,10 @@ class TaskCore extends Task
 
 			$path = realpath($dir."/".$value);
 
-			if($value == "." || $value == "..")
+			if ($value == "." || $value == "..")
 				continue;
 
-			if(is_dir($path))
+			if (is_dir($path))
 				$this->getDirectoryFiles($path, $results);
 			else
 				$results[] = $path;

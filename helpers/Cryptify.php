@@ -145,7 +145,7 @@ class Cryptify
 	 */
 	public function newHash($length = 20, $seed = "")
 	{
-		if(empty($seed))
+		if (empty($seed))
 			$seed = uniqid();
 
 		$code = "";

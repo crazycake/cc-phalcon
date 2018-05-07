@@ -69,7 +69,7 @@ trait AccountAuth
 		//append class prefix
 		$conf["user_entity"] = App::getClass($conf["user_entity"]);
 
-		if(empty($conf["trans"]))
+		if (empty($conf["trans"]))
 			$conf["trans"] = \TranslationController::getCoreTranslations("account");
 
 		//set configuration
@@ -146,7 +146,7 @@ trait AccountAuth
 		$entity = $this->account_auth_conf["user_entity"];
 		$params = ["pass" => "string"];
 
-		if($this->account_auth_conf["user_key"] == "email") 
+		if ($this->account_auth_conf["user_key"] == "email") 
 			$params = ["email" => "email"];
 
 		//validate and filter request params data, second params are the required fields
@@ -154,13 +154,13 @@ trait AccountAuth
 
 
 		//find this user
-		if($this->account_auth_conf["user_key"] == "email")
+		if ($this->account_auth_conf["user_key"] == "email")
 			$user = $entity::getUserByEmail($data["email"]);
 		else
 			$user = $this->getLoginUser($data); //must implement
 
 		//recaptcha challenge?
-		if($this->account_auth_conf["recaptcha_login"]) {
+		if ($this->account_auth_conf["recaptcha_login"]) {
 
 			$recaptcher = new ReCaptcha($this->config->google->reCaptchaKey);
 			$recaptcha  = $data["g-recaptcha-response"] ?? null;
@@ -207,11 +207,11 @@ trait AccountAuth
 		$entity = $this->account_auth_conf["user_entity"];
 
 		//check valid email
-		if(!filter_var($data["email"], FILTER_VALIDATE_EMAIL))
+		if (!filter_var($data["email"], FILTER_VALIDATE_EMAIL))
 			$this->jsonResponse(400, $this->account_auth_conf["trans"]["INVALID_EMAIL"]);
 
 		// validate if user exists
-		if($entity::getUserByEmail($data["email"])) {
+		if ($entity::getUserByEmail($data["email"])) {
 
 			$msg = str_replace("{email}", $data["email"], $this->account_auth_conf["trans"]["EMAIL_EXISTS"]);
 			$msg = str_replace("{link}", $this->account_auth_conf["login_uri"], $msg);
@@ -225,7 +225,7 @@ trait AccountAuth
 		$data["flag"] = "pending";
 
 		//event trigger
-		if(method_exists($this, "beforeRegisterUser"))
+		if (method_exists($this, "beforeRegisterUser"))
 			$this->beforeRegisterUser($data);
 		
 		//insert user
@@ -315,7 +315,7 @@ trait AccountAuth
 
 			$token = self::getToken($data["token"], "access");
 
-			if(!$token)
+			if (!$token)
 				throw new Exception("Invalid token");
 
 			return $token;

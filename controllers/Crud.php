@@ -77,17 +77,17 @@ trait Crud
 		$conf = array_merge($defaults, $conf);
 
 		//set default fields?
-		if(empty($conf["entity"]) || empty($conf["dfields"]) || empty($conf["sfields"]))
+		if (empty($conf["entity"]) || empty($conf["dfields"]) || empty($conf["sfields"]))
 			throw new \Exception("Crud requires entity, dfields & sfields options.");
 
 		//set entity in lower case
 		$conf["entity_lower"] = \Phalcon\Text::uncamelize($conf["entity"]);
 
-		if(empty($conf["entity_component"]))
+		if (empty($conf["entity_component"]))
 			$conf["entity_component"] = $conf["entity_lower"];
 
 		//init uploader?
-		if(isset($conf["uploader"]))
+		if (isset($conf["uploader"]))
 			$this->initUploader($conf["uploader"]);
 
 		//finally set conf
@@ -135,7 +135,7 @@ trait Crud
 		//default order
 		$query->orderBy($this->_fieldToPhql($this->crud_conf["pk"])." DESC");
 
-		if(!empty($data["sort"])) {
+		if (!empty($data["sort"])) {
 			//parse sort data from js
 			$sort  = explode("|", $data["sort"], 2);
 			$order = $this->_fieldToPhql($sort[0])." ".strtoupper($sort[1]);
@@ -144,7 +144,7 @@ trait Crud
 		}
 
 		//filter param for search
-		if(!empty($data["filter"])) {
+		if (!empty($data["filter"])) {
 
 			//create filter syntax
 			$search_fields = $this->crud_conf["sfields"] ?? [$this->crud_conf["pk"]];
@@ -156,7 +156,7 @@ trait Crud
 				//s($condition);
 
 				//1st condition
-				if(empty($index)) {
+				if (empty($index)) {
 					$query->where($condition);
 					continue;
 				}
@@ -175,7 +175,7 @@ trait Crud
 		$r = $this->_getPaginationData($query, $data);
 
 		//optional listener
-		if(method_exists($this, "onResultset"))
+		if (method_exists($this, "onResultset"))
 			$r->output->data = $this->onResultset($r->resultset);
 
 		//output json response
@@ -207,11 +207,11 @@ trait Crud
 			$data = array_map(function($prop) { return $prop == "" ? null : $prop; }, $data);
 
 			//save object
-			if(!$object->save($data))
+			if (!$object->save($data))
 				throw new \Exception($object->messages(true));
 
 			//move uploaded files? (UploaderController)
-			if(!empty($this->crud_conf["uploader"])) {
+			if (!empty($this->crud_conf["uploader"])) {
 
 				$uri = $this->crud_conf["entity_lower"]."/".$object->{$this->crud_conf["pk"]}."/";
 
@@ -253,7 +253,7 @@ trait Crud
 			$object       = $object_class::findFirst([$this->crud_conf["pk"]." = '".$data[$this->crud_conf["pk"]]."'"]);
 
 			//check object exists
-			if(!$object)
+			if (!$object)
 				throw new \Exception("Objeto no encontrado");
 
 			//consider only attributes from object (phalcon metadata)
@@ -271,11 +271,11 @@ trait Crud
 			$new_data = array_map(function($prop) { return $prop == "" ? null : $prop; }, $new_data);
 
 			//update values
-			if(!$object->update($new_data))
+			if (!$object->update($new_data))
 				throw new \Exception($object->messages(true));
 
 			//move uploaded files? (UploaderController)
-			if(!empty($this->crud_conf["uploader"])) {
+			if (!empty($this->crud_conf["uploader"])) {
 
 				$uri = $this->crud_conf["entity_lower"]."/".$object->{$this->crud_conf["pk"]}."/";
 
@@ -285,7 +285,7 @@ trait Crud
 			//append non-model data
 			foreach ($data as $key => $value) {
 
-				if(isset($new_data[$key]))
+				if (isset($new_data[$key]))
 					continue;
 
 				$new_data[$key] = $value;
@@ -320,16 +320,16 @@ trait Crud
 		$object = $object_class::findFirst([$this->crud_conf["pk"]." = '".$data[$this->crud_conf["pk"]]."'"]);
 
 		//orm deletion
-		if($object) {
+		if ($object) {
 
-			if(method_exists($this, "onBeforeDelete"))
+			if (method_exists($this, "onBeforeDelete"))
 				$this->onBeforeDelete($object);
 
 			$object->delete();
 		}
 
 		//delete upload files?
-		if(isset($this->crud_conf["uploader"])) {
+		if (isset($this->crud_conf["uploader"])) {
 
 			$path = Uploader::$ROOT_UPLOAD_PATH.$this->crud_conf["entity_lower"]."/".$data[$this->crud_conf["pk"]]."/";
 			$this->cleanUploadFolder($path);
@@ -351,7 +351,7 @@ trait Crud
 		$namespaces = explode(".", $field);
 
 		// one level
-		if(count($namespaces) <= 1)
+		if (count($namespaces) <= 1)
 			return $this->crud_conf["entity"].".".$field;
 
 		//two or more levels
@@ -389,7 +389,7 @@ trait Crud
 		$before = ($current_page <= 1) ? 1 : $current_page - 1;
 		$next   = ($current_page + 1) >= $last ? $last : $current_page + 1;
 
-		if($to > $total) $to = $total;
+		if ($to > $total) $to = $total;
 
 		//filtered resultset
 		$resultset = $query->limit($per_page, $from - 1)
@@ -411,7 +411,7 @@ trait Crud
 			"data"          => $resultset->jsonSerialize()
 		];
 
-		if(APP_ENV != "production")
+		if (APP_ENV != "production")
 			$output->phql = $query->getPhql();
 
 		return (object)["output" => $output, "resultset" => $resultset];
@@ -424,7 +424,7 @@ trait Crud
 	private function _mergePayload(&$data)
 	{
 		//merge payload if set
-		if(!isset($data["payload"]))
+		if (!isset($data["payload"]))
 			return;
 
 		$payload = json_decode($data["payload"], true);

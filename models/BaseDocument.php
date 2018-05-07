@@ -79,7 +79,7 @@ class BaseDocument
 		foreach ($values as &$v)
 			$v = empty($case) ? $v : ($case == "UPPER" ? strtoupper($v) : strtolower($v));
 
-		if(!$values)
+		if (!$values)
 			return [];
 
 		sort($values);
@@ -98,7 +98,7 @@ class BaseDocument
 	{
 		$mongo = (\Phalcon\DI::getDefault())->getShared("mongo");
 
-		if($key == "_id")
+		if ($key == "_id")
 			$id = $id instanceof \MongoDB\BSON\ObjectId ? $id : new \MongoDB\BSON\ObjectId($id);
 
 		return $mongo->{static::$COLLECTION}->updateOne([$key => $id], ['$set' => ["$prop" => $value]]); 
@@ -114,7 +114,7 @@ class BaseDocument
 	{
 		$mongo = (\Phalcon\DI::getDefault())->getShared("mongo");
 
-		if($key == "_id")
+		if ($key == "_id")
 			$id = $id instanceof \MongoDB\BSON\ObjectId ? $id : new \MongoDB\BSON\ObjectId($id);
 
 		return $mongo->{static::$COLLECTION}->updateOne([$key => $id], ['$set' => $props]); 
@@ -140,10 +140,10 @@ class BaseDocument
 	 */
 	public static function toIsoDate($date = null)
 	{
-		if(!$date)
+		if (!$date)
 			$date = new \DateTime();
 
-		else if(is_string($date))
+		else if (is_string($date))
 			$date = new \DateTime($date);
 
 		return new \MongoDB\BSON\UTCDateTime($date->getTimestamp() * 1000);

@@ -94,7 +94,7 @@ trait CheckoutManager
 			//set buy order
 			$checkout->buy_order = $checkout_orm->buy_order;
 
-			if(method_exists($this, "onAfterBuyOrderCreation"))
+			if (method_exists($this, "onAfterBuyOrderCreation"))
 				$this->onAfterBuyOrderCreation($checkout);
 
 			//send JSON response
@@ -126,14 +126,14 @@ trait CheckoutManager
 				throw new Exception("checkout not found! buy order: ".$buy_order);
 
 			//skip already process for dev
-			if($checkout->state == "success")
+			if ($checkout->state == "success")
 				throw new Exception("Checkout already processed, buy order: ".$buy_order);
 
 			//1) update status of checkout
 			$entity::updateState($buy_order, "success");
 
 			//reduce object
-			if(method_exists($checkout, "reduce"))
+			if (method_exists($checkout, "reduce"))
 				$checkout = $checkout->reduce();
 
 			//set objects
@@ -193,7 +193,7 @@ trait CheckoutManager
 			$total_q += $q;
 
 			//update amount
-			if(!empty($object->price))
+			if (!empty($object->price))
 				$checkout->amount += $q * $object->price;
 
 			//create new checkout object without ORM props

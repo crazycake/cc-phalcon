@@ -56,7 +56,7 @@ trait AccountPassword
 
 		$conf["user_entity"] = App::getClass($conf["user_entity"]);
 
-		if(empty($conf["trans"]))
+		if (empty($conf["trans"]))
 			$conf["trans"] = \TranslationController::getCoreTranslations("account");
 
 		$this->account_password_conf = $conf;

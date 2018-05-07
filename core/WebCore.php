@@ -66,7 +66,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 		$this->_setCSRF();
 
 		//for session initializer
-		if(method_exists($this, "onBeforeInitialize"))
+		if (method_exists($this, "onBeforeInitialize"))
 			$this->onBeforeInitialize();
 	}
 
@@ -114,7 +114,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 			$this->redirectToNotFound();
 		}
 
-		if($this->request->isAjax())
+		if ($this->request->isAjax())
 			return false;
 
 		$this->response->redirect($url, true);
@@ -186,7 +186,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 		$https  = getenv("APP_HTTPS_ONLY") ?: false;
 		$scheme = $this->getScheme();
 
-		if(!$https || $scheme == "https")
+		if (!$https || $scheme == "https")
 			return;
 
 		//force redirect for non-https request
@@ -236,7 +236,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 		$this->client->lang = $lang;
 
 		// set translation service
-		if(!is_null($this->trans))
+		if (!is_null($this->trans))
 			$this->trans->setLanguage($lang);
 	}
 
@@ -308,7 +308,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 		$this->setAppJsProperties($js_app);
 
 		//css lazy loading properties
-		if(!empty($js_app->cssLazy))
+		if (!empty($js_app->cssLazy))
 			$js_app->cssLazy = str_replace("/app", "/lazy", $this->view->getVar("css_url"));
 
 		//set translations?

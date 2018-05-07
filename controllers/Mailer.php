@@ -49,7 +49,7 @@ trait Mailer
 		//append class prefixes
 		$conf["user_entity"] = App::getClass($conf["user_entity"]);
 
-		if(empty($conf["trans"]))
+		if (empty($conf["trans"]))
 			$conf["trans"] = \TranslationController::getCoreTranslations("mailer");
 
 		$this->mailer_conf = $conf;
@@ -137,7 +137,7 @@ trait Mailer
 		$html = $this->simpleView->render("mailing/$template", $this->mailer_conf);
 
 		//apply a HTML inliner if a stylesheet is present
-		if(is_file(self::$MAILER_CSS_FILE)) {
+		if (is_file(self::$MAILER_CSS_FILE)) {
 
 			$emogrifier = new Emogrifier($html, file_get_contents(self::$MAILER_CSS_FILE));
 			$emogrifier->addExcludedSelector("head");
@@ -160,7 +160,7 @@ trait Mailer
 
 		$admin_emails = !empty($this->config->emails->admins) ? (array)$this->config->emails->admins : $this->config->emails->support;
 
-		if(!is_array($admin_emails))
+		if (!is_array($admin_emails))
 			$admin_emails = [$admin_emails];
 
 		$data["email"]   = $this->config->emails->sender;
@@ -212,7 +212,7 @@ trait Mailer
 		//add recipients
 		foreach ($recipients as $i => $email) {
 
-			if(empty($i)) continue;
+			if (empty($i)) continue;
 
 			$mail->personalization[0]->addTo(new \SendGrid\Email(null, $email));
 		}
@@ -239,12 +239,12 @@ trait Mailer
 	 */
 	private function _parseAttachments($attachments = null, &$mail)
 	{
-		if(empty($attachments))
+		if (empty($attachments))
 			return;
 
 		foreach ($attachments as $attachment) {
 
-			if(empty($attachment["name"]) || empty($attachment["binary"]))
+			if (empty($attachment["name"]) || empty($attachment["binary"]))
 				continue;
 
 			//set attachment

@@ -68,13 +68,13 @@ abstract class BaseCore extends Controller
 		$host_parts = explode(":", $host);
 
 		//check if host already has binded a port
-		if(count($host_parts) > 1)
+		if (count($host_parts) > 1)
 			$host = current($host_parts);
 
 		$host_url = empty($port) ? $host : $host.":".$port;
 
 		//remove default port if set
-		if(substr($host_url, -3) == ":80")
+		if (substr($host_url, -3) == ":80")
 			$host_url = substr($host_url, 0, strlen($host_url) - 3);
 
 		return $host_url;
@@ -186,7 +186,7 @@ abstract class BaseCore extends Controller
 		//set anoymous function for send response
 		$sendResponse = function($code) {
 
-			if(MODULE_NAME == "api" || $this->request->isAjax())
+			if (MODULE_NAME == "api" || $this->request->isAjax())
 				$this->jsonResponse($code);
 
 			//otherwise redirect to 400 page
@@ -231,11 +231,11 @@ abstract class BaseCore extends Controller
 
 			$value = $this->_validateField($data, $field, $data_type);
 
-			if($value === false)
+			if ($value === false)
 				return $sendResponse(404);
 
 			//optional fields
-			if($field[0] == "@") {
+			if ($field[0] == "@") {
 				unset($data[$field]);
 				$field = substr($field, 1);
 			}

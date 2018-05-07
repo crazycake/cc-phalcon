@@ -53,7 +53,7 @@ trait Requester
 			// merge options with parsed URL
 			$url_pieces = parse_url($options["base_url"].$options["uri"]);
 
-			if(!empty($url_pieces))
+			if (!empty($url_pieces))
 				  $options = array_merge($options, $url_pieces);
 
 			$this->logger->debug("Requester::newRequest -> Options: ".json_encode($options, JSON_UNESCAPED_SLASHES));

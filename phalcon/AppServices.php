@@ -72,7 +72,7 @@ class AppServices
 		$this->_setSessionService($di);
 		$this->_setViewService($di);
 
-		if(MODULE_NAME != "api")
+		if (MODULE_NAME != "api")
 			$this->_setBrowserServices($di);
 
 		return $di;
@@ -115,7 +115,7 @@ class AppServices
 			$log_file = date("d-m-Y");
 
 			// special case for cli (log is not saved as 'httpd user' as default)
-			if(MODULE_NAME == "cli")
+			if (MODULE_NAME == "cli")
 				$log_file = "cli_".$log_file;
 
 			$logger = new \Phalcon\Logger\Adapter\File(STORAGE_PATH."logs/".$log_file.".log");
@@ -160,11 +160,11 @@ class AppServices
 	private function _setDatabaseServices(&$di)
 	{
 		//mongo adapter
-		if(!empty($this->config->mongoService))
+		if (!empty($this->config->mongoService))
 			$this->_setMongoService($di);
 
 		//mysql adapter
-		if(!empty($this->config->mysqlService))
+		if (!empty($this->config->mysqlService))
 			$this->_setMysqlService($di);
 	}
 
@@ -350,7 +350,7 @@ class AppServices
 		});
 
 		// skip api for view service
-		if(MODULE_NAME == "api")
+		if (MODULE_NAME == "api")
 			return;
 
 		// set view service

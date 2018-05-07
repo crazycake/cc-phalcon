@@ -69,7 +69,7 @@ trait CheckoutCurrency
 		$value = $redis->get(self::$REDIS_KEY_USD_CLP_VALUE);
 
 		//set value if is empty
-		if(empty($value) && $new_value = $this->apiChileanCurrencyRequest())
+		if (empty($value) && $new_value = $this->apiChileanCurrencyRequest())
 			$redis->set(self::$REDIS_KEY_USD_CLP_VALUE, $new_value);
 
 		$value = $redis->get(self::$REDIS_KEY_USD_CLP_VALUE) * $amount;
@@ -119,7 +119,7 @@ trait CheckoutCurrency
 			$api_url = self::$API_CURRENCY_URL."&currencies=CLP&source=USD&format=1";
 
 			// print output for CLI
-			if(method_exists($this, "colorize"))
+			if (method_exists($this, "colorize"))
 				$this->colorize("Requesting: ".$api_url);
 
 			// curl request
@@ -140,14 +140,14 @@ trait CheckoutCurrency
 			$value = (float)($data->quotes->USDCLP);
 
 			// print output for CLI
-			if(method_exists($this, "colorize"))
+			if (method_exists($this, "colorize"))
 				$this->colorize("Saving value in Redis: ".$value);
 
 			return $value;
 		}
 		catch (\Exception | Exception $e) { $msg = $e->getMessage(); }
 
-		if(method_exists($this, "colorize"))
+		if (method_exists($this, "colorize"))
 			$this->colorize($msg, "ERROR");
 
 		return null;

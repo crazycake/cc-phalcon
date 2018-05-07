@@ -79,7 +79,7 @@ trait AppLoader
 			//set port?
 			$port = getenv("APP_PORT") ?: "";
 
-			if(!empty($port))
+			if (!empty($port))
 				$base_url = str_replace(":$port", "", $base_url).":$port";
 
 			// add missing slash?

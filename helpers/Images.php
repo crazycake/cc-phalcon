@@ -28,7 +28,7 @@ class Images
 		$new_url = preg_replace("/\\.([0-9a-z]+)(?:[\\?#]|$)/i", "_".$key.".$1?", $path);
 
 		//remove single question marks
-		if(substr($new_url, -1) == "?")
+		if (substr($new_url, -1) == "?")
 			$new_url = substr($new_url, 0, strlen($new_url) - 1);
 
 		return $new_url;
@@ -42,7 +42,7 @@ class Images
 	 */
 	public static function resize($filepath = "", $conf = [])
 	{
-		if(!is_file($filepath))
+		if (!is_file($filepath))
 			throw new Exception("Images::resize -> File not found: $filepath");
 
 		//make sure object is an array in all depths
@@ -66,25 +66,25 @@ class Images
 
 				//++ Resizes (keeping aspect ratio)
 				// percentage
-				if(isset($resize["p"]))
+				if (isset($resize["p"]))
 					$image->resize($image->getWidth()*$resize["p"]/100, $image->getHeight()*$resize["p"]/100);
 				// width px, keep ratio
-				else if(isset($resize["w"]))
+				else if (isset($resize["w"]))
 					$image->resize($resize["w"], $resize["w"] / $ratio);
 				// height px, keep ratio
-				else if(isset($resize["h"]))
+				else if (isset($resize["h"]))
 					$image->resize($resize["h"] * $ratio, $resize["h"]);
 
 				//++ Modifiers
 
 				// crop
-				if(isset($resize["c"]))
+				if (isset($resize["c"]))
 					$image->crop($resize["c"][0], $resize["c"][1], $resize["c"][2], $resize["c"][3]);
 				// blur
-				if(isset($resize["b"]))
+				if (isset($resize["b"]))
 					$image->blur($resize["b"]);
 				// rotate
-				if(isset($resize["r"]))
+				if (isset($resize["r"]))
 					$image->rotate($resize["r"]);
 
 				// save image (default 100%)

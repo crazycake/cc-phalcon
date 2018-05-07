@@ -114,7 +114,7 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
 
 			$orm_object = !class_exists($object_class) ?: $object_class::getById($obj->object_id);
 
-			if(!$orm_object || empty($obj->quantity))
+			if (!$orm_object || empty($obj->quantity))
 				continue;
 
 			$current_quantity = $orm_object->quantity;

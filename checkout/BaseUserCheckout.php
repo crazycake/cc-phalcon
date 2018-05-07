@@ -101,7 +101,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 		//model relations
 		$this->hasOne("user_id", $user_entity, "id");
 
-		if(class_exists("\\".$object_entity))
+		if (class_exists("\\".$object_entity))
 			$this->hasMany("buy_order", $object_entity, "buy_order");
 	}
 
@@ -149,7 +149,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 	 */
 	public static function newBuyOrderCode($length = null)
 	{
-		if(is_null($length))
+		if (is_null($length))
 			$length = static::$BUY_ORDER_CODE_LENGTH;
 
 		$code = (\Phalcon\DI::getDefault())->getShared("cryptify")->newAlphanumeric($length);
@@ -197,7 +197,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 
 			foreach ($checkout_data as $key => $value) {
 
-				if(is_array($value))
+				if (is_array($value))
 					$checkout_data[$key] = implode(",", $value);
 			}
 
@@ -308,7 +308,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 		//get class
 		$entity = "\\".static::entity();
 
-		if(in_array($state, static::$STATES))
+		if (in_array($state, static::$STATES))
 			$entity::updateProperty($buy_order, "state", $state, "buy_order");
 	}
 
@@ -321,7 +321,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 	{
 		try {
 
-			if(!class_exists("\Carbon\Carbon"))
+			if (!class_exists("\Carbon\Carbon"))
 				throw new Exception("Carbon library class not found.");
 
 			//use carbon library to handle time

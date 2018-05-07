@@ -43,11 +43,11 @@ trait CrudDocument
 		$conf = array_merge($defaults, $conf);
 
 		//set default fields?
-		if(empty($conf["collection"]))
+		if (empty($conf["collection"]))
 			throw new Exception("Crud requires a collection argument.");
 
 		//init uploader?
-		if(isset($conf["uploader"]))
+		if (isset($conf["uploader"]))
 			$this->initUploader($conf["uploader"]);
 
 		//finally set conf
@@ -64,13 +64,13 @@ trait CrudDocument
 		//parse query string & assign to data
 		parse_str($this->request->get("query"), $data);
 
-		if(empty($data))
+		if (empty($data))
 			$this->jsonResponse(404);
 
 		//set limit, skips
 		$limit = $data["limit"] ?? $this->crud_conf["fetch_limit"];
 
-		if($limit > $this->crud_conf["fetch_limit"]) 
+		if ($limit > $this->crud_conf["fetch_limit"]) 
 			$limit = $this->crud_conf["fetch_limit"];
 
 		// defaults
@@ -83,7 +83,7 @@ trait CrudDocument
 		$data["search"] = rtrim(ltrim($data["search"]));
 
 		//sort by score relevance (full text search)
-		if(!empty($data["search"])) {
+		if (!empty($data["search"])) {
 
 			$query['$text']     = ['$search' => $data["search"]];
 			$opts["projection"] = ["score" => ['$meta' => "textScore"]];
@@ -94,14 +94,14 @@ trait CrudDocument
 			//sort default
 			$opts["sort"] = ["_id" => -1];
 
-			if(!empty($data["sort"]) && !empty($data["order"]))
+			if (!empty($data["sort"]) && !empty($data["order"]))
 				$opts["sort"] = [$data["sort"] => intval($data["order"])];
 		}
 
 		$this->logger->debug("CrudDocument::list -> new request: ". json_encode($query)." => ".json_encode($opts));
 
 		//optional listener
-		if(method_exists($this, "onBeforeQuery"))
+		if (method_exists($this, "onBeforeQuery"))
 			$this->onBeforeQuery($query, $opts, $data);
 
 		// collection
@@ -116,7 +116,7 @@ trait CrudDocument
 		$totalItems = count($resultset ? $resultset->toArray() : []);
 
 		//optional listener
-		if(method_exists($this, "onAfterQuery"))
+		if (method_exists($this, "onAfterQuery"))
 			$this->onAfterQuery($items);
 
 		$response = ["items" => $items, "totalItems" => $totalItems];
@@ -143,18 +143,18 @@ trait CrudDocument
 		$this->formatPayload($payload);
 
 		//optional listener
-		if(method_exists($this, "onBeforeSave"))
+		if (method_exists($this, "onBeforeSave"))
 			$this->onBeforeSave($payload);
 
 		//insert
-		if(is_null($object_id)) {
+		if (is_null($object_id)) {
 
 			try { $object = $this->mongo->{$this->crud_conf["collection"]}->insertOne($payload); }
 			catch(\Exception | Exception $e) {
 
 				$this->logger->error("CrudDocument::saveAction -> insert exception: ".$e->getMessage());
 
-				if(method_exists($this, "onSaveException"))
+				if (method_exists($this, "onSaveException"))
 					$this->onSaveException($e, $payload);
 
 				$this->jsonResponse(500);
@@ -168,7 +168,7 @@ trait CrudDocument
 			foreach ($payload as $key => $value) {
 
 				//unset reserved props
-				if(in_array($key, ["_id", "createdAt"])) {
+				if (in_array($key, ["_id", "createdAt"])) {
 
 					unset($payload->{$key});
 					continue;
@@ -179,7 +179,7 @@ trait CrudDocument
 
 					$this->logger->error("CrudDocument::saveAction -> update exception: ".$e->getMessage());
 					
-					if(method_exists($this, "onSaveException"))
+					if (method_exists($this, "onSaveException"))
 						$this->onSaveException($e, $payload);
 				}
 			}
@@ -190,7 +190,7 @@ trait CrudDocument
 		catch(\Exception | Exception $e) { $object = null; }
 
 		//auto-move uploaded files? (UploaderController)
-		if(!empty($this->crud_conf["uploader"])) {
+		if (!empty($this->crud_conf["uploader"])) {
 
 			$uri = $this->crud_conf["collection"]."/".(string)$object->_id."/";
 
@@ -198,7 +198,7 @@ trait CrudDocument
 		}
 
 		//optional listener
-		if(method_exists($this, "onAfterSave"))
+		if (method_exists($this, "onAfterSave"))
 			$this->onAfterSave($object, $payload);
 
 		// ok response
@@ -213,7 +213,7 @@ trait CrudDocument
 	{
 		$this->onlyAjax();
 
-		if(empty($id))
+		if (empty($id))
 			$this->jsonResponse(400);
 
 		//sanitize id
@@ -223,7 +223,7 @@ trait CrudDocument
 		catch(\Exception | Exception $e) { $object = null; }
 
 		//optional listener
-		if(method_exists($this, "onGet"))
+		if (method_exists($this, "onGet"))
 			$this->onGet($object);
 
 		$this->jsonResponse(200, $object);
@@ -242,13 +242,13 @@ trait CrudDocument
 		$object_id = new \MongoDB\BSON\ObjectID($data["id"]);
 
 		//optional listener
-		if(method_exists($this, "onBeforeDelete"))
+		if (method_exists($this, "onBeforeDelete"))
 			$this->onBeforeDelete($data);
 
 		$this->mongo->{$this->crud_conf["collection"]}->deleteOne(["_id" => $object_id]);
 
 		//delete upload files?
-		if(!empty($this->crud_conf["uploader"])) {
+		if (!empty($this->crud_conf["uploader"])) {
 
 			$path = Uploader::$ROOT_UPLOAD_PATH.$this->crud_conf["collection"]."/".$data["id"]."/";
 
@@ -273,7 +273,7 @@ trait CrudDocument
 		], "POST");
 
 		//optional listener
-		if(method_exists($this, "onBeforeDeleteImage"))
+		if (method_exists($this, "onBeforeDeleteImage"))
 			$this->onBeforeDeleteImage($data);
 		
 		//set object id
@@ -282,7 +282,7 @@ trait CrudDocument
 
 		$object = $this->mongo->{$this->crud_conf["collection"]}->findOne(["_id" => $object_id]);
 
-		if(empty($object))
+		if (empty($object))
 			$this->jsonResponse(400);
 
 		//check if is array
@@ -307,15 +307,15 @@ trait CrudDocument
 	{
 		foreach ($payload as $key => &$value) {
 			
-			if(is_numeric($value))
+			if (is_numeric($value))
 				$value = strpos($value, ".") > 0 ? floatval($value) : intval($value);
 
-			else if(empty($value))
+			else if (empty($value))
 				$value = null;
 		}
 
 		//always set a createdAt timestamp
-		if(!isset($payload->createdAt)) 
+		if (!isset($payload->createdAt)) 
 			$payload->createdAt = new \MongoDB\BSON\UTCDateTime((new \DateTime())->getTimestamp() * 1000);
 	}
 }

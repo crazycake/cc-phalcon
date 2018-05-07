@@ -47,7 +47,7 @@ class Base extends \Phalcon\Mvc\Model
 
 		$props = empty($params["columns"]) ? null : $params["columns"];
 
-		if($reduce)
+		if ($reduce)
 			$objects = BaseResultset::reduceResultset($objects, $props);
 
 		return $objects;
@@ -65,7 +65,7 @@ class Base extends \Phalcon\Mvc\Model
 
 		$props = empty($params["columns"]) ? null : $params["columns"];
 
-		if($reduce)
+		if ($reduce)
 			$object = BaseResultset::reduceResultset($object, $props);
 
 		return $object;
@@ -171,7 +171,7 @@ class Base extends \Phalcon\Mvc\Model
 		$object->save($data);
 
 		// DB ORM errors?
-		if(!empty($object->messages())) {
+		if (!empty($object->messages())) {
 
 			(\Phalcon\DI::getDefault())->getShared("logger")->error("Base::insert -> failed insertion ".json_encode($object->messages()));
 			return false;

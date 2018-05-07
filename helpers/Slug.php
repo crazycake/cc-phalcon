@@ -26,7 +26,7 @@ class Slug
 	{
 		$clean = $string;
 
-		if(extension_loaded("iconv"))
+		if (extension_loaded("iconv"))
 			$clean = iconv("UTF-8", "ASCII//TRANSLIT", $string);
 
 		if (!empty($replace))
