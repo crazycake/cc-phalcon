@@ -56,12 +56,11 @@ copyVoltFiles() {
 	fi
 }
 
-buildCorePhar() {
+copyCorePhar() {
 
-	echo -e "\033[95mBuilding core phar file from $CORE_SRC_PATH... \033[0m"
-	cd $CORE_SRC_PATH
-	./cli build
-	cp "$CORE_PROJECT_NAME.phar" "$DEST_PATH$CORE_PROJECT_NAME.phar"
+	echo -e "\033[95mCopying core phar file from $CORE_SRC_PATH... \033[0m"
+	
+	cp "$CORE_SRC_PATH$CORE_PROJECT_NAME.phar" "$DEST_PATH$CORE_PROJECT_NAME.phar"
 }
 
 # tasks
@@ -74,7 +73,7 @@ copyToolFiles
 copyVoltFiles
 
 # 3) php phar core builder
-buildCorePhar
+copyCorePhar
 
 # task done!
 echo -e "\033[92mDone! \033[0m"
