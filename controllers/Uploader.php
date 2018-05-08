@@ -456,7 +456,6 @@ trait Uploader
 			"mime"    => $file_mimetype,
 			"message" => false
 		];
-		return $new_file;
 		//~s($new_file);exit;
 
 		try {
