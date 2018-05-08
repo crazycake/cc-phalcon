@@ -200,6 +200,20 @@ trait Uploader
 	}
 
 	/**
+	 * Ajax Action - Replace a current upload
+	 */
+	public function replaceUploadAction()
+	{
+		list($uploaded, $messages) = $this->upload();
+
+		//response
+		$this->jsonResponse(200, [
+			"uploaded" => $uploaded,
+			"messages" => $messages
+		]);
+	}
+
+	/**
 	 * Cleans upload folder
 	 * @param String $path - The target path to delete
 	 */
@@ -403,6 +417,8 @@ trait Uploader
 		$file_name       = $file->getName();
 		$file_name_array = explode(".", $file_name);
 		$file_ext        = strtolower(end($file_name_array));
+		$file_mimetype   = $file->getRealType(); //real file MIME type
+		$file_size       = (float)($file->getSize()); //set to KB unit
 
 		// change special extensions
 		if($file_ext == "jpeg") {
@@ -411,10 +427,14 @@ trait Uploader
 			$file_ext = "jpg";
 		}
 
-		$file_cname      = str_ireplace(".$file_ext", "", $file_name); //ignore case
-		$file_mimetype   = $file->getRealType(); //real file MIME type
-		$file_size       = (float)($file->getSize()); //set to KB unit
-		$file_tag        = preg_replace("/[^0-9]/", "", Slug::generate($file_cname));
+		else if($file_ext == "blob" && $file_mimetype == "image/jpeg") {
+
+			$file_name = str_replace(".blob", ".jpg", $file_name);
+			$file_ext = "jpg";
+		}
+
+		$file_cname = str_ireplace(".$file_ext", "", $file_name); //ignore case
+		$file_tag   = preg_replace("/[^0-9]/", "", Slug::generate($file_cname));
 
 		// limit namespace length
 		if (empty($file_tag))
@@ -430,6 +450,7 @@ trait Uploader
 			"mime"    => $file_mimetype,
 			"message" => false
 		];
+		//~s($new_file);exit;
 
 		try {
 
