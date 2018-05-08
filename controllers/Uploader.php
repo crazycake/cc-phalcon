@@ -207,10 +207,20 @@ trait Uploader
 		list($uploaded, $messages) = $this->upload();
 
 		$file = $uploaded[0] ?? null;
+		//s($file);exit;
 
 		//remove old ones
-		if($file)
-			array_map(function($f) use ($file) { strpos($f, $file["save_name"]) > 0 ? true : @unlink($f); }, glob($this->uploader_conf["path"]."*"));
+		if($file) {
+
+			array_map(function($f) use ($file) { 
+
+				if(strpos($f, $file["key"]) < 0)
+					return;
+
+				strpos($f, $file["save_name"]) > 0 ? true : @unlink($f); 
+
+			}, glob($this->uploader_conf["path"]."*"));
+		}
 
 		//response
 		$this->jsonResponse(200, [
