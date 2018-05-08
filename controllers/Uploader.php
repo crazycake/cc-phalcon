@@ -174,11 +174,11 @@ trait Uploader
 
 		//validate and filter request params data, second params are the required fields
 		$data = $this->handleRequest([
-			"uploaded_file" => "array"
+			"file" => "string"
 		], "POST");
 
 		//get file path
-		$file_path = $this->uploader_conf["path"].$data["uploaded_file"]["save_name"];
+		$file_path = $this->uploader_conf["path"].$data["file"];
 
 		//check if exists
 		if (is_file($file_path))
@@ -206,9 +206,15 @@ trait Uploader
 	{
 		list($uploaded, $messages) = $this->upload();
 
+		$file = $uploaded[0] ?? null;
+
+		//remove old ones
+		if($file)
+			array_map(function($f) use ($file) { strpos($f, $file["save_name"]) > 0 ? true : @unlink($f); }, glob($this->uploader_conf["path"]."*"));
+
 		//response
 		$this->jsonResponse(200, [
-			"uploaded" => $uploaded,
+			"uploaded" => $file,
 			"messages" => $messages
 		]);
 	}
@@ -424,13 +430,13 @@ trait Uploader
 		if($file_ext == "jpeg") {
 
 			$file_name = str_replace(".jpeg", ".jpg", $file_name);
-			$file_ext = "jpg";
+			$file_ext  = "jpg";
 		}
 
 		else if($file_ext == "blob" && $file_mimetype == "image/jpeg") {
 
-			$file_name = str_replace(".blob", ".jpg", $file_name);
-			$file_ext = "jpg";
+			$file_name = $file_key."-".uniqid();
+			$file_ext  = "jpg";
 		}
 
 		$file_cname = str_ireplace(".$file_ext", "", $file_name); //ignore case
@@ -450,6 +456,7 @@ trait Uploader
 			"mime"    => $file_mimetype,
 			"message" => false
 		];
+		return $new_file;
 		//~s($new_file);exit;
 
 		try {
