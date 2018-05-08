@@ -214,7 +214,7 @@ trait Uploader
 
 			array_map(function($f) use ($file) { 
 
-				if(strpos($f, $file["key"]) < 0)
+				if(strpos($f, $file["key"]) === false)
 					return;
 
 				strpos($f, $file["save_name"]) > 0 ? true : @unlink($f); 
