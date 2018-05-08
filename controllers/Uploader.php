@@ -200,14 +200,13 @@ trait Uploader
 	}
 
 	/**
-	 * Ajax Action - Replace a current upload
+	 * Ajax Action - Replace a current upload (Multiple upload type not supported)
 	 */
 	public function replaceUploadAction()
 	{
 		list($uploaded, $messages) = $this->upload();
 
 		$file = $uploaded[0] ?? null;
-		//s($file);exit;
 
 		//remove old ones
 		if($file) {
@@ -222,6 +221,7 @@ trait Uploader
 			}, glob($this->uploader_conf["path"]."*"));
 		}
 
+		//s($file);exit;
 		//response
 		$this->jsonResponse(200, [
 			"uploaded" => $file,
