@@ -202,7 +202,7 @@ trait CrudDocument
 			$this->onAfterSave($object, $payload);
 
 		// ok response
-		$this->jsonResponse(200);
+		$this->jsonResponse(200, $object);
 	}
 	
 	/**

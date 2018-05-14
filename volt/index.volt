@@ -152,7 +152,7 @@
 			</noscript>
 		{% endif %}
 
-		{# recaptcha plugin #}
+		{# reCaptcha plugin #}
 		{% if js_recaptcha is not empty %}
 			<script src="//www.google.com/recaptcha/api.js?onload={{ js_recaptcha }}&amp;render=explicit&amp;hl={{ client.lang }}" async defer></script>
 		{% endif %}
