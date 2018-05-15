@@ -36,7 +36,7 @@ trait CrudDocument
 		//default configurations
 		$defaults = [
 			"collection"  => "",
-			"fetch_limit" => 300
+			"fetch_limit" => 1000
 		];
 
 		//merge confs
