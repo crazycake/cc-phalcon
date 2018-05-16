@@ -80,7 +80,7 @@ trait CrudDocument
 			"skip"  => intval($data["skip"] ?? 0),
 		];
 
-		$data["search"] = rtrim(ltrim($data["search"]));
+		$data["search"] = rtrim(ltrim($data["search"] ?? ""));
 
 		//sort by score relevance (full text search)
 		if (!empty($data["search"])) {
