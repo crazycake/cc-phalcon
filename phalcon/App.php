@@ -103,6 +103,7 @@ abstract class App
 
 		//set args data
 		foreach ($argv as $k => $arg) {
+
 			switch ($k) {
 				case 0: break;
 				case 1: $arguments["task"]        = $arg; break;
@@ -186,7 +187,7 @@ abstract class App
 		$replace = [">","<","\\1"];
 
 		if (preg_match("/\<html/i",$buffer) == 1 && preg_match("/\<\/html\>/i",$buffer) == 1)
-		$buffer = preg_replace($search, $replace, $buffer);
+			$buffer = preg_replace($search, $replace, $buffer);
 
 		return $buffer;
 	}

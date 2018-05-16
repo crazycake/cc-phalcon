@@ -63,8 +63,20 @@ copyCorePhar() {
 	cp "$CORE_SRC_PATH$CORE_PROJECT_NAME.phar" "$DEST_PATH$CORE_PROJECT_NAME.phar"
 }
 
-# tasks
+# Tasks
 echo -e "\033[96mCore path: "$CORE_SRC_PATH" \033[0m"
+
+# 0) build?
+if [ "$1" = "--b" ]; then
+
+	echo -e "\033[95mBuilding core package... \033[0m"
+
+	cd $CORE_SRC_PATH
+
+	./cli build
+
+	cd $PROJECT_PATH
+fi
 
 # 1) tools
 copyToolFiles

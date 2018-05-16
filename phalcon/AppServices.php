@@ -256,8 +256,12 @@ class AppServices
 				"index"      => 1
 			]);
 
+			//set domain for cookie params
+			$host = array_reverse(explode('.', parse_url(APP_BASE_URL, PHP_URL_HOST)));
+			
 			// set session name (domain & cookie)
 			$session->setName($conf->namespace);
+			session_set_cookie_params($expiration, "/", ".".$host[1].".".$host[0]); //shared cookies for subdomains
 			$session->start();
 
 			return $session;
