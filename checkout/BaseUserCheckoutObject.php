@@ -92,7 +92,7 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
 
 		//substract total
 		$total = $object->quantity - $checkout_q;
-		//var_dump($total, $object->quantity, $checkout_q, $total);exit;
+		//ss($total, $object->quantity, $checkout_q, $total);
 
 		if ($total <= 0)
 			return false;

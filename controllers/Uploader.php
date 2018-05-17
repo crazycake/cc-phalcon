@@ -221,7 +221,7 @@ trait Uploader
 			}, glob($this->uploader_conf["path"]."*"));
 		}
 
-		//s($file);exit;
+		//ss($file);
 		//response
 		$this->jsonResponse(200, [
 			"uploaded" => $file,
@@ -466,7 +466,7 @@ trait Uploader
 			"mime"    => $file_mimetype,
 			"message" => false
 		];
-		//~s($new_file);exit;
+		//~ss($new_file);
 
 		try {
 

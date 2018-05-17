@@ -21,6 +21,7 @@ class AppServices
 	 */
 	private $config;
 
+
 	/**
 	 * Constructor
 	 * @param Object $loaderObj - The app loader instance
@@ -148,8 +149,11 @@ class AppServices
 		}
 
 		// kint options
-		if (class_exists("\Kint"))
+		if (class_exists("\Kint")) {
+
 			\Kint::$max_depth = 0;
+			\Kint::$aliases[] = "ss";
+		}
 	}
 
 	/**
