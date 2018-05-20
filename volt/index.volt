@@ -74,7 +74,7 @@
 		{% endif %}
 
 		{# APP CSS #}
-		<link rel="stylesheet" type="text/css" href="{{ css_url }}" />
+		<link id="style" rel="stylesheet" type="text/css" href="{{ css_url }}" />
 
 		{# APP Global scope vars #}
 		{% if js_app is defined %}
