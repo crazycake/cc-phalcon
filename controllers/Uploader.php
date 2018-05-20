@@ -209,11 +209,11 @@ trait Uploader
 		$file = $uploaded[0] ?? null;
 
 		//remove old ones
-		if($file) {
+		if ($file) {
 
 			array_map(function($f) use ($file) { 
 
-				if(strpos($f, $file["key"]) === false)
+				if (strpos($f, $file["key"]) === false)
 					return;
 
 				strpos($f, $file["save_name"]) > 0 ? true : @unlink($f); 
@@ -437,13 +437,13 @@ trait Uploader
 		$file_size       = (float)($file->getSize()); //set to KB unit
 
 		// change special extensions
-		if($file_ext == "jpeg") {
+		if ($file_ext == "jpeg") {
 
 			$file_name = str_replace(".jpeg", ".jpg", $file_name);
 			$file_ext  = "jpg";
 		}
 
-		else if($file_ext == "blob" && $file_mimetype == "image/jpeg") {
+		else if ($file_ext == "blob" && $file_mimetype == "image/jpeg") {
 
 			$file_name = $file_key."-".uniqid();
 			$file_ext  = "jpg";
