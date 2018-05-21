@@ -23,7 +23,7 @@ scriptHelp() {
 	echo -e "\033[95m build: build JS & CSS bundles and compile translations. \033[0m"
 	echo -e "\033[95m trans: Update translations po file. \033[0m"
 	echo -e "\033[95m php: Runs app php CLI. \033[0m"
-	echo -e "\033[95m clean: Cleans cache, logs and rev assets (js, css).\033[0m"
+	echo -e "\033[95m clean: Cleans cache, logs and JS & CSS .rev bundles.\033[0m"
 	echo -e "\033[97m > admin commands \033[0m"
 	echo -e "\033[95m core: installs/updates core package (requires cc-phalcon project symlink). \033[0m"
 	echo -e "\033[95m aws-sync <bucket> <profile>: Syncs S3 CDN bucket with app assets (requires AWS CLI & profiles).\033[0m"
