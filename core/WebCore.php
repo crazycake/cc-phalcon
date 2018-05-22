@@ -104,7 +104,11 @@ abstract class WebCore extends BaseCore implements WebSecurity
 			$uri .= "?".implode("&", $params);
 		}
 
-		//set url
+		//ajax?
+		if ($this->request->isAjax())
+			return $this->jsonResponse(200, ["redirect" => $uri]);
+
+		//response 302, set url
 		$url = $this->baseUrl($uri);
 
 		//validate URI
@@ -113,9 +117,6 @@ abstract class WebCore extends BaseCore implements WebSecurity
 			$this->logger->debug("WebCore::redirectTo -> got an invalid URL: $url");
 			$this->redirectToNotFound();
 		}
-
-		if ($this->request->isAjax())
-			return false;
 
 		$this->response->redirect($url, true);
 		$this->response->send();
