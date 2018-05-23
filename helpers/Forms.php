@@ -103,8 +103,7 @@ class Forms
 		$trans = (\Phalcon\DI::getDefault())->getShared("trans");
 
 		//days
-		$days_array     = [];
-		$days_array[""] = $trans->_("Día");
+		$days_array  = [];
 		
 		for ($i = 1; $i <= 31; $i++) {
 			$prefix = ($i <= 9) ? "0$i" : "$i";
@@ -112,8 +111,7 @@ class Forms
 		}
 
 		//months
-		$months_array     = [];
-		$months_array[""] = $trans->_("Mes");
+		$months_array = [];
 		
 		for ($i = 1; $i <= 12; $i++) {
 
@@ -123,8 +121,7 @@ class Forms
 		}
 
 		//years
-		$years_array     = [];
-		$years_array[""] = $trans->_("Año");
+		$years_array = [];
 		
 		for ($i = (int)date("Y") - 5; $i >= 1930; $i--)
 			$years_array["$i"] = $i;
