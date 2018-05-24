@@ -100,8 +100,6 @@ class Forms
 	 */
 	public static function getBirthdaySelectors()
 	{
-		$trans = (\Phalcon\DI::getDefault())->getShared("trans");
-
 		//days
 		$days_array  = [];
 		
