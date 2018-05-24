@@ -1,5 +1,5 @@
 #! /bin/bash
-# Core Task Runner Installer
+# Core Installer
 # author: Nicolas Pulido <nicolas.pulido@crazycake.cl>
 
 # interrupt if error raises
@@ -32,8 +32,10 @@ fi
 copyToolFiles() {
 
 	echo -e "\033[94mCopying tool script files to $CORE_SRC_TOOLS... \033[0m"
-	rm -rf $TOOLS_PATH
-	mkdir -p $TOOLS_PATH
+
+	# clean path
+	rm -rf $TOOLS_PATH && mkdir -p $TOOLS_PATH
+
 	# copy tool files
 	find $CORE_SRC_TOOLS -maxdepth 1 -mindepth 1 -type f -print0 | while read -d $'\0' FILE; do
 
@@ -51,6 +53,7 @@ copyToolFiles() {
 copyVoltFiles() {
 
 	if [ -d $PROJECT_PATH"/ui/volt/" ]; then
+		
 		echo -e "\033[94mCopying volt files ... \033[0m"
 		cp $CORE_SRC_VOLT"index.volt" $PROJECT_PATH"/ui/volt/"
 	fi

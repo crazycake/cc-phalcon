@@ -1,6 +1,5 @@
 #! /bin/bash
 # GetText helper script. Finds translations & compile po files.
-# Requires GetText installed.
 # author: Nicolas Pulido <nicolas.pulido@crazycake.cl>
 
 # interrupt if error raises
@@ -13,20 +12,11 @@ PROJECT_PATH="$(dirname "$PROJECT_PATH")"
 # app namespace
 APP_NAME=${PWD##*/}
 
-APP_CORE_PATH=$PROJECT_PATH"/../cc-phalcon/"
-APP_FILE_PATH=$PROJECT_PATH"/app/"
-APP_LANGS_PATH=$APP_FILE_PATH"langs/"
-APP_STORAGE_PATH=$PROJECT_PATH"/storage/"
-
-# translation filenames
-MO_FILE="app.mo"
-TEMP_FILE=".translations"
-
 # help output
 scriptHelp() {
-	echo -e "\033[93m WebApp translations script\nValid actions:\033[0m"
+	echo -e "\033[93m > "$APP_NAME" translations CLI \033[0m"
 	echo -e "\033[95m build: build po files in app folder. \033[0m"
-		echo -e "\033[95m find: find for new translations in app folder. \033[0m"
+	echo -e "\033[95m find: find for new translations in app folder. \033[0m"
 	exit
 }
 
@@ -36,17 +26,18 @@ case "$1" in
 # compile and generate mo files
 build)
 
-	echo -e "\033[94mSearching for .po files in $APP_LANGS_PATH \033[0m"
+	echo -e "\033[94mSearching for .po files in langs folder \033[0m"
 
 	# generate .mo files in LC_MESSAGES subfolder for each lang code
-	find $APP_LANGS_PATH -type f -name '*.po' | while read PO_FILE ; do
+	docker exec -it $APP_NAME bash -c \
+		'find /var/www/app/langs/ -type f -name "*.po" | while read PO_FILE ; do
 
-		CODE=`basename "$PO_FILE" .po`
-		TARGET_DIR="$APP_LANGS_PATH$CODE/LC_MESSAGES"
-		mkdir -p "$TARGET_DIR"
-		echo -e "\033[94mCompiling language file: $CODE \033[0m"
-		msgfmt -o "$TARGET_DIR/$MO_FILE" "$PO_FILE"
-	done
+			CODE=`basename "$PO_FILE" .po`
+			TARGET_DIR="/var/www/app/langs/$CODE/LC_MESSAGES"
+			mkdir -p "$TARGET_DIR"
+			echo -e "\033[94mCompiling language file: $CODE \033[0m"
+			msgfmt -o "$TARGET_DIR/app.mo" "$PO_FILE"
+		done'
 
 	# task done!
 	echo -e "\033[92mDone! \033[0m"
@@ -55,48 +46,45 @@ build)
 # search and generate pot files
 find)
 
-	echo -e "\033[95mCompiling volt files from container...  \033[0m"
+	echo -e "\033[95mCompiling volt files from container... \033[0m"
 
 	# execute volt compailer in container
-	docker exec -it $APP_NAME bash -c 'php app/cli/cli.php main compileVolt'
-	# copy contianer cache files
-	docker cp $APP_NAME:"/var/www/storage/cache/" $APP_STORAGE_PATH
+	docker exec -it $APP_NAME bash -c 'php /var/www/app/cli/cli.php main compileVolt'
 
-	echo -e "\033[95mSearching for keyword 'trans' in php files...  \033[0m"
+	echo -e "\033[95mSearching for keyword 'trans' in php files... \033[0m"
 
 	# find files (exclude some folders)
-	find $APP_CORE_PATH $APP_FILE_PATH $APP_STORAGE_PATH"cache/" -type f -name '*.php' > $TEMP_FILE
+	docker exec -it $APP_NAME bash -c 'find /var/www/app/ /var/www/storage/cache/ -type f -name "*.php" > .translations'
 
-	# generate pot file with xgettext
-	xgettext -o $APP_LANGS_PATH"trans.pot" \
-		-d $APP_FILE_PATH -L php --from-code=UTF-8 \
-		-k'trans' -k'transPlural:1,2' \
-		--copyright-holder="CrazyCake" \
-		--package-name="crazycake" \
-		--package-version='`date -u +"%Y-%m-%dT%H:%M:%SZ"`' \
-		--no-wrap -f $TEMP_FILE
-
-	# delete temp files
-	rm $TEMP_FILE
-	find $APP_STORAGE_PATH"cache/" -mindepth 1 -type f -name '*.php' -delete
-	# also in container
-	docker exec -it $APP_NAME bash -c 'find storage/cache -type f \( ! -iname ".*" \) -print0 | xargs -0 rm'
+	# generate pot file with xgettext and clean temp file
+	docker exec -it $APP_NAME bash -c \
+		'xgettext \
+				--output app/langs/trans.pot \
+				--directory app/ \
+				--language="php" \
+				--from-code=UTF-8 \
+				--keyword='trans' \
+				--keyword='transPlural:1,2' \
+				--package-version=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
+				--package-name="crazycake" \
+				--copyright-holder="CrazyCake" \
+				--no-wrap -f .translations && \
+		rm .translations && \
+		find /var/www/storage/cache -type f \( ! -iname ".*" \) -print0 | xargs -0 rm'
 
 	# merge po file
-	find $APP_LANGS_PATH -mindepth 1 -maxdepth 1 -type d | while read CODE_DIR ; do
+	docker exec -it $APP_NAME bash -c \
+		'find /var/www/app/langs/ -mindepth 1 -maxdepth 1 -type d | while read CODE_DIR; do
 
-		cd "$CODE_DIR"
+			cd "$CODE_DIR"
+			CODE=`basename "$CODE_DIR"`
 
-		CODE=`basename "$CODE_DIR"`
-
-		if [ -f "$CODE".po ]; then
-			echo -e "\033[94mUpdating new entries for lang code: $CODE  \033[0m"
-			msgmerge -U "$CODE".po ../trans.pot
-		else
-			echo -e "\033[94mGenerating new entries for lang code: $CODE  \033[0m"
-			msginit -i ../trans.pot --no-translator -l "$CODE"
-		fi
-	done
+			if [ -f "$CODE".po ]; then
+				msgmerge -U "$CODE".po ../trans.pot
+			else
+				msginit -i ../trans.pot --no-translator -l "$CODE"
+			fi
+		done'
 
 	# task done!
 	echo -e "\033[92mDone! \033[0m"

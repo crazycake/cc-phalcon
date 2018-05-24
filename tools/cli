@@ -13,7 +13,6 @@ APP_NAME=${PWD##*/}
 
 # app paths
 TOOLS_PATH=$PROJECT_PATH"/.tools/"
-STORAGE_PATH=$PROJECT_PATH"/storage/"
 
 # help output
 scriptHelp() {
@@ -50,7 +49,7 @@ build)
 	echo -e "\033[95mExecuting container '$APP_NAME' tasks... \033[0m"
 
 	# rev assets in container
-	docker exec -it $APP_NAME bash -c 'php app/cli/cli.php main revAssets'
+	docker exec -it $APP_NAME bash -c 'php /var/www/app/cli/cli.php main revAssets'
 
 	# translations (gettext)
 	bash $TOOLS_PATH"translations.bash" build
@@ -71,9 +70,9 @@ php)
 
 clean)
 
-	docker exec -it $APP_NAME bash -c 'find storage/cache storage/logs -type f \( ! -iname ".*" \) -print0 | xargs -0 rm'
+	docker exec -it $APP_NAME bash -c 'find /var/www/storage/cache /var/www/storage/logs -type f \( ! -iname ".*" \) -print0 | xargs -0 rm'
 
-	docker exec -it $APP_NAME bash -c 'find public/assets -type f \( -iname "*.rev.*" \) -print0 | xargs -0 rm'
+	docker exec -it $APP_NAME bash -c 'find /var/www/public/assets -type f \( -iname "*.rev.*" \) -print0 | xargs -0 rm'
 
 	echo -e "\033[92mDone! \033[0m"
 	;;
