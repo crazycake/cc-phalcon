@@ -94,39 +94,6 @@ class Forms
 		return $formatted;
 	}
 
-	/**
-	 * Get birthday options form HTML select element
-	 * @return Array
-	 */
-	public static function getBirthdaySelectors()
-	{
-		//days
-		$days_array  = [];
-		
-		for ($i = 1; $i <= 31; $i++) {
-			$prefix = ($i <= 9) ? "0$i" : "$i";
-			$days_array[$prefix] = $i;
-		}
-
-		//months
-		$months_array = [];
-		
-		for ($i = 1; $i <= 12; $i++) {
-
-			$prefix = ($i <= 9) ? "0$i" : "$i";
-			//set month array
-			$months_array[$prefix] = ucfirst(strftime("%b", mktime(0, 0, 0, $i, 1)));
-		}
-
-		//years
-		$years_array = [];
-		
-		for ($i = (int)date("Y") - 5; $i >= 1930; $i--)
-			$years_array["$i"] = $i;
-
-		return [$years_array, $months_array, $days_array];
-	}
-
 	/* --------------------------------------------------- § -------------------------------------------------------- */
 
 	/**
