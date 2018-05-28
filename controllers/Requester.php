@@ -52,8 +52,8 @@ trait Requester
 		try {
 
 			// default base url
-			if(empty($base_url))
-				$base_url = $this->baseUrl();
+			if(empty($options["base_url"]))
+				$options["base_url"] = $this->baseUrl();
 
 			// merge options with parsed URL
 			$url_pieces = parse_url($options["base_url"].$options["uri"]);
