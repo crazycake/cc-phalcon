@@ -203,12 +203,15 @@ trait AccountAuth
 			"pass"  => "string"
 		], "POST");
 
-		//get user entity
-		$entity = $this->account_auth_conf["user_entity"];
+		//lower case email
+		$data["email"] = strtolower($data["email"]);
 
 		//check valid email
 		if (!filter_var($data["email"], FILTER_VALIDATE_EMAIL))
 			$this->jsonResponse(400, $this->account_auth_conf["trans"]["INVALID_EMAIL"]);
+
+		//get user entity
+		$entity = $this->account_auth_conf["user_entity"];
 
 		// validate if user exists
 		if ($entity::getUserByEmail($data["email"])) {
