@@ -1,7 +1,7 @@
 <?php
 /**
  * Requester Trait - Can make HTTP requests
- * Requires Guzzle library (composer)
+ * Requires CoreController, Guzzle library (composer)
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
@@ -51,6 +51,10 @@ trait Requester
 
 		try {
 
+			// default base url
+			if(empty($base_url))
+				$base_url = $this->baseUrl();
+
 			// merge options with parsed URL
 			$url_pieces = parse_url($options["base_url"].$options["uri"]);
 
@@ -59,7 +63,7 @@ trait Requester
 
 			$this->logger->debug("Requester::newRequest -> Options: ".json_encode($options, JSON_UNESCAPED_SLASHES));
 
-			//encrypt payload?
+			// encrypt payload?
 			if (!empty($this->cryptify) && !empty($options["payload"]) && $options["encrypt"])
 				$options["payload"] = $this->cryptify->encryptData($options["payload"]);
 
@@ -67,16 +71,10 @@ trait Requester
 			if ($options["socket"])
 				return $this->_socketAsync($options);
 
-			// guzzle instance
-			$client = new \GuzzleHttp\Client([
-				"base_uri" => $options["base_url"],
-				"timeout"  => $options["timeout"]
-			]);
-
 			// reflection method (get or post)
 			$action = "_".strtolower($options["method"])."Request";
 
-			return $this->$action($client, $options);
+			return $this->$action($options);
 		}
 		catch (\Exception | Exception $e) { $ex = $e; }
 
@@ -90,12 +88,17 @@ trait Requester
 
 	/**
 	 * Do a GET request
-	 * @param Object $client - The HTTP Guzzle client
 	 * @param Array $options - The input options
 	 * @return Object - The promise object
 	 */
-	private function _getRequest($client, $options = [])
+	private function _getRequest($options = [])
 	{
+		// set guzzle instance
+		$client = new \GuzzleHttp\Client([
+			"base_uri" => $options["base_url"],
+			"timeout"  => $options["timeout"]
+		]);
+		
 		//curl options
 		$guzzle_options = [
 			"curl" => [
@@ -128,12 +131,17 @@ trait Requester
 
 	/**
 	 * Do a POST request
-	 * @param Object $client - The HTTP Guzzle client
 	 * @param Array $options - The input options
 	 * @return Object - The promise object
 	 */
-	private function _postRequest($client, $options = [])
+	private function _postRequest($options = [])
 	{
+		// set guzzle instance
+		$client = new \GuzzleHttp\Client([
+			"base_uri" => $options["base_url"],
+			"timeout"  => $options["timeout"]
+		]);
+
 		//curl options
 		$guzzle_options = [
 			"form_params" => $options["payload"],
