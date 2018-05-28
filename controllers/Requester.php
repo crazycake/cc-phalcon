@@ -61,12 +61,12 @@ trait Requester
 			if (!empty($url_pieces))
 				  $options = array_merge($options, $url_pieces);
 
-			$this->logger->debug("Requester::newRequest -> Options: ".json_encode($options, JSON_UNESCAPED_SLASHES));
-
 			// encrypt payload?
 			if (!empty($this->cryptify) && !empty($options["payload"]) && $options["encrypt"])
 				$options["payload"] = $this->cryptify->encryptData($options["payload"]);
 
+			$this->logger->debug("Requester::newRequest -> Options: ".json_encode($options, JSON_UNESCAPED_SLASHES));
+			
 			// socket async call?
 			if ($options["socket"])
 				return $this->_socketRequest($options);
@@ -179,7 +179,7 @@ trait Requester
 	 */
 	private function _putRequest($options = [])
 	{
-		return $this->_postRequest($options = []);
+		return $this->_postRequest($options);
 	}
 
 	/**
