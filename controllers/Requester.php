@@ -69,7 +69,7 @@ trait Requester
 
 			// socket async call?
 			if ($options["socket"])
-				return $this->_socketAsync($options);
+				return $this->_socketRequest($options);
 
 			// reflection method (get or post)
 			$action = "_".strtolower($options["method"])."Request";
@@ -87,7 +87,7 @@ trait Requester
 	/* --------------------------------------------------- § -------------------------------------------------------- */
 
 	/**
-	 * Do a GET request
+	 * GET request
 	 * @param Array $options - The input options
 	 * @return Object - The promise object
 	 */
@@ -130,7 +130,7 @@ trait Requester
 	}
 
 	/**
-	 * Do a POST request
+	 * POST request
 	 * @param Array $options - The input options
 	 * @return Object - The promise object
 	 */
@@ -161,22 +161,32 @@ trait Requester
 
 		$this->logger->debug("Requester::_postRequest [".$options["uri"]."] options: ".print_r($guzzle_options, true));
 
-		$response = $client->request("POST", $options["uri"], $guzzle_options);
+		//request action
+		$response = $client->request(strtoupper($options["method"]), $options["uri"], $guzzle_options);
 
 		$body = $response->getBody();
 
-		$this->logger->debug("Requester::_postRequest -> OK, received response [".$response->getStatusCode()."] length:  ".strlen($body).
+		$this->logger->debug("Requester::_postRequest -> OK, received response [".$response->getStatusCode()."] length: ".strlen($body).
 												   "\nHeaders: ".json_encode($response->getHeaders(), JSON_UNESCAPED_SLASHES));
 
 		return (string)$body;
 	}
 
+	/**
+	 * PUT request
+	 * @param Array $options - The input options
+	 * @return Object - The promise object
+	 */
+	private function _putRequest($options = [])
+	{
+		return $this->_postRequest($options = []);
+	}
 
 	/**
 	 * Simulates a socket async request without waiting for response
 	 * @param Array $options - The input options
 	 */
-	private function _socketAsync($options = [])
+	private function _socketRequest($options = [])
 	{
 		$ssl      = $options["scheme"] == "https";
 		$protocol = $ssl ? "ssl://" : "";
@@ -228,7 +238,7 @@ trait Requester
 		if (strtoupper($options["method"]) == "POST" && !empty($options["payload"]))
 			$out .= $options["payload"];
 
-		$this->logger->debug("Requester::_socketAsync -> sending out request ".print_r($out, true));
+		$this->logger->debug("Requester::_socketRequest -> sending out request ".print_r($out, true));
 
 		fwrite($socket, $out);
 		usleep(300000); //0.3s
