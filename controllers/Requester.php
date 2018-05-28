@@ -43,6 +43,7 @@ trait Requester
 			"payload"      => "",
 			"method"       => "GET",
 			"socket"       => false,
+			"encrypt"      => false,
 			"verify_host"  => false,
 			"query-string" => false,
 			"timeout"      => self::$REQUEST_TIMEOUT
@@ -57,6 +58,10 @@ trait Requester
 				  $options = array_merge($options, $url_pieces);
 
 			$this->logger->debug("Requester::newRequest -> Options: ".json_encode($options, JSON_UNESCAPED_SLASHES));
+
+			//encrypt payload?
+			if (!empty($this->cryptify) && !empty($options["payload"]) && $options["encrypt"])
+				$options["payload"] = $this->cryptify->encryptData($options["payload"]);
 
 			// socket async call?
 			if ($options["socket"])

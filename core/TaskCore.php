@@ -191,48 +191,6 @@ class TaskCore extends Task
 	}
 
 	/**
-	 * Async Request (CLI struct)
-	 * @param Array $options - The HTTP options
-	 * @return Object - The requester object
-	 */
-	protected function coreRequest($options = [])
-	{
-		$options = array_merge([
-			"base_url" => "",
-			"uri"      => "",
-			"module"   => "",
-			"payload"  => "",
-			"method"   => "GET",
-			"socket"   => false,
-			"encrypt"  => false
-		], $options);
-
-		//check base url
-		if (empty($options["base_url"]))
-			$this->colorize("Base URL is required", "ERROR", true);
-
-		//validate URL
-		if (filter_var($options["base_url"], FILTER_VALIDATE_URL) === false)
-			$this->colorize("Option 'base_url' is not a valid URL", "ERROR", true);
-
-		//special case for module cross requests
-		if ($options["module"] == "api") {
-
-			//set API key header name
-			$api_key_header_value = $this->config->apiKey;
-			$api_key_header_name  = str_replace("_", "-", WsCore::HEADER_API_KEY);
-			$options["headers"]   = [$api_key_header_name => $api_key_header_value];
-		}
-
-		//payload
-		if (!empty($options["payload"]) && $options["encrypt"])
-			$options["payload"] = $this->cryptify->encryptData($options["payload"]);
-
-		//requester
-		return $this->newRequest($options);
-	}
-
-	/**
 	 * Get all files in folder (recursive)
 	 * @param String $dir - The input directories
 	 * @param Array $results - The recursive results

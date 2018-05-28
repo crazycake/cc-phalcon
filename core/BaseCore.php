@@ -133,40 +133,6 @@ abstract class BaseCore extends Controller
 	}
 
 	/**
-	 * Sends an async tasks as another request. (MVC struct)
-	 * @param Array $options - Options: module, controller, action, method, payload, socket, headers
-	 * @return Object - The requester object
-	 */
-	protected function coreRequest($options = [])
-	{
-		$options = array_merge([
-			"base_url" => $this->baseUrl(),
-			"uri"      => "",
-			"module"   => "",
-			"payload"  => "",
-			"method"   => "GET",
-			"encrypt"  => false,
-			"socket"   => false,
-		], $options);
-
-		//special case for module cross requests
-		if ($options["module"] == "api") {
-
-			//set API key header name
-			$api_key_header_value = $this->config->apiKey;
-			$api_key_header_name  = str_replace("_", "-", WsCore::HEADER_API_KEY);
-			$options["headers"]   = [$api_key_header_name => $api_key_header_value];
-		}
-
-		//payload
-		if (!empty($options["payload"]) && $options["encrypt"])
-			$options["payload"] = $this->cryptify->encryptData($options["payload"]);
-
-		//requester
-		return $this->newRequest($options);
-	}
-
-	/**
 	 * Handle the request params data validating required parameters.
 	 * Also Check if get/post data is valid, if validation fails send an HTTP code, onSuccess returns a data array.
 	 * Required field may have a ```@``` prefix to establish that is just an optional field to be sanitized.
