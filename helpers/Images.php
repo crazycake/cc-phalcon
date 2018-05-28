@@ -68,9 +68,11 @@ class Images
 				// percentage
 				if (isset($resize["p"]))
 					$image->resize($image->getWidth()*$resize["p"]/100, $image->getHeight()*$resize["p"]/100);
+
 				// width px, keep ratio
 				else if (isset($resize["w"]))
 					$image->resize($resize["w"], $resize["w"] / $ratio);
+
 				// height px, keep ratio
 				else if (isset($resize["h"]))
 					$image->resize($resize["h"] * $ratio, $resize["h"]);
@@ -78,11 +80,21 @@ class Images
 				//++ Modifiers
 
 				// crop
-				if (isset($resize["c"]))
-					$image->crop($resize["c"][0], $resize["c"][1], $resize["c"][2], $resize["c"][3]);
+				if (isset($resize["c"])) {
+
+					list($w, $h, $pos_x, $pos_y) = resize["c"];
+
+					// percentage
+					if(!$pos_x) $pos_x = ($image->getWidth() - $w)/ 2;
+					if(!$pos_y) $pos_y = ($image->getHeight() - $h)/ 2;
+
+					$image->crop($w, $h, $pos_x, $pos_y);
+				}
+
 				// blur
 				if (isset($resize["b"]))
 					$image->blur($resize["b"]);
+
 				// rotate
 				if (isset($resize["r"]))
 					$image->rotate($resize["r"]);
