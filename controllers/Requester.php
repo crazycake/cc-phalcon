@@ -66,7 +66,7 @@ trait Requester
 				$options["payload"] = $this->cryptify->encryptData($options["payload"]);
 
 			$this->logger->debug("Requester::newRequest -> Options: ".json_encode($options, JSON_UNESCAPED_SLASHES));
-			
+
 			// socket async call?
 			if ($options["socket"])
 				return $this->_socketRequest($options);
@@ -78,10 +78,9 @@ trait Requester
 		}
 		catch (\Exception | Exception $e) { $ex = $e; }
 
-		$this->logger->error("Requester::newRequest -> Failed request: ".$ex->getMessage()."\n".$ex->getLine()." ".$ex->getFile().
-							 "\nOptions: ".json_encode($options, JSON_UNESCAPED_SLASHES));
+		$this->logger->error("Requester::newRequest -> Failed request: ".$ex->getMessage()."\nOptions: ".json_encode($options, JSON_UNESCAPED_SLASHES));
 
-		return null;
+		return ["error" => true, "message" => $ex->getMessage()];
 	}
 
 	/* --------------------------------------------------- § -------------------------------------------------------- */
