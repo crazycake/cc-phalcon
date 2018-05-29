@@ -70,9 +70,9 @@ php)
 
 clean)
 
-	docker exec -it $APP_NAME bash -c 'find /var/www/storage/cache /var/www/storage/logs -type f \( ! -iname ".*" \) -print0 | xargs -0 rm'
+	docker exec -it $APP_NAME bash -c 'find /var/www/storage/cache /var/www/storage/logs -type f \( ! -iname ".*" \) -print0 | xargs -0 rm -f'
 
-	docker exec -it $APP_NAME bash -c 'find /var/www/public/assets -type f \( -iname "*.rev.*" \) -print0 | xargs -0 rm'
+	docker exec -it $APP_NAME bash -c 'find /var/www/public/assets -type f \( -iname "*.rev.*" \) -print0 | xargs -0 rm -f'
 
 	echo -e "\033[92mDone! \033[0m"
 	;;
