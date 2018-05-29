@@ -127,6 +127,7 @@ trait AccountPassword
 
 			$this->dispatcher->forward(["controller" => "error", "action" => "expired"]);
 			$this->dispatcher->dispatch();
+			die();
 		}
 	}
 

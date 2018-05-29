@@ -105,6 +105,7 @@ trait AccountSession
 		//forward to logout
 		$this->dispatcher->forward(["controller" => "auth", "action" => "logout"]);
 		$this->dispatcher->dispatch();
+		die();
 	}
 
 	/**

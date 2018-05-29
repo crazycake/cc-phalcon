@@ -158,7 +158,7 @@ abstract class BaseCore extends Controller
 			//otherwise redirect to 400 page
 			$this->dispatcher->forward(["controller" => "error", "action" => "badRequest"]);
 			$this->dispatcher->dispatch();
-			return;
+			die();
 		};
 
 		//is post request? (method now allowed)
