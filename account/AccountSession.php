@@ -189,10 +189,6 @@ trait AccountSession
 			$uri = $this->session->get("auth_redirect");
 			$this->session->remove("auth_redirect");
 		}
-
-		//check for ajax request
-		if ($this->request->isAjax() || MODULE_NAME == "api")
-			return $this->jsonResponse(200, $payload ?? ["redirect" => $uri]);
 		
 		$this->redirectTo($uri);
 	}

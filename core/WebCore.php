@@ -75,7 +75,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 	 */
 	public function afterExecuteRoute()
 	{
-		//Load view data only for non-ajax requests
+		//load view data only for non-ajax requests
 		if ($this->request->isAjax())
 			return;
 
@@ -88,7 +88,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 	/* --------------------------------------------------- § -------------------------------------------------------- */
 
 	/**
-	 * Redirect to given uri as GET method
+	 * Redirect to given URI as GET method
 	 * @param String $uri - The URI to redirect
 	 * @param Array $params - The GET params (optional)
 	 */
@@ -98,19 +98,20 @@ abstract class WebCore extends BaseCore implements WebSecurity
 		if (!empty($params))
 			$uri .= "?".http_build_query($params);
 
-		//ajax?
-		if ($this->request->isAjax())
-			return $this->jsonResponse(200, ["redirect" => $uri]);
-
-		//response 302, set url
-		$url = $this->baseUrl($uri);
+		//set url
+		$url = substr($uri, 0, 4) == "http" ? $uri : $this->baseUrl($uri);
+		//ss($url);
 
 		//validate URI
 		if (filter_var($url, FILTER_VALIDATE_URL) === false) {
 
 			$this->logger->debug("WebCore::redirectTo -> got an invalid URL: $url");
-			$this->redirectToNotFound();
+			$url = $this->baseUrl("error/notFound");
 		}
+
+		//ajax?
+		if ($this->request->isAjax() || MODULE_NAME == "api")
+			return $this->jsonResponse(200, ["redirect" => $url]);
 
 		$this->response->redirect($url, true);
 		$this->response->send();
