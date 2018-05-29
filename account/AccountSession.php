@@ -192,7 +192,7 @@ trait AccountSession
 
 		//check for ajax request
 		if ($this->request->isAjax() || MODULE_NAME == "api")
-			return $this->jsonResponse(200, !empty($payload) ? $payload : ["redirect" => $uri]);
+			return $this->jsonResponse(200, $payload ?? ["redirect" => $uri]);
 		
 		$this->redirectTo($uri);
 	}
