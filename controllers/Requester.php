@@ -209,7 +209,7 @@ trait Requester
 
 			//query string or body content
 			if (is_array($options["payload"]))
-				$options["payload"] = http_build_query($options["payload"], "","&");
+				$options["payload"] = http_build_query($options["payload"], "", "&");
 			else
 				$options["payload"] = "payload=".$options["payload"];
 

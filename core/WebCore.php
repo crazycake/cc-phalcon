@@ -95,14 +95,8 @@ abstract class WebCore extends BaseCore implements WebSecurity
 	protected function redirectTo($uri = "", $params = [])
 	{
 		//parse get params & append them to the URL
-		if (!empty($params)) {
-
-			//anonymous function
-			$parser = function (&$item, $key) { $item = $key."=".$item; };
-
-			array_walk($params, $parser);
-			$uri .= "?".implode("&", $params);
-		}
+		if (!empty($params))
+			$uri .= "?".http_build_query($params);
 
 		//ajax?
 		if ($this->request->isAjax())
