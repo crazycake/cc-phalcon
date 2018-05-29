@@ -80,7 +80,7 @@ trait Requester
 
 		$this->logger->error("Requester::newRequest -> Failed request: ".$ex->getMessage()."\nOptions: ".json_encode($options, JSON_UNESCAPED_SLASHES));
 
-		return ["error" => true, "message" => $ex->getMessage()];
+		return ["error" => true, "exception" => $ex->getMessage()];
 	}
 
 	/* --------------------------------------------------- § -------------------------------------------------------- */
