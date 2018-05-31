@@ -101,7 +101,7 @@ class BaseDocument
 		if ($key == "_id")
 			$id = $id instanceof \MongoDB\BSON\ObjectId ? $id : new \MongoDB\BSON\ObjectId($id);
 
-		return $mongo->{static::$COLLECTION}->updateOne([$key => $id], ['$set' => ["$prop" => $value]]); 
+		return $mongo->{static::$COLLECTION}->updateOne([$key => $id], ['$set' => ["$prop" => $value]]);
 	}
 
 	/**
@@ -117,7 +117,7 @@ class BaseDocument
 		if ($key == "_id")
 			$id = $id instanceof \MongoDB\BSON\ObjectId ? $id : new \MongoDB\BSON\ObjectId($id);
 
-		return $mongo->{static::$COLLECTION}->updateOne([$key => $id], ['$set' => $props]); 
+		return $mongo->{static::$COLLECTION}->updateOne([$key => $id], ['$set' => $props]);
 	}
 
 	/**
@@ -147,6 +147,18 @@ class BaseDocument
 			$date = new \DateTime($date);
 
 		return new \MongoDB\BSON\UTCDateTime($date->getTimestamp() * 1000);
+	}
+
+	/**
+	 * To Date string
+	 * @param BSON $bsonDate
+	 * @param String $format
+	 */
+	public static function toDateString($bsonDate, $format = "Y/m/d H:i:s")
+	{
+		$tz = new \DateTimeZone(date_default_timezone_get());
+
+		return $bsonDate->toDateTime()->setTimezone($tz)->format($format);
 	}
 
 	/**
