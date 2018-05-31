@@ -146,7 +146,7 @@ trait AccountAuth
 		$entity = $this->account_auth_conf["user_entity"];
 		$params = ["pass" => "string"];
 
-		if ($this->account_auth_conf["user_key"] == "email") 
+		if ($this->account_auth_conf["user_key"] == "email")
 			$params = ["email" => "email"];
 
 		//validate and filter request params data, second params are the required fields
@@ -184,7 +184,7 @@ trait AccountAuth
 			//for API handle alerts & warning as errors,
 			$this->jsonResponse(400, $message, "warning", $namespace);
 		}
-		
+
 		//success login
 		$this->newUserSession($user);
 
@@ -217,7 +217,7 @@ trait AccountAuth
 		if ($entity::getUserByEmail($data["email"])) {
 
 			$msg = str_replace("{email}", $data["email"], $this->account_auth_conf["trans"]["EMAIL_EXISTS"]);
-			$msg = str_replace("{link}", $this->account_auth_conf["login_uri"], $msg);
+			$msg = str_replace("{link}", $this->baseUrl($this->account_auth_conf["login_uri"]), $msg);
 
 			$this->jsonResponse(400, $msg);
 		}
@@ -230,7 +230,7 @@ trait AccountAuth
 		//event trigger
 		if (method_exists($this, "beforeRegisterUser"))
 			$this->beforeRegisterUser($data);
-		
+
 		//insert user
 		$user = $entity::insert($data);
 
@@ -259,7 +259,7 @@ trait AccountAuth
 		if (MODULE_NAME == "api")
 			$this->jsonResponse(200, ["message" => $message]);
 
-		$this->jsonResponse(200, ["redirect" => $this->account_auth_conf["logout_uri"]]);
+		$this->redirectTo($this->account_auth_conf["logout_uri"]);
 	}
 
 	/**
