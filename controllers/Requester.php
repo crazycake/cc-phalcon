@@ -52,7 +52,7 @@ trait Requester
 		try {
 
 			// default base url
-			if(empty($options["base_url"]))
+			if (empty($options["base_url"]))
 				$options["base_url"] = $this->baseUrl();
 
 			// merge options with parsed URL
@@ -97,7 +97,7 @@ trait Requester
 			"base_uri" => $options["base_url"],
 			"timeout"  => $options["timeout"]
 		]);
-		
+
 		//curl options
 		$guzzle_options = [
 			"curl" => [
@@ -114,7 +114,7 @@ trait Requester
 		$query_string = $options["query-string"] || is_array($options["payload"]);
 
 		$params = $query_string ? "?".http_build_query($options["payload"]) : "/".$options["payload"];
-		
+
 		$this->logger->debug("Requester::_getRequest [".$options["uri"]."] options: ".print_r($guzzle_options, true));
 
 		//new promise

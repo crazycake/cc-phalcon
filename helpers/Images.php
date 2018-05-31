@@ -85,8 +85,8 @@ class Images
 					list($w, $h, $pos_x, $pos_y) = resize["c"];
 
 					// percentage
-					if(!$pos_x) $pos_x = ($image->getWidth() - $w)/ 2;
-					if(!$pos_y) $pos_y = ($image->getHeight() - $h)/ 2;
+					if (!$pos_x) $pos_x = ($image->getWidth() - $w)/ 2;
+					if (!$pos_y) $pos_y = ($image->getHeight() - $h)/ 2;
 
 					$image->crop($w, $h, $pos_x, $pos_y);
 				}
