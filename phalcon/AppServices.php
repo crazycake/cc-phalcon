@@ -262,7 +262,7 @@ class AppServices
 
 			//set domain for cookie params
 			$host = array_reverse(explode('.', parse_url(APP_BASE_URL, PHP_URL_HOST)));
-			
+
 			// set session name (domain & cookie)
 			$session->setName($conf->namespace);
 			session_set_cookie_params($expiration, "/", ".".($host[1] ?? "").".".$host[0]); //shared cookies for subdomains
@@ -381,7 +381,7 @@ class AppServices
 	public static function setVoltCompilerFunctions(&$compiler)
 	{
 		//++ str_replace
-		$compiler->addFunction("replace", "str_replace");
+		$compiler->addFunction("str_replace", "str_replace");
 		//++ preg_replace
 		$compiler->addFunction("preg_replace", "preg_replace");
 		//++ substr
@@ -398,7 +398,7 @@ class AppServices
 		$compiler->addFunction("in_array", "in_array");
 		//++ resizedImagePath
 		$compiler->addFunction("resized_image_path", function($resolvedArgs, $exprArgs) {
-			
+
 			return "CrazyCake\Helpers\Images::resizedImagePath(".$resolvedArgs.")";
 		});
 	}
