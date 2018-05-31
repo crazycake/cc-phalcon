@@ -381,7 +381,7 @@ class AppServices
 	public static function setVoltCompilerFunctions(&$compiler)
 	{
 		//++ str_replace
-		$compiler->addFunction("str_replace", "str_replace");
+		$compiler->addFunction("sreplace", "str_replace");
 		//++ preg_replace
 		$compiler->addFunction("preg_replace", "preg_replace");
 		//++ substr
