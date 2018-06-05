@@ -262,13 +262,13 @@ class AppServices
 
 			//set domain for cookie params
 			$host = array_reverse(explode('.', parse_url(APP_BASE_URL, PHP_URL_HOST)));
-
+			//ss($host[1].".".$host[0]);
 			// set session name (domain & cookie)
 			$session->setName($conf->namespace);
 
-			//session exceptions
-			if(!in_array($host[1], ["ngrok"]))
-				session_set_cookie_params($expiration, "/", ".".$host[1].".".$host[0]); //shared cookies for subdomains
+			//session exceptions for shared cookies domain
+			if(!in_array($host[1], ["ngrok"]) && !empty($host[1]))
+				session_set_cookie_params($expiration, "/", ".".$host[1].".".$host[0]);
 
 			$session->start();
 
