@@ -265,7 +265,11 @@ class AppServices
 
 			// set session name (domain & cookie)
 			$session->setName($conf->namespace);
-			session_set_cookie_params($expiration, "/", ".".($host[1] ?? "").".".$host[0]); //shared cookies for subdomains
+
+			//session exceptions
+			if(!in_array($host[1], ["ngrok"]))
+				session_set_cookie_params($expiration, "/", ".".$host[1].".".$host[0]); //shared cookies for subdomains
+
 			$session->start();
 
 			return $session;
