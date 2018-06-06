@@ -22,100 +22,60 @@ PHPDOC_OUTPUT_PATH=$PROJECT_PATH"/.docs/"
 #script help function
 scriptHelp() {
 	echo -e "\033[93m"$APP_NAME" core Script\nValid actions:\033[0m"
-	echo -e "\033[96m chmod: Set correct permissions on directories and files for serve.\033[0m"
 	echo -e "\033[96m build: Builds phar file with default box.json file.\033[0m"
 	echo -e "\033[96m tree: Returns the file tree of phar file.\033[0m"
-	echo -e "\033[96m docs: Generates PHP Docs (PHP doc library is required [phpdoc]).\033[0m"
-	echo -e "\033[96m release: Creates a new tag release. Required version and message.\033[0m"
-	echo -e "\033[96m delete-tags: Removes local and remote repository tags.\033[0m"
+	echo -e "\033[96m docs: Generates PHP Docs (PHPDoc library is required [phpdoc]).\033[0m"
 	exit
 }
 
 #commands
 case "$1" in
 
-	chmod)
-	# print project dir
-	echo -e "\033[95mProject path: "$PROJECT_PATH" \033[0m"
-
-	# set default perms for folders & files (use 'xargs -I {} -0 sudo chmod xxxx {}' if args is to long)
-	echo -e "\033[95mApplying user-perms for all folders and files (sudo is required)... \033[0m"
-	# current path
-	find $PROJECT_PATH -type d -print0 | sudo xargs -0 chmod 0755
-	find $PROJECT_PATH -type f -print0 | sudo xargs -0 chmod 0644
-
-	#task done!
-	echo -e "\033[92mDone! \033[0m"
-	;;
-
 	build)
 
-	# download phar once
-	if [ ! -f $PROJECT_PATH"/box.phar" ]; then
+		# download phar once
+		if [ ! -f $PROJECT_PATH"/box.phar" ]; then
 
-		echo -e "\033[94mDownloading box.phar ... \033[0m"
-		wget -O box.phar $BOX_PHAR_URL
-	fi
+			echo -e "\033[94mDownloading box.phar ... \033[0m"
+			wget -O box.phar $BOX_PHAR_URL
+		fi
 
-	VER=$(git rev-parse --short HEAD)
+		VER=$(git rev-parse --short HEAD)
 
-	# append version to autoload file
-	sed -i "6s/.*/DEFINE('CORE_VERSION', '$VER');/" autoload.php
+		# append version to autoload file
+		sed -i "6s/.*/DEFINE('CORE_VERSION', '$VER');/" autoload.php
 
-	cd $PROJECT_PATH
-	# build, use -v for verbose
-	php box.phar build
-	# task done!
-	echo -e "\033[92mBuilded $VER \033[0m"
+		cd $PROJECT_PATH
+		# build, use -v for verbose
+		php box.phar build
+		# task done!
+		echo -e "\033[92mBuilded $VER \033[0m"
 	;;
 
 	tree)
 
-	cd $PROJECT_PATH
-	php box.phar info -l $APP_NAMESPACE".phar"
-	# task done!
-	echo -e "\033[92mDone! \033[0m"
+		cd $PROJECT_PATH
+		php box.phar info -l $APP_NAMESPACE".phar"
+		# task done!
+		echo -e "\033[92mDone! \033[0m"
 	;;
 
 	docs)
 
-	# download phar once
-	if [ ! -f $PROJECT_PATH"/phpdoc.phar" ]; then
+		# download phar once
+		if [ ! -f $PROJECT_PATH"/phpdoc.phar" ]; then
 
-		echo -e "\033[94mDownloading phpdoc.phar ... \033[0m"
-		wget -O phpdoc.phar $PHPDOC_PHAR_URL
-	fi
+			echo -e "\033[94mDownloading phpdoc.phar ... \033[0m"
+			wget -O phpdoc.phar $PHPDOC_PHAR_URL
+		fi
 
-	#PHP
-	echo -e "\033[35mGenerating PHP Docs...\033[0m"
-	php phpdoc.phar -d $PHPDOC_INPUT_PATH -t $PHPDOC_OUTPUT_PATH --template="responsive-twig"
-	;;
-
-	release)
-
-	if [ "$2" = "" ] || [ "$3" = "" ] ; then
-		echo -e "\033[95mRelease and message params are required.\033[0m"
-		exit
-	fi
-
-	echo -e "\033[95mReleasing version $2 \033[0m"
-
-	git tag -a "$2" -m "$3"
-	git push origin master --tags
-	;;
-
-	delete-tags)
-
-	#loop through tags
-	for t in `git tag`
-	do
-		git push origin :$t
-		git tag -d $t
-	done
+		#PHP
+		echo -e "\033[35mGenerating PHP Docs...\033[0m"
+		php phpdoc.phar -d $PHPDOC_INPUT_PATH -t $PHPDOC_OUTPUT_PATH --template="responsive-twig"
 	;;
 
 	#default
 	*)
-	scriptHelp
+		scriptHelp
 	;;
 esac
