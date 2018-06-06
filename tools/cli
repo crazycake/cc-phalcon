@@ -37,7 +37,7 @@ watch)
 	echo -e "\033[95mRunning gulp watch...\033[0m"
 
 	[[ "$2" = "--m" ]] && gulp watch-m || gulp watch "${@:2}"
-	;;
+;;
 
 build)
 
@@ -53,20 +53,20 @@ build)
 
 	# translations (gettext)
 	bash $TOOLS_PATH"translations.bash" build
-	;;
+;;
 
 trans)
 
 	# translations (gettext)
 	bash $TOOLS_PATH"translations.bash" find
-	;;
+;;
 
 php)
 
 	echo -e "\033[95mRunning app php CLI... \033[0m"
 
 	docker exec -it $APP_NAME bash -c "php /var/www/app/cli/cli.php main ${@:2}"
-	;;
+;;
 
 clean)
 
@@ -75,12 +75,12 @@ clean)
 	docker exec -it $APP_NAME bash -c 'find /var/www/public/assets -type f \( -iname "*.rev.*" \) -print0 | xargs -0 rm -f'
 
 	echo -e "\033[92mDone! \033[0m"
-	;;
+;;
 
 core)
-	
+
 	bash $TOOLS_PATH"core.bash" "${@:2}"
-	;;
+;;
 
 aws-sync)
 
@@ -115,10 +115,10 @@ aws-sync)
 	echo -e "\033[95mBucket Syncing $SYNC_LOCAL_PATH -> $SYNC_REMOTE_PATH \033[0m"
 	#sync
 	aws s3 sync $SYNC_LOCAL_PATH $SYNC_REMOTE_PATH --profile $3 --delete --cache-control max-age=864000 --exclude '*.html'
-	;;
+;;
 
 #default
 *)
 	scriptHelp
-	;;
+;;
 esac
