@@ -1,14 +1,7 @@
-# Linux
+# Linux & OSX
 *~
-*.bak
-*.log
-*.gz
-
-# OSX
 .DS_Store
-
-# GIT
-!*.gitkeep
+*.log
 
 # PHP Phar files
 *.phar
