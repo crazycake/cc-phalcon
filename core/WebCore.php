@@ -19,7 +19,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 	 * Js loader function
 	 * @var String
 	 */
-	const JS_LOADER_FUNCTION = "core.start";
+	const JS_LOADER_FUNCTION = "cc.start";
 
 	/**
 	 * Set App Javascript Properties for global scope
