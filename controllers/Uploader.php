@@ -157,7 +157,7 @@ trait Uploader
 	public function uploadAction()
 	{
 		list($uploaded, $messages) = $this->upload();
-		
+
 		//response
 		$this->jsonResponse(200, [
 			"uploaded" => $uploaded,
@@ -211,12 +211,12 @@ trait Uploader
 		//remove old ones
 		if ($file) {
 
-			array_map(function($f) use ($file) { 
+			array_map(function($f) use ($file) {
 
 				if (strpos($f, $file["key"]) === false)
 					return;
 
-				strpos($f, $file["save_name"]) > 0 ? true : @unlink($f); 
+				strpos($f, $file["save_name"]) > 0 ? true : @unlink($f);
 
 			}, glob($this->uploader_conf["path"]."*"));
 		}
@@ -477,15 +477,12 @@ trait Uploader
 				throw new Exception("Uploader file configuration missing for $file_key.");
 
 			//set defaults
-			if (!isset($file_conf["max_size"]))
-				$file_conf["max_size"] = self::$DEFAULT_MAX_SIZE;
-
-			if (!isset($file_conf["type"]))
-				$file_conf["type"] = self::$DEFAULT_FILE_TYPE;
+			$file_conf["max_size"] = $file_conf["max_size"] ?? self::$DEFAULT_MAX_SIZE;
+			$file_conf["type"]     = $file_conf["type"] ?? self::$DEFAULT_FILE_TYPE;
 
 			//validation: max-size
 			if ($file_size/1024 > $file_conf["max_size"])
-				throw new Exception(str_replace(["{file}", "{size}"],[$file_name, $file_conf["max_size"]." KB"],
+				throw new Exception(str_replace(["{file}", "{size}"], [$file_name, ceil($file_conf["max_size"]/1024)." MB"],
 																	  $this->uploader_conf["trans"]["MAX_SIZE"]));
 			//validation: file-type
 			if (!in_array($file_ext, $file_conf["type"]))
