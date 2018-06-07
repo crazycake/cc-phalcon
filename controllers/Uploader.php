@@ -358,23 +358,24 @@ trait Uploader
 			"Content-Length: ".strlen($body),
 		];
 
-		$url       = APP_ENV == "local" || !getenv("IMGAPI_URL") ? "http://imgapi/" : getenv("IMGAPI_URL");
+		$url       = getenv("IMGAPI_URL") ?: "http://imgapi/";
 		$url_parts = parse_url($url);
 
 		$options = [
 			CURLOPT_URL            => $url_parts["scheme"]."://".$url_parts["host"]."/".$api_uri, // SERVICE URL
-			CURLOPT_PORT           => $url_parts["port"] ?? 80,
+			CURLOPT_PORT           => $url_parts["port"] ?? ($url_parts["scheme"] == "http" ? 80 : 443),
 			CURLOPT_POST           => 1,
 			CURLOPT_POSTFIELDS     => $body,
 			CURLOPT_HTTPHEADER     => $headers,
 			CURLOPT_RETURNTRANSFER => true
 		];
 
-		//curl call
+		//curl request
 		$ch = curl_init();
 	 	curl_setopt_array($ch, $options);
 		$result = curl_exec($ch);
 		curl_close($ch);
+		//~ss($result);
 
 		//process result
 		$response = json_decode($result, true);

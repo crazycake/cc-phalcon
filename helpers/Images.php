@@ -82,7 +82,7 @@ class Images
 				// crop
 				if (isset($resize["c"])) {
 
-					list($w, $h, $pos_x, $pos_y) = resize["c"];
+					list($w, $h, $pos_x, $pos_y) = $resize["c"];
 
 					// percentage
 					if (!$pos_x) $pos_x = ($image->getWidth() - $w)/ 2;
