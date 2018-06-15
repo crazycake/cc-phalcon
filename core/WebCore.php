@@ -251,7 +251,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 			$this->session->set("csrf", [$key, $value]);
 		}
 		else {
-			//set vars
+
 			list($key, $value) = $this->session->get("csrf");
 		}
 

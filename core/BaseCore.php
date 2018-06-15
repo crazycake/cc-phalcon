@@ -241,9 +241,9 @@ abstract class BaseCore extends Controller
 			$value = json_decode($data[$field]); //NULL if cannot be decoded
 		}
 		else {
-			//sanitize
+			//sanitize & lowercase
 			$value = $this->filter->sanitize($data[$field], $data_type);
-			//lower case for email
+
 			if ($data_type == "email")
 				$value = strtolower($value);
 		}
