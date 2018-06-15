@@ -200,36 +200,6 @@ trait Uploader
 	}
 
 	/**
-	 * Ajax Action - Replace a current upload (Multiple upload type not supported)
-	 */
-	public function replaceUploadAction()
-	{
-		list($uploaded, $messages) = $this->upload();
-
-		$file = $uploaded[0] ?? null;
-
-		//remove old ones
-		if ($file) {
-
-			array_map(function($f) use ($file) {
-
-				if (strpos($f, $file["key"]) === false)
-					return;
-
-				strpos($f, $file["save_name"]) > 0 ? true : @unlink($f);
-
-			}, glob($this->uploader_conf["path"]."*"));
-		}
-
-		//ss($file);
-		//response
-		$this->jsonResponse(200, [
-			"uploaded" => $file,
-			"messages" => $messages
-		]);
-	}
-
-	/**
 	 * Cleans upload folder
 	 * @param String $path - The target path to delete
 	 */
