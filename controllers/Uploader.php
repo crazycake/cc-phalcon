@@ -249,13 +249,9 @@ trait Uploader
 
 		foreach ($this->uploader_conf["files"] as $key => $conf) {
 
-			//set amazon properties
-			if (!empty($this->config->aws->s3)) {
-
-				$conf["s3"] = (array)$this->config->aws->s3;
-				// set bucket base uri
-				$conf["s3"]["bucketBaseUri"] .= strtolower($uri);
-			}
+			// set bucket base uri
+			$conf["s3"] = (array)$this->config->aws->s3;
+			$conf["s3"]["bucketBaseUri"] .= strtolower($uri);
 
 			//set job (img-api)
 			$job = !empty($conf["resize"]) ? "resize" : "s3push";
@@ -288,14 +284,6 @@ trait Uploader
 
 				if (!isset($saved_files[$key]))
 					$saved_files[$key] = [];
-
-				//skip buckets actions?
-				if (!isset($conf["s3"])) {
-
-					//append destination to array
-					$saved_files[$key][] = $dst;
-					continue;
-				}
 
 				//set filename
 				$conf["filename"] = $file;
