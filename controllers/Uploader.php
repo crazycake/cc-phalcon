@@ -135,7 +135,7 @@ trait Uploader
 			}
 
 			//set file saved name
-			$namespace = $new_file["key"]."_".$new_file["tag"]."_".round(microtime(true) * 1000);
+			$namespace = $new_file["key"]."_".$new_file["tag"]."_"."_".round(microtime(true) * 1000);
 			$save_name = $namespace.".".$new_file["ext"];
 			//append resource url
 			$new_file["url"]            = $this->uploader_conf["path_url"].$save_name;
@@ -203,7 +203,7 @@ trait Uploader
 	 * Cleans upload folder
 	 * @param String $path - The target path to delete
 	 */
-	protected function cleanUploadFolder($path = "")
+	protected function cleanUploadFolder($path = null)
 	{
 		if (empty($path))
 			$path = $this->uploader_conf["path"];
@@ -408,6 +408,7 @@ trait Uploader
 			$file_ext  = "jpg";
 		}
 
+		// set tag
 		$file_cname = str_ireplace(".$file_ext", "", $file_name); //ignore case
 		$file_tag   = preg_replace("/[^0-9]/", "", Slug::generate($file_cname));
 

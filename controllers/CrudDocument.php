@@ -70,7 +70,7 @@ trait CrudDocument
 		//set limit, skips
 		$limit = $data["limit"] ?? $this->crud_conf["fetch_limit"];
 
-		if ($limit > $this->crud_conf["fetch_limit"]) 
+		if ($limit > $this->crud_conf["fetch_limit"])
 			$limit = $this->crud_conf["fetch_limit"];
 
 		// defaults
@@ -90,7 +90,7 @@ trait CrudDocument
 			$opts["sort"]       = ["score" => ['$meta' => "textScore"]];
 		}
 		else {
-			
+
 			//sort default
 			$opts["sort"] = ["_id" => -1];
 
@@ -135,7 +135,7 @@ trait CrudDocument
 		//set required props to be validated
 		$data    = $this->handleRequest(["payload" => "array"], "POST");
 		$payload = (object)$data["payload"];
-		
+
 		//set object id
 		$object_id = empty($payload->_id) ? null : new \MongoDB\BSON\ObjectID(current($payload->_id));
 
@@ -164,7 +164,7 @@ trait CrudDocument
 		}
 		//update
 		else {
-		
+
 			foreach ($payload as $key => $value) {
 
 				//unset reserved props
@@ -178,7 +178,7 @@ trait CrudDocument
 				catch(\Exception | Exception $e) {
 
 					$this->logger->error("CrudDocument::saveAction -> update exception: ".$e->getMessage());
-					
+
 					if (method_exists($this, "onSaveException"))
 						$this->onSaveException($e, $payload);
 				}
@@ -204,7 +204,7 @@ trait CrudDocument
 		// ok response
 		$this->jsonResponse(200, $object);
 	}
-	
+
 	/**
 	 * Get single document
 	 * @param String $id - The object ID
@@ -218,7 +218,7 @@ trait CrudDocument
 
 		//sanitize id
 		$id = (new \Phalcon\Filter())->sanitize($id, "string");
-		
+
 		try { $object = $this->mongo->{$this->crud_conf["collection"]}->findOne(["_id" => (new \MongoDB\BSON\ObjectId($id))]); }
 		catch(\Exception | Exception $e) { $object = null; }
 
@@ -247,14 +247,6 @@ trait CrudDocument
 
 		$this->mongo->{$this->crud_conf["collection"]}->deleteOne(["_id" => $object_id]);
 
-		//delete upload files?
-		if (!empty($this->crud_conf["uploader"])) {
-
-			$path = Uploader::$ROOT_UPLOAD_PATH.$this->crud_conf["collection"]."/".$data["id"]."/";
-
-			$this->cleanUploadFolder($path);
-		}
-
 		// ok response
 		$this->jsonResponse(200);
 	}
@@ -275,7 +267,7 @@ trait CrudDocument
 		//optional listener
 		if (method_exists($this, "onBeforeDeleteImage"))
 			$this->onBeforeDeleteImage($data);
-		
+
 		//set object id
 		$object_id = new \MongoDB\BSON\ObjectID($data["id"]);
 		$prop      = $data["prop"];
@@ -289,7 +281,7 @@ trait CrudDocument
 		$is_array = $object->{$prop} instanceof \MongoDB\Model\BSONArray;
 
 		//arrays
-		$cmd = $is_array ? ['$pull' => ["$prop" => $data["url"]]] : ['$set' => ["$prop" => null]]; 
+		$cmd = $is_array ? ['$pull' => ["$prop" => $data["url"]]] : ['$set' => ["$prop" => null]];
 
 		$this->mongo->{$this->crud_conf["collection"]}->updateOne(["_id" => $object_id], $cmd);
 
@@ -306,7 +298,7 @@ trait CrudDocument
 	protected function formatPayload(&$payload)
 	{
 		foreach ($payload as $key => &$value) {
-			
+
 			if (is_numeric($value))
 				$value = strpos($value, ".") > 0 ? floatval($value) : intval($value);
 
@@ -315,7 +307,7 @@ trait CrudDocument
 		}
 
 		//always set a createdAt timestamp
-		if (!isset($payload->createdAt)) 
+		if (!isset($payload->createdAt))
 			$payload->createdAt = new \MongoDB\BSON\UTCDateTime((new \DateTime())->getTimestamp() * 1000);
 	}
 }
