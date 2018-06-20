@@ -184,13 +184,10 @@ class QRrsItem {
 	}
 }
 
-//##########################################################################
-
 class QRrs {
 
-	public static $items = array();
+	public static $items = [];
 
-	//----------------------------------------------------------------------
 	public static function init_rs($symsize, $gfpoly, $fcr, $prim, $nroots, $pad)
 	{
 		foreach (self::$items as $rs) {

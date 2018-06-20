@@ -30,15 +30,6 @@ abstract class QrTagShape {
 	public $bgColorRGB = array(255, 255, 255);
 
 	/**
-	 *
-	 * @param Int $size
-	 */
-	public function __construct() {
-
-		//constructor
-	}
-
-	/**
 	 * @return resource $image
 	 */
 	public abstract function generate();
@@ -201,9 +192,6 @@ class QrTag {
 	 */
 	public $frame = null;
 	public $frameImg = null;
-
-	public function __construct() {
-	}
 
 	protected function isPixelMarker($x, $y) {
 		if (

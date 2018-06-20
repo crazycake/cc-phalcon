@@ -56,7 +56,6 @@ class QrTagDotLineV extends QrTagShape {
 		$this->markerSize = $this->size/1.01;
 		return $im;
 	}
-
 }
 
 /**
