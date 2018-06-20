@@ -41,13 +41,10 @@ class QRMaker
 	 */
 	function __construct($log_path, $cache_path = null)
 	{
-		if (empty($log_path))
-			throw new Exception("QRMaker Library -> Log path parameters are required.");
-
-		else if (!is_dir($log_path))
+		if (empty($log_path) || !is_dir($log_path))
 			throw new Exception("QRMaker Library -> Log path ($log_path) not found.");
 
-		else if (!is_dir($cache_path))
+		if (empty($cache_path) || !is_dir($cache_path))
 			throw new Exception("QRMaker Library -> Cache path ($cache_path) not found.");
 
 		// init class
@@ -77,7 +74,6 @@ class QRMaker
 			mkdir(QR_CACHE_DIR, 0775, true);
 
 		//Check if library is running from a Phar file, if does, assets must be copied to cache folder.
-		//For reading assets from a phar directly, see: http://php.net/manual/en/phar.webphar.php
 		define("QR_ASSETS_PATH", \Phar::running() ? $this->_extractAssetsFromPhar($cache_path) : __DIR__."/assets/");
 
 		//if true, estimates best mask (spec. default, but extremally slow; set to false to significant performance boost but (propably) worst quality code
@@ -131,8 +127,9 @@ class QRMaker
 			$class     = self::QR_LIB_NAMESPACE.$params["dot_frame_class"];
 			$dot_frame = new $class();
 		}
+		//fallback
 		else {
-			 //fallback
+
 			$dot_frame = new QrTagFrameDotSquare();
 		}
 
@@ -146,16 +143,15 @@ class QRMaker
 			$class = self::QR_LIB_NAMESPACE.$params["frame_class"];
 			$frame = new $class();
 		}
+		//fallback
 		else {
-			//fallback
+
 			$frame = new QrTagFrameSquare();
 		}
 
 		$dot_frame->color = $params["frame_color"] ?? "000000";
 		$qr->frame = $frame;
-	   //var_dump($qr);//exit;
 
-		//generate!
 		$qr->generate();
 
 		//embed image?
@@ -181,15 +177,9 @@ class QRMaker
 
 		//embed image type
 		switch ($extension) {
-			case "png":
-				$embed_img = imagecreatefrompng($embed_img_path);
-				break;
-			case "jpg":
-				$embed_img = imagecreatefromjpeg($embed_img_path);
-				break;
-			case "gif":
-				$embed_img = imagecreatefromgif($embed_img_path);
-				break;
+			case "png": $embed_img = imagecreatefrompng($embed_img_path);  break;
+			case "jpg": $embed_img = imagecreatefromjpeg($embed_img_path); break;
+			case "gif": $embed_img = imagecreatefromgif($embed_img_path);  break;
 		}
 
 		$real_embed_img_width  = imagesx($embed_img);
@@ -202,6 +192,7 @@ class QRMaker
 
 		//image merging
 		$new_embed_img = imagecreatetruecolor($embed_img_width, $embed_img_height);
+
 		imagecopy($new_embed_img, $qr_img, 0, 0, $qr_width/2 - $embed_img_width/2, $qr_height/2 - $embed_img_height/2, $embed_img_width, $embed_img_height);
 		imagecopyresized($new_embed_img, $embed_img, 0, 0, 0, 0, $embed_img_width, $embed_img_height, $real_embed_img_width, $real_embed_img_height);
 		imagecopymerge($qr_img, $new_embed_img, $qr_width/2 - $embed_img_width/2, $qr_height/2 - $embed_img_height/2, 0, 0, $embed_img_width, $embed_img_height, 100);
@@ -243,6 +234,7 @@ class QRMaker
 			return $output_path;
 
 		$assets = [];
+
 		//fill the asset array
 		foreach ($files as $file)
 			array_push($assets, "qr/assets/".$file);
