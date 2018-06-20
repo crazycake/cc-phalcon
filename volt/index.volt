@@ -142,7 +142,7 @@
 				ga('create','{{ config.google.analyticsUA }}','auto');
 				ga('send','pageview');
 			</script>
-			<script src="//www.google-analytics.com/analytics.js" async defer></script>
+			<script src="https://www.google-analytics.com/analytics.js" async defer></script>
 		{% endif %}
 
 		{# Google Tag Manager [BODY] #}
@@ -155,7 +155,7 @@
 
 		{# reCaptcha plugin #}
 		{% if js_recaptcha is not empty %}
-			<script src="//www.google.com/recaptcha/api.js?onload={{ js_recaptcha }}&amp;render=explicit&amp;hl={{ client.lang }}" async defer></script>
+			<script src="https://www.google.com/recaptcha/api.js?onload={{ js_recaptcha }}&amp;render=explicit&amp;hl={{ client.lang }}" async defer></script>
 		{% endif %}
 
 		{# javascript disabled fallback #}
