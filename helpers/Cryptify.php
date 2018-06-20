@@ -111,13 +111,11 @@ class Cryptify
 	 */
 	public function encryptHashId($id)
 	{
-		if (empty($id) && $id != 0)
+		if (empty($id))
 			return false;
 
-		//HashIds Library Instance
-		$hashids = new \Hashids\Hashids($this->crypt->getKey());
-
-		return $hashids->encode($id);
+		//HashIds Library
+		return (new \Hashids\Hashids($this->crypt->getKey()))->encode($id);
 	}
 
 	/**
@@ -130,11 +128,10 @@ class Cryptify
 		if (empty($hash))
 			return false;
 
-		//HashIds Library Instance
-		$hashids = new \Hashids\Hashids($this->crypt->getKey());
-		$data    = $hashids->decode($hash);
+		//HashIds Library
+		$data = (new \Hashids\Hashids($this->crypt->getKey()))->decode($hash);
 
-		return count($data) > 0 ? $data[0] : false;
+		return $data[0] ?? false;
 	}
 
 	/**
@@ -182,7 +179,7 @@ class Cryptify
 			//append
 			$code .= ($p == 1) ? $num : $char;
 		}
-		
+
 		//replace ambiguos chars
 		$placeholders = ["0", "O", "I", "J", "B"];
 		$replacers    = ["G", "Y", "1", "X", "3"];

@@ -108,9 +108,7 @@ class Images
 			}
 			catch(\Exception | Exception $e) {
 
-				$di = \Phalcon\DI::getDefault();
-
-				$di->getShared("logger")->error("Images::resize -> failed resizing image $key: ".$e->getMessage());
+				(\Phalcon\DI::getDefault())->getShared("logger")->error("Images::resize -> failed resizing image $key: ".$e->getMessage());
 			}
 		}
 

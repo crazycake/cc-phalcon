@@ -83,11 +83,9 @@ abstract class WsCore extends BaseCore
 		$class_name = \Phalcon\Text::camelize(implode($scheme, "_"));
 
 		$p = $optional ? "@" : "";
-		//get request param
-		$data = $this->handleRequest([
-			"$p$prop"  => "int"
-		], $method);
 
+		//get request param
+		$data  = $this->handleRequest(["$p$prop" => "int"], $method);
 		$value = $data[$prop] ?? null;
 
 		//get model data
@@ -109,6 +107,7 @@ abstract class WsCore extends BaseCore
 	protected function handleLimitInput($input_num = null, $input_off = null, $max_num = null)
 	{
 		if (!is_null($input_num)) {
+
 			$number = $input_num;
 			$offset = $input_off;
 
@@ -122,6 +121,7 @@ abstract class WsCore extends BaseCore
 				$number = $max_num;
 		}
 		else {
+
 			$number = empty($max_num) ? 1 : $max_num;
 			$offset = 0;
 		}
@@ -147,7 +147,7 @@ abstract class WsCore extends BaseCore
 
 		//get data for API struct
 		if (!$bust && is_file($json_file)) {
-			
+
 			$this->sendFileToBuffer(file_get_contents($json_file));
 			return;
 		}

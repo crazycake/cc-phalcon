@@ -102,8 +102,6 @@ trait Translations
 		];
 
 		//call handler
-		$data = array_merge($data, self::jsTranslations());
-
-		return $data;
+		return array_merge($data, self::jsTranslations());
 	}
 }

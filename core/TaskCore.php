@@ -186,8 +186,8 @@ class TaskCore extends Task
 		//echo output
 		if ($die)
 			$this->output($output);
-		else
-			echo $output;
+
+		echo $output;
 	}
 
 	/**
