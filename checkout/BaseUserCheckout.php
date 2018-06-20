@@ -1,7 +1,6 @@
 <?php
 /**
  * Base Model Users Checkouts (Relational)
- * Requires Criptify Util library
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
@@ -23,15 +22,23 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 
 	/**
 	 * Pending checkouts expiration threshold, in minutes.
-	 * @var Integer
 	 */
 	public static $CHECKOUT_EXPIRATION = 72; //hours
 
 	/**
 	 * Buy Order code length
-	 * @var Integer
 	 */
-	public static $BUY_ORDER_CODE_LENGTH = 16;
+	public static $CODE_LENGTH = 16;
+
+	/**
+	 * Form data prefix
+	 */
+	public static $FORM_DATA_PREFIX = "Checkout_";
+
+	/**
+	 * States possible values
+	 */
+	public static $STATES = ["pending", "failed", "overturn", "success"];
 
 	/* properties */
 
@@ -82,12 +89,6 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 	 * @var String
 	 */
 	public $client;
-
-	/**
-	 * States possible values
-	 * @var Array
-	 */
-	public static $STATES = ["pending", "failed", "overturn", "success"];
 
 	/**
 	 * Initializer
@@ -150,7 +151,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 	public static function newBuyOrderCode($length = null)
 	{
 		if (is_null($length))
-			$length = static::$BUY_ORDER_CODE_LENGTH;
+			$length = static::$CODE_LENGTH;
 
 		$code = (\Phalcon\DI::getDefault())->getShared("cryptify")->newAlphanumeric($length);
 		//unique constrait
@@ -164,11 +165,8 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 	 * @param Object $checkout_obj -The checkout object
 	 * @return Mixed - The checkout ORM object
 	 */
-	public static function newBuyOrder($checkout_obj = null)
+	public static function newBuyOrder($checkout_obj)
 	{
-		if (is_null($checkout_obj))
-			return false;
-
 		//get DI reference (static)
 		$di = \Phalcon\DI::getDefault();
 		//get classes
@@ -184,25 +182,20 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 
 		try {
 
-			//creates object with some checkout object props
-			$checkout = new $entity();
-
 			//begin trx
 			$di->getShared("db")->begin();
 
-			//implode sub-arrays
-			$checkout_data = (array)$checkout_obj;
-			//unset checkout objects
-			unset($checkout_data["objects"]);
+			$data = (array)$checkout_obj;
+			unset($data["objects"], $data["objects_classes"]);
 
-			foreach ($checkout_data as $key => $value) {
+			$data["client"] = json_encode($data["client"]);
+			//~ss($data);
 
-				if (is_array($value))
-					$checkout_data[$key] = implode(",", $value);
-			}
+			//creates object with some checkout object props
+			$checkout = new $entity();
 
-			if (!$checkout->save($checkout_data))
-				throw new Exception("A DB error ocurred saving in checkouts model.");
+			if (!$checkout->save($data))
+				throw new Exception("A DB error ocurred inserting checkout object");
 
 			//save each checkout object
 			foreach ($checkout_obj->objects as $obj) {
@@ -268,7 +261,8 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 			//get object local props
 			$props = !class_exists($object_class) ?: $object_class::getById($obj->object_id);
 
-			if (!$props) continue;
+			if (!$props)
+				continue;
 
 			//extend custom flexible properties
 			$checkout_object->name     = $props->name ?? "";
@@ -285,17 +279,61 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 	}
 
 	/**
-	 * Get the last user checkout
-	 * @param Int $user_id - The User ID
-	 * @param String $state - The checkout state property
-	 * @return Mixed
+	 * Method: Parses checkout form objects & set new props by reference (validator & parser)
+	 * @param Object $checkout - The checkout object
+	 * @param Array $data - The received form data
 	 */
-	public static function getLast($user_id = 0, $state = "pending")
+	public static function parseFormObjects(&$checkout, $data = [])
 	{
-		$conditions = "user_id = ?1 AND state = ?2";
-		$binding    = [1 => $user_id, 2 => $state];
+		$checkout->objects = [];
+		$checkout->amount  = 0;
 
-		return self::findFirst([$conditions, "bind" => $binding, "order" => "local_time DESC"]);
+		$classes = [];
+		$total_q = 0;
+
+		//loop throught checkout items
+		foreach ($data as $key => $q) {
+
+			//parse properties
+			$props = explode("_", $key);
+
+			//validates checkout data has defined prefix
+			if (strpos($key, static::$FORM_DATA_PREFIX) === false || count($props) != 3 || empty($q))
+				continue;
+
+			//get object props
+			$object_class = $props[1];
+			$object_id    = $props[2];
+
+			//create object if class dont exists
+			$object = class_exists($object_class) ? $object_class::getById($object_id) : null;
+
+			//append object class
+			if (!in_array($object_class, $classes))
+				$classes[] = $object_class;
+
+			//update total Q
+			$total_q += $q;
+
+			//update amount
+			if (!empty($object->price))
+				$checkout->amount += $q * $object->price;
+
+			//create new checkout object without ORM props
+			$checkout_object = (object)[
+				"object_class" => $object_class,
+				"object_id"    => $object_id,
+				"quantity"     => $q,
+			];
+
+			//set item in array as string or plain object
+			$checkout->objects[] = $checkout_object;
+		}
+
+		//set objects class name
+		$checkout->objects_classes = $classes;
+		//update total Q
+		$checkout->total_q = $total_q;
 	}
 
 	/**
@@ -325,21 +363,16 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 				throw new Exception("Carbon library class not found.");
 
 			//use carbon library to handle time
-			$now = new \Carbon\Carbon();
-			//substract time
-			$now->subHours(static::$CHECKOUT_EXPIRATION);
-			//s($now->toDateTimeString());
+			$now = (new \Carbon\Carbon())->subHours(static::$CHECKOUT_EXPIRATION);
 
 			//get expired objects
 			$conditions = "state = 'pending' AND local_time < ?1";
-			$binding    = [1 => $now->toDateTimeString()];
-			//query
-			$objects = self::find([$conditions, "bind" => $binding]);
+			$objects    = self::find([$conditions, "bind" => [1 => $now->toDateTimeString()]]);
 
 			$count = 0;
 
 			if ($objects) {
-				//set count
+
 				$count = $objects->count();
 				//delete action
 				$objects->delete();
@@ -348,9 +381,6 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 			//delete expired objects
 			return $count;
 		}
-		catch (\Exception | Exception $e) {
-
-			return 0;
-		}
+		catch (\Exception | Exception $e) { return 0; }
 	}
 }

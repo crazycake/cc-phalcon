@@ -30,12 +30,6 @@ trait CheckoutManager
 	abstract public function onSuccessCheckout(&$checkout);
 
 	/**
-	 * Form data prefix
-	 * @var String
-	 */
-	public static $FORM_DATA_PREFIX = "Checkout_";
-
-		/**
 	 * trait config
 	 * @var Array
 	 */
@@ -71,39 +65,45 @@ trait CheckoutManager
 		//make sure is ajax request
 		$this->onlyAjax();
 
-		//get class
-		$entity = $this->checkout_manager_conf["checkout_entity"];
+		//get form data
+		$data = $this->handleRequest([
+			"gateway" => "string"
+		], "POST", false);
 
 		try {
 
-			//get checkout object with parsed data
-			$checkout = $this->newCheckoutObject();
+			//new checkout object
+			$checkout = (object)[
+				"gateway"  => $data["gateway"],
+				"currency" => $data["currency"] ?? $this->checkout_manager_conf["default_currency"],
+				"payload"  => $data["payload"] ?? null,
+				"client"   => ["platform" => $this->client->platform, "browser" => $this->client->browser, "version" => $this->client->version]
+			];
 
-			//call listeners
+			$entity = $this->checkout_manager_conf["checkout_entity"];
+
+			//parse checkout objects
+			if (method_exists($entity, "parseFormObjects"))
+				$entity::parseFormObjects($checkout, $data);
+
+			//call event
 			$this->onBeforeBuyOrderCreation($checkout);
 
-			$checkout_orm = $entity::newBuyOrder($checkout);
-
 			//check if an error occurred
-			if (!$checkout_orm) {
+			if (!$checkout = $entity::newBuyOrder($checkout)) {
 
 				$this->logger->error("CheckoutManager::buyOrder -> failed saving checkout: ".json_encode($checkout, JSON_UNESCAPED_SLASHES));
 				$this->jsonResponse(500);
 			}
 
-			//set buy order
-			$checkout->buy_order = $checkout_orm->buy_order;
-
+			//call event
 			if (method_exists($this, "onAfterBuyOrderCreation"))
 				$this->onAfterBuyOrderCreation($checkout);
 
 			//send JSON response
 			return $this->jsonResponse(200, $checkout);
 		}
-		catch (\Exception | Exception $e) { $exception = $e->getMessage(); }
-
-		//sends an error message
-		$this->jsonResponse(400, $exception);
+		catch (\Exception | Exception $e) { $this->jsonResponse(400, $e->getMessage()); }
 	}
 
 	/**
@@ -113,7 +113,7 @@ trait CheckoutManager
 	 */
 	public function successCheckout($buy_order = "")
 	{
-		$this->logger->debug("CheckoutManager::successCheckout -> processing buy order: ". $buy_order);
+		$this->logger->debug("CheckoutManager::successCheckout -> processing buy order: $buy_order");
 
 		try {
 			//set classes
@@ -137,7 +137,8 @@ trait CheckoutManager
 				$checkout = $checkout->reduce();
 
 			//set objects
-			$checkout->objects = $entity::getObjects($buy_order);
+			if (method_exists($entity, "getObjects"))
+				$checkout->objects = $entity::getObjects($buy_order);
 
 			//2) Call listener
 			$this->onSuccessCheckout($checkout);
@@ -152,97 +153,5 @@ trait CheckoutManager
 			//send alert system mail message
 			(new $mailer())->adminException($e, ["edata" => "buy_order: ".$buy_order ?? "n/a"]);
 		}
-	}
-
-	/**
-	 * Method: Parses objects checkout & set new props by reference (validator & parser)
-	 * @param Object $checkout - The checkout object
-	 * @param Array $data - The received form data
-	 */
-	public function parseCheckoutObjects(&$checkout = null, $data = [])
-	{
-
-		$checkout->objects = [];
-		$checkout->amount  = 0;
-
-		$classes = [];
-		$total_q = 0;
-
-		//loop throught checkout items
-		foreach ($data as $key => $q) {
-
-			//parse properties
-			$props = explode("_", $key);
-
-			//validates checkout data has defined prefix
-			if (strpos($key, static::$FORM_DATA_PREFIX) === false || count($props) != 3 || empty($q))
-				continue;
-
-			//get object props
-			$object_class = $props[1];
-			$object_id    = $props[2];
-
-			//create object if class dont exists
-			$object = class_exists($object_class) ? $object_class::getById($object_id) : null;
-
-			//append object class
-			if (!in_array($object_class, $classes))
-				$classes[] = $object_class;
-
-			//update total Q
-			$total_q += $q;
-
-			//update amount
-			if (!empty($object->price))
-				$checkout->amount += $q * $object->price;
-
-			//create new checkout object without ORM props
-			$checkout_object = (object)[
-				"object_class" => $object_class,
-				"object_id"    => $object_id,
-				"quantity"     => $q,
-			];
-
-			//set item in array as string or plain object
-			$checkout->objects[] = $checkout_object;
-		}
-
-		//set objects class name
-		$checkout->objects_classes = $classes;
-		//update total Q
-		$checkout->total_q = $total_q;
-	}
-
-	/* --------------------------------------------------- § -------------------------------------------------------- */
-
-	/**
-	 * New checkout object. CSRF validation skipped.
-	 * @return Object
-	 */
-	private function newCheckoutObject()
-	{
-		//get form data
-		$data = $this->handleRequest([
-			"gateway" => "string"
-		], "POST", false);
-
-		// take only some props of object client
-		$client = json_decode(json_encode($this->client), true);
-		
-		unset($client["shortVersion"], $client["isLegacy"], $client["requestedUri"], $client["token"], $client["tokenKey"]);
-
-		//create checkout object
-		$checkout = (object)[
-			"user_id"  => $this->user_session["id"] ?? null,
-			"gateway"  => $data["gateway"],
-			"currency" => $data["currency"] ?? $this->checkout_manager_conf["default_currency"],
-			"payload"  => $data["payload"] ?? null,
-			"client"   => json_encode($client, JSON_UNESCAPED_SLASHES)
-		];
-
-		//parse checkout objects
-		$this->parseCheckoutObjects($checkout, $data);
-
-		return $checkout;
 	}
 }
