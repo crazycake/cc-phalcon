@@ -21,7 +21,7 @@ trait Uploader
 	 * Default upload max size
 	 * @var Integer
 	 */
-	protected static $DEFAULT_MAX_SIZE = 3072; //KB
+	protected static $DEFAULT_MAX_SIZE = 5120; //KB
 
 	/**
 	 * Default upload file type
