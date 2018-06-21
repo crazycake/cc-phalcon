@@ -30,9 +30,8 @@ trait AccountAuth
 
 	/**
 	 * Set response on logged in (session)
-	 * @param Array $payload - Optional data
 	 */
-	abstract public function setResponseOnLoggedIn($payload = null);
+	abstract public function setResponseOnLoggedIn();
 
 	/**
 	 * Session Destructor with autoredirection (session)

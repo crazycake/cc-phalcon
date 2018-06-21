@@ -177,20 +177,19 @@ trait AccountSession
 
 	/**
 	 * Handles response on login event, check for pending redirection.
-	 * @param Array $payload - Sends a payload response instead of redirection (optional)
 	 */
-	protected function setResponseOnLoggedIn($payload = null)
+	protected function setResponseOnLoggedIn()
 	{
 		$uri = $this->account_session_conf["logged_in_uri"]; //default logged in uri
 
 		//check if redirection is set in session
 		if ($this->session->has("auth_redirect")) {
-			
+
 			//get redirection uri from session & remove from session
 			$uri = $this->session->get("auth_redirect");
 			$this->session->remove("auth_redirect");
 		}
-		
+
 		$this->redirectTo($uri);
 	}
 
