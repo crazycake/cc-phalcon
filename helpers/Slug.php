@@ -17,17 +17,20 @@ class Slug
 	/**
 	 * Creates a slug to be used for pretty URLs
 	 * If iconv extension is enabled, replace utf8 chars to ascii.
-	 * @param String $string - The input string
+	 * @param String $str - The input string
 	 * @param Array $replace - Placeholders to be replaced
 	 * @param String $delimiter - A delimiter
 	 * @return Mixed
 	 */
-	public static function generate($string = "", $replace = [], $delimiter = "-")
+	public static function generate($str = "", $replace = [], $delimiter = "-")
 	{
-		$clean = $string;
+		if(empty($str))
+			return "";
+
+		$clean = $str;
 
 		if (extension_loaded("iconv"))
-			$clean = iconv("UTF-8", "ASCII//TRANSLIT", $string);
+			$clean = iconv("UTF-8", "ASCII//TRANSLIT", $str);
 
 		if (!empty($replace))
 			$clean = str_replace((array)$replace, " ", $clean);
