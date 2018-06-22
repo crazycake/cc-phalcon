@@ -27,7 +27,7 @@ trait CheckoutManager
 	 * Listener - Success checkout Task completed
 	 * @param Object $checkout - The checkout object
 	 */
-	abstract public function onSuccessCheckout(&$checkout);
+	abstract public function onSuccessCheckout($checkout);
 
 	/**
 	 * trait config
@@ -131,14 +131,6 @@ trait CheckoutManager
 
 			//1) update status of checkout
 			$entity::updateState($buy_order, "success");
-
-			//reduce object
-			if (method_exists($checkout, "reduce"))
-				$checkout = $checkout->reduce();
-
-			//set objects
-			if (method_exists($entity, "getObjects"))
-				$checkout->objects = $entity::getObjects($buy_order);
 
 			//2) Call listener
 			$this->onSuccessCheckout($checkout);

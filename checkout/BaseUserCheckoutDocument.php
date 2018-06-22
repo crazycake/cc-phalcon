@@ -73,7 +73,6 @@ class BaseUserCheckoutDocument extends \CrazyCake\Models\BaseDocument
 		$di->getShared("logger")->debug("BaseUserCheckout::newBuyOrder -> saving BuyOrder: $checkout->buyOrder");
 
 		try {
-
 			//insert
 			if (!$checkout = self::insert($checkout))
 				throw new Exception("A DB error ocurred inserting checkout object.");
