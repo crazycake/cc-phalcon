@@ -109,6 +109,7 @@ trait AccountAuth
 
 			//success login
 			$this->newUserSession($user);
+
 			//redirect/response
 			$this->setResponseOnLoggedIn();
 		}

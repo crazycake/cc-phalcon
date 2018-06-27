@@ -60,6 +60,7 @@ trait AccountSession
 
 		//set session var
 		$this->user_session = $this->getUserSession();
+
 		//set user data for view, filter is passed to exclude some properties
 		$this->_setUserSessionForView($this->user_session);
 	}
@@ -135,6 +136,8 @@ trait AccountSession
 
 		//save in session
 		$this->session->set("user", $user_session);
+
+		$this->user_session = $user_session;
 	}
 
 	/**
