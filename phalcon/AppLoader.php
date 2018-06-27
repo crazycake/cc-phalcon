@@ -1,7 +1,7 @@
 <?php
 /**
  * App Loader Trait. Contains classes loader logic & environment setup
- * Env vars: APP_ENV, APP_PORT, APP_TZ, APP_HTTPS_ONLY
+ * Env vars: APP_ENV, APP_TZ, APP_HTTPS_ONLY
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
@@ -75,12 +75,6 @@ trait AppLoader
 			$scheme   = $_SERVER["HTTP_X_FORWARDED_PROTO"] ?? "http"; //aws elb headers
 			$host     = $_SERVER["HTTP_HOST"].preg_replace("@/+$@", "", dirname($_SERVER["SCRIPT_NAME"]));
 			$base_url = "$scheme://$host";
-
-			//set port?
-			$port = getenv("APP_PORT") ?: "";
-
-			if (!empty($port))
-				$base_url = str_replace(":$port", "", $base_url).":$port";
 
 			// add missing slash?
 			if (substr($base_url, -1) != "/")
@@ -159,7 +153,7 @@ trait AppLoader
 
 		//set library path => namespaces
 		$namespaces = [];
-		
+
 		foreach ($libraries as $lib)
 			$namespaces[self::$CORE_NAMESPACE.ucfirst($lib)] = "$class_path/$lib/";
 
