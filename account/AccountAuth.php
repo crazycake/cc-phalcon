@@ -171,7 +171,7 @@ trait AccountAuth
 		}
 
 		//check user & given hash with the one stored (wrong combination)
-		if (!$user || !$this->security->checkHash($data["pass"], $user->pass))
+		if (!$user || !$this->security->checkHash($data["pass"], $user->pass ?? ''))
 			$this->jsonResponse(400, $this->account_auth_conf["trans"]["AUTH_FAILED"]);
 
 		//check user account flag
