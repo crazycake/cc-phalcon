@@ -241,6 +241,10 @@ trait AccountAuth
 			$this->jsonResponse(400);
 		}
 
+		//event trigger
+		if (method_exists($this, "afterRegisterUser"))
+			$this->afterRegisterUser($user);
+
 		//hash sensitive data
 		$token_chain = self::newTokenChainCrypt($user->id ?? (string)$user->_id, "activation");
 
