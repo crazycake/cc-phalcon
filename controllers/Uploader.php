@@ -285,8 +285,11 @@ trait Uploader
 					$saved_files[$key] = [];
 
 				//skip image api job?
-				if(isset($conf["img_api"]) && !$conf["img_api"])
+				if(isset($conf["img_api"]) && !$conf["img_api"]) {
+
+					$saved_files[$key][] = $dst;
 					continue;
+				}
 
 				//set filename
 				$conf["filename"] = $file;
