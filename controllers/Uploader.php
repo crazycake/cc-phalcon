@@ -286,7 +286,7 @@ trait Uploader
 					$saved_files[$key] = [];
 
 				//skip image api job?
-				if(isset($conf["s3Upload"]) && !$conf["s3Upload"])
+				if(isset($conf["img_api"]) && !$conf["img_api"])
 					continue;
 
 				//set filename
