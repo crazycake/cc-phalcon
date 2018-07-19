@@ -285,6 +285,10 @@ trait Uploader
 				if (!isset($saved_files[$key]))
 					$saved_files[$key] = [];
 
+				//skip image api job?
+				if(isset($conf["s3Upload"]) && !$conf["s3Upload"])
+					continue;
+
 				//set filename
 				$conf["filename"] = $file;
 				// new resize job
