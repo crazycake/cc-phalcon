@@ -200,7 +200,7 @@ class AppServices
 	 */
 	private function _setMongoService(&$di)
 	{
-		$uri = getenv("MONGO_HOST") ? str_replace("+", "=", getenv("MONGO_HOST")) : "mongodb://mongo";
+		$uri = getenv("MONGO_HOST") ? str_replace("~", "=", getenv("MONGO_HOST")) : "mongodb://mongo";
 
 		$di->setShared("mongo", function() use ($uri) {
 
