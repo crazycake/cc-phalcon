@@ -266,11 +266,11 @@ trait AccountAuth
 	}
 
 	/**
-	 * Sends activation mail message by email with recaptcha validation
+	 * Sends activation mail message with email & recaptcha validation
 	 * @param String $email - The user email
 	 * @param String $recaptcha - The reCaptcha challenge
 	 */
-	public function sendActivationMailMessageByEmail($email, $recaptcha = "")
+	public function sendActivationMailMessageWithRecaptcha($email, $recaptcha = "")
 	{
 		// google reCaptcha helper
 		$recaptcher = new ReCaptcha($this->config->google->reCaptchaKey);
