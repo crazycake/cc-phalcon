@@ -35,16 +35,15 @@ trait Mailer
 	 */
 	public function initMailer($conf = [])
 	{
-		//defaults
 		$defaults = [
 			"user_entity" => "user",
 			"from_name"   => $this->config->name
 		];
 
-		//merge confs
+		// merge confs
 		$conf = array_merge($defaults, $conf);
 
-		//append class prefixes
+		// append class prefixes
 		$conf["user_entity"] = App::getClass($conf["user_entity"]);
 
 		if (empty($conf["trans"]))
@@ -72,17 +71,17 @@ trait Mailer
 		$data["subject"] = "Contacto ".$this->config->name;
 		$data["to"]      = $this->config->emails->support;
 
-		//extend config
+		// extend config
 		$this->mailer_conf = array_merge($this->mailer_conf, $data);
 
 		// call listener?
 		if (method_exists($this, "onBeforeSendContact"))
 			$this->onBeforeSendContact($data);
 
-		//sends email
+		// sends email
 		$this->sendMessage("contact", $data["subject"], $data["to"]);
 
-		//send JSON response
+		// send response
 		$this->jsonResponse(200);
 	}
 
@@ -92,14 +91,14 @@ trait Mailer
 	 */
 	public function accountActivation($data = [])
 	{
-		//merge mailer conf
+		// merge mailer conf
 		$this->mailer_conf = array_merge($this->mailer_conf, $data);
 
-		//set message properties
+		// set message properties
 		$subject = $this->mailer_conf["trans"]["SUBJECT_ACTIVATION"];
 		$to      = $this->mailer_conf["email"];
 
-		//sends the message
+		// sends the message
 		$this->sendMessage("activation", $subject, $to);
 	}
 
@@ -109,14 +108,14 @@ trait Mailer
 	 */
 	public function passwordRecovery($data = [])
 	{
-		//merge mailer conf
+		// merge mailer conf
 		$this->mailer_conf = array_merge($this->mailer_conf, $data);
 
-		//set message properties
+		// set message properties
 		$subject = $this->mailer_conf["trans"]["SUBJECT_PASSWORD"];
 		$to      = $this->mailer_conf["email"];
 
-		//sends the message
+		// sends the message
 		$this->sendMessage("passwordRecovery", $subject, $to);
 	}
 
@@ -128,13 +127,13 @@ trait Mailer
 	 */
 	public function inlineHtml($template = "")
 	{
-		//set mailer sub config
+		// set mailer sub config
 		$this->mailer_conf["config"] = $this->config;
 
-		//get the view in mailing folder
+		// get the view in mailing folder
 		$html = $this->simpleView->render("mailing/$template", $this->mailer_conf);
 
-		//apply a HTML inliner if a stylesheet is present
+		// apply a HTML inliner if a stylesheet is present
 		if (is_file(self::$MAILER_CSS_FILE)) {
 
 			$emogrifier = new \Pelago\Emogrifier($html, file_get_contents(self::$MAILER_CSS_FILE));
@@ -165,12 +164,12 @@ trait Mailer
 		$data["name"]    = $this->config->name." ".MODULE_NAME;
 		$data["message"] = "$error\nData:\n".(empty($data["edata"]) ? "n/a" : json_encode($data["edata"], JSON_UNESCAPED_SLASHES));
 
-		//extend config
+		// extend config
 		$this->mailer_conf = array_merge($this->mailer_conf, $data);
 
 		$this->logger->debug("Mailer::adminException -> sending exception: ".json_encode($this->mailer_conf, JSON_UNESCAPED_SLASHES));
 
-		//sends the message
+		// sends the message
 		$this->sendMessage("contact", "Admin message", $admin_emails);
 	}
 
@@ -184,30 +183,30 @@ trait Mailer
 	 */
 	public function sendMessage($template, $subject, $recipients, $attachments = [])
 	{
-		//validation
+		// validation
 		if (empty($template) || empty($recipients))
 			throw new Exception("Mailer::sendMessage -> Invalid params data for sending mail");
 
-		//parse recipients
+		// parse recipients
 		if (is_string($recipients))
 			$recipients = explode(",", $recipients);
 
-		//set default subject
+		// set default subject
 		if (empty($subject))
 			$subject = $this->config->name;
 
-		//service instance
+		// service instance
 		$sendgrid = new \SendGrid($this->config->sendgrid->apiKey);
-		//emails
+		// emails
 		$from     = new \SendGrid\Email($this->mailer_conf["from_name"],  $this->config->emails->sender);
 		$reply_to = new \SendGrid\ReplyTo($this->config->emails->support ?? $this->config->emails->sender, $this->mailer_conf["from_name"]);
-		//content
+		// content
 		$content = new \SendGrid\Content("text/html", $this->inlineHtml($template));
-		//mail object
+		// mail object
 		$mail = new \SendGrid\Mail($from, $subject, (new \SendGrid\Email(null, $recipients[0])), $content);
 		$mail->setReplyTo($reply_to);
 
-		//add recipients
+		// add recipients
 		foreach ($recipients as $i => $email) {
 
 			if (empty($i)) continue;
@@ -215,10 +214,10 @@ trait Mailer
 			$mail->personalization[0]->addTo(new \SendGrid\Email(null, $email));
 		}
 
-		//parse attachments
+		// parse attachments
 		$this->_parseAttachments($attachments, $mail);
 
-		//send mail
+		// send mail
 		$result = $sendgrid->client->mail()->send()->post($mail);
 
 		$body = json_encode($result->body() ?? "", JSON_UNESCAPED_SLASHES);
@@ -245,7 +244,7 @@ trait Mailer
 			if (empty($attachment["name"]) || empty($attachment["binary"]))
 				continue;
 
-			//set attachment
+			// attachment
 			$att = new \SendGrid\Attachment();
 			$att->setDisposition("attachment");
 			$att->setContentId($attachment["id"] ?? uniqid());

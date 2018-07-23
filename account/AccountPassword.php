@@ -33,7 +33,7 @@ trait AccountPassword
 	public function afterExecuteRoute()
 	{
 		parent::afterExecuteRoute();
-		//if loggedIn redirect
+		// if loggedIn redirect
 		$this->redirectLoggedIn();
 	}
 
@@ -43,7 +43,7 @@ trait AccountPassword
 	 */
 	public function initAccountPassword($conf = [])
 	{
-		//defaults
+		// defaults
 		$defaults = [
 			"user_entity"         => "user",
 			"redirection_uri"     => "signIn",
@@ -51,7 +51,7 @@ trait AccountPassword
 			"password_min_length" => 8,
 		];
 
-		//merge confs
+		// merge confs
 		$conf = array_merge($defaults, $conf);
 
 		$conf["user_entity"] = App::getClass($conf["user_entity"]);
@@ -71,26 +71,26 @@ trait AccountPassword
 	 */
 	public function sendRecoveryInstructions($email, $recaptcha = "")
 	{
-		//google reCaptcha helper
+		// google reCaptcha helper
 		$recaptcher = new ReCaptcha($this->config->google->reCaptchaKey);
 
-		//check valid reCaptcha
+		// check valid reCaptcha
 		if (empty($email) || empty($recaptcha) || !$recaptcher->isValid($recaptcha))
 			return $this->jsonResponse(400, $this->account_password_conf["trans"]["RECAPTCHA_FAILED"]);
 
-		//check if user exists with active account flag
+		// check if user exists with active account flag
 		$entity = $this->account_password_conf["user_entity"];
 		$user   = $entity::getUserByEmail($email, "enabled");
 
-		//if user not exists, send message
+		// if user not exists, send message
 		if (!$user)
 			$this->jsonResponse(400, $this->account_password_conf["trans"]["NOT_FOUND"]);
 
-		//hash sensitive data
+		// hash sensitive data
 		$token_chain  = self::newTokenChainCrypt($user->id ?? (string)$user->_id, "pass");
 		$password_uri = str_replace("{hash}", $token_chain, $this->account_password_conf["password_uri"]);
 
-		//sends the message
+		// sends the message
 		$this->sendMailMessage("passwordRecovery", [
 			"user"       => $user,
 			"email"      => $user->email,
@@ -98,10 +98,10 @@ trait AccountPassword
 			"expiration" => self::$TOKEN_EXPIRES["pass"]
 		]);
 
-		//set a flash message to show on account controller
+		// set a flash message to show on account controller
 		$this->flash->success(str_replace("{email}", $email, $this->account_password_conf["trans"]["PASS_MAIL_SENT"]));
 
-		//send JSON response
+		// send response
 		$this->jsonResponse(200, ["redirect" => $this->account_password_conf["redirection_uri"]]);
 	}
 
@@ -111,14 +111,14 @@ trait AccountPassword
 	 */
 	public function newPasswordView($hash = null)
 	{
-		//if loggedIn redirect to account
+		// if loggedIn redirect to account
 		$this->redirectLoggedIn();
 
 		try {
-			//handle the encrypted data with parent controller
+			// handle the encrypted data with parent controller
 			self::validateHash($hash);
 
-			//saves hash in session
+			// saves hash in session
 			$this->session->set("passwordHash", $hash);
 		}
 		catch (Exception $e) {
@@ -143,29 +143,29 @@ trait AccountPassword
 
 			list($user_id, $token_type, $token) = self::validateHash($hash);
 
-			//get user
+			// get user
 			$entity = $this->account_password_conf["user_entity"];
 			$user   = $entity::getById($user_id);
 
 			if (!$user)
 				throw new Exception("got an invalid user [$user_id] when validating hash.");
 
-			//pass length
+			// pass length
 			if (strlen($password) < $this->account_password_conf["password_min_length"])
 				throw new Exception($this->account_password_conf["trans"]["PASS_TOO_SHORT"]);
 
-			//saves new pass
+			// saves new pass
 			$entity::updateProperty($user_id, "pass", $this->security->hash($password));
 
-			//new user session
+			// new user session
 			$this->newUserSession($user);
 
-			//delete token
+			// delete token
 			$this->deleteToken($user_id, $token_type);
 
-			//set a flash message to show on account controller
+			// set a flash message to show on account controller
 			$this->flash->success($this->account_password_conf["trans"]["NEW_PASS_SAVED"]);
-			
+
 			// redirect response
 			$this->jsonResponse(200, ["redirect" => $this->account_password_conf["redirection_uri"]]);
 		}
@@ -185,28 +185,28 @@ trait AccountPassword
 	public function updatePassword($new_pass, $current_pass)
 	{
 		try {
-			//get model class name & user
+			// get model class name & user
 			$entity = $this->account_password_conf["user_entity"];
 			$user   = $entity::getById($this->user_session["id"]);
 
 			if (empty($new_pass) && empty($current_pass))
 				return;
-			
+
 			if (!empty($new_pass) && empty($current_pass))
 				throw new Exception($this->account_password_conf["trans"]["CURRENT_PASS_EMPTY"]);
 
 			if (strlen($new_pass) < $this->account_password_conf["password_min_length"])
 				throw new Exception($this->account_password_conf["trans"]["PASS_TOO_SHORT"]);
 
-			//check current pass input
+			// check current pass input
 			if (!$this->security->checkHash($current_pass, $user->pass))
 				throw new Exception($this->account_password_conf["trans"]["PASS_DONT_MATCH"]);
 
-			//check pass is different to current
+			// check pass is different to current
 			if ($this->security->checkHash($new_pass, $user->pass))
 				throw new Exception($this->account_password_conf["trans"]["NEW_PASS_EQUALS"]);
 
-			//saves new pass
+			// saves new pass
 			$entity::updateProperty($this->user_session["id"], "pass", $this->security->hash($new_pass));
 
 			return true;

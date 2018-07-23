@@ -55,7 +55,7 @@ trait AccountToken
 
 		$token = $redis->get("TOKEN_".$type."_".$user_id);
 		$redis->close();
-		
+
 		return $token;
 	}
 
@@ -125,14 +125,14 @@ trait AccountToken
 
 		$data = (\Phalcon\DI::getDefault())->getShared("cryptify")->decryptData($hash, "#");
 
-		//validate data (user_id, token_type and token)
+		// validate data (user_id, token_type and token)
 		if (count($data) < 3)
 			throw new Exception("decrypted data is not 3 dimension array [user_id, token_type, token]");
 
-		//set vars values
+		// set vars values
 		list($user_id, $token_type, $token) = $data;
 
-		//get token
+		// get token
 		$storedToken = self::getToken($user_id, $token_type);
 
 		if (!$storedToken || $token != $storedToken)

@@ -68,11 +68,11 @@ class BaseUser extends \CrazyCake\Models\Base
 	 */
 	public function beforeValidationOnCreate()
 	{
-		//set password hash
+		// set password hash
 		if (!is_null($this->pass))
 			$this->pass = $this->getDI()->getShared("security")->hash($this->pass);
 
-		//set dates
+		// set dates
 		$this->last_login = date("Y-m-d H:i:s");
 		$this->created_at = date("Y-m-d H:i:s");
 	}
@@ -90,7 +90,7 @@ class BaseUser extends \CrazyCake\Models\Base
 		$conditions = "email = ?0"; //default condition
 		$bind       = [$email];
 
-		//filter by account flag?
+		// filter by account flag?
 		if ($flag) {
 
 			$bind[] = $flag;

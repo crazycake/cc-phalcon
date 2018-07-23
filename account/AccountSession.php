@@ -44,24 +44,23 @@ trait AccountSession
 	 */
 	public function initAccountSession($conf = [])
 	{
-		//defaults
 		$defaults = [
 			"user_entity"        => "user",
 			"logged_in_uri"      => "account",
 			"ignored_properties" => ["pass"]
 		];
 
-		//merge confs
+		// merge confs
 		$conf = array_merge($defaults, $conf);
-		//append class prefixes
+		// append class prefixes
 		$conf["user_entity"] = App::getClass($conf["user_entity"]);
 
 		$this->account_session_conf = $conf;
 
-		//set session var
+		// set session var
 		$this->user_session = $this->getUserSession();
 
-		//set user data for view, filter is passed to exclude some properties
+		// set user data for view, filter is passed to exclude some properties
 		$this->_setUserSessionForView($this->user_session);
 	}
 
@@ -76,7 +75,7 @@ trait AccountSession
 		if (!$this->session->has("user"))
 			return false;
 
-		//get user session
+		// get user session
 		$user_session = $this->session->get("user");
 
 		if (empty($user_session) || empty($user_session["id"]) || empty($user_session["auth"]))
@@ -95,15 +94,15 @@ trait AccountSession
 	 */
 	protected function requireLoggedIn()
 	{
-		//check if user is logged in, if not dispatch to auth/logout
+		// check if user is logged in, if not dispatch to auth/logout
 		if ($this->isLoggedIn())
 			return true;
 
-		//for ajax request or API mode sends a forbidden warning
+		// for ajax request or API mode sends a forbidden warning
 		if ($this->request->isAjax() || MODULE_NAME == "api")
 			$this->jsonResponse(401);
 
-		//forward to logout
+		// forward to logout
 		$this->dispatcher->forward(["controller" => "auth", "action" => "logout"]);
 		$this->dispatcher->dispatch();
 		die();
@@ -115,11 +114,11 @@ trait AccountSession
 	 */
 	protected function newUserSession($user)
 	{
-		//set user data
+		// set user data
 		$user_session         = json_decode(json_encode($user), true);
 		$user_session["auth"] = true;
 
-		//mongo ID special case
+		// mongo ID special case
 		if (!empty($user_session["_id"])) {
 
 			$user_session["id"] = current($user_session["_id"]);
@@ -131,10 +130,10 @@ trait AccountSession
 		foreach ($filter as $key)
 			unset($user_session[$key]);
 
-		//call abstract method
+		// call abstract method
 		$user_session = array_merge($user_session, $this->onSessionSave($user));
 
-		//save in session
+		// save in session
 		$this->session->set("user", $user_session);
 
 		$this->user_session = $user_session;
@@ -156,14 +155,14 @@ trait AccountSession
 	 */
 	protected function updateUserSession($data = [])
 	{
-		//get user session
+		// get user session
 		$user_session = $this->session->get("user");
 
-		//update props
+		// update props
 		foreach ($data as $key => $value)
 			$user_session[$key] = $value;
 
-		//save in session
+		// save in session
 		$this->session->set("user", $user_session);
 
 		$this->user_session = $this->getUserSession();
@@ -174,7 +173,7 @@ trait AccountSession
 	 */
 	protected function removeUserSession()
 	{
-		//unset all user session data
+		// unset all user session data
 		$this->session->remove("user");
 	}
 
@@ -185,10 +184,10 @@ trait AccountSession
 	{
 		$uri = $this->account_session_conf["logged_in_uri"]; //default logged in uri
 
-		//check if redirection is set in session
+		// check if redirection is set in session
 		if ($this->session->has("auth_redirect")) {
 
-			//get redirection uri from session & remove from session
+			// get redirection uri from session & remove from session
 			$uri = $this->session->get("auth_redirect");
 			$this->session->remove("auth_redirect");
 		}
@@ -245,13 +244,13 @@ trait AccountSession
 		if ($this->request->isAjax() || !$this->di->has("view"))
 			return;
 
-		//filter some sensitive props?
+		// filter some sensitive props?
 		$filter = $this->account_session_conf["ignored_properties"];
 
 		foreach ($filter as $key)
 			unset($user_session[$key]);
 
-		//Load view data only for non-ajax requests, set user data var for view
+		// load view data only for non-ajax requests, set user data var for view
 		$this->view->setVar("user_session", $user_session);
 	}
 }
