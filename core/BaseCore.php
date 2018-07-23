@@ -96,7 +96,7 @@ abstract class BaseCore extends Controller
 	{
 		$uri = $this->request->getUri();
 
-		//replaces '*/public/' or first '/'
+		// replaces '*/public/' or first '/'
 		$regex = "/^.*\/public\/(?=[^.]*$)|^\//";
 		$uri   = preg_replace($regex, "", $uri);
 
