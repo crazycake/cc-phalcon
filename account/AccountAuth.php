@@ -283,10 +283,9 @@ trait AccountAuth
 
 		// get model classes
 		$entity = $this->account_auth_conf["user_entity"];
-		$user   = $entity::getUserByEmail($email, "pending");
 
 		// check if user exists is a pending account
-		if (!$user)
+		if (!$user = $entity::getUserByEmail($email, "pending"))
 			$this->jsonResponse(400, $this->account_auth_conf["trans"]["NOT_FOUND"]);
 
 		// send activation mail message
