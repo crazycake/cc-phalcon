@@ -8,8 +8,6 @@ namespace CrazyCake\Controllers;
 
 //imports
 use Phalcon\Exception;
-use Pelago\Emogrifier;
-//core
 use CrazyCake\Phalcon\App;
 
 /**
@@ -100,7 +98,7 @@ trait Mailer
 		//set message properties
 		$subject = $this->mailer_conf["trans"]["SUBJECT_ACTIVATION"];
 		$to      = $this->mailer_conf["email"];
-		
+
 		//sends the message
 		$this->sendMessage("activation", $subject, $to);
 	}
@@ -117,7 +115,7 @@ trait Mailer
 		//set message properties
 		$subject = $this->mailer_conf["trans"]["SUBJECT_PASSWORD"];
 		$to      = $this->mailer_conf["email"];
-		
+
 		//sends the message
 		$this->sendMessage("passwordRecovery", $subject, $to);
 	}
@@ -139,11 +137,11 @@ trait Mailer
 		//apply a HTML inliner if a stylesheet is present
 		if (is_file(self::$MAILER_CSS_FILE)) {
 
-			$emogrifier = new Emogrifier($html, file_get_contents(self::$MAILER_CSS_FILE));
+			$emogrifier = new \Pelago\Emogrifier($html, file_get_contents(self::$MAILER_CSS_FILE));
 			$emogrifier->addExcludedSelector("head");
 			$emogrifier->addExcludedSelector("meta");
-			//inliner
-			$html = $emogrifier->emogrify();
+
+			$html = $emogrifier->emogrify(); //inline styles
 		}
 
 		return $html;
@@ -208,7 +206,7 @@ trait Mailer
 		//mail object
 		$mail = new \SendGrid\Mail($from, $subject, (new \SendGrid\Email(null, $recipients[0])), $content);
 		$mail->setReplyTo($reply_to);
-		
+
 		//add recipients
 		foreach ($recipients as $i => $email) {
 
