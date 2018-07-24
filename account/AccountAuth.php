@@ -228,12 +228,12 @@ trait AccountAuth
 			// remove activation token
 			$this->deleteToken($user_id, "activation");
 
-			// success login
-			$this->newUserSession($user);
-
 			// listener
 			if (method_exists($this, "onActivationSuccess"))
 				$this->onActivationSuccess($user);
+
+			// success login
+			$this->newUserSession($user);
 
 			// set a flash message to show on account controller
 			$this->flash->success($this->account_auth_conf["trans"]["ACTIVATION_SUCCESS"]);
