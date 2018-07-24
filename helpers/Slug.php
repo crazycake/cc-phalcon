@@ -21,7 +21,7 @@ class Slug
 	 */
 	public static function generate($str = "", $replace = [], $delimiter = "-")
 	{
-		if(empty($str))
+		if (empty($str))
 			return "";
 
 		$clean = $str;

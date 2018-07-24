@@ -274,10 +274,8 @@ trait AccountAuth
 		$recaptcher = new ReCaptcha($this->config->google->reCaptchaKey);
 
 		// check valid reCaptcha
-		if (empty($email) || !$recaptcher->isValid($recaptcha)) {
-			//show error message
+		if (empty($email) || !$recaptcher->isValid($recaptcha))
 			return $this->jsonResponse(400, $this->account_auth_conf["trans"]["RECAPTCHA_FAILED"]);
-		}
 
 		// get model classes
 		$entity = $this->account_auth_conf["user_entity"];
