@@ -75,51 +75,6 @@ trait AccountAuth
 	/* --------------------------------------------------- § -------------------------------------------------------- */
 
 	/**
-	 * Action - Activation link handler, can dispatch to a view
-	 * @param String $hash - The encrypted hash
-	 */
-	public function activationAction($hash = "")
-	{
-		// if user is already logged in redirect
-		$this->redirectLoggedIn();
-
-		try {
-
-			$entity = $this->account_auth_conf["user_entity"];
-
-			// handle the hash data with parent controller
-			list($user_id, $token_type, $token) = self::validateHash($hash);
-
-			// check user pending flag
-			$user = $entity::getById($user_id);
-
-			if (!$user || $user->flag != "pending")
-				throw new Exception("missing 'pending' flag for user [$user->id].");
-
-			// save new account flag state
-			$entity::updateProperty($user_id, "flag", "enabled");
-			// remove activation token
-			$this->deleteToken($user_id, "activation");
-
-			// set a flash message to show on account controller
-			$this->flash->success($this->account_auth_conf["trans"]["ACTIVATION_SUCCESS"]);
-
-			// success login
-			$this->newUserSession($user);
-
-			// redirect/response
-			$this->setResponseOnLoggedIn();
-		}
-		catch (Exception $e) {
-
-			$data = $hash ? $this->cryptify->decryptData($hash) : "invalid hash";
-
-			$this->logger->error("AccountAuth::activationAction -> Error in account activation, decrypted data [$data]: ".$e->getMessage());
-			$this->dispatcher->forward(["controller" => "error", "action" => "expired"]);
-		}
-	}
-
-	/**
 	 * Action - Logout
 	 */
 	public function logoutAction()
@@ -224,7 +179,7 @@ trait AccountAuth
 		// insert user
 		if (!$user = $entity::insert($data)) {
 
-			$this->logger->error("AccountAuth::registerAction -> failed inserting user ".json_encode(data));
+			$this->logger->error("AccountAuth::registerAction -> failed user insertion: ".json_encode(data));
 			$this->jsonResponse(400);
 		}
 
@@ -244,6 +199,53 @@ trait AccountAuth
 			$this->jsonResponse(200, ["message" => $message]);
 
 		$this->redirectTo($this->account_auth_conf["logout_uri"]);
+	}
+
+	/**
+	 * Action - Activation link handler, can dispatch to a view
+	 * @param String $hash - The encrypted hash
+	 */
+	public function activationAction($hash = "")
+	{
+		// if user is already logged in redirect
+		$this->redirectLoggedIn();
+
+		try {
+
+			$entity = $this->account_auth_conf["user_entity"];
+
+			// handle the hash data with parent controller
+			list($user_id, $token_type, $token) = self::validateHash($hash);
+
+			// check user pending flag
+			$user = $entity::getById($user_id);
+
+			if (!$user || $user->flag != "pending")
+				throw new Exception("invalid user or missing 'pending' flag, userID: $user->id");
+
+			// save new account flag state
+			$entity::updateProperty($user_id, "flag", "enabled");
+			// remove activation token
+			$this->deleteToken($user_id, "activation");
+
+			// success login
+			$this->newUserSession($user);
+
+			// listener
+			if (method_exists($this, "onActivationSuccess"))
+				$this->onActivationSuccess($user);
+
+			// set a flash message to show on account controller
+			$this->flash->success($this->account_auth_conf["trans"]["ACTIVATION_SUCCESS"]);
+
+			// redirect/response
+			$this->setResponseOnLoggedIn();
+		}
+		catch (Exception $e) {
+
+			$this->logger->error("AccountAuth::activationAction -> exception: ".$e->getMessage());
+			$this->dispatcher->forward(["controller" => "error", "action" => "expired"]);
+		}
 	}
 
 	/**
