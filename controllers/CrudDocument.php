@@ -6,17 +6,16 @@
 
 namespace CrazyCake\Controllers;
 
-//phalcon
 use Phalcon\Exception;
-//imports
+
 use CrazyCake\Phalcon\App;
 
 /**
- * Base CRUD Controller
+ * Base CRUD Document
  */
 trait CrudDocument
 {
-	//uploader trait
+	// traits
 	use Uploader;
 
 	/**
@@ -33,24 +32,21 @@ trait CrudDocument
 	 */
 	protected function initCrud($conf = [])
 	{
-		//default configurations
 		$defaults = [
 			"collection"  => "",
 			"fetch_limit" => 1000
 		];
 
-		//merge confs
+		// merge confs
 		$conf = array_merge($defaults, $conf);
 
-		//set default fields?
 		if (empty($conf["collection"]))
 			throw new Exception("Crud requires a collection argument.");
 
-		//init uploader?
 		if (isset($conf["uploader"]))
 			$this->initUploader($conf["uploader"]);
 
-		//finally set conf
+		// set conf
 		$this->crud_conf = $conf;
 	}
 
@@ -61,13 +57,13 @@ trait CrudDocument
 	{
 		$this->onlyAjax();
 
-		//parse query string & assign to data
+		// parse query string & assign to data
 		parse_str($this->request->get("query"), $data);
 
 		if (empty($data))
 			$this->jsonResponse(404);
 
-		//set limit, skips
+		// set limit, skips
 		$limit = $data["limit"] ?? $this->crud_conf["fetch_limit"];
 
 		if ($limit > $this->crud_conf["fetch_limit"])
@@ -82,7 +78,7 @@ trait CrudDocument
 
 		$data["search"] = rtrim(ltrim($data["search"] ?? ""));
 
-		//sort by score relevance (full text search)
+		// sort by score relevance (full text search)
 		if (!empty($data["search"])) {
 
 			$query['$text']     = ['$search' => $data["search"]];
@@ -91,7 +87,7 @@ trait CrudDocument
 		}
 		else {
 
-			//sort default
+			// sort default
 			$opts["sort"] = ["_id" => -1];
 
 			if (!empty($data["sort"]) && !empty($data["order"]))
@@ -100,28 +96,28 @@ trait CrudDocument
 
 		$this->logger->debug("CrudDocument::list -> new request: ". json_encode($query)." => ".json_encode($opts));
 
-		//optional listener
+		// listener
 		if (method_exists($this, "onBeforeQuery"))
 			$this->onBeforeQuery($query, $opts, $data);
 
 		// collection
 		$collection = $this->mongo->getDatabaseName().".".$this->crud_conf["collection"];
-		//query
+		// query
 		$resultset = $this->mongoManager->executeQuery($collection, new \MongoDB\Driver\Query($query, $opts));
 		$items     = $resultset ? $resultset->toArray() : [];
 
-		//get unfiltered items
+		// get unfiltered items
 		unset($opts["limit"], $opts["skip"], $opts["sort"]);
 		$resultset  = $this->mongoManager->executeQuery($collection, new \MongoDB\Driver\Query($query, $opts));
 		$totalItems = count($resultset ? $resultset->toArray() : []);
 
-		//optional listener
+		// listener
 		if (method_exists($this, "onAfterQuery"))
 			$this->onAfterQuery($items);
 
 		$response = ["items" => $items, "totalItems" => $totalItems];
 
-		// ok response
+		// send response
 		$this->jsonResponse(200, $response);
 	}
 
@@ -132,17 +128,17 @@ trait CrudDocument
 	{
 		$this->onlyAjax();
 
-		//set required props to be validated
+		// set required props to be validated
 		$data    = $this->handleRequest(["payload" => "array"], "POST");
 		$payload = (object)$data["payload"];
 
-		//set object id
+		// set object id
 		$object_id = empty($payload->_id) ? null : new \MongoDB\BSON\ObjectID(current($payload->_id));
 
-		//format payload
+		// format payload
 		$this->formatPayload($payload);
 
-		//optional listener
+		// listener
 		if (method_exists($this, "onBeforeSave"))
 			$this->onBeforeSave($payload);
 
@@ -162,12 +158,12 @@ trait CrudDocument
 
 			$object_id = $object->getInsertedId();
 		}
-		//update
+		// update
 		else {
 
 			foreach ($payload as $key => $value) {
 
-				//unset reserved props
+				// unset reserved props
 				if (in_array($key, ["_id", "createdAt"])) {
 
 					unset($payload->{$key});
@@ -185,11 +181,11 @@ trait CrudDocument
 			}
 		}
 
-		//get saved object
+		// get saved object
 		try { $object = $this->mongo->{$this->crud_conf["collection"]}->findOne(["_id" => $object_id]); }
 		catch(\Exception | Exception $e) { $object = null; }
 
-		//auto-move uploaded files? (UploaderController)
+		// auto-move uploaded files? (UploaderController)
 		if (!empty($this->crud_conf["uploader"])) {
 
 			$uri = $this->crud_conf["collection"]."/".(string)$object->_id."/";
@@ -197,7 +193,7 @@ trait CrudDocument
 			$payload->uploaded = $this->saveUploadedFiles($uri);
 		}
 
-		//optional listener
+		// listener
 		if (method_exists($this, "onAfterSave"))
 			$this->onAfterSave($object, $payload);
 
@@ -216,13 +212,12 @@ trait CrudDocument
 		if (empty($id))
 			$this->jsonResponse(400);
 
-		//sanitize id
 		$id = (new \Phalcon\Filter())->sanitize($id, "string");
 
 		try { $object = $this->mongo->{$this->crud_conf["collection"]}->findOne(["_id" => (new \MongoDB\BSON\ObjectId($id))]); }
 		catch(\Exception | Exception $e) { $object = null; }
 
-		//optional listener
+		// listener
 		if (method_exists($this, "onGet"))
 			$this->onGet($object);
 
@@ -238,16 +233,15 @@ trait CrudDocument
 
 		$data = $this->handleRequest(["id" => "string"], "POST");
 
-		//set object id
 		$object_id = new \MongoDB\BSON\ObjectID($data["id"]);
 
-		//optional listener
+		// listener
 		if (method_exists($this, "onBeforeDelete"))
 			$this->onBeforeDelete($data);
 
 		$this->mongo->{$this->crud_conf["collection"]}->deleteOne(["_id" => $object_id]);
 
-		// ok response
+		// send response
 		$this->jsonResponse(200);
 	}
 
@@ -264,11 +258,10 @@ trait CrudDocument
 			"url"  => "string",
 		], "POST");
 
-		//optional listener
+		// listener
 		if (method_exists($this, "onBeforeDeleteImage"))
 			$this->onBeforeDeleteImage($data);
 
-		//set object id
 		$object_id = new \MongoDB\BSON\ObjectID($data["id"]);
 		$prop      = $data["prop"];
 
@@ -277,15 +270,15 @@ trait CrudDocument
 		if (empty($object))
 			$this->jsonResponse(400);
 
-		//check if is array
+		// check if is array
 		$is_array = $object->{$prop} instanceof \MongoDB\Model\BSONArray;
 
-		//arrays
+		// array special case?
 		$cmd = $is_array ? ['$pull' => ["$prop" => $data["url"]]] : ['$set' => ["$prop" => null]];
 
 		$this->mongo->{$this->crud_conf["collection"]}->updateOne(["_id" => $object_id], $cmd);
 
-		//get updated value
+		// get updated value
 		$value = $this->mongo->{$this->crud_conf["collection"]}->findOne(["_id" => $object_id]);
 
 		$this->jsonResponse(200, ["prop" => "$prop", "value" => $value->{$prop}]);
@@ -306,7 +299,7 @@ trait CrudDocument
 				$value = null;
 		}
 
-		//always set a createdAt timestamp
+		// always set a createdAt timestamp
 		if (!isset($payload->createdAt))
 			$payload->createdAt = new \MongoDB\BSON\UTCDateTime((new \DateTime())->getTimestamp() * 1000);
 	}

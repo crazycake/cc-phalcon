@@ -1,6 +1,6 @@
 <?php
 /**
- * CLI Task Controller, provides common functions for CLI tasks.
+ * CLI Task Controller, common functions for CLI tasks.
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
@@ -9,7 +9,7 @@ namespace CrazyCake\Core;
 use Phalcon\CLI\Task;
 use Phalcon\Exception;
 use Phalcon\Mvc\View\Engine\Volt\Compiler as VoltCompiler;
-//core
+
 use CrazyCake\Phalcon\App;
 use CrazyCake\Phalcon\AppServices;
 use CrazyCake\Controllers\Requester;
@@ -19,7 +19,7 @@ use CrazyCake\Controllers\Requester;
  */
 class TaskCore extends Task
 {
-	/* traits */
+	// traits
 	use Debugger;
 	use Requester;
 
@@ -60,7 +60,6 @@ class TaskCore extends Task
 	 */
 	public function revAssetsAction($args = [])
 	{
-		//set paths
 		$assets_path = PROJECT_PATH."public/assets/";
 
 		if (!is_dir($assets_path))
@@ -69,11 +68,11 @@ class TaskCore extends Task
 		if (!is_file($assets_path."app.min.js") || !is_file($assets_path."app.min.css"))
 			$this->colorize("Missing minified assets files.", "ERROR", true);
 
-		//decimal version
+		// decimal version
 		$ver = str_replace(".", "", $this->config->version);
 		$this->colorize("Current version: $ver", "NOTE");
 
-		//clean old files
+		// clean old files
 		$files = scandir($assets_path);
 
 		foreach ($files as $f) {
@@ -81,7 +80,7 @@ class TaskCore extends Task
 			if (strpos($f, ".rev.") === false)
 				continue;
 
-			//keep 1st & 2nd-last versions only, get ony decimals
+			// keep 1st & 2nd-last versions only, get ony decimals
 			preg_match_all('/\d+/', $f, $file_ver);
 			$file_ver = $file_ver[0];
 
@@ -92,19 +91,19 @@ class TaskCore extends Task
 			unlink($assets_path.$f);
 		}
 
-		//APP JS
+		// APP JS
 		copy($assets_path."app.min.js", $assets_path."app-".$ver.".rev.js");
-		//APP CSS
+		// APP CSS
 		copy($assets_path."app.min.css", $assets_path."app-".$ver.".rev.css");
-		//LAZY CSS
+		// LAZY CSS
 		if (is_file($assets_path."lazy.min.css"))
 			copy($assets_path."lazy.min.css", $assets_path."lazy-".$ver.".rev.css");
 
-		//remove min files
+		// remove min files
 		foreach (glob($assets_path."*.min.*") as $f)
 			unlink($f);
 
-		//print output
+		// output
 		$this->colorize("Created revision assets for version: ".$this->config->version, "OK", true);
 	}
 
@@ -180,10 +179,9 @@ class TaskCore extends Task
 			default:
 				throw new Exception("CoreTask:_colorize -> invalid message type: ".$type);
 		}
-		//return output
+
 		$output = $open.$text.$close."\n";
 
-		//echo output
 		if ($die)
 			$this->output($output);
 

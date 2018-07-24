@@ -1,14 +1,14 @@
 <?php
 /**
- * Uploader Adapter. Handle uploads, validations & img-api link.
+ * Uploader Adapter. Handle uploads, validations & img-api caller.
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
 namespace CrazyCake\Controllers;
 
-//imports
 use Phalcon\Exception;
 use Phalcon\Image\Adapter\GD;
+
 use CrazyCake\Helpers\Slug;
 
 /**
@@ -61,31 +61,31 @@ trait Uploader
 		if (empty($conf["trans"]))
 			$conf["trans"] = \TranslationController::getCoreTranslations("uploader");
 
-		//set conf
+		// set conf
 		$this->uploader_conf = $conf;
 
 		if (empty($conf["files"]))
 			throw new Exception("Uploader requires files array config.");
 
-		//set request headers
+		// set request headers
 		$this->headers = $this->request->getHeaders();
 
-		//get session user id or temp dir
+		// get session user id or temp dir
 		$subdir = ($user_session = $this->session->get("user")) ? $user_session["id"] : time();
 
-		//set upload root path
+		// set upload root path
 		if (empty($this->uploader_conf["root_path"]))
 			$this->uploader_conf["root_path"] = self::$ROOT_UPLOAD_PATH;
 
-		//set upload save path
+		// set upload save path
 		$this->uploader_conf["path"]     = $this->uploader_conf["root_path"]."temp/".$subdir."/";
 		$this->uploader_conf["path_url"] = $this->baseUrl("uploads/temp/".$subdir."/");
 
-		//create dir if not exists
+		// create dir if not exists
 		if (!is_dir($this->uploader_conf["path"]))
 			@mkdir($this->uploader_conf["path"], 0755, true);
 
-		//set data for view
+		// set data for view
 		$this->view->setVar("upload_files", $this->uploader_conf["files"]);
 	}
 
@@ -108,11 +108,11 @@ trait Uploader
 		$uploaded = [];
 		$messages = [];
 
-		//check header
+		// check header
 		if (empty($this->headers[self::$HEADER_NAME]))
 			$this->jsonResponse(404);
 
-		//check if user has uploaded files
+		// check if user has uploaded files
 		if (!$this->request->hasFiles())
 			$this->jsonResponse(900);
 
@@ -121,29 +121,29 @@ trait Uploader
 
 		foreach ($files as $file) {
 
-			//validate file
+			// validate file
 			$new_file = $this->_validateUploadedFile($file, $this->headers[self::$HEADER_NAME]);
 
-			//check for rejected uploads
+			// check for rejected uploads
 			if ($new_file["message"]) {
 
 				array_push($messages, $new_file["message"]);
-				//remove temp file
+				// remove temp file
 				unlink($file->getTempName());
 				continue;
 			}
 
-			//set file saved name
+			// set file saved name
 			$namespace = $new_file["key"]."_".$new_file["tag"]."_"."_".round(microtime(true) * 1000);
 			$save_name = $namespace.".".$new_file["ext"];
-			//append resource url
+			// append resource url
 			$new_file["url"]            = $this->uploader_conf["path_url"].$save_name;
 			$new_file["save_name"]      = $save_name;
 			$new_file["save_namespace"] = $namespace;
 
-			//move file into temp folder
+			// move file into temp folder
 			$file->moveTo($this->uploader_conf["path"].$save_name);
-			//push to array
+			// push to array
 			array_push($uploaded, $new_file);
 		}
 
@@ -157,7 +157,7 @@ trait Uploader
 	{
 		list($uploaded, $messages) = $this->upload();
 
-		//response
+		// response
 		$this->jsonResponse(200, [
 			"uploaded" => $uploaded,
 			"messages" => $messages
@@ -171,15 +171,14 @@ trait Uploader
 	{
 		$this->onlyAjax();
 
-		//validate and filter request params data, second params are the required fields
+		// validate and filter request params data, second params are the required fields
 		$data = $this->handleRequest([
 			"file" => "string"
 		], "POST");
 
-		//get file path
+		// set file path
 		$file_path = $this->uploader_conf["path"].$data["file"];
 
-		//check if exists
 		if (is_file($file_path))
 			unlink($file_path);
 
@@ -210,7 +209,6 @@ trait Uploader
 		if (!is_dir($path))
 			return;
 
-		//cleans folder
 		array_map(function($f) { @unlink($f); }, glob($path."*"));
 	}
 
@@ -221,7 +219,7 @@ trait Uploader
 	 */
 	protected function getUploadedFiles($absolute_path = true)
 	{
-		//exclude hidden files
+		// exclude hidden files
 		$files = preg_grep('/^([^.])/', scandir($this->uploader_conf["path"]));
 
 		if (!$absolute_path)
@@ -252,13 +250,13 @@ trait Uploader
 			$conf["s3"] = (array)$this->config->aws->s3;
 			$conf["s3"]["bucketBaseUri"] .= strtolower($uri);
 
-			//set job (img-api)
+			// set job (img-api)
 			$job = !empty($conf["resize"]) ? "resize" : "s3push";
 
 			// loop through files
 			foreach ($uploaded_files as $file) {
 
-				//check key if belongs
+				// check key if belongs
 				if (strpos($file, $key) === false)
 					continue;
 
@@ -266,32 +264,32 @@ trait Uploader
 				if (!empty($uri) && substr($uri, -1) != "/")
 					$uri .= "/";
 
-				//append fullpath
+				// append fullpath
 				$dest_folder = self::$ROOT_UPLOAD_PATH.$uri;
 
-				//create folder?
+				// create folder?
 				if (!is_dir($dest_folder))
 					mkdir($dest_folder, 0755, true);
 
-				//set source/destination path
+				// set source/destination path
 				$src = $this->uploader_conf["path"].$file;
 				$dst = $dest_folder.$file;
 
-				//copy file & unlink temp file
+				// copy file & unlink temp file
 				copy($src, $dst);
 				unlink($src);
 
 				if (!isset($saved_files[$key]))
 					$saved_files[$key] = [];
 
-				//skip image api job?
+				// skip image api job?
 				if(isset($conf["img_api"]) && !$conf["img_api"]) {
 
 					$saved_files[$key][] = $dst;
 					continue;
 				}
 
-				//set filename
+				// set filename
 				$conf["filename"] = $file;
 				// new resize job
 				$saved_files[$key][] = $this->newImageApiJob($job, $dst, $conf);
@@ -334,14 +332,13 @@ trait Uploader
 			CURLOPT_RETURNTRANSFER => true
 		];
 
-		//curl request
 		$ch = curl_init();
 	 	curl_setopt_array($ch, $options);
 		$result = curl_exec($ch);
 		curl_close($ch);
 		//~ss($result);
 
-		//process result
+		// parse result
 		$response = json_decode($result, true);
 
 		$this->logger->debug("Uploader::newImageApiJob -> [$url] payload: ".json_encode($response, JSON_UNESCAPED_SLASHES)."\n".print_r($result, true));
@@ -394,7 +391,7 @@ trait Uploader
 	 */
 	private function _validateUploadedFile($file, $file_key = "")
 	{
-		//get file properties
+		// get file properties
 		$file_name       = $file->getName();
 		$file_name_array = explode(".", $file_name);
 		$file_ext        = strtolower(end($file_name_array));
@@ -422,7 +419,6 @@ trait Uploader
 		if (empty($file_tag))
 			$file_tag = "0";
 
-		//set array keys
 		$new_file = [
 			"name"    => $file_name,
 			"tag"     => $file_tag,
@@ -436,25 +432,25 @@ trait Uploader
 
 		try {
 
-			//get file config with file_key
+			// get file config with file_key
 			$file_conf = $this->uploader_conf["files"][$file_key];
 
 			if (empty($file_conf))
 				throw new Exception("Uploader file configuration missing for $file_key.");
 
-			//set defaults
+			// set defaults
 			$file_conf["max_size"] = $file_conf["max_size"] ?? self::$DEFAULT_MAX_SIZE;
 			$file_conf["type"]     = $file_conf["type"] ?? self::$DEFAULT_FILE_TYPE;
 
-			//validation: max-size
+			// validation: max-size
 			if ($file_size/1024 > $file_conf["max_size"])
 				throw new Exception(str_replace(["{file}", "{size}"], [$file_name, ceil($file_conf["max_size"]/1024)." MB"],
 																	  $this->uploader_conf["trans"]["MAX_SIZE"]));
-			//validation: file-type
+			// validation: file-type
 			if (!in_array($file_ext, $file_conf["type"]))
 				throw new Exception(str_replace("{file}", $file_name, $this->uploader_conf["trans"]["FILE_TYPE"]));
 
-			//validation: image size
+			// validation: image size
 			if (empty($file_conf["isize"]))
 				return $new_file;
 
@@ -462,23 +458,23 @@ trait Uploader
 			$size  = $file_conf["isize"];
 			$image = new GD($file->getTempName());
 
-			//fixed width
+			// fixed width
 			if (isset($size["w"]) && $size["w"] != $image->getWidth())
 				throw new Exception(str_replace(["{file}", "{w}"], [$file_name, $size["w"]], $this->uploader_conf["trans"]["IMG_WIDTH"]));
 
-			//fixed height
+			// fixed height
 			if (isset($size["h"]) && $size["h"] != $image->getHeight())
 				throw new Exception(str_replace(["{file}", "{h}"], [$file_name, $size["h"]], $this->uploader_conf["trans"]["IMG_HEIGHT"]));
 
-			//minimun width
+			// minimun width
 			if (isset($size["mw"]) && $image->getWidth() < $size["mw"])
 				throw new Exception(str_replace(["{file}", "{w}"], [$file_name, $size["mw"]], $this->uploader_conf["trans"]["IMG_MIN_WIDTH"]));
 
-			//minimun width
+			// minimun width
 			if (isset($size["mh"]) && $image->getHeight() < $size["mh"])
 				throw new Exception(str_replace(["{file}", "{h}"], [$file_name, $size["mh"]], $this->uploader_conf["trans"]["IMG_MIN_HEIGHT"]));
 
-			//ratio
+			// ratio
 			$ratio = explode("/", $size["r"] ?? "");
 
 			if (isset($size["r"]) && round($image->getWidth()/$image->getHeight(), 2) != round($ratio[0] / $ratio[1], 2))

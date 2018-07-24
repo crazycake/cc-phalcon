@@ -6,7 +6,6 @@
 
 namespace CrazyCake\Models;
 
-//imports
 use \Phalcon\Mvc\Model\Resultset\Simple as Resultset;
 
 /**
@@ -38,9 +37,8 @@ class BaseResultset extends Resultset
 		if (!$resultset)
 			return [];
 
-		//objects
 		$objects = [];
-		
+
 		foreach ($resultset as $obj)
 			$objects[] = method_exists($obj, "reduce") ? $obj->reduce($props) : (object)$obj->toArray($props);
 
@@ -94,7 +92,6 @@ class BaseResultset extends Resultset
 		if (empty($result) || !is_array($result))
 			return;
 
-		//anonymous function, merge _ext prop
 		$mergeProps = function(&$object) {
 
 			if (!is_array($object))
@@ -108,11 +105,11 @@ class BaseResultset extends Resultset
 			if (!is_null($props))
 				$object = array_merge($props, $object);
 
-			//unset unwanted props
+			// unset unwanted props
 			unset($object[field]);
 		};
 
-		//loop & merge props
+		// loop & merge props
 		foreach ($result as &$obj)
 			$mergeProps($obj);
 	}

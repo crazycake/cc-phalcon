@@ -1,16 +1,14 @@
 <?php
 /**
- * Mvc Core Controller
- * Includes basic and helper methods for WebCore & WsCore controllers.
+ * BaseCore, shared methods for WebCore & WsCore.
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
 namespace CrazyCake\Core;
 
-//imports
 use Phalcon\Mvc\Controller;
 use Phalcon\Exception;
-//core
+
 use CrazyCake\Phalcon\App;
 use CrazyCake\Controllers\Requester;
 use CrazyCake\Controllers\Responser;
@@ -32,7 +30,7 @@ interface WebSecurity
  */
 abstract class BaseCore extends Controller
 {
-	/* Traits */
+	// traits
 	use Debugger;
 	use Requester;
 	use Responser;
@@ -67,13 +65,13 @@ abstract class BaseCore extends Controller
 		$host       = $this->request->getHttpHost();
 		$host_parts = explode(":", $host);
 
-		//check if host already has binded a port
+		// check if host already has binded a port
 		if (count($host_parts) > 1)
 			$host = current($host_parts);
 
 		$host_url = empty($port) ? $host : $host.":".$port;
 
-		//remove default port if set
+		// remove default port if set
 		if (substr($host_url, -3) == ":80")
 			$host_url = substr($host_url, 0, strlen($host_url) - 3);
 
@@ -86,7 +84,7 @@ abstract class BaseCore extends Controller
 	 */
 	protected function getScheme()
 	{
-		return $_SERVER["HTTP_X_FORWARDED_PROTO"] ?? "http"; //aws elb headers
+		return $_SERVER["HTTP_X_FORWARDED_PROTO"] ?? "http"; // aws elb headers
 	}
 
 	/**
@@ -111,24 +109,23 @@ abstract class BaseCore extends Controller
 	 */
 	protected function sendMailMessage($method = null, $data = null)
 	{
-		//simple input validation
+		// simple input validation
 		if (empty($method))
 			throw new Exception("BaseCore::sendMailMessage -> method param is required.");
 
-		//checks that a MailerController exists
+		// checks that a MailerController exists
 		if (!class_exists("\MailerController"))
 			throw new Exception("BaseCore::sendMailMessage -> A Mailer Controller is required.");
 
 		$mailer = new \MailerController();
 
-		//checks that a MailerController exists
+		// checks that a MailerController exists
 		if (!method_exists($mailer, $method))
 			throw new Exception("BaseCore::sendMailMessage -> Method $method is not defined in Mailer Controller.");
 
-		//call mailer class method (reflection)
+		// call mailer class method (reflection)
 		$mailer->{$method}($data);
 
-		//save response only for non production-environment
 		$this->logger->debug("BaseCore::sendMailMessage -> Queued mailer message successfully [$method]");
 	}
 
@@ -145,38 +142,35 @@ abstract class BaseCore extends Controller
 	 */
 	protected function handleRequest($req_fields = [], $method = "GET", $check_csrf = true)
 	{
-		//check API module and set special settings
+		// check API module and set special settings
 		if (MODULE_NAME == "api")
 			$check_csrf = false;
 
-		//set anoymous function for send response
+		// set anoymous function for send response
 		$sendResponse = function($code) {
 
 			if (MODULE_NAME == "api" || $this->request->isAjax())
 				$this->jsonResponse($code);
 
-			//otherwise redirect to 400 page
+			// otherwise redirect to 400 page
 			$this->dispatcher->forward(["controller" => "error", "action" => "badRequest"]);
 			$this->dispatcher->dispatch();
 			die();
 		};
 
-		//is post request? (method now allowed)
+		// is post request? (method now allowed)
 		if ($method == "POST" && !$this->request->isPost())
 			return $sendResponse(404);
 
-		//is get request? (method now allowed)
+		// is get request? (method now allowed)
 		if ($method == "GET" && !$this->request->isGet())
 			return $sendResponse(404);
 
-		//validate always CSRF Token (prevents also headless browsers, POST only and API module excluded)
-		if ($check_csrf) {
-			//check if method exists
-			if (method_exists($this, "checkCsrfToken") && !$this->checkCsrfToken())
-				return $sendResponse(498);
-		}
+		// validate always CSRF Token (prevents also headless browsers, POST only and API module excluded)
+		if ($check_csrf && method_exists($this, "checkCsrfToken") && !$this->checkCsrfToken())
+			return $sendResponse(498);
 
-		//get params data: POST, GET, or mixed
+		// get params data: POST, GET, or mixed
 		if ($method == "POST")
 			$data = $this->request->getPost();
 		else if ($method == "GET")
@@ -184,15 +178,15 @@ abstract class BaseCore extends Controller
 		else
 			$data = array_merge($this->request->get(), $this->request->getPost());
 
-		//clean phalcon data for GET or MIXED method
+		// clean phalcon data for GET or MIXED method
 		if ($method != "POST")
 			unset($data["_url"]);
 
-		//if no required fields given, return all POST or GET vars as array
+		// if no required fields given, return all POST or GET vars as array
 		if (empty($req_fields))
 			return $data;
 
-		//check require fields
+		// check require fields
 		foreach ($req_fields as $field => $data_type) {
 
 			$value = $this->_validateField($data, $field, $data_type);
@@ -200,7 +194,7 @@ abstract class BaseCore extends Controller
 			if ($value === false)
 				return $sendResponse(404);
 
-			//optional fields
+			// optional fields
 			if ($field[0] == "@") {
 				unset($data[$field]);
 				$field = substr($field, 1);
@@ -223,36 +217,36 @@ abstract class BaseCore extends Controller
 	{
 		$is_optional = false;
 
-		//check if is a optional field
+		// check if is a optional field
 		if (substr($field, 0, 1) == "@") {
 			$is_optional = true;
 			$field = substr($field, 1);
 		}
 
-		//validate field
+		// validate field
 		if (!array_key_exists($field, $data))
 			return $is_optional ? null : false;
 
-		//set value from data array
+		// set value from data array
 		if (empty($data_type) || $data_type == "array") {
 			$value = $data[$field];
 		}
 		else if ($data_type == "json") {
-			$value = json_decode($data[$field]); //NULL if cannot be decoded
+			$value = json_decode($data[$field]); // NULL if cannot be decoded
 		}
 		else {
-			//sanitize & lowercase
+
 			$value = $this->filter->sanitize($data[$field], $data_type);
 
 			if ($data_type == "email")
 				$value = strtolower($value);
 		}
 
-		//(empty fn considers zero value)
+		// empty function considers zero value
 		if (!$is_optional && (is_null($value) || $value == ""))
 			return false;
 
-		//check optional field
+		// check optional field
 		if ($is_optional && (is_null($value) || $value == ""))
 			return null;
 

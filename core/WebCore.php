@@ -6,7 +6,6 @@
 
 namespace CrazyCake\Core;
 
-//core
 use CrazyCake\Phalcon\App;
 use CrazyCake\Helpers\UserAgent;
 
@@ -46,26 +45,26 @@ abstract class WebCore extends BaseCore implements WebSecurity
 	 */
 	public function beforeExecuteRoute()
 	{
-		//set client object with its properties (User-Agent)
+		// set client object with its properties (User-Agent)
 		$this->_setClient();
 
-		//redirect non https?
+		// redirect non https?
 		$this->_handleHttps();
 
-		//check browser is supported
+		// check browser is supported
 		if (!$this->checkBrowserSupport($this->client->browser, $this->client->shortVersion) &&
 			$this->router->getControllerName() != "error") {
 
 			return $this->redirectTo("error/oldBrowser");
 		}
 
-		//set language translations
+		// set language translations
 		$this->_setLanguage();
 
-		//set CSRF
+		// set CSRF
 		$this->_setCSRF();
 
-		//for session initializer
+		// for session initializer
 		if (method_exists($this, "onBeforeInitialize"))
 			$this->onBeforeInitialize();
 	}
@@ -75,13 +74,13 @@ abstract class WebCore extends BaseCore implements WebSecurity
 	 */
 	public function afterExecuteRoute()
 	{
-		//load view data only for non-ajax requests
+		// load view data only for non-ajax requests
 		if ($this->request->isAjax())
 			return;
 
-		//set app assets
+		// set app assets
 		$this->_setAppAssets();
-		//set js & volt vars in view
+		// set js & volt vars in view
 		$this->_setAppViewVars();
 	}
 
@@ -94,22 +93,22 @@ abstract class WebCore extends BaseCore implements WebSecurity
 	 */
 	protected function redirectTo($uri = "", $params = [])
 	{
-		//parse get params & append them to the URL
+		// parse get params & append them to the URL
 		if (!empty($params))
 			$uri .= "?".http_build_query($params);
 
-		//set url
+		// set url
 		$url = substr($uri, 0, 4) == "http" ? $uri : $this->baseUrl($uri);
-		//ss($url);
+		// ss($url);
 
-		//validate URI
+		// validate URI
 		if (filter_var($url, FILTER_VALIDATE_URL) === false) {
 
 			$this->logger->debug("WebCore::redirectTo -> got an invalid URL: $url");
 			$url = $this->baseUrl("error/notFound");
 		}
 
-		//ajax?
+		// is ajax?
 		if ($this->request->isAjax() || MODULE_NAME == "api")
 			return $this->jsonResponse(200, ["redirect" => $url]);
 
@@ -147,9 +146,9 @@ abstract class WebCore extends BaseCore implements WebSecurity
 		if (!$this->request->isPost())
 			return true;
 
-		//get token from saved client session
+		// get token from saved client session
 		$session_token = $this->client->token ?? null;
-		//get sent token (crsf key is the same always)
+		// get sent token (crsf key is the same always)
 		$sent_token = $this->request->getPost($this->client->tokenKey);
 
 		return $session_token == $sent_token;
@@ -162,13 +161,13 @@ abstract class WebCore extends BaseCore implements WebSecurity
 	 */
 	protected function loadJsModules($modules = [], $fn = self::JS_LOADER_FUNCTION)
 	{
-		//skip for legacy browsers
+		// skip legacy browsers
 		if ($this->client->isLegacy)
 			return;
 
 		$param  = empty($modules) ? '' : json_encode($modules, JSON_UNESCAPED_SLASHES);
 		$script = "$fn($param);";
-		//send javascript vars to view as JSON enconded
+
 		$this->view->setVar("js_loader", $script);
 	}
 
@@ -185,7 +184,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 		if (!$https || $scheme == "https")
 			return;
 
-		//force redirect for non-https request
+		// force redirect for non-https request
 		$this->response->redirect(str_replace("http:", "https:", $this->baseUrl()));
 	}
 
@@ -194,13 +193,12 @@ abstract class WebCore extends BaseCore implements WebSecurity
 	 */
 	private function _setClient()
 	{
-		//parse user agent
+		// parse user agent
 		$ua = new UserAgent($this->request->getUserAgent());
 		$ua = $ua->parseUserAgent();
 
-		//create a client object
+		// create a client object
 		$this->client = (object)[
-			//UA
 			"platform"     => $ua["platform"],
 			"browser"      => $ua["browser"],
 			"version"      => $ua["version"],
@@ -225,7 +223,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 		else
 			$lang = $this->session->has("lang") ? $this->session->get("lang") : $this->request->getBestLanguage();
 
-		//filter lang
+		// filter lang
 		$lang = substr(trim(strtolower($lang)), 0, 2);
 
 		// set client language
@@ -241,13 +239,13 @@ abstract class WebCore extends BaseCore implements WebSecurity
 	 */
 	private function _setCSRF()
 	{
-		//check if CSRF was already created
+		// check if CSRF was already created
 		if (!$this->session->has("csrf")) {
 
 			$key   = $this->security->getTokenKey();
 			$value = $this->security->getToken();
 
-			//save it in session
+			// save it in session
 			$this->session->set("csrf", [$key, $value]);
 		}
 		else {
@@ -255,7 +253,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 			list($key, $value) = $this->session->get("csrf");
 		}
 
-		//update client props
+		// update client props
 		$this->client->tokenKey = $key;
 		$this->client->token    = $value;
 	}
@@ -270,7 +268,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 		$css_url = $this->staticUrl("assets/app.css");
 		$js_url  = $this->staticUrl("assets/app.js");
 
-		//set revision file for non local env
+		// set revision file for non local env
 		if (!is_file(PUBLIC_PATH."assets/app.js")) {
 
 			$version = str_replace(".", "", $version);
@@ -285,7 +283,6 @@ abstract class WebCore extends BaseCore implements WebSecurity
 		}
 		//ss($css_url, $js_url);
 
-		//set vars
 		$this->view->setVars([
 			"css_url" => $css_url,
 			"js_url"  => $js_url
@@ -297,7 +294,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 	 */
 	private function _setAppViewVars()
 	{
-		//set javascript global objects
+		// set javascript global objects
 		$js_app = (object)[
 			"dev"       => (APP_ENV == "production") ? 0 : 1,
 			"version"   => $this->config->version,
@@ -306,24 +303,24 @@ abstract class WebCore extends BaseCore implements WebSecurity
 			"staticUrl" => $this->staticUrl(),
 		];
 
-		//set custom properties
+		// set custom properties
 		$this->setAppJsProperties($js_app);
 
-		//css lazy loading properties
+		// css lazy loading properties
 		if (!empty($js_app->cssLazy))
 			$js_app->cssLazy = str_replace("/app", "/lazy", $this->view->getVar("css_url"));
 
-		//set translations?
+		// set translations?
 		if (class_exists("\TranslationController"))
 			$js_app->TRANS = \TranslationController::getJsTranslations();
 
-		//set user agent
+		// set user agent
 		$js_app->UA = $this->client;
 
-		//send javascript vars to view as JSON enconded
+		// send javascript vars to view as JSON enconded
 		$this->view->setVars([
-			"config" => $this->config, //app configuration vars
-			"client" => $this->client,  //client object
+			"config" => $this->config,
+			"client" => $this->client,
 			"js_app" => json_encode($js_app, JSON_UNESCAPED_SLASHES)
 		]);
 	}

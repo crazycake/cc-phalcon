@@ -15,7 +15,7 @@ APP_NAME=${PWD##*/}
 TOOLS_PATH=$PROJECT_PATH"/.tools/"
 
 # help output
-scriptHelp() {
+help() {
 
 	echo -e "\033[93m > "$APP_NAME" webapp CLI \033[0m"
 	echo -e "\033[95m watch <option>: Runs watcher daemon. Options: --hmr [HMR], --m [mailing]\033[0m"
@@ -41,9 +41,8 @@ watch)
 
 build)
 
-	# msg
 	echo -e "\033[95mGulp build task... \033[0m"
-	# gulp build task
+
 	gulp build
 
 	echo -e "\033[95mExecuting container '$APP_NAME' tasks... \033[0m"
@@ -92,33 +91,33 @@ aws-sync)
 		echo -e "\033[31mAWS profile argument missing (~/.aws/credentials).\033[0m" && exit
 	fi
 
-	#sync assets
+	# sync assets
 	SYNC_LOCAL_PATH="$PROJECT_PATH/public/assets/"
 	SYNC_REMOTE_PATH="s3://$2/assets/"
 
 	echo -e "\033[95mBucket Syncing $SYNC_LOCAL_PATH -> $SYNC_REMOTE_PATH \033[0m"
-	#sync
+
 	aws s3 sync $SYNC_LOCAL_PATH $SYNC_REMOTE_PATH --profile $3 --delete --cache-control max-age=864000 --exclude '*' --include '*.rev.css' --include '*.rev.js'
 
-	#sync images
+	# sync images
 	SYNC_LOCAL_PATH="$PROJECT_PATH/public/images/"
 	SYNC_REMOTE_PATH="s3://$2/images/"
 
 	echo -e "\033[95mBucket Syncing $SYNC_LOCAL_PATH -> $SYNC_REMOTE_PATH \033[0m"
-	#sync
+
 	aws s3 sync $SYNC_LOCAL_PATH $SYNC_REMOTE_PATH --profile $3 --delete --cache-control max-age=864000 --exclude '*.html'
 
-	#sync fonts
+	# sync fonts
 	SYNC_LOCAL_PATH="$PROJECT_PATH/public/fonts/"
 	SYNC_REMOTE_PATH="s3://$2/fonts/"
 
 	echo -e "\033[95mBucket Syncing $SYNC_LOCAL_PATH -> $SYNC_REMOTE_PATH \033[0m"
-	#sync
+
 	aws s3 sync $SYNC_LOCAL_PATH $SYNC_REMOTE_PATH --profile $3 --delete --cache-control max-age=864000 --exclude '*.html'
 ;;
 
-#default
+# defaults
 *)
-	scriptHelp
+	help
 ;;
 esac

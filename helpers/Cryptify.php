@@ -1,15 +1,12 @@
 <?php
 /**
- * Cryptify : helper that encrypts & decrypts sensitive data for URL format.
+ * Cryptify, helper that encrypts & decrypts data.
  * Uses Crypt Phalcon adapter
- * Optional library: Hashids
- * @link https://github.com/ivanakimov/hashids.php
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
 namespace CrazyCake\Helpers;
 
-//imports
 use Phalcon\DI;
 use Phalcon\Exception;
 use Phalcon\Crypt;
@@ -37,14 +34,12 @@ class Cryptify
 	 */
 	public function __construct($key = null)
 	{
-		//validate key is not empty or null
+		// validate key is not empty or null
 		if (empty($key))
 			throw new Exception("Cryptify helper -> Key parameter in constructor is required.");
 
-		//set crypt adapter
-		$this->crypt = new Crypt(); //must be included in Phalcon loader configs
+		$this->crypt = new Crypt();
 		$this->crypt->setKey($key);
-		//set algorithm cipher
 		$this->crypt->setCipher(self::DEFAULT_CIPHER);
 	}
 
@@ -58,13 +53,12 @@ class Cryptify
 		if (empty($data) && $data != 0)
 			return false;
 
-		//encode arrays as json
+		// encode arrays as json
 		$data = (is_array($data) || is_object($data)) ? json_encode($data, JSON_UNESCAPED_SLASHES) : (string)$data;
 
-		//key must be set in DI service
 		$encrypted = $this->crypt->encrypt($data);
 
-		//encrypt string
+		// encrypt string
 		$hash = str_replace("%", "-", rawurlencode(base64_encode($encrypted)));
 
 		return $hash;
@@ -82,9 +76,9 @@ class Cryptify
 			if (empty($hash) || !is_string($hash))
 				return false;
 
-			//decrypt string
+			// decrypt string
 			$decrypted_string = $this->crypt->decrypt(base64_decode(rawurldecode(str_replace("-", "%", $hash))));
-			//remove null bytes in string
+			// remove null bytes in string
 			$data = str_replace(chr(0), "", $decrypted_string);
 
 			if ($parse)
@@ -94,7 +88,6 @@ class Cryptify
 		}
 		catch (Exception $e) {
 
-			//get DI instance (static)
 			$di = \Phalcon\DI::getDefault();
 
 			if ($di->getShared("logger"))
@@ -102,36 +95,6 @@ class Cryptify
 
 			return null;
 		}
-	}
-
-	/**
-	 * Encrypts a numeric ID and returns the hash
-	 * @param Int $id - A numeric ID
-	 * @return String
-	 */
-	public function encryptHashId($id)
-	{
-		if (empty($id))
-			return false;
-
-		//HashIds Library
-		return (new \Hashids\Hashids($this->crypt->getKey()))->encode($id);
-	}
-
-	/**
-	 * Decrypt a numeric ID and returns the hash
-	 * @param String $hash - An encrypted ID
-	 * @return Mixed [string|boolean]
-	 */
-	public function decryptHashId($hash)
-	{
-		if (empty($hash))
-			return false;
-
-		//HashIds Library
-		$data = (new \Hashids\Hashids($this->crypt->getKey()))->decode($hash);
-
-		return $data[0] ?? false;
 	}
 
 	/**
@@ -151,11 +114,10 @@ class Cryptify
 
 			$num  = chr(rand(48, 57));
 			$char = chr(rand(97, 122));
-			//append string
+
 			$code .= (rand(1, 2) == 1) ? $num : $char;
 		}
 
-		//make sure hash is always different
 		$hash = sha1($code.microtime().$seed);
 		$hash = substr(str_shuffle($hash), 0, $length);
 
@@ -176,11 +138,11 @@ class Cryptify
 			$num  = chr(rand(48,57));
 			$char = strtoupper(chr(rand(97,122)));
 			$p    = rand(1,2);
-			//append
+			// append
 			$code .= ($p == 1) ? $num : $char;
 		}
 
-		//replace ambiguos chars
+		// replace ambiguous chars
 		$placeholders = ["0", "O", "I", "J", "B"];
 		$replacers    = ["G", "Y", "1", "X", "3"];
 

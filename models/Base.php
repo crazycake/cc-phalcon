@@ -6,7 +6,6 @@
 
 namespace CrazyCake\Models;
 
-//imports
 use \Phalcon\Mvc\Model\Query as PHQL;
 
 /**
@@ -14,8 +13,6 @@ use \Phalcon\Mvc\Model\Query as PHQL;
  */
 class Base extends \Phalcon\Mvc\Model
 {
-	/* properties */
-
 	/**
 	 * The object ID
 	 * @var Int
@@ -44,8 +41,7 @@ class Base extends \Phalcon\Mvc\Model
 	public static function find($params = null, $reduce = false)
 	{
 		$objects = parent::find($params);
-
-		$props = empty($params["columns"]) ? null : $params["columns"];
+		$props   = empty($params["columns"]) ? null : $params["columns"];
 
 		if ($reduce)
 			$objects = BaseResultset::reduceResultset($objects, $props);
@@ -62,8 +58,7 @@ class Base extends \Phalcon\Mvc\Model
 	public static function findFirst($params = null, $reduce = false)
 	{
 		$object = parent::findFirst($params);
-
-		$props = empty($params["columns"]) ? null : $params["columns"];
+		$props  = empty($params["columns"]) ? null : $params["columns"];
 
 		if ($reduce)
 			$object = BaseResultset::reduceResultset($object, $props);
@@ -152,7 +147,7 @@ class Base extends \Phalcon\Mvc\Model
 
 		$query = new PHQL($phql, \Phalcon\DI::getDefault());
 
-		//Executing with bound parameters
+		// executing with bound parameters
 		$status = $query->execute($binds);
 
 		return $status ? $status->success() : false;
@@ -194,7 +189,7 @@ class Base extends \Phalcon\Mvc\Model
 		return self::executePhql(
 			"UPDATE $entity SET $prop = ?1 WHERE $key = ?0",
 			[$id, $value]
-		); 
+		);
 	}
 
 	/**

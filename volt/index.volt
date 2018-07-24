@@ -22,6 +22,7 @@
 			{# android metas #}
 			<meta name="mobile-web-app-capable" content="yes" />
 			<meta name="application-name" content="{{ config.name }}" />
+
 			{# PWA metas #}
 			{% if metas['theme_color'] is not empty %}
 				<meta name="theme-color" content="{{ metas['theme_color'] }}" />
@@ -35,7 +36,7 @@
 			<meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
 		{% endif %}
 
-		{# InternetExplorer: force last version of render compatibility mod  #}
+		{# IE: force last version of render compatibility mod  #}
 		{% if client.browser == "MSIE" %}
 			<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 		{% endif %}
@@ -56,7 +57,7 @@
 		<link rel="icon" type="image/png" href="{{ static_url('images/favicons/favicon.png') }}" />
 		<link rel="apple-touch-icon" href="{{ static_url('images/favicons/apple-touch-icon.png') }}" />
 
-		{# Windows 8 #}
+		{# windows 8 #}
 		{% if client.platform == "Windows" %}
 			<meta name="msapplication-TileColor" content="{{ metas['ms_tile_color'] is not empty ? metas['ms_tile_color'] : '#EDEDED' }}" />
 			<meta name="msapplication-TileImage" content="{{ static_url('images/favicons/mstile.png') }}" />
@@ -100,17 +101,18 @@
 		{% endif %}
 
 	</head>
-	{# Flush the buffer (optimization) #}
+	{# flushes the buffer (optimization) #}
 	<?php flush(); ?>
 	<body class="{{ 'ua-'~client.browser|lower~' '~client.platform|lower }}{{ html_body_class is defined ? ' '~html_body_class : '' }}">
 
 		{# app content wrapper #}
 		{% if html_app_wrapper is defined and !html_app_wrapper %}
-			{# layout content #}
+
 			{{ get_content() }}
+
 		{% else %}
 			<div id="app">
-				{# layout content #}
+
 				{{ get_content() }}
 			</div>
 		{% endif %}
@@ -123,7 +125,7 @@
 		{# APP JS #}
 		<script src="{{ js_url }}" type="text/javascript"></script>
 
-		{# APP JS Module Loader #}
+		{# APP JS Modules Loader #}
 		{% if js_loader is not empty %}
 			<script>{{ js_loader }}</script>
 		{% endif %}
@@ -158,12 +160,12 @@
 			<script src="https://www.google.com/recaptcha/api.js?onload={{ js_recaptcha }}&amp;render=explicit&amp;hl={{ client.lang }}" async defer></script>
 		{% endif %}
 
-		{# javascript disabled fallback #}
+		{# JS disabled fallback #}
 		<noscript>
 			<p>{{ trans._('Este sitio funciona con Javascript. Por favor activa el motor de Javascript en tu navegador.') }}</p>
 		</noscript>
 
-		{# debug: output render time #}
+		{# debug, output render time #}
 		<script>
 			console.log('App {{ config.version }} - Engine <?php echo \Phalcon\Version::get()." [".CORE_VERSION."], rendered in ".number_format((float)(microtime(true) - APP_ST), 3, ".", "")." secs."; ?>');
 		</script>

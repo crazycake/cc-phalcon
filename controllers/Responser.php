@@ -1,15 +1,13 @@
 <?php
 /**
  * Responser Trait
- * Requires Guzzle library (composer)
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
 namespace CrazyCake\Controllers;
 
-//imports
 use Phalcon\Exception;
-//core
+
 use CrazyCake\Models\BaseResultset;
 
 /**
@@ -28,15 +26,15 @@ trait Responser
 	 * @var Array
 	 */
 	public $RCODES = [
-		//success
+		// success
 		"200" => "OK",
-		//client errors
+		// client errors
 		"400" => "Bad Request",
 		"401" => "Unauthorized",
 		"404" => "Not Found",
 		"408" => "Request Timeout",
 		"498" => "Invalid Token",
-		//server
+		// server
 		"500" => "Internal Server Error",
 		"800" => "Empty result data",
 		"900" => "No files attached"
@@ -53,49 +51,49 @@ trait Responser
 	 */
 	protected function jsonResponse($code = 200, $payload = null, $type = "", $namespace = "")
 	{
-		//if code is not identified set default
+		// if code is not identified set default
 		if (!isset($this->RCODES[$code]))
 			$this->RCODES[$code] = $this->RCODES[400];
 
-		//set response
+		// set response
 		$response = [
 			"code"   => (string)$code,
 			"status" => $code == 200 ? "ok" : "error"
 		];
 
-		//type
+		// type
 		if (!empty($type))
 			$response["type"] = $type;
 
-		//namespace
+		// namespace
 		if (!empty($namespace))
 			$response["namespace"] = $namespace;
 
-		//success data
+		// success data
 		if ($code == 200) {
 
-			//serialize object?
+			// serialize object?
 			if (is_object($payload))
 				$payload = json_decode(json_encode($payload), true);
 
-			//check redirection action
+			// check redirection action
 			if (!empty($payload["redirect"]))
 				$response["redirect"] = $payload["redirect"];
 			else
-				$response["payload"] = $payload; //append payload
+				$response["payload"] = $payload; // append payload
 		}
-		//error data
+		// error data
 		else {
 
-			//set payload as objectId for numeric data, for string set as error
+			// set payload as objectId for numeric data, for string set as error
 			if (is_string($payload))
 				$response["message"] = $payload;
 
-			//set error for non array
+			// set error for non array
 			$response["error"] = is_object($payload) ? $payload : $this->RCODES[$code];
 		}
 
-		//outputs JSON response
+		// outputs JSON response
 		$this->outputJsonResponse($response);
 	}
 
@@ -107,18 +105,18 @@ trait Responser
 	 */
 	protected function sendFileToBuffer($data = null, $mime_type = "application/json")
 	{
-		//append struct as string if data type is JSON
+		// append struct as string if data type is JSON
 		if ($mime_type == "application/json")
 			$data = str_replace("@payload", $data, self::$JSON_RESPONSE_STRUCT);
 
 		if ($this->di->has("view"))
-			$this->view->disable(); //disable view output
+			$this->view->disable(); // disable view output
 
 		$this->response->setStatusCode(200, "OK");
 		$this->response->setHeader("Access-Control-Allow-Origin", "*");
 		$this->response->setContentType($mime_type);
 
-		//content must be set after content type
+		// content must be set after content type
 		if (!is_null($data))
 			$this->response->setContent($data);
 
@@ -133,11 +131,11 @@ trait Responser
 	 */
 	protected function outputJsonResponse($response = []) {
 
-		//if a view service is set, disable rendering
+		// if a view service is set, disable rendering
 		if ($this->di->has("view"))
 			$this->view->disable();
 
-		//output the response
+		// output the response
 		$this->response->setStatusCode(200, "OK");
 		$this->response->setHeader("Access-Control-Allow-Origin", "*");
 		$this->response->setContentType("application/json");
@@ -153,11 +151,11 @@ trait Responser
 	 */
 	protected function outputTextResponse($text = "OK") {
 
-		//if a view service is set, disable rendering
+		// if a view service is set, disable rendering
 		if ($this->di->has("view"))
-			$this->view->disable(); //disable view output
+			$this->view->disable(); // disable view output
 
-		//output the response
+		// output the response
 		$this->response->setStatusCode(200, "OK");
 		$this->response->setHeader("Access-Control-Allow-Origin", "*");
 		$this->response->setContentType('text/html');

@@ -18,20 +18,21 @@ trait Debugger
 	 */
 	protected function dblog($file = "db.log")
 	{
-		//Listen all the database events
+		// listen all the database events
 		$manager = new \Phalcon\Events\Manager();
 		$logger  = new \Phalcon\Logger\Adapter\File(STORAGE_PATH."logs/".$file);
 
 		$manager->attach('db', function ($event, $connection) use ($logger) {
-			
-			//log SQL
+
+			// log SQL
 			if ($event->getType() == 'beforeQuery') {
 
 				$sql = $connection->getSQLStatement();
 				$logger->log($sql, \Phalcon\Logger::INFO);
 			}
 		});
-		// Assign the eventsManager to the db adapter instance
+
+		// assign the eventsManager to the db adapter instance
 		$this->db->setEventsManager($manager);
 	}
 }

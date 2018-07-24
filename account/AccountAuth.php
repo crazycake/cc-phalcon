@@ -6,10 +6,8 @@
 
 namespace CrazyCake\Account;
 
-//imports
 use Phalcon\Exception;
 
-//core
 use CrazyCake\Phalcon\App;
 use CrazyCake\Helpers\Forms;
 use CrazyCake\Helpers\ReCaptcha;
@@ -19,7 +17,7 @@ use CrazyCake\Helpers\ReCaptcha;
  */
 trait AccountAuth
 {
-	// Traits
+	// traits
 	use AccountToken;
 
 	/**

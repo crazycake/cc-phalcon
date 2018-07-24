@@ -1,12 +1,11 @@
 <?php
 /**
- * Phalcon APP main controller
+ * Phalcon APP
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
 namespace CrazyCake\Phalcon;
 
-//required Files
 require "AppLoader.php";
 require "AppServices.php";
 
@@ -15,7 +14,7 @@ require "AppServices.php";
  */
 abstract class App
 {
-	//trait
+	// traits
 	use AppLoader;
 
 	/**
@@ -42,7 +41,7 @@ abstract class App
 	 */
 	public function __construct($mod_name = "frontend")
 	{
-		//define APP contants
+		// define APP contants
 		define("MODULE_NAME", strtolower($mod_name));
 		define("PROJECT_PATH", static::$PROJECT_PATH);
 		define("STORAGE_PATH", PROJECT_PATH."storage/");
@@ -52,19 +51,19 @@ abstract class App
 		define("APP_PATH", PROJECT_PATH."app/");
 		define("APP_ST", microtime(true)); //for debugging render time
 
-		//composer libraries (no config required)
+		// composer libraries (no config required)
 		$this->loadComposer();
 
-		//environment (loader)
+		// environment (loader)
 		$this->setEnvironment();
 
-		//set app configurations
+		// set app configurations
 		$config = $this->config();
 
-		//app classes (loader)
+		// app classes (loader)
 		$this->loadClasses($config);
 
-		//set DI (services)
+		// set DI (services)
 		$this->di = (new AppServices($config))->getDI();
 	}
 
@@ -74,7 +73,7 @@ abstract class App
 	 */
 	public function start($argv = null)
 	{
-		//set routes function
+		// set routes function
 		$routes_fn = is_file(APP_PATH."config/routes.php") ? include APP_PATH."config/routes.php" : null;
 
 		switch (MODULE_NAME) {
@@ -93,15 +92,14 @@ abstract class App
 	 */
 	private function _startCli($argv = null)
 	{
-		//new cli app
+		// new cli app
 		$app = new \Phalcon\CLI\Console($this->di);
-		//loop through args
+
+		if (is_null($argv)) die("Phalcon Console -> no args supplied\n");
+
 		$arguments = [];
 
-		if (is_null($argv))
-			die("Phalcon Console -> no args supplied\n");
-
-		//set args data
+		// set args data
 		foreach ($argv as $k => $arg) {
 
 			switch ($k) {
@@ -112,21 +110,20 @@ abstract class App
 			}
 		}
 
-		//checks that array param was set
 		if (!isset($arguments["params"]))
 			$arguments["params"] = [];
 
-		//order params
+		// order params
 		if (count($arguments["params"]) > 0) {
 			$params = array_values($arguments["params"]);
 			$arguments["params"] = $params;
 		}
 
-		//define global constants for the current task and action
+		// define global constants for the current task and action
 		define("CLI_TASK",   $argv[1] ?? null);
 		define("CLI_ACTION", $argv[2] ?? null);
 
-		//handle incoming arguments
+		// handle incoming arguments
 		$app->handle($arguments);
 	}
 
@@ -136,13 +133,14 @@ abstract class App
 	 */
 	private function _startApi($routes_fn = null)
 	{
-		//new micro app
+		// new micro app
 		$app = new \Phalcon\Mvc\Micro($this->di);
-		//apply a routes function if param given (must be done before object instance)
+
+		// apply a routes function if param given (must be done before object instance)
 		if (is_callable($routes_fn))
 			$routes_fn($app);
 
-		//Handle the request
+		// handle the request
 		echo $app->handle();
 	}
 
@@ -152,25 +150,23 @@ abstract class App
 	 */
 	private function _startMvc($routes_fn = null)
 	{
-		//call routes function?
+		// call routes function?
 		if (is_callable($routes_fn)) {
-			//creates a router object (for use custom URL behavior use "false" param)
+
 			$router = new \Phalcon\Mvc\Router();
-			//Remove trailing slashes automatically
+			// remove trailing slashes automatically
 			$router->removeExtraSlashes(true);
-			//apply a routes function
+			// apply a routes function
 			$routes_fn($router);
-			//Register the router in the DI
-			$this->di->set("router", function() use (&$router) {
-				return $router;
-			});
+
+			$this->di->set("router", function() use (&$router) { return $router; });
 		}
 
 		$app = new \Phalcon\Mvc\Application($this->di);
-		//set output
+		// set output
 		$output = $app->handle()->getContent();
 
-		//Handle the request
+		// handle the request
 		if (APP_ENV != "local")
 			ob_start([$this,"_minifyOutput"]); //call function
 

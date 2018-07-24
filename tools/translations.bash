@@ -13,7 +13,7 @@ PROJECT_PATH="$(dirname "$PROJECT_PATH")"
 APP_NAME=${PWD##*/}
 
 # help output
-scriptHelp() {
+help() {
 	echo -e "\033[93m > "$APP_NAME" translations CLI \033[0m"
 	echo -e "\033[95m build: build po files in app folder. \033[0m"
 	echo -e "\033[95m find: find for new translations in app folder. \033[0m"
@@ -39,7 +39,6 @@ build)
 			msgfmt -o "$TARGET_DIR/app.mo" "$PO_FILE"
 		done'
 
-	# task done!
 	echo -e "\033[92mDone! \033[0m"
 	;;
 
@@ -86,12 +85,11 @@ find)
 			fi
 		done'
 
-	# task done!
 	echo -e "\033[92mDone! \033[0m"
 	;;
 
-#default
+# defaults
 *)
-	scriptHelp
+	help
 	;;
 esac

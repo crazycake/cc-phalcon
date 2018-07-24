@@ -6,9 +6,8 @@
 
 namespace CrazyCake\Checkout;
 
-//imports
 use Phalcon\Exception;
-//core
+
 use CrazyCake\Phalcon\App;
 
 /**
@@ -41,10 +40,9 @@ trait CheckoutJobs
 	{
 		$entity = $this->checkout_jobs_conf["checkout_entity"];
 
-		//delete pending checkouts with default expiration time
+		// delete pending checkouts with default expiration time
 		$objs_deleted = $entity::deleteExpired();
 
-		//rows affected
 		if ($objs_deleted)
 			$this->logger->debug("CheckoutJobs::cleanExpiredCheckouts -> Expired Checkouts deleted: ".$objs_deleted);
 

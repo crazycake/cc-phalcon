@@ -9,7 +9,6 @@
 
 namespace CrazyCake\Helpers;
 
-//imports
 use Mobile_Detect;
 
 /**
@@ -18,7 +17,7 @@ use Mobile_Detect;
 class UserAgent
 {
 	/**
-	 * input User Agent
+	 * User Agent
 	 * @var String
 	 */
 	private $user_agent;
@@ -38,17 +37,16 @@ class UserAgent
 	 */
 	public function parseUserAgent()
 	{
-		//parse user agent (loaded library method from composer)
+		// parse user agent (loaded library method from composer)
 		$data = parse_user_agent($this->user_agent);
 
-		//get the short version
+		// get the short version
 		$short_version = $data["version"] ? current(explode(".", $data["version"])) : false;
 
 		$data["short_version"] = $short_version;
 		$data["is_mobile"]     = (new Mobile_Detect())->isMobile();
 		$data["is_legacy"]     = $this->_isUserAgentLegacy($data);
 
-		//ss($data, $this->user_agent);
 		return $data;
 	}
 

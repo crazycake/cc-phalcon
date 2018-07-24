@@ -1,14 +1,13 @@
 <?php
 /**
  * Phalcon App plugins
- * Handles Phalcon Exceptions & Custom Filters
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
 namespace CrazyCake\Phalcon;
 
 /**
- * Class for MVC module that hanldes Phalcon Exceptions.
+ * Class ExceptionsPlugin.
  */
 class ExceptionsPlugin extends \Phalcon\Mvc\User\Plugin
 {
@@ -21,16 +20,15 @@ class ExceptionsPlugin extends \Phalcon\Mvc\User\Plugin
 	 */
 	public function beforeException(\Phalcon\Events\Event $event, \Phalcon\Mvc\Dispatcher $dispatcher, \Exception $exception)
 	{
-		//log error
 		$di = $dispatcher->getDI();
 
-		//Handle Phalcon exceptions
+		// handle Phalcon exceptions
 		if ($exception instanceof \Phalcon\Mvc\Dispatcher\Exception) {
 
 			$log_exception = false;
 
 			switch ($exception->getCode()) {
-				//dispatch to not found action
+
 				case \Phalcon\Dispatcher::EXCEPTION_NO_DI:
 				case \Phalcon\Dispatcher::EXCEPTION_CYCLIC_ROUTING:
 
@@ -52,11 +50,11 @@ class ExceptionsPlugin extends \Phalcon\Mvc\User\Plugin
 					break;
 			}
 
-			//log error?
+			// log error?
 			if ($log_exception)
 				$di->getShared("logger")->error("App Exception: ".$exception->getMessage()." File: ".$exception->getFile().". Line: ".$exception->getLine()."</h1>");
 
-			//forward
+			// forward
 			$dispatcher->forward($forward);
 			return false;
 		}
@@ -64,10 +62,9 @@ class ExceptionsPlugin extends \Phalcon\Mvc\User\Plugin
 		if (APP_ENV != "production")
 			die("App Exception: ".$exception->getMessage()." File: ".$exception->getFile().". Line: ".$exception->getLine());
 
-		//log error
 		$di->getShared("logger")->error("App Exception: ".$exception->getMessage());
 
-		//Handle exception and forward to internal error page
+		// handle exception and forward to internal error page
 		$dispatcher->forward(["controller" => "error", "action" => "internal"]);
 		return false;
 	}

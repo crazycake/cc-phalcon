@@ -6,7 +6,6 @@
 
 namespace CrazyCake\Controllers;
 
-//imports
 use Phalcon\Exception;
 use CrazyCake\Phalcon\App;
 

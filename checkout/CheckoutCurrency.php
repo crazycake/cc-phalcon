@@ -6,7 +6,6 @@
 
 namespace CrazyCake\Checkout;
 
-//imports
 use Phalcon\Exception;
 
 /**
@@ -48,11 +47,10 @@ trait CheckoutCurrency
 	{
 		$value = $this->dollarToChileanPeso();
 
-		//fallback
 		if (empty($value))
 			throw new Exception("Invalid chilean currency value stored in Redis.");
 
-		//apply conversion
+		// apply conversion
 		return number_format((float)($amount / $value), 2, '.', '');
 	}
 
@@ -63,12 +61,11 @@ trait CheckoutCurrency
 	 */
 	public function dollarToChileanPeso($amount = 1.00)
 	{
-		//redis service
+		// redis service
 		$redis = $this->newRedisClient();
-
 		$value = $redis->get(self::$REDIS_KEY_USD_CLP_VALUE);
 
-		//set value if is empty
+		// set value if is empty
 		if (empty($value) && $new_value = $this->apiChileanCurrencyRequest())
 			$redis->set(self::$REDIS_KEY_USD_CLP_VALUE, $new_value);
 
@@ -85,7 +82,7 @@ trait CheckoutCurrency
 	{
 		try {
 
-			//get value from remote API
+			// get value from remote API
 			$value = $this->apiChileanCurrencyRequest();
 
 			if (empty($value))

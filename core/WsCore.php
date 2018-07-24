@@ -1,14 +1,11 @@
 <?php
 /**
  * WS Core Controller
- * Core Webservice controller, basic and helper methods for child controllers.
- * Requires a Phalcon DI Factory Services
  * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
 namespace CrazyCake\Core;
 
-//core
 use CrazyCake\Phalcon\App;
 
 /**
@@ -21,12 +18,6 @@ abstract class WsCore extends BaseCore
 	 * @var String
 	 */
 	const HEADER_API_KEY = "API-KEY";
-
-	/**
-	 * Webservice response cache path
-	 * @var String
-	 */
-	const WS_RESPONSE_CACHE_PATH = STORAGE_PATH."cache/response/";
 
 	/**
 	 * Welcome message for API server status
@@ -61,120 +52,7 @@ abstract class WsCore extends BaseCore
 		if (empty($config->key))
 			return true;
 
-		//check if keys are equal
+		// check if keys are equal
 		return $config->key === $request->getHeader(self::HEADER_API_KEY);
-	}
-
-	/* --------------------------------------------------- § -------------------------------------------------------- */
-
-	/**
-	 * Handles id property validation from a given object
-	 * @param String $prop - The object property name
-	 * @param Boolean $optional - Parameter optional flag
-	 * @param Boolean $method - HTTP method, default is GET
-	 * @return Mixed [object|boolean]
-	 */
-	protected function handleIdInput($prop = "object_id", $optional = false, $method = "GET")
-	{
-		$scheme = explode("_", strtolower($prop));
-		//unset last prop
-		array_pop($scheme);
-		//get class name
-		$class_name = \Phalcon\Text::camelize(implode($scheme, "_"));
-
-		$p = $optional ? "@" : "";
-
-		//get request param
-		$data  = $this->handleRequest(["$p$prop" => "int"], $method);
-		$value = $data[$prop] ?? null;
-
-		//get model data
-		$object = empty($value) ? null : $class_name::findFirst(["id = ?1", "bind" => [1 => $value]]);
-
-		if (!$optional && !$object)
-			$this->jsonResponse(404);
-
-		return $object;
-	}
-
-	/**
-	 * Validate search number & offset parameters
-	 * @param Int $input_num - Input number
-	 * @param Int $input_off - Input offset
-	 * @param Int $max_num - Maximum number
-	 * @return Array
-	 */
-	protected function handleLimitInput($input_num = null, $input_off = null, $max_num = null)
-	{
-		if (!is_null($input_num)) {
-
-			$number = $input_num;
-			$offset = $input_off;
-
-			if ($number < 0 || !is_numeric($number))
-				$number = 0;
-
-			if ($offset < 0 || !is_numeric($offset))
-				$offset = 1;
-
-			if ((empty($number) && $max_num >= 1) || ($number > $max_num))
-				$number = $max_num;
-		}
-		else {
-
-			$number = empty($max_num) ? 1 : $max_num;
-			$offset = 0;
-		}
-
-		return ["number" => $number, "offset" => $offset];
-	}
-
-	/**
-	 * Handles a cache response
-	 * @param String $key - The key for saving cached data
-	 * @param Mixed $data - The data to be cached or served
-	 * @param Boolean $bust - Forces a cache update
-	 */
-	protected function handleCacheResponse($key = "response", $data = null, $bust = false)
-	{
-		//prepare input data
-		$hash = sha1($key);
-
-		if (empty($hash) || empty($data))
-			$this->jsonResponse(800);
-
-		$json_file = self::WS_RESPONSE_CACHE_PATH."$hash.json";
-
-		//get data for API struct
-		if (!$bust && is_file($json_file)) {
-
-			$this->sendFileToBuffer(file_get_contents($json_file));
-			return;
-		}
-
-		//check dir
-		if (!is_dir(self::WS_RESPONSE_CACHE_PATH))
-			mkdir(self::WS_RESPONSE_CACHE_PATH, 0775);
-
-		//save file to disk
-		file_put_contents($json_file, json_encode($data, JSON_UNESCAPED_SLASHES));
-
-		//send response
-		$this->jsonResponse(200, $data);
-	}
-
-	/**
-	 * Cleans json cache files
-	 */
-	protected function cleanCacheResponse()
-	{
-		if (!is_dir(self::WS_RESPONSE_CACHE_PATH))
-			return;
-
-		foreach (glob(self::WS_RESPONSE_CACHE_PATH."/*.json") as $filename) {
-
-			if (is_file($filename))
-				unlink($filename);
-		}
 	}
 }

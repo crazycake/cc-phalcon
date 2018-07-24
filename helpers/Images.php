@@ -7,7 +7,6 @@
 
 namespace CrazyCake\Helpers;
 
-//imports
 use Phalcon\Exception;
 
 /**
@@ -27,7 +26,7 @@ class Images
 	{
 		$new_url = preg_replace("/\\.([0-9a-z]+)(?:[\\?#]|$)/i", "_".$key.".$1?", $path);
 
-		//remove single question marks
+		// remove single question marks
 		if (substr($new_url, -1) == "?")
 			$new_url = substr($new_url, 0, strlen($new_url) - 1);
 
@@ -45,12 +44,12 @@ class Images
 		if (!is_file($filepath))
 			throw new Exception("Images::resize -> File not found: $filepath");
 
-		//make sure object is an array in all depths
+		// make sure object is an array in all depths
 		$conf = json_decode(json_encode($conf), true);
 		$src  = dirname($filepath)."/";
 
 		$resized = [];
-		//loop resizer
+		// loop resizer
 		foreach ($conf as $key => $resize) {
 
 			try {

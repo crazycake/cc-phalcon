@@ -11,8 +11,6 @@ namespace CrazyCake\Models;
  */
 class BaseDocument
 {
-	/* properties */
-
 	/**
 	 * The colelction name [required]
 	 * @var String
@@ -61,7 +59,7 @@ class BaseDocument
 		try { $object = $mongo->{static::$COLLECTION}->findOne($props); }
 		catch (\Exception $e) { $object = false; }
 
-		// return reduced object
+		// reduce object
 		return $object ? $object->jsonSerialize() : null;
 	}
 

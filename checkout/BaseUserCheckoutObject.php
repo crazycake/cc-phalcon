@@ -66,13 +66,12 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
 		if (!$object)
 			return false;
 
-		//get classes
+		// get classes
 		$entity 		 = static::entity();
 		$checkout_entity = str_replace("Object", "", $entity);
 
-		//get pending checkouts items quantity
+		// get pending checkouts items quantity
 		$objects = $checkout_entity::getByPhql(
-			//phql
 			"SELECT SUM(quantity) AS q
 			 FROM $entity AS objects
 			 INNER JOIN $checkout_entity AS checkout ON checkout.buy_order = objects.buy_order
@@ -80,19 +79,18 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
 			 AND objects.object_class = :object_class:
 			 AND checkout.state = 'pending'
 			",
-			//bindings
 			["object_id" => $object_id, "object_class" => $object_class]
 		);
 
-		//get sum quantity
+		// get sum quantity
 		$checkout_q = $objects->getFirst()->q;
 
 		if (is_null($checkout_q))
 			$checkout_q = 0;
 
-		//substract total
+		// substract total
 		$total = $object->quantity - $checkout_q;
-		//ss($total, $object->quantity, $checkout_q, $total);
+		// ss($total, $object->quantity, $checkout_q, $total);
 
 		if ($total <= 0)
 			return false;
@@ -106,10 +104,10 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
 	 */
 	public static function substractStock($objects)
 	{
-		//loop throught items and substract Q
+		// loop throught items and substract Q
 		foreach ($objects as $obj) {
 
-			//get object ORM class
+			// get object ORM class
 			$object_class = $obj->object_class;
 
 			$orm_object = !class_exists($object_class) ?: $object_class::getById($obj->object_id);
@@ -128,7 +126,7 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
 				$state = "closed";
 			}
 
-			//update record throught query (safer than ORM)
+			// update record throught query (safer than ORM)
 			self::executePhql(
 				"UPDATE $object_class
 				 SET quantity = ?0, state = ?1

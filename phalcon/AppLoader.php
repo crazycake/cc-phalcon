@@ -32,14 +32,13 @@ trait AppLoader
 
 	/**
 	 * Get Module Model Class Name
-	 * A prefix can be set in module options
 	 * @param String $key - The class module name uncamelize, example: "some_class"
 	 * @param Boolean $prefix - Append prefix (double slash)
 	 * @return String
 	 */
 	public static function getClass($key = "", $prefix = true)
 	{
-		//check for prefix in module settings
+		// camelized class name
 		$class_name = \Phalcon\Text::camelize($key);
 
 		return $prefix ? "\\$class_name" : $class_name;
@@ -52,13 +51,13 @@ trait AppLoader
 	 */
 	private function setEnvironment()
 	{
-		//default timezone
+		// default timezone
 		date_default_timezone_set(getenv("APP_TZ") ?: "America/Santiago");
 
-		//get env-vars
-		$env = getenv("APP_ENV") ?: "local"; //default to 'local'
+		// get env-vars
+		$env = getenv("APP_ENV") ?: "local";
 
-		//display errors?
+		// display errors?
 		ini_set("display_errors", (int)($env != "production"));
 		error_reporting(E_ALL);
 
@@ -84,7 +83,7 @@ trait AppLoader
 			$base_url = str_replace(":80/", "/", $base_url);
 		}
 
-		//set environment consts & self vars
+		// set environment consts & self vars
 		define("APP_ENV", $env);
 		define("APP_BASE_URL", $base_url);
 	}
@@ -113,12 +112,11 @@ trait AppLoader
 
 		foreach ($config["loader"] as $dir) {
 
-			$paths = explode("/", $dir, 2);
-			//set directory path
+			$paths      = explode("/", $dir, 2);
 			$dirs[$dir] = count($paths) > 1 ? PROJECT_PATH.$paths[0]."/".$paths[1]."/" : APP_PATH.$dir."/";
 		}
 
-		//inverted sort
+		// inverted sort
 		arsort($dirs);
 
 		// 2. Load app directories (components)
@@ -130,7 +128,7 @@ trait AppLoader
 
 		//4.- Register phalcon loader
 		$loader->register();
-		//s(get_included_files());
+		//ss(get_included_files());
 	}
 
 	/**
@@ -145,19 +143,19 @@ trait AppLoader
 		if (!is_array($libraries))
 			$libraries = [];
 
-		//merge libraries with defaults
+		// merge libraries with defaults
 		$libraries = array_merge(self::$CORE_DEFAULT_LIBS, $libraries);
 
-		//check if lib is runnning in phar file
+		// check if lib is runnning in phar file
 		$class_path = \Phar::running() ?: dirname(__DIR__);
 
-		//set library path => namespaces
+		// set library path => namespaces
 		$namespaces = [];
 
 		foreach ($libraries as $lib)
 			$namespaces[self::$CORE_NAMESPACE.ucfirst($lib)] = "$class_path/$lib/";
 
-		//register namespaces
+		// register namespaces
 		$loader->registerNamespaces($namespaces);
 		//var_dump($namespaces);exit;
 	}

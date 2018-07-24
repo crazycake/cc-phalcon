@@ -7,8 +7,8 @@
 
 namespace CrazyCake\Helpers;
 
-//imports
 use Phalcon\Translate\Adapter\Gettext as GetTextAdapter;
+
 /**
  * GetText Adapter Handler
  */
@@ -54,12 +54,12 @@ class GetText extends GetTextAdapter
 		if (!is_array($options) || empty($options["domain"]) || empty($options["directory"]) || !is_array($options["supported"]))
 			die("GetText Lib -> Invalid options: directory, domain & supported options are required.");
 
-		//set class properties
+		// set class properties
 		$this->default_locale  = self::LOCALES["en"];
 		$this->current_lang    = substr($this->default_locale, 0, 2);
 		$this->supported_langs = $options["supported"];
 
-		//call parent constructor
+		// call parent constructor
 		parent::__construct([
 			"locale"        => $this->default_locale,
 			"defaultDomain" => $options["domain"],
@@ -74,17 +74,17 @@ class GetText extends GetTextAdapter
 	 */
 	public function setLanguage($lang = "")
 	{
-		//validate lang
+		// validate lang
 		if (strlen($lang) > 2 || !in_array($lang, $this->supported_langs))
 			$lang = substr($this->default_locale, 0, 2);
 
-		//set new lang
+		// set new lang
 		$this->current_lang = $lang;
 
 		$locale = self::LOCALES[$lang];
-		//s($this->getDefaultDomain(), $this->getCategory(), $this->getDirectory(), $this->current_lang, $locale);
+		//ss($this->getDefaultDomain(), $this->getCategory(), $this->getDirectory(), $this->current_lang, $locale);
 
-		//set environment vars
+		// set environment vars
 		$this->setLocale(LC_ALL, $locale);
 	}
 

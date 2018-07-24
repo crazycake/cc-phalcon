@@ -6,17 +6,17 @@
 
 namespace CrazyCake\Controllers;
 
-//phalcon
 use Phalcon\Mvc\Model\Resultset\Simple as Resultset;
 use Phalcon\Exception;
-//imports
+
 use CrazyCake\Phalcon\App;
+
 /**
  * Base CRUD Controller
  */
 trait Crud
 {
-	//uploader trait
+	// traits
 	use Uploader;
 
 	/**
@@ -59,7 +59,7 @@ trait Crud
 	 */
 	protected function initCrud($conf = [])
 	{
-		//default configurations
+		// default configurations
 		$defaults = [
 			"pk"               => "id",         // primary key
 			"entity"           => "",           // entity in uppercase
@@ -67,30 +67,30 @@ trait Crud
 			"entity_component" => "",           // entity HTML component name
 			"entity_label"     => "Colección",
 			"new_label"        => "Nuevo",
-			"dfields"          => [],	        //data fields, head row
-			"sfields"          => [],	        //search fields
-			"cfields"          => [],	        //custom fields
+			"dfields"          => [],	        // data fields, head row
+			"sfields"          => [],	        // search fields
+			"cfields"          => [],	        // custom fields
 			"actions"          => ["update", "delete"]
 		];
 
-		//merge confs
+		// merge confs
 		$conf = array_merge($defaults, $conf);
 
-		//set default fields?
+		// set default fields?
 		if (empty($conf["entity"]) || empty($conf["dfields"]) || empty($conf["sfields"]))
 			throw new \Exception("Crud requires entity, dfields & sfields options.");
 
-		//set entity in lower case
+		// set entity in lower case
 		$conf["entity_lower"] = \Phalcon\Text::uncamelize($conf["entity"]);
 
 		if (empty($conf["entity_component"]))
 			$conf["entity_component"] = $conf["entity_lower"];
 
-		//init uploader?
+		// init uploader?
 		if (isset($conf["uploader"]))
 			$this->initUploader($conf["uploader"]);
 
-		//finally set conf
+		// finally set conf
 		$this->crud_conf = $conf;
 	}
 
@@ -99,16 +99,16 @@ trait Crud
 	 */
 	public function indexAction()
 	{
-		//set layout
+		// set layout
 		$this->view->setLayout("crud");
 
-		//listener
+		// listener
 		$this->onBeforeRenderIndex();
 
-		//set current_view
+		// set current_view
 		$this->view->setVars($this->crud_conf);
 
-		//load modules
+		// load modules
 		$this->loadJsModules([
 			"crud" => $this->crud_conf
 		]);
@@ -129,56 +129,56 @@ trait Crud
 			"@per_page" => "int"
 		], "GET");
 
-		//build query object
+		// build query object
 		$query = $this->modelsManager->createBuilder()->from($this->crud_conf["entity"]);
 
-		//default order
+		// default order
 		$query->orderBy($this->_fieldToPhql($this->crud_conf["pk"])." DESC");
 
 		if (!empty($data["sort"])) {
-			//parse sort data from js
+			// parse sort data from js
 			$sort  = explode("|", $data["sort"], 2);
 			$order = $this->_fieldToPhql($sort[0])." ".strtoupper($sort[1]);
-			//set order
+			// set order
 			$query->orderBy($order);
 		}
 
-		//filter param for search
+		// filter param for search
 		if (!empty($data["filter"])) {
 
-			//create filter syntax
+			// create filter syntax
 			$search_fields = $this->crud_conf["sfields"] ?? [$this->crud_conf["pk"]];
 
-			//loop through search fields
+			// loop through search fields
 			foreach ($search_fields as $index => $fname) {
 
 				$condition = $this->_fieldToPhql($fname)." LIKE '%".$data["filter"]."%'";
-				//s($condition);
+				// s($condition);
 
-				//1st condition
+				// 1st condition
 				if (empty($index)) {
 					$query->where($condition);
 					continue;
 				}
-				//append other condition
+				// append other condition
 				$query->orWhere($condition);
 			}
 		}
 
-		//group results
+		// group results
 		$query->groupBy($this->_fieldToPhql($this->crud_conf["pk"]));
 
-		//listener, on query
+		// listener, on query
 		$this->onQuery($query);
 
-		//get pagination response
+		// get pagination response
 		$r = $this->_getPaginationData($query, $data);
 
-		//optional listener
+		// optional listener
 		if (method_exists($this, "onResultset"))
 			$r->output->data = $this->onResultset($r->resultset);
 
-		//output json response
+		// output json response
 		$this->outputJsonResponse($r->output);
 	}
 
@@ -189,28 +189,27 @@ trait Crud
 	{
 		$this->onlyAjax();
 
-		//get data
+		// get data
 		$data = $this->handleRequest([], "POST");
 
-		//merge paylod if set
+		// merge paylod if set
 		$this->_mergePayload($data);
 
 		try {
-			//call listener
+			// listener
 			$this->onBeforeSave($data, "create");
 
-			//new object
 			$object_class = $this->crud_conf["entity"];
 			$object 	  = new $object_class();
 
-			//set empty strings as null data
+			// set empty strings as null data
 			$data = array_map(function($prop) { return $prop == "" ? null : $prop; }, $data);
 
-			//save object
+			// save object
 			if (!$object->save($data))
 				throw new \Exception($object->messages(true));
 
-			//move uploaded files? (UploaderController)
+			// move uploaded files? (UploaderController)
 			if (!empty($this->crud_conf["uploader"])) {
 
 				$uri = $this->crud_conf["entity_lower"]."/".$object->{$this->crud_conf["pk"]}."/";
@@ -218,10 +217,10 @@ trait Crud
 				$data["uploaded"] = $this->saveUploadedFiles($uri);
 			}
 
-			//call listener
+			// listener
 			$this->onAfterSave($object, $data, "create");
 
-			//send response
+			// send response
 			$this->jsonResponse(200);
 		}
 		catch (\Exception | Exception $e) {
@@ -241,40 +240,40 @@ trait Crud
 			"@payload" => ""
 		], "POST");
 
-		//merge paylod if set
+		// merge paylod if set
 		$this->_mergePayload($data);
 
 		try {
-			//call listener
+			// listener
 			$this->onBeforeSave($data, "update");
 
-			//get object class & get object by primary key
+			// get object class & get object by primary key
 			$object_class = $this->crud_conf["entity"];
 			$object       = $object_class::findFirst([$this->crud_conf["pk"]." = '".$data[$this->crud_conf["pk"]]."'"]);
 
-			//check object exists
+			// check object exists
 			if (!$object)
 				throw new \Exception("Objeto no encontrado");
 
-			//consider only attributes from object (phalcon metadata)
+			// consider only attributes from object (phalcon metadata)
 			$meta_data  = $object->getModelsMetaData();
 			$attributes = $meta_data->getAttributes($object);
-			//unset id
+			// unset id
 			unset($attributes[$this->crud_conf["pk"]]);
 
-			//filter data
+			// filter data
 			$new_data = array_filter($data,
 							function ($key) use ($attributes) { return in_array($key, $attributes); },
 							ARRAY_FILTER_USE_KEY);
 
-			//set empty strings as null data
+			// set empty strings as null data
 			$new_data = array_map(function($prop) { return $prop == "" ? null : $prop; }, $new_data);
 
-			//update values
+			// update values
 			if (!$object->update($new_data))
 				throw new \Exception($object->messages(true));
 
-			//move uploaded files? (UploaderController)
+			// move uploaded files? (UploaderController)
 			if (!empty($this->crud_conf["uploader"])) {
 
 				$uri = $this->crud_conf["entity_lower"]."/".$object->{$this->crud_conf["pk"]}."/";
@@ -282,7 +281,7 @@ trait Crud
 				$new_data["uploaded"] = $this->saveUploadedFiles($uri);
 			}
 
-			//append non-model data
+			// append non-model data
 			foreach ($data as $key => $value) {
 
 				if (isset($new_data[$key]))
@@ -291,10 +290,10 @@ trait Crud
 				$new_data[$key] = $value;
 			}
 
-			//call listener
+			// listener
 			$this->onAfterSave($object, $new_data, "update");
 
-			//send response
+			// send response
 			$this->jsonResponse(200);
 		}
 		catch (\Exception | Exception $e) {
@@ -314,12 +313,10 @@ trait Crud
 			$this->crud_conf["pk"] => "string" //number or string
 		], "POST");
 
-		//get object class
 		$object_class = $this->crud_conf["entity"];
-		// get object by primary key
-		$object = $object_class::findFirst([$this->crud_conf["pk"]." = '".$data[$this->crud_conf["pk"]]."'"]);
+		$object       = $object_class::findFirst([$this->crud_conf["pk"]." = '".$data[$this->crud_conf["pk"]]."'"]);
 
-		//orm deletion
+		// orm deletion
 		if ($object) {
 
 			if (method_exists($this, "onBeforeDelete"))
@@ -328,14 +325,14 @@ trait Crud
 			$object->delete();
 		}
 
-		//delete upload files?
+		// delete upload files?
 		if (isset($this->crud_conf["uploader"])) {
 
 			$path = Uploader::$ROOT_UPLOAD_PATH.$this->crud_conf["entity_lower"]."/".$data[$this->crud_conf["pk"]]."/";
 			$this->cleanUploadFolder($path);
 		}
 
-		//send response
+		// send response
 		$this->jsonResponse(200);
 	}
 
@@ -354,11 +351,11 @@ trait Crud
 		if (count($namespaces) <= 1)
 			return $this->crud_conf["entity"].".".$field;
 
-		//two or more levels
+		// two or more levels
 		$levels   = count($namespaces);
 		$entities = array_slice($namespaces, $levels - 2);
 
-		//syntax is always table.field
+		// syntax is always 'table.field'
 		$field = \Phalcon\Text::camelize(current($entities)).".".end($entities);
 
 		return $field;
@@ -376,13 +373,12 @@ trait Crud
 		$per_page 	  = (int)$data["per_page"];
 		$current_page = (int)$data["page"];
 
-		//get total records
+		// get total records
 		$total = $query->getQuery()->execute()->count();
 
-		//baseUrl
 		$url = $this->baseUrl("$entity_lower/list?page=");
 
-		//limits
+		// limits
 		$from   = ($current_page == 1) ? 1 : ($per_page*$current_page - $per_page + 1);
 		$to     = $from + $per_page - 1;
 		$last 	= ceil($total / $per_page);
@@ -391,12 +387,12 @@ trait Crud
 
 		if ($to > $total) $to = $total;
 
-		//filtered resultset
+		// filtered resultset
 		$resultset = $query->limit($per_page, $from - 1)
 							->getQuery()
 							->execute();
 
-		//create response object
+		// create response object
 		$output = (object)[
 			"total"         => $total,
 			"per_page"      => $per_page,
@@ -404,10 +400,10 @@ trait Crud
 			"last_page"     => $last,
 			"from"          => $from,
 			"to"            => $to,
-			//urls
+			// urls
 			"next_page_url" => $url.$next,
 			"prev_page_url" => $url.$before,
-			//resultset
+			// resultset
 			"data"          => $resultset->jsonSerialize()
 		];
 
@@ -423,15 +419,14 @@ trait Crud
 	 */
 	private function _mergePayload(&$data)
 	{
-		//merge payload if set
+		// merge payload if set
 		if (!isset($data["payload"]))
 			return;
 
 		$payload = json_decode($data["payload"], true);
-		//merge
-		$data = array_merge($data, $payload);
+		$data    = array_merge($data, $payload);
 
-		//unset payload
+		// unset payload
 		unset($data["payload"]);
 	}
 }

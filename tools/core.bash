@@ -53,7 +53,7 @@ copyToolFiles() {
 copyVoltFiles() {
 
 	if [ -d $PROJECT_PATH"/ui/volt/" ]; then
-		
+
 		echo -e "\033[94mCopying volt files ... \033[0m"
 		cp $CORE_SRC_VOLT"index.volt" $PROJECT_PATH"/ui/volt/"
 	fi
@@ -62,14 +62,14 @@ copyVoltFiles() {
 copyCorePhar() {
 
 	echo -e "\033[95mCopying core phar file from $CORE_SRC_PATH... \033[0m"
-	
+
 	cp "$CORE_SRC_PATH$CORE_PROJECT_NAME.phar" "$DEST_PATH$CORE_PROJECT_NAME.phar"
 }
 
-# Tasks
+# tasks
 echo -e "\033[96mCore path: "$CORE_SRC_PATH" \033[0m"
 
-# 0) build?
+# 1) build?
 if [ "$1" = "--b" ]; then
 
 	echo -e "\033[95mBuilding core package... \033[0m"
@@ -81,14 +81,13 @@ if [ "$1" = "--b" ]; then
 	cd $PROJECT_PATH
 fi
 
-# 1) tools
+# 2) tools
 copyToolFiles
 
-# 2) volt files
+# 3) volt files
 copyVoltFiles
 
-# 3) php phar core builder
+# 4) php phar core builder
 copyCorePhar
 
-# task done!
 echo -e "\033[92mDone! \033[0m"

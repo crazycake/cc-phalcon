@@ -6,7 +6,6 @@
 
 namespace CrazyCake\Controllers;
 
-//imports
 use Phalcon\Mvc\Controller;
 
 /**
@@ -65,10 +64,10 @@ trait Translations
 			]
 		];
 
-		//call handler
+		// call handler
 		$data = array_merge($data, self::coreTranslations());
 
-		//return controller translations
+		// return key translations
 		return $data[strtoupper($controller)] ?? [];
 	}
 
@@ -101,7 +100,7 @@ trait Translations
 			]
 		];
 
-		//call handler
+		// call handler
 		return array_merge($data, self::jsTranslations());
 	}
 }

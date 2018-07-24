@@ -6,7 +6,6 @@
 
 namespace CrazyCake\Helpers;
 
-//imports
 use Phalcon\Exception;
 
 /**
@@ -34,7 +33,7 @@ class Forms
 
 		$rut = explode("-", $input_rut);
 
-		//checks if rut is valid
+		// checks if rut is valid
 		return strtolower($rut[1]) == self::_validateRutVD($rut[0]);
 	}
 
@@ -44,13 +43,13 @@ class Forms
 	 */
 	public static function validateName($name = "")
 	{
-		//validate names
+		// validate names
 		$nums = "0123456789";
 
 		if (strcspn($name, $nums) != strlen($name))
 			return false;
 
-		//format to capitalized name
+		// format to capitalized name
 		return mb_convert_case($name, MB_CASE_TITLE, "UTF-8");
 	}
 

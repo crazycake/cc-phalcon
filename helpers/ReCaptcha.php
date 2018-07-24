@@ -7,7 +7,6 @@
 
 namespace CrazyCake\Helpers;
 
-//imports
 use Phalcon\Exception;
 
 /**
@@ -31,7 +30,7 @@ class ReCaptcha
 		if (is_null($secret_key))
 			throw new Exception("ReCaptcha Helper -> Google reCaptcha key is required.");
 
-		//set secret key
+		// set secret key
 		$this->recaptcha = new \ReCaptcha\ReCaptcha($secret_key);
 	}
 
@@ -42,15 +41,14 @@ class ReCaptcha
 	 */
 	public function isValid($gRecaptchaResponse = null)
 	{
-		//get DI instance (static)
 		$di = \Phalcon\DI::getDefault();
 
 		if (empty($gRecaptchaResponse))
 			return false;
 
-		//get remote address
+		// get remote address
 		$ip = $di->getShared("request")->getServerAddress();
-		//verify response
+		// verify response
 		$response = $this->recaptcha->verify($gRecaptchaResponse, $ip);
 
 		if ($response->isSuccess())

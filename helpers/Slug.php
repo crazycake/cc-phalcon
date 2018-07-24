@@ -2,9 +2,6 @@
 /**
  * Slug Helper for namespaces
  * @link http://cubiq.org/the-perfect-php-clean-url-generator
- * @author Andres Gutierrez <andres@phalconphp.com>
- * @author Nikolaos Dimopoulos <nikos@niden.net>
- * @contributor Nicolas Pulido <nicolas.pulido@crazycake.cl>
  */
 
 namespace CrazyCake\Helpers;
@@ -35,8 +32,7 @@ class Slug
 		if (!empty($replace))
 			$clean = str_replace((array)$replace, " ", $clean);
 
-		$clean = preg_replace("/[^a-zA-Z0-9\/_|+ -]/", "", $clean);
-		$clean = strtolower($clean);
+		$clean = strtolower(preg_replace("/[^a-zA-Z0-9\/_|+ -]/", "", $clean));
 		$clean = preg_replace("/[\/_|+ -]+/", $delimiter, $clean);
 		$clean = trim($clean, $delimiter);
 

@@ -5,22 +5,22 @@
 # stop execution for exceptions
 set -e
 
-#Current path
+# current path
 PROJECT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-# Package properties
+# package properties
 APP_NAME="cc-phalcon"
 APP_NAMESPACE="$(echo "$APP_NAME" | tr '[:upper:]' '[:lower:]')"
 
 # URLs
 BOX_PHAR_URL="https://github.com/box-project/box2/releases/download/2.7.5/box-2.7.5.phar"
 PHPDOC_PHAR_URL="http://phpdoc.org/phpDocumentor.phar"
-# Local documentation path.
+
+# local documentation path.
 PHPDOC_INPUT_PATH="./"
 PHPDOC_OUTPUT_PATH=$PROJECT_PATH"/.docs/"
 
-#script help function
-scriptHelp() {
+help() {
 	echo -e "\033[93m"$APP_NAME" core Script\nValid actions:\033[0m"
 	echo -e "\033[96m build: Builds phar file with default box.json file.\033[0m"
 	echo -e "\033[96m tree: Returns the file tree of phar file.\033[0m"
@@ -28,7 +28,7 @@ scriptHelp() {
 	exit
 }
 
-#commands
+# commands
 case "$1" in
 
 	build)
@@ -48,7 +48,7 @@ case "$1" in
 		cd $PROJECT_PATH
 		# build, use -v for verbose
 		php box.phar build
-		# task done!
+
 		echo -e "\033[92mBuilded $VER \033[0m"
 	;;
 
@@ -56,7 +56,7 @@ case "$1" in
 
 		cd $PROJECT_PATH
 		php box.phar info -l $APP_NAMESPACE".phar"
-		# task done!
+
 		echo -e "\033[92mDone! \033[0m"
 	;;
 
@@ -69,13 +69,13 @@ case "$1" in
 			wget -O phpdoc.phar $PHPDOC_PHAR_URL
 		fi
 
-		#PHP
+		# PHP DOC
 		echo -e "\033[35mGenerating PHP Docs...\033[0m"
 		php phpdoc.phar -d $PHPDOC_INPUT_PATH -t $PHPDOC_OUTPUT_PATH --template="responsive-twig"
 	;;
 
-	#default
+	# defaults
 	*)
-		scriptHelp
+		help
 	;;
 esac

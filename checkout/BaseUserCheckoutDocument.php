@@ -6,7 +6,6 @@
 
 namespace CrazyCake\Checkout;
 
-//imports
 use Phalcon\Exception;
 use CrazyCake\Helpers\Forms;
 
@@ -49,7 +48,7 @@ class BaseUserCheckoutDocument extends \CrazyCake\Models\BaseDocument
 			$length = static::$CODE_LENGTH;
 
 		$code = (\Phalcon\DI::getDefault())->getShared("cryptify")->newAlphanumeric($length);
-		//unique constrait
+
 		$exists = self::getByProperties(["code" => $code]);
 
 		return $exists ? self::newBuyOrderCode($length) : $code;
@@ -62,18 +61,18 @@ class BaseUserCheckoutDocument extends \CrazyCake\Models\BaseDocument
 	 */
 	public static function newBuyOrder($checkout)
 	{
-		//get DI reference (static)
+		// get DI reference (static)
 		$di = \Phalcon\DI::getDefault();
 
-		//generates buy order
+		// generates buy order
 		$checkout->buyOrder = self::newBuyOrderCode();
 		$checkout->state    = "pending";
 
-		//log statement
+		// log statement
 		$di->getShared("logger")->debug("BaseUserCheckout::newBuyOrder -> saving BuyOrder: $checkout->buyOrder");
 
 		try {
-			//insert
+			// insert
 			if (!$checkout = self::insert($checkout))
 				throw new Exception("A DB error ocurred inserting checkout object.");
 
@@ -123,13 +122,12 @@ class BaseUserCheckoutDocument extends \CrazyCake\Models\BaseDocument
 
 			$mongo = (\Phalcon\DI::getDefault())->getShared("mongo");
 
-			//use carbon library to handle time
+			// use carbon library to handle time
 			$now = (new \Carbon\Carbon())->subHours(static::$CHECKOUT_EXPIRATION);
 
-			//delete action
+			// delete action
 			$mongo->{static::$COLLECTION}->deleteOne(["state" => "pending", "local_time" => ['$lt' => self::toIsoDate($now)]]);
 
-			//delete expired objects
 			return $result;
 		}
 		catch (\Exception | Exception $e) { return 0; }

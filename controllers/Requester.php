@@ -7,9 +7,8 @@
 
 namespace CrazyCake\Controllers;
 
-//imports
 use Phalcon\Exception;
-//core
+
 use CrazyCake\Phalcon\App;
 
 /**
@@ -98,7 +97,7 @@ trait Requester
 			"timeout"  => $options["timeout"]
 		]);
 
-		//curl options
+		// curl options
 		$guzzle_options = [
 			"curl" => [
 				CURLOPT_SSL_VERIFYHOST => $options["verify_host"] ? 2 : false, // prod_recommended: 2
@@ -106,18 +105,18 @@ trait Requester
 			]
 		];
 
-		//set headers?
+		// set headers?
 		if (!empty($options["headers"]))
 			$guzzle_options["headers"] = $options["headers"];
 
-		//check params for query strings
+		// check params for query strings
 		$query_string = $options["query-string"] || is_array($options["payload"]);
 
 		$params = $query_string ? "?".http_build_query($options["payload"]) : "/".$options["payload"];
 
 		$this->logger->debug("Requester::_getRequest [".$options["uri"]."] options: ".print_r($guzzle_options, true));
 
-		//new promise
+		// new promise
 		$response = $client->request("GET", $options["uri"].$params, $guzzle_options);
 
 		$body = $response->getBody();
@@ -141,7 +140,7 @@ trait Requester
 			"timeout"  => $options["timeout"]
 		]);
 
-		//curl options
+		// curl options
 		$guzzle_options = [
 			"form_params" => $options["payload"],
 			"curl" => [
@@ -150,17 +149,17 @@ trait Requester
 			]
 		];
 
-		//set headers?
+		// set headers?
 		if (!empty($options["headers"]))
 			$guzzle_options["headers"] = $options["headers"];
 
-		//set body?
+		// set body?
 		if (!empty($options["body"]))
 			$guzzle_options["body"] = $options["body"];
 
 		$this->logger->debug("Requester::_postRequest [".$options["uri"]."] options: ".print_r($guzzle_options, true));
 
-		//request action
+		// request action
 		$response = $client->request(strtoupper($options["method"]), $options["uri"], $guzzle_options);
 
 		$body = $response->getBody();
@@ -190,7 +189,7 @@ trait Requester
 		$ssl      = $options["scheme"] == "https";
 		$protocol = $ssl ? "ssl://" : "";
 
-		//set socket to be opened
+		// set socket to be opened
 		$socket = fsockopen(
 			$protocol.$options["host"],
 			$options["port"] ?? ($ssl ? 443 : 80),
@@ -199,7 +198,7 @@ trait Requester
 			$options["timeout"]
 		);
 
-		// Data goes in the path for a GET request
+		// data goes in the path for a GET request
 		if (strtoupper($options["method"]) == "GET") {
 
 			$options["path"] .= $options["payload"];
@@ -207,30 +206,30 @@ trait Requester
 		}
 		else {
 
-			//query string or body content
+			// query string or body content
 			$options["payload"] = is_array($options["payload"]) ? http_build_query($options["payload"], "", "&") : "payload=".$options["payload"];
 
 			$length = strlen($options["payload"]);
 		}
 
-		//set output
+		// set output
 		$out = strtoupper($options["method"])." ".$options["path"]." HTTP/1.1\r\n";
 		$out .= "Host: ".$options["host"]."\r\n";
 		$out .= "User-Agent: AppLocalServer\r\n";
 		$out .= "Content-Type: application/x-www-form-urlencoded\r\n";
 		$out .= "Content-Length: ".$length."\r\n";
 
-		//set headers
+		// set headers?
 		if (!empty($options["headers"])) {
 
 			foreach ($options["headers"] as $header => $value)
 				$out .= $header.": ".$value."\r\n";
 		}
 
-		//closer
+		// closer
 		$out .= "Connection: Close\r\n\r\n";
 
-		// Data goes in the request body for a POST request
+		// data goes in the request body for a POST request
 		if (strtoupper($options["method"]) == "POST" && !empty($options["payload"]))
 			$out .= $options["payload"];
 

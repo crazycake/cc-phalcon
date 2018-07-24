@@ -7,9 +7,8 @@
 
 namespace CrazyCake\Checkout;
 
-//imports
 use Phalcon\Exception;
-//core
+
 use CrazyCake\Phalcon\App;
 
 /**
@@ -62,17 +61,17 @@ trait CheckoutManager
 	 */
 	public function buyOrderAction()
 	{
-		//make sure is ajax request
+		// make sure is ajax request
 		$this->onlyAjax();
 
-		//get form data
+		// get form data
 		$data = $this->handleRequest([
 			"gateway" => "string"
 		], "POST", false);
 
 		try {
 
-			//new checkout object
+			// new checkout object
 			$checkout = (object)[
 				"gateway"  => $data["gateway"],
 				"currency" => $data["currency"] ?? $this->checkout_manager_conf["default_currency"],
@@ -82,25 +81,25 @@ trait CheckoutManager
 
 			$entity = $this->checkout_manager_conf["checkout_entity"];
 
-			//parse checkout objects
+			// parse checkout objects
 			if (method_exists($entity, "parseFormObjects"))
 				$entity::parseFormObjects($checkout, $data);
 
-			//call event
+			// listener
 			$this->onBeforeBuyOrderCreation($checkout);
 
-			//check if an error occurred
+			// check if an error occurred
 			if (!$checkout = $entity::newBuyOrder($checkout)) {
 
 				$this->logger->error("CheckoutManager::buyOrder -> failed saving checkout: ".json_encode($checkout, JSON_UNESCAPED_SLASHES));
 				$this->jsonResponse(500);
 			}
 
-			//call event
+			// listener
 			if (method_exists($this, "onAfterBuyOrderCreation"))
 				$this->onAfterBuyOrderCreation($checkout);
 
-			//send JSON response
+			// send response
 			return $this->jsonResponse(200, $checkout);
 		}
 		catch (\Exception | Exception $e) { $this->jsonResponse(400, $e->getMessage()); }
@@ -116,16 +115,16 @@ trait CheckoutManager
 		$this->logger->debug("CheckoutManager::successCheckout -> processing buy order: $buy_order");
 
 		try {
-			//set classes
+			// set classes
 			$entity = $this->checkout_manager_conf["checkout_entity"];
 
-			//get checkout & user
+			// get checkout & user
 			$checkout = $entity::getByBuyOrder($buy_order);
 
 			if (!$checkout)
 				throw new Exception("checkout not found! buy order: ".$buy_order);
 
-			//skip already process for dev
+			// skip already process for dev
 			if ($checkout->state == "success")
 				throw new Exception("Checkout already processed, buy order: ".$buy_order);
 
@@ -139,10 +138,9 @@ trait CheckoutManager
 
 			$this->logger->debug("CheckoutManager::successCheckout -> Exception: ".$e->getMessage());
 
-			//get mailer controller
 			$mailer = App::getClass("mailer_controller");
 
-			//send alert system mail message
+			// send alert system mail message
 			(new $mailer())->adminException($e, ["edata" => "buy_order: ".$buy_order ?? "n/a"]);
 		}
 	}

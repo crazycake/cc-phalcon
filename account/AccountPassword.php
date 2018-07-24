@@ -6,7 +6,6 @@
 
 namespace CrazyCake\Account;
 
-//imports
 use Phalcon\Exception;
 use CrazyCake\Phalcon\App;
 use CrazyCake\Helpers\ReCaptcha;
@@ -16,7 +15,7 @@ use CrazyCake\Helpers\ReCaptcha;
  */
 trait AccountPassword
 {
-	// Traits
+	// traits
 	use AccountToken;
 
 	/**
@@ -43,7 +42,6 @@ trait AccountPassword
 	 */
 	public function initAccountPassword($conf = [])
 	{
-		// defaults
 		$defaults = [
 			"user_entity"         => "user",
 			"redirection_uri"     => "signIn",

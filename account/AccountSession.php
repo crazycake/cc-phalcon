@@ -6,10 +6,8 @@
 
 namespace CrazyCake\Account;
 
-//imports
 use Phalcon\Exception;
 
-//core
 use CrazyCake\Phalcon\App;
 
 /**

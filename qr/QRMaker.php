@@ -7,7 +7,6 @@
 
 namespace CrazyCake\Qr;
 
-//imports
 use Phalcon\Exception;
 
 /**
@@ -46,10 +45,9 @@ class QRMaker
 		if (empty($cache_path) || !is_dir($cache_path))
 			throw new Exception("QRMaker Library -> Cache path ($cache_path) not found.");
 
-		// init class
 		$this->init($log_path, $cache_path);
 
-		//load QR library
+		// load QR library
 		require_once "src/qrconf.php";
 	}
 
@@ -63,19 +61,19 @@ class QRMaker
 		if (defined("QR_ASSETS_PATH"))
 			return;
 
-		//use cache - more disk reads but less CPU power, masks and format templates are stored there
+		// use cache - more disk reads but less CPU power, masks and format templates are stored there
 		define("QR_CACHEABLE", !is_null($cache_path));
 		define("QR_CACHE_DIR", $cache_path."qr/");
 		define("QR_LOG_DIR", $log_path);
 
-		//create cache dir if not exists
+		// create folder?
 		if (!is_dir(QR_CACHE_DIR))
 			mkdir(QR_CACHE_DIR, 0775, true);
 
-		//Check if library is running from a Phar file, if does, assets must be copied to cache folder.
+		// check if library is running from a Phar file, if does, assets must be copied to cache folder.
 		define("QR_ASSETS_PATH", \Phar::running() ? $this->_extractAssetsFromPhar($cache_path) : __DIR__."/assets/");
 
-		//if true, estimates best mask (spec. default, but extremally slow; set to false to significant performance boost but (propably) worst quality code
+		// if true, estimates best mask (spec. default, but extremally slow; set to false to significant performance boost but (propably) worst quality code
 		if (self::QR_HIGH_QUALITY) {
 			define("QR_FIND_BEST_MASK", true);
 		}
@@ -84,9 +82,9 @@ class QRMaker
 			define("QR_DEFAULT_MASK", false);
 		}
 
-		//if false, checks all masks available, otherwise value tells count of masks need to be checked, mask id are got randomly
+		// if false, checks all masks available, otherwise value tells count of masks need to be checked, mask id are got randomly
 		define("QR_FIND_FROM_RANDOM", false);
-		//maximum allowed png image width (in pixels), tune to make sure GD and PHP can handle such big images
+		// maximum allowed png image width (in pixels), tune to make sure GD and PHP can handle such big images
 		define("QR_PNG_MAXIMUM_SIZE",  self::QR_PNG_MAX_SIZE);
 	}
 
@@ -96,53 +94,53 @@ class QRMaker
 	 */
 	public function generate($params = [])
 	{
-		//new QrTag object
+
 		$qr = new QrTag();
-		//props
 		$qr->bgColor = $params["background_color"] ?? "ffffff";
 		$qr->text    = $params["data"] ?? "CrazyCake QR Code";
 		$qr->file    = $params["savename"] ?? die("QR Library -> (generate) must set param savename");
 
-		//shape dot object
+		// shape dot object
 		if (!empty($params["dot_shape_class"]) && $this->_classExists($params["dot_shape_class"])) {
 
 			$class     = self::QR_LIB_NAMESPACE.$params["dot_shape_class"];
 			$dot_shape = new $class();
 		}
+		// fallback
 		else {
-			 //fallback
+
 			$dot_shape = new QrTagDotSquare();
 		}
 
-		//set shape dot
+		// set shape dot
 		$dot_shape->color = $params["dot_shape_color"] ?? "000000";
 		$dot_shape->size  = $params["dot_shape_size"] ?? 14;
 
 		$qr->setDot($dot_shape);
 
-		//frame dot object
+		// frame dot object
 		if (!empty($params["dot_frame_class"]) && $this->_classExists($params["dot_frame_class"])) {
 
 			$class     = self::QR_LIB_NAMESPACE.$params["dot_frame_class"];
 			$dot_frame = new $class();
 		}
-		//fallback
+		// fallback
 		else {
 
 			$dot_frame = new QrTagFrameDotSquare();
 		}
 
-		//set frame dot
+		// set frame dot
 		$dot_frame->color = $params["dot_frame_color"] ?? "000000";
 		$qr->frameDot     = $dot_frame;
 
-		//main frame object
+		// main frame object
 		if (!empty($params["frame_class"]) && $this->_classExists($params["frame_class"])) {
 
 			$class = self::QR_LIB_NAMESPACE.$params["frame_class"];
 			$frame = new $class();
 		}
-		//fallback
+		// fallback
 		else {
 
 			$frame = new QrTagFrameSquare();
@@ -153,7 +151,7 @@ class QRMaker
 
 		$qr->generate();
 
-		//embed image?
+		// embed image?
 		if (!empty($params["embed_logo"]))
 			$this->_embedLogo($params["savename"], $params["embed_logo"]);
 
@@ -174,22 +172,21 @@ class QRMaker
 	{
 		$extension = strtolower(pathinfo($embed_img_path, PATHINFO_EXTENSION));
 
-		//embed image type
+		// embed image type
 		switch ($extension) {
 			case "png": $embed_img = imagecreatefrompng($embed_img_path);  break;
 			case "jpg": $embed_img = imagecreatefromjpeg($embed_img_path); break;
-			case "gif": $embed_img = imagecreatefromgif($embed_img_path);  break;
 		}
 
 		$real_embed_img_width  = imagesx($embed_img);
 		$real_embed_img_height = imagesy($embed_img);
 
-		//qr image
+		// qr image
 		$qr_img    = imagecreatefrompng($qr_path);
 		$qr_width  = imagesx($qr_img);
 		$qr_height = imagesy($qr_img);
 
-		//image merging
+		// image merging
 		$new_embed_img = imagecreatetruecolor($embed_img_width, $embed_img_height);
 
 		imagecopy($new_embed_img, $qr_img, 0, 0, $qr_width/2 - $embed_img_width/2, $qr_height/2 - $embed_img_height/2, $embed_img_width, $embed_img_height);
@@ -216,35 +213,34 @@ class QRMaker
 	 */
 	private function _extractAssetsFromPhar($cache_path = null, $force_extract = false)
 	{
-		//check folders
+		// folder validation
 		if (is_null($cache_path) || !is_dir($cache_path))
 			throw new Exception("extractAssetsFromPhar -> assets and cache path must be valid paths.");
 
-		//set phar assets path
+		// set phar assets path
 		$output_path = $cache_path."qr/assets/";
 
-		//get files in directory & exclude ".", ".." directories
+		// get files in directory & exclude ".", ".." directories
 		$files = scandir(__DIR__."/assets");
 
 		unset($files["."], $files[".."]);
 
-		//skip if files were already copied
+		// skip if files were already copied
 		if (!$force_extract && is_file($output_path.current($files)))
 			return $output_path;
 
 		$assets = [];
 
-		//fill the asset array
+		// fill the asset array
 		foreach ($files as $file)
 			array_push($assets, "qr/assets/".$file);
 
-		//instance a phar file object
+		// instance a phar file object
 		$phar = new \Phar(\Phar::running());
 
-		//extract all files in a given directory
+		// extract all files in a given directory
 		$phar->extractTo($cache_path, $assets, true);
 
-		//return path
 		return $output_path;
 	}
 }
