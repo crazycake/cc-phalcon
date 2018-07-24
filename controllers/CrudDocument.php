@@ -96,7 +96,7 @@ trait CrudDocument
 
 		$this->logger->debug("CrudDocument::list -> new request: ". json_encode($query)." => ".json_encode($opts));
 
-		// listener
+		// event
 		if (method_exists($this, "onBeforeQuery"))
 			$this->onBeforeQuery($query, $opts, $data);
 
@@ -111,7 +111,7 @@ trait CrudDocument
 		$resultset  = $this->mongoManager->executeQuery($collection, new \MongoDB\Driver\Query($query, $opts));
 		$totalItems = count($resultset ? $resultset->toArray() : []);
 
-		// listener
+		// event
 		if (method_exists($this, "onAfterQuery"))
 			$this->onAfterQuery($items);
 
@@ -138,7 +138,7 @@ trait CrudDocument
 		// format payload
 		$this->formatPayload($payload);
 
-		// listener
+		// event
 		if (method_exists($this, "onBeforeSave"))
 			$this->onBeforeSave($payload);
 
@@ -193,7 +193,7 @@ trait CrudDocument
 			$payload->uploaded = $this->saveUploadedFiles($uri);
 		}
 
-		// listener
+		// event
 		if (method_exists($this, "onAfterSave"))
 			$this->onAfterSave($object, $payload);
 
@@ -217,7 +217,7 @@ trait CrudDocument
 		try { $object = $this->mongo->{$this->crud_conf["collection"]}->findOne(["_id" => (new \MongoDB\BSON\ObjectId($id))]); }
 		catch(\Exception | Exception $e) { $object = null; }
 
-		// listener
+		// event
 		if (method_exists($this, "onGet"))
 			$this->onGet($object);
 
@@ -235,7 +235,7 @@ trait CrudDocument
 
 		$object_id = new \MongoDB\BSON\ObjectID($data["id"]);
 
-		// listener
+		// event
 		if (method_exists($this, "onBeforeDelete"))
 			$this->onBeforeDelete($data);
 
@@ -258,7 +258,7 @@ trait CrudDocument
 			"url"  => "string",
 		], "POST");
 
-		// listener
+		// event
 		if (method_exists($this, "onBeforeDeleteImage"))
 			$this->onBeforeDeleteImage($data);
 

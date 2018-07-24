@@ -17,13 +17,13 @@ use CrazyCake\Phalcon\App;
 trait CheckoutManager
 {
 	/**
-	 * Listener - Before Inster a new Buy Order record
+	 * Event - Before Inster a new Buy Order record
 	 * @param Object $checkout - The checkout object
 	 */
 	abstract public function onBeforeBuyOrderCreation(&$checkout);
 
 	/**
-	 * Listener - Success checkout Task completed
+	 * Event - Success checkout Task completed
 	 * @param Object $checkout - The checkout object
 	 */
 	abstract public function onSuccessCheckout($checkout);
@@ -64,7 +64,6 @@ trait CheckoutManager
 		// make sure is ajax request
 		$this->onlyAjax();
 
-		// get form data
 		$data = $this->handleRequest([
 			"gateway" => "string"
 		], "POST", false);
@@ -85,7 +84,7 @@ trait CheckoutManager
 			if (method_exists($entity, "parseFormObjects"))
 				$entity::parseFormObjects($checkout, $data);
 
-			// listener
+			// event
 			$this->onBeforeBuyOrderCreation($checkout);
 
 			// check if an error occurred
@@ -95,7 +94,7 @@ trait CheckoutManager
 				$this->jsonResponse(500);
 			}
 
-			// listener
+			// event
 			if (method_exists($this, "onAfterBuyOrderCreation"))
 				$this->onAfterBuyOrderCreation($checkout);
 
@@ -131,7 +130,7 @@ trait CheckoutManager
 			//1) update status of checkout
 			$entity::updateState($buy_order, "success");
 
-			//2) Call listener
+			//2) call event
 			$this->onSuccessCheckout($checkout);
 		}
 		catch (\Exception | Exception $e) {

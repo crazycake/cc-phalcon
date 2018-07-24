@@ -44,8 +44,7 @@ trait AccountPassword
 	{
 		$defaults = [
 			"user_entity"         => "user",
-			"redirection_uri"     => "signIn",
-			"password_uri"        => "password/create/{hash}/#/new",
+			"password_uri"        => "password/create/{hash}",
 			"password_min_length" => 8,
 		];
 
@@ -95,12 +94,6 @@ trait AccountPassword
 			"url"        => $this->baseUrl($password_uri),
 			"expiration" => self::$TOKEN_EXPIRES["pass"]
 		]);
-
-		// set a flash message to show on account controller
-		$this->flash->success(str_replace("{email}", $email, $this->account_password_conf["trans"]["PASS_MAIL_SENT"]));
-
-		// send response
-		$this->jsonResponse(200, ["redirect" => $this->account_password_conf["redirection_uri"]]);
 	}
 
 	/**
@@ -161,11 +154,7 @@ trait AccountPassword
 			// delete token
 			$this->deleteToken($user_id, $token_type);
 
-			// set a flash message to show on account controller
-			$this->flash->success($this->account_password_conf["trans"]["NEW_PASS_SAVED"]);
-
-			// redirect response
-			$this->jsonResponse(200, ["redirect" => $this->account_password_conf["redirection_uri"]]);
+			return true;
 		}
 		catch (Exception $e) {
 

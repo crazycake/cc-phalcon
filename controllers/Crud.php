@@ -102,7 +102,7 @@ trait Crud
 		// set layout
 		$this->view->setLayout("crud");
 
-		// listener
+		// event
 		$this->onBeforeRenderIndex();
 
 		// set current_view
@@ -168,13 +168,13 @@ trait Crud
 		// group results
 		$query->groupBy($this->_fieldToPhql($this->crud_conf["pk"]));
 
-		// listener, on query
+		// event
 		$this->onQuery($query);
 
 		// get pagination response
 		$r = $this->_getPaginationData($query, $data);
 
-		// optional listener
+		// event
 		if (method_exists($this, "onResultset"))
 			$r->output->data = $this->onResultset($r->resultset);
 
@@ -196,7 +196,7 @@ trait Crud
 		$this->_mergePayload($data);
 
 		try {
-			// listener
+			// event
 			$this->onBeforeSave($data, "create");
 
 			$object_class = $this->crud_conf["entity"];
@@ -217,7 +217,7 @@ trait Crud
 				$data["uploaded"] = $this->saveUploadedFiles($uri);
 			}
 
-			// listener
+			// event
 			$this->onAfterSave($object, $data, "create");
 
 			// send response
@@ -244,7 +244,7 @@ trait Crud
 		$this->_mergePayload($data);
 
 		try {
-			// listener
+			// event
 			$this->onBeforeSave($data, "update");
 
 			// get object class & get object by primary key
@@ -290,7 +290,7 @@ trait Crud
 				$new_data[$key] = $value;
 			}
 
-			// listener
+			// event
 			$this->onAfterSave($object, $new_data, "update");
 
 			// send response

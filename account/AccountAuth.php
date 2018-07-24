@@ -167,7 +167,7 @@ trait AccountAuth
 		// set pending email confirmation status
 		$data["flag"] = "pending";
 
-		// listener
+		// event
 		if (method_exists($this, "beforeRegisterUser"))
 			$this->beforeRegisterUser($data);
 
@@ -178,7 +178,7 @@ trait AccountAuth
 			$this->jsonResponse(400);
 		}
 
-		// listener
+		// event
 		if (method_exists($this, "afterRegisterUser"))
 			$this->afterRegisterUser($user);
 
@@ -223,18 +223,18 @@ trait AccountAuth
 			// remove activation token
 			$this->deleteToken($user_id, "activation");
 
-			// listener
+			// custom behavior event
 			if (method_exists($this, "onActivationSuccess")) {
 
 				$this->onActivationSuccess($user);
 				return;
 			}
 
-			// success login
-			$this->newUserSession($user);
-
 			// set a flash message to show on account controller
 			$this->flash->success($this->account_auth_conf["trans"]["ACTIVATION_SUCCESS"]);
+
+			// success login
+			$this->newUserSession($user);
 
 			// redirect/response
 			$this->setResponseOnLoggedIn();

@@ -73,7 +73,7 @@ trait Mailer
 		// extend config
 		$this->mailer_conf = array_merge($this->mailer_conf, $data);
 
-		// call listener?
+		// event
 		if (method_exists($this, "onBeforeSendContact"))
 			$this->onBeforeSendContact($data);
 
