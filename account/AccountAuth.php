@@ -126,7 +126,7 @@ trait AccountAuth
 
 			// set message
 			$namespace = "STATE_".strtoupper($user->flag);
-			$message   = str_replace("{email}", "<b>".$user->email."</b>", $this->account_auth_conf["trans"][$namespace]);
+			$message   = str_replace("{email}", $user->email, $this->account_auth_conf["trans"][$namespace]);
 
 			// for API handle alerts & warning as errors,
 			$this->jsonResponse(400, $message, "warning", $namespace);
@@ -187,7 +187,7 @@ trait AccountAuth
 
 		// set a flash message to show on account controller
 		$message = str_replace("{email}", $user->email, $this->account_auth_conf["trans"]["ACTIVATION_PENDING"]);
-		$this->flash->success(str_replace($user->email, "<i>".$user->email."</i>", $message));
+		$this->flash->success($message);
 
 		// redirect/response
 		if (MODULE_NAME == "api")
