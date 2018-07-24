@@ -126,7 +126,7 @@ trait AccountAuth
 
 			// set message
 			$namespace = "STATE_".strtoupper($user->flag);
-			$message   = $this->account_auth_conf["trans"][$namespace];
+			$message   = str_replace("{email}", $user->email, $this->account_auth_conf["trans"][$namespace]);
 
 			// for API handle alerts & warning as errors,
 			$this->jsonResponse(400, $message, "warning", $namespace);
