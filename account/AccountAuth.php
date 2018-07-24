@@ -243,7 +243,7 @@ trait AccountAuth
 		}
 		catch (Exception $e) {
 
-			$this->logger->error("AccountAuth::activationAction -> exception: ".$e->getMessage());
+			$this->logger->error("AccountAuth::activationAction [$hash] -> exception: ".$e->getMessage());
 			$this->dispatcher->forward(["controller" => "error", "action" => "expired"]);
 		}
 	}
