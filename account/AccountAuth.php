@@ -230,7 +230,7 @@ trait AccountAuth
 
 			// listener
 			if (method_exists($this, "onActivationSuccess"))
-				$this->onActivationSuccess($user);
+				return $this->onActivationSuccess($user);
 
 			// success login
 			$this->newUserSession($user);
