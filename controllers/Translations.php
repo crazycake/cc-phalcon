@@ -35,7 +35,7 @@ trait Translations
 				"STATE_PENDING"      => "Te hemos enviado un correo de activación a {email}.",
 				"STATE_DISABLED"     => "Esta cuenta se encuentra desactivada, por favor comunícate con nuestro equipo.",
 				"NOT_FOUND"          => "Esta cuenta no se encuentra registrada o no ha sido activada.",
-				"EMAIL_EXISTS"       => "El correo {email} ya se encuentra registrado, ingresa con tu correo <a href=\"{link}\">aquí</a>.",
+				"EMAIL_EXISTS"       => "El correo {email} ya se encuentra registrado.",
 				"ACTIVATION_SUCCESS" => "¡Tu cuenta ha sido activada!",
 				"ACTIVATION_PENDING" => "Te hemos enviado un correo a {email} para que actives tu cuenta.",
 				"RECAPTCHA_FAILED"   => "No hemos logrado verficar el reCaptcha, por favor inténtalo de nuevo.",

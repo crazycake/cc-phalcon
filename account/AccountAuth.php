@@ -159,13 +159,8 @@ trait AccountAuth
 		$entity = $this->account_auth_conf["user_entity"];
 
 		// validate if user exists
-		if ($entity::getUserByEmail($data["email"])) {
-
-			$msg = str_replace("{email}", $data["email"], $this->account_auth_conf["trans"]["EMAIL_EXISTS"]);
-			$msg = str_replace("{link}", $this->baseUrl($this->account_auth_conf["login_uri"]), $msg);
-
-			$this->jsonResponse(400, $msg);
-		}
+		if ($entity::getUserByEmail($data["email"]))
+			$this->jsonResponse(400, str_replace("{email}", $data["email"], $this->account_auth_conf["trans"]["EMAIL_EXISTS"]));
 
 		// remove CSRF key
 		unset($data[$this->client->tokenKey]);
@@ -202,7 +197,7 @@ trait AccountAuth
 	}
 
 	/**
-	 * Action - Activation link handler, can dispatch to a view
+	 * Action - Activation handler, can dispatch to a view
 	 * @param String $hash - The encrypted hash
 	 */
 	public function activationAction($hash = "")
@@ -220,17 +215,20 @@ trait AccountAuth
 			// check user pending flag
 			$user = $entity::getById($user_id);
 
-			if (!$user || $user->flag != "pending")
-				throw new Exception("invalid user or missing 'pending' flag, userID: $user->id");
+			//if (!$user || $user->flag != "pending")
+			//	throw new Exception("invalid user or missing 'pending' flag, userID: $user->id");
 
 			// save new account flag state
 			$entity::updateProperty($user_id, "flag", "enabled");
 			// remove activation token
-			$this->deleteToken($user_id, "activation");
+			//$this->deleteToken($user_id, "activation");
 
 			// listener
-			if (method_exists($this, "onActivationSuccess"))
-				return $this->onActivationSuccess($user);
+			if (method_exists($this, "onActivationSuccess")) {
+
+				$this->onActivationSuccess($user);
+				return;
+			}
 
 			// success login
 			$this->newUserSession($user);
