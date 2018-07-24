@@ -215,13 +215,13 @@ trait AccountAuth
 			// check user pending flag
 			$user = $entity::getById($user_id);
 
-			//if (!$user || $user->flag != "pending")
-			//	throw new Exception("invalid user or missing 'pending' flag, userID: $user->id");
+			if (!$user || $user->flag != "pending")
+				throw new Exception("invalid user or missing 'pending' flag, userID: $user->id");
 
 			// save new account flag state
 			$entity::updateProperty($user_id, "flag", "enabled");
 			// remove activation token
-			//$this->deleteToken($user_id, "activation");
+			$this->deleteToken($user_id, "activation");
 
 			// listener
 			if (method_exists($this, "onActivationSuccess")) {
