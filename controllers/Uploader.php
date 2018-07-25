@@ -134,7 +134,7 @@ trait Uploader
 			}
 
 			// set file saved name
-			$namespace = $new_file["key"]."_".$new_file["tag"]."_"."_".round(microtime(true) * 1000);
+			$namespace = $new_file["key"]."_".$new_file["tag"]."_".round(microtime(true) * 1000);
 			$save_name = $namespace.".".$new_file["ext"];
 			// append resource url
 			$new_file["url"]            = $this->uploader_conf["path_url"].$save_name;
