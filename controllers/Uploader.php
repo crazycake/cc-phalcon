@@ -85,6 +85,10 @@ trait Uploader
 		if (!is_dir($this->uploader_conf["path"]))
 			@mkdir($this->uploader_conf["path"], 0755, true);
 
+		// crate symlink if not exists
+		if(!is_link(PUBLIC_PATH."uploads"))
+			symlink(PUBLIC_PATH."uploads", STORAGE_PATH."uploads");
+
 		// set data for view
 		$this->view->setVar("upload_files", $this->uploader_conf["files"]);
 	}
