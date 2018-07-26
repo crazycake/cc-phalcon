@@ -85,12 +85,7 @@ trait Uploader
 	 */
 	public function uploadAction()
 	{
-		$upload = $this->upload();
-
-		if (method_exists($this, "onFileUploaded"))
-			$this->onFileUploaded($upload);
-
-		$this->jsonResponse(200, $upload);
+		$this->jsonResponse(200, $this->upload());
 	}
 
 	/**
@@ -205,15 +200,15 @@ trait Uploader
 	 * Push uploaded files to Image API
 	 * @param String $uri - The file uri to append
 	 * @return Array - The saved uploaded files
+	 * @return Array - Optional files
 	 */
-	protected function pushToImageApi($uri = "")
+	protected function pushToImageApi($uri = "", $files = false)
 	{
-		$uploaded_files = $this->getUploadedFiles(false);
+		$files = $files ?? $this->getUploadedFiles(false);
 
-		if (empty($uploaded_files))
-			return [];
+		if (empty($files)) return [];
 
-		$saved_files = [];
+		$pushed = [];
 
 		foreach ($this->uploader_conf["files"] as $key => $conf) {
 
@@ -228,7 +223,7 @@ trait Uploader
 			$job = !empty($conf["resize"]) ? "resize" : "s3push";
 
 			// loop through files
-			foreach ($uploaded_files as $file) {
+			foreach ($files as $file) {
 
 				// check key if belongs
 				if (strpos($file, $key) === false)
@@ -239,17 +234,17 @@ trait Uploader
 					$uri .= "/";
 
 				// create array
-				if (!isset($saved_files[$key]))
-					$saved_files[$key] = [];
+				if (!isset($pushed[$key]))
+					$pushed[$key] = [];
 
 				// set filename to be saved
 				$conf["filename"] = $file;
 				// new resize job
-				$saved_files[$key][] = $this->newImageApiJob($job, $this->uploader_conf["path"].$file, $conf);
+				$pushed[$key][] = $this->newImageApiJob($job, $this->uploader_conf["path"].$file, $conf);
 			}
 		}
 
-		return $saved_files;
+		return $pushed;
 	}
 
 	/**
