@@ -106,16 +106,14 @@ trait Uploader
 		// check for rejected uploads
 		if (empty($upload["error"])) {
 
-			// set file saved name
-			$namespace = $upload["key"]."_".$upload["tag"]."_".round(microtime(true) * 1000);
-			$save_name = $namespace.".".$upload["ext"];
+			// set file name
+			$filename = $upload["key"]."_".$upload["tag"]."_".round(microtime(true) * 1000).".".$upload["ext"];
 
-			$upload["url"]            = $this->uploader_conf["path_url"].$save_name;
-			$upload["save_name"]      = $save_name;
-			$upload["save_namespace"] = $namespace;
+			$upload["url"] = $this->uploader_conf["path_url"].$filename;
+			$upload["id"]  = $filename;
 
 			// move file into temp folder
-			$file->moveTo($this->uploader_conf["path"].$save_name);
+			$file->moveTo($this->uploader_conf["path"].$filename);
 		}
 		else
 			unlink($file->getTempName());
