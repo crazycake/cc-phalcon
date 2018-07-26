@@ -65,7 +65,7 @@ trait Uploader
 		$this->headers = $this->request->getHeaders();
 
 		// get session user id or temp dir
-		$subdir = ($user_session = $this->session->get("user")) ? $user_session["id"] : time();
+		$subdir = $this->client->csrfKey;
 
 		// set upload root path
 		if (empty($this->uploader_conf["root_path"]))

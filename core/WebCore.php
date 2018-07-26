@@ -146,12 +146,10 @@ abstract class WebCore extends BaseCore implements WebSecurity
 		if (!$this->request->isPost())
 			return true;
 
-		// get token from saved client session
-		$session_token = $this->client->token ?? null;
-		// get sent token (crsf key is the same always)
-		$sent_token = $this->request->getPost($this->client->tokenKey);
+		if(empty($this->client->csrfKey))
+			return false;
 
-		return $session_token == $sent_token;
+		return $this->client->csrfValue == $this->request->getPost($this->client->csrfKey);
 	}
 
 	/**
@@ -254,8 +252,8 @@ abstract class WebCore extends BaseCore implements WebSecurity
 		}
 
 		// update client props
-		$this->client->tokenKey = $key;
-		$this->client->token    = $value;
+		$this->client->csrfKey   = $key;
+		$this->client->csrfValue = $value;
 	}
 
 	/**

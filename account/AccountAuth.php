@@ -163,7 +163,7 @@ trait AccountAuth
 			$this->jsonResponse(400, str_replace("{email}", $data["email"], $this->account_auth_conf["trans"]["EMAIL_EXISTS"]));
 
 		// remove CSRF key
-		unset($data[$this->client->tokenKey]);
+		unset($data[$this->client->csrfKey]);
 		// set pending email confirmation status
 		$data["flag"] = "pending";
 
