@@ -52,100 +52,32 @@ trait Uploader
 	 */
 	protected function initUploader($conf = [])
 	{
+		if (empty($conf["files"]))
+			throw new Exception("Uploader requires files array config.");
+
 		if (empty($conf["trans"]))
 			$conf["trans"] = \TranslationController::getCoreTranslations("uploader");
 
 		// set conf
 		$this->uploader_conf = $conf;
 
-		if (empty($conf["files"]))
-			throw new Exception("Uploader requires files array config.");
-
 		// set request headers
 		$this->headers = $this->request->getHeaders();
 
-		// get session user id or temp dir
-		$subdir = $this->client->csrfKey;
-
-		// set upload root path
-		if (empty($this->uploader_conf["root_path"]))
-			$this->uploader_conf["root_path"] = self::$ROOT_UPLOAD_PATH;
+		// get session user temporal dir
+		$dir = $this->client->csrfKey;
 
 		// set upload save path
-		$this->uploader_conf["path"]     = $this->uploader_conf["root_path"]."temp/".$subdir."/";
-		$this->uploader_conf["path_url"] = $this->baseUrl("uploads/temp/".$subdir."/");
+		$this->uploader_conf["path"]     = self::$ROOT_UPLOAD_PATH.$dir;
+		$this->uploader_conf["path_url"] = $this->baseUrl("uploads/$dir/");
 
 		// create dir if not exists
 		if (!is_dir($this->uploader_conf["path"]))
-			@mkdir($this->uploader_conf["path"], 0755, true);
+			mkdir($this->uploader_conf["path"], 0755);
 
 		// crate symlink if not exists
 		if(!is_link(PUBLIC_PATH."uploads"))
 			symlink(PUBLIC_PATH."uploads", STORAGE_PATH."uploads");
-
-		// set data for view
-		$this->view->setVar("upload_files", $this->uploader_conf["files"]);
-	}
-
-	/**
-	 * Dispatch Event, cleans upload folder for non ajax requests
-	 */
-	public function afterExecuteRoute()
-	{
-		parent::afterExecuteRoute();
-
-		if (!$this->request->isAjax())
-			$this->cleanUploadFolder();
-	}
-
-	/**
-	 * Uploads a file
-	 */
-	public function upload()
-	{
-		$uploaded = [];
-		$messages = [];
-
-		// check header
-		if (empty($this->headers[self::$HEADER_NAME]))
-			$this->jsonResponse(404);
-
-		// check if user has uploaded files
-		if (!$this->request->hasFiles())
-			$this->jsonResponse(900);
-
-		// loop through uploaded files
-		$files = $this->request->getUploadedFiles();
-
-		foreach ($files as $file) {
-
-			// validate file
-			$new_file = $this->_validateUploadedFile($file, $this->headers[self::$HEADER_NAME]);
-
-			// check for rejected uploads
-			if ($new_file["message"]) {
-
-				array_push($messages, $new_file["message"]);
-				// remove temp file
-				unlink($file->getTempName());
-				continue;
-			}
-
-			// set file saved name
-			$namespace = $new_file["key"]."_".$new_file["tag"]."_".round(microtime(true) * 1000);
-			$save_name = $namespace.".".$new_file["ext"];
-			// append resource url
-			$new_file["url"]            = $this->uploader_conf["path_url"].$save_name;
-			$new_file["save_name"]      = $save_name;
-			$new_file["save_namespace"] = $namespace;
-
-			// move file into temp folder
-			$file->moveTo($this->uploader_conf["path"].$save_name);
-			// push to array
-			array_push($uploaded, $new_file);
-		}
-
-		return [$uploaded, $messages];
 	}
 
 	/**
@@ -163,7 +95,53 @@ trait Uploader
 	}
 
 	/**
-	 * Ajax POST Action - Removes a file in uploader folder
+	 * Uploads a file
+	 */
+	protected function upload()
+	{
+		$uploaded = [];
+		$messages = [];
+
+		// check header
+		if (empty($this->headers[self::$HEADER_NAME]) || !$this->request->hasFiles())
+			$this->jsonResponse(400);
+
+		// loop through uploaded files
+		$files = $this->request->getUploadedFiles();
+
+		foreach ($files as $file) {
+
+			// validate file
+			$new_file = $this->validateUploadedFile($file, $this->headers[self::$HEADER_NAME]);
+
+			// check for rejected uploads
+			if ($new_file["message"]) {
+
+				array_push($messages, $new_file["message"]);
+
+				unlink($file->getTempName()); // remove temp file
+				continue;
+			}
+
+			// set file saved name
+			$namespace = $new_file["key"]."_".$new_file["tag"]."_".round(microtime(true) * 1000);
+			$save_name = $namespace.".".$new_file["ext"];
+
+			$new_file["url"]            = $this->uploader_conf["path_url"].$save_name;
+			$new_file["save_name"]      = $save_name;
+			$new_file["save_namespace"] = $namespace;
+
+			// move file into temp folder
+			$file->moveTo($this->uploader_conf["path"].$save_name);
+			// push to array
+			array_push($uploaded, $new_file);
+		}
+
+		return [$uploaded, $messages];
+	}
+
+	/**
+	 * Ajax POST - Removes a file in uploader folder
 	 */
 	public function removeUploadedFileAction()
 	{
@@ -184,7 +162,7 @@ trait Uploader
 	}
 
 	/**
-	 * Ajax Action - Removes all files in uploader folder
+	 * Ajax GET - Removes all files in uploader folder
 	 */
 	public function removeAllUploadedFilesAction()
 	{
@@ -213,27 +191,34 @@ trait Uploader
 	/**
 	 * Gets uploaded files in temp directory
 	 * @param Boolean $absolute_path - Append absolute path to each image
+	 * @param String $filter_key - File Key Filter
 	 * @return String
 	 */
-	protected function getUploadedFiles($absolute_path = true)
+	protected function getUploadedFiles($absolute_path = true, $filter_key = false)
 	{
+		// filter function
+		$filter = function($array) use ($filter_key) {
+
+			return array_filter($array, function($f) use ($filter_key) { return strpos($f, $filter_key) !== false; });
+		};
+
 		// exclude hidden files
 		$files = preg_grep('/^([^.])/', scandir($this->uploader_conf["path"]));
 
 		if (!$absolute_path)
-			return array_values($files);
+			return $filter_key ? $filter(array_values($files)) : array_values($files);
 
 		$files = array_map(function($f) { return $this->uploader_conf["path"].$f; }, $files);
 
-		return array_values($files);
+		return filter_key ? $filter(array_values($files)) : array_values($files);
 	}
 
 	/**
-	 * Saves & stores uploaded files
+	 * Push uploaded files to S3
 	 * @param String $uri - The file uri
 	 * @return Array - The saved uploaded files
 	 */
-	protected function saveUploadedFiles($uri = "")
+	protected function pushUploadedFilesToS3($uri = "")
 	{
 		$uploaded_files = $this->getUploadedFiles(false);
 
@@ -258,39 +243,18 @@ trait Uploader
 				if (strpos($file, $key) === false)
 					continue;
 
-				//add missing slash to uri?
+				// add missing slash to uri?
 				if (!empty($uri) && substr($uri, -1) != "/")
 					$uri .= "/";
 
-				// append fullpath
-				$dest_folder = self::$ROOT_UPLOAD_PATH.$uri;
-
-				// create folder?
-				if (!is_dir($dest_folder))
-					mkdir($dest_folder, 0755, true);
-
-				// set source/destination path
-				$src = $this->uploader_conf["path"].$file;
-				$dst = $dest_folder.$file;
-
-				// copy file & unlink temp file
-				copy($src, $dst);
-				unlink($src);
-
+				// create array
 				if (!isset($saved_files[$key]))
 					$saved_files[$key] = [];
 
-				// skip image api job?
-				if (isset($conf["img_api"]) && !$conf["img_api"]) {
-
-					$saved_files[$key][] = $dst;
-					continue;
-				}
-
-				// set filename
-				$conf["filename"] = $file;
+				// set filename to be saved
+				$conf["filename"] = $uri.$file;
 				// new resize job
-				$saved_files[$key][] = $this->newImageApiJob($job, $dst, $conf);
+				$saved_files[$key][] = $this->newImageApiJob($job, $this->uploader_conf["path"].$file, $conf);
 			}
 		}
 
@@ -303,7 +267,7 @@ trait Uploader
 	 * @param String $src - The source file
 	 * @param Array $config - The config array
 	 */
-	public function newImageApiJob($api_uri = "", $src = "", $config = [])
+	protected function newImageApiJob($api_uri = "", $src = "", $config = [])
 	{
 		if (!is_file($src))
 			throw new Exception("Uploader::newImageApiJob -> File not found!");
@@ -346,24 +310,10 @@ trait Uploader
 	}
 
 	/**
-	 * Get upload local path
-	 * @param String $url - The remote url upload
-	 */
-	public function getUploadLocalFilepath($url = "")
-	{
-		$uri = substr($url, strpos($url, $this->config->aws->s3->bucketBaseUri) +
-							strlen($this->config->aws->s3->bucketBaseUri));
-
-		$filepath = self::$ROOT_UPLOAD_PATH.$uri;
-
-		return $filepath;
-	}
-
-	/**
 	 * Sort files by numeric tag
 	 * @param Array $files - The upload file array
 	 */
-	public static function sortFilesByTag(&$files)
+	protected static function sortFilesByTag(&$files)
 	{
 		if (empty($files))
 			return;
@@ -380,15 +330,13 @@ trait Uploader
 		});
 	}
 
-	/** ------------------------------------------- § ------------------------------------------------ **/
-
 	/**
 	 * Validate uploaded file
 	 * @param String $file object - The phalcon uploaded file
 	 * @param String $file_key string - The file key
 	 * @return Array
 	 */
-	private function _validateUploadedFile($file, $file_key = "")
+	protected function validateUploadedFile($file, $file_key = "")
 	{
 		// get file properties
 		$file_name       = $file->getName();

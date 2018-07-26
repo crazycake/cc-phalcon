@@ -15,9 +15,6 @@ use CrazyCake\Phalcon\App;
  */
 trait CrudDocument
 {
-	// traits
-	use Uploader;
-
 	/**
 	 * trait config
 	 * @var Array
@@ -42,9 +39,6 @@ trait CrudDocument
 
 		if (empty($conf["collection"]))
 			throw new Exception("Crud requires a collection argument.");
-
-		if (isset($conf["uploader"]))
-			$this->initUploader($conf["uploader"]);
 
 		// set conf
 		$this->crud_conf = $conf;
@@ -184,14 +178,6 @@ trait CrudDocument
 		// get saved object
 		try { $object = $this->mongo->{$this->crud_conf["collection"]}->findOne(["_id" => $object_id]); }
 		catch(\Exception | Exception $e) { $object = null; }
-
-		// auto-move uploaded files? (UploaderController)
-		if (!empty($this->crud_conf["uploader"])) {
-
-			$uri = $this->crud_conf["collection"]."/".(string)$object->_id."/";
-
-			$payload->uploaded = $this->saveUploadedFiles($uri);
-		}
 
 		// event
 		if (method_exists($this, "onAfterSave"))

@@ -28,16 +28,12 @@ trait Responser
 	public $RCODES = [
 		// success
 		"200" => "OK",
-		// client errors
 		"400" => "Bad Request",
 		"401" => "Unauthorized",
 		"404" => "Not Found",
 		"408" => "Request Timeout",
 		"498" => "Invalid Token",
-		// server
-		"500" => "Internal Server Error",
-		"800" => "Empty result data",
-		"900" => "No files attached"
+		"500" => "Internal Server Error"
 	];
 
 	/**

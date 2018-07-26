@@ -16,9 +16,6 @@ use CrazyCake\Phalcon\App;
  */
 trait Crud
 {
-	// traits
-	use Uploader;
-
 	/**
 	 * Event on before render Index
 	 */
@@ -85,10 +82,6 @@ trait Crud
 
 		if (empty($conf["entity_component"]))
 			$conf["entity_component"] = $conf["entity_lower"];
-
-		// init uploader?
-		if (isset($conf["uploader"]))
-			$this->initUploader($conf["uploader"]);
 
 		// finally set conf
 		$this->crud_conf = $conf;
@@ -209,14 +202,6 @@ trait Crud
 			if (!$object->save($data))
 				throw new \Exception($object->messages(true));
 
-			// move uploaded files? (UploaderController)
-			if (!empty($this->crud_conf["uploader"])) {
-
-				$uri = $this->crud_conf["entity_lower"]."/".$object->{$this->crud_conf["pk"]}."/";
-
-				$data["uploaded"] = $this->saveUploadedFiles($uri);
-			}
-
 			// event
 			$this->onAfterSave($object, $data, "create");
 
@@ -273,14 +258,6 @@ trait Crud
 			if (!$object->update($new_data))
 				throw new \Exception($object->messages(true));
 
-			// move uploaded files? (UploaderController)
-			if (!empty($this->crud_conf["uploader"])) {
-
-				$uri = $this->crud_conf["entity_lower"]."/".$object->{$this->crud_conf["pk"]}."/";
-
-				$new_data["uploaded"] = $this->saveUploadedFiles($uri);
-			}
-
 			// append non-model data
 			foreach ($data as $key => $value) {
 
@@ -323,13 +300,6 @@ trait Crud
 				$this->onBeforeDelete($object);
 
 			$object->delete();
-		}
-
-		// delete upload files?
-		if (isset($this->crud_conf["uploader"])) {
-
-			$path = Uploader::$ROOT_UPLOAD_PATH.$this->crud_conf["entity_lower"]."/".$data[$this->crud_conf["pk"]]."/";
-			$this->cleanUploadFolder($path);
 		}
 
 		// send response
