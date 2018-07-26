@@ -23,12 +23,6 @@ trait Uploader
 	protected static $DEFAULT_MAX_SIZE = 5120; //KB
 
 	/**
-	 * Default upload file type
-	 * @var Array
-	 */
-	protected static $DEFAULT_FILE_TYPE = ["csv"];
-
-	/**
 	 * Header Name for file checking
 	 * @var String
 	 */
@@ -333,7 +327,8 @@ trait Uploader
 			CURLOPT_POST           => 1,
 			CURLOPT_POSTFIELDS     => $body,
 			CURLOPT_HTTPHEADER     => $headers,
-			CURLOPT_RETURNTRANSFER => true
+			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_USERAGENT      => "Phalcon"
 		];
 
 		$ch = curl_init();
@@ -444,7 +439,7 @@ trait Uploader
 
 			// set defaults
 			$file_conf["max_size"] = $file_conf["max_size"] ?? self::$DEFAULT_MAX_SIZE;
-			$file_conf["type"]     = $file_conf["type"] ?? self::$DEFAULT_FILE_TYPE;
+			$file_conf["type"]     = $file_conf["type"] ?? "";
 
 			// validation: max-size
 			if ($file_size/1024 > $file_conf["max_size"])
