@@ -109,8 +109,8 @@ trait Uploader
 			// set file name
 			$filename = $upload["key"]."_".$upload["tag"]."_".round(microtime(true) * 1000).".".$upload["ext"];
 
-			$upload["url"] = $this->uploader_conf["path_url"].$filename;
 			$upload["id"]  = $filename;
+			$upload["url"] = $this->uploader_conf["path_url"].$filename;
 
 			// move file into temp folder
 			$file->moveTo($this->uploader_conf["path"].$filename);
