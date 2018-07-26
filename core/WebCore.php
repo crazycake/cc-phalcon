@@ -146,7 +146,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 		if (!$this->request->isPost())
 			return true;
 
-		if(empty($this->client->csrfKey))
+		if (empty($this->client->csrfKey))
 			return false;
 
 		return $this->client->csrfValue == $this->request->getPost($this->client->csrfKey);

@@ -76,7 +76,7 @@ trait Uploader
 			mkdir($this->uploader_conf["path"], 0755);
 
 		// crate symlink if not exists
-		if(!is_link(PUBLIC_PATH."uploads"))
+		if (!is_link(PUBLIC_PATH."uploads"))
 			symlink(PUBLIC_PATH."uploads", STORAGE_PATH."uploads");
 	}
 
@@ -85,13 +85,7 @@ trait Uploader
 	 */
 	public function uploadAction()
 	{
-		list($uploaded, $messages) = $this->upload();
-
-		// response
-		$this->jsonResponse(200, [
-			"uploaded" => $uploaded,
-			"messages" => $messages
-		]);
+		$this->jsonResponse(200, $this->upload());
 	}
 
 	/**
@@ -99,45 +93,34 @@ trait Uploader
 	 */
 	protected function upload()
 	{
-		$uploaded = [];
-		$messages = [];
-
 		// check header
 		if (empty($this->headers[self::$HEADER_NAME]) || !$this->request->hasFiles())
 			$this->jsonResponse(400);
 
-		// loop through uploaded files
-		$files = $this->request->getUploadedFiles();
+		// get uploaded file
+		$file = current($this->request->getUploadedFiles());
 
-		foreach ($files as $file) {
+		// validate file
+		$upload = $this->validateUploadedFile($file, $this->headers[self::$HEADER_NAME]);
 
-			// validate file
-			$new_file = $this->validateUploadedFile($file, $this->headers[self::$HEADER_NAME]);
-
-			// check for rejected uploads
-			if ($new_file["message"]) {
-
-				array_push($messages, $new_file["message"]);
-
-				unlink($file->getTempName()); // remove temp file
-				continue;
-			}
+		// check for rejected uploads
+		if (empty($upload["error"])) {
 
 			// set file saved name
-			$namespace = $new_file["key"]."_".$new_file["tag"]."_".round(microtime(true) * 1000);
-			$save_name = $namespace.".".$new_file["ext"];
+			$namespace = $upload["key"]."_".$upload["tag"]."_".round(microtime(true) * 1000);
+			$save_name = $namespace.".".$upload["ext"];
 
-			$new_file["url"]            = $this->uploader_conf["path_url"].$save_name;
-			$new_file["save_name"]      = $save_name;
-			$new_file["save_namespace"] = $namespace;
+			$upload["url"]            = $this->uploader_conf["path_url"].$save_name;
+			$upload["save_name"]      = $save_name;
+			$upload["save_namespace"] = $namespace;
 
 			// move file into temp folder
 			$file->moveTo($this->uploader_conf["path"].$save_name);
-			// push to array
-			array_push($uploaded, $new_file);
 		}
+		else
+			unlink($file->getTempName());
 
-		return [$uploaded, $messages];
+		return $upload;
 	}
 
 	/**
@@ -229,7 +212,7 @@ trait Uploader
 
 		foreach ($this->uploader_conf["files"] as $key => $conf) {
 
-			if(empty($conf["resize"]) && empty($conf["s3push"]))
+			if (empty($conf["resize"]) && empty($conf["s3push"]))
 				continue;
 
 			// set bucket base uri
@@ -355,7 +338,6 @@ trait Uploader
 			$file_name = str_replace(".jpeg", ".jpg", $file_name);
 			$file_ext  = "jpg";
 		}
-
 		else if ($file_ext == "blob" && $file_mimetype == "image/jpeg") {
 
 			$file_name = $file_key."-".uniqid();
@@ -370,7 +352,7 @@ trait Uploader
 		if (empty($file_tag))
 			$file_tag = "0";
 
-		$new_file = [
+		$upload = [
 			"name"    => $file_name,
 			"tag"     => $file_tag,
 			"size"    => $file_size,
@@ -379,12 +361,11 @@ trait Uploader
 			"mime"    => $file_mimetype,
 			"message" => false
 		];
-		//~ss($new_file);
+		//~ss($upload);
 
 		try {
 
-			// get file config with file_key
-			$file_conf = $this->uploader_conf["files"][$file_key];
+			$file_conf = $this->uploader_conf["files"][$file_key]; // file conf
 
 			if (empty($file_conf))
 				throw new Exception("Uploader file configuration missing for $file_key.");
@@ -403,7 +384,7 @@ trait Uploader
 
 			// validation: image size
 			if (empty($file_conf["isize"]))
-				return $new_file;
+				return $upload;
 
 			// get file props
 			$size  = $file_conf["isize"];
@@ -425,14 +406,13 @@ trait Uploader
 			if (isset($size["mh"]) && $image->getHeight() < $size["mh"])
 				throw new Exception(str_replace(["{file}", "{h}"], [$file_name, $size["mh"]], $this->uploader_conf["trans"]["IMG_MIN_HEIGHT"]));
 
-			// ratio
 			$ratio = explode("/", $size["r"] ?? "");
 
 			if (isset($size["r"]) && round($image->getWidth()/$image->getHeight(), 2) != round($ratio[0] / $ratio[1], 2))
 				throw new Exception(str_replace(["{file}", "{r}"], [$file_name, $size["r"]], $this->uploader_conf["trans"]["IMG_RATIO"]));
 		}
-		catch (\Exception | Exception $e) { $new_file["message"] = $e->getMessage(); }
+		catch (\Exception | Exception $e) { $upload["error"] = $e->getMessage(); }
 
-		return $new_file;
+		return $upload;
 	}
 }
