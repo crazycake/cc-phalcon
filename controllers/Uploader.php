@@ -68,7 +68,7 @@ trait Uploader
 		$dir = $this->client->csrfKey;
 
 		// set upload save path
-		$this->uploader_conf["path"]     = self::$ROOT_UPLOAD_PATH.$dir;
+		$this->uploader_conf["path"]     = self::$ROOT_UPLOAD_PATH.$dir."/";
 		$this->uploader_conf["path_url"] = $this->baseUrl("uploads/$dir/");
 
 		// create dir if not exists
@@ -190,8 +190,8 @@ trait Uploader
 
 	/**
 	 * Gets uploaded files in temp directory
-	 * @param Boolean $absolute_path - Append absolute path to each image
-	 * @param String $filter_key - File Key Filter
+	 * @param Boolean $absolute_path - Append absolute path to each image (optional)
+	 * @param String $filter_key - File Key Filter (optional)
 	 * @return String
 	 */
 	protected function getUploadedFiles($absolute_path = true, $filter_key = false)
@@ -210,15 +210,15 @@ trait Uploader
 
 		$files = array_map(function($f) { return $this->uploader_conf["path"].$f; }, $files);
 
-		return filter_key ? $filter(array_values($files)) : array_values($files);
+		return $filter_key ? $filter(array_values($files)) : array_values($files);
 	}
 
 	/**
-	 * Push uploaded files to S3
-	 * @param String $uri - The file uri
+	 * Push uploaded files to Image API
+	 * @param String $uri - The file uri to append
 	 * @return Array - The saved uploaded files
 	 */
-	protected function pushUploadedFilesToS3($uri = "")
+	protected function pushToImageApi($uri = "")
 	{
 		$uploaded_files = $this->getUploadedFiles(false);
 
@@ -228,6 +228,9 @@ trait Uploader
 		$saved_files = [];
 
 		foreach ($this->uploader_conf["files"] as $key => $conf) {
+
+			if(empty($conf["resize"]) && empty($conf["s3push"]))
+				continue;
 
 			// set bucket base uri
 			$conf["s3"] = (array)$this->config->aws->s3;
@@ -252,7 +255,7 @@ trait Uploader
 					$saved_files[$key] = [];
 
 				// set filename to be saved
-				$conf["filename"] = $uri.$file;
+				$conf["filename"] = $file;
 				// new resize job
 				$saved_files[$key][] = $this->newImageApiJob($job, $this->uploader_conf["path"].$file, $conf);
 			}
@@ -270,7 +273,7 @@ trait Uploader
 	protected function newImageApiJob($api_uri = "", $src = "", $config = [])
 	{
 		if (!is_file($src))
-			throw new Exception("Uploader::newImageApiJob -> File not found!");
+			return null;
 
 		$body = json_encode([
 			"contents" => base64_encode(file_get_contents($src)),
@@ -294,6 +297,7 @@ trait Uploader
 			CURLOPT_RETURNTRANSFER => true,
 			CURLOPT_USERAGENT      => "Phalcon"
 		];
+		//~ss($options);
 
 		$ch = curl_init();
 	 	curl_setopt_array($ch, $options);
