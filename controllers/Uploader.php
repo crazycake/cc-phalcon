@@ -202,7 +202,7 @@ trait Uploader
 	 */
 	protected function pushToImageApi($uri = "", $files = false)
 	{
-		$files = $files ?? $this->getUploadedFiles(false);
+		$files = $files ? $files : $this->getUploadedFiles(false);
 
 		if (empty($files)) return [];
 
