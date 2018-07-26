@@ -353,13 +353,12 @@ trait Uploader
 			$file_tag = "0";
 
 		$upload = [
-			"name"    => $file_name,
-			"tag"     => $file_tag,
-			"size"    => $file_size,
-			"key"     => $file_key,
-			"ext"     => $file_ext,
-			"mime"    => $file_mimetype,
-			"message" => false
+			"name" => $file_name,
+			"tag"  => $file_tag,
+			"size" => $file_size,
+			"key"  => $file_key,
+			"ext"  => $file_ext,
+			"mime" => $file_mimetype
 		];
 		//~ss($upload);
 
