@@ -168,8 +168,8 @@ trait AccountAuth
 		$data["flag"] = "pending";
 
 		// event
-		if (method_exists($this, "beforeRegisterUser"))
-			$this->beforeRegisterUser($data);
+		if (method_exists($this, "onBeforeRegisterUser"))
+			$this->onBeforeRegisterUser($data);
 
 		// insert user
 		if (!$user = $entity::insert($data)) {
@@ -179,8 +179,8 @@ trait AccountAuth
 		}
 
 		// event
-		if (method_exists($this, "afterRegisterUser"))
-			$this->afterRegisterUser($user);
+		if (method_exists($this, "onAfterRegisterUser"))
+			$this->onAfterRegisterUser($user);
 
 		// send activation mail message
 		$this->sendActivationMailMessage($user);
