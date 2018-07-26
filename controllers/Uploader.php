@@ -206,6 +206,10 @@ trait Uploader
 
 		if (empty($files)) return [];
 
+		// add missing slash to uri?
+		if (!empty($uri) && substr($uri, -1) != "/")
+			$uri .= "/";
+
 		$pushed = [];
 
 		foreach ($this->uploader_conf["files"] as $key => $conf) {
@@ -226,10 +230,6 @@ trait Uploader
 				// check key if belongs
 				if (strpos($file, $key) === false)
 					continue;
-
-				// add missing slash to uri?
-				if (!empty($uri) && substr($uri, -1) != "/")
-					$uri .= "/";
 
 				// create array
 				if (!isset($pushed[$key]))
