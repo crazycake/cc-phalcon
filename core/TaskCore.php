@@ -95,9 +95,6 @@ class TaskCore extends Task
 		copy($assets_path."app.min.js", $assets_path."app-".$ver.".rev.js");
 		// APP CSS
 		copy($assets_path."app.min.css", $assets_path."app-".$ver.".rev.css");
-		// LAZY CSS
-		if (is_file($assets_path."lazy.min.css"))
-			copy($assets_path."lazy.min.css", $assets_path."lazy-".$ver.".rev.css");
 
 		// remove min files
 		foreach (glob($assets_path."*.min.*") as $f)

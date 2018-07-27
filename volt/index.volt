@@ -41,16 +41,13 @@
 			<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 		{% endif %}
 
-		{# description meta #}
+		{# document metas #}
 		<meta name="description" content="{{ metas['description'] is not empty ? metas['description'] : config.name }}" />
 
-		{# author meta #}
 		<meta name="author" content="{{ metas['author'] is not empty ? metas['author'] : 'CrazyCake Technologies' }}" />
 
-		{# robots meta #}
 		<meta name="robots" content="{{ metas['disallow_robots'] is not empty ? 'noindex,nofollow' : 'index,follow' }}" />
 
-		{# page title #}
 		<title>{{ metas['title'] is not empty ? metas['title'] : config.name }}</title>
 
 		{# favicons #}
@@ -75,15 +72,6 @@
 
 		{# APP CSS #}
 		<link id="style" rel="stylesheet" type="text/css" href="{{ css_url }}" />
-
-		{# APP Global scope vars #}
-		{% if js_app is defined %}
-			<script>
-				APP = {{ js_app }};
-			</script>
-		{% else %}
-			<script> console.log('Core -> (warning) javascript APP or UA scope vars are not defined.'); </script>
-		{% endif %}
 
 		{# Google Tag Manager [HEAD] #}
 		{% if config.google.gtmUA is not empty %}
@@ -110,7 +98,6 @@
 
 		{% else %}
 			<div id="app">
-
 				{{ get_content() }}
 			</div>
 		{% endif %}
@@ -120,9 +107,17 @@
 			{{ flash.output() }}
 		</div>
 
-		{# APP JS #}
-		<script src="{{ js_url }}" type="text/javascript"></script>
+		{# APP Global scope vars #}
 
+
+		{# APP JS #}
+		<script src="{{ js_url }}"></script>
+
+		{% if js_app is defined %}
+			<script>
+				APP = {{ js_app }};
+			</script>
+		{% endif %}
 		{# APP JS Modules Loader #}
 		{% if js_loader is not empty %}
 			<script defer>{{ js_loader }}</script>
