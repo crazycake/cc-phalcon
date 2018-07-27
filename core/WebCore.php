@@ -304,10 +304,6 @@ abstract class WebCore extends BaseCore implements WebSecurity
 		// set custom properties
 		$this->setAppJsProperties($js_app);
 
-		// css lazy loading properties
-		if (!empty($js_app->cssLazy))
-			$js_app->cssLazy = str_replace("/app", "/lazy", $this->view->getVar("css_url"));
-
 		// set translations?
 		if (class_exists("\TranslationController"))
 			$js_app->TRANS = \TranslationController::getJsTranslations();
