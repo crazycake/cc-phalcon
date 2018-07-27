@@ -107,20 +107,15 @@
 			{{ flash.output() }}
 		</div>
 
-		{# APP Global scope vars #}
-
-
 		{# APP JS #}
 		<script src="{{ js_url }}"></script>
 
-		{% if js_app is defined %}
-			<script>
-				APP = {{ js_app }};
-			</script>
-		{% endif %}
-		{# APP JS Modules Loader #}
+		{# APP JS Loader #}
 		{% if js_loader is not empty %}
-			<script defer>{{ js_loader }}</script>
+			<script defer>
+			APP = {{ js_app }};
+			{{ js_loader }}
+			</script>
 		{% endif %}
 
 		{# Google Analytics (async loading) #}
