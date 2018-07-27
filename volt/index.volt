@@ -68,11 +68,9 @@
 			{{ partial("templates/metas") }}
 		{% endif %}
 
-		{# APP EXTERNAL CSS LINKS #}
-		{% if css_links is defined and css_links is iterable %}
-			{% for link in css_links %}
-				<link href="{{ link }}" rel="stylesheet" />
-			{% endfor %}
+		{# custom CSS links #}
+		{% if metas['links'] is not empty %}
+			{{ partial("templates/links") }}
 		{% endif %}
 
 		{# APP CSS #}
@@ -127,14 +125,7 @@
 
 		{# APP JS Modules Loader #}
 		{% if js_loader is not empty %}
-			<script>{{ js_loader }}</script>
-		{% endif %}
-
-		{# JS Defer URLs #}
-		{% if js_defer is not empty %}
-			{% for defer in js_defer %}
-				<script defer src="{{ defer }}" type="text/javascript"></script>
-			{% endfor %}
+			<script defer>{{ js_loader }}</script>
 		{% endif %}
 
 		{# Google Analytics (async loading) #}
