@@ -214,8 +214,8 @@ class Base extends \Phalcon\Mvc\Model
 		if (!method_exists($this, "getMessages"))
 			return $data;
 
-		foreach ($this->getMessages() as $msg)
-			array_push($data, $msg->getMessage());
+		foreach ($this->getMessages() as $m)
+			array_push($data, $m->getMessage());
 
 		if ($format)
 			$data = implode($data, " ");

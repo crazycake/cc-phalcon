@@ -142,10 +142,10 @@ trait CheckoutCurrency
 
 			return $value;
 		}
-		catch (\Exception | Exception $e) { $msg = $e->getMessage(); }
+		catch (\Exception | Exception $e) { $error = $e->getMessage(); }
 
 		if (method_exists($this, "colorize"))
-			$this->colorize($msg, "ERROR");
+			$this->colorize($error, "ERROR");
 
 		return null;
 	}
