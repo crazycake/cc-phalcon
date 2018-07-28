@@ -230,12 +230,12 @@ abstract class BaseCore extends Controller
 			return $is_optional ? null : false;
 
 		// set value from data array
-		if (empty($data_type) || $data_type == "array") {
+		if ($data_type == "raw")
 			$value = $data[$field];
-		}
-		else if ($data_type == "json") {
+
+		else if ($data_type == "json")
 			$value = json_decode($data[$field]); // NULL if cannot be decoded
-		}
+
 		else {
 
 			$value = $this->filter->sanitize($data[$field], $data_type);

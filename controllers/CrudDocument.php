@@ -123,7 +123,7 @@ trait CrudDocument
 		$this->onlyAjax();
 
 		// set required props to be validated
-		$data    = $this->handleRequest(["payload" => "array"], "POST");
+		$data    = $this->handleRequest(["payload" => "raw"], "POST");
 		$payload = (object)$data["payload"];
 
 		// set object id
@@ -241,7 +241,7 @@ trait CrudDocument
 		$data = $this->handleRequest([
 			"id"   => "string",
 			"prop" => "string",
-			"url"  => "string",
+			"url"  => "string"
 		], "POST");
 
 		// event

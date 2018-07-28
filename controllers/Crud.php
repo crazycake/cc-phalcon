@@ -222,7 +222,7 @@ trait Crud
 		$this->onlyAjax();
 
 		$data = $this->handleRequest([
-			"@payload" => ""
+			"@payload" => "raw"
 		], "POST");
 
 		// merge paylod if set
