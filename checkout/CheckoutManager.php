@@ -64,9 +64,7 @@ trait CheckoutManager
 		// make sure is ajax request
 		$this->onlyAjax();
 
-		$data = $this->handleRequest([
-			"gateway" => "string"
-		], "POST", false);
+		$data = $this->handleRequest(["gateway" => "string"], "POST");
 
 		try {
 

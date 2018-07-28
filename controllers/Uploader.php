@@ -129,9 +129,7 @@ trait Uploader
 		$this->onlyAjax();
 
 		// validate and filter request params data, second params are the required fields
-		$data = $this->handleRequest([
-			"file" => "string"
-		], "POST");
+		$data = $this->handleRequest(["file" => "string"], "POST");
 
 		// set file path
 		$file_path = $this->uploader_conf["path"].$data["file"];

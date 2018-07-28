@@ -183,7 +183,7 @@ trait Crud
 		$this->onlyAjax();
 
 		// get data
-		$data = $this->handleRequest([], "POST");
+		$data = $this->handleRequest(["@payload" => "raw"], "POST");
 
 		// merge paylod if set
 		$this->_mergePayload($data);
@@ -221,9 +221,7 @@ trait Crud
 	{
 		$this->onlyAjax();
 
-		$data = $this->handleRequest([
-			"@payload" => "raw"
-		], "POST");
+		$data = $this->handleRequest(["@payload" => "raw"], "POST");
 
 		// merge paylod if set
 		$this->_mergePayload($data);
@@ -286,9 +284,7 @@ trait Crud
 	{
 		$this->onlyAjax();
 
-		$data = $this->handleRequest([
-			$this->crud_conf["pk"] => "string" //number or string
-		], "POST");
+		$data = $this->handleRequest([$this->crud_conf["pk"] => "string"], "POST");
 
 		$object_class = $this->crud_conf["entity"];
 		$object       = $object_class::findFirst([$this->crud_conf["pk"]." = '".$data[$this->crud_conf["pk"]]."'"]);
@@ -393,7 +389,7 @@ trait Crud
 		if (!isset($data["payload"]))
 			return;
 
-		$payload = json_decode($data["payload"], true);
+		$payload = json_decode((new \Phalcon\Filter())->sanitize($data["payload"], "striptags"), true);
 		$data    = array_merge($data, $payload);
 
 		// unset payload

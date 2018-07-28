@@ -303,9 +303,7 @@ trait AccountAuth
 	{
 		try {
 
-			$data = $this->handleRequest([
-				"token" => "string"
-			], "MIXED");
+			$data = $this->handleRequest(["token" => "string"], "MIXED");
 
 			$token = self::getToken($data["token"], "access");
 

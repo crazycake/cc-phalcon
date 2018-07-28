@@ -113,28 +113,23 @@ abstract class BaseCore extends Controller
 		if (empty($method))
 			throw new Exception("BaseCore::sendMailMessage -> method param is required.");
 
-		// checks that a MailerController exists
-		if (!class_exists("\MailerController"))
-			throw new Exception("BaseCore::sendMailMessage -> A Mailer Controller is required.");
-
 		$mailer = new \MailerController();
 
 		// checks that a MailerController exists
 		if (!method_exists($mailer, $method))
-			throw new Exception("BaseCore::sendMailMessage -> Method $method is not defined in Mailer Controller.");
+			throw new Exception("BaseCore::sendMailMessage -> method $method is not defined in Mailer Controller.");
 
 		// call mailer class method (reflection)
 		$mailer->{$method}($data);
 
-		$this->logger->debug("BaseCore::sendMailMessage -> Queued mailer message successfully [$method]");
+		$this->logger->debug("BaseCore::sendMailMessage -> queued mailer message successfully [$method]");
 	}
 
 	/**
 	 * Handle the request params data validating required parameters.
 	 * Also Check if get/post data is valid, if validation fails send an HTTP code, onSuccess returns a data array.
-	 * Required field may have a ```@``` prefix to establish that is just an optional field to be sanitized.
-	 * Types: ```string, email, int, float, alphanum, striptags, trim, lower, upper.```
-	 * @link   http://docs.phalconphp.com/en/latest/reference/filter.html#sanitizing-data
+	 * Required field may have a `@` prefix to establish that is just an optional field to be sanitized.
+	 * Types: `string, email, int, float, alphanum, striptags, trim, lower, upper.`
 	 * @param Array $req_fields - Required fields
 	 * @param String $method - HTTP method: [GET, POST, MIXED], defaults to GET.
 	 * @param Boolean $check_csrf - Checks the form CSRF token
@@ -142,10 +137,6 @@ abstract class BaseCore extends Controller
 	 */
 	protected function handleRequest($req_fields = [], $method = "GET", $check_csrf = true)
 	{
-		// check API module and set special settings
-		if (MODULE_NAME == "api")
-			$check_csrf = false;
-
 		// set anoymous function for send response
 		$sendResponse = function($code) {
 
@@ -166,8 +157,8 @@ abstract class BaseCore extends Controller
 		if ($method == "GET" && !$this->request->isGet())
 			return $sendResponse(404);
 
-		// validate always CSRF Token (prevents also headless browsers, POST only and API module excluded)
-		if ($check_csrf && method_exists($this, "checkCsrfToken") && !$this->checkCsrfToken())
+		// validate always CSRF Token (POST only and API module excluded)
+		if (MODULE_NAME != "api" && $check_csrf && !$this->checkCsrfToken())
 			return $sendResponse(498);
 
 		// get params data: POST, GET, or mixed

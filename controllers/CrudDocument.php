@@ -123,8 +123,8 @@ trait CrudDocument
 		$this->onlyAjax();
 
 		// set required props to be validated
-		$data    = $this->handleRequest(["payload" => "raw"], "POST");
-		$payload = (object)$data["payload"];
+		$data    = $this->handleRequest(["payload" => "striptags"], "POST");
+		$payload = json_decode($data["payload"]);
 
 		// set object id
 		$object_id = empty($payload->_id) ? null : new \MongoDB\BSON\ObjectID(current($payload->_id));
