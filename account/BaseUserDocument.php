@@ -25,12 +25,15 @@ class BaseUserDocument extends \CrazyCake\Models\BaseDocument
 	 */
 	public static function insert($data)
 	{
+		if(is_array($data))
+			$data = (object)$data;
+
 		// set password hash
-		if (!empty($data["pass"]))
-			$data["pass"] = (\Phalcon\DI::getDefault())->getShared("security")->hash($data["pass"]);
+		if (!empty($data->pass))
+			$data->pass = (\Phalcon\DI::getDefault())->getShared("security")->hash($data->pass);
 
 		// set timestamp
-		$data["createdAt"] = self::toIsoDate();
+		$data->createdAt = self::toIsoDate();
 
 		return parent::insert($data);
 	}
