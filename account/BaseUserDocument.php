@@ -25,7 +25,7 @@ class BaseUserDocument extends \CrazyCake\Models\BaseDocument
 	 */
 	public static function insert($data)
 	{
-		if(is_array($data))
+		if (is_array($data))
 			$data = (object)$data;
 
 		// set password hash

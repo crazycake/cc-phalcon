@@ -196,6 +196,7 @@ abstract class BaseCore extends Controller
 
 			// optional fields
 			if ($field[0] == "@") {
+
 				unset($data[$field]);
 				$field = substr($field, 1);
 			}
@@ -219,6 +220,7 @@ abstract class BaseCore extends Controller
 
 		// check if is a optional field
 		if (substr($field, 0, 1) == "@") {
+
 			$is_optional = true;
 			$field = substr($field, 1);
 		}
