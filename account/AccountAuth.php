@@ -56,6 +56,7 @@ trait AccountAuth
 			"login_uri"       => "signIn",
 			"logout_uri"      => "signIn",
 			"activation_uri"  => "auth/activation/",
+			"csrf"            => true,
 			"recaptcha_login" => false
 		];
 
@@ -102,7 +103,7 @@ trait AccountAuth
 			$params = ["email" => "email"];
 
 		// validate and filter request params data, second params are the required fields
-		$data = $this->handleRequest($params, "POST");
+		$data = $this->handleRequest($params, "POST", $this->account_auth_conf["csrf"]);
 
 		// find user
 		$user = $this->account_auth_conf["user_key"] == "email" ? $entity::getUserByEmail($data["email"]) : $this->getLoginUser($data);
@@ -147,7 +148,7 @@ trait AccountAuth
 		$data = $this->handleRequest([
 			"email" => "email",
 			"pass"  => "string"
-		], "POST");
+		], "POST", $this->account_auth_conf["csrf"]);
 
 		// lower case email
 		$data["email"] = strtolower($data["email"]);
@@ -268,7 +269,7 @@ trait AccountAuth
 	 * @param String $email - The user email
 	 * @param String $recaptcha - The reCaptcha challenge
 	 */
-	public function sendActivationMailMessageWithRecaptcha($email, $recaptcha = "")
+	public function sendActivationMailMessageRecaptcha($email, $recaptcha = "")
 	{
 		// google reCaptcha helper
 		$recaptcher = new ReCaptcha($this->config->google->reCaptchaKey);
@@ -303,18 +304,13 @@ trait AccountAuth
 	{
 		try {
 
-			$data = $this->handleRequest(["token" => "string"], "MIXED");
-
-			$token = self::getToken($data["token"], "access");
+			$token = self::getToken($token, "access");
 
 			if (!$token)
 				throw new Exception("Invalid token");
 
 			return $token;
 		}
-		catch(Exception $e) {
-
-			$this->jsonResponse(401, $e->getMessage());
-		}
+		catch(Exception $e) { $this->jsonResponse(401, $e->getMessage()); }
 	}
 }
