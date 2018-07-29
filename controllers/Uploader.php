@@ -73,11 +73,11 @@ trait Uploader
 
 		// create dir if not exists
 		if (!is_dir($this->uploader_conf["path"]))
-			mkdir($this->uploader_conf["path"], 0755);
+			 mkdir($this->uploader_conf["path"], 0755);
 
 		// crate symlink if not exists
 		if (!is_link(PUBLIC_PATH."uploads"))
-			symlink(PUBLIC_PATH."uploads", STORAGE_PATH."uploads");
+			@symlink(PUBLIC_PATH."uploads", STORAGE_PATH."uploads");
 	}
 
 	/**
