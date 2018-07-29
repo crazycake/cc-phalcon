@@ -107,10 +107,12 @@ trait AccountPassword
 
 		try {
 			// handle the encrypted data with parent controller
-			self::validateHash($hash);
+			list($user_id, $token_type, $token) = self::validateHash($hash);
 
 			// saves hash in session
 			$this->session->set("passwordHash", $hash);
+
+			return $user_id;
 		}
 		catch (Exception $e) {
 
