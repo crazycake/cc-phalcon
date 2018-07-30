@@ -35,7 +35,7 @@ class BaseDocument
 	 * Get by Id
 	 * @param Mixed $id - The document ID (String or ObjectId)
 	 */
-	public static function getById($id = "")
+	public static function getById($id)
 	{
 		$mongo = (\Phalcon\DI::getDefault())->getShared("mongo");
 
@@ -53,7 +53,7 @@ class BaseDocument
 	 * @param Array $props - Properties (associative array)
 	 * @param Array $opts - Options (associative array)
 	 */
-	public static function getByProperties($props = [], $opts = [])
+	public static function getByProperties($props, $opts = [])
 	{
 		$mongo = (\Phalcon\DI::getDefault())->getShared("mongo");
 
@@ -69,7 +69,7 @@ class BaseDocument
 	 * @param String $prop - property name
 	 * @param Mixed $case - case flag [UPPER, LOWER]
 	 */
-	public static function getDistinctValues($prop = "", $case = false)
+	public static function getDistinctValues($prop, $case = false)
 	{
 		$mongo = (\Phalcon\DI::getDefault())->getShared("mongo");
 
@@ -93,7 +93,7 @@ class BaseDocument
 	 * @param Mixed $value - The value
 	 * @param String $key - The key index
 	 */
-	public static function updateProperty($id = "", $prop = "", $value = null, $key = "_id")
+	public static function updateProperty($id, $prop, $value, $key = "_id")
 	{
 		$mongo = (\Phalcon\DI::getDefault())->getShared("mongo");
 
@@ -109,7 +109,7 @@ class BaseDocument
 	 * @param Array $prop - The properties
 	 * @param String $key - The key index
 	 */
-	public static function updateProperties($id = "", $props = [], $key = "_id")
+	public static function updateProperties($id, $props, $key = "_id")
 	{
 		$mongo = (\Phalcon\DI::getDefault())->getShared("mongo");
 
@@ -123,7 +123,7 @@ class BaseDocument
 	 * Inserts a new document
 	 * @param Mixed $data - The input data
 	 */
-	public static function insert($data = [])
+	public static function insert($data)
 	{
 		$mongo = (\Phalcon\DI::getDefault())->getShared("mongo");
 
