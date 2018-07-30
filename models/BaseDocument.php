@@ -51,12 +51,13 @@ class BaseDocument
 	/**
 	 * Get by Properties
 	 * @param Array $props - Properties (associative array)
+	 * @param Array $opts - Options (associative array)
 	 */
-	public static function getByProperties($props)
+	public static function getByProperties($props, $opts)
 	{
 		$mongo = (\Phalcon\DI::getDefault())->getShared("mongo");
 
-		try { $object = $mongo->{static::$COLLECTION}->findOne($props); }
+		try { $object = $mongo->{static::$COLLECTION}->findOne($props, $opts); }
 		catch (\Exception $e) { $object = false; }
 
 		// reduce object
