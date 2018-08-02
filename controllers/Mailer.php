@@ -63,7 +63,7 @@ trait Mailer
 		$this->mailer_conf = array_merge($this->mailer_conf, $data);
 
 		$subject = "Contacto ".$this->config->name;
-		$to      = $this->mailer_conf["email"] ?? $this->config->emails->support;
+		$to      = $this->config->emails->support;
 
 		// sends email
 		$this->sendMessage("contact", $subject, $to);
