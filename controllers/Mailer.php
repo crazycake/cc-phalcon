@@ -199,9 +199,9 @@ trait Mailer
 		// emails
 		$from     = new \SendGrid\Email($this->mailer_conf["from_name"],  $this->config->emails->sender);
 		$reply_to = new \SendGrid\ReplyTo($this->config->emails->support ?? $this->config->emails->sender, $this->mailer_conf["from_name"]);
-		// content
+
 		$content = new \SendGrid\Content("text/html", $this->inlineHtml($template));
-		// mail object
+
 		$mail = new \SendGrid\Mail($from, $subject, (new \SendGrid\Email(null, $recipients[0])), $content);
 		$mail->setReplyTo($reply_to);
 
@@ -216,7 +216,7 @@ trait Mailer
 		// parse attachments
 		$this->_parseAttachments($attachments, $mail);
 
-		// send mail
+		// send
 		$result = $sendgrid->client->mail()->send()->post($mail);
 
 		$body = json_encode($result->body() ?? "", JSON_UNESCAPED_SLASHES);
