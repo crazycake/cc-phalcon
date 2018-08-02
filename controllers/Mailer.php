@@ -57,31 +57,16 @@ trait Mailer
 	 * Ajax Handler Action - Send the contact to message to our app
 	 * Requires email, name, message POST params
 	 */
-	public function sendContactAction()
+	public function sendContact($data = [])
 	{
-		$this->onlyAjax();
-
-		$data = $this->handleRequest([
-			"email"    => "email",
-			"name"     => "string",
-			"@message" => "string"
-		], "POST");
-
-		$data["subject"] = "Contacto ".$this->config->name;
-		$data["to"]      = $this->config->emails->support;
-
 		// extend config
 		$this->mailer_conf = array_merge($this->mailer_conf, $data);
 
-		// event
-		if (method_exists($this, "onBeforeSendContact"))
-			$this->onBeforeSendContact($data);
+		$subject = "Contacto ".$this->config->name;
+		$to      = $this->mailer_conf["email"] ?? $this->config->emails->support;
 
 		// sends email
-		$this->sendMessage("contact", $data["subject"], $data["to"]);
-
-		// send response
-		$this->jsonResponse(200);
+		$this->sendMessage("contact", $subject, $to);
 	}
 
 	/**
@@ -90,10 +75,8 @@ trait Mailer
 	 */
 	public function accountActivation($data = [])
 	{
-		// merge mailer conf
 		$this->mailer_conf = array_merge($this->mailer_conf, $data);
 
-		// set message properties
 		$subject = $this->mailer_conf["trans"]["SUBJECT_ACTIVATION"];
 		$to      = $this->mailer_conf["email"];
 
@@ -107,10 +90,8 @@ trait Mailer
 	 */
 	public function passwordRecovery($data = [])
 	{
-		// merge mailer conf
 		$this->mailer_conf = array_merge($this->mailer_conf, $data);
 
-		// set message properties
 		$subject = $this->mailer_conf["trans"]["SUBJECT_PASSWORD"];
 		$to      = $this->mailer_conf["email"];
 
@@ -154,14 +135,11 @@ trait Mailer
 	{
 		$error = is_string($e) ? $e : $e->getMessage().". File: ".$e->getFile()." [".$e->getLine()."]";
 
-		$admin_emails = !empty($this->config->emails->admins) ? (array)$this->config->emails->admins : $this->config->emails->support;
+		$admin_emails = !empty($this->config->emails->admins) ? (array)$this->config->emails->admins : [$this->config->emails->support];
 
-		if (!is_array($admin_emails))
-			$admin_emails = [$admin_emails];
-
-		$data["email"]   = $this->config->emails->sender;
 		$data["name"]    = $this->config->name." ".MODULE_NAME;
-		$data["message"] = "$error\nData:\n".(empty($data["edata"]) ? "n/a" : json_encode($data["edata"], JSON_UNESCAPED_SLASHES));
+		$data["email"]   = $this->config->emails->sender;
+		$data["message"] = "$error\nTrace:\n".(empty($data["trace"]) ? "n/a" : json_encode($data["trace"], JSON_UNESCAPED_SLASHES));
 
 		// extend config
 		$this->mailer_conf = array_merge($this->mailer_conf, $data);
@@ -194,9 +172,8 @@ trait Mailer
 		if (empty($subject))
 			$subject = $this->config->name;
 
-		// service instance
 		$sendgrid = new \SendGrid($this->config->sendgrid->apiKey);
-		// emails
+
 		$from     = new \SendGrid\Email($this->mailer_conf["from_name"],  $this->config->emails->sender);
 		$reply_to = new \SendGrid\ReplyTo($this->config->emails->support ?? $this->config->emails->sender, $this->mailer_conf["from_name"]);
 
@@ -216,7 +193,7 @@ trait Mailer
 		// parse attachments
 		$this->_parseAttachments($attachments, $mail);
 
-		// send
+		// send!
 		$result = $sendgrid->client->mail()->send()->post($mail);
 
 		$body = json_encode($result->body() ?? "", JSON_UNESCAPED_SLASHES);
