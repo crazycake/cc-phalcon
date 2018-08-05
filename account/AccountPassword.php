@@ -178,7 +178,7 @@ trait AccountPassword
 			$entity = $this->account_password_conf["user_entity"];
 			$user   = $entity::getById($this->user_session["id"]);
 
-			if (empty($new_pass) && empty($current_pass))
+			if (empty($user) || empty($new_pass) || empty($current_pass))
 				return;
 
 			if (!empty($new_pass) && empty($current_pass))

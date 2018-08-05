@@ -170,10 +170,9 @@ class BaseDocument
 		if(!is_string($json))
 			$json = json_encode($json);
 
-		$bson   = \MongoDB\BSON\fromJSON($json);
-		$object = \MongoDB\BSON\toPHP($bson);
+		$bson = \MongoDB\BSON\fromJSON($json);
 
-		return $object;
+		return \MongoDB\BSON\toPHP($bson);
 	}
 
 	/**
