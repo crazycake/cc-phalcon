@@ -161,6 +161,22 @@ class BaseDocument
 	}
 
 	/**
+	 * json to mongo object
+	 * @param Mixed[String, Array, Object] $json
+	 * @return object
+	 */
+	public static function jsonToMongoObject($json)
+	{
+		if(!is_string($json))
+			$json = json_encode($json);
+
+		$bson   = \MongoDB\BSON\fromJSON($json);
+		$object = \MongoDB\BSON\toPHP($bson);
+
+		return $object;
+	}
+
+	/**
 	 * Recursively flatten multidimensional array to one dimension (helper)
 	 * @param Array $array - An input array
 	 * @return Array
