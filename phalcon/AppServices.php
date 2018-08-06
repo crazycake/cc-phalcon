@@ -28,7 +28,6 @@ class AppServices
 	 */
 	public function __construct($config)
 	{
-		// set class vars
 		$this->config = new \Phalcon\Config($config);
 	}
 
@@ -53,6 +52,7 @@ class AppServices
 	{
 		// get a new Micro DI
 		$di = new \Phalcon\DI\FactoryDefault\CLI();
+
 		$this->_setMainServices($di);
 		$this->_setDatabaseServices($di);
 		$this->_setTranslationService($di);
@@ -67,6 +67,7 @@ class AppServices
 	{
 		// get a new Micro DI
 		$di = new \Phalcon\DI\FactoryDefault();
+
 		$this->_setMainServices($di);
 		$this->_setDatabaseServices($di);
 		$this->_setTranslationService($di);
@@ -181,16 +182,14 @@ class AppServices
 		// mysql adapter
 		$di->setShared("db", function() {
 
-			$db_conf = [
+			return new \Phalcon\Db\Adapter\Pdo\Mysql([
 				"host"     => getenv("MYSQL_HOST") ?: "mysql",
 				"port"     => 3306,
 				"dbname"   => "app",
 				"username" => getenv("MYSQL_USER") ?: "root",
 				"password" => getenv("MYSQL_PWD") ?: "mysql24681214?",
 				"options"  => [\PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"]
-			];
-
-			return new \Phalcon\Db\Adapter\Pdo\Mysql($db_conf);
+			]);
 		});
 	}
 
@@ -204,9 +203,7 @@ class AppServices
 
 		$di->setShared("mongo", function() use ($uri) {
 
-			$mongo = new \MongoDB\Client($uri);
-
-			return $mongo->{getenv("MONGO_DB") ?: "app"};
+			return (new \MongoDB\Client($uri))->{getenv("MONGO_DB") ?: "app"};
 		});
 
 		$di->setShared("mongoManager", function() use ($uri) {

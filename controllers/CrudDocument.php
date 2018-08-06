@@ -21,6 +21,12 @@ trait CrudDocument
 	 */
 	protected $crud_conf;
 
+	/**
+	 * Database connection object
+	 * @var Object
+	 */
+	protected $database;
+
 	/* --------------------------------------------------- § -------------------------------------------------------- */
 
 	/**
@@ -30,8 +36,10 @@ trait CrudDocument
 	protected function initCrud($conf = [])
 	{
 		$defaults = [
-			"collection"  => "",
-			"fetch_limit" => 1000
+			"database_uri"  => null,
+			"database_name" => null,
+			"collection"    => null,
+			"fetch_limit"   => 1000
 		];
 
 		// merge confs
@@ -42,6 +50,14 @@ trait CrudDocument
 
 		// set conf
 		$this->crud_conf = $conf;
+
+		// set db
+		$uri = getenv("MONGO_HOST") ? str_replace("~", "=", getenv("MONGO_HOST")) : "mongodb://mongo";
+
+		if (!empty($this->crud_conf["database_uri"]))
+			$uri = str_replace("~", "=", $this->crud_conf["database_uri"]);
+
+		$this->database = (new \MongoDB\Client($uri))->{$this->crud_conf["database_name"] ?: "app"};
 	}
 
 	/**
@@ -95,7 +111,7 @@ trait CrudDocument
 			$this->onBeforeQuery($query, $opts, $data);
 
 		// collection
-		$collection = $this->mongo->getDatabaseName().".".$this->crud_conf["collection"];
+		$collection = $this->database->getDatabaseName().".".$this->crud_conf["collection"];
 		// query
 		$resultset = $this->mongoManager->executeQuery($collection, new \MongoDB\Driver\Query($query, $opts));
 		$items     = $resultset ? $resultset->toArray() : [];
@@ -139,7 +155,7 @@ trait CrudDocument
 		//insert
 		if (is_null($object_id)) {
 
-			try { $object = $this->mongo->{$this->crud_conf["collection"]}->insertOne($payload); }
+			try { $object = $this->database->{$this->crud_conf["collection"]}->insertOne($payload); }
 			catch(\Exception | Exception $e) {
 
 				$this->logger->error("CrudDocument::saveAction -> insert exception: ".$e->getMessage());
@@ -164,7 +180,7 @@ trait CrudDocument
 					continue;
 				}
 
-				try { $this->mongo->{$this->crud_conf["collection"]}->updateOne(["_id" => $object_id], ['$set' => ["$key" => $value]]); }
+				try { $this->database->{$this->crud_conf["collection"]}->updateOne(["_id" => $object_id], ['$set' => ["$key" => $value]]); }
 				catch(\Exception | Exception $e) {
 
 					$this->logger->error("CrudDocument::saveAction -> update exception: ".$e->getMessage());
@@ -176,7 +192,7 @@ trait CrudDocument
 		}
 
 		// get saved object
-		try { $object = $this->mongo->{$this->crud_conf["collection"]}->findOne(["_id" => $object_id]); }
+		try { $object = $this->database->{$this->crud_conf["collection"]}->findOne(["_id" => $object_id]); }
 		catch(\Exception | Exception $e) { $object = null; }
 
 		// event
@@ -200,7 +216,7 @@ trait CrudDocument
 
 		$id = (new \Phalcon\Filter())->sanitize($id, "string");
 
-		try { $object = $this->mongo->{$this->crud_conf["collection"]}->findOne(["_id" => (new \MongoDB\BSON\ObjectId($id))]); }
+		try { $object = $this->database->{$this->crud_conf["collection"]}->findOne(["_id" => (new \MongoDB\BSON\ObjectId($id))]); }
 		catch(\Exception | Exception $e) { $object = null; }
 
 		// event
@@ -225,7 +241,7 @@ trait CrudDocument
 		if (method_exists($this, "onBeforeDelete"))
 			$this->onBeforeDelete($data);
 
-		$this->mongo->{$this->crud_conf["collection"]}->deleteOne(["_id" => $object_id]);
+		$this->database->{$this->crud_conf["collection"]}->deleteOne(["_id" => $object_id]);
 
 		// send response
 		$this->jsonResponse(200);
@@ -251,7 +267,7 @@ trait CrudDocument
 		$object_id = new \MongoDB\BSON\ObjectID($data["id"]);
 		$prop      = $data["prop"];
 
-		$object = $this->mongo->{$this->crud_conf["collection"]}->findOne(["_id" => $object_id]);
+		$object = $this->database->{$this->crud_conf["collection"]}->findOne(["_id" => $object_id]);
 
 		if (empty($object))
 			$this->jsonResponse(400);
@@ -262,10 +278,10 @@ trait CrudDocument
 		// array special case?
 		$cmd = $is_array ? ['$pull' => ["$prop" => $data["url"]]] : ['$set' => ["$prop" => null]];
 
-		$this->mongo->{$this->crud_conf["collection"]}->updateOne(["_id" => $object_id], $cmd);
+		$this->database->{$this->crud_conf["collection"]}->updateOne(["_id" => $object_id], $cmd);
 
 		// get updated value
-		$value = $this->mongo->{$this->crud_conf["collection"]}->findOne(["_id" => $object_id]);
+		$value = $this->database->{$this->crud_conf["collection"]}->findOne(["_id" => $object_id]);
 
 		$this->jsonResponse(200, ["prop" => "$prop", "value" => $value->{$prop}]);
 	}

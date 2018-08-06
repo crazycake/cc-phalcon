@@ -151,7 +151,7 @@ trait AccountAuth
 		], "POST", $this->account_auth_conf["csrf"]);
 
 		// lower case email
-		$data["email"] = strtolower($data["email"]);
+		$data["email"] = strtolower(trim($data["email"]));
 
 		// check valid email
 		if (!filter_var($data["email"], FILTER_VALIDATE_EMAIL))
