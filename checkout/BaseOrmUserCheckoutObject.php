@@ -9,7 +9,7 @@ namespace CrazyCake\Checkout;
 /**
  * Base User Checkouts objects
  */
-class BaseUserCheckoutObject extends \CrazyCake\Models\Base
+class BaseOrmUserCheckoutObject extends \CrazyCake\Models\BaseOrm
 {
 	/* properties */
 
@@ -59,7 +59,7 @@ class BaseUserCheckoutObject extends \CrazyCake\Models\Base
 	public static function validateStock($object_class = "", $object_id = 0, $q = 0)
 	{
 		if (!class_exists($object_class))
-			throw new Exception("BaseUserCheckoutObject -> Object class not found ($object_class)");
+			throw new Exception("BaseOrmUserCheckoutObject -> Object class not found ($object_class)");
 
 		$object = $object_class::getById($object_id);
 

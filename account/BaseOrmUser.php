@@ -9,7 +9,7 @@ namespace CrazyCake\Account;
 /**
  * Base User Model
  */
-class BaseUser extends \CrazyCake\Models\Base
+class BaseOrmUser extends \CrazyCake\Models\BaseOrm
 {
 	/* properties */
 

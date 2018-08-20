@@ -15,7 +15,7 @@ use CrazyCake\Helpers\Forms;
 /**
  * Base User Checkouts
  */
-class BaseUserCheckout extends \CrazyCake\Models\Base
+class BaseOrmUserCheckout extends \CrazyCake\Models\BaseOrm
 {
 	/* static vars */
 
@@ -177,7 +177,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 		$checkout_obj->buy_order = $buy_order;
 
 		// log statement
-		$di->getShared("logger")->debug("BaseUserCheckout::newBuyOrder -> saving BuyOrder: $buy_order");
+		$di->getShared("logger")->debug("BaseOrmUserCheckout::newBuyOrder -> saving BuyOrder: $buy_order");
 
 		try {
 
@@ -216,7 +216,7 @@ class BaseUserCheckout extends \CrazyCake\Models\Base
 		}
 		catch (Exception $e) {
 
-			$di->getShared("logger")->error("BaseUserCheckout::newBuyOrder -> exception: ".$e->getMessage());
+			$di->getShared("logger")->error("BaseOrmUserCheckout::newBuyOrder -> exception: ".$e->getMessage());
 			$di->getShared("db")->rollback();
 			return false;
 		}

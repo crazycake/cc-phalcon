@@ -9,7 +9,7 @@ namespace CrazyCake\Account;
 /**
  * Base User Model
  */
-class BaseUserDocument extends \CrazyCake\Models\BaseDocument
+class BaseDocumentUser extends \CrazyCake\Models\BaseDocument
 {
 	/**
 	 * Flags

@@ -11,7 +11,7 @@ use \Phalcon\Mvc\Model\Query as PHQL;
 /**
  * Base extended functions for models
  */
-class Base extends \Phalcon\Mvc\Model
+class BaseOrm extends \Phalcon\Mvc\Model
 {
 	/**
 	 * The object ID
@@ -168,7 +168,7 @@ class Base extends \Phalcon\Mvc\Model
 		// DB ORM errors?
 		if (!empty($object->messages())) {
 
-			(\Phalcon\DI::getDefault())->getShared("logger")->error("Base::insert -> failed insertion ".json_encode($object->messages()));
+			(\Phalcon\DI::getDefault())->getShared("logger")->error("BaseOrm::insert -> failed insertion ".json_encode($object->messages()));
 			return false;
 		}
 

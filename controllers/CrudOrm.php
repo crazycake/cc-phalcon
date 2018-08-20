@@ -14,7 +14,7 @@ use CrazyCake\Phalcon\App;
 /**
  * Base CRUD Controller
  */
-trait Crud
+trait CrudOrm
 {
 	/**
 	 * Event on before render Index

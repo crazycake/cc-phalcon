@@ -8,8 +8,6 @@ namespace CrazyCake\Controllers;
 
 use Phalcon\Exception;
 
-use CrazyCake\Models\BaseResultset;
-
 /**
  * HTTP Response Handler
  */

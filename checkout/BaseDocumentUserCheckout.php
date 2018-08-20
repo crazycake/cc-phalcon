@@ -12,7 +12,7 @@ use CrazyCake\Helpers\Forms;
 /**
  * Base User Checkouts
  */
-class BaseUserCheckoutDocument extends \CrazyCake\Models\BaseDocument
+class BaseDocumentUserCheckout extends \CrazyCake\Models\BaseDocument
 {
 	/* static vars */
 
@@ -69,7 +69,7 @@ class BaseUserCheckoutDocument extends \CrazyCake\Models\BaseDocument
 		$checkout->state    = "pending";
 
 		// log statement
-		$di->getShared("logger")->debug("BaseUserCheckout::newBuyOrder -> saving BuyOrder: $checkout->buyOrder");
+		$di->getShared("logger")->debug("BaseDocumentUserCheckout::newBuyOrder -> saving BuyOrder: $checkout->buyOrder");
 
 		try {
 			// insert
@@ -80,7 +80,7 @@ class BaseUserCheckoutDocument extends \CrazyCake\Models\BaseDocument
 		}
 		catch (Exception $e) {
 
-			$di->getShared("logger")->error("BaseUserCheckout::newBuyOrder -> exception: ".$e->getMessage());
+			$di->getShared("logger")->error("BaseDocumentUserCheckout::newBuyOrder -> exception: ".$e->getMessage());
 			return false;
 		}
 	}
