@@ -57,7 +57,9 @@ trait CrudDocument
 		if (!empty($this->crud_conf["database_uri"]))
 			$uri = str_replace("~", "=", $this->crud_conf["database_uri"]);
 
-		$this->database = (new \MongoDB\Client($uri))->{$this->crud_conf["database_name"] ?: "app"};
+		$database = $this->crud_conf["database_name"] ?: (getenv("MONGO_DB") ?: "app");
+
+		$this->database = (new \MongoDB\Client($uri))->{$database};
 	}
 
 	/**
