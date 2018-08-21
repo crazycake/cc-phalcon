@@ -108,7 +108,7 @@ trait Mailer
 	public function inlineHtml($template = "")
 	{
 		// set mailer sub config
-		$this->mailer_conf["config"] = $this->config;
+		$this->mailer_conf["config"] = ["name" => $this->config->name, "emails" => $this->config->emails]; // logs security
 
 		// get the view in mailing folder
 		$html = $this->simpleView->render("mailing/$template", $this->mailer_conf);
