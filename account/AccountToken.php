@@ -19,7 +19,7 @@ trait AccountToken
 	 */
 	public static $TOKEN_EXPIRES = [
 		"access"     => 30,
-		"activation" => 7,
+		"activation" => 10,
 		"pass"       => 1
 	];
 
@@ -62,14 +62,13 @@ trait AccountToken
 	 * Saves a new token
 	 * @param Int $user_id - The user ID
 	 * @param String $type - The token type
-	 * @param Integer $expiration - The expiration time
 	 */
-	public static function newToken($user_id, $type, $expiration = 0)
+	public static function newToken($user_id, $type)
 	{
 		$redis = self::newRedisClient();
 
 		$token   = (\Phalcon\DI::getDefault())->getShared("cryptify")->newHash(static::$TOKEN_LENGTH);
-		$expires = empty($expiration) ? static::$TOKEN_EXPIRES[$type] : $expiration;
+		$expires = static::$TOKEN_EXPIRES[$type];
 
 		$key = "TOKEN_".$type."_".$user_id;
 
