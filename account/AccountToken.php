@@ -14,7 +14,7 @@ use Phalcon\Exception;
 trait AccountToken
 {
 	/**
-	 * Token expiration in days (can be overrided).
+	 * Token expiration in days
 	 * @var Integer
 	 */
 	public static $TOKEN_EXPIRES = [
@@ -24,7 +24,7 @@ trait AccountToken
 	];
 
 	/**
-	 * Token default length (can be overrided).
+	 * Token default length
 	 * @var Integer
 	 */
 	public static $TOKEN_LENGTH = 13;
@@ -62,13 +62,14 @@ trait AccountToken
 	 * Saves a new token
 	 * @param Int $user_id - The user ID
 	 * @param String $type - The token type
+	 * @param Integer $expiration - The expiration time
 	 */
-	public static function newToken($user_id, $type)
+	public static function newToken($user_id, $type, $expiration = 0)
 	{
 		$redis = self::newRedisClient();
 
 		$token   = (\Phalcon\DI::getDefault())->getShared("cryptify")->newHash(static::$TOKEN_LENGTH);
-		$expires = static::$TOKEN_EXPIRES[$type];
+		$expires = empty($expiration) ? static::$TOKEN_EXPIRES[$type] : $expiration;
 
 		$key = "TOKEN_".$type."_".$user_id;
 
