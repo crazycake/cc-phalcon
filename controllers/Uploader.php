@@ -273,6 +273,7 @@ trait Uploader
 			CURLOPT_POST           => 1,
 			CURLOPT_POSTFIELDS     => $body,
 			CURLOPT_HTTPHEADER     => $headers,
+			CURLOPT_TIMEOUT        => 90,
 			CURLOPT_RETURNTRANSFER => true,
 			CURLOPT_USERAGENT      => "Phalcon"
 		];
