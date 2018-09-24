@@ -49,8 +49,8 @@ class Forms
 		if (strcspn($name, $nums) != strlen($name))
 			return false;
 
-		// format to capitalized name
-		return mb_convert_case($name, MB_CASE_TITLE, "UTF-8");
+		// remove spaces & format to capitalized name
+		return mb_convert_case(ltrim(rtrim($name)), MB_CASE_TITLE, "UTF-8");
 	}
 
 	/**
