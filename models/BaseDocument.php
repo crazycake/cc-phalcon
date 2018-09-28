@@ -167,7 +167,7 @@ class BaseDocument
 	 */
 	public static function jsonToMongoObject($json)
 	{
-		if(!is_string($json))
+		if (!is_string($json))
 			$json = json_encode($json);
 
 		$bson = \MongoDB\BSON\fromJSON($json);
