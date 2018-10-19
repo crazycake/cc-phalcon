@@ -1,4 +1,8 @@
 <?php
+/**
+ * QR Tag
+ * @link http://phpqrcode.sourceforge.net/
+ */
 
 namespace CrazyCake\Qr;
 

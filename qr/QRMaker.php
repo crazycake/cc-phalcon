@@ -16,16 +16,19 @@ class QRMaker
 {
 	/**
 	 * QR library namespace
+	 * @var String
 	 */
 	const QR_LIB_NAMESPACE = "\\CrazyCake\\Qr\\";
 
 	/**
 	 * QR high quality (debug only)
+	 * @var Boolean
 	 */
 	const QR_HIGH_QUALITY  = true;
 
 	/**
 	 * QR PNG max size
+	 * @var Integer
 	 */
 	const QR_PNG_MAX_SIZE  = 1024;
 

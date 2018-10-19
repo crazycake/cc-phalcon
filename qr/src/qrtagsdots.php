@@ -2,7 +2,6 @@
 /**
  * QR Tags Dot
  * This file contains all tags dot classes
- * @contributor Nicolas Pulido <nicolas.pulido@crazycake.cl>
  * @link http://phpqrcode.sourceforge.net/
  */
 

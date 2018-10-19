@@ -97,7 +97,7 @@ class Forms
 	/**
 	 * Validates Rut Verification Digit
 	 * @param String $R - The input rut without VD
-	 * @return Mixed [Int|String]
+	 * @return Mixed
 	 */
 	private static function _validateRutVD($R)
 	{
