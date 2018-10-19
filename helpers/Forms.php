@@ -21,17 +21,17 @@ class Forms
 
 	/**
 	 * Validates chilean rut
-	 * @param String $input_rut - The input form rut (requires '-' token)
+	 * @param String $rut - The input form rut (requires '-' token)
 	 * @return Boolean
 	 */
-	public static function validateRut($input_rut = "")
+	public static function validateRut($rut = "")
 	{
-		$input_rut = str_replace(".", "", $input_rut);
+		$rut = str_replace(".", "", $rut);
 
-		if (!preg_match(self::RUT_REGEX, $input_rut))
+		if (!preg_match(self::RUT_REGEX, $rut))
 			return false;
 
-		$rut = explode("-", $input_rut);
+		$rut = explode("-", $rut);
 
 		// checks if rut is valid
 		return strtolower($rut[1]) == self::_validateRutVD($rut[0]);
@@ -61,6 +61,7 @@ class Forms
 	public static function formatRut($rut)
 	{
 		$str = explode("-", $rut);
+
 		return number_format($str[0], 0, "", ".").'-'.$str[1];
 	}
 
@@ -78,16 +79,14 @@ class Forms
 		switch ($currency) {
 
 			case "CLP":
-				$formatted = "$".str_replace(".00", "", number_format($formatted));
-				$formatted = str_replace(",", ".", $formatted);
-				break;
+
+				$formatted = str_replace(",", ".", "$".str_replace(".00", "", number_format($formatted))); break;
 
 			case "USD":
-				$formatted = "$".$formatted;
-				break;
 
-			default:
-				break;
+				$formatted = "$".$formatted; break;
+
+			default: break;
 		}
 
 		return $formatted;
@@ -98,7 +97,7 @@ class Forms
 	/**
 	 * Validates Rut Verification Digit
 	 * @param String $R - The input rut without VD
-	 * @return Mixed [int|string]
+	 * @return Mixed [Int|String]
 	 */
 	private static function _validateRutVD($R)
 	{
