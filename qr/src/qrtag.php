@@ -39,11 +39,14 @@ abstract class QrTagShape {
 	 * @return Array
 	 */
 	public static function hex2dec($color) {
+
 		return array(hexdec(substr($color, 0, 2)), hexdec(substr($color, 2, 2)), hexdec(substr($color, 4, 2)));
 	}
 
 	/**
-	 *
+	 * Simple function that calculates the *exact* bounding box (single pixel precision).
+	 * The function returns an associative array with these keys:
+	 * left, top:  coordinates you will pass to imagettftext width, height: dimension of the image you have to create
 	 * @param String $text
 	 * @param String $fontFile
 	 * @param Int $fontSize
@@ -51,12 +54,7 @@ abstract class QrTagShape {
 	 * @return Array
 	 */
 	function calculateTextBox($text, $fontFile, $fontSize, $fontAngle) {
-		/*         * **********
-		  simple function that calculates the *exact* bounding box (single pixel precision).
-		  The function returns an associative array with these keys:
-		  left, top:  coordinates you will pass to imagettftext
-		  width, height: dimension of the image you have to create
-		 * *********** */
+
 		$rect = imagettfbbox($fontSize, $fontAngle, $fontFile, $text);
 		$minX = min(array($rect[0], $rect[2], $rect[4], $rect[6]));
 		$maxX = max(array($rect[0], $rect[2], $rect[4], $rect[6]));
@@ -73,7 +71,9 @@ abstract class QrTagShape {
 	}
 
 	public function generateMarkerFrame($shape, $fillHoles = true) {
+
 		$markerFrame = imagecreatetruecolor($this->size * 7, $this->size * 7);
+
 		imagefilledrectangle($markerFrame, 0, 0, $this->size * 7, $this->size * 7, imagecolorallocate($markerFrame, $this->bgColorRGB[0], $this->bgColorRGB[1], $this->bgColorRGB[2]));
 
 
@@ -88,10 +88,12 @@ abstract class QrTagShape {
 
 		for ($x = 0; $x < 7; $x++) {
 			for ($y = 0; $y < 7; $y++) {
+
 				if ($x == 0 || $x == 6 || $y == 0 || $y == 6) {
-					if ($fillHoles) {
+
+					if ($fillHoles)
 						self::copy($markerFrame, $im2, $y * $this->size, $x * $this->size, $this->size, $this->size);
-					}
+
 					self::copy($markerFrame, $shape, $y * $this->size, $x * $this->size, $this->size, $this->size);
 				}
 			}
@@ -101,6 +103,7 @@ abstract class QrTagShape {
 	}
 
 	public function attachMarkerDot(&$frame, $dot) {
+
 		$fw = imagesx($frame);
 		$fh = imagesy($frame);
 		$dw = imagesx($dot);
@@ -110,6 +113,7 @@ abstract class QrTagShape {
 	}
 
 	public static function copy(&$dst, $src, $dy, $dx, $w, $h) {
+
 		$tmpImg = imagecreatetruecolor($w, $h);
 		imagecopy($tmpImg, $dst, 0, 0, $dy, $dx, $w, $h);
 		imagecopy($tmpImg, $src, 0, 0, 0, 0, $w, $h);
@@ -125,34 +129,26 @@ abstract class QrTagShape {
  */
 abstract class QrTagEffect extends QrTagShape {
 
-	// _|_
-	public $imUp;
-	// _|
-	//  |
-	public $imLeft;
-	// |_
-	// |
-	public $imRight;
-	// ___
-	//  |
-	public $imDown;
-	// _
-	//  |
-	public $imTopRight;
-	//   _
-	//  |
-	public $imTopLeft;
-	//   _|
-	//
-	public $imBottomRight;
-	//   |_
-	//
-	public $imBottomLeft;
-	//   o
-	//
-	public $imAlone;
-	public $imSquare;
 
+	public $imUp;
+
+	public $imLeft;
+
+	public $imRight;
+
+	public $imDown;
+
+	public $imTopRight;
+
+	public $imTopLeft;
+
+	public $imBottomRight;
+
+	public $imBottomLeft;
+
+	public $imAlone;
+
+	public $imSquare;
 }
 
 /**
@@ -194,6 +190,7 @@ class QrTag {
 	public $frameImg = null;
 
 	protected function isPixelMarker($x, $y) {
+
 		if (
 				(($x >= 0 && $x <= 6) && ($y >= 0 && $y <= 6)) ||
 				(($x >= $this->cols - 7 && $x <= $this->cols - 1) && ($y >= 0 && $y <= 6)) ||
@@ -204,10 +201,12 @@ class QrTag {
 	}
 
 	public function setDot(QrTagShape $dot) {
+
 		$this->dot = $dot;
 	}
 
 	private function populateData() {
+
 		$this->bgColorRGB = QrTagShape::hex2dec($this->bgColor);
 		$data = QRCode::text($this->text, false, $this->error_level);
 		$data = array_map('str_split', $data);
@@ -219,16 +218,17 @@ class QrTag {
 			$this->dot->bgColorRGB = $this->bgColorRGB;
 			$this->dotImg = $this->dot->generate();
 
-			if (!is_resource($this->dotImg)) {
+			if (!is_resource($this->dotImg))
 				throw new Exception('Dot must generate a valid image resource.');
-			}
 		}
 		else if ($this->dot instanceof QrTagEffect) {
+
 			$this->dot->bgColorRGB = $this->bgColorRGB;
 			$this->dot->generate();
 		}
 
 		if (!($this->frameDot instanceof QrTagShape)) {
+
 			$this->frameDot->bgColorRGB = $this->bgColorRGB;
 			throw new Exception('Frame Dot must be instance of QrTagShape class.');
 		}
@@ -236,9 +236,9 @@ class QrTag {
 		$this->frameDot->size = $this->dot->markerSize ? $this->dot->markerSize : $this->dot->size;
 		$this->frameDotImg = $this->frameDot->generate();
 
-		if (!($this->frame instanceof QrTagShape)) {
+		if (!($this->frame instanceof QrTagShape))
 			throw new Exception('Frame must be instance of QrTagShape class.');
-		}
+
 		$this->frame->bgColorRGB = $this->bgColorRGB;
 
 		$this->frame->size = $this->dot->size;
@@ -256,13 +256,16 @@ class QrTag {
 	}
 
 	public function generate() {
+
 		$this->populateData();
 
 		for ($x = 0; $x < $this->rows; $x++) {
 			for ($y = 0; $y < $this->cols; $y++) {
+
 				if ($this->data[$x][$y] == 1 && !$this->isPixelMarker($x, $y)) {
 
 					if ($this->dot instanceof QrTagEffect) {
+
 						// _|_
 						if (empty($this->data[$x][$y - 1]) && empty($this->data[$x][$y + 1]) && empty($this->data[$x - 1][$y]) && !empty($this->data[$x + 1][$y])) {
 							QrTagShape::copy($this->image, $this->dot->imUp, $this->dot->size * $y, $this->dot->size * $x, $this->dot->size, $this->dot->size);
@@ -306,7 +309,8 @@ class QrTag {
 						//
 						else if (empty($this->data[$x - 1][$y]) && empty($this->data[$x + 1][$y]) && empty($this->data[$x][$y - 1]) && empty($this->data[$x][$y + 1])) {
 							QrTagShape::copy($this->image, $this->dot->imAlone, $this->dot->size * $y, $this->dot->size * $x, $this->dot->size, $this->dot->size);
-						} else {
+						}
+						else {
 							QrTagShape::copy($this->image, $this->dot->imSquare, $this->dot->size * $y, $this->dot->size * $x, $this->dot->size, $this->dot->size);
 						}
 					}
@@ -338,12 +342,14 @@ class QrTag {
 	}
 
 	public static function installedShapes() {
+
 		$path = QR_ASSETS_PATH;
 		$out = array();
 
 		// get all dots
 		$i = 0;
 		$shapes = glob($path . 'QrTagDot*.png');
+
 		foreach ($shapes as $shape) {
 			$filename = pathinfo($shape, PATHINFO_FILENAME);
 			$out['dots'][$filename == 'QrTagDotSquare' ? count($shapes) + 1 : $i++] = $filename;
@@ -353,12 +359,16 @@ class QrTag {
 		$shapes = glob($path . 'QrTagFrame*.png');
 		$i = 0;
 		$ii = 0;
+
 		foreach ($shapes as $shape) {
+
 			$filename = pathinfo($shape, PATHINFO_FILENAME);
+
 			if (Utility::beginsWith($filename, 'QrTagFrameDot')) {
 			//$out['frame_dots'][$i++] = $filename;
 				$out['frame_dots'][$filename == 'QrTagFrameDotSquare' ? count($shapes) + 1 : $i++] = $filename;
-			} else {
+			}
+			else {
 			//$out['frames'][$ii++] = $filename;
 				$out['frames'][$filename == 'QrTagFrameSquare' ? count($shapes) + 1 : $ii++] = $filename;
 			}
@@ -375,7 +385,8 @@ class QrTag {
 /**
  * QrTagFrameTwoSquare Class
  */
-if (!class_exists('QrTagFrameTwoSquare', FALSE)){
+if (!class_exists('QrTagFrameTwoSquare', FALSE)) {
+
 	class QrTagFrameTwoSquare extends QrTagShape {
 
 		public function generate() {
@@ -402,8 +413,10 @@ if (!class_exists('QrTagFrameTwoSquare', FALSE)){
 /**
  * QrTagFrameSquare Class
  */
-if (!class_exists('QrTagFrameSquare', FALSE)){
+if (!class_exists('QrTagFrameSquare', FALSE)) {
+
 	class QrTagFrameSquare extends QrTagShape {
+
 		public function generate() {
 			$color = $this->hex2dec($this->color);
 
@@ -419,7 +432,8 @@ if (!class_exists('QrTagFrameSquare', FALSE)){
 /**
  * QrTagFrameGrid Class
  */
-if (!class_exists('QrTagFrameGrid', FALSE)){
+if (!class_exists('QrTagFrameGrid', FALSE)) {
+
 	class QrTagFrameGrid extends QrTagShape {
 
 		public function generate() {
@@ -444,7 +458,8 @@ if (!class_exists('QrTagFrameGrid', FALSE)){
 /**
  * QrTagFrameDotSquare Class
  */
-if (!class_exists('QrTagFrameDotSquare', FALSE)){
+if (!class_exists('QrTagFrameDotSquare', FALSE)) {
+
 	class QrTagFrameDotSquare extends QrTagShape {
 
 		public function generate() {
@@ -462,7 +477,8 @@ if (!class_exists('QrTagFrameDotSquare', FALSE)){
 /**
  * QrTagFrameDot9 Class
  */
-if (!class_exists('QrTagFrameDot9', FALSE)){
+if (!class_exists('QrTagFrameDot9', FALSE)) {
+
 	class QrTagFrameDot9 extends QrTagShape {
 
 		public function generate() {
@@ -489,7 +505,8 @@ if (!class_exists('QrTagFrameDot9', FALSE)){
 /**
  * QrTagFrameDot7 Class
  */
-if (!class_exists('QrTagFrameDot7', FALSE)){
+if (!class_exists('QrTagFrameDot7', FALSE)) {
+
 	class QrTagFrameDot7 extends QrTagShape {
 
 		public function generate() {
@@ -517,7 +534,8 @@ if (!class_exists('QrTagFrameDot7', FALSE)){
 /**
  * QrTagFrameDot3 Class
  */
-if (!class_exists('QrTagFrameDot3', FALSE)){
+if (!class_exists('QrTagFrameDot3', FALSE)) {
+
 	class QrTagFrameDot3 extends QrTagShape {
 
 		public function generate() {
@@ -545,7 +563,8 @@ if (!class_exists('QrTagFrameDot3', FALSE)){
 /**
  * QrTagFrameDot18 Class
  */
-if (!class_exists('QrTagFrameDot18', FALSE)){
+if (!class_exists('QrTagFrameDot18', FALSE)) {
+
 	class QrTagFrameDot18 extends QrTagShape {
 
 		public function generate() {
@@ -573,7 +592,8 @@ if (!class_exists('QrTagFrameDot18', FALSE)){
 /**
  * QrTagFrameDot16 Class
  */
-if (!class_exists('QrTagFrameDot16', FALSE)){
+if (!class_exists('QrTagFrameDot16', FALSE)) {
+
 	class QrTagFrameDot16 extends QrTagShape {
 
 		public function generate() {
@@ -601,7 +621,8 @@ if (!class_exists('QrTagFrameDot16', FALSE)){
 /**
  * QrTagFrameDot15 Class
  */
-if (!class_exists('QrTagFrameDot15', FALSE)){
+if (!class_exists('QrTagFrameDot15', FALSE)) {
+
 	class QrTagFrameDot15 extends QrTagShape {
 
 		public function generate() {
@@ -629,7 +650,8 @@ if (!class_exists('QrTagFrameDot15', FALSE)){
 /**
  * QrTagFrameDot14 Class
  */
-if (!class_exists('QrTagFrameDot14', FALSE)){
+if (!class_exists('QrTagFrameDot14', FALSE)) {
+
 	class QrTagFrameDot14 extends QrTagShape {
 
 		public function generate() {
@@ -657,7 +679,8 @@ if (!class_exists('QrTagFrameDot14', FALSE)){
 /**
  * QrTagFrameDot12 Class
  */
-if (!class_exists('QrTagFrameDot12', FALSE)){
+if (!class_exists('QrTagFrameDot12', FALSE)) {
+
 	class QrTagFrameDot12 extends QrTagShape {
 
 		public function generate() {
@@ -685,7 +708,8 @@ if (!class_exists('QrTagFrameDot12', FALSE)){
 /**
  * QrTagFrameDot11 Class
  */
-if (!class_exists('QrTagFrameDot11', FALSE)){
+if (!class_exists('QrTagFrameDot11', FALSE)) {
+
 	class QrTagFrameDot11 extends QrTagShape {
 
 		public function generate() {
@@ -713,7 +737,8 @@ if (!class_exists('QrTagFrameDot11', FALSE)){
 /**
  * QrTagFrameAngle Class
  */
-if (!class_exists('QrTagFrameAngle', FALSE)){
+if (!class_exists('QrTagFrameAngle', FALSE)) {
+
 	class QrTagFrameAngle extends QrTagShape {
 
 		public function generate() {
@@ -739,7 +764,8 @@ if (!class_exists('QrTagFrameAngle', FALSE)){
 /**
  * QrTagFrame9 Class
  */
-if (!class_exists('QrTagFrame9', FALSE)){
+if (!class_exists('QrTagFrame9', FALSE)) {
+
 	class QrTagFrame9 extends QrTagShape {
 
 		public function generate() {
@@ -765,7 +791,8 @@ if (!class_exists('QrTagFrame9', FALSE)){
 /**
  * QrTagFrame7 Class
  */
-if (!class_exists('QrTagFrame7', FALSE)){
+if (!class_exists('QrTagFrame7', FALSE)) {
+
 	class QrTagFrame7 extends QrTagShape {
 
 		public function generate() {
@@ -791,7 +818,8 @@ if (!class_exists('QrTagFrame7', FALSE)){
 /**
  * QrTagFrame6 Class
  */
-if (!class_exists('QrTagFrame6', FALSE)){
+if (!class_exists('QrTagFrame6', FALSE)) {
+
 	class QrTagFrame6 extends QrTagShape {
 
 		public function generate() {
@@ -817,7 +845,8 @@ if (!class_exists('QrTagFrame6', FALSE)){
 /**
  * QrTagFrame5 Class
  */
-if (!class_exists('QrTagFrame5', FALSE)){
+if (!class_exists('QrTagFrame5', FALSE)) {
+
 	class QrTagFrame5 extends QrTagShape {
 
 		public function generate() {
@@ -843,7 +872,8 @@ if (!class_exists('QrTagFrame5', FALSE)){
 /**
  * QrTagFrame3 Class
  */
-if (!class_exists('QrTagFrame3', FALSE)){
+if (!class_exists('QrTagFrame3', FALSE)) {
+
 	class QrTagFrame3 extends QrTagShape {
 
 		public function generate() {
@@ -869,7 +899,8 @@ if (!class_exists('QrTagFrame3', FALSE)){
 /**
  * QrTagFrame2 Class
  */
-if (!class_exists('QrTagFrame2', FALSE)){
+if (!class_exists('QrTagFrame2', FALSE)) {
+
 	class QrTagFrame2 extends QrTagShape {
 
 		public function generate() {
@@ -895,7 +926,8 @@ if (!class_exists('QrTagFrame2', FALSE)){
 /**
  * QrTagFrame16 Class
  */
-if (!class_exists('QrTagFrame16', FALSE)){
+if (!class_exists('QrTagFrame16', FALSE)) {
+
 	class QrTagFrame16 extends QrTagShape {
 
 		public function generate() {
@@ -921,7 +953,8 @@ if (!class_exists('QrTagFrame16', FALSE)){
 /**
  * QrTagFrame13 Class
  */
-if (!class_exists('QrTagFrame13', FALSE)){
+if (!class_exists('QrTagFrame13', FALSE)) {
+
 	class QrTagFrame13 extends QrTagShape {
 
 		public function generate() {
@@ -947,7 +980,8 @@ if (!class_exists('QrTagFrame13', FALSE)){
 /**
  * QrTagFrame12 Class
  */
-if (!class_exists('QrTagFrame12', FALSE)){
+if (!class_exists('QrTagFrame12', FALSE)) {
+
 	class QrTagFrame12 extends QrTagShape {
 
 		public function generate() {
@@ -973,7 +1007,8 @@ if (!class_exists('QrTagFrame12', FALSE)){
 /**
  * QrTagDotSquare Class
  */
-if (!class_exists('QrTagDotSquare', FALSE)){
+if (!class_exists('QrTagDotSquare', FALSE)) {
+
 	class QrTagDotSquare extends QrTagShape {
 
 		public function generate() {
@@ -991,7 +1026,8 @@ if (!class_exists('QrTagDotSquare', FALSE)){
 /**
  * QrTagDot9 Class
  */
-if (!class_exists('QrTagDot9', FALSE)){
+if (!class_exists('QrTagDot9', FALSE)) {
+
 	class QrTagDot9 extends QrTagShape {
 
 		public function generate() {
@@ -1018,7 +1054,8 @@ if (!class_exists('QrTagDot9', FALSE)){
 /**
  * QrTagDot8 Class
  */
-if (!class_exists('QrTagDot8', FALSE)){
+if (!class_exists('QrTagDot8', FALSE)) {
+
 	class QrTagDot8 extends QrTagShape {
 
 		public function generate() {
@@ -1045,7 +1082,8 @@ if (!class_exists('QrTagDot8', FALSE)){
 /**
  * QrTagDot7 Class
  */
-if (!class_exists('QrTagDot7', FALSE)){
+if (!class_exists('QrTagDot7', FALSE)) {
+
 	class QrTagDot7 extends QrTagShape {
 
 		public function generate() {
@@ -1073,7 +1111,8 @@ if (!class_exists('QrTagDot7', FALSE)){
 /**
  * QrTagDot6 Class
  */
-if (!class_exists('QrTagDot6', FALSE)){
+if (!class_exists('QrTagDot6', FALSE)) {
+
 	class QrTagDot6 extends QrTagShape {
 
 		public function generate() {
@@ -1100,7 +1139,8 @@ if (!class_exists('QrTagDot6', FALSE)){
 /**
  * QrTagDot5 Class
  */
-if (!class_exists('QrTagDot5', FALSE)){
+if (!class_exists('QrTagDot5', FALSE)) {
+
 	class QrTagDot5 extends QrTagShape {
 
 		public function generate() {
@@ -1127,7 +1167,8 @@ if (!class_exists('QrTagDot5', FALSE)){
 /**
  * QrTagDot4 Class
  */
-if (!class_exists('QrTagDot4', FALSE)){
+if (!class_exists('QrTagDot4', FALSE)) {
+
 	class QrTagDot4 extends QrTagShape {
 
 		public function generate() {
@@ -1154,7 +1195,8 @@ if (!class_exists('QrTagDot4', FALSE)){
 /**
  * QrTagDot3 Class
  */
-if (!class_exists('QrTagDot3', FALSE)){
+if (!class_exists('QrTagDot3', FALSE)) {
+
 	class QrTagDot3 extends QrTagShape {
 
 		public function generate() {
@@ -1181,7 +1223,8 @@ if (!class_exists('QrTagDot3', FALSE)){
 /**
  * QrTagDot23 Class
  */
-if (!class_exists('QrTagDot23', FALSE)){
+if (!class_exists('QrTagDot23', FALSE)) {
+
 	class QrTagDot23 extends QrTagEffect {
 
 		public function generate() {
@@ -1316,7 +1359,8 @@ if (!class_exists('QrTagDot23', FALSE)){
 /**
  * QrTagDot21 Class
  */
-if (!class_exists('QrTagDot21', FALSE)){
+if (!class_exists('QrTagDot21', FALSE)) {
+
 	class QrTagDot21 extends QrTagEffect {
 
 		public function generate() {
@@ -1455,7 +1499,8 @@ if (!class_exists('QrTagDot21', FALSE)){
 /**
  * QrTagDot20 Class
  */
-if (!class_exists('QrTagDot20', FALSE)){
+if (!class_exists('QrTagDot20', FALSE)) {
+
 	class QrTagDot20 extends QrTagEffect {
 
 		public function generate() {
@@ -1595,7 +1640,8 @@ if (!class_exists('QrTagDot20', FALSE)){
 /**
  * QrTagDot2 Class
  */
-if (!class_exists('QrTagDot2', FALSE)){
+if (!class_exists('QrTagDot2', FALSE)) {
+
 	class QrTagDot2 extends QrTagShape {
 
 		public function generate() {
@@ -1622,7 +1668,8 @@ if (!class_exists('QrTagDot2', FALSE)){
 /**
  * QrTagDot17 Class
  */
-if (!class_exists('QrTagDot17', FALSE)){
+if (!class_exists('QrTagDot17', FALSE)) {
+
 	class QrTagDot17 extends QrTagEffect {
 
 		public function generate() {
@@ -1759,7 +1806,8 @@ if (!class_exists('QrTagDot17', FALSE)){
 /**
  * QrTagDot14 Class
  */
-if (!class_exists('QrTagDot14', FALSE)){
+if (!class_exists('QrTagDot14', FALSE)) {
+
 	class QrTagDot14 extends QrTagEffect {
 
 		public function generate() {
@@ -1846,7 +1894,8 @@ if (!class_exists('QrTagDot14', FALSE)){
 /**
  * QrTagDot12 Class
  */
-if (!class_exists('QrTagDot12', FALSE)){
+if (!class_exists('QrTagDot12', FALSE)) {
+
 	class QrTagDot12 extends QrTagEffect {
 
 		public function generate() {
@@ -1983,7 +2032,8 @@ if (!class_exists('QrTagDot12', FALSE)){
 /**
  * QrTagDot11 Class
  */
-if (!class_exists('QrTagDot11', FALSE)){
+if (!class_exists('QrTagDot11', FALSE)) {
+
 	class QrTagDot11 extends QrTagShape {
 
 		public function generate() {
@@ -2010,7 +2060,8 @@ if (!class_exists('QrTagDot11', FALSE)){
 /**
  * QrTagDot10 Class
  */
-if (!class_exists('QrTagDot10', FALSE)){
+if (!class_exists('QrTagDot10', FALSE)) {
+
 	class QrTagDot10 extends QrTagShape {
 
 		public function generate() {
