@@ -84,8 +84,8 @@ abstract class WebCore extends BaseCore implements WebSecurity
 		$this->_setAppViewVars();
 
 		// event
-		if (method_exists($this, "onAfterInitialize"))
-			$this->onAfterInitialize();
+		if (method_exists($this, "onBeforeRender"))
+			$this->onBeforeRender();
 	}
 
 	/* --------------------------------------------------- § -------------------------------------------------------- */
