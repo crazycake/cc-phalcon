@@ -64,7 +64,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 		// set CSRF
 		$this->_setCSRF();
 
-		// for session initializer
+		// event (session)
 		if (method_exists($this, "onBeforeInitialize"))
 			$this->onBeforeInitialize();
 	}
@@ -82,6 +82,10 @@ abstract class WebCore extends BaseCore implements WebSecurity
 		$this->_setAppAssets();
 		// set js & volt vars in view
 		$this->_setAppViewVars();
+
+		// event
+		if (method_exists($this, "onAfterInitialize"))
+			$this->onAfterInitialize();
 	}
 
 	/* --------------------------------------------------- § -------------------------------------------------------- */
