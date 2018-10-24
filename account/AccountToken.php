@@ -19,7 +19,7 @@ trait AccountToken
 	 */
 	public static $TOKEN_EXPIRES = [
 		"access"     => 30,
-		"activation" => 15,
+		"activation" => 7,
 		"pass"       => 1
 	];
 
