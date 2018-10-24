@@ -221,8 +221,9 @@ trait AccountAuth
 
 			// save new account flag state
 			$entity::updateProperty($user_id, "flag", "enabled");
+
 			// remove activation token
-			$this->deleteToken($user_id, "activation");
+			//$this->deleteToken($user_id, "activation");
 
 			// custom behavior event
 			if (method_exists($this, "onActivationSuccess")) {

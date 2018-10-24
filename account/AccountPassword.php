@@ -154,7 +154,7 @@ trait AccountPassword
 			$this->newUserSession($user);
 
 			// delete token
-			$this->deleteToken($user_id, $token_type);
+			//$this->deleteToken($user_id, $token_type);
 
 			return true;
 		}
