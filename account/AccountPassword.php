@@ -27,16 +27,6 @@ trait AccountPassword
 	/* --------------------------------------------------- § -------------------------------------------------------- */
 
 	/**
-	 * After Execute Route
-	 */
-	public function afterExecuteRoute()
-	{
-		parent::afterExecuteRoute();
-		// if loggedIn redirect
-		$this->redirectLoggedIn();
-	}
-
-	/**
 	 * Initialize Trait
 	 * @param Array $conf - The config array
 	 */
@@ -102,10 +92,11 @@ trait AccountPassword
 	 */
 	public function newPasswordView($hash = null)
 	{
-		// if loggedIn redirect to account
-		$this->redirectLoggedIn();
-
 		try {
+
+			if ($this->isLoggedIn())
+				throw new Exception("user is already logged in");
+
 			// handle the encrypted data with parent controller
 			list($user_id, $token_type, $token) = self::validateHash($hash);
 
@@ -118,9 +109,7 @@ trait AccountPassword
 
 			$this->logger->error("AccountPassword::newPasswordView -> exception in new password view [$hash]: ".$e->getMessage());
 
-			$this->dispatcher->forward(["controller" => "error", "action" => "expired"]);
-			$this->dispatcher->dispatch();
-			die();
+			$this->redirectTo("error/expired");
 		}
 	}
 
