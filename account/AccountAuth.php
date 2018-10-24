@@ -203,10 +203,10 @@ trait AccountAuth
 	 */
 	public function activationAction($hash = "")
 	{
-		// if user is already logged in redirect
-		$this->redirectLoggedIn();
-
 		try {
+
+			if ($this->isLoggedIn())
+				throw new Exception("user is already logged in");
 
 			$entity = $this->account_auth_conf["user_entity"];
 
