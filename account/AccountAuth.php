@@ -223,11 +223,8 @@ trait AccountAuth
 			$entity::updateProperty($user_id, "flag", "enabled");
 
 			// custom behaviour event
-			if (method_exists($this, "onActivationSuccess")) {
-
-				$this->onActivationSuccess($user, $hash);
-				return;
-			}
+			if (method_exists($this, "onActivationSuccess"))
+				return $this->onActivationSuccess($user);
 
 			// set a flash message to show on account controller
 			$this->flash->success($this->account_auth_conf["trans"]["ACTIVATION_SUCCESS"]);
