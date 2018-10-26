@@ -222,10 +222,10 @@ trait AccountAuth
 			// save new account flag state
 			$entity::updateProperty($user_id, "flag", "enabled");
 
-			// custom behavior event
+			// custom behaviour event
 			if (method_exists($this, "onActivationSuccess")) {
 
-				$this->onActivationSuccess($user);
+				$this->onActivationSuccess($user, $hash);
 				return;
 			}
 
