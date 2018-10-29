@@ -308,6 +308,6 @@ trait AccountAuth
 
 			return $token;
 		}
-		catch(Exception $e) { $this->jsonResponse(401, $e->getMessage()); }
+		catch (Exception $e) { $this->jsonResponse(401, $e->getMessage()); }
 	}
 }

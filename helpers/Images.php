@@ -105,7 +105,7 @@ class Images
 
 				$resized[] = $new_file;
 			}
-			catch(\Exception | Exception $e) {
+			catch (\Exception | Exception $e) {
 
 				(\Phalcon\DI::getDefault())->getShared("logger")->error("Images::resize -> failed resizing image $key: ".$e->getMessage());
 			}

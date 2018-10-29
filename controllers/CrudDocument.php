@@ -158,7 +158,7 @@ trait CrudDocument
 		if (is_null($object_id)) {
 
 			try { $object = $this->database->{$this->crud_conf["collection"]}->insertOne($payload); }
-			catch(\Exception | Exception $e) {
+			catch (\Exception | Exception $e) {
 
 				$this->logger->error("CrudDocument::saveAction -> insert exception: ".$e->getMessage());
 
@@ -183,7 +183,7 @@ trait CrudDocument
 				}
 
 				try { $this->database->{$this->crud_conf["collection"]}->updateOne(["_id" => $object_id], ['$set' => ["$key" => $value]]); }
-				catch(\Exception | Exception $e) {
+				catch (\Exception | Exception $e) {
 
 					$this->logger->error("CrudDocument::saveAction -> update exception: ".$e->getMessage());
 
@@ -195,7 +195,7 @@ trait CrudDocument
 
 		// get saved object
 		try { $object = $this->database->{$this->crud_conf["collection"]}->findOne(["_id" => $object_id]); }
-		catch(\Exception | Exception $e) { $object = null; }
+		catch (\Exception | Exception $e) { $object = null; }
 
 		// event
 		if (method_exists($this, "onAfterSave"))
@@ -219,7 +219,7 @@ trait CrudDocument
 		$id = (new \Phalcon\Filter())->sanitize($id, "string");
 
 		try { $object = $this->database->{$this->crud_conf["collection"]}->findOne(["_id" => (new \MongoDB\BSON\ObjectId($id))]); }
-		catch(\Exception | Exception $e) { $object = null; }
+		catch (\Exception | Exception $e) { $object = null; }
 
 		// event
 		if (method_exists($this, "onGet"))
