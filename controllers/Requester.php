@@ -62,7 +62,7 @@ trait Requester
 
 			// encrypt payload?
 			if ($options["encrypt"] && !empty($options["payload"]))
-				ss($this->cryptify->encryptData($options["payload"]));
+				$this->cryptify->encryptData($options["payload"]);
 
 			$this->logger->debug("Requester::newRequest -> Options: ".json_encode($options, JSON_UNESCAPED_SLASHES));
 
