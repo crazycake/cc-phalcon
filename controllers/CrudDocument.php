@@ -1,6 +1,6 @@
 <?php
 /**
- * BaseCrud Trait for Backend apps (MongoDB).
+ * BaseCrud Trait for apps (MongoDB).
  * @author Nicolas Pulido <nicolas.pulido@crazycake.tech>
  */
 

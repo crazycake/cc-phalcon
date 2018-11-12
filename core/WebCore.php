@@ -10,7 +10,7 @@ use CrazyCake\Phalcon\App;
 use CrazyCake\Helpers\UserAgent;
 
 /**
- * WebCore for backend or frontend modules
+ * WebCore for frontend modules
  */
 abstract class WebCore extends BaseCore implements WebSecurity
 {

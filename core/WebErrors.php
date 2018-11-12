@@ -8,7 +8,7 @@ namespace CrazyCake\Core;
 
 /**
  * Handles public actions for error pages
- * Requires a Frontend or Backend Module
+ * Requires a Frontend Module
  */
 trait WebErrors
 {

@@ -1,6 +1,6 @@
 <?php
 /**
- * BaseCrud Trait for Backend apps (Relational).
+ * BaseCrud Trait for apps (Relational).
  * @author Nicolas Pulido <nicolas.pulido@crazycake.tech>
  */
 
