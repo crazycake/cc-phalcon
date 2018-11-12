@@ -2,7 +2,7 @@
 /**
  * Phalcon App Services files (Dependency Injector)
  * @link http://docs.phalconphp.com/en/latest/reference/di.html
- * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
+ * @author Nicolas Pulido <nicolas.pulido@crazycake.tech>
  */
 
 namespace CrazyCake\Phalcon;

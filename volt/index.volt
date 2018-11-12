@@ -1,7 +1,7 @@
 <?php
 /**
  * Root Layout. Phalcon main template.
- * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
+ * @author Nicolas Pulido <nicolas.pulido@crazycake.tech>
  */
 ?>
 <!DOCTYPE html>

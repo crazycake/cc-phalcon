@@ -1,6 +1,6 @@
 #! /bin/bash
 # Core Installer
-# author: Nicolas Pulido <nicolas.pulido@crazycake.cl>
+# author: Nicolas Pulido <nicolas.pulido@crazycake.tech>
 
 # interrupt if error raises
 set -e

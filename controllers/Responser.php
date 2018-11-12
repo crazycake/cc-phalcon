@@ -1,7 +1,7 @@
 <?php
 /**
  * Responser Trait
- * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
+ * @author Nicolas Pulido <nicolas.pulido@crazycake.tech>
  */
 
 namespace CrazyCake\Controllers;

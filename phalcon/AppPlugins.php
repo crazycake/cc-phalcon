@@ -1,7 +1,7 @@
 <?php
 /**
  * Phalcon App plugins
- * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
+ * @author Nicolas Pulido <nicolas.pulido@crazycake.tech>
  */
 
 namespace CrazyCake\Phalcon;

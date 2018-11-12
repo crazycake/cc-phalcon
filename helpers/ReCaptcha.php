@@ -2,7 +2,7 @@
 /**
  * ReCaptcha Helper
  * @link https://github.com/google/recaptcha
- * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
+ * @author Nicolas Pulido <nicolas.pulido@crazycake.tech>
  */
 
 namespace CrazyCake\Helpers;

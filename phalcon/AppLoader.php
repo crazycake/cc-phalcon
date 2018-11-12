@@ -2,7 +2,7 @@
 /**
  * App Loader Trait. Contains classes loader logic & environment setup
  * Env vars: APP_ENV, APP_TZ, APP_HTTPS_ONLY
- * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
+ * @author Nicolas Pulido <nicolas.pulido@crazycake.tech>
  */
 
 namespace CrazyCake\Phalcon;

@@ -2,7 +2,7 @@
 /**
  * QRMaker, generates readable custom QR images. Uses custom fonts in assets folder.
  * @link http://phpqrcode.sourceforge.net/
- * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
+ * @author Nicolas Pulido <nicolas.pulido@crazycake.tech>
  */
 
 namespace CrazyCake\Qr;

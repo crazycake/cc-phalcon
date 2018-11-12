@@ -1,7 +1,7 @@
 <?php
 /**
  * Session Trait, common actions for account session
- * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
+ * @author Nicolas Pulido <nicolas.pulido@crazycake.tech>
  */
 
 namespace CrazyCake\Account;

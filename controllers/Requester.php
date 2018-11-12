@@ -2,7 +2,7 @@
 /**
  * Requester Trait - Can make HTTP requests
  * Requires CoreController, Guzzle library (composer)
- * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
+ * @author Nicolas Pulido <nicolas.pulido@crazycake.tech>
  */
 
 namespace CrazyCake\Controllers;

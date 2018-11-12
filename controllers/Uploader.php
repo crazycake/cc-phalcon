@@ -1,7 +1,7 @@
 <?php
 /**
  * Uploader Adapter. Handle uploads, validations & img-api caller.
- * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
+ * @author Nicolas Pulido <nicolas.pulido@crazycake.tech>
  */
 
 namespace CrazyCake\Controllers;

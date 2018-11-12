@@ -4,7 +4,7 @@
  * Requires composer donatj/phpuseragentparser, mobiledetect/mobiledetectlib
  * @link https://github.com/donatj/PhpUserAgent
  * @link https://github.com/serbanghita/Mobile-Detect/
- * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
+ * @author Nicolas Pulido <nicolas.pulido@crazycake.tech>
  */
 
 namespace CrazyCake\Helpers;

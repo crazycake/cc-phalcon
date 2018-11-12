@@ -1,7 +1,7 @@
 <?php
 /**
  * BaseCrud Trait for Backend apps (MongoDB).
- * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
+ * @author Nicolas Pulido <nicolas.pulido@crazycake.tech>
  */
 
 namespace CrazyCake\Controllers;

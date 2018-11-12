@@ -1,7 +1,7 @@
 <?php
 /**
  * Base Model User Checkout (Mongo)
- * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
+ * @author Nicolas Pulido <nicolas.pulido@crazycake.tech>
  */
 
 namespace CrazyCake\Checkout;

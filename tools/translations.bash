@@ -1,6 +1,6 @@
 #! /bin/bash
 # GetText helper script. Finds translations & compile po files.
-# author: Nicolas Pulido <nicolas.pulido@crazycake.cl>
+# author: Nicolas Pulido <nicolas.pulido@crazycake.tech>
 
 # interrupt if error raises
 set -e

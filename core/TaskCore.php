@@ -1,7 +1,7 @@
 <?php
 /**
  * CLI Task Controller, common functions for CLI tasks.
- * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
+ * @author Nicolas Pulido <nicolas.pulido@crazycake.tech>
  */
 
 namespace CrazyCake\Core;

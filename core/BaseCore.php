@@ -1,7 +1,7 @@
 <?php
 /**
  * BaseCore, shared methods for WebCore & WsCore.
- * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
+ * @author Nicolas Pulido <nicolas.pulido@crazycake.tech>
  */
 
 namespace CrazyCake\Core;

@@ -2,7 +2,7 @@
 /**
  * Checkout Trait
  * This class has common actions for checkout controllers
- * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
+ * @author Nicolas Pulido <nicolas.pulido@crazycake.tech>
  */
 
 namespace CrazyCake\Checkout;

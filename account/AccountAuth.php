@@ -1,7 +1,7 @@
 <?php
 /**
  * Account Auth Trait, common actions for account authorization (login, register with activation)
- * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
+ * @author Nicolas Pulido <nicolas.pulido@crazycake.tech>
  */
 
 namespace CrazyCake\Account;

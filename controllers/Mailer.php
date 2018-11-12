@@ -1,7 +1,7 @@
 <?php
 /**
  * Mailer Service Trait, requires WebCore
- * @author Nicolas Pulido <nicolas.pulido@crazycake.cl>
+ * @author Nicolas Pulido <nicolas.pulido@crazycake.tech>
  */
 
 namespace CrazyCake\Controllers;
