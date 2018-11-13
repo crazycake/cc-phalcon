@@ -89,7 +89,7 @@
 	</head>
 	{# flushes the buffer (optimization) #}
 	<?php flush(); ?>
-	<body class="{{ 'ua-'~client.browser|lower~' '~client.platform|lower }}{{ html_body_class is defined ? ' '~html_body_class : '' }}">
+	<body class="{{ 'ux ua-'~client.browser|lower~' '~client.platform|lower }}{{ html_body_class is defined ? ' '~html_body_class : '' }}">
 
 		{# app content wrapper #}
 		{% if html_app_wrapper is defined and !html_app_wrapper %}
@@ -103,7 +103,7 @@
 		{% endif %}
 
 		{# flash messages #}
-		<div id="app-flash" style="display:none;">
+		<div id="app-flash" style="display:none">
 			{{ flash.output() }}
 		</div>
 
