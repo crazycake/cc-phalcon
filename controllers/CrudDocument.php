@@ -27,8 +27,6 @@ trait CrudDocument
 	 */
 	protected $database;
 
-	/* --------------------------------------------------- § -------------------------------------------------------- */
-
 	/**
 	 * Initialize Trait
 	 * @param Array $conf - The config array

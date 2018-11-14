@@ -11,8 +11,6 @@ namespace CrazyCake\Checkout;
  */
 class BaseOrmUserCheckoutObject extends \CrazyCake\Models\BaseOrm
 {
-	/* properties */
-
 	/**
 	 * Buy order
 	 * @var String

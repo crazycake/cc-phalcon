@@ -7,7 +7,6 @@
 
 namespace CrazyCake\Phalcon;
 
-//import plugins
 require "AppPlugins.php";
 
 /**
@@ -20,7 +19,6 @@ class AppServices
 	 * @var Object
 	 */
 	private $config;
-
 
 	/**
 	 * Constructor

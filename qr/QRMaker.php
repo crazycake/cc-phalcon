@@ -107,10 +107,8 @@ class QRMaker
 			$dot_shape = new $class();
 		}
 		// fallback
-		else {
-
+		else
 			$dot_shape = new QrTagDotSquare();
-		}
 
 		// set shape dot
 		$dot_shape->color = $params["dot_shape_color"] ?? "000000";
@@ -125,10 +123,8 @@ class QRMaker
 			$dot_frame = new $class();
 		}
 		// fallback
-		else {
-
+		else
 			$dot_frame = new QrTagFrameDotSquare();
-		}
 
 		// set frame dot
 		$dot_frame->color = $params["dot_frame_color"] ?? "000000";
@@ -141,10 +137,8 @@ class QRMaker
 			$frame = new $class();
 		}
 		// fallback
-		else {
-
+		else
 			$frame = new QrTagFrameSquare();
-		}
 
 		$dot_frame->color = $params["frame_color"] ?? "000000";
 		$qr->frame = $frame;
@@ -174,6 +168,7 @@ class QRMaker
 
 		// embed image type
 		switch ($extension) {
+
 			case "png": $embed_img = imagecreatefrompng($embed_img_path);  break;
 			case "jpg": $embed_img = imagecreatefromjpeg($embed_img_path); break;
 		}

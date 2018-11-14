@@ -11,8 +11,6 @@ namespace CrazyCake\Account;
  */
 class BaseOrmUser extends \CrazyCake\Models\BaseOrm
 {
-	/* properties */
-
 	/**
 	 * The user primary email
 	 * @var String

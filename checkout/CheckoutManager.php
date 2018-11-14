@@ -34,8 +34,6 @@ trait CheckoutManager
 	 */
 	public $checkout_manager_conf;
 
-	/* --------------------------------------------------- § -------------------------------------------------------- */
-
 	/**
 	 * Initialize Trait.
 	 * @param Array $conf - The config array

@@ -14,7 +14,6 @@ require "AppServices.php";
  */
 abstract class App
 {
-	// traits
 	use AppLoader;
 
 	/**

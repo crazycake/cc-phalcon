@@ -17,8 +17,6 @@ use CrazyCake\Helpers\Forms;
  */
 class BaseOrmUserCheckout extends \CrazyCake\Models\BaseOrm
 {
-	/* static vars */
-
 	/**
 	 * Pending checkouts expiration threshold, in minutes.
 	 */
@@ -38,8 +36,6 @@ class BaseOrmUserCheckout extends \CrazyCake\Models\BaseOrm
 	 * States possible values
 	 */
 	public static $STATES = ["pending", "failed", "overturn", "success"];
-
-	/* properties */
 
 	/**
 	 * Buy Order string

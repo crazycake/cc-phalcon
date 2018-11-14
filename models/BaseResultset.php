@@ -13,9 +13,6 @@ use \Phalcon\Mvc\Model\Resultset\Simple as Resultset;
  */
 class BaseResultset extends Resultset
 {
-	/* Methods
-	--------------------------------------------------- § -------------------------------------------------------- */
-
 	/**
 	 * Reduces a Resultset to native objects array
 	 * @param Array $props - Filter properties, if empty array given filters all.

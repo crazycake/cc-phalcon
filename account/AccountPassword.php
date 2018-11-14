@@ -15,7 +15,6 @@ use CrazyCake\Helpers\ReCaptcha;
  */
 trait AccountPassword
 {
-	// traits
 	use AccountToken;
 
 	/**
@@ -189,9 +188,6 @@ trait AccountPassword
 
 			return true;
 		}
-		catch (Exception $e) {
-
-			$this->jsonResponse(400, $e->getMessage());
-		}
+		catch (Exception $e) { $this->jsonResponse(400, $e->getMessage()); }
 	}
 }

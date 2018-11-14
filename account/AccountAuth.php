@@ -17,7 +17,6 @@ use CrazyCake\Helpers\ReCaptcha;
  */
 trait AccountAuth
 {
-	// traits
 	use AccountToken;
 
 	/**
@@ -51,13 +50,13 @@ trait AccountAuth
 	public function initAccountAuth($conf = [])
 	{
 		$defaults = [
-			"user_entity"     => "user",
-			"user_key"        => "email",
-			"login_uri"       => "signIn",
-			"logout_uri"      => "signIn",
-			"activation_uri"  => "auth/activation/",
-			"csrf"            => true,
-			"recaptcha_login" => false
+			"user_entity"    => "user",
+			"user_key"       => "email",
+			"login_uri"      => "signIn",
+			"logout_uri"     => "signIn",
+			"activation_uri" => "auth/activation/",
+			"csrf"           => true,
+			"recaptcha"      => false
 		];
 
 		// merge confs
@@ -108,8 +107,11 @@ trait AccountAuth
 		// find user
 		$user = $this->account_auth_conf["user_key"] == "email" ? $entity::getUserByEmail($data["email"]) : $this->getLoginUser($data);
 
+		if (!$user)
+			$this->jsonResponse(400, $this->account_auth_conf["trans"]["AUTH_FAILED"]);
+
 		// recaptcha challenge?
-		if ($this->account_auth_conf["recaptcha_login"]) {
+		if ($this->account_auth_conf["recaptcha"] && $this->getLoginAttempts($user->id ?? $user->_id) > 3) {
 
 			$recaptcher = new ReCaptcha($this->config->google->reCaptchaKey);
 			$recaptcha  = $data["g-recaptcha-response"] ?? null;
@@ -118,20 +120,20 @@ trait AccountAuth
 				return $this->jsonResponse(400, $this->account_auth_conf["trans"]["RECAPTCHA_FAILED"]);
 		}
 
-		// check user & given hash with the one stored (wrong combination)
-		if (!$user || !$this->security->checkHash($data["pass"], $user->pass ?? ''))
-			$this->jsonResponse(400, $this->account_auth_conf["trans"]["AUTH_FAILED"]);
+		// password hash validation
+		if (!$this->security->checkHash($data["pass"], $user->pass ?? '')) {
+
+			$message = $this->account_auth_conf["trans"]["AUTH_FAILED"];
+
+			if ($this->account_auth_conf["recaptcha"])
+				$this->jsonResponse(400, ["text" => $message, "n" => $this->saveLoginAttempt($user->id ?? $user->_id)]);
+
+			$this->jsonResponse(400, $message);
+		}
 
 		// check user account flag
-		if ($user->flag != "enabled") {
-
-			// set message
-			$namespace = "STATE_".strtoupper($user->flag);
-			$message   = str_replace("{email}", $user->email, $this->account_auth_conf["trans"][$namespace]);
-
-			// for API handle alerts & warning as errors,
-			$this->jsonResponse(400, $message, "warning", $namespace);
-		}
+		if ($user->flag != "enabled")
+			$this->jsonResponse(400, str_replace("{email}", $user->email, $this->account_auth_conf["trans"]["STATE_".strtoupper($user->flag)]));
 
 		// success login
 		$this->newUserSession($user);
@@ -303,11 +305,44 @@ trait AccountAuth
 
 			$token = self::getToken($token, "access");
 
-			if (!$token)
-				throw new Exception("Invalid token");
+			if (!$token) throw new Exception("Invalid token");
 
 			return $token;
 		}
 		catch (Exception $e) { $this->jsonResponse(401, $e->getMessage()); }
+	}
+
+	/**
+	 * Saves in redis a new login attempt
+	 * @param String $user_id
+	 */
+	protected function saveLoginAttempt($user_id)
+	{
+		$redis = new \Redis();
+		$redis->connect(getenv("REDIS_HOST") ?: "redis");
+
+		$key = "LOGIN_".$user_id;
+
+		$attempts = ($redis->exists($key) ? $redis->get($key) : 0) + 1;
+
+		$redis->set($key, $attempts);
+		$redis->expire($key, 3600*8); // hours
+		$redis->close();
+
+		return $attempts;
+	}
+
+	/**
+	 * Get stored login attempts
+	 * @param String $user_id
+	 */
+	protected function getLoginAttempts($user_id)
+	{
+		$redis = new \Redis();
+		$redis->connect(getenv("REDIS_HOST") ?: "redis");
+
+		$key = "LOGIN_".$user_id;
+
+		return $redis->exists($key) ? $redis->get($key) : 0;
 	}
 }

@@ -14,8 +14,6 @@ use CrazyCake\Helpers\Forms;
  */
 class BaseDocumentUserCheckout extends \CrazyCake\Models\BaseDocument
 {
-	/* static vars */
-
 	/**
 	 * Pending checkouts expiration threshold, in minutes.
 	 * @var Integer
@@ -35,7 +33,6 @@ class BaseDocumentUserCheckout extends \CrazyCake\Models\BaseDocument
 	 * @var Array
 	 */
 	public static $STATES = ["pending", "failed", "overturn", "success"];
-
 
 	/**
 	 * Generates a random code for a buy order

@@ -19,7 +19,6 @@ use CrazyCake\Controllers\Requester;
  */
 class TaskCore extends Task
 {
-	// traits
 	use Debugger;
 	use Requester;
 

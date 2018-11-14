@@ -19,9 +19,6 @@ class BaseOrm extends \Phalcon\Mvc\Model
 	 */
 	public $id;
 
-	/* Methods
-	---------------------------------------------- § -------------------------------------------------- */
-
 	/**
 	 * Entity (class name)
 	 * @link http://php.net/manual/en/language.oop5.late-static-bindings.php

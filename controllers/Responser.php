@@ -24,7 +24,6 @@ trait Responser
 	 * @var Array
 	 */
 	public $RCODES = [
-		// success
 		"200" => "OK",
 		"400" => "Bad Request",
 		"401" => "Unauthorized",
@@ -36,32 +35,17 @@ trait Responser
 
 	/**
 	 * Sends a JSON response for APIs.
-	 * The HTTP header status code is always 200.
 	 * @param String $code - The app message code.
 	 * @param Object $payload - Payload to send
-	 * @param String $type - (optional) Append a type attr to the response. Example alert, warning.
-	 * @param String $namespace - (optional) Append a type namespace to the response.
 	 * @return String - The response
 	 */
-	protected function jsonResponse($code = 200, $payload = null, $type = "", $namespace = "")
+	protected function jsonResponse($code = 200, $payload = null)
 	{
-		// if code is not identified set default
-		if (!isset($this->RCODES[$code]))
-			$this->RCODES[$code] = $this->RCODES[400];
-
 		// set response
 		$response = [
 			"code"   => (string)$code,
 			"status" => $code == 200 ? "ok" : "error"
 		];
-
-		// type
-		if (!empty($type))
-			$response["type"] = $type;
-
-		// namespace
-		if (!empty($namespace))
-			$response["namespace"] = $namespace;
 
 		// success data
 		if ($code == 200) {
@@ -70,21 +54,17 @@ trait Responser
 			if (is_object($payload))
 				$payload = json_decode(json_encode($payload), true);
 
-			// check redirection action
+			// redirect or payload
 			if (!empty($payload["redirect"]))
 				$response["redirect"] = $payload["redirect"];
 			else
-				$response["payload"] = $payload; // append payload
+				$response["payload"] = $payload;
 		}
 		// error data
 		else {
 
-			// set payload as objectId for numeric data, for string set as error
-			if (is_string($payload))
-				$response["message"] = $payload;
-
-			// set error for non array
-			$response["error"] = is_object($payload) ? $payload : $this->RCODES[$code];
+			$response["error"]   = $this->RCODES[$code] ?? 400;
+			$response["message"] = $payload;
 		}
 
 		// outputs JSON response

@@ -26,8 +26,6 @@ trait Mailer
 	 */
 	public $mailer_conf;
 
-	/* --------------------------------------------------- § -------------------------------------------------------- */
-
 	/**
 	 * Initialize Trait
 	 * @param Array $conf - The config array

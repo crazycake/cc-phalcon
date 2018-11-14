@@ -48,8 +48,6 @@ trait CrudOrm
 	 */
 	protected $crud_conf;
 
-	/* --------------------------------------------------- § -------------------------------------------------------- */
-
 	/**
 	 * Initialize Trait
 	 * @param Array $conf - The config array
@@ -271,10 +269,7 @@ trait CrudOrm
 			// send response
 			$this->jsonResponse(200);
 		}
-		catch (\Exception | Exception $e) {
-
-			$this->jsonResponse(400, $e->getMessage());
-		}
+		catch (\Exception | Exception $e) { $this->jsonResponse(400, $e->getMessage()); }
 	}
 
 	/**

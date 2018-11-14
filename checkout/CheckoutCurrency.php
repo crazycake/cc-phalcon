@@ -25,8 +25,6 @@ trait CheckoutCurrency
 	 */
 	private static $REDIS_KEY_USD_CLP_VALUE = "CHECKOUT_CURRENCY_USD_CLP";
 
-	/** ------------------------------------------- § ------------------------------------------------ **/
-
 	/**
 	 * Set Redis client
 	 */

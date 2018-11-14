@@ -15,7 +15,6 @@ use CrazyCake\Phalcon\App;
  */
 trait CheckoutJobs
 {
-
 	/**
 	 * Initialize Trait.
 	 * @param Array $conf - The config array

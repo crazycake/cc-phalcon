@@ -132,9 +132,9 @@ trait AccountToken
 		list($user_id, $token_type, $token) = $data;
 
 		// get token
-		$storedToken = self::getToken($user_id, $token_type);
+		$stored_token = self::getToken($user_id, $token_type);
 
-		if (!$storedToken || $token != $storedToken)
+		if (!$stored_token || $token != $stored_token)
 			throw new Exception("no token match found.");
 
 		return $data;

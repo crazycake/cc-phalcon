@@ -17,10 +17,6 @@ class BaseDocument
 	 */
 	public static $COLLECTION = "";
 
-
-	/* Methods
-	---------------------------------------------- § -------------------------------------------------- */
-
 	/**
 	 * Entity (class name)
 	 * @link http://php.net/manual/en/language.oop5.late-static-bindings.php
