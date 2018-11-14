@@ -26,7 +26,7 @@ trait AccountSession
 	 * Config var
 	 * @var Array
 	 */
-	public $account_session_conf;
+	public $SESSION_CONF;
 
 	/**
 	 * Stores user session as array for direct access
@@ -53,7 +53,7 @@ trait AccountSession
 		// append class prefixes
 		$conf["user_entity"] = App::getClass($conf["user_entity"]);
 
-		$this->account_session_conf = $conf;
+		$this->SESSION_CONF = $conf;
 
 		// set session var
 		$this->user_session = $this->getUserSession();
@@ -79,7 +79,7 @@ trait AccountSession
 		if (empty($user_session) || empty($user_session["id"]) || empty($user_session["auth"]))
 			return false;
 
-		$user_class = $this->account_session_conf["user_entity"];
+		$user_class = $this->SESSION_CONF["user_entity"];
 
 		if (!$user_class::getById($user_session["id"]))
 			return false;
@@ -123,7 +123,7 @@ trait AccountSession
 			unset($user_session["_id"]);
 		}
 
-		$filter = $this->account_session_conf["ignored_properties"];
+		$filter = $this->SESSION_CONF["ignored_properties"];
 
 		foreach ($filter as $key)
 			unset($user_session[$key]);
@@ -180,7 +180,7 @@ trait AccountSession
 	 */
 	protected function setResponseOnLoggedIn()
 	{
-		$uri = $this->account_session_conf["logged_in_uri"]; //default logged in uri
+		$uri = $this->SESSION_CONF["logged_in_uri"]; //default logged in uri
 
 		// check if redirection is set in session
 		if ($this->session->has("auth_redirect")) {
@@ -227,7 +227,7 @@ trait AccountSession
 		if ($check_logged_in && !$this->isLoggedIn())
 			return;
 
-		$this->redirectTo($this->account_session_conf["logged_in_uri"]);
+		$this->redirectTo($this->SESSION_CONF["logged_in_uri"]);
 	}
 
 	/* --------------------------------------------------- § -------------------------------------------------------- */
@@ -243,7 +243,7 @@ trait AccountSession
 			return;
 
 		// filter some sensitive props?
-		$filter = $this->account_session_conf["ignored_properties"];
+		$filter = $this->SESSION_CONF["ignored_properties"];
 
 		foreach ($filter as $key)
 			unset($user_session[$key]);

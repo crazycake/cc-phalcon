@@ -21,7 +21,7 @@ trait AccountPassword
 	 * Trait config
 	 * @var Array
 	 */
-	public $account_password_conf;
+	public $PASSWORD_CONF;
 
 	/* --------------------------------------------------- § -------------------------------------------------------- */
 
@@ -45,7 +45,7 @@ trait AccountPassword
 		if (empty($conf["trans"]))
 			$conf["trans"] = \TranslationController::getCoreTranslations("account");
 
-		$this->account_password_conf = $conf;
+		$this->PASSWORD_CONF = $conf;
 	}
 
 	/* --------------------------------------------------- § -------------------------------------------------------- */
@@ -62,19 +62,19 @@ trait AccountPassword
 
 		// check valid reCaptcha
 		if (empty($email) || empty($recaptcha) || !$recaptcher->isValid($recaptcha))
-			return $this->jsonResponse(400, $this->account_password_conf["trans"]["RECAPTCHA_FAILED"]);
+			return $this->jsonResponse(400, $this->PASSWORD_CONF["trans"]["RECAPTCHA_FAILED"]);
 
 		// check if user exists with active account flag
-		$entity = $this->account_password_conf["user_entity"];
+		$entity = $this->PASSWORD_CONF["user_entity"];
 		$user   = $entity::getUserByEmail($email, "enabled");
 
 		// if user not exists, send message
 		if (!$user)
-			$this->jsonResponse(400, $this->account_password_conf["trans"]["NOT_FOUND"]);
+			$this->jsonResponse(400, $this->PASSWORD_CONF["trans"]["NOT_FOUND"]);
 
 		// hash sensitive data
 		$token_chain  = self::newTokenChainCrypt($user->id ?? (string)$user->_id, "pass");
-		$password_uri = str_replace("{hash}", $token_chain, $this->account_password_conf["password_uri"]);
+		$password_uri = str_replace("{hash}", $token_chain, $this->PASSWORD_CONF["password_uri"]);
 
 		// sends the message
 		$this->sendMailMessage("passwordRecovery", [
@@ -125,15 +125,15 @@ trait AccountPassword
 			list($user_id, $token_type, $token) = self::validateHash($hash);
 
 			// get user
-			$entity = $this->account_password_conf["user_entity"];
+			$entity = $this->PASSWORD_CONF["user_entity"];
 			$user   = $entity::getById($user_id);
 
 			if (!$user)
 				throw new Exception("got an invalid user [$user_id] when validating hash.");
 
 			// pass length
-			if (strlen($password) < $this->account_password_conf["password_min_length"])
-				throw new Exception($this->account_password_conf["trans"]["PASS_TOO_SHORT"]);
+			if (strlen($password) < $this->PASSWORD_CONF["password_min_length"])
+				throw new Exception($this->PASSWORD_CONF["trans"]["PASS_TOO_SHORT"]);
 
 			// saves new pass
 			$entity::updateProperty($user_id, "pass", $this->security->hash($password));
@@ -163,25 +163,25 @@ trait AccountPassword
 	{
 		try {
 			// get model class name & user
-			$entity = $this->account_password_conf["user_entity"];
+			$entity = $this->PASSWORD_CONF["user_entity"];
 			$user   = $entity::getById($this->user_session["id"]);
 
 			if (empty($user) || empty($new_pass) || empty($current_pass))
 				return;
 
 			if (!empty($new_pass) && empty($current_pass))
-				throw new Exception($this->account_password_conf["trans"]["CURRENT_PASS_EMPTY"]);
+				throw new Exception($this->PASSWORD_CONF["trans"]["CURRENT_PASS_EMPTY"]);
 
-			if (strlen($new_pass) < $this->account_password_conf["password_min_length"])
-				throw new Exception($this->account_password_conf["trans"]["PASS_TOO_SHORT"]);
+			if (strlen($new_pass) < $this->PASSWORD_CONF["password_min_length"])
+				throw new Exception($this->PASSWORD_CONF["trans"]["PASS_TOO_SHORT"]);
 
 			// check current pass input
 			if (!$this->security->checkHash($current_pass, $user->pass))
-				throw new Exception($this->account_password_conf["trans"]["PASS_DONT_MATCH"]);
+				throw new Exception($this->PASSWORD_CONF["trans"]["PASS_DONT_MATCH"]);
 
 			// check pass is different to current
 			if ($this->security->checkHash($new_pass, $user->pass))
-				throw new Exception($this->account_password_conf["trans"]["NEW_PASS_EQUALS"]);
+				throw new Exception($this->PASSWORD_CONF["trans"]["NEW_PASS_EQUALS"]);
 
 			// saves new pass
 			$entity::updateProperty($this->user_session["id"], "pass", $this->security->hash($new_pass));

@@ -32,7 +32,7 @@ trait CheckoutManager
 	 * trait config
 	 * @var Array
 	 */
-	public $checkout_manager_conf;
+	public $CHECKOUT_MANAGER_CONF;
 
 	/**
 	 * Initialize Trait.
@@ -49,7 +49,7 @@ trait CheckoutManager
 
 		$conf["checkout_entity"] = App::getClass($conf["checkout_entity"]);
 
-		$this->checkout_manager_conf = $conf;
+		$this->CHECKOUT_MANAGER_CONF = $conf;
 	}
 
 	/* --------------------------------------------------- § -------------------------------------------------------- */
@@ -69,12 +69,12 @@ trait CheckoutManager
 			// new checkout object
 			$checkout = (object)[
 				"gateway"  => $data["gateway"],
-				"currency" => $data["currency"] ?? $this->checkout_manager_conf["default_currency"],
+				"currency" => $data["currency"] ?? $this->CHECKOUT_MANAGER_CONF["default_currency"],
 				"payload"  => $data["payload"] ?? null,
 				"client"   => ["platform" => $this->client->platform, "browser" => $this->client->browser, "version" => $this->client->version]
 			];
 
-			$entity = $this->checkout_manager_conf["checkout_entity"];
+			$entity = $this->CHECKOUT_MANAGER_CONF["checkout_entity"];
 
 			// parse checkout objects
 			if (method_exists($entity, "parseFormObjects"))
@@ -111,7 +111,7 @@ trait CheckoutManager
 
 		try {
 			// set classes
-			$entity = $this->checkout_manager_conf["checkout_entity"];
+			$entity = $this->CHECKOUT_MANAGER_CONF["checkout_entity"];
 
 			// get checkout & user
 			$checkout = $entity::getByBuyOrder($buy_order);

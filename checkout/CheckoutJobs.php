@@ -16,6 +16,12 @@ use CrazyCake\Phalcon\App;
 trait CheckoutJobs
 {
 	/**
+	 * Config var
+	 * @var Array
+	 */
+	public $CHECKOUT_JOBS_CONF;
+
+	/**
 	 * Initialize Trait.
 	 * @param Array $conf - The config array
 	 */
@@ -29,7 +35,7 @@ trait CheckoutJobs
 
 		$conf["checkout_entity"] = App::getClass($conf["checkout_entity"]);
 
-		$this->checkout_jobs_conf = $conf;
+		$this->CHECKOUT_JOBS_CONF = $conf;
 	}
 
 	/**
@@ -37,7 +43,7 @@ trait CheckoutJobs
 	 */
 	public function cleanExpiredCheckouts()
 	{
-		$entity = $this->checkout_jobs_conf["checkout_entity"];
+		$entity = $this->CHECKOUT_JOBS_CONF["checkout_entity"];
 
 		// delete pending checkouts with default expiration time
 		$objs_deleted = $entity::deleteExpired();

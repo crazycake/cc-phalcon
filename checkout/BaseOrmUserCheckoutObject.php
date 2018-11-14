@@ -40,7 +40,7 @@ class BaseOrmUserCheckoutObject extends \CrazyCake\Models\BaseOrm
 	 */
 	public function initialize()
 	{
-		//set relation
+		// set relation
 		$this->hasOne("object_id", $this->object_class, "id", ["alias" => "rel"]);
 	}
 

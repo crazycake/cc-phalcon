@@ -38,7 +38,7 @@ trait Uploader
 	 * trait config var
 	 * @var Array
 	 */
-	protected $uploader_conf;
+	protected $UPLOADER_CONF;
 
 	/**
 	 * Request headers
@@ -59,7 +59,7 @@ trait Uploader
 			$conf["trans"] = \TranslationController::getCoreTranslations("uploader");
 
 		// set conf
-		$this->uploader_conf = $conf;
+		$this->UPLOADER_CONF = $conf;
 
 		// set request headers
 		$this->headers = $this->request->getHeaders();
@@ -68,12 +68,12 @@ trait Uploader
 		$dir = $this->client->csrfKey;
 
 		// set upload save path
-		$this->uploader_conf["path"]     = self::$ROOT_UPLOAD_PATH.$dir."/";
-		$this->uploader_conf["path_url"] = $this->baseUrl("uploads/$dir/");
+		$this->UPLOADER_CONF["path"]     = self::$ROOT_UPLOAD_PATH.$dir."/";
+		$this->UPLOADER_CONF["path_url"] = $this->baseUrl("uploads/$dir/");
 
 		// create dir if not exists
-		if (!is_dir($this->uploader_conf["path"]))
-			 mkdir($this->uploader_conf["path"], 0755);
+		if (!is_dir($this->UPLOADER_CONF["path"]))
+			 mkdir($this->UPLOADER_CONF["path"], 0755);
 
 		// crate symlink if not exists
 		if (!is_link(PUBLIC_PATH."uploads"))
@@ -110,10 +110,10 @@ trait Uploader
 			$filename = $upload["key"]."_".$upload["tag"]."_".round(microtime(true) * 1000).".".$upload["ext"];
 
 			$upload["id"]  = $filename;
-			$upload["url"] = $this->uploader_conf["path_url"].$filename;
+			$upload["url"] = $this->UPLOADER_CONF["path_url"].$filename;
 
 			// move file into temp folder
-			$file->moveTo($this->uploader_conf["path"].$filename);
+			$file->moveTo($this->UPLOADER_CONF["path"].$filename);
 		}
 		else
 			unlink($file->getTempName());
@@ -132,7 +132,7 @@ trait Uploader
 		$data = $this->handleRequest(["file" => "string"], "POST");
 
 		// set file path
-		$file_path = $this->uploader_conf["path"].$data["file"];
+		$file_path = $this->UPLOADER_CONF["path"].$data["file"];
 
 		if (is_file($file_path))
 			unlink($file_path);
@@ -159,7 +159,7 @@ trait Uploader
 	protected function cleanUploadFolder($path = null)
 	{
 		if (empty($path))
-			$path = $this->uploader_conf["path"];
+			$path = $this->UPLOADER_CONF["path"];
 
 		if (!is_dir($path))
 			return;
@@ -182,12 +182,12 @@ trait Uploader
 		};
 
 		// exclude hidden files
-		$files = preg_grep('/^([^.])/', scandir($this->uploader_conf["path"]));
+		$files = preg_grep('/^([^.])/', scandir($this->UPLOADER_CONF["path"]));
 
 		if (!$absolute_path)
 			return $filter_key ? $filter(array_values($files)) : array_values($files);
 
-		$files = array_map(function($f) { return $this->uploader_conf["path"].$f; }, $files);
+		$files = array_map(function($f) { return $this->UPLOADER_CONF["path"].$f; }, $files);
 
 		return $filter_key ? $filter(array_values($files)) : array_values($files);
 	}
@@ -210,7 +210,7 @@ trait Uploader
 
 		$pushed = [];
 
-		foreach ($this->uploader_conf["files"] as $key => $conf) {
+		foreach ($this->UPLOADER_CONF["files"] as $key => $conf) {
 
 			if (empty($conf["resize"]) && empty($conf["s3push"]))
 				continue;
@@ -236,7 +236,7 @@ trait Uploader
 				// set filename to be saved
 				$conf["filename"] = $file;
 				// new resize job
-				$pushed[$key][] = $this->newImageApiJob($job, $this->uploader_conf["path"].$file, $conf);
+				$pushed[$key][] = $this->newImageApiJob($job, $this->UPLOADER_CONF["path"].$file, $conf);
 			}
 		}
 
@@ -361,7 +361,7 @@ trait Uploader
 
 		try {
 
-			$file_conf = $this->uploader_conf["files"][$file_key]; // file conf
+			$file_conf = $this->UPLOADER_CONF["files"][$file_key]; // file conf
 
 			if (empty($file_conf))
 				throw new Exception("Uploader file configuration missing for $file_key.");
@@ -373,10 +373,10 @@ trait Uploader
 			// validation: max-size
 			if ($file_size/1024 > $file_conf["max_size"])
 				throw new Exception(str_replace(["{file}", "{size}"], [$file_name, ceil($file_conf["max_size"]/1024)." MB"],
-																	  $this->uploader_conf["trans"]["MAX_SIZE"]));
+																	  $this->UPLOADER_CONF["trans"]["MAX_SIZE"]));
 			// validation: file-type
 			if (!in_array($file_ext, $file_conf["type"]))
-				throw new Exception(str_replace("{file}", $file_name, $this->uploader_conf["trans"]["FILE_TYPE"]));
+				throw new Exception(str_replace("{file}", $file_name, $this->UPLOADER_CONF["trans"]["FILE_TYPE"]));
 
 			// validation: image size
 			if (empty($file_conf["isize"]))
@@ -388,24 +388,24 @@ trait Uploader
 
 			// fixed width
 			if (isset($size["w"]) && $size["w"] != $image->getWidth())
-				throw new Exception(str_replace(["{file}", "{w}"], [$file_name, $size["w"]], $this->uploader_conf["trans"]["IMG_WIDTH"]));
+				throw new Exception(str_replace(["{file}", "{w}"], [$file_name, $size["w"]], $this->UPLOADER_CONF["trans"]["IMG_WIDTH"]));
 
 			// fixed height
 			if (isset($size["h"]) && $size["h"] != $image->getHeight())
-				throw new Exception(str_replace(["{file}", "{h}"], [$file_name, $size["h"]], $this->uploader_conf["trans"]["IMG_HEIGHT"]));
+				throw new Exception(str_replace(["{file}", "{h}"], [$file_name, $size["h"]], $this->UPLOADER_CONF["trans"]["IMG_HEIGHT"]));
 
 			// minimun width
 			if (isset($size["mw"]) && $image->getWidth() < $size["mw"])
-				throw new Exception(str_replace(["{file}", "{w}"], [$file_name, $size["mw"]], $this->uploader_conf["trans"]["IMG_MIN_WIDTH"]));
+				throw new Exception(str_replace(["{file}", "{w}"], [$file_name, $size["mw"]], $this->UPLOADER_CONF["trans"]["IMG_MIN_WIDTH"]));
 
 			// minimun width
 			if (isset($size["mh"]) && $image->getHeight() < $size["mh"])
-				throw new Exception(str_replace(["{file}", "{h}"], [$file_name, $size["mh"]], $this->uploader_conf["trans"]["IMG_MIN_HEIGHT"]));
+				throw new Exception(str_replace(["{file}", "{h}"], [$file_name, $size["mh"]], $this->UPLOADER_CONF["trans"]["IMG_MIN_HEIGHT"]));
 
 			$ratio = explode("/", $size["r"] ?? "");
 
 			if (isset($size["r"]) && round($image->getWidth()/$image->getHeight(), 2) != round($ratio[0] / $ratio[1], 2))
-				throw new Exception(str_replace(["{file}", "{r}"], [$file_name, $size["r"]], $this->uploader_conf["trans"]["IMG_RATIO"]));
+				throw new Exception(str_replace(["{file}", "{r}"], [$file_name, $size["r"]], $this->UPLOADER_CONF["trans"]["IMG_RATIO"]));
 		}
 		catch (\Exception | Exception $e) { $upload["error"] = $e->getMessage(); }
 

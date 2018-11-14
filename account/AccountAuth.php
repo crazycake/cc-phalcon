@@ -39,7 +39,7 @@ trait AccountAuth
 	 * trait config
 	 * @var Array
 	 */
-	public $account_auth_conf;
+	public $AUTH_CONF;
 
 	/* --------------------------------------------------- § -------------------------------------------------------- */
 
@@ -69,7 +69,7 @@ trait AccountAuth
 			$conf["trans"] = \TranslationController::getCoreTranslations("account");
 
 		// set configuration
-		$this->account_auth_conf = $conf;
+		$this->AUTH_CONF = $conf;
 	}
 
 	/* --------------------------------------------------- § -------------------------------------------------------- */
@@ -86,7 +86,7 @@ trait AccountAuth
 			$this->jsonResponse(200);
 
 		// redirect to given url, login as default
-		$this->redirectTo($this->account_auth_conf["logout_uri"]);
+		$this->redirectTo($this->AUTH_CONF["logout_uri"]);
 	}
 
 	/**
@@ -95,37 +95,37 @@ trait AccountAuth
 	public function loginAction()
 	{
 		// get model classes
-		$entity = $this->account_auth_conf["user_entity"];
+		$entity = $this->AUTH_CONF["user_entity"];
 		$params = ["pass" => "string"];
 
-		if ($this->account_auth_conf["user_key"] == "email")
+		if ($this->AUTH_CONF["user_key"] == "email")
 			$params = ["email" => "email"];
 
 		// validate and filter request params data, second params are the required fields
-		$data = $this->handleRequest($params, "POST", $this->account_auth_conf["csrf"]);
+		$data = $this->handleRequest($params, "POST", $this->AUTH_CONF["csrf"]);
 
 		// find user
-		$user = $this->account_auth_conf["user_key"] == "email" ? $entity::getUserByEmail($data["email"]) : $this->getLoginUser($data);
+		$user = $this->AUTH_CONF["user_key"] == "email" ? $entity::getUserByEmail($data["email"]) : $this->getLoginUser($data);
 
 		if (!$user)
-			$this->jsonResponse(400, $this->account_auth_conf["trans"]["AUTH_FAILED"]);
+			$this->jsonResponse(400, $this->AUTH_CONF["trans"]["AUTH_FAILED"]);
 
 		// recaptcha challenge?
-		if ($this->account_auth_conf["recaptcha"] && $this->getLoginAttempts($user->id ?? $user->_id) > 3) {
+		if ($this->AUTH_CONF["recaptcha"] && $this->getLoginAttempts($user->id ?? $user->_id) > 3) {
 
 			$recaptcher = new ReCaptcha($this->config->google->reCaptchaKey);
 			$recaptcha  = $data["g-recaptcha-response"] ?? null;
 
 			if (empty($recaptcha) || !$recaptcher->isValid($recaptcha))
-				return $this->jsonResponse(400, $this->account_auth_conf["trans"]["RECAPTCHA_FAILED"]);
+				return $this->jsonResponse(400, $this->AUTH_CONF["trans"]["RECAPTCHA_FAILED"]);
 		}
 
 		// password hash validation
 		if (!$this->security->checkHash($data["pass"], $user->pass ?? '')) {
 
-			$message = $this->account_auth_conf["trans"]["AUTH_FAILED"];
+			$message = $this->AUTH_CONF["trans"]["AUTH_FAILED"];
 
-			if ($this->account_auth_conf["recaptcha"])
+			if ($this->AUTH_CONF["recaptcha"])
 				$this->jsonResponse(400, ["text" => $message, "n" => $this->saveLoginAttempt($user->id ?? $user->_id)]);
 
 			$this->jsonResponse(400, $message);
@@ -133,7 +133,7 @@ trait AccountAuth
 
 		// check user account flag
 		if ($user->flag != "enabled")
-			$this->jsonResponse(400, str_replace("{email}", $user->email, $this->account_auth_conf["trans"]["STATE_".strtoupper($user->flag)]));
+			$this->jsonResponse(400, str_replace("{email}", $user->email, $this->AUTH_CONF["trans"]["STATE_".strtoupper($user->flag)]));
 
 		// success login
 		$this->newUserSession($user);
@@ -150,20 +150,20 @@ trait AccountAuth
 		$data = $this->handleRequest([
 			"email" => "email",
 			"pass"  => "string"
-		], "POST", $this->account_auth_conf["csrf"]);
+		], "POST", $this->AUTH_CONF["csrf"]);
 
 		// lower case email
 		$data["email"] = strtolower(trim($data["email"]));
 
 		// check valid email
 		if (!filter_var($data["email"], FILTER_VALIDATE_EMAIL))
-			$this->jsonResponse(400, $this->account_auth_conf["trans"]["INVALID_EMAIL"]);
+			$this->jsonResponse(400, $this->AUTH_CONF["trans"]["INVALID_EMAIL"]);
 
-		$entity = $this->account_auth_conf["user_entity"];
+		$entity = $this->AUTH_CONF["user_entity"];
 
 		// validate if user exists
 		if ($entity::getUserByEmail($data["email"]))
-			$this->jsonResponse(400, str_replace("{email}", $data["email"], $this->account_auth_conf["trans"]["EMAIL_EXISTS"]));
+			$this->jsonResponse(400, str_replace("{email}", $data["email"], $this->AUTH_CONF["trans"]["EMAIL_EXISTS"]));
 
 		// remove CSRF key
 		unset($data[$this->client->csrfKey]);
@@ -189,14 +189,14 @@ trait AccountAuth
 		$this->sendActivationMailMessage($user);
 
 		// set a flash message to show on account controller
-		$message = str_replace("{email}", $user->email, $this->account_auth_conf["trans"]["ACTIVATION_PENDING"]);
+		$message = str_replace("{email}", $user->email, $this->AUTH_CONF["trans"]["ACTIVATION_PENDING"]);
 		$this->flash->success($message);
 
 		// redirect/response
 		if (MODULE_NAME == "api")
 			$this->jsonResponse(200, ["message" => $message]);
 
-		$this->redirectTo($this->account_auth_conf["logout_uri"]);
+		$this->redirectTo($this->AUTH_CONF["logout_uri"]);
 	}
 
 	/**
@@ -210,7 +210,7 @@ trait AccountAuth
 			if ($this->isLoggedIn())
 				throw new Exception("user is already logged in");
 
-			$entity = $this->account_auth_conf["user_entity"];
+			$entity = $this->AUTH_CONF["user_entity"];
 
 			// handle the hash data with parent controller
 			list($user_id, $token_type, $token) = self::validateHash($hash);
@@ -229,7 +229,7 @@ trait AccountAuth
 				return $this->onActivationSuccess($user);
 
 			// set a flash message to show on account controller
-			$this->flash->success($this->account_auth_conf["trans"]["ACTIVATION_SUCCESS"]);
+			$this->flash->success($this->AUTH_CONF["trans"]["ACTIVATION_SUCCESS"]);
 
 			// success login
 			$this->newUserSession($user);
@@ -259,7 +259,7 @@ trait AccountAuth
 		return $this->sendMailMessage("accountActivation", [
 			"user"  => $user,
 			"email" => $user->email,
-			"url"   => $this->baseUrl($this->account_auth_conf["activation_uri"].$token_chain)
+			"url"   => $this->baseUrl($this->AUTH_CONF["activation_uri"].$token_chain)
 		]);
 	}
 
@@ -275,20 +275,20 @@ trait AccountAuth
 
 		// check valid reCaptcha
 		if (empty($email) || !$recaptcher->isValid($recaptcha))
-			return $this->jsonResponse(400, $this->account_auth_conf["trans"]["RECAPTCHA_FAILED"]);
+			return $this->jsonResponse(400, $this->AUTH_CONF["trans"]["RECAPTCHA_FAILED"]);
 
 		// get model classes
-		$entity = $this->account_auth_conf["user_entity"];
+		$entity = $this->AUTH_CONF["user_entity"];
 
 		// check if user exists is a pending account
 		if (!$user = $entity::getUserByEmail($email, "pending"))
-			$this->jsonResponse(400, $this->account_auth_conf["trans"]["NOT_FOUND"]);
+			$this->jsonResponse(400, $this->AUTH_CONF["trans"]["NOT_FOUND"]);
 
 		// send activation mail message
 		$this->sendActivationMailMessage($user);
 
 		// set a flash message to show on account controller
-		$message = str_replace("{email}", $user->email, $this->account_auth_conf["trans"]["ACTIVATION_PENDING"]);
+		$message = str_replace("{email}", $user->email, $this->AUTH_CONF["trans"]["ACTIVATION_PENDING"]);
 
 		// redirect/response
 		$this->jsonResponse(200, ["message" => $message]);

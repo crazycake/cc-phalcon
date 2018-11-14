@@ -110,7 +110,7 @@ trait CheckoutCurrency
 	protected function apiChileanCurrencyRequest($indicator = "dolar")
 	{
 		try {
-			// get dollar value for today
+
 			$api_url = self::$API_CURRENCY_URL."&currencies=CLP&source=USD&format=1";
 
 			// print output for CLI

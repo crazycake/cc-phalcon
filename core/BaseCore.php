@@ -122,7 +122,7 @@ abstract class BaseCore extends Controller
 		// call mailer class method (reflection)
 		$mailer->{$method}($data);
 
-		$this->logger->debug("BaseCore::sendMailMessage -> queued mailer message [$method]: ".json_encode($mailer->mailer_conf, JSON_UNESCAPED_SLASHES));
+		$this->logger->debug("BaseCore::sendMailMessage -> queued mailer message [$method]: ".json_encode($mailer->MAILER_CONF, JSON_UNESCAPED_SLASHES));
 	}
 
 	/**

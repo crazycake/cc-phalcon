@@ -53,8 +53,6 @@ class BaseOrmUser extends \CrazyCake\Models\BaseOrm
 	 */
 	public $flag;
 
-	/* inclusion vars */
-
 	/**
 	 * Account Flags
 	 * @var Array
@@ -85,7 +83,7 @@ class BaseOrmUser extends \CrazyCake\Models\BaseOrm
 	 */
 	public static function getUserByEmail($email, $flag = null)
 	{
-		$conditions = "email = ?0"; //default condition
+		$conditions = "email = ?0"; // default condition
 		$bind       = [$email];
 
 		// filter by account flag?

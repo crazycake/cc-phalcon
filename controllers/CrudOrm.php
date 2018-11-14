@@ -46,7 +46,7 @@ trait CrudOrm
 	 * trait config
 	 * @var Array
 	 */
-	protected $crud_conf;
+	protected $CRUD_CONF;
 
 	/**
 	 * Initialize Trait
@@ -82,7 +82,7 @@ trait CrudOrm
 			$conf["entity_component"] = $conf["entity_lower"];
 
 		// finally set conf
-		$this->crud_conf = $conf;
+		$this->CRUD_CONF = $conf;
 	}
 
 	/**
@@ -97,11 +97,11 @@ trait CrudOrm
 		$this->onBeforeRenderIndex();
 
 		// set current_view
-		$this->view->setVars($this->crud_conf);
+		$this->view->setVars($this->CRUD_CONF);
 
 		// load modules
 		$this->loadJsModules([
-			"crud" => $this->crud_conf
+			"crud" => $this->CRUD_CONF
 		]);
 	}
 
@@ -121,10 +121,10 @@ trait CrudOrm
 		], "GET");
 
 		// build query object
-		$query = $this->modelsManager->createBuilder()->from($this->crud_conf["entity"]);
+		$query = $this->modelsManager->createBuilder()->from($this->CRUD_CONF["entity"]);
 
 		// default order
-		$query->orderBy($this->_fieldToPhql($this->crud_conf["pk"])." DESC");
+		$query->orderBy($this->_fieldToPhql($this->CRUD_CONF["pk"])." DESC");
 
 		if (!empty($data["sort"])) {
 			// parse sort data from js
@@ -138,7 +138,7 @@ trait CrudOrm
 		if (!empty($data["filter"])) {
 
 			// create filter syntax
-			$search_fields = $this->crud_conf["sfields"] ?? [$this->crud_conf["pk"]];
+			$search_fields = $this->CRUD_CONF["sfields"] ?? [$this->CRUD_CONF["pk"]];
 
 			// loop through search fields
 			foreach ($search_fields as $index => $fname) {
@@ -157,7 +157,7 @@ trait CrudOrm
 		}
 
 		// group results
-		$query->groupBy($this->_fieldToPhql($this->crud_conf["pk"]));
+		$query->groupBy($this->_fieldToPhql($this->CRUD_CONF["pk"]));
 
 		// event
 		$this->onQuery($query);
@@ -190,7 +190,7 @@ trait CrudOrm
 			// event
 			$this->onBeforeSave($data, "create");
 
-			$object_class = $this->crud_conf["entity"];
+			$object_class = $this->CRUD_CONF["entity"];
 			$object 	  = new $object_class();
 
 			// set empty strings as null data
@@ -229,8 +229,8 @@ trait CrudOrm
 			$this->onBeforeSave($data, "update");
 
 			// get object class & get object by primary key
-			$object_class = $this->crud_conf["entity"];
-			$object       = $object_class::findFirst([$this->crud_conf["pk"]." = '".$data[$this->crud_conf["pk"]]."'"]);
+			$object_class = $this->CRUD_CONF["entity"];
+			$object       = $object_class::findFirst([$this->CRUD_CONF["pk"]." = '".$data[$this->CRUD_CONF["pk"]]."'"]);
 
 			// check object exists
 			if (!$object)
@@ -240,7 +240,7 @@ trait CrudOrm
 			$meta_data  = $object->getModelsMetaData();
 			$attributes = $meta_data->getAttributes($object);
 			// unset id
-			unset($attributes[$this->crud_conf["pk"]]);
+			unset($attributes[$this->CRUD_CONF["pk"]]);
 
 			// filter data
 			$new_data = array_filter($data,
@@ -279,10 +279,10 @@ trait CrudOrm
 	{
 		$this->onlyAjax();
 
-		$data = $this->handleRequest([$this->crud_conf["pk"] => "string"], "POST");
+		$data = $this->handleRequest([$this->CRUD_CONF["pk"] => "string"], "POST");
 
-		$object_class = $this->crud_conf["entity"];
-		$object       = $object_class::findFirst([$this->crud_conf["pk"]." = '".$data[$this->crud_conf["pk"]]."'"]);
+		$object_class = $this->CRUD_CONF["entity"];
+		$object       = $object_class::findFirst([$this->CRUD_CONF["pk"]." = '".$data[$this->CRUD_CONF["pk"]]."'"]);
 
 		// orm deletion
 		if ($object) {
@@ -310,7 +310,7 @@ trait CrudOrm
 
 		// one level
 		if (count($namespaces) <= 1)
-			return $this->crud_conf["entity"].".".$field;
+			return $this->CRUD_CONF["entity"].".".$field;
 
 		// two or more levels
 		$levels   = count($namespaces);
@@ -330,7 +330,7 @@ trait CrudOrm
 	 */
 	private function _getPaginationData($query, $data)
 	{
-		$entity_lower = $this->crud_conf["entity_lower"];
+		$entity_lower = $this->CRUD_CONF["entity_lower"];
 		$per_page 	  = (int)$data["per_page"];
 		$current_page = (int)$data["page"];
 

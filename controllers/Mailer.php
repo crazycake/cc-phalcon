@@ -24,7 +24,7 @@ trait Mailer
 	 * trait config
 	 * @var Array
 	 */
-	public $mailer_conf;
+	public $MAILER_CONF;
 
 	/**
 	 * Initialize Trait
@@ -46,7 +46,7 @@ trait Mailer
 		if (empty($conf["trans"]))
 			$conf["trans"] = \TranslationController::getCoreTranslations("mailer");
 
-		$this->mailer_conf = $conf;
+		$this->MAILER_CONF = $conf;
 	}
 
 	/* --------------------------------------------------- § -------------------------------------------------------- */
@@ -58,7 +58,7 @@ trait Mailer
 	public function sendContact($data = [])
 	{
 		// extend config
-		$this->mailer_conf = array_merge($this->mailer_conf, $data);
+		$this->MAILER_CONF = array_merge($this->MAILER_CONF, $data);
 
 		$subject = "Contacto ".$this->config->name;
 		$to      = $this->config->emails->support;
@@ -73,10 +73,10 @@ trait Mailer
 	 */
 	public function accountActivation($data = [])
 	{
-		$this->mailer_conf = array_merge($this->mailer_conf, $data);
+		$this->MAILER_CONF = array_merge($this->MAILER_CONF, $data);
 
-		$subject = $this->mailer_conf["trans"]["SUBJECT_ACTIVATION"];
-		$to      = $this->mailer_conf["email"];
+		$subject = $this->MAILER_CONF["trans"]["SUBJECT_ACTIVATION"];
+		$to      = $this->MAILER_CONF["email"];
 
 		// sends the message
 		$this->sendMessage("activation", $subject, $to);
@@ -88,10 +88,10 @@ trait Mailer
 	 */
 	public function passwordRecovery($data = [])
 	{
-		$this->mailer_conf = array_merge($this->mailer_conf, $data);
+		$this->MAILER_CONF = array_merge($this->MAILER_CONF, $data);
 
-		$subject = $this->mailer_conf["trans"]["SUBJECT_PASSWORD"];
-		$to      = $this->mailer_conf["email"];
+		$subject = $this->MAILER_CONF["trans"]["SUBJECT_PASSWORD"];
+		$to      = $this->MAILER_CONF["email"];
 
 		// sends the message
 		$this->sendMessage("passwordRecovery", $subject, $to);
@@ -106,10 +106,10 @@ trait Mailer
 	public function inlineHtml($template = "")
 	{
 		// set mailer sub config
-		$this->mailer_conf["config"] = ["name" => $this->config->name, "emails" => $this->config->emails]; // logs security
+		$this->MAILER_CONF["config"] = ["name" => $this->config->name, "emails" => $this->config->emails]; // logs security
 
 		// get the view in mailing folder
-		$html = $this->simpleView->render("mailing/$template", $this->mailer_conf);
+		$html = $this->simpleView->render("mailing/$template", $this->MAILER_CONF);
 
 		// apply a HTML inliner if a stylesheet is present
 		if (is_file(self::$MAILER_CSS_FILE)) {
@@ -140,9 +140,9 @@ trait Mailer
 		$data["message"] = "$error\nTrace:\n".(empty($data["trace"]) ? "n/a" : json_encode($data["trace"], JSON_UNESCAPED_SLASHES));
 
 		// extend config
-		$this->mailer_conf = array_merge($this->mailer_conf, $data);
+		$this->MAILER_CONF = array_merge($this->MAILER_CONF, $data);
 
-		$this->logger->debug("Mailer::adminException -> sending exception: ".json_encode($this->mailer_conf, JSON_UNESCAPED_SLASHES));
+		$this->logger->debug("Mailer::adminException -> sending exception: ".json_encode($this->MAILER_CONF, JSON_UNESCAPED_SLASHES));
 
 		// sends the message
 		$this->sendMessage("contact", "Admin message", $admin_emails);
@@ -172,8 +172,8 @@ trait Mailer
 
 		$sendgrid = new \SendGrid($this->config->sendgrid->apiKey);
 
-		$from     = new \SendGrid\Email($this->mailer_conf["from_name"],  $this->config->emails->sender);
-		$reply_to = new \SendGrid\ReplyTo($this->config->emails->support ?? $this->config->emails->sender, $this->mailer_conf["from_name"]);
+		$from     = new \SendGrid\Email($this->MAILER_CONF["from_name"],  $this->config->emails->sender);
+		$reply_to = new \SendGrid\ReplyTo($this->config->emails->support ?? $this->config->emails->sender, $this->MAILER_CONF["from_name"]);
 
 		$content = new \SendGrid\Content("text/html", $this->inlineHtml($template));
 
