@@ -1,7 +1,6 @@
 # Linux & OSX
 *~
 .DS_Store
-*.log
 
 # PHP Phar files
 *.phar
