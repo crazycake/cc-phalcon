@@ -59,7 +59,6 @@ trait CheckoutManager
 	 */
 	public function buyOrderAction()
 	{
-		// make sure is ajax request
 		$this->onlyAjax();
 
 		$data = $this->handleRequest(["gateway" => "string"], "POST");

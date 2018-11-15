@@ -34,7 +34,7 @@ trait AccountPassword
 		$defaults = [
 			"user_entity"         => "user",
 			"password_uri"        => "password/create/{hash}",
-			"password_min_length" => 8,
+			"password_min_length" => 8
 		];
 
 		// merge confs

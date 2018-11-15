@@ -59,7 +59,6 @@ trait CheckoutCurrency
 	 */
 	public function dollarToChileanPeso($amount = 1.00)
 	{
-		// redis service
 		$redis = $this->newRedisClient();
 		$value = $redis->get(self::$REDIS_KEY_USD_CLP_VALUE);
 
