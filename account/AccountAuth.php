@@ -330,7 +330,7 @@ trait AccountAuth
 		$attempts = ($redis->exists($key) ? $redis->get($key) : 0) + 1;
 
 		$redis->set($key, $attempts);
-		$redis->expire($key, 3600*8); // hours
+		$redis->expire($key, 3600*4); // hours
 		$redis->close();
 	}
 
