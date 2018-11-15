@@ -27,7 +27,7 @@ class ReCaptcha
 	 */
 	public function __construct($secret_key = null)
 	{
-		if (is_null($secret_key))
+		if (empty($secret_key))
 			throw new Exception("ReCaptcha Helper -> Google reCaptcha key is required.");
 
 		// set secret key
@@ -48,6 +48,7 @@ class ReCaptcha
 
 		// get remote address
 		$ip = $di->getShared("request")->getServerAddress();
+
 		// verify response
 		$response = $this->recaptcha->verify($gRecaptchaResponse, $ip);
 
@@ -56,8 +57,7 @@ class ReCaptcha
 
 		$errors = $response->getErrorCodes();
 
-		if ($di->getShared("logger"))
-			$di->getShared("logger")->error("ReCaptcha Helper -> Invalid reCaptcha response: ".json_encode($errors));
+		$di->getShared("logger")->error("ReCaptcha Helper -> Invalid reCaptcha response: ".json_encode($errors));
 
 		return false;
 	}

@@ -55,13 +55,13 @@ trait AccountPassword
 	 * @param String $email - The user email
 	 * @param String $recaptcha - The reCaptcha challenge
 	 */
-	public function sendRecoveryInstructions($email, $recaptcha = "")
+	public function sendRecoveryInstructions($email, $recaptcha = null)
 	{
 		// google reCaptcha helper
 		$recaptcher = new ReCaptcha($this->config->google->reCaptchaKey);
 
 		// check valid reCaptcha
-		if (empty($email) || empty($recaptcha) || !$recaptcher->isValid($recaptcha))
+		if (empty($email) || !$recaptcher->isValid($recaptcha))
 			return $this->jsonResponse(400, $this->PASSWORD_CONF["trans"]["RECAPTCHA_FAILED"]);
 
 		// check if user exists with active account flag

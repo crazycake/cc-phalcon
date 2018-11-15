@@ -56,7 +56,8 @@ trait AccountAuth
 			"logout_uri"     => "signIn",
 			"activation_uri" => "auth/activation/",
 			"csrf"           => true,
-			"recaptcha"      => false
+			"recaptcha"      => false,
+			"loginAttempts"  => 3
 		];
 
 		// merge confs
@@ -111,13 +112,12 @@ trait AccountAuth
 			$this->jsonResponse(400, $this->AUTH_CONF["trans"]["AUTH_FAILED"]);
 
 		// recaptcha challenge?
-		if ($this->AUTH_CONF["recaptcha"] && $this->getLoginAttempts($user->id ?? $user->_id) > 3) {
+		if ($this->AUTH_CONF["recaptcha"] && $this->hasReachedLoginAttempts($user->id ?? $user->_id)) {
 
 			$recaptcher = new ReCaptcha($this->config->google->reCaptchaKey);
-			$recaptcha  = $data["g-recaptcha-response"] ?? null;
 
-			if (empty($recaptcha) || !$recaptcher->isValid($recaptcha))
-				return $this->jsonResponse(400, $this->AUTH_CONF["trans"]["RECAPTCHA_FAILED"]);
+			if (!$recaptcher->isValid($data["g-recaptcha-response"] ?? null))
+				return $this->jsonResponse(400, ["text" => $this->AUTH_CONF["trans"]["RECAPTCHA_FAILED"], "recaptcha" => true]);
 		}
 
 		// password hash validation
@@ -125,8 +125,12 @@ trait AccountAuth
 
 			$message = $this->AUTH_CONF["trans"]["AUTH_FAILED"];
 
-			if ($this->AUTH_CONF["recaptcha"])
-				$this->jsonResponse(400, ["text" => $message, "n" => $this->saveLoginAttempt($user->id ?? $user->_id)]);
+			if ($this->AUTH_CONF["recaptcha"]) {
+
+				$this->saveLoginAttempt($user->id ?? $user->_id);
+
+				$this->jsonResponse(400, ["text" => $message, "recaptcha" => $this->hasReachedLoginAttempts($user->id ?? $user->_id)]);
+			}
 
 			$this->jsonResponse(400, $message);
 		}
@@ -328,21 +332,21 @@ trait AccountAuth
 		$redis->set($key, $attempts);
 		$redis->expire($key, 3600*8); // hours
 		$redis->close();
-
-		return $attempts;
 	}
 
 	/**
 	 * Get stored login attempts
 	 * @param String $user_id
 	 */
-	protected function getLoginAttempts($user_id)
+	protected function hasReachedLoginAttempts($user_id)
 	{
 		$redis = new \Redis();
 		$redis->connect(getenv("REDIS_HOST") ?: "redis");
 
 		$key = "LOGIN_".$user_id;
 
-		return $redis->exists($key) ? $redis->get($key) : 0;
+		$attempts = $redis->exists($key) ? $redis->get($key) : 0;
+
+		return $attempts > $this->AUTH_CONF["loginAttempts"];
 	}
 }
