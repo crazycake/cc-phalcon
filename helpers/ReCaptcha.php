@@ -55,13 +55,8 @@ class ReCaptcha
 									->setScoreThreshold($score)
 									->verify($token ?? "", $ip);
 
-		if ($response->isSuccess())
-			return true;
+		$di->getShared("logger")->debug("ReCaptcha Helper -> reCaptcha response: ".json_encode($response->toArray()));
 
-		$errors = $response->getErrorCodes();
-
-		$di->getShared("logger")->error("ReCaptcha Helper -> Invalid reCaptcha response: ".json_encode($errors));
-
-		return false;
+		return $response->isSuccess();
 	}
 }
