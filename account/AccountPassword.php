@@ -34,7 +34,8 @@ trait AccountPassword
 		$defaults = [
 			"user_entity"         => "user",
 			"password_uri"        => "password/create/{hash}",
-			"password_min_length" => 8
+			"password_min_length" => 8,
+			"recaptcha"           => false
 		];
 
 		// merge confs
@@ -53,18 +54,20 @@ trait AccountPassword
 	/**
 	 * Send Recovery password email message with further instructions
 	 * @param String $email - The user email
-	 * @param String $recaptcha - The reCaptcha challenge
 	 */
-	public function sendRecoveryInstructions($email, $recaptcha = null)
+	public function sendRecoveryInstructions($email = "")
 	{
-		// google reCaptcha helper
-		$recaptcher = new ReCaptcha($this->config->google->reCaptchaKey);
+		// recaptcha validation
+		if ($this->PASSWORD_CONF["recaptcha"]) {
 
-		// check valid reCaptcha
-		if (empty($email) || !$recaptcher->isValid($recaptcha))
-			return $this->jsonResponse(400, $this->PASSWORD_CONF["trans"]["RECAPTCHA_FAILED"]);
+			$data = $this->handleRequest([], "POST");
 
-		// check if user exists with active account flag
+			$recaptcher = new ReCaptcha($this->config->google->reCaptchaKey);
+
+			if (!$recaptcher->isValid($data["recaptcha"] ?? null, "session"))
+				return $this->jsonResponse(498);
+		}
+
 		$entity = $this->PASSWORD_CONF["user_entity"];
 		$user   = $entity::getUserByEmail($email, "enabled");
 
