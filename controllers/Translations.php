@@ -39,7 +39,7 @@ trait Translations
 				"EMAIL_EXISTS"       => "El correo <b>{email}</b> ya se encuentra registrado.",
 				"ACTIVATION_SUCCESS" => "¡Tu cuenta ha sido activada!",
 				"ACTIVATION_PENDING" => "Te hemos enviado un correo a <b>{email}</b> para que actives tu cuenta.",
-				"NOT_HUMAN"          => "Para asegurarnos que no eres un robot <i>inténtalo más tarde.</i> ",
+				"NOT_HUMAN"          => "¿Eres un robot? Por favor <a href=\"javascript:location.reload();\">refresca la aplicación</a> ó inténtalo nuevamente más tarde.",
 				"INVALID_NAME"       => "Tu nombre y apellido deben ser válidos.",
 				"INVALID_EMAIL"      => "Tu correo electrónico no es válido.",
 				"PASS_TOO_SHORT"     => "Debes ingresar una contraseña de al menos 8 caracteres.",
