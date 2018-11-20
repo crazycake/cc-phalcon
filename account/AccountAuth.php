@@ -57,7 +57,7 @@ trait AccountAuth
 			"activation_uri" => "auth/activation/",
 			"csrf"           => true,
 			"recaptcha"      => false,
-			"loginAttempts"  => 3
+			"loginAttempts"  => 4
 		];
 
 		// merge confs
@@ -111,28 +111,25 @@ trait AccountAuth
 		if (!$user)
 			$this->jsonResponse(400, $this->AUTH_CONF["trans"]["AUTH_FAILED"]);
 
-		// recaptcha challenge?
-		if ($this->AUTH_CONF["recaptcha"] && $this->hasReachedLoginAttempts($user->id ?? $user->_id)) {
+		// recaptcha validation
+		if ($this->AUTH_CONF["recaptcha"]) {
 
 			$recaptcher = new ReCaptcha($this->config->google->reCaptchaKey);
 
-			if (!$recaptcher->isValid($data["g-recaptcha-response"] ?? null))
-				return $this->jsonResponse(400, ["text" => $this->AUTH_CONF["trans"]["RECAPTCHA_FAILED"], "recaptcha" => true]);
+			if (!$recaptcher->isValid($data["recaptcha"] ?? null, "session"))
+				return $this->jsonResponse(498);
 		}
 
 		// password hash validation
 		if (!$this->security->checkHash($data["pass"], $user->pass ?? '')) {
 
-			$message = $this->AUTH_CONF["trans"]["AUTH_FAILED"];
+			$this->saveLoginAttempt($user->id ?? $user->_id);
 
-			if ($this->AUTH_CONF["recaptcha"]) {
+			// basic attempts security
+			if ($this->hasReachedLoginAttempts($user->id ?? $user->_id))
+				$this->jsonResponse(400, $this->AUTH_CONF["trans"]["AUTH_BLOCKED"]);
 
-				$this->saveLoginAttempt($user->id ?? $user->_id);
-
-				$this->jsonResponse(400, ["text" => $message, "recaptcha" => $this->hasReachedLoginAttempts($user->id ?? $user->_id)]);
-			}
-
-			$this->jsonResponse(400, $message);
+			$this->jsonResponse(400, $this->AUTH_CONF["trans"]["AUTH_FAILED"]);
 		}
 
 		// check user account flag
@@ -268,37 +265,6 @@ trait AccountAuth
 	}
 
 	/**
-	 * Sends activation mail message with email & recaptcha validation
-	 * @param String $email - The user email
-	 * @param String $recaptcha - The reCaptcha challenge
-	 */
-	public function sendActivationMailMessageRecaptcha($email, $recaptcha = "")
-	{
-		// google reCaptcha helper
-		$recaptcher = new ReCaptcha($this->config->google->reCaptchaKey);
-
-		// check valid reCaptcha
-		if (empty($email) || !$recaptcher->isValid($recaptcha))
-			return $this->jsonResponse(400, $this->AUTH_CONF["trans"]["RECAPTCHA_FAILED"]);
-
-		// get model classes
-		$entity = $this->AUTH_CONF["user_entity"];
-
-		// check if user exists is a pending account
-		if (!$user = $entity::getUserByEmail($email, "pending"))
-			$this->jsonResponse(400, $this->AUTH_CONF["trans"]["NOT_FOUND"]);
-
-		// send activation mail message
-		$this->sendActivationMailMessage($user);
-
-		// set a flash message to show on account controller
-		$message = str_replace("{email}", $user->email, $this->AUTH_CONF["trans"]["ACTIVATION_PENDING"]);
-
-		// redirect/response
-		$this->jsonResponse(200, ["message" => $message]);
-	}
-
-	/**
 	 * Access Token validation for API Auth
 	 * @param String $token - The input token
 	 * @return Object - The token ORM object
@@ -330,12 +296,12 @@ trait AccountAuth
 		$attempts = ($redis->exists($key) ? $redis->get($key) : 0) + 1;
 
 		$redis->set($key, $attempts);
-		$redis->expire($key, 3600*4); // hours
+		$redis->expire($key, 3600*6); // hours
 		$redis->close();
 	}
 
 	/**
-	 * Get stored login attempts
+	 * Validate stored login attempts
 	 * @param String $user_id
 	 */
 	protected function hasReachedLoginAttempts($user_id)
@@ -346,6 +312,8 @@ trait AccountAuth
 		$key = "LOGIN_".$user_id;
 
 		$attempts = $redis->exists($key) ? $redis->get($key) : 0;
+
+		$redis->close();
 
 		return $attempts > $this->AUTH_CONF["loginAttempts"];
 	}

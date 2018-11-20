@@ -137,8 +137,9 @@
 		{% endif %}
 
 		{# reCaptcha plugin #}
-		{% if js_recaptcha is not empty %}
-			<script src="https://www.google.com/recaptcha/api.js?onload={{ js_recaptcha }}&amp;render=explicit&amp;hl={{ client.lang }}" async defer></script>
+		{% if config.google.reCaptchaID %}
+			<script src="https://www.google.com/recaptcha/api.js?onload=onRecaptchaLoaded&render={{ config.google.reCaptchaID }}&hl={{ client.lang }}" async defer>
+			</script>
 		{% endif %}
 
 		{# JS disabled fallback #}

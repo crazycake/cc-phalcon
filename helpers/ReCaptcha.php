@@ -36,21 +36,24 @@ class ReCaptcha
 
 	/**
 	 * Verifies that recaptcha value is valid with Google reCaptcha API
-	 * @param String $gRecaptchaResponse - The reCaptcha response
+	 * @param String $token - The reCaptcha client response token
+	 * @param String $action - The action to validate
+	 * @param String $score - The score threshold
 	 * @return Boolean
 	 */
-	public function isValid($gRecaptchaResponse = null)
+	public function isValid($token = null, $action = "", $score = 0.6)
 	{
-		$di = \Phalcon\DI::getDefault();
+		if (empty($token)) return false;
 
-		if (empty($gRecaptchaResponse))
-			return false;
+		$di = \Phalcon\DI::getDefault();
 
 		// get remote address
 		$ip = $di->getShared("request")->getServerAddress();
 
 		// verify response
-		$response = $this->recaptcha->verify($gRecaptchaResponse, $ip);
+		$response = $this->recaptcha->setExpectedAction($action)
+									->setScoreThreshold($score)
+									->verify($token ?? "", $ip);
 
 		if ($response->isSuccess())
 			return true;
