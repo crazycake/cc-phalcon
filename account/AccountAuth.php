@@ -57,7 +57,7 @@ trait AccountAuth
 			"activation_uri" => "auth/activation/",
 			"csrf"           => true,
 			"recaptcha"      => false,
-			"loginAttempts"  => 8
+			"loginAttempts"  => 10
 		];
 
 		// merge confs
@@ -112,11 +112,11 @@ trait AccountAuth
 			$this->jsonResponse(400, $this->AUTH_CONF["trans"]["AUTH_FAILED"]);
 
 		// recaptcha validation
-		if ($this->AUTH_CONF["recaptcha"] && $this->getLoginAttempts($user->id ?? $user->_id) > 0) {
+		if ($this->AUTH_CONF["recaptcha"] && $this->getLoginAttempts($user->id ?? $user->_id) > 2) {
 
 			$recaptcher = new ReCaptcha($this->config->google->reCaptchaKey);
 
-			if (!$recaptcher->isValid($data["recaptcha"] ?? null, "session"))
+			if (!$recaptcher->isValid($data["recaptcha"] ?? null, "session", 0.5))
 				return $this->jsonResponse(400, $this->AUTH_CONF["trans"]["NOT_HUMAN"]);
 		}
 
