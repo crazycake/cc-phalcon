@@ -116,7 +116,7 @@ trait AccountAuth
 
 			$recaptcher = new ReCaptcha($this->config->google->reCaptchaKey);
 
-			if (!$recaptcher->isValid($data["recaptcha"] ?? null, "session", 0.5))
+			if (!$recaptcher->isValid($data["recaptcha"] ?? null, "session", 0.3))
 				return $this->jsonResponse(400, $this->AUTH_CONF["trans"]["NOT_HUMAN"]);
 		}
 
