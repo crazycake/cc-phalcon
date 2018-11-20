@@ -112,12 +112,12 @@ trait AccountAuth
 			$this->jsonResponse(400, $this->AUTH_CONF["trans"]["AUTH_FAILED"]);
 
 		// recaptcha validation
-		if ($this->AUTH_CONF["recaptcha"]) {
+		if ($this->AUTH_CONF["recaptcha"] && $this->getLoginAttempts($user->id ?? $user->_id) > 0) {
 
 			$recaptcher = new ReCaptcha($this->config->google->reCaptchaKey);
 
 			if (!$recaptcher->isValid($data["recaptcha"] ?? null, "session"))
-				return $this->jsonResponse(498);
+				return $this->jsonResponse(400, $this->AUTH_CONF["trans"]["NOT_HUMAN"]);
 		}
 
 		// password hash validation
@@ -126,7 +126,7 @@ trait AccountAuth
 			$this->saveLoginAttempt($user->id ?? $user->_id);
 
 			// basic attempts security
-			if ($this->hasReachedLoginAttempts($user->id ?? $user->_id))
+			if ($this->getLoginAttempts($user->id ?? $user->_id) > $this->AUTH_CONF["loginAttempts"])
 				$this->jsonResponse(400, $this->AUTH_CONF["trans"]["AUTH_BLOCKED"]);
 
 			$this->jsonResponse(400, $this->AUTH_CONF["trans"]["AUTH_FAILED"]);
@@ -301,10 +301,10 @@ trait AccountAuth
 	}
 
 	/**
-	 * Validate stored login attempts
+	 * Get stored login attempts
 	 * @param String $user_id
 	 */
-	protected function hasReachedLoginAttempts($user_id)
+	protected function getLoginAttempts($user_id)
 	{
 		$redis = new \Redis();
 		$redis->connect(getenv("REDIS_HOST") ?: "redis");
@@ -315,6 +315,6 @@ trait AccountAuth
 
 		$redis->close();
 
-		return $attempts > $this->AUTH_CONF["loginAttempts"];
+		return $attempts;
 	}
 }

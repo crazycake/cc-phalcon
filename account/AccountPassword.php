@@ -65,7 +65,7 @@ trait AccountPassword
 			$recaptcher = new ReCaptcha($this->config->google->reCaptchaKey);
 
 			if (!$recaptcher->isValid($data["recaptcha"] ?? null, "session"))
-				return $this->jsonResponse(498);
+				return $this->jsonResponse(400, $this->PASSWORD_CONF["trans"]["NOT_HUMAN"]);
 		}
 
 		$entity = $this->PASSWORD_CONF["user_entity"];
