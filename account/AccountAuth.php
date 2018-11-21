@@ -57,7 +57,7 @@ trait AccountAuth
 			"activation_uri" => "auth/activation/",
 			"csrf"           => true,
 			"recaptcha"      => false,
-			"loginAttempts"  => 10
+			"loginAttempts"  => 8
 		];
 
 		// merge confs
