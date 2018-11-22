@@ -81,7 +81,7 @@ trait Translations
 			"ALERTS" => [
 				"SERVER_ERROR"     => "Ha ocurrido algo inesperado, por favor inténtalo más tarde.",
 				"SERVER_TIMEOUT"   => "Sin conexión. Revisa tu conexión a Internet e inténtalo de nuevo.",
-				"NOT_FOUND"        => "Este enlace está roto, por favor inténtalo más tarde.",
+				"NOT_FOUND"        => "Esta acción está deshabilitada, por favor inténtalo más tarde.",
 				"ACCESS_FORBIDDEN" => "Tu sesión ha caducado, debes iniciar sesión nuevamente.",
 				"CSRF"             => "La aplicación ha estado inactiva por mucho tiempo, refréscala haciendo ".
 										"<a href=\"javascript:location.reload();\">click aquí</a>.",
