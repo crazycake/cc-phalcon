@@ -22,10 +22,9 @@ help() {
 	echo -e "\033[95m build: build JS & CSS bundles and compile translations. \033[0m"
 	echo -e "\033[95m trans: Update translations po file. \033[0m"
 	echo -e "\033[95m php: Runs app php CLI. \033[0m"
-	echo -e "\033[95m clean: Cleans cache, logs and JS & CSS .rev bundles.\033[0m"
+	echo -e "\033[95m clean: Cleans cache, logs and JS & CSS revision bundles.\033[0m"
 	echo -e "\033[97m > admin commands \033[0m"
-	echo -e "\033[95m core: installs/updates core package (requires cc-phalcon project symlink). \033[0m"
-	echo -e "\033[95m aws-sync <bucket> <profile>: Syncs S3 CDN bucket with app assets (requires AWS CLI & profiles).\033[0m"
+	echo -e "\033[95m core: installs/updates core package (requires cc-phalcon project symbolic link). \033[0m"
 	exit
 }
 
@@ -79,41 +78,6 @@ clean)
 core)
 
 	bash $TOOLS_PATH"core.bash" "${@:2}"
-;;
-
-aws-sync)
-
-	if [ "$2" = "" ]; then
-		echo -e "\033[31mbucket name argument missing.\033[0m" && exit
-	fi
-
-	if [ "$3" = "" ]; then
-		echo -e "\033[31mAWS profile argument missing (~/.aws/credentials).\033[0m" && exit
-	fi
-
-	# sync assets
-	SYNC_LOCAL_PATH="$PROJECT_PATH/public/assets/"
-	SYNC_REMOTE_PATH="s3://$2/assets/"
-
-	echo -e "\033[95mBucket Syncing $SYNC_LOCAL_PATH -> $SYNC_REMOTE_PATH \033[0m"
-
-	aws s3 sync $SYNC_LOCAL_PATH $SYNC_REMOTE_PATH --profile $3 --delete --cache-control max-age=864000 --exclude '*' --include '*.rev.css' --include '*.rev.js'
-
-	# sync images
-	SYNC_LOCAL_PATH="$PROJECT_PATH/public/images/"
-	SYNC_REMOTE_PATH="s3://$2/images/"
-
-	echo -e "\033[95mBucket Syncing $SYNC_LOCAL_PATH -> $SYNC_REMOTE_PATH \033[0m"
-
-	aws s3 sync $SYNC_LOCAL_PATH $SYNC_REMOTE_PATH --profile $3 --delete --cache-control max-age=864000 --exclude '*.html'
-
-	# sync fonts
-	SYNC_LOCAL_PATH="$PROJECT_PATH/public/fonts/"
-	SYNC_REMOTE_PATH="s3://$2/fonts/"
-
-	echo -e "\033[95mBucket Syncing $SYNC_LOCAL_PATH -> $SYNC_REMOTE_PATH \033[0m"
-
-	aws s3 sync $SYNC_LOCAL_PATH $SYNC_REMOTE_PATH --profile $3 --delete --cache-control max-age=864000 --exclude '*.html'
 ;;
 
 # defaults
