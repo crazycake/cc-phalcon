@@ -304,10 +304,13 @@ abstract class WebCore extends BaseCore implements WebSecurity
 			"staticUrl" => $this->staticUrl()
 		];
 
+		// flash messages
+		$js->app->flashMessages = $this->flash->getMessages();
+
 		// set custom properties
 		$this->setAppJsProperties($js_app);
 
-		// set translations?
+		// set translations
 		if (class_exists("\TranslationController"))
 			$js_app->TRANS = \TranslationController::getJsTranslations();
 

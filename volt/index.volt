@@ -102,11 +102,6 @@
 			</div>
 		{% endif %}
 
-		{# flash messages #}
-		<div id="app-flash" style="display:none">
-			{{ flash.output() }}
-		</div>
-
 		{# APP JS #}
 		<script src="{{ js_url }}"></script>
 
