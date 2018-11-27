@@ -137,7 +137,7 @@
 		{% endif %}
 
 		{# reCaptcha plugin #}
-		{% if config.google.reCaptchaID %}
+		{% if config.google.reCaptchaID is not empty %}
 			<script src="https://www.google.com/recaptcha/api.js?onload=onRecaptchaLoaded&render={{ config.google.reCaptchaID }}&hl={{ client.lang }}" async defer>
 			</script>
 		{% endif %}
