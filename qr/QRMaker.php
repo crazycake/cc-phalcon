@@ -94,8 +94,8 @@ class QRMaker
 	 */
 	public function generate($params = [])
 	{
-
 		$qr = new QrTag();
+
 		$qr->bgColor = $params["background_color"] ?? "ffffff";
 		$qr->text    = $params["data"] ?? "CrazyCake QR Code";
 		$qr->file    = $params["savename"] ?? die("QR Library -> (generate) must set param savename");
