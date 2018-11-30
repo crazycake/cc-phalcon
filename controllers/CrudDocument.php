@@ -57,9 +57,9 @@ trait CrudDocument
 		// set db URI
 		$this->CRUD_CONF["database_uri"] = str_replace("~", "=", $this->CRUD_CONF["database_uri"]);
 
-		$this->database = (new \MongoDB\Client($uri))->{$this->CRUD_CONF["database_name"]};
+		$this->database = (new \MongoDB\Client($this->CRUD_CONF["database_uri"]))->{$this->CRUD_CONF["database_name"]};
 
-		$this->databaseManager = new \MongoDB\Driver\Manager($uri);
+		$this->databaseManager = new \MongoDB\Driver\Manager($this->CRUD_CONF["database_uri"]);
 	}
 
 	/**
@@ -249,21 +249,21 @@ trait CrudDocument
 	}
 
 	/**
-	 * Ajax - Delete Image
+	 * Ajax - Nullify prop or remove value in array-prop
 	 */
-	public function deleteImageAction()
+	public function nullifyValueAction()
 	{
 		$this->onlyAjax();
 
 		$data = $this->handleRequest([
-			"id"   => "string",
-			"prop" => "string",
-			"url"  => "string"
+			"id"     => "string",
+			"prop"   => "string",
+			"@value" => "string" // optional
 		], "POST");
 
 		// event
-		if (method_exists($this, "onBeforeDeleteImage"))
-			$this->onBeforeDeleteImage($data);
+		if (method_exists($this, "onBeforeNullifyValue"))
+			$this->onBeforeNullifyValue($data);
 
 		$object_id = new \MongoDB\BSON\ObjectID($data["id"]);
 		$prop      = $data["prop"];
@@ -277,14 +277,14 @@ trait CrudDocument
 		$is_array = $object->{$prop} instanceof \MongoDB\Model\BSONArray;
 
 		// array special case?
-		$cmd = $is_array ? ['$pull' => ["$prop" => $data["url"]]] : ['$set' => ["$prop" => null]];
+		$cmd = $is_array ? ['$pull' => ["$prop" => $data["value"]]] : ['$set' => ["$prop" => null]];
 
 		$this->database->{$this->CRUD_CONF["collection"]}->updateOne(["_id" => $object_id], $cmd);
 
 		// get updated value
-		$value = $this->database->{$this->CRUD_CONF["collection"]}->findOne(["_id" => $object_id]);
+		$object = $this->database->{$this->CRUD_CONF["collection"]}->findOne(["_id" => $object_id]);
 
-		$this->jsonResponse(200, ["prop" => "$prop", "value" => $value->{$prop}]);
+		$this->jsonResponse(200, ["prop" => "$prop", "value" => $object->{$prop}]);
 	}
 
 	/**
