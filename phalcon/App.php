@@ -20,7 +20,7 @@ abstract class App
 	 * Project Path
 	 * @var String
 	 */
-	protected static $PROJECT_PATH = __DIR__;
+	const PROJECT_PATH = "/var/www/";
 
 	/**
 	 * Config function
@@ -42,7 +42,7 @@ abstract class App
 	{
 		// define APP contants
 		define("MODULE_NAME", strtolower($mod_name));
-		define("PROJECT_PATH", static::$PROJECT_PATH);
+		define("PROJECT_PATH", self::PROJECT_PATH);
 		define("STORAGE_PATH", PROJECT_PATH."storage/");
 		define("COMPOSER_PATH", PROJECT_PATH."vendor/");
 		define("CORE_PATH", PROJECT_PATH."core/");
@@ -58,6 +58,8 @@ abstract class App
 
 		// set app configurations
 		$config = $this->config();
+		// set app version
+		$config["version"] = is_file(PROJECT_PATH."version") ? file_get_contents(PROJECT_PATH."version") : "1";
 
 		// app classes (loader)
 		$this->loadClasses($config);

@@ -3,7 +3,7 @@
  * Autoload phar file
  */
 
-DEFINE('CORE_VERSION', '0200e04');
+DEFINE('CORE_VERSION', '66eedb4');
 
 // load App
 require "phalcon/App.php";

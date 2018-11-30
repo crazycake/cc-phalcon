@@ -64,9 +64,10 @@ class TaskCore extends Task
 		if (!is_dir($assets_path) || !is_file($assets_path."app.js") || !is_file($assets_path."app.css"))
 			$this->colorize("Missing assets files.", "ERROR", true);
 
+		$current_version = (int)$this->config->version;
+
 		// decimal version
-		$ver = str_replace(".", "", $this->config->version);
-		$this->colorize("Current version: $ver", "NOTE");
+		$this->colorize("Current version: $current_version", "NOTE");
 
 		// clean old files
 		$files = scandir($assets_path);
@@ -80,20 +81,25 @@ class TaskCore extends Task
 			preg_match_all('/\d+/', $f, $file_ver);
 			$file_ver = current($file_ver[0]);
 
-			if ((int)$ver - (int)$file_ver <= 1)
+			if (empty($current_version - (int)$file_ver))
 				continue;
 
 			$this->colorize("Removing asset $assets_path$f", "NOTE");
 			unlink($assets_path.$f);
 		}
 
+		$new_version = $current_version + 1;
+
+		// update version
+		file_put_contents(PROJECT_PATH."version", $new_version);
+
 		// APP JS
-		copy($assets_path."app.js", $assets_path."app-".$ver.".rev.js");
+		copy($assets_path."app.js", $assets_path."app-".$new_version.".rev.js");
 		// APP CSS
-		copy($assets_path."app.css", $assets_path."app-".$ver.".rev.css");
+		copy($assets_path."app.css", $assets_path."app-".$new_version.".rev.css");
 
 		// output
-		$this->colorize("Created revision assets for version: ".$this->config->version, "OK", true);
+		$this->colorize("Created revision assets for version: ".$new_version, "OK", true);
 	}
 
 	/**
