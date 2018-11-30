@@ -61,11 +61,8 @@ class TaskCore extends Task
 	{
 		$assets_path = PROJECT_PATH."public/assets/";
 
-		if (!is_dir($assets_path))
-			$this->colorize("Assets path not found: $assets_path", "ERROR", true);
-
-		if (!is_file($assets_path."app.min.js") || !is_file($assets_path."app.min.css"))
-			$this->colorize("Missing minified assets files.", "ERROR", true);
+		if (!is_dir($assets_path) || !is_file($assets_path."app.js") || !is_file($assets_path."app.css"))
+			$this->colorize("Missing assets files.", "ERROR", true);
 
 		// decimal version
 		$ver = str_replace(".", "", $this->config->version);
@@ -79,9 +76,11 @@ class TaskCore extends Task
 			if (strpos($f, ".rev.") === false)
 				continue;
 
-			// keep 1st & 2nd-last versions only, get ony decimals
+			// keep 1st & 2nd-last versions only, numeric validation
 			preg_match_all('/\d+/', $f, $file_ver);
 			$file_ver = $file_ver[0];
+
+			~ss($file_ver);
 
 			if ((int)$ver - (int)$file_ver[0] <= 1)
 				continue;

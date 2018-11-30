@@ -9,12 +9,16 @@ echo -e "\033[94mCore Package Installer \033[0m"
 # project paths
 PROJECT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PROJECT_PATH="$(dirname "$PROJECT_PATH")"
+
 # tools path
 TOOLS_PATH=$PROJECT_PATH"/.tools/"
+
 # destination path
 DEST_PATH=$PROJECT_PATH"/core/"
+
 # core source
 CORE_PROJECT_NAME="cc-phalcon"
+
 # symlink to core project
 CORE_SRC_PATH="../$CORE_PROJECT_NAME/"
 # sub-paths
@@ -26,6 +30,7 @@ ROOT_TOOL_FILES=("cli")
 
 # check if cc-phalcon symlink is present
 if [ ! -d $CORE_SRC_PATH ]; then
+
 	echo -e "\033[31mCore project symlink folder not found ($CORE_SRC_PATH).\033[0m" && exit
 fi
 
