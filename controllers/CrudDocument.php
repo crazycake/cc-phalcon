@@ -249,9 +249,9 @@ trait CrudDocument
 	}
 
 	/**
-	 * Ajax - Nullify prop or remove value in array-prop
+	 * Ajax - Nullify prop or pull value in array-prop
 	 */
-	public function nullifyValueAction()
+	public function pullValueAction()
 	{
 		$this->onlyAjax();
 
