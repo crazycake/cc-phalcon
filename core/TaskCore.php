@@ -78,11 +78,9 @@ class TaskCore extends Task
 
 			// keep 1st & 2nd-last versions only, numeric validation
 			preg_match_all('/\d+/', $f, $file_ver);
-			$file_ver = $file_ver[0];
+			$file_ver = current($file_ver[0]);
 
-			~ss($file_ver);
-
-			if ((int)$ver - (int)$file_ver[0] <= 1)
+			if ((int)$ver - (int)$file_ver <= 1)
 				continue;
 
 			$this->colorize("Removing asset $assets_path$f", "NOTE");
@@ -90,9 +88,9 @@ class TaskCore extends Task
 		}
 
 		// APP JS
-		copy($assets_path."app.min.js", $assets_path."app-".$ver.".rev.js");
+		copy($assets_path."app.js", $assets_path."app-".$ver.".rev.js");
 		// APP CSS
-		copy($assets_path."app.min.css", $assets_path."app-".$ver.".rev.css");
+		copy($assets_path."app.css", $assets_path."app-".$ver.".rev.css");
 
 		// remove min files
 		foreach (glob($assets_path."*.min.*") as $f)
