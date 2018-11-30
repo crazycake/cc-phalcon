@@ -28,14 +28,20 @@ trait CrudDocument
 	protected $database;
 
 	/**
+	 * Database manager object
+	 * @var Object
+	 */
+	protected $databaseManager;
+
+	/**
 	 * Initialize Trait
 	 * @param Array $conf - The config array
 	 */
 	protected function initCrud($conf = [])
 	{
 		$defaults = [
-			"database_uri"  => null,
-			"database_name" => null,
+			"database_uri"  => getenv("MONGO_HOST") ?: "mongodb://mongo",
+			"database_name" => getenv("MONGO_DB") ?: "app",
 			"collection"    => null,
 			"fetch_limit"   => 1000
 		];
@@ -43,21 +49,17 @@ trait CrudDocument
 		// merge confs
 		$conf = array_merge($defaults, $conf);
 
-		if (empty($conf["collection"]))
-			throw new Exception("Crud requires a collection argument.");
+		if (empty($conf["collection"])) throw new Exception("Crud requires a collection argument.");
 
 		// set conf
 		$this->CRUD_CONF = $conf;
 
-		// set db
-		$uri = getenv("MONGO_HOST") ? str_replace("~", "=", getenv("MONGO_HOST")) : "mongodb://mongo";
+		// set db URI
+		$this->CRUD_CONF["database_uri"] = str_replace("~", "=", $this->CRUD_CONF["database_uri"]);
 
-		if (!empty($this->CRUD_CONF["database_uri"]))
-			$uri = str_replace("~", "=", $this->CRUD_CONF["database_uri"]);
+		$this->database = (new \MongoDB\Client($uri))->{$this->CRUD_CONF["database_name"]};
 
-		$database = $this->CRUD_CONF["database_name"] ?: (getenv("MONGO_DB") ?: "app");
-
-		$this->database = (new \MongoDB\Client($uri))->{$database};
+		$this->databaseManager = new \MongoDB\Driver\Manager($uri);
 	}
 
 	/**
@@ -81,10 +83,7 @@ trait CrudDocument
 
 		// defaults
 		$query = [];
-		$opts  = [
-			"limit" => intval($limit),
-			"skip"  => intval($data["skip"] ?? 0),
-		];
+		$opts  = ["limit" => intval($limit), "skip" => intval($data["skip"] ?? 0)];
 
 		$data["search"] = rtrim(ltrim($data["search"] ?? ""));
 
@@ -112,13 +111,15 @@ trait CrudDocument
 
 		// collection
 		$collection = $this->database->getDatabaseName().".".$this->CRUD_CONF["collection"];
+
 		// query
-		$resultset = $this->mongoManager->executeQuery($collection, new \MongoDB\Driver\Query($query, $opts));
+		$resultset = $this->databaseManager->executeQuery($collection, new \MongoDB\Driver\Query($query, $opts));
 		$items     = $resultset ? $resultset->toArray() : [];
 
 		// get unfiltered items
 		unset($opts["limit"], $opts["skip"], $opts["sort"]);
-		$resultset  = $this->mongoManager->executeQuery($collection, new \MongoDB\Driver\Query($query, $opts));
+
+		$resultset  = $this->databaseManager->executeQuery($collection, new \MongoDB\Driver\Query($query, $opts));
 		$totalItems = count($resultset ? $resultset->toArray() : []);
 
 		// event
