@@ -93,6 +93,9 @@ trait CrudDocument
 			$query['$text']     = ['$search' => $data["search"]];
 			$opts["projection"] = ["score" => ['$meta' => "textScore"]];
 			$opts["sort"]       = ["score" => ['$meta' => "textScore"]];
+
+			if (!empty($data["sort"]) && !empty($data["order"]))
+				$opts["sort"][$data["sort"]] = intval($data["order"]);
 		}
 		else {
 
@@ -103,7 +106,7 @@ trait CrudDocument
 				$opts["sort"] = [$data["sort"] => intval($data["order"])];
 		}
 
-		$this->logger->debug("CrudDocument::list -> new request: ". json_encode($query)." => ".json_encode($opts));
+		$this->logger->debug("CrudDocument::list -> query: ". json_encode($query)." => ".json_encode($opts));
 
 		// event
 		if (method_exists($this, "onBeforeQuery"))
