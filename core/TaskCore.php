@@ -92,10 +92,6 @@ class TaskCore extends Task
 		// APP CSS
 		copy($assets_path."app.css", $assets_path."app-".$ver.".rev.css");
 
-		// remove min files
-		foreach (glob($assets_path."*.min.*") as $f)
-			unlink($f);
-
 		// output
 		$this->colorize("Created revision assets for version: ".$this->config->version, "OK", true);
 	}
