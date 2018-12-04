@@ -106,11 +106,11 @@ trait CrudDocument
 				$opts["sort"] = [$data["sort"] => intval($data["order"])];
 		}
 
-		$this->logger->debug("CrudDocument::list -> query: ". json_encode($query)." => ".json_encode($opts));
-
 		// event
 		if (method_exists($this, "onBeforeQuery"))
 			$this->onBeforeQuery($query, $opts, $data);
+
+		$this->logger->debug("CrudDocument::list -> query: ". json_encode($query)." => ".json_encode($opts));
 
 		// collection
 		$collection = $this->database->getDatabaseName().".".$this->CRUD_CONF["collection"];
