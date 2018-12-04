@@ -40,10 +40,11 @@ trait CrudDocument
 	protected function initCrud($conf = [])
 	{
 		$defaults = [
-			"database_uri"  => getenv("MONGO_HOST") ?: "mongodb://mongo",
-			"database_name" => getenv("MONGO_DB") ?: "app",
-			"collection"    => null,
-			"fetch_limit"   => 1000
+			"database_uri"      => getenv("MONGO_HOST") ?: "mongodb://mongo",
+			"database_name"     => getenv("MONGO_DB") ?: "app",
+			"collection"        => null,
+			"predictive_search" => false,
+			"fetch_limit"       => 1000
 		];
 
 		// merge confs
@@ -96,6 +97,15 @@ trait CrudDocument
 
 			if (!empty($data["sort"]) && !empty($data["order"]))
 				$opts["sort"][$data["sort"]] = intval($data["order"]);
+
+			// search prediction props
+			if (!empty($this->CRUD_CONF["predictive_search"])) {
+
+				$query = ['$or' => [['$text' => $query['$text']]]];
+
+				foreach ($this->CRUD_CONF["predictive_search"] as $prop)
+					$query['$or'][] = [$prop => ['$regex' => $data["search"], '$options' => 'i']];
+			}
 		}
 		else {
 
@@ -106,11 +116,11 @@ trait CrudDocument
 				$opts["sort"] = [$data["sort"] => intval($data["order"])];
 		}
 
-		$this->logger->debug("CrudDocument::list -> query: ". json_encode($query)." => ".json_encode($opts));
-
 		// event
 		if (method_exists($this, "onBeforeQuery"))
 			$this->onBeforeQuery($query, $opts, $data);
+
+		$this->logger->debug("CrudDocument::list -> query: ". json_encode($query)." => ".json_encode($opts));
 
 		// collection
 		$collection = $this->database->getDatabaseName().".".$this->CRUD_CONF["collection"];

@@ -83,7 +83,7 @@ class BaseDocument
 	}
 
 	/**
-	 * Updates a property
+	 * Updates a property (alias)
 	 * @param Int $id - The object id value
 	 * @param String $prop - The property name
 	 * @param Mixed $value - The value
@@ -91,12 +91,7 @@ class BaseDocument
 	 */
 	public static function updateProperty($id, $prop, $value, $key = "_id")
 	{
-		$mongo = (\Phalcon\DI::getDefault())->getShared("mongo");
-
-		if ($key == "_id")
-			$id = $id instanceof \MongoDB\BSON\ObjectId ? $id : new \MongoDB\BSON\ObjectId($id);
-
-		return $mongo->{static::$COLLECTION}->updateOne([$key => $id], ['$set' => ["$prop" => $value]]);
+		return self::updateProperties($id, ["$prop" => $value], $key);
 	}
 
 	/**
