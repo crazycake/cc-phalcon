@@ -42,7 +42,7 @@ trait AccountAuth
 	public $AUTH_CONF;
 
 	/**
-	 * Flags
+	 * Account Flags
 	 * @var Array
 	 */
 	public static $FLAGS = ["pending", "enabled", "disabled"];
