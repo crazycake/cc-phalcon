@@ -35,14 +35,14 @@ watch)
 
 	echo -e "\033[95mRunning bundler watcher...\033[0m"
 
-	parcel ui/app.js -d public/assets/ --cache-dir storage/parcel/
+	parcel ui/app.js -d public/assets/ --cache-dir .parcel/
 ;;
 
 build)
 
 	echo -e "\033[95mBuilding bundlers... \033[0m"
 
-	parcel build ui/app.js -d public/assets/ --cache-dir storage/parcel/ --no-source-maps --detailed-report
+	parcel build ui/app.js -d public/assets/ --cache-dir .parcel/ --no-source-maps --detailed-report
 
 	echo -e "\033[95mExecuting container '$APP_NAME' tasks... \033[0m"
 
