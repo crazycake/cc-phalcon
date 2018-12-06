@@ -7,7 +7,6 @@
 		"models",
 		"account",
 		"helpers",
-		"qr",
 		"checkout"
 	],
 	"main"   : "autoload.php",

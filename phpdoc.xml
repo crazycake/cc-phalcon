@@ -8,6 +8,5 @@
 	</transformer>
 	<files>
 		<directory>.</directory>
-		<ignore>qr/src/*</ignore>
 	</files>
 </phpdoc>
