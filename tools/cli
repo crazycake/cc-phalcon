@@ -18,13 +18,13 @@ TOOLS_PATH=$PROJECT_PATH"/.tools/"
 help() {
 
 	echo -e "\033[93m > "$APP_NAME" webapp CLI \033[0m"
-	echo -e "\033[95m watch: Runs JS bundler watcher daemon.\033[0m"
-	echo -e "\033[95m build: Builds JS bundle and compile 'po' translation files. \033[0m"
+	echo -e "\033[95m watch: Run JS bundler watcher daemon.\033[0m"
+	echo -e "\033[95m build: Build JS bundle and compile 'po' translation files. \033[0m"
 	echo -e "\033[95m trans: Update translations 'po' file. \033[0m"
-	echo -e "\033[95m php: Runs app php CLI. \033[0m"
-	echo -e "\033[95m clean: Cleans cache, logs and JS / CSS revision bundles.\033[0m"
+	echo -e "\033[95m php: Run app php CLI. \033[0m"
+	echo -e "\033[95m clean: Clean cache & logs.\033[0m"
 	echo -e "\033[97m > admin commands \033[0m"
-	echo -e "\033[95m core: installs/updates core package (requires cc-phalcon project symbolic link). \033[0m"
+	echo -e "\033[95m core: Install/update core package (requires cc-phalcon project symbolic link). \033[0m"
 	exit
 }
 
@@ -70,7 +70,7 @@ clean)
 
 	docker exec -it $APP_NAME bash -c 'find /var/www/storage/cache /var/www/storage/logs -type f \( ! -iname ".*" \) -print0 | xargs -0 rm -f'
 
-	docker exec -it $APP_NAME bash -c 'find /var/www/public/assets -type f \( -iname "*.rev.*" \) -print0 | xargs -0 rm -f'
+	rm -rf $PROJECT_PATH"/.parcel" || true
 
 	echo -e "\033[92mDone! \033[0m"
 ;;
