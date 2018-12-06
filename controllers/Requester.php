@@ -122,7 +122,7 @@ trait Requester
 		$body = $response->getBody();
 
 		$this->logger->debug("Requester::_getRequest -> OK, received response [".$response->getStatusCode()."] length:  ".strlen($body).
-												  "\nHeaders: ".json_encode($response->getHeaders(), JSON_UNESCAPED_SLASHES));
+														"\nHeaders: ".json_encode($response->getHeaders(), JSON_UNESCAPED_SLASHES));
 
 		return (string)$body;
 	}

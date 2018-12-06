@@ -69,14 +69,14 @@ trait AccountPassword
 		}
 
 		$entity = $this->PASSWORD_CONF["user_entity"];
-		$user   = $entity::getUserByEmail($email, "enabled");
+		$user   = $entity::getByProperties(["email" => $email, "flag" => "enabled"]);
 
 		// if user not exists, send message
 		if (!$user)
 			$this->jsonResponse(400, $this->PASSWORD_CONF["trans"]["NOT_FOUND"]);
 
 		// hash sensitive data
-		$token_chain  = self::newTokenChainCrypt($user->id ?? (string)$user->_id, "pass");
+		$token_chain  = self::newTokenChainCrypt((string)$user->_id, "pass");
 		$password_uri = str_replace("{hash}", $token_chain, $this->PASSWORD_CONF["password_uri"]);
 
 		// sends the message
@@ -139,7 +139,7 @@ trait AccountPassword
 				throw new Exception($this->PASSWORD_CONF["trans"]["PASS_TOO_SHORT"]);
 
 			// saves new pass
-			$entity::updateProperty($user_id, "pass", $this->security->hash($password));
+			$entity::updateProperties($user_id, ["pass" => $this->security->hash($password)]);
 
 			// new user session
 			$this->newUserSession($user);
@@ -187,7 +187,7 @@ trait AccountPassword
 				throw new Exception($this->PASSWORD_CONF["trans"]["NEW_PASS_EQUALS"]);
 
 			// saves new pass
-			$entity::updateProperty($this->user_session["id"], "pass", $this->security->hash($new_pass));
+			$entity::updateProperties($this->user_session["id"], ["pass" => $this->security->hash($new_pass)]);
 
 			return true;
 		}

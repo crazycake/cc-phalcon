@@ -178,7 +178,7 @@ class AppServices
 	private function _setMysqlService(&$di)
 	{
 		// mysql adapter
-		$di->setShared("db", function() {
+		$di->setShared("mysql", function() {
 
 			return new \Phalcon\Db\Adapter\Pdo\Mysql([
 				"host"     => getenv("MYSQL_HOST") ?: "mysql",

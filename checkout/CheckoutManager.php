@@ -8,7 +8,6 @@
 namespace CrazyCake\Checkout;
 
 use Phalcon\Exception;
-
 use CrazyCake\Phalcon\App;
 
 /**
@@ -32,27 +31,19 @@ trait CheckoutManager
 	 * trait config
 	 * @var Array
 	 */
-	public $CHECKOUT_MANAGER_CONF;
+	public static $DEFAULT_CURRENCY = "CLP";
 
 	/**
-	 * Initialize Trait.
-	 * @param Array $conf - The config array
+	 * Buy Order code length
+	 * @var Integer
 	 */
-	public function initCheckoutManager($conf = [])
-	{
-		$defaults = [
-			"checkout_entity"  => "user_checkout",
-			"default_currency" => "CLP"
-		];
+	public static $CODE_LENGTH = 16;
 
-		$conf = array_merge($defaults, $conf);
-
-		$conf["checkout_entity"] = App::getClass($conf["checkout_entity"]);
-
-		$this->CHECKOUT_MANAGER_CONF = $conf;
-	}
-
-	/* --------------------------------------------------- § -------------------------------------------------------- */
+	/**
+	 * States possible values
+	 * @var Array
+	 */
+	public static $STATES = ["pending", "failed", "overturn", "success"];
 
 	/**
 	 * Ajax Action - Before user goes to payment gateway, a buyorder is generated.
@@ -68,22 +59,16 @@ trait CheckoutManager
 			// new checkout object
 			$checkout = (object)[
 				"gateway"  => $data["gateway"],
-				"currency" => $data["currency"] ?? $this->CHECKOUT_MANAGER_CONF["default_currency"],
+				"currency" => $data["currency"] ?? static::$DEFAULT_CURRENCY,
 				"payload"  => $data["payload"] ?? null,
 				"client"   => ["platform" => $this->client->platform, "browser" => $this->client->browser, "version" => $this->client->version]
 			];
-
-			$entity = $this->CHECKOUT_MANAGER_CONF["checkout_entity"];
-
-			// parse checkout objects
-			if (method_exists($entity, "parseFormObjects"))
-				$entity::parseFormObjects($checkout, $data);
 
 			// event
 			$this->onBeforeBuyOrderCreation($checkout);
 
 			// check if an error occurred
-			if (!$checkout = $entity::newBuyOrder($checkout)) {
+			if (!$checkout = UserCheckout::newBuyOrder($checkout)) {
 
 				$this->logger->error("CheckoutManager::buyOrder -> failed saving checkout: ".json_encode($checkout, JSON_UNESCAPED_SLASHES));
 				$this->jsonResponse(500);
@@ -109,33 +94,75 @@ trait CheckoutManager
 		$this->logger->debug("CheckoutManager::successCheckout -> processing buy order: $buy_order");
 
 		try {
-			// set classes
-			$entity = $this->CHECKOUT_MANAGER_CONF["checkout_entity"];
 
 			// get checkout & user
-			$checkout = $entity::getByBuyOrder($buy_order);
+			$checkout = UserCheckout::getByProperties(["buyOrder" => $buyOrder]);
 
 			if (!$checkout)
-				throw new Exception("checkout not found! buy order: ".$buy_order);
+				throw new Exception("checkout not found! buy order: $buy_order");
 
 			// skip already process for dev
 			if ($checkout->state == "success")
-				throw new Exception("Checkout already processed, buy order: ".$buy_order);
+				throw new Exception("Checkout already processed, buy order: $buy_order");
 
 			//1) update status of checkout
-			$entity::updateState($buy_order, "success");
+			UserCheckout::updateProperties(["buyOrder" => $buyOrder], ["state" => "success"]);
 
 			//2) call event
 			$this->onSuccessCheckout($checkout);
 		}
 		catch (\Exception | Exception $e) {
 
-			$this->logger->debug("CheckoutManager::successCheckout -> Exception: ".$e->getMessage());
-
-			$mailer = App::getClass("mailer_controller");
+			$this->logger->debug("CheckoutManager::successCheckout -> exception: ".$e->getMessage());
 
 			// send alert system mail message
-			(new $mailer())->adminException($e, ["trace" => "buy_order: ".$buy_order ?? "n/a"]);
+			(new \MailerController())->adminException($e, ["trace" => "buy_order: ".$buy_order ?? "n/a"]);
 		}
+	}
+
+	/**
+	 * Creates a new buy order
+	 * @param Object $checkout -The checkout object
+	 * @return Mixed - The checkout ORM object
+	 */
+	public static function newBuyOrder($checkout)
+	{
+		// generates buy order
+		$checkout->buyOrder = self::newBuyOrderCode();
+		$checkout->state    = "pending";
+
+		// log statement
+		$this->logger->debug("CheckoutManager::newBuyOrder -> saving buy order: $checkout->buyOrder");
+
+		try {
+
+			$checkout = UserCheckout::insert($checkout);
+
+			$this->logger->debug("CheckoutManager::newBuyOrder -> saved checkout! buy order: $checkout->buyOrder");
+
+			return $checkout;
+		}
+		catch (\Exception | Exception $e) {
+
+			$this->logger->error("CheckoutManager::newBuyOrder -> exception: ".$e->getMessage());
+			return false;
+		}
+	}
+
+	/**
+	 * Generates a random code for a buy order
+	 * @param Int $length - The buy order string length
+	 * @return String
+	 */
+	public static function newBuyOrderCode($length = '')
+	{
+		if (empty($length))
+			$length = static::$CODE_LENGTH;
+
+		$code = $this->cryptify->newAlphanumeric($length);
+
+		$exists = UserCheckout::getByProperties(["code" => $code]);
+
+		return $exists ? self::newBuyOrderCode($length) : $code;
 	}
 }

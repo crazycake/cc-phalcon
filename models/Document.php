@@ -1,6 +1,6 @@
 <?php
 /**
- * BaseDocument Model (NoSQL)
+ * Document Model (NoSQL)
  * @author Nicolas Pulido <nicolas.pulido@crazycake.tech>
  */
 
@@ -9,23 +9,13 @@ namespace CrazyCake\Models;
 /**
  * Base extended functions for models
  */
-class BaseDocument
+class Document
 {
 	/**
-	 * The colelction name [required]
+	 * The collection name (required)
 	 * @var String
 	 */
 	public static $COLLECTION = "";
-
-	/**
-	 * Entity (class name)
-	 * @link http://php.net/manual/en/language.oop5.late-static-bindings.php
-	 * @return String The current class name
-	 */
-	public static function entity()
-	{
-		return __CLASS__;
-	}
 
 	/**
 	 * Get by Id
@@ -83,29 +73,20 @@ class BaseDocument
 	}
 
 	/**
-	 * Updates a property (alias)
-	 * @param Int $id - The object id value
-	 * @param String $prop - The property name
-	 * @param Mixed $value - The value
-	 * @param String $key - The key index
-	 */
-	public static function updateProperty($id, $prop, $value, $key = "_id")
-	{
-		return self::updateProperties($id, ["$prop" => $value], $key);
-	}
-
-	/**
 	 * Updates an array of properties
-	 * @param Int $id - The object id value
+	 * @param Mixed $search - Array or String
 	 * @param Array $prop - The properties
 	 * @param String $key - The key index
 	 */
-	public static function updateProperties($id, $props, $key = "_id")
+	public static function updateProperties($search, $props)
 	{
-		$mongo = (\Phalcon\DI::getDefault())->getShared("mongo");
+		$key = is_array($search) ? $search[0] : "_id";
+		$id  = is_array($search) ? $search[1] : $search;
 
 		if ($key == "_id")
 			$id = $id instanceof \MongoDB\BSON\ObjectId ? $id : new \MongoDB\BSON\ObjectId($id);
+
+		$mongo = (\Phalcon\DI::getDefault())->getShared("mongo");
 
 		return $mongo->{static::$COLLECTION}->updateOne([$key => $id], ['$set' => $props]);
 	}

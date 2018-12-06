@@ -30,8 +30,6 @@ interface WebSecurity
  */
 abstract class BaseCore extends Controller
 {
-	// traits
-	use Debugger;
 	use Requester;
 	use Responser;
 

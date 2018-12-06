@@ -95,7 +95,7 @@ trait CheckoutCurrency
 		}
 		catch (\Exception | Exception $e) {
 
-			$this->logger->error("CheckoutJob::storeChileanPesoToDollarConversion -> failed retriving API data. Err: ".$e->getMessage());
+			$this->logger->error("CheckoutCurrency::storeDollarChileanPesoValue -> failed retriving API data, exception: ".$e->getMessage());
 
 			return null;
 		}
@@ -114,7 +114,7 @@ trait CheckoutCurrency
 
 			// print output for CLI
 			if (method_exists($this, "colorize"))
-				$this->colorize("Requesting: ".$api_url);
+				$this->colorize("Requesting: $api_url");
 
 			// curl request
 			$curl = curl_init($api_url);

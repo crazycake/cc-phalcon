@@ -33,15 +33,11 @@ trait Mailer
 	public function initMailer($conf = [])
 	{
 		$defaults = [
-			"user_entity" => "user",
-			"from_name"   => $this->config->name
+			"from_name" => $this->config->name
 		];
 
 		// merge confs
 		$conf = array_merge($defaults, $conf);
-
-		// append class prefixes
-		$conf["user_entity"] = App::getClass($conf["user_entity"]);
 
 		if (empty($conf["trans"]))
 			$conf["trans"] = \TranslationController::getCoreTranslations("mailer");
@@ -196,7 +192,7 @@ trait Mailer
 
 		$body = json_encode($result->body() ?? "", JSON_UNESCAPED_SLASHES);
 
-		$this->logger->debug("Mailer::sendMessage -> mail message sent: ".json_encode($recipients, JSON_UNESCAPED_SLASHES)." [$body]");
+		$this->logger->debug("Mailer::sendMessage -> mail message sent: ".json_encode($recipients)." [$body]");
 		return $result;
 	}
 

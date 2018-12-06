@@ -41,6 +41,12 @@ trait AccountAuth
 	 */
 	public $AUTH_CONF;
 
+	/**
+	 * Flags
+	 * @var Array
+	 */
+	public static $FLAGS = ["pending", "enabled", "disabled"];
+
 	/* --------------------------------------------------- § -------------------------------------------------------- */
 
 	/**
@@ -99,20 +105,23 @@ trait AccountAuth
 		$entity = $this->AUTH_CONF["user_entity"];
 		$params = ["pass" => "string"];
 
+		// user key
 		if ($this->AUTH_CONF["user_key"] == "email")
-			 $params["email"] = "email";
+			$params["email"] = "email";
+		else
+			$params[$this->AUTH_CONF["user_key"]] = "string";
 
 		// validate and filter request params data, second params are the required fields
 		$data = $this->handleRequest($params, "POST", $this->AUTH_CONF["csrf"]);
 
 		// find user
-		$user = $this->AUTH_CONF["user_key"] == "email" ? $entity::getUserByEmail($data["email"]) : $this->getLoginUser($data);
+		$user = $entity::getByProperties([$this->AUTH_CONF["user_key"] => $data["email"] ?? $data[$this->AUTH_CONF["user_key"]]]);
 
 		if (!$user)
 			$this->jsonResponse(400, $this->AUTH_CONF["trans"]["AUTH_FAILED"]);
 
 		// recaptcha validation
-		if ($this->AUTH_CONF["recaptcha"] && $this->getLoginAttempts($user->id ?? $user->_id) > 2) {
+		if ($this->AUTH_CONF["recaptcha"] && $this->getLoginAttempts($user->_id) > 2) {
 
 			$recaptcher = new ReCaptcha($this->config->google->reCaptchaKey);
 
@@ -123,10 +132,10 @@ trait AccountAuth
 		// password hash validation
 		if (!$this->security->checkHash($data["pass"], $user->pass ?? '')) {
 
-			$this->saveLoginAttempt($user->id ?? $user->_id);
+			$this->saveLoginAttempt($user->_id);
 
 			// basic attempts security
-			if ($this->getLoginAttempts($user->id ?? $user->_id) > $this->AUTH_CONF["loginAttempts"])
+			if ($this->getLoginAttempts($user->_id) > $this->AUTH_CONF["loginAttempts"])
 				$this->jsonResponse(400, $this->AUTH_CONF["trans"]["AUTH_BLOCKED"]);
 
 			$this->jsonResponse(400, $this->AUTH_CONF["trans"]["AUTH_FAILED"]);
@@ -163,13 +172,16 @@ trait AccountAuth
 		$entity = $this->AUTH_CONF["user_entity"];
 
 		// validate if user exists
-		if ($entity::getUserByEmail($data["email"]))
+		if ($entity::getByProperties(["email" => $data["email"]]))
 			$this->jsonResponse(400, str_replace("{email}", $data["email"], $this->AUTH_CONF["trans"]["EMAIL_EXISTS"]));
 
 		// remove CSRF key
 		unset($data[$this->client->csrfKey]);
-		// set pending email confirmation status
-		$data["flag"] = "pending";
+
+		// set properties
+		$data["pass"]      = $this->security->hash($data["pass"]);
+		$data["flag"]      = "pending";
+		$data["createdAt"] = $entity::toIsoDate();
 
 		// event
 		if (method_exists($this, "onBeforeRegisterUser"))
@@ -223,7 +235,7 @@ trait AccountAuth
 				throw new Exception("invalid user or missing 'pending' flag, userID: $user->id");
 
 			// save new account flag state
-			$entity::updateProperty($user_id, "flag", "enabled");
+			$entity::updateProperties($user_id, ["flag" => "enabled"]);
 
 			// custom behaviour event
 			if (method_exists($this, "onActivationSuccess"))
@@ -254,7 +266,7 @@ trait AccountAuth
 	public function sendActivationMailMessage($user)
 	{
 		// hash data
-		$token_chain = self::newTokenChainCrypt($user->id ?? (string)$user->_id, "activation");
+		$token_chain = self::newTokenChainCrypt((string)$user->_id, "activation");
 
 		// send activation account email
 		return $this->sendMailMessage("accountActivation", [
