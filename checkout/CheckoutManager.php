@@ -1,7 +1,7 @@
 <?php
 /**
  * Checkout Trait
- * This class has common actions for checkout controllers
+ * This class has common actions for checkout logic
  * @author Nicolas Pulido <nicolas.pulido@crazycake.tech>
  */
 
