@@ -100,7 +100,7 @@ trait AccountAuth
 		$params = ["pass" => "string"];
 
 		if ($this->AUTH_CONF["user_key"] == "email")
-			$params = ["email" => "email"];
+			 $params["email"] = "email";
 
 		// validate and filter request params data, second params are the required fields
 		$data = $this->handleRequest($params, "POST", $this->AUTH_CONF["csrf"]);
