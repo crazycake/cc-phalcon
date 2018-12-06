@@ -123,7 +123,7 @@ trait CheckoutManager
 	/**
 	 * Creates a new buy order
 	 * @param Object $checkout -The checkout object
-	 * @return Mixed - The checkout ORM object
+	 * @return Mixed - The checkout object
 	 */
 	public static function newBuyOrder($checkout)
 	{

@@ -279,7 +279,7 @@ trait AccountAuth
 	/**
 	 * Access Token validation for API Auth
 	 * @param String $token - The input token
-	 * @return Object - The token ORM object
+	 * @return Object - The token object
 	 */
 	protected function validateAccessToken($token = "")
 	{
