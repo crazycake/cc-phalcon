@@ -302,7 +302,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 			"name"          => $this->config->name,
 			"baseUrl"       => $this->baseUrl(),
 			"staticUrl"     => $this->staticUrl(),
-			"flashMessages" => $this->flash->getMessages()
+			"flashMessages" => $this->flash->getMessages() ?: []
 		];
 
 		// set custom properties
