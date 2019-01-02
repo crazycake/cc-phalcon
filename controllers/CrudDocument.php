@@ -56,7 +56,7 @@ trait CrudDocument
 		$this->CRUD_CONF = $conf;
 
 		// set db URI
-		$this->CRUD_CONF["database_uri"] = str_replace("~", "=", $this->CRUD_CONF["database_uri"]);
+		$this->CRUD_CONF["database_uri"] = $this->CRUD_CONF["database_uri"];
 
 		$this->database = (new \MongoDB\Client($this->CRUD_CONF["database_uri"]))->{$this->CRUD_CONF["database_name"]};
 
