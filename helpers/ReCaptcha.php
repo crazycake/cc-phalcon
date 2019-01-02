@@ -41,7 +41,7 @@ class ReCaptcha
 	 * @param String $score - The score threshold
 	 * @return Boolean
 	 */
-	public function isValid($token = null, $action = "", $score = 0.3)
+	public function isValid($token = null, $action = "", $score = 0.2)
 	{
 		if (empty($token)) return false;
 
