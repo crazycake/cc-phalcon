@@ -104,9 +104,10 @@ abstract class App
 		foreach ($argv as $k => $arg) {
 
 			switch ($k) {
-				case 0: break;
-				case 1: $arguments["task"]        = $arg; break;
-				case 2: $arguments["action"]      = $arg; break;
+
+				case 0 : break;
+				case 1 : $arguments["task"]       = $arg; break;
+				case 2 : $arguments["action"]     = $arg; break;
 				default: $arguments["params"][$k] = $arg; break;
 			}
 		}

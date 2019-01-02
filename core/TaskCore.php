@@ -157,6 +157,7 @@ class TaskCore extends Task
 		$close = "\033[0m";
 
 		switch ($type) {
+
 			case "OK":
 				$open = "\033[92m"; //Green color
 				break;
