@@ -196,8 +196,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 	private function _setClient()
 	{
 		// parse user agent
-		$ua = new UserAgent($this->request->getUserAgent());
-		$ua = $ua->parseUserAgent();
+		$ua = (new UserAgent($this->request->getUserAgent()))->parseUserAgent();
 
 		// create a client object
 		$this->client = (object)[
