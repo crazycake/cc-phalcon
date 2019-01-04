@@ -280,8 +280,8 @@ abstract class WebCore extends BaseCore implements WebSecurity
 		// for dev always set a random version
 		else {
 
-			$css_url .= "?v=".uniqid();
-			$js_url  .= "?v=".uniqid();
+			$css_url .= "?".uniqid();
+			$js_url  .= "?".uniqid();
 		}
 		//ss($css_url, $js_url);
 
