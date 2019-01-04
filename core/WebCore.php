@@ -45,11 +45,15 @@ abstract class WebCore extends BaseCore implements WebSecurity
 	 */
 	public function beforeExecuteRoute()
 	{
+		// redirect non https?
+		$this->_handleHttps();
+
 		// set client object with its properties (User-Agent)
 		$this->_setClient();
 
-		// redirect non https?
-		$this->_handleHttps();
+		// event (for crawlers)
+		if (method_exists($this, "onClientSet"))
+			$this->onClientSet();
 
 		// check browser is supported
 		if (!$this->checkBrowserSupport($this->client->browser, $this->client->shortVersion) &&
@@ -64,7 +68,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 		// set CSRF
 		$this->_setCSRF();
 
-		// event (session)
+		// event (for session)
 		if (method_exists($this, "onBeforeInitialize"))
 			$this->onBeforeInitialize();
 	}
