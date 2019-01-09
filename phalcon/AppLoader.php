@@ -61,7 +61,7 @@ trait AppLoader
 		ini_set("display_errors", (int)($env != "production"));
 		error_reporting(E_ALL);
 
-		$base_url = null;
+		$base_url = "http://localhost/";
 
 		// set BASE_URL for non CLI, CGI apps
 		if (php_sapi_name() != "cli") {
