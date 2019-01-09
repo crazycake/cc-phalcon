@@ -47,6 +47,10 @@ class UserAgent
 		$data["is_mobile"]     = (new Mobile_Detect())->isMobile();
 		$data["is_legacy"]     = $this->_isUserAgentLegacy($data);
 
+		// ++ special cases
+		if (strpos($this->user_agent, "XML Sitemaps Generator") >= 0)
+			$data["browser"] = "XML Sitemaps";
+
 		return $data;
 	}
 
