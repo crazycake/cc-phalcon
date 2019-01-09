@@ -48,7 +48,7 @@ class UserAgent
 		$data["is_legacy"]     = $this->_isUserAgentLegacy($data);
 
 		// ++ special cases
-		if (strpos($this->user_agent, "XML Sitemaps Generator") >= 0)
+		if (strpos($this->user_agent, "XML Sitemaps Generator") > 1)
 			$data["browser"] = "XML Sitemaps";
 
 		return $data;
