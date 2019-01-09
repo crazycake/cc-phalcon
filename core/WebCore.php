@@ -308,6 +308,8 @@ abstract class WebCore extends BaseCore implements WebSecurity
 			"flashMessages" => $this->flash->getMessages() ?: []
 		];
 
+		ss($this->flash->output());
+
 		// set custom properties
 		$this->setAppJsProperties($js_app);
 
