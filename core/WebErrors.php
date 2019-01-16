@@ -15,11 +15,9 @@ trait WebErrors
 	/**
 	 * After Execute Route
 	 */
-	public function afterExecuteRoute()
+	public function onBeforeInitialize()
 	{
-		parent::afterExecuteRoute();
-
-		//disable robots
+		// disable robots
 		$this->view->setVar("metas", ["disallow_robots" => true]);
 	}
 

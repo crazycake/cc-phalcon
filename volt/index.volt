@@ -42,7 +42,7 @@
 		{% endif %}
 
 		{# document metas #}
-		<meta name="description" content="{{ metas['description'] is not empty ? metas['description'] : config.name }}" />
+		<meta name="description" content="{{ metas['description'] is not empty ? metas['description'] : config.name }}" vmid="description" data-vue-meta="true" />
 
 		<meta name="author" content="{{ metas['author'] is not empty ? metas['author'] : 'CrazyCake Technologies' }}" />
 
