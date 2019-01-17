@@ -80,15 +80,15 @@ class Document
 	 */
 	public static function updateProperties($search, $props)
 	{
-		$key = is_array($search) ? $search[0] : "_id";
-		$id  = is_array($search) ? $search[1] : $search;
+		if (is_string($search))
+			$search = ["_id" => new \MongoDB\BSON\ObjectId($search)];
 
-		if ($key == "_id")
-			$id = $id instanceof \MongoDB\BSON\ObjectId ? $id : new \MongoDB\BSON\ObjectId($id);
+		else if ($search instanceof \MongoDB\BSON\ObjectId)
+			$search = ["_id" => $search];
 
 		$mongo = (\Phalcon\DI::getDefault())->getShared("mongo");
 
-		return $mongo->{static::$COLLECTION}->updateOne([$key => $id], ['$set' => $props]);
+		return $mongo->{static::$COLLECTION}->updateOne($search, ['$set' => $props]);
 	}
 
 	/**
