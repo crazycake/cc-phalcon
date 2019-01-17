@@ -68,7 +68,7 @@ trait CheckoutManager
 			$this->onBeforeBuyOrderCreation($checkout);
 
 			// check if an error occurred
-			if (!$checkout = UserCheckout::newBuyOrder($checkout)) {
+			if (!$checkout = \UserCheckout::newBuyOrder($checkout)) {
 
 				$this->logger->error("CheckoutManager::buyOrder -> failed saving checkout: ".json_encode($checkout, JSON_UNESCAPED_SLASHES));
 				$this->jsonResponse(500);
@@ -96,7 +96,7 @@ trait CheckoutManager
 		try {
 
 			// get checkout & user
-			$checkout = UserCheckout::getByProperties(["buyOrder" => $buyOrder]);
+			$checkout = \UserCheckout::getByProperties(["buyOrder" => $buyOrder]);
 
 			if (!$checkout)
 				throw new Exception("checkout not found! buy order: $buy_order");
@@ -106,7 +106,7 @@ trait CheckoutManager
 				throw new Exception("Checkout already processed, buy order: $buy_order");
 
 			//1) update status of checkout
-			UserCheckout::updateProperties(["buyOrder" => $buyOrder], ["state" => "success"]);
+			\UserCheckout::updateProperties(["buyOrder" => $buyOrder], ["state" => "success"]);
 
 			//2) call event
 			$this->onSuccessCheckout($checkout);
@@ -136,7 +136,7 @@ trait CheckoutManager
 
 		try {
 
-			$checkout = UserCheckout::insert($checkout);
+			$checkout = \UserCheckout::insert($checkout);
 
 			$this->logger->debug("CheckoutManager::newBuyOrder -> saved checkout! buy order: $checkout->buyOrder");
 
@@ -161,7 +161,7 @@ trait CheckoutManager
 
 		$code = $this->cryptify->newAlphanumeric($length);
 
-		$exists = UserCheckout::getByProperties(["code" => $code]);
+		$exists = \UserCheckout::getByProperties(["code" => $code]);
 
 		return $exists ? self::newBuyOrderCode($length) : $code;
 	}
