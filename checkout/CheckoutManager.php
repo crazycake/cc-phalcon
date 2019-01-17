@@ -68,7 +68,7 @@ trait CheckoutManager
 			$this->onBeforeBuyOrderCreation($checkout);
 
 			// check if an error occurred
-			if (!$checkout = \UserCheckout::newBuyOrder($checkout)) {
+			if (!$checkout = $this->newBuyOrder($checkout)) {
 
 				$this->logger->error("CheckoutManager::buyOrder -> failed saving checkout: ".json_encode($checkout, JSON_UNESCAPED_SLASHES));
 				$this->jsonResponse(500);
@@ -86,12 +86,12 @@ trait CheckoutManager
 
 	/**
 	 * Succesful checkout, call when checkout is completed succesfuly
-	 * @param String $buy_order - The buy order
+	 * @param String $buyOrder - The buy order
 	 * @return Object Checkout
 	 */
-	public function successCheckout($buy_order = "")
+	public function successCheckout($buyOrder = "")
 	{
-		$this->logger->debug("CheckoutManager::successCheckout -> processing buy order: $buy_order");
+		$this->logger->debug("CheckoutManager::successCheckout -> processing buy order: $buyOrder");
 
 		try {
 
@@ -99,11 +99,11 @@ trait CheckoutManager
 			$checkout = \UserCheckout::getByProperties(["buyOrder" => $buyOrder]);
 
 			if (!$checkout)
-				throw new Exception("checkout not found! buy order: $buy_order");
+				throw new Exception("checkout not found! buy order: $buyOrder");
 
 			// skip already process for dev
 			if ($checkout->state == "success")
-				throw new Exception("Checkout already processed, buy order: $buy_order");
+				throw new Exception("Checkout already processed, buy order: $buyOrder");
 
 			//1) update status of checkout
 			\UserCheckout::updateProperties(["buyOrder" => $buyOrder], ["state" => "success"]);
@@ -116,7 +116,7 @@ trait CheckoutManager
 			$this->logger->debug("CheckoutManager::successCheckout -> exception: ".$e->getMessage());
 
 			// send alert system mail message
-			(new \MailerController())->adminException($e, ["trace" => "buy_order: ".$buy_order ?? "n/a"]);
+			(new \MailerController())->adminException($e, ["trace" => "buyOrder: ".$buyOrder ?? "n/a"]);
 		}
 	}
 
@@ -125,10 +125,10 @@ trait CheckoutManager
 	 * @param Object $checkout -The checkout object
 	 * @return Mixed - The checkout object
 	 */
-	public static function newBuyOrder($checkout)
+	public function newBuyOrder($checkout)
 	{
 		// generates buy order
-		$checkout->buyOrder = self::newBuyOrderCode();
+		$checkout->buyOrder = $this->newBuyOrderCode();
 		$checkout->state    = "pending";
 
 		// log statement
@@ -154,7 +154,7 @@ trait CheckoutManager
 	 * @param Int $length - The buy order string length
 	 * @return String
 	 */
-	public static function newBuyOrderCode($length = '')
+	public function newBuyOrderCode($length = '')
 	{
 		if (empty($length))
 			$length = static::$CODE_LENGTH;
@@ -163,6 +163,6 @@ trait CheckoutManager
 
 		$exists = \UserCheckout::getByProperties(["code" => $code]);
 
-		return $exists ? self::newBuyOrderCode($length) : $code;
+		return $exists ? $this->newBuyOrderCode($length) : $code;
 	}
 }
