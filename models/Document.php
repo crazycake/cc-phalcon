@@ -25,9 +25,12 @@ class Document
 	{
 		$mongo = (\Phalcon\DI::getDefault())->getShared("mongo");
 
-		$id = $id instanceof \MongoDB\BSON\ObjectId ? $id : new \MongoDB\BSON\ObjectId($id);
+		try {
 
-		try { $object = $mongo->{static::$COLLECTION}->findOne(["_id" => $id]); }
+			$id = $id instanceof \MongoDB\BSON\ObjectId ? $id : new \MongoDB\BSON\ObjectId($id);
+
+			$object = $mongo->{static::$COLLECTION}->findOne(["_id" => $id]);
+		}
 		catch (\Exception $e) { $object = false; }
 
 		// return reduced object
@@ -80,13 +83,13 @@ class Document
 	 */
 	public static function updateProperties($search, $props)
 	{
+		$mongo = (\Phalcon\DI::getDefault())->getShared("mongo");
+
 		if (is_string($search))
 			$search = ["_id" => new \MongoDB\BSON\ObjectId($search)];
 
 		else if ($search instanceof \MongoDB\BSON\ObjectId)
 			$search = ["_id" => $search];
-
-		$mongo = (\Phalcon\DI::getDefault())->getShared("mongo");
 
 		return $mongo->{static::$COLLECTION}->updateOne($search, ['$set' => $props]);
 	}
