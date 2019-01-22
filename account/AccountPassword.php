@@ -182,7 +182,7 @@ trait AccountPassword
 				throw new Exception($this->PASSWORD_CONF["trans"]["PASS_TOO_SHORT"]);
 
 			// check current pass input
-			if (!$this->security->checkHash($current_pass, $user->pass ?? 'x'))
+			if (empty($user->pass) || !$this->security->checkHash($current_pass, $user->pass))
 				throw new Exception($this->PASSWORD_CONF["trans"]["PASS_DONT_MATCH"]);
 
 			// check pass is different to current
