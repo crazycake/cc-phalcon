@@ -158,7 +158,7 @@ trait AccountPassword
 	}
 
 	/**
-	 * Updates user password
+	 * Updates user password with validation
 	 * @param String $new_pass - The new password
 	 * @param String $current_pass - The current user password (input verification)
 	 */
@@ -172,6 +172,9 @@ trait AccountPassword
 			if (empty($user) || empty($new_pass) || empty($current_pass))
 				return;
 
+			if (strlen($new_pass) < $this->PASSWORD_CONF["password_min_length"])
+				throw new Exception($this->PASSWORD_CONF["trans"]["PASS_TOO_SHORT"]);
+
 			if (!empty($new_pass) && empty($current_pass))
 				throw new Exception($this->PASSWORD_CONF["trans"]["CURRENT_PASS_EMPTY"]);
 
@@ -179,7 +182,7 @@ trait AccountPassword
 				throw new Exception($this->PASSWORD_CONF["trans"]["PASS_TOO_SHORT"]);
 
 			// check current pass input
-			if (!$this->security->checkHash($current_pass, $user->pass))
+			if (!$this->security->checkHash($current_pass, $user->pass ?? 'x'))
 				throw new Exception($this->PASSWORD_CONF["trans"]["PASS_DONT_MATCH"]);
 
 			// check pass is different to current
