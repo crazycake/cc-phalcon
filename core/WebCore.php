@@ -191,7 +191,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 			return;
 
 		// force redirect for non-https request
-		$this->response->redirect(str_replace("http:", "https:", $this->baseUrl()));
+		$this->response->redirect(str_replace("http:", "https:", $this->baseUrl($this->getRequestedUri() ?? '')));
 	}
 
 	/**
