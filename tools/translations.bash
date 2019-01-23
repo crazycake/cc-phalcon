@@ -6,11 +6,12 @@
 set -e
 
 # current path
-PROJECT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-PROJECT_PATH="$(dirname "$PROJECT_PATH")"
+PROJECT_PATH="$(dirname $(pwd))"
 
 # app namespace
 APP_NAME=${PWD##*/}
+GROUP_NAME=$(pwd | awk -F/ '{print $(NF-2)}')
+CONTAINER_NAME="$GROUP_NAME"_"$APP_NAME"
 
 # help output
 help() {
@@ -29,7 +30,7 @@ build)
 	echo -e "\033[94mSearching for .po files in langs folder \033[0m"
 
 	# generate .mo files in LC_MESSAGES subfolder for each lang code
-	docker exec -it $APP_NAME bash -c \
+	docker exec -it $CONTAINER_NAME bash -c \
 		'find /var/www/app/langs/ -type f -name "*.po" | while read PO_FILE ; do
 
 			CODE=`basename "$PO_FILE" .po`
@@ -48,15 +49,15 @@ find)
 	echo -e "\033[95mCompiling volt files from container... \033[0m"
 
 	# execute volt compailer in container
-	docker exec -it $APP_NAME bash -c 'php /var/www/app/cli/cli.php main compileVolt'
+	docker exec -it $CONTAINER_NAME bash -c 'php /var/www/app/cli/cli.php main compileVolt'
 
 	echo -e "\033[95mSearching for keyword 'trans' in php files... \033[0m"
 
 	# find files (exclude some folders)
-	docker exec -it $APP_NAME bash -c 'find /var/www/app/ /var/www/storage/cache/ -type f -name "*.php" > .translations'
+	docker exec -it $CONTAINER_NAME bash -c 'find /var/www/app/ /var/www/storage/cache/ -type f -name "*.php" > .translations'
 
 	# generate pot file with xgettext and clean temp file
-	docker exec -it $APP_NAME bash -c \
+	docker exec -it $CONTAINER_NAME bash -c \
 		'xgettext \
 				--output app/langs/trans.pot \
 				--directory app/ \
@@ -72,7 +73,7 @@ find)
 		find /var/www/storage/cache -type f \( ! -iname ".*" \) -print0 | xargs -0 rm'
 
 	# merge po file
-	docker exec -it $APP_NAME bash -c \
+	docker exec -it $CONTAINER_NAME bash -c \
 		'find /var/www/app/langs/ -mindepth 1 -maxdepth 1 -type d | while read CODE_DIR; do
 
 			cd "$CODE_DIR"

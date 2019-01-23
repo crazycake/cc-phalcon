@@ -6,7 +6,7 @@
 set -e
 
 # current path
-PROJECT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+PROJECT_PATH="$(pwd)"
 
 # package properties
 APP_NAME="cc-phalcon"
@@ -36,7 +36,7 @@ case "$1" in
 		# download phar once
 		if [ ! -f $PROJECT_PATH"/box.phar" ]; then
 
-			echo -e "\033[94mDownloading box.phar ... \033[0m"
+			echo -e "\033[94mDownloading box.phar \033[0m"
 			wget -O box.phar $BOX_PHAR_URL
 		fi
 
@@ -65,12 +65,12 @@ case "$1" in
 		# download phar once
 		if [ ! -f $PROJECT_PATH"/phpdoc.phar" ]; then
 
-			echo -e "\033[94mDownloading phpdoc.phar ... \033[0m"
+			echo -e "\033[94mDownloading phpdoc.phar \033[0m"
 			wget -O phpdoc.phar $PHPDOC_PHAR_URL
 		fi
 
 		# PHP DOC
-		echo -e "\033[35mGenerating PHP Docs...\033[0m"
+		echo -e "\033[35mGenerating PHP Docs \033[0m"
 		php phpdoc.phar -d $PHPDOC_INPUT_PATH -t $PHPDOC_OUTPUT_PATH --template="responsive-twig"
 	;;
 

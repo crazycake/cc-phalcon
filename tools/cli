@@ -1,15 +1,17 @@
 #! /bin/bash
-# CrazyCake Phalcon App CLI [dev only]
+# Phalcon App CLI
 # author: Nicolas Pulido <nicolas.pulido@crazycake.tech>
 
 # stop script if an error occurs
 set -e
 
 # set project path
-PROJECT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+PROJECT_PATH="$(pwd)"
 
 # app namespace
 APP_NAME=${PWD##*/}
+GROUP_NAME=$(pwd | awk -F/ '{print $(NF-2)}')
+CONTAINER_NAME="$GROUP_NAME"_"$APP_NAME"
 
 # app paths
 TOOLS_PATH=$PROJECT_PATH"/.tools/"
@@ -44,10 +46,10 @@ build)
 
 	parcel build ui/app.js -d public/assets/ --cache-dir .parcel/ --no-source-maps --detailed-report
 
-	echo -e "\033[95mExecuting container '$APP_NAME' tasks... \033[0m"
+	echo -e "\033[95mExecuting container '$CONTAINER_NAME' tasks... \033[0m"
 
 	# rev assets in container
-	docker exec -it $APP_NAME bash -c 'php /var/www/app/cli/cli.php main revAssets'
+	docker exec -it $CONTAINER_NAME bash -c 'php /var/www/app/cli/cli.php main revAssets'
 
 	# translations (gettext)
 	bash $TOOLS_PATH"translations.bash" build
@@ -63,12 +65,12 @@ php)
 
 	echo -e "\033[95mRunning app php CLI... \033[0m"
 
-	docker exec -it $APP_NAME bash -c "php /var/www/app/cli/cli.php main ${@:2}"
+	docker exec -it $CONTAINER_NAME bash -c "php /var/www/app/cli/cli.php main ${@:2}"
 ;;
 
 clean)
 
-	docker exec -it $APP_NAME bash -c 'find /var/www/storage/cache /var/www/storage/logs -type f \( ! -iname ".*" \) -print0 | xargs -0 rm -f'
+	docker exec -it $CONTAINER_NAME bash -c 'find /var/www/storage/cache /var/www/storage/logs -type f \( ! -iname ".*" \) -print0 | xargs -0 rm -f'
 
 	rm -rf $PROJECT_PATH"/.parcel" || true
 
