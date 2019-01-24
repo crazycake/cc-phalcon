@@ -161,17 +161,17 @@ class TaskCore extends Task
 		switch ($type) {
 
 			case "OK":
-				$open = "\033[92m"; break; //Green color
+				$open = "\033[92m"; break; // green color
 
 			case "ERROR":
-				$open = "\033[91m"; break; //Red color
+				$open = "\033[91m"; break; // red color
 
 			case "WARNING":
-				$open = "\033[35m"; break; //Magenta color
+				$open = "\033[35m"; break; // magenta color
 
 			case "NOTE":
 			case "INFO":
-				$open = "\033[94m"; break; //Blue color
+				$open = "\033[94m"; break; // blue color
 
 			default:
 				throw new Exception("CoreTask:_colorize -> invalid message type: ".$type);
