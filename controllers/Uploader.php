@@ -69,15 +69,11 @@ trait Uploader
 
 		// set upload save path
 		$this->UPLOADER_CONF["path"]     = self::$ROOT_UPLOAD_PATH.$dir."/";
-		$this->UPLOADER_CONF["path_url"] = $this->baseUrl("uploads/$dir/");
+		$this->UPLOADER_CONF["path_url"] = $this->baseUrl($this->router->getControllerName()."/file/");
 
 		// create dir if not exists
 		if (!is_dir($this->UPLOADER_CONF["path"]))
 			 mkdir($this->UPLOADER_CONF["path"], 0755);
-
-		// crate symlink if not exists
-		if (!is_link(PUBLIC_PATH."uploads"))
-			@symlink(PUBLIC_PATH."uploads", STORAGE_PATH."uploads");
 	}
 
 	/**
@@ -110,7 +106,7 @@ trait Uploader
 			$filename = $upload["key"]."_".$upload["tag"]."_".round(microtime(true) * 1000).".".$upload["ext"];
 
 			$upload["id"]  = $filename;
-			$upload["url"] = $this->UPLOADER_CONF["path_url"].$filename;
+			$upload["url"] = $this->UPLOADER_CONF["path_url"].$this->cryptify->encryptData($filename);
 
 			// move file into temp folder
 			$file->moveTo($this->UPLOADER_CONF["path"].$filename);
@@ -119,6 +115,27 @@ trait Uploader
 			unlink($file->getTempName());
 
 		return $upload;
+	}
+
+	/**
+	 * Action - Get file by encrypted path
+	 */
+	public function fileAction($hash = "")
+	{
+		$filename = $this->UPLOADER_CONF["path"].$this->cryptify->decryptData($hash);
+
+		if (!is_file($filename)) die();
+
+		$finfo = finfo_open(FILEINFO_MIME_TYPE);
+		$mime  = finfo_file($finfo, $filename);
+
+		$this->response->setStatusCode(200, "OK");
+		$this->response->setContentType($mime);
+
+		// content must be set after content type
+		$this->response->setContent(file_get_contents($filename));
+		$this->response->send();
+		die();
 	}
 
 	/**

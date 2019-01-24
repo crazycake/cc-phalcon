@@ -73,7 +73,7 @@ class TaskCore extends Task
 
 		foreach ($files as $f) {
 
-			if (strpos($f, ".rev.") === false)
+			if (is_dir($f) || strpos($f, ".rev.") === false)
 				continue;
 
 			// keep 1st & 2nd-last versions only, numeric validation
@@ -84,6 +84,7 @@ class TaskCore extends Task
 				continue;
 
 			$this->colorize("Removing asset $assets_path$f", "NOTE");
+
 			unlink($assets_path.$f);
 		}
 

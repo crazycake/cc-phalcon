@@ -177,7 +177,7 @@ abstract class BaseCore extends Controller
 		// check require fields
 		foreach ($req_fields as $field => $data_type) {
 
-			$value = $this->_validateField($data, $field, $data_type);
+			$value = $this->_validateParam($data, $field, $data_type);
 
 			if ($value === false)
 				return $sendResponse(404);
@@ -196,13 +196,13 @@ abstract class BaseCore extends Controller
 	}
 
 	/**
-	 * Validates a request input field
+	 * Validates a request parameter
 	 * @param Array $data - The input data
 	 * @param String $field - The field name
 	 * @param String $data_type - The data type (int, string, array, json, email)
 	 * @return Mixed
 	 */
-	private function _validateField($data, $field, $data_type)
+	private function _validateParam($data, $field, $data_type)
 	{
 		$is_optional = false;
 
