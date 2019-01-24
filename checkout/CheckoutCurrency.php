@@ -67,6 +67,7 @@ trait CheckoutCurrency
 			$redis->set(self::$REDIS_KEY_USD_CLP_VALUE, $new_value);
 
 		$value = $redis->get(self::$REDIS_KEY_USD_CLP_VALUE) * $amount;
+
 		$redis->close();
 
 		return $value;
