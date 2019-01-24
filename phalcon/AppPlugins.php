@@ -52,7 +52,7 @@ class ExceptionsPlugin extends \Phalcon\Mvc\User\Plugin
 
 			// log error?
 			if ($log_exception)
-				$di->getShared("logger")->error("App Exception: ".$exception->getMessage()." File: ".$exception->getFile().". Line: ".$exception->getLine()."</h1>");
+				$di->getShared("logger")->error("App Exception: ".$exception->getMessage()." File: ".$exception->getFile().". Line: ".$exception->getLine());
 
 			// forward
 			$dispatcher->forward($forward);
