@@ -12,7 +12,7 @@ use Phalcon\Image\Adapter\GD;
 use CrazyCake\Helpers\Slug;
 
 /**
- * Uploader Adapter Handler.
+ * Uploader Adapter Handler
  */
 trait Uploader
 {
@@ -64,12 +64,8 @@ trait Uploader
 		// set request headers
 		$this->headers = $this->request->getHeaders();
 
-		// get session user temporal dir
-		$dir = $this->client->csrfKey;
-
-		// set upload save path
-		$this->UPLOADER_CONF["path"]     = self::$ROOT_UPLOAD_PATH.$dir."/";
-		$this->UPLOADER_CONF["path_url"] = $this->baseUrl($this->router->getControllerName()."/file/");
+		// set upload save path for session
+		$this->UPLOADER_CONF["path"] = self::$ROOT_UPLOAD_PATH.$this->client->csrfKey."/";
 
 		// create dir if not exists
 		if (!is_dir($this->UPLOADER_CONF["path"]))
@@ -105,8 +101,10 @@ trait Uploader
 			// set file name
 			$filename = $upload["key"]."_".$upload["tag"]."_".round(microtime(true) * 1000).".".$upload["ext"];
 
-			$upload["id"]  = $filename;
-			$upload["url"] = $this->UPLOADER_CONF["path_url"].$this->cryptify->encryptData($filename);
+			$upload["id"] = $filename;
+
+			// public url
+			$upload["url"] = $this->baseUrl($this->router->getControllerName()."/file/".$this->cryptify->encryptData($filename));
 
 			// move file into temp folder
 			$file->moveTo($this->UPLOADER_CONF["path"].$filename);
@@ -294,13 +292,12 @@ trait Uploader
 			CURLOPT_RETURNTRANSFER => true,
 			CURLOPT_USERAGENT      => "Phalcon"
 		];
-		//~ss($options);
 
 		$ch = curl_init();
 	 	curl_setopt_array($ch, $options);
 		$result = curl_exec($ch);
 		curl_close($ch);
-		//~ss($result);
+		//~ss($result, $options);
 
 		// parse result
 		$response = json_decode($result, true);
@@ -334,95 +331,94 @@ trait Uploader
 	/**
 	 * Validate uploaded file
 	 * @param String $file object - The phalcon uploaded file
-	 * @param String $file_key string - The file key
+	 * @param String $key string - The file key
 	 * @return Array
 	 */
-	protected function validateUploadedFile($file, $file_key = "")
+	protected function validateUploadedFile($file, $key = "")
 	{
 		// get file properties
-		$file_name       = $file->getName();
-		$file_name_array = explode(".", $file_name);
-		$file_ext        = strtolower(end($file_name_array));
-		$file_mimetype   = $file->getRealType(); //real file MIME type
-		$file_size       = (float)($file->getSize()); //set to KB unit
+		$filename  = $file->getName();
+		$pieces    = explode(".", $filename);
+		$extension = strtolower(end($pieces));
+		$mimetype  = $file->getRealType();      // real file MIME type
+		$fsize     = (float)($file->getSize()); // set to KB unit
 
 		// change special extensions
-		if ($file_ext == "jpeg") {
+		if ($extension == "jpeg") {
 
-			$file_name = str_replace(".jpeg", ".jpg", $file_name);
-			$file_ext  = "jpg";
+			$filename  = str_replace(".jpeg", ".jpg", $filename);
+			$extension = "jpg";
 		}
-		else if ($file_ext == "blob" && $file_mimetype == "image/jpeg") {
+		else if ($extension == "blob" && $mimetype == "image/jpeg") {
 
-			$file_name = $file_key."-".uniqid();
-			$file_ext  = "jpg";
+			$filename  = $key."-".uniqid();
+			$extension = "jpg";
 		}
 
 		// set tag
-		$file_cname = str_ireplace(".$file_ext", "", $file_name); //ignore case
-		$file_tag   = preg_replace("/[^0-9]/", "", Slug::generate($file_cname));
+		$cname = str_ireplace(".$extension", "", $filename);
+		$tag   = preg_replace("/[^0-9]/", "", Slug::generate($cname));
 
 		// limit namespace length
-		if (empty($file_tag))
-			$file_tag = "0";
+		if (empty($tag)) $tag = "0";
 
 		$upload = [
-			"name" => $file_name,
-			"tag"  => $file_tag,
-			"size" => $file_size,
-			"key"  => $file_key,
-			"ext"  => $file_ext,
-			"mime" => $file_mimetype
+			"name" => $filename,
+			"tag"  => $tag,
+			"size" => $fsize,
+			"key"  => $key,
+			"ext"  => $extension,
+			"mime" => $mimetype
 		];
 		//~ss($upload);
 
 		try {
 
-			$file_conf = $this->UPLOADER_CONF["files"][$file_key]; // file conf
+			$conf = $this->UPLOADER_CONF["files"][$key]; // file conf
 
-			if (empty($file_conf))
-				throw new Exception("Uploader file configuration missing for $file_key.");
+			if (empty($conf))
+				throw new Exception("Uploader file configuration missing for $key.");
 
 			// set defaults
-			$file_conf["max_size"] = $file_conf["max_size"] ?? self::$DEFAULT_MAX_SIZE;
-			$file_conf["type"]     = $file_conf["type"] ?? "";
+			$conf["max_size"] = $conf["max_size"] ?? self::$DEFAULT_MAX_SIZE;
+			$conf["type"]     = $conf["type"] ?? "";
 
 			// validation: max-size
-			if ($file_size/1024 > $file_conf["max_size"])
-				throw new Exception(str_replace(["{file}", "{size}"], [$file_name, ceil($file_conf["max_size"]/1024)." MB"],
-																	  $this->UPLOADER_CONF["trans"]["MAX_SIZE"]));
+			if ($fsize/1024 > $conf["max_size"])
+				throw new Exception(str_replace(["{file}", "{size}"], [$filename, ceil($conf["max_size"]/1024)." MB"], $this->UPLOADER_CONF["trans"]["MAX_SIZE"]));
+
 			// validation: file-type
-			if (!in_array($file_ext, $file_conf["type"]))
-				throw new Exception(str_replace("{file}", $file_name, $this->UPLOADER_CONF["trans"]["FILE_TYPE"]));
+			if (!in_array($extension, $conf["type"]))
+				throw new Exception(str_replace("{file}", $filename, $this->UPLOADER_CONF["trans"]["FILE_TYPE"]));
 
 			// validation: image size
-			if (empty($file_conf["isize"]))
+			if (empty($conf["isize"]))
 				return $upload;
 
 			// get file props
-			$size  = $file_conf["isize"];
+			$size  = $conf["isize"];
 			$image = new GD($file->getTempName());
 
 			// fixed width
 			if (isset($size["w"]) && $size["w"] != $image->getWidth())
-				throw new Exception(str_replace(["{file}", "{w}"], [$file_name, $size["w"]], $this->UPLOADER_CONF["trans"]["IMG_WIDTH"]));
+				throw new Exception(str_replace(["{file}", "{w}"], [$filename, $size["w"]], $this->UPLOADER_CONF["trans"]["IMG_WIDTH"]));
 
 			// fixed height
 			if (isset($size["h"]) && $size["h"] != $image->getHeight())
-				throw new Exception(str_replace(["{file}", "{h}"], [$file_name, $size["h"]], $this->UPLOADER_CONF["trans"]["IMG_HEIGHT"]));
+				throw new Exception(str_replace(["{file}", "{h}"], [$filename, $size["h"]], $this->UPLOADER_CONF["trans"]["IMG_HEIGHT"]));
 
 			// minimun width
 			if (isset($size["mw"]) && $image->getWidth() < $size["mw"])
-				throw new Exception(str_replace(["{file}", "{w}"], [$file_name, $size["mw"]], $this->UPLOADER_CONF["trans"]["IMG_MIN_WIDTH"]));
+				throw new Exception(str_replace(["{file}", "{w}"], [$filename, $size["mw"]], $this->UPLOADER_CONF["trans"]["IMG_MIN_WIDTH"]));
 
 			// minimun width
 			if (isset($size["mh"]) && $image->getHeight() < $size["mh"])
-				throw new Exception(str_replace(["{file}", "{h}"], [$file_name, $size["mh"]], $this->UPLOADER_CONF["trans"]["IMG_MIN_HEIGHT"]));
+				throw new Exception(str_replace(["{file}", "{h}"], [$filename, $size["mh"]], $this->UPLOADER_CONF["trans"]["IMG_MIN_HEIGHT"]));
 
 			$ratio = explode("/", $size["r"] ?? "");
 
 			if (isset($size["r"]) && round($image->getWidth()/$image->getHeight(), 2) != round($ratio[0] / $ratio[1], 2))
-				throw new Exception(str_replace(["{file}", "{r}"], [$file_name, $size["r"]], $this->UPLOADER_CONF["trans"]["IMG_RATIO"]));
+				throw new Exception(str_replace(["{file}", "{r}"], [$filename, $size["r"]], $this->UPLOADER_CONF["trans"]["IMG_RATIO"]));
 		}
 		catch (\Exception | Exception $e) { $upload["error"] = $e->getMessage(); }
 

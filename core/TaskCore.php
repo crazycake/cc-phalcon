@@ -124,6 +124,7 @@ class TaskCore extends Task
 
 		$i = 0;
 		foreach ($files as $file) {
+
 			$compiler->compile($file);
 			$i++;
 		}
@@ -160,18 +161,18 @@ class TaskCore extends Task
 		switch ($type) {
 
 			case "OK":
-				$open = "\033[92m"; //Green color
-				break;
+				$open = "\033[92m"; break; //Green color
+
 			case "ERROR":
-				$open = "\033[91m"; //Red color
-				break;
+				$open = "\033[91m"; break; //Red color
+
 			case "WARNING":
-				$open = "\033[35m"; //Magenta color
-				break;
+				$open = "\033[35m"; break; //Magenta color
+
 			case "NOTE":
 			case "INFO":
-				$open = "\033[94m"; //Blue color
-				break;
+				$open = "\033[94m"; break; //Blue color
+
 			default:
 				throw new Exception("CoreTask:_colorize -> invalid message type: ".$type);
 		}
