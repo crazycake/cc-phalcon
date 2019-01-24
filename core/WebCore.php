@@ -213,8 +213,10 @@ abstract class WebCore extends BaseCore implements WebSecurity
 			"requestedUri" => $this->getRequestedUri()
 		];
 
-		if (!empty($this->loggerAccess))
-			$this->loggerAccess->debug("Access -> [".$this->request->getClientAddress()."] UA: ".$this->request->getUserAgent()." -> ".json_encode($this->client));
+		$this->loggerAccess->debug(
+			"[".$this->request->getClientAddress()."] ".json_encode("./".$this->getRequestedUri(), JSON_UNESCAPED_SLASHES)." ".
+			"UA: ".$this->request->getUserAgent()." -> ".json_encode($ua)
+		);
 	}
 
 	/**
