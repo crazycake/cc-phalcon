@@ -212,6 +212,9 @@ abstract class WebCore extends BaseCore implements WebSecurity
 			"isLegacy"     => $ua["is_legacy"],
 			"requestedUri" => $this->getRequestedUri()
 		];
+
+		if (!empty($this->loggerAccess))
+			$this->loggerAccess->debug("Access -> [".$this->request->getClientAddress()."] UA: ".$this->request->getUserAgent()." -> ".json_encode($this->client));
 	}
 
 	/**
