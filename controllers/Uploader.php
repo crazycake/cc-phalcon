@@ -349,11 +349,6 @@ trait Uploader
 			$filename  = str_replace(".jpeg", ".jpg", $filename);
 			$extension = "jpg";
 		}
-		else if ($extension == "blob" && $mimetype == "image/jpeg") {
-
-			$filename  = $key."-".uniqid();
-			$extension = "jpg";
-		}
 
 		// set tag
 		$cname = str_ireplace(".$extension", "", $filename);
