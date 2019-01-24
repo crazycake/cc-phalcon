@@ -108,19 +108,26 @@ class AppServices
 			return $url;
 		});
 
-		// logger adapter
+		// global logger adapter
 		$di->setShared("logger", function() {
 
 			// date now
-			$log_file = date("d-m-Y");
+			$file = date("d-m-Y");
 
-			// special case for cli (log is not saved as 'httpd user' as default)
-			if (MODULE_NAME == "cli")
-				$log_file = "cli_".$log_file;
-
-			$logger = new \Phalcon\Logger\Adapter\File(STORAGE_PATH."logs/".$log_file.".log");
-			return $logger;
+			return new \Phalcon\Logger\Adapter\File(STORAGE_PATH."logs/$file.log");
 		});
+
+		// access logger adapter
+		if (MODULE_NAME != "cli") {
+
+			$di->setShared("loggerAccess", function() {
+
+				// date now
+				$file = date("d-m-Y");
+
+				return new \Phalcon\Logger\Adapter\File(STORAGE_PATH."logs/access-$file.log");
+			});
+		}
 
 		// basic http security
 		$di->setShared("security", function() {
