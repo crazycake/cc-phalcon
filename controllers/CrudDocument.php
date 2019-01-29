@@ -126,14 +126,12 @@ trait CrudDocument
 		$collection = $this->database->getDatabaseName().".".$this->CRUD_CONF["collection"];
 
 		// query
-		$resultset = $this->databaseManager->executeQuery($collection, new \MongoDB\Driver\Query($query, $opts));
-		$items     = $resultset ? $resultset->toArray() : [];
+		$items = $this->databaseManager->executeQuery($collection, new \MongoDB\Driver\Query($query, $opts))->toArray();
 
 		// get unfiltered items
 		unset($opts["limit"], $opts["skip"], $opts["sort"]);
 
-		$resultset  = $this->databaseManager->executeQuery($collection, new \MongoDB\Driver\Query($query, $opts));
-		$totalItems = count($resultset ? $resultset->toArray() : []);
+		$totalItems = $this->database->{$this->CRUD_CONF["collection"]}->count($query, $opts);
 
 		// event
 		if (method_exists($this, "onAfterQuery"))
