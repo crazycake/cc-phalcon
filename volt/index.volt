@@ -73,6 +73,9 @@
 		{# APP CSS #}
 		<link id="style" rel="stylesheet" type="text/css" href="{{ css_url }}" />
 
+		{# APP JS (defered) #}
+		<script defer src="{{ js_url }}"></script>
+
 		{# Google Tag Manager [HEAD] #}
 		{% if config.google.gtmUA is not empty %}
 			<script>
@@ -102,25 +105,27 @@
 			</div>
 		{% endif %}
 
-		{# APP JS #}
-		<script src="{{ js_url }}"></script>
-
-		{# APP JS Loader #}
+		{# APP JS Loader (on document ready) #}
 		{% if js_loader is not empty %}
 			<script defer>
-			APP = {{ js_app }};
-			{{ js_loader }}
+				APP = {{ js_app }};
+
+				document.addEventListener('DOMContentLoaded', function() {
+					{{ js_loader }}
+
+					console.log('App {{ config.version }} - Engine <?php echo \Phalcon\Version::get()." [".CORE_VERSION."], rendered in ".number_format((float)(microtime(true) - APP_ST), 3, ".", "")." secs."; ?>');
+				}, false);
 			</script>
 		{% endif %}
 
 		{# Google Analytics (async loading) #}
 		{% if config.google.analyticsUA is not empty %}
-			<script>
+			<script defer>
 				window.ga=function(){ga.q.push(arguments)};ga.q=[];ga.l=+new Date;
 				ga('create','{{ config.google.analyticsUA }}','auto');
 				ga('send','pageview');
 			</script>
-			<script src="https://www.google-analytics.com/analytics.js" async defer></script>
+			<script async defer src="https://www.google-analytics.com/analytics.js"></script>
 		{% endif %}
 
 		{# Google Tag Manager [BODY] #}
@@ -133,19 +138,12 @@
 
 		{# reCaptcha plugin #}
 		{% if config.google.reCaptchaID is not empty %}
-			<script src="https://www.google.com/recaptcha/api.js?onload=onRecaptchaLoaded&render={{ config.google.reCaptchaID }}&hl={{ client.lang }}" async defer>
-			</script>
+			<script async defer src="https://www.google.com/recaptcha/api.js?onload=onRecaptchaLoaded&render={{ config.google.reCaptchaID }}&hl={{ client.lang }}"></script>
 		{% endif %}
 
 		{# JS disabled fallback #}
 		<noscript>
 			<p>{{ trans._('Este sitio funciona con Javascript. Por favor activa el motor de Javascript en tu navegador.') }}</p>
 		</noscript>
-
-		{# debug, output render time #}
-		<script>
-			console.log('App {{ config.version }} - Engine <?php echo \Phalcon\Version::get()." [".CORE_VERSION."], rendered in ".number_format((float)(microtime(true) - APP_ST), 3, ".", "")." secs."; ?>');
-		</script>
-
 	</body>
 </html>
