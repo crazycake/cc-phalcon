@@ -69,7 +69,7 @@ trait Uploader
 
 		// create dir if not exists
 		if (!is_dir($this->UPLOADER_CONF["path"]))
-			 mkdir($this->UPLOADER_CONF["path"], 0755);
+			mkdir($this->UPLOADER_CONF["path"], 0755);
 	}
 
 	/**

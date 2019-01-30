@@ -77,22 +77,16 @@ trait Responser
 	 * @param String $mime_type - The mime type
 	 * @return String - The response
 	 */
-	protected function sendFileToBuffer($data = null, $mime_type = "application/json")
+	protected function sendFileToBuffer($data = null, $mime_type = "text/plain")
 	{
-		// append struct as string if data type is JSON
-		if ($mime_type == "application/json")
-			$data = str_replace("@payload", $data, self::$JSON_RESPONSE_STRUCT);
-
 		if ($this->di->has("view"))
 			$this->view->disable(); // disable view output
 
 		$this->response->setStatusCode(200, "OK");
 		$this->response->setHeader("Access-Control-Allow-Origin", "*");
 		$this->response->setContentType($mime_type);
-
 		// content must be set after content type
-		if (!is_null($data))
-			$this->response->setContent($data);
+		$this->response->setContent($data);
 
 		$this->response->send();
 		die();
