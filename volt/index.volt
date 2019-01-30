@@ -70,10 +70,15 @@
 			{{ partial("templates/links") }}
 		{% endif %}
 
-		{# APP CSS #}
+		{# Bundle CSS #}
 		<link id="style" rel="stylesheet" type="text/css" href="{{ css_url }}" />
 
-		{# APP JS (defered) #}
+		{# APP STORE #}
+		{% if metas['store'] is not empty %}
+			<script defer src="{{ url(metas['store']) }}"></script>
+		{% endif %}
+
+		{# Bundle JS (defered) #}
 		<script defer src="{{ js_url }}"></script>
 
 		{# Google Tag Manager [HEAD] #}
