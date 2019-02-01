@@ -27,9 +27,7 @@ class Document
 
 		try {
 
-			$id = $id instanceof \MongoDB\BSON\ObjectId ? $id : new \MongoDB\BSON\ObjectId($id);
-
-			$object = $mongo->{static::$COLLECTION}->findOne(["_id" => $id]);
+			$object = $mongo->{static::$COLLECTION}->findOne(["_id" => self::toObjectId($id)]);
 		}
 		catch (\Exception $e) { $object = false; }
 
@@ -85,11 +83,8 @@ class Document
 	{
 		$mongo = (\Phalcon\DI::getDefault())->getShared("mongo");
 
-		if (is_string($search))
-			$search = ["_id" => new \MongoDB\BSON\ObjectId($search)];
-
-		else if ($search instanceof \MongoDB\BSON\ObjectId)
-			$search = ["_id" => $search];
+		if (!is_array($search))
+			$search = ["_id" => self::toObjectId($search)];
 
 		return $mongo->{static::$COLLECTION}->updateOne($search, ['$set' => $props]);
 	}
@@ -106,6 +101,18 @@ class Document
 		$object_id = $insertion->getInsertedId();
 
 		return self::getById($object_id);
+	}
+
+	/**
+	 * To Mongo Object ID
+	 * @param Mixed $id
+	 */
+	public static function toObjectId($id)
+	{
+		try { $id = $id instanceof \MongoDB\BSON\ObjectId ? $id : new \MongoDB\BSON\ObjectId($id); }
+		catch (\Exception $e) { $id = null; }
+
+		return $id;
 	}
 
 	/**
