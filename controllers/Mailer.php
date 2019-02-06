@@ -40,7 +40,7 @@ trait Mailer
 		$conf = array_merge($defaults, $conf);
 
 		if (empty($conf["trans"]))
-			$conf["trans"] = \TranslationController::getCoreTranslations("mailer");
+			$conf["trans"] = \TranslationController::defaultCoreTranslations("mailer");
 
 		$this->MAILER_CONF = $conf;
 	}

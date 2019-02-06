@@ -25,10 +25,7 @@ class Document
 	{
 		$mongo = (\Phalcon\DI::getDefault())->getShared("mongo");
 
-		try {
-
-			$object = $mongo->{static::$COLLECTION}->findOne(["_id" => self::toObjectId($id)]);
-		}
+		try { $object = $mongo->{static::$COLLECTION}->findOne(["_id" => self::toObjectId($id)]); }
 		catch (\Exception $e) { $object = false; }
 
 		// return reduced object

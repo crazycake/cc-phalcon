@@ -73,13 +73,11 @@ trait AccountAuth
 		$conf["user_entity"] = App::getClass($conf["user_entity"]);
 
 		if (empty($conf["trans"]))
-			$conf["trans"] = \TranslationController::getCoreTranslations("account");
+			$conf["trans"] = \TranslationController::defaultCoreTranslations("account");
 
 		// set configuration
 		$this->AUTH_CONF = $conf;
 	}
-
-	/* --------------------------------------------------- § -------------------------------------------------------- */
 
 	/**
 	 * Action - Logout

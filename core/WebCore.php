@@ -313,7 +313,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 
 		// set translations
 		if (class_exists("\TranslationController"))
-			$js_app->TRANS = \TranslationController::getJsTranslations();
+			$js_app->TRANS = \TranslationController::defaultJsTranslations();
 
 		// set user agent
 		$js_app->UA = $this->client;

@@ -23,8 +23,6 @@ trait AccountPassword
 	 */
 	public $PASSWORD_CONF;
 
-	/* --------------------------------------------------- § -------------------------------------------------------- */
-
 	/**
 	 * Initialize Trait
 	 * @param Array $conf - The config array
@@ -44,7 +42,7 @@ trait AccountPassword
 		$conf["user_entity"] = App::getClass($conf["user_entity"]);
 
 		if (empty($conf["trans"]))
-			$conf["trans"] = \TranslationController::getCoreTranslations("account");
+			$conf["trans"] = \TranslationController::defaultCoreTranslations("account");
 
 		$this->PASSWORD_CONF = $conf;
 	}

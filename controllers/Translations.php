@@ -24,10 +24,10 @@ trait Translations
 	abstract public function jsTranslations();
 
 	/**
-	 * Get Controllers Translations
+	 * Default Controllers Translations
 	 * @param String $controller - The Controller name
 	 */
-	public static function getCoreTranslations($controller = "")
+	public static function defaultCoreTranslations($controller = "")
 	{
 		$data = [
 			"ACCOUNT" => [
@@ -66,16 +66,16 @@ trait Translations
 		];
 
 		// call handler
-		$data = array_merge($data, self::coreTranslations());
+		$data = array_replace_recursive($data, self::coreTranslations());
 
 		// return key translations
 		return $data[strtoupper($controller)] ?? [];
 	}
 
 	/**
-	 * Javascript Translations (Sent to view)
+	 * Default Javascript Translations (Sent to view)
 	 */
-	public static function getJsTranslations()
+	public static function defaultJsTranslations()
 	{
 		$data = [
 			"ALERTS" => [
@@ -87,21 +87,10 @@ trait Translations
 										"<a href=\"javascript:location.reload();\">click aquí</a>.",
 				"LOADING"          => "cargando ...",
 				"REDIRECTING"      => "redireccionado ..."
-			],
-			"ACTIONS" => [
-				"OK"       => "Ok",
-				"ACCEPT"   => "Aceptar",
-				"CANCEL"   => "Cancelar",
-				"DELETE"   => "Eliminar",
-				"CONTINUE" => "Continuar",
-				"SEND"     => "Enviar"
-			],
-			"MAILER" => [
-				"SENT" => "¡Hemos recibido tu mensaje! Te responderemos a la brevedad."
 			]
 		];
 
 		// call handler
-		return array_merge($data, self::jsTranslations());
+		return array_replace_recursive($data, self::jsTranslations());
 	}
 }

@@ -56,7 +56,7 @@ trait Uploader
 			throw new Exception("Uploader requires files array config.");
 
 		if (empty($conf["trans"]))
-			$conf["trans"] = \TranslationController::getCoreTranslations("uploader");
+			$conf["trans"] = \TranslationController::defaultCoreTranslations("uploader");
 
 		// set conf
 		$this->UPLOADER_CONF = $conf;
