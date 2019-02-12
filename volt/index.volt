@@ -117,7 +117,7 @@
 
 				document.addEventListener('DOMContentLoaded', function() { {{ js_loader }} }, false);
 
-				console.log('App {{ config.version }} - Engine <?php echo \Phalcon\Version::get()." [".CORE_VERSION."], rendered in ".number_format((float)(microtime(true) - APP_ST), 3, ".", "")." secs."; ?>');
+				console.log(`App {{ config.version }} - Engine <?php echo \Phalcon\Version::get()." [".CORE_VERSION."], rendered in ".number_format((float)(microtime(true) - APP_ST), 3, ".", "")." secs."; ?>`);
 			</script>
 		{% endif %}
 

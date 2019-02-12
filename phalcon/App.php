@@ -59,7 +59,7 @@ abstract class App
 		// set app configurations
 		$config = $this->config();
 		// set app version
-		$config["version"] = is_file(PROJECT_PATH."version") ? file_get_contents(PROJECT_PATH."version") : "1";
+		$config["version"] = is_file(PROJECT_PATH."version") ? trim(file_get_contents(PROJECT_PATH."version")) : "1";
 
 		// app classes (loader)
 		$this->loadClasses($config);
@@ -117,6 +117,7 @@ abstract class App
 
 		// order params
 		if (count($arguments["params"]) > 0) {
+
 			$params = array_values($arguments["params"]);
 			$arguments["params"] = $params;
 		}
