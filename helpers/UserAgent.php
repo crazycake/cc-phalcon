@@ -48,8 +48,8 @@ class UserAgent
 		$data["is_legacy"]     = $this->_isUserAgentLegacy($data);
 
 		// ++ special cases
-		if (strpos($this->user_agent, "XML Sitemaps Generator") > 1)
-			$data["browser"] = "XML Sitemaps";
+		if (preg_match('/sitemap|adsbot-google|mediapartners-google/i', $this->user_agent, $matches))
+			$data["browser"] = ucwords($matches[0]);
 
 		return $data;
 	}
