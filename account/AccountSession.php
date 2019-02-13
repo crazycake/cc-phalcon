@@ -45,7 +45,7 @@ trait AccountSession
 		$defaults = [
 			"user_entity"        => "user",
 			"logged_in_uri"      => "account",
-			"ignored_properties" => ["pass"]
+			"ignored_properties" => ["pass", "createdAt"]
 		];
 
 		// merge confs
