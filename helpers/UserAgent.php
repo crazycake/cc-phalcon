@@ -48,7 +48,7 @@ class UserAgent
 		$data["is_legacy"]     = $this->_isUserAgentLegacy($data);
 
 		// ++ special cases
-		if (preg_match('/sitemap|adsbot-google|mediapartners-google/i', $this->user_agent, $matches))
+		if (empty($data["browser"]) && preg_match('/sitemap|adsbot-google|mediapartners-google/i', $this->user_agent, $matches))
 			$data["browser"] = ucwords($matches[0]);
 
 		return $data;
