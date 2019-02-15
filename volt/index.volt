@@ -33,7 +33,7 @@
 			{% endif %}
 
 		{% else %}
-			<meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+			<meta name="viewport" content="width=device-width,initial-scale=1.0,shrink-to-fit=no" />
 		{% endif %}
 
 		{# IE: force last version of render compatibility mod  #}
