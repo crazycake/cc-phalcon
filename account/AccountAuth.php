@@ -58,9 +58,8 @@ trait AccountAuth
 		$defaults = [
 			"user_entity"    => "user",
 			"user_key"       => "email",
-			"login_uri"      => "signIn",
-			"logout_uri"     => "signIn",
 			"logged_in_uri"  => "account",
+			"logged_out_uri" => "signIn",
 			"activation_uri" => "auth/activation/",
 			"csrf"           => true,
 			"recaptcha"      => false,
@@ -92,7 +91,7 @@ trait AccountAuth
 			$this->jsonResponse(200);
 
 		// redirect to given url, login as default
-		$this->redirectTo($this->AUTH_CONF["logout_uri"]);
+		$this->redirectTo($this->AUTH_CONF["logged_out_uri"]);
 	}
 
 	/**
@@ -208,7 +207,7 @@ trait AccountAuth
 		if (MODULE_NAME == "api")
 			$this->jsonResponse(200, ["message" => $message]);
 
-		$this->redirectTo($this->AUTH_CONF["logout_uri"]);
+		$this->redirectTo($this->AUTH_CONF["logged_out_uri"]);
 	}
 
 	/**
