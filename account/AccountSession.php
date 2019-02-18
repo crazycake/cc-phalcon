@@ -218,15 +218,10 @@ trait AccountSession
 
 	/**
 	 * Redirect to logged_in URI
-	 * @param Boolean $check_logged_in - Checks if user is logged in, if not skips redirect
 	 */
-	protected function redirectLoggedIn($check_logged_in = true)
+	protected function redirectLoggedIn()
 	{
-		// skip redirect?
-		if ($check_logged_in && !$this->isLoggedIn())
-			return;
-
-		$this->redirectTo($this->SESSION_CONF["logged_in_uri"]);
+		return $this->isLoggedIn() ? $this->redirectTo($this->SESSION_CONF["logged_in_uri"]) : false;
 	}
 
 	/* --------------------------------------------------- § -------------------------------------------------------- */
