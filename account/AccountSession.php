@@ -44,7 +44,6 @@ trait AccountSession
 	{
 		$defaults = [
 			"user_entity"        => "user",
-			"logged_in_uri"      => "account",
 			"ignored_properties" => ["pass", "createdAt"]
 		];
 
@@ -177,10 +176,8 @@ trait AccountSession
 	/**
 	 * Handles response on login event, check for pending redirection.
 	 */
-	protected function setResponseOnLoggedIn()
+	protected function setResponseOnLoggedIn($uri)
 	{
-		$uri = $this->SESSION_CONF["logged_in_uri"]; //default logged in uri
-
 		// check if redirection is set in session
 		if ($this->session->has("auth_redirect")) {
 
@@ -219,9 +216,9 @@ trait AccountSession
 	/**
 	 * Redirect to logged_in URI
 	 */
-	protected function redirectLoggedIn()
+	protected function redirectLoggedIn($uri = "account")
 	{
-		return $this->isLoggedIn() ? $this->redirectTo($this->SESSION_CONF["logged_in_uri"]) : false;
+		return $this->isLoggedIn() ? $this->redirectTo($uri) : false;
 	}
 
 	/* --------------------------------------------------- § -------------------------------------------------------- */

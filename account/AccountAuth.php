@@ -28,7 +28,7 @@ trait AccountAuth
 	/**
 	 * Set response on logged in (session)
 	 */
-	abstract public function setResponseOnLoggedIn();
+	abstract public function setResponseOnLoggedIn($uri);
 
 	/**
 	 * Session Destructor with autoredirection (session)
@@ -60,6 +60,7 @@ trait AccountAuth
 			"user_key"       => "email",
 			"login_uri"      => "signIn",
 			"logout_uri"     => "signIn",
+			"logged_in_uri"  => "account",
 			"activation_uri" => "auth/activation/",
 			"csrf"           => true,
 			"recaptcha"      => false,
@@ -147,7 +148,7 @@ trait AccountAuth
 		$this->newUserSession($user);
 
 		// session controller, dispatch response
-		$this->setResponseOnLoggedIn();
+		$this->setResponseOnLoggedIn($this->AUTH_CONF["logged_in_uri"]);
 	}
 
 	/**
@@ -246,7 +247,7 @@ trait AccountAuth
 			$this->newUserSession($user);
 
 			// redirect/response
-			$this->setResponseOnLoggedIn();
+			$this->setResponseOnLoggedIn($this->AUTH_CONF["logged_in_uri"]);
 		}
 		catch (Exception $e) {
 
