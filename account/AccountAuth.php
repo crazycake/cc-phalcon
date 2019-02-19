@@ -147,7 +147,7 @@ trait AccountAuth
 		$this->newUserSession($user);
 
 		// event (cant break flux)
-		if (method_exists($this, "onAfterLoginUser") && $this->onAfterLoginUser($user) == true)
+		if (method_exists($this, "onAfterLoginUser") && $this->onAfterLoginUser($user) === true)
 			$this->onAfterLoginUser($user);
 
 		// session controller, dispatch response
