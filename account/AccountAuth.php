@@ -146,6 +146,10 @@ trait AccountAuth
 		// success login
 		$this->newUserSession($user);
 
+		// event (cant break flux)
+		if (method_exists($this, "onAfterLoginUser") && $this->onAfterLoginUser($user) == true)
+			$this->onAfterLoginUser($user);
+
 		// session controller, dispatch response
 		$this->setResponseOnLoggedIn($this->AUTH_CONF["logged_in_uri"]);
 	}
@@ -192,9 +196,9 @@ trait AccountAuth
 			$this->jsonResponse(400);
 		}
 
-		// event
-		if (method_exists($this, "onAfterRegisterUser"))
-			$this->onAfterRegisterUser($user);
+		// event (cant break flux)
+		if (method_exists($this, "onAfterRegisterUser") && $this->onAfterRegisterUser($user) === true)
+			return;
 
 		// send activation mail message
 		$this->sendActivationMailMessage($user);
@@ -235,9 +239,9 @@ trait AccountAuth
 			// save new account flag state
 			$entity::updateProperties($user_id, ["flag" => "enabled"]);
 
-			// custom behaviour event
-			if (method_exists($this, "onActivationSuccess"))
-				return $this->onActivationSuccess($user);
+			// event (cant break flux)
+			if (method_exists($this, "onActivationSuccess") && $this->onActivationSuccess($user) === true)
+				return;
 
 			// set a flash message to show on account controller
 			$this->flash->success($this->AUTH_CONF["trans"]["ACTIVATION_SUCCESS"]);
