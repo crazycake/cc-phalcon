@@ -146,7 +146,7 @@ trait AccountAuth
 		// success login
 		$this->newUserSession($user);
 
-		// event (cant break flux)
+		// event (can interrupt flux)
 		if (method_exists($this, "onAfterLoginUser") && $this->onAfterLoginUser($user) === true)
 			$this->onAfterLoginUser($user);
 
@@ -161,7 +161,7 @@ trait AccountAuth
 	{
 		$data = $this->handleRequest([
 			"email" => "email",
-			"pass"  => "string"
+			"@pass" => "string"
 		], "POST", $this->AUTH_CONF["csrf"]);
 
 		// lower case email
@@ -181,7 +181,7 @@ trait AccountAuth
 		unset($data[$this->client->csrfKey]);
 
 		// set properties
-		$data["pass"]      = $this->security->hash($data["pass"]);
+		$data["pass"]      = empty($data["pass"]) ? null : $this->security->hash($data["pass"]);
 		$data["flag"]      = "pending";
 		$data["createdAt"] = $entity::toIsoDate();
 
@@ -196,7 +196,7 @@ trait AccountAuth
 			$this->jsonResponse(400);
 		}
 
-		// event (cant break flux)
+		// event (can interrupt flux)
 		if (method_exists($this, "onAfterRegisterUser") && $this->onAfterRegisterUser($user) === true)
 			return;
 
@@ -239,7 +239,7 @@ trait AccountAuth
 			// save new account flag state
 			$entity::updateProperties($user_id, ["flag" => "enabled"]);
 
-			// event (cant break flux)
+			// event (can interrupt flux)
 			if (method_exists($this, "onActivationSuccess") && $this->onActivationSuccess($user) === true)
 				return;
 
