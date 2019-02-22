@@ -193,7 +193,7 @@ trait AccountAuth
 		if (!$user = $entity::insert($data)) {
 
 			$this->logger->error("AccountAuth::registerAction -> failed user insertion: ".json_encode($data, JSON_UNESCAPED_SLASHES));
-			$this->jsonResponse(400);
+			$this->jsonResponse(500);
 		}
 
 		// event (can interrupt flux)
