@@ -73,9 +73,9 @@
 		{# Bundle CSS #}
 		<link id="style" rel="stylesheet" type="text/css" href="{{ css_url }}" />
 
-		{# APP STORE #}
-		{% if metas['store'] is not empty %}
-			<script defer src="{{ url(metas['store']) }}"></script>
+		{# Js data #}
+		{% if metas['script'] is not empty %}
+			<script defer src="{{ url(metas['script']) }}"></script>
 		{% endif %}
 
 		{# Bundle JS (defered) #}
@@ -97,29 +97,12 @@
 	</head>
 	{# flushes the buffer (optimization) #}
 	<?php flush(); ?>
-	<body class="{{ 'ux ua-'~client.browser|lower~' '~client.platform|lower }}{{ html_body_class is defined ? ' '~html_body_class : '' }}">
+	<body class="{{ 'ux ua-'~client.browser|lower~' '~client.platform|lower }}">
 
 		{# app content wrapper #}
-		{% if html_app_wrapper is defined and !html_app_wrapper %}
-
+		<div id="app">
 			{{ get_content() }}
-
-		{% else %}
-			<div id="app">
-				{{ get_content() }}
-			</div>
-		{% endif %}
-
-		{# APP JS Loader (on document ready) #}
-		{% if js_loader is not empty %}
-			<script defer>
-				APP = {{ js_app }};
-
-				document.addEventListener('DOMContentLoaded', function() { {{ js_loader }} }, false);
-
-				console.log(`App {{ config.version }} - Engine <?php echo \Phalcon\Version::get()." [".CORE_VERSION."], rendered in ".number_format((float)(microtime(true) - APP_ST), 3, ".", "")." secs."; ?>`);
-			</script>
-		{% endif %}
+		</div>
 
 		{# Google Analytics (async loading) #}
 		{% if config.google.analyticsUA is not empty %}

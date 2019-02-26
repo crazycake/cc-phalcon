@@ -15,18 +15,6 @@ use CrazyCake\Helpers\UserAgent;
 abstract class WebCore extends BaseCore implements WebSecurity
 {
 	/**
-	 * Js loader function
-	 * @var String
-	 */
-	const JS_LOADER_FUNCTION = "cc.start";
-
-	/**
-	 * Set App Javascript Properties for global scope
-	 * @param Object $js_app - The javascript app object reference
-	 */
-	abstract protected function setAppJsProperties(&$js_app);
-
-	/**
 	 * Checks Browser Support
 	 * @param String $browser - The browser family [MSIE, Chrome, Firefox, Opera, Safari]
 	 * @param Int $version - The browser short version
@@ -162,20 +150,37 @@ abstract class WebCore extends BaseCore implements WebSecurity
 	}
 
 	/**
-	 * Loads javascript modules. This method must be called once.
-	 * @param Array $modules - An array of modules => args
-	 * @param String $fn - The loader function name
+	 * Load js application
+	 * @param String $module - The module to load
+	 * @param Mixed $store - The store data
 	 */
-	protected function loadJsModules($modules = [], $fn = self::JS_LOADER_FUNCTION)
+	protected function loadJsModule($module = null, $store = null)
 	{
-		// skip legacy browsers
-		if ($this->client->isLegacy)
-			return;
+		// set js global object
+		$data = (object)[
+			"version"   => $this->config->version,
+			"name"      => $this->config->name,
+			"baseUrl"   => $this->baseUrl(),
+			"staticUrl" => $this->staticUrl(),
+			"flash"     => $this->flash->getMessages() ?: []
+		];
 
-		$param  = empty($modules) ? '' : json_encode($modules, JSON_UNESCAPED_SLASHES);
-		$script = "$fn($param);";
+		// set user agent
+		$data->UA = $this->client;
 
-		$this->view->setVar("js_loader", $script);
+		// set translations
+		if (class_exists("\TranslationController"))
+			$data->TRANS = \TranslationController::defaultJsTranslations();
+
+
+		$js = "APP = ".json_encode($data, JSON_UNESCAPED_SLASHES).";\n";
+
+		if ($module)
+			$js .= "document.addEventListener('DOMContentLoaded', function() { cc.start({ $module: ".json_encode($store, JSON_UNESCAPED_SLASHES)."}); }, false);\n";
+
+		$js .= "console.log(`App ".$this->config->version." [".\Phalcon\Version::get()." => ".CORE_VERSION."] ".number_format((float)(microtime(true) - APP_ST), 3, ".", "")." s.`);";
+
+		return $js;
 	}
 
 	/* --------------------------------------------------- § -------------------------------------------------------- */
@@ -301,29 +306,9 @@ abstract class WebCore extends BaseCore implements WebSecurity
 	 */
 	private function _setAppViewVars()
 	{
-		// set javascript global objects
-		$js_app = (object)[
-			"version"       => $this->config->version,
-			"name"          => $this->config->name,
-			"baseUrl"       => $this->baseUrl(),
-			"staticUrl"     => $this->staticUrl()
-		];
-
-		// set custom properties
-		$this->setAppJsProperties($js_app);
-
-		// set translations
-		if (class_exists("\TranslationController"))
-			$js_app->TRANS = \TranslationController::defaultJsTranslations();
-
-		// set user agent
-		$js_app->UA = $this->client;
-
-		// send javascript vars to view as JSON enconded
 		$this->view->setVars([
 			"config" => $this->config,
 			"client" => $this->client,
-			"js_app" => json_encode($js_app, JSON_UNESCAPED_SLASHES)
 		]);
 	}
 }
