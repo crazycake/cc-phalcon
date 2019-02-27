@@ -49,6 +49,7 @@ trait AccountSession
 
 		// merge confs
 		$conf = array_merge($defaults, $conf);
+
 		// append class prefixes
 		$conf["user_entity"] = App::getClass($conf["user_entity"]);
 

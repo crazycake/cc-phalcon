@@ -39,7 +39,7 @@ trait AppLoader
 	public static function getClass($key = "", $prefix = true)
 	{
 		// camelized class name
-		$class_name = \Phalcon\Text::camelize($key);
+		$class_name = \Phalcon\Text::camelize(\Phalcon\Text::uncamelize($key));
 
 		return $prefix ? "\\$class_name" : $class_name;
 	}
