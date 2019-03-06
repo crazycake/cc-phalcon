@@ -63,17 +63,19 @@ class AppServices
 	 */
 	private function _getDefaultDI()
 	{
-		// get a new Micro DI
+		// get a new Factory DI
 		$di = new \Phalcon\DI\FactoryDefault();
 
 		$this->_setMainServices($di);
 		$this->_setDatabaseServices($di);
-		$this->_setTranslationService($di);
-		$this->_setSessionService($di);
-		$this->_setViewService($di);
+		$this->_setTranslationServices($di);
+		$this->_setViewServices($di);
 
-		if (MODULE_NAME != "api")
-			$this->_setBrowserServices($di);
+		if (MODULE_NAME != "api") {
+
+			$this->_setSessionServices($di);
+			$this->_setClientServices($di);
+		}
 
 		return $di;
 	}
@@ -210,7 +212,7 @@ class AppServices
 	 * GetText adapter (multi-lang support)
 	 * @param Object $di - The DI object
 	 */
-	private function _setTranslationService(&$di)
+	private function _setTranslationServices(&$di)
 	{
 		// check if langs are set
 		if (empty($this->config->langs))
@@ -229,31 +231,35 @@ class AppServices
 	}
 
 	/**
-	 * Set session service
+	 * Set session services
 	 * @param Object $di - The DI object
 	 */
-	private function _setSessionService(&$di)
+	private function _setSessionServices(&$di)
 	{
 		$conf = $this->config;
 
 		// session adapter
 		$di->setShared("session", function() use ($conf) {
 
-			$expiration = 3600*($conf->sessionExpiration ?? 8); //hours
+			$expiration = 3600*($conf->sessionExpiration ?? 8); // hours
 
-			$session = new \Phalcon\Session\Adapter\Redis([
+			$options = [
 				"uniqueId"   => $conf->namespace,
-				"host"       => getenv("REDIS_HOST") ?: "redis",
 				"lifetime"   => $expiration,
 				"prefix"     => "_".strtoupper($conf->namespace)."_",
 				"persistent" => false,
 				"index"      => 1
-			]);
+			];
 
-			//set domain for cookie params
+			if (!empty($conf->sessionFiles))
+				$session = new \Phalcon\Session\Adapter\Files($options);
+			else
+				$session = new \Phalcon\Session\Adapter\Redis(array_merge($options, ["host" => getenv("REDIS_HOST") ?: "redis"]));
+
+			// set domain for cookie params
 			$host = explode('.', parse_url(APP_BASE_URL, PHP_URL_HOST));
 
-			//session exceptions for shared cookies domain
+			// session exceptions for shared cookies domain
 			session_set_cookie_params($expiration, "/", getenv("SESSION_DOMAIN") ?: implode(".", $host));
 
 			// set session name & start
@@ -261,36 +267,6 @@ class AppServices
 			$session->start();
 
 			return $session;
-		});
-	}
-
-	/**
-	 * Set Browser services
-	 * @param Object $di - The DI object
-	 */
-	private function _setBrowserServices(&$di)
-	{
-		// dispatcher event manager
-		$di->setShared("dispatcher", function() {
-
-			$manager = new \Phalcon\Events\Manager;
-			//Handle exceptions and not-found exceptions using Exceptions Plugin
-			$manager->attach("dispatch:beforeException", new ExceptionsPlugin);
-
-			$dispatcher = new \Phalcon\Mvc\Dispatcher;
-			$dispatcher->setEventsManager($manager);
-
-			return $dispatcher;
-		});
-
-		// cookies
-		$di->setShared("cookies", function() {
-
-			$cookies = new \Phalcon\Http\Response\Cookies();
-			//no encryption
-			$cookies->useEncryption(false);
-
-			return $cookies;
 		});
 
 		// flash messages
@@ -310,10 +286,40 @@ class AppServices
 	}
 
 	/**
+	 * Set Client services
+	 * @param Object $di - The DI object
+	 */
+	private function _setClientServices(&$di)
+	{
+		// dispatcher event manager
+		$di->setShared("dispatcher", function() {
+
+			$manager = new \Phalcon\Events\Manager;
+			// handle exceptions and not-found exceptions using Exceptions Plugin
+			$manager->attach("dispatch:beforeException", new ExceptionsPlugin);
+
+			$dispatcher = new \Phalcon\Mvc\Dispatcher;
+			$dispatcher->setEventsManager($manager);
+
+			return $dispatcher;
+		});
+
+		// cookies
+		$di->setShared("cookies", function() {
+
+			$cookies = new \Phalcon\Http\Response\Cookies();
+			// no encryption
+			$cookies->useEncryption(false);
+
+			return $cookies;
+		});
+	}
+
+	/**
 	 * Set View services
 	 * @param Object $di - The DI object
 	 */
-	private function _setViewService(&$di)
+	private function _setViewServices(&$di)
 	{
 		// setting up the view component
 		$engines = [

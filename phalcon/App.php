@@ -166,12 +166,13 @@ abstract class App
 		}
 
 		$app = new \Phalcon\Mvc\Application($this->di);
+
 		// set output
 		$output = $app->handle()->getContent();
 
 		// handle the request
 		if (APP_ENV != "local")
-			ob_start([$this,"_minifyOutput"]); //call function
+			ob_start([$this,"_minifyOutput"]);
 
 		echo $output;
 	}
