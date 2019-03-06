@@ -208,7 +208,7 @@ class AppServices
 	}
 
 	/**
-	 * Set Translation Service
+	 * Set Translation Services
 	 * GetText adapter (multi-lang support)
 	 * @param Object $di - The DI object
 	 */
