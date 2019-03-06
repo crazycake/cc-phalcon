@@ -138,7 +138,7 @@ class AppServices
 		if (class_exists("\CrazyCake\Helpers\Cryptify")) {
 
 			$di->setShared("cryptify", function() use ($conf) {
-				return new \CrazyCake\Helpers\Cryptify($conf->cryptKey);
+				return new \CrazyCake\Helpers\Cryptify($conf->cryptKey ?? $conf->namespace);
 			});
 		}
 
