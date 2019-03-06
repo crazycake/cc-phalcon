@@ -134,14 +134,6 @@ class AppServices
 			return $security;
 		});
 
-		// phalcon crypt service
-		$di->setShared("crypt", function() use ($conf) {
-
-			$crypt = new \Phalcon\Crypt();
-			$crypt->setKey($conf->cryptKey);
-			return $crypt;
-		});
-
 		// extended encryption, cryptify adapter (cryptography helper)
 		if (class_exists("\CrazyCake\Helpers\Cryptify")) {
 
