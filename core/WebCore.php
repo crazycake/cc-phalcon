@@ -231,9 +231,9 @@ abstract class WebCore extends BaseCore implements WebSecurity
 
 		// set default lang if only one available, otherwise check lang from session
 		if (count($langs) == 1)
-			$lang = current($langs);
+			$lang = $langs[0];
 		else
-			$lang = isset($this->session) && $this->session->has("lang") ? $this->session->get("lang") : $this->request->getBestLanguage();
+			$lang = !is_null($this->session) && $this->session->has("lang") ? $this->session->get("lang") : $this->request->getBestLanguage();
 
 		// filter lang
 		$lang = substr(trim(strtolower($lang)), 0, 2);
