@@ -53,7 +53,7 @@ class AppServices
 
 		$this->_setMainServices($di);
 		$this->_setDatabaseServices($di);
-		$this->_setTranslationService($di);
+		$this->_setTranslationServices($di);
 
 		return $di;
 	}

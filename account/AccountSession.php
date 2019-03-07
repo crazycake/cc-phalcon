@@ -59,7 +59,7 @@ trait AccountSession
 		$this->user_session = $this->getUserSession();
 
 		// set user data for view, filter is passed to exclude some properties
-		$this->_setUserSessionForView($this->user_session);
+		$this->_setSessionViewVars($this->user_session);
 	}
 
 	/* --------------------------------------------------- § -------------------------------------------------------- */
@@ -225,11 +225,11 @@ trait AccountSession
 	/* --------------------------------------------------- § -------------------------------------------------------- */
 
 	/**
-	 * Forwards user session to view
+	 * Sets view vars
 	 * @access private
 	 * @param Array $filter - A string array of properties to filter
 	 */
-	private function _setUserSessionForView($user_session = [])
+	private function _setSessionViewVars($user_session = [])
 	{
 		if ($this->request->isAjax() || !$this->di->has("view"))
 			return;
