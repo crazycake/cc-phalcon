@@ -129,7 +129,7 @@
 
 		{# JS disabled fallback #}
 		<noscript>
-			<p>{{ trans._('Este sitio funciona con Javascript. Por favor activa el motor de Javascript en tu navegador.') }}</p>
+			<p>{{ trans._('This site requires Javascript. Please enable Javascript Engine in your browser settings.') }}</p>
 		</noscript>
 	</body>
 </html>
