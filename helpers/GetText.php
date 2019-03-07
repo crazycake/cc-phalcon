@@ -58,6 +58,7 @@ class GetText extends GetTextAdapter
 		$this->default_locale  = self::LOCALES["en"];
 		$this->current_lang    = substr($this->default_locale, 0, 2);
 		$this->supported_langs = $options["supported"];
+		//ss($options);
 
 		// call parent constructor
 		parent::__construct([
