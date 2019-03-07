@@ -84,9 +84,7 @@ trait Translations
 				"NOT_FOUND"        => "Esta acción está deshabilitada, por favor inténtalo más tarde.",
 				"ACCESS_FORBIDDEN" => "Tu sesión ha caducado, debes iniciar sesión nuevamente.",
 				"CSRF"             => "La aplicación ha estado inactiva por mucho tiempo, refréscala haciendo ".
-										"<a href=\"javascript:location.reload();\">click aquí</a>.",
-				"LOADING"          => "cargando ...",
-				"REDIRECTING"      => "redireccionado ..."
+										"<a href=\"javascript:location.reload();\">click aquí</a>."
 			]
 		];
 
