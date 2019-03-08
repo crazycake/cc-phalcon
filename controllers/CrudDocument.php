@@ -183,19 +183,16 @@ trait CrudDocument
 		// update
 		else {
 
-			foreach ($payload as $key => $value) {
+			// unset const props
+			unset($payload->_id, $payload->createdAt);
 
-				// unset const props
-				unset($payload->_id, $payload->createdAt);
+			try { $this->database->{$this->CRUD_CONF["collection"]}->updateOne(["_id" => $object_id], ['$set' => $payload]); }
+			catch (\Exception | Exception $e) {
 
-				try { $this->database->{$this->CRUD_CONF["collection"]}->updateOne(["_id" => $object_id], ['$set' => $payload]); }
-				catch (\Exception | Exception $e) {
+				$this->logger->error("CrudDocument::saveAction -> update exception: ".$e->getMessage());
 
-					$this->logger->error("CrudDocument::saveAction -> update exception: ".$e->getMessage());
-
-					if (method_exists($this, "onSaveException"))
-						$this->onSaveException($e, $payload);
-				}
+				if (method_exists($this, "onSaveException"))
+					$this->onSaveException($e, $payload);
 			}
 		}
 
