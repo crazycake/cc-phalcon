@@ -22,8 +22,6 @@ trait Requester
 	 */
 	protected static $REQUEST_TIMEOUT = 30.0;
 
-	/* --------------------------------------------------- § -------------------------------------------------------- */
-
 	/**
 	 * Do a asynchronously request through Guzzle
 	 * @param Array $options - Options:

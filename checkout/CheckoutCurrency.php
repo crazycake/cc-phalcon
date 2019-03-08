@@ -23,7 +23,7 @@ trait CheckoutCurrency
 	 * Redis key to store Dollar day value to CLP currency
 	 * @var String
 	 */
-	private static $REDIS_KEY_USD_CLP_VALUE = "CHECKOUT_CURRENCY_USD_CLP";
+	private static $REDIS_KEY_USD_CLP = "CHECKOUT_CURRENCY_USD_CLP";
 
 	/**
 	 * Set Redis client
@@ -60,13 +60,13 @@ trait CheckoutCurrency
 	public function dollarToChileanPeso($amount = 1.00)
 	{
 		$redis = $this->newRedisClient();
-		$value = $redis->get(self::$REDIS_KEY_USD_CLP_VALUE);
+		$value = $redis->get(self::$REDIS_KEY_USD_CLP);
 
 		// set value if is empty
 		if (empty($value) && $new_value = $this->apiChileanCurrencyRequest())
-			$redis->set(self::$REDIS_KEY_USD_CLP_VALUE, $new_value);
+			$redis->set(self::$REDIS_KEY_USD_CLP, $new_value);
 
-		$value = $redis->get(self::$REDIS_KEY_USD_CLP_VALUE) * $amount;
+		$value = $redis->get(self::$REDIS_KEY_USD_CLP) * $amount;
 
 		$redis->close();
 
@@ -87,7 +87,7 @@ trait CheckoutCurrency
 				throw new Exception("Invalid value received from api chilean currency");
 
 			$redis = $this->newRedisClient();
-			$redis->set(self::$REDIS_KEY_USD_CLP_VALUE, $value);
+			$redis->set(self::$REDIS_KEY_USD_CLP, $value);
 			$redis->close();
 
 			$this->logger->debug("storeDollarChileanPesoValue -> Stored value '$value' in Redis.");

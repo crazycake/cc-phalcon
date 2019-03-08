@@ -164,7 +164,7 @@ trait CrudDocument
 		if (method_exists($this, "onBeforeSave"))
 			$this->onBeforeSave($payload);
 
-		//insert
+		// insert
 		if (is_null($object_id)) {
 
 			try { $object = $this->database->{$this->CRUD_CONF["collection"]}->insertOne($payload); }
@@ -185,14 +185,10 @@ trait CrudDocument
 
 			foreach ($payload as $key => $value) {
 
-				// unset reserved props
-				if (in_array($key, ["_id", "createdAt"])) {
+				// unset const props
+				unset($payload->_id, $payload->createdAt);
 
-					unset($payload->{$key});
-					continue;
-				}
-
-				try { $this->database->{$this->CRUD_CONF["collection"]}->updateOne(["_id" => $object_id], ['$set' => ["$key" => $value]]); }
+				try { $this->database->{$this->CRUD_CONF["collection"]}->updateOne(["_id" => $object_id], ['$set' => $payload]); }
 				catch (\Exception | Exception $e) {
 
 					$this->logger->error("CrudDocument::saveAction -> update exception: ".$e->getMessage());
