@@ -68,9 +68,10 @@ find)
 				--package-version=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
 				--package-name="crazycake" \
 				--copyright-holder="CrazyCake" \
-				--no-wrap -f .translations && \
-		rm .translations && \
-		find /var/www/storage/cache -type f \( ! -iname ".*" \) -print0 | xargs -0 rm'
+				--no-wrap \
+				-f .translations \
+		&& rm .translations \
+		&& find /var/www/storage/cache -type f \( ! -iname ".*" \) -print0 | xargs -0 rm'
 
 	# merge po file
 	docker exec -it $CONTAINER_NAME bash -c \
