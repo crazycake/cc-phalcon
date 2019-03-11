@@ -119,7 +119,7 @@ trait AccountAuth
 			$this->jsonResponse(400, $this->AUTH_CONF["trans"]["AUTH_FAILED"]);
 
 		// recaptcha validation
-		if ($this->AUTH_CONF["recaptcha"] && $this->getLoginAttempts($user->_id) > 2) {
+		if ($this->AUTH_CONF["recaptcha"] && $this->getLoginAttempts($user->_id) > 4) {
 
 			$recaptcher = new ReCaptcha($this->config->google->reCaptchaKey);
 
