@@ -204,40 +204,36 @@ abstract class BaseCore extends Controller
 	 */
 	private function _validateParam($data, $field, $data_type)
 	{
-		$is_optional = false;
+		$optional = false;
 
 		// check if is a optional field
-		if (substr($field, 0, 1) == "@") {
+		if ($field[0] == "@") {
 
-			$is_optional = true;
-			$field = substr($field, 1);
+			$optional = true;
+			$field    = substr($field, 1);
 		}
 
 		// validate field
 		if (!array_key_exists($field, $data))
-			return $is_optional ? null : false;
+			return $optional ? null : false;
 
 		// set value from data array
-		if ($data_type == "raw")
-			$value = $data[$field];
-
-		else if ($data_type == "json")
-			$value = json_decode($data[$field]); // NULL if cannot be decoded
-
-		else {
+		if ($data_type != "raw") {
 
 			$value = $this->filter->sanitize($data[$field], $data_type);
 
 			if ($data_type == "email")
 				$value = strtolower($value);
 		}
+		else
+			$value = $data[$field]; // raw
 
 		// empty function considers zero value
-		if (!$is_optional && (is_null($value) || $value == ""))
+		if (!$optional && (is_null($value) || $value == ""))
 			return false;
 
 		// check optional field
-		if ($is_optional && (is_null($value) || $value == ""))
+		if ($optional && (is_null($value) || $value == ""))
 			return null;
 
 		return $value;
