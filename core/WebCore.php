@@ -172,7 +172,6 @@ abstract class WebCore extends BaseCore implements WebSecurity
 		if (class_exists("\TranslationController"))
 			$data->TRANS = \TranslationController::defaultJsTranslations();
 
-
 		$js = "APP = ".json_encode($data, JSON_UNESCAPED_SLASHES).";\n";
 
 		if ($module)
