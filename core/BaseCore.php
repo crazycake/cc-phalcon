@@ -129,7 +129,7 @@ abstract class BaseCore extends Controller
 	 * Required field may have a `@` prefix to establish that is just an optional field to be sanitized.
 	 * Types: `string, email, int, float, alphanum, striptags, trim, lower, upper.`
 	 * @param Array $req_fields - Required fields
-	 * @param String $method - HTTP method: [GET, POST, MIXED], defaults to GET.
+	 * @param String $method - HTTP method: [GET, POST], defaults to GET.
 	 * @param Boolean $check_csrf - Checks the form CSRF token
 	 * @return Array
 	 */
@@ -158,17 +158,8 @@ abstract class BaseCore extends Controller
 		if (MODULE_NAME != "api" && $check_csrf && !$this->checkCsrfToken())
 			return $sendResponse(498);
 
-		// get params data: POST, GET, or mixed
-		if ($method == "POST")
-			$data = $this->request->getPost();
-		else if ($method == "GET")
-			$data = $this->request->get();
-		else
-			$data = array_merge($this->request->get(), $this->request->getPost());
-
-		// clean phalcon data for GET or MIXED method
-		if ($method != "POST")
-			unset($data["_url"]);
+		// get params data (POST, GET)
+		$data = $method == "POST" ? $this->request->getPost() : $this->request->get();
 
 		// if no required fields given, return all POST or GET vars as array
 		if (empty($req_fields))
