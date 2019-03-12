@@ -196,22 +196,7 @@ trait AccountSession
 	 */
 	protected function setRedirectionOnLoggedIn($uri = "")
 	{
-		if (empty($uri))
-			$uri = $this->getRequestedUri();
-
-		$this->session->set("auth_redirect", $uri);
-	}
-
-	/**
-	 * Removes pending session redirection
-	 * @return Boolean
-	 */
-	protected function removeRedirectionOnLoggedIn()
-	{
-		if (!$this->session->has("auth_redirect"))
-			return false;
-
-		return $this->session->remove("auth_redirect");
+		$this->session->set("auth_redirect", empty($uri) ? $this->getRequestedUri() : $uri);
 	}
 
 	/**
