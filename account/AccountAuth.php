@@ -188,8 +188,8 @@ trait AccountAuth
 		}
 
 		// event (can interrupt flux)
-		if (method_exists($this, "onAfterRegisterUser") && $this->onAfterRegisterUser($user) === true)
-			return;
+		if (method_exists($this, "onAfterRegisterUser"))
+			$this->onAfterRegisterUser($user);
 
 		// send activation mail message
 		$this->sendActivationMailMessage($user);
@@ -231,8 +231,8 @@ trait AccountAuth
 			$entity::updateProperties($user_id, ["flag" => "enabled"]);
 
 			// event (can interrupt flux)
-			if (method_exists($this, "onActivationSuccess") && $this->onActivationSuccess($user) === true)
-				return;
+			if (method_exists($this, "onActivationSuccess"))
+				$this->onActivationSuccess($user);
 
 			// set a flash message to show on account controller
 			$this->flash->success($this->AUTH_CONF["trans"]["ACTIVATION_SUCCESS"]);
