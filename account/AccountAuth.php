@@ -26,11 +26,6 @@ trait AccountAuth
 	abstract public function newUserSession($user);
 
 	/**
-	 * Set response on logged in (session)
-	 */
-	abstract public function setResponseOnLoggedIn($uri);
-
-	/**
 	 * Session Destructor with autoredirection (session)
 	 */
 	abstract public function removeUserSession();
@@ -147,11 +142,7 @@ trait AccountAuth
 		$this->newUserSession($user);
 
 		// event (can interrupt flux)
-		if (method_exists($this, "onAfterLoginUser") && $this->onAfterLoginUser($user) === true)
-			$this->onAfterLoginUser($user);
-
-		// session controller, dispatch response
-		$this->setResponseOnLoggedIn($this->AUTH_CONF["logged_in_uri"]);
+		$this->onAfterLoginUser($user);
 	}
 
 	/**
@@ -250,7 +241,7 @@ trait AccountAuth
 			$this->newUserSession($user);
 
 			// redirect/response
-			$this->setResponseOnLoggedIn($this->AUTH_CONF["logged_in_uri"]);
+			$this->onAfterLoginUser($user);
 		}
 		catch (Exception $e) {
 
@@ -259,6 +250,35 @@ trait AccountAuth
 			$this->logger->error("AccountAuth::activationAction [$hash] -> exception: ".$e->getMessage());
 			$this->dispatcher->forward(["controller" => "error", "action" => "expired"]);
 		}
+	}
+
+	/**
+	 * Handles response after login user.
+	 */
+	public function onAfterLoginUser($user)
+	{
+		$uri = $this->AUTH_CONF["logged_in_uri"];
+
+		// check if redirection is set in session
+		if ($this->session->has("auth_redirect")) {
+
+			// get redirection uri from session & remove from session
+			$uri = $this->session->get("auth_redirect");
+			$this->session->remove("auth_redirect");
+		}
+
+		$this->redirectTo($uri);
+	}
+
+	/**
+	 * Sets auth redirect session
+	 * @param String $uri - The URL to be redirected
+	 */
+	public static function setAuthRedirection($uri = "")
+	{
+		$session = (\Phalcon\DI::getDefault())->getShared("session");
+
+		$session->set("auth_redirect", $uri);
 	}
 
 	/**

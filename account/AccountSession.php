@@ -16,13 +16,6 @@ use CrazyCake\Phalcon\App;
 trait AccountSession
 {
 	/**
-	 * Set user Session as logged in
-	 * @param Object $user - A user object
-	 * @return Array
-	 */
-	abstract protected function onSessionSave($user);
-
-	/**
 	 * Config var
 	 * @var Array
 	 */
@@ -112,28 +105,29 @@ trait AccountSession
 	protected function newUserSession($user)
 	{
 		// set user data
-		$user_session         = json_decode(json_encode($user), true);
-		$user_session["auth"] = true;
+		$session         = json_decode(json_encode($user), true);
+		$session["auth"] = true;
 
 		// mongo ID special case
-		if (!empty($user_session["_id"])) {
+		if (!empty($session["_id"])) {
 
-			$user_session["id"] = current($user_session["_id"]);
-			unset($user_session["_id"]);
+			$session["id"] = current($session["_id"]);
+			unset($session["_id"]);
 		}
 
 		$filter = $this->SESSION_CONF["ignored_properties"];
 
 		foreach ($filter as $key)
-			unset($user_session[$key]);
+			unset($session[$key]);
 
-		// call abstract method
-		$user_session = array_merge($user_session, $this->onSessionSave($user));
+		// call optional method
+		if (method_exists($this, "onSessionSave"))
+			$this->onSessionSave($user, $session);
+
+		$this->user_session = $session;
 
 		// save in session
-		$this->session->set("user", $user_session);
-
-		$this->user_session = $user_session;
+		$this->session->set("user", $this->user_session);
 	}
 
 	/**
@@ -172,31 +166,6 @@ trait AccountSession
 	{
 		// unset all user session data
 		$this->session->remove("user");
-	}
-
-	/**
-	 * Handles response on login event, check for pending redirection.
-	 */
-	protected function setResponseOnLoggedIn($uri)
-	{
-		// check if redirection is set in session
-		if ($this->session->has("auth_redirect")) {
-
-			// get redirection uri from session & remove from session
-			$uri = $this->session->get("auth_redirect");
-			$this->session->remove("auth_redirect");
-		}
-
-		$this->redirectTo($uri);
-	}
-
-	/**
-	 * Set redirection URL for after loggedIn event
-	 * @param String $uri - The URL to be redirected
-	 */
-	protected function setRedirectionOnLoggedIn($uri = "")
-	{
-		$this->session->set("auth_redirect", empty($uri) ? $this->getRequestedUri() : $uri);
 	}
 
 	/**
