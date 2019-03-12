@@ -142,7 +142,7 @@ trait AccountAuth
 		$this->newUserSession($user);
 
 		// event (can interrupt flux)
-		$this->onAfterLoginUser($user);
+		$this->onAfterLoginUser("login");
 	}
 
 	/**
@@ -241,7 +241,7 @@ trait AccountAuth
 			$this->newUserSession($user);
 
 			// redirect/response
-			$this->onAfterLoginUser($user);
+			$this->onAfterLoginUser("activation");
 		}
 		catch (Exception $e) {
 
@@ -254,8 +254,9 @@ trait AccountAuth
 
 	/**
 	 * Handles response after login user.
+	 * @param String $from - The name of the current flow
 	 */
-	public function onAfterLoginUser($user)
+	public function onAfterLoginUser($from = "")
 	{
 		$uri = $this->AUTH_CONF["logged_in_uri"];
 
