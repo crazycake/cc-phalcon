@@ -99,6 +99,14 @@ trait AccountSession
 	}
 
 	/**
+	 * Redirect to logged_in URI
+	 */
+	protected function redirectLoggedIn($uri = "account")
+	{
+		return $this->isLoggedIn() ? $this->redirectTo($uri) : false;
+	}
+
+	/**
 	 * Stores a new user session
 	 * @param Object $user - User object
 	 */
@@ -166,14 +174,6 @@ trait AccountSession
 	{
 		// unset all user session data
 		$this->session->remove("user");
-	}
-
-	/**
-	 * Redirect to logged_in URI
-	 */
-	protected function redirectLoggedIn($uri = "account")
-	{
-		return $this->isLoggedIn() ? $this->redirectTo($uri) : false;
 	}
 
 	/* --------------------------------------------------- § -------------------------------------------------------- */
