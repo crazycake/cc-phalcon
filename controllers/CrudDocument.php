@@ -244,7 +244,7 @@ trait CrudDocument
 
 		// event
 		if (method_exists($this, "onBeforeDelete"))
-			$this->onBeforeDelete($data);
+			$this->onBeforeDelete($object_id);
 
 		$this->database->{$this->CRUD_CONF["collection"]}->deleteOne(["_id" => $object_id]);
 
