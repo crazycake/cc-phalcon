@@ -77,7 +77,13 @@ trait Uploader
 	 */
 	public function uploadAction()
 	{
-		$this->jsonResponse(200, $this->upload());
+		$upload = $this->upload();
+
+		// event
+		if (method_exists($this, "onAfterUpload"))
+			$this->onAfterUpload($upload);
+
+		$this->jsonResponse(200, $upload);
 	}
 
 	/**
