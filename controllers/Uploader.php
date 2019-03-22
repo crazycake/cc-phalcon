@@ -20,19 +20,19 @@ trait Uploader
 	 * Default upload max size
 	 * @var Integer
 	 */
-	protected static $DEFAULT_MAX_SIZE = 4096; //KB
+	protected static $DEFAULT_MAX_SIZE = 4096; // KB
+
+	/**
+	 * Default file expire time
+	 * @var Integer
+	 */
+	protected static $FILE_EXPIRES = 20; // minutes
 
 	/**
 	 * Header Name for file checking
 	 * @var String
 	 */
 	protected static $HEADER_NAME = "File-Key";
-
-	/**
-	 * Root upload path. Files are saved in a temporal public user folder.
-	 * @var String
-	 */
-	public static $ROOT_UPLOAD_PATH = STORAGE_PATH."uploads/";
 
 	/**
 	 * trait config var
@@ -64,12 +64,20 @@ trait Uploader
 		// set request headers
 		$this->headers = $this->request->getHeaders();
 
-		// set upload save path for session
-		$this->UPLOADER_CONF["path"] = self::$ROOT_UPLOAD_PATH.$this->client->csrfKey."/";
+		// set key for user uploads
+		$this->UPLOADER_CONF["key"] = "UP_".$this->client->csrfKey."_";
+	}
 
-		// create dir if not exists
-		if (!is_dir($this->UPLOADER_CONF["path"]))
-			mkdir($this->UPLOADER_CONF["path"], 0755);
+	/**
+	 * Returns a new redis client
+	 */
+	protected static function newRedisClient()
+	{
+		$redis = new \Redis();
+		$redis->connect(getenv("REDIS_HOST") ?: "redis");
+		$redis->select(2);
+
+		return $redis;
 	}
 
 	/**
@@ -105,20 +113,71 @@ trait Uploader
 		if (empty($upload["error"])) {
 
 			// set file name
-			$filename = $upload["key"]."_".$upload["tag"]."_".round(microtime(true) * 1000).".".$upload["ext"];
-
-			$upload["id"] = $filename;
-
+			$upload["id"]  = $upload["key"]."_".$upload["tag"]."_".$upload["time"].".".$upload["ext"];
 			// public url
-			$upload["url"] = $this->baseUrl($this->router->getControllerName()."/file/".$this->cryptify->encryptData($filename));
+			$upload["url"] = $this->baseUrl($this->router->getControllerName()."/file/".$this->cryptify->encryptData($upload["id"]));
 
-			// move file into temp folder
-			$file->moveTo($this->UPLOADER_CONF["path"].$filename);
+			// store temp file
+			$this->storeFile($file->getTempName(), $upload["id"]);
 		}
-		else
-			unlink($file->getTempName());
+
+		// remove local file
+		unlink($file->getTempName());
 
 		return $upload;
+	}
+
+	/**
+	 * Saves temporary file
+	 * @param String $src - The source local file
+	 * @param String $filename - The filename key
+	 */
+	protected function storeFile($src, $filename)
+	{
+		if (!is_file($src)) return;
+
+		$redis = self::newRedisClient();
+
+		$key  = $this->UPLOADER_CONF["key"].$filename;
+		$file = file_get_contents($src);
+
+		$redis->set($key, base64_encode($file));
+		$redis->expire($key, self::$FILE_EXPIRES * 60);
+		$redis->close();
+	}
+
+	/**
+	 * Gets stored temporary file
+	 * @param String $filename - The filename key
+	 * @return String $file
+	 */
+	protected function getStoredFile($filename)
+	{
+		$redis = self::newRedisClient();
+
+		$key  = $this->UPLOADER_CONF["key"].$filename;
+		$file = $redis->get($key);
+
+		$redis->close();
+
+		return $file ? base64_decode($file) : null;
+	}
+
+	/**
+	 * Gets stored temporary files
+	 * @param String $filter- File Key Filter (optional)
+	 * @return Array
+	 */
+	protected function getStoredFiles($filter = "")
+	{
+		$redis = self::newRedisClient();
+
+		$key   = $this->UPLOADER_CONF["key"].$filter;
+		$files = $redis->getAll($key);
+
+		$redis->close();
+
+		return $files;
 	}
 
 	/**
@@ -126,18 +185,20 @@ trait Uploader
 	 */
 	public function fileAction($hash = "")
 	{
-		$filename = $this->UPLOADER_CONF["path"].$this->cryptify->decryptData($hash);
+		$redis = self::newRedisClient();
 
-		if (!is_file($filename)) die();
+		$filename = $this->cryptify->decryptData($hash);
 
-		$finfo = finfo_open(FILEINFO_MIME_TYPE);
-		$mime  = finfo_file($finfo, $filename);
+		if (!$file = $this->getStoredFile($filename)) die();
+
+		$finfo = new finfo(FILEINFO_MIME);
+		$mime  = $finfo->buffer($file);
 
 		$this->response->setStatusCode(200, "OK");
 		$this->response->setContentType($mime);
 
 		// content must be set after content type
-		$this->response->setContent(file_get_contents($filename));
+		$this->response->setContent($file);
 		$this->response->send();
 		die();
 	}
@@ -152,13 +213,14 @@ trait Uploader
 		// validate and filter request params data, second params are the required fields
 		$data = $this->handleRequest(["file" => "string"], "POST");
 
-		// set file path
-		$file_path = $this->UPLOADER_CONF["path"].$data["file"];
+		$redis = self::newRedisClient();
 
-		if (is_file($file_path))
-			unlink($file_path);
+		$key = $this->UPLOADER_CONF["key"].$data["file"];
 
-		$this->jsonResponse(200, ["file" => $file_path]);
+		$redis->del($key);
+		$redis->close();
+
+		$this->jsonResponse(200);
 	}
 
 	/**
@@ -168,49 +230,11 @@ trait Uploader
 	{
 		$this->onlyAjax();
 
-		$this->cleanUploadFolder();
+		$files = $this->getStoredFiles();
+
+		// TODO: delete all
 
 		$this->jsonResponse(200);
-	}
-
-	/**
-	 * Cleans upload folder
-	 * @param String $path - The target path to delete
-	 */
-	protected function cleanUploadFolder($path = null)
-	{
-		if (empty($path))
-			$path = $this->UPLOADER_CONF["path"];
-
-		if (!is_dir($path))
-			return;
-
-		array_map(function($f) { @unlink($f); }, glob($path."*"));
-	}
-
-	/**
-	 * Gets uploaded files in temp directory
-	 * @param Boolean $absolute_path - Append absolute path to each image (optional)
-	 * @param String $filter_key - File Key Filter (optional)
-	 * @return String
-	 */
-	protected function getUploadedFiles($absolute_path = true, $filter_key = false)
-	{
-		// filter function
-		$filter = function($array) use ($filter_key) {
-
-			return array_filter($array, function($f) use ($filter_key) { return strpos($f, $filter_key) !== false; });
-		};
-
-		// exclude hidden files
-		$files = preg_grep('/^([^.])/', scandir($this->UPLOADER_CONF["path"]));
-
-		if (!$absolute_path)
-			return $filter_key ? $filter(array_values($files)) : array_values($files);
-
-		$files = array_map(function($f) { return $this->UPLOADER_CONF["path"].$f; }, $files);
-
-		return $filter_key ? $filter(array_values($files)) : array_values($files);
 	}
 
 	/**
@@ -219,15 +243,14 @@ trait Uploader
 	 * @return Array - The saved uploaded files
 	 * @return Array - Optional files
 	 */
-	protected function pushToImageApi($uri = "", $files = false)
+	protected function pushToImageApi($uri = "", $files = null)
 	{
-		$files = $files ? $files : $this->getUploadedFiles(false);
+		$files = $files ?? $this->getUploadedFileKeys();
 
 		if (empty($files)) return [];
 
 		// add missing slash to uri?
-		if (!empty($uri) && substr($uri, -1) != "/")
-			$uri .= "/";
+		if (!empty($uri) && substr($uri, -1) != "/") $uri .= "/";
 
 		$pushed = [];
 
@@ -267,7 +290,7 @@ trait Uploader
 	/**
 	 * New Image Api Job, files are stored automatically in S3 (curl request)
 	 * @param String $api_uri - The imgapi uri job
-	 * @param String $src - The source file
+	 * @param String $src - The base64 encoded file
 	 * @param Array $config - The config array
 	 */
 	protected function newImageApiJob($api_uri = "", $src = "", $config = [])
@@ -276,7 +299,7 @@ trait Uploader
 			return null;
 
 		$body = json_encode([
-			"contents" => base64_encode(file_get_contents($src)),
+			"contents" => $src,
 			"config"   => $config
 		]);
 
@@ -369,7 +392,8 @@ trait Uploader
 			"size" => $fsize,
 			"key"  => $key,
 			"ext"  => $extension,
-			"mime" => $mimetype
+			"mime" => $mimetype,
+			"time" => round(microtime(true) * 1000)
 		];
 		//~ss($upload);
 
