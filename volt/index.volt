@@ -82,7 +82,7 @@
 		<script defer src="{{ js_url }}"></script>
 
 		{# Google Tag Manager [HEAD] #}
-		{% if config.google.gtmUA is not empty %}
+		{% if config.google.gtmID is not empty %}
 			<script>
 				(function(w,d,s,l,i){
 					w[l]=w[l]||[];w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});
@@ -90,7 +90,7 @@
 					j.async=true;
 					j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;
 					f.parentNode.insertBefore(j,f);
-				})(window,document,'script','dataLayer','{{ config.google.gtmUA }}');
+				})(window,document,'script','dataLayer','{{ config.google.gtmID }}');
 			</script>
 		{% endif %}
 
@@ -115,9 +115,9 @@
 		{% endif %}
 
 		{# Google Tag Manager [BODY] #}
-		{% if config.google.gtmUA is not empty %}
+		{% if config.google.gtmID is not empty %}
 			<noscript>
-				<iframe src="https://www.googletagmanager.com/ns.html?id={{ config.google.gtmUA }}" height="0" width="0" style="display:none;visibility:hidden;">
+				<iframe src="https://www.googletagmanager.com/ns.html?id={{ config.google.gtmID }}" height="0" width="0" style="display:none;visibility:hidden;">
 				</iframe>
 			</noscript>
 		{% endif %}

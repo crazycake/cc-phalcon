@@ -65,7 +65,7 @@ trait Uploader
 		$this->headers = $this->request->getHeaders();
 
 		// set key for user uploads
-		$this->UPLOADER_CONF["key"] = "UP_".$this->client->csrfKey."_";
+		$this->UPLOADER_CONF["key"] = $this->client->csrfKey."_";
 	}
 
 	/**
@@ -128,7 +128,7 @@ trait Uploader
 	}
 
 	/**
-	 * Saves temporary file
+	 * Saves temporary file with base64 encoding
 	 * @param String $src - The source local file
 	 * @param String $filename - The filename key
 	 */
@@ -149,35 +149,36 @@ trait Uploader
 	/**
 	 * Gets stored temporary file
 	 * @param String $filename - The filename key
-	 * @return String $file
+	 * @param Boolean $prefix - Append prefix to key
+	 * @param Boolean $decode - Base64 decoded value
+	 * @return String
 	 */
-	protected function getStoredFile($filename)
+	protected function getStoredFile($filename, $prefix = true, $decode = true)
 	{
 		$redis = self::newRedisClient();
 
-		$key  = $this->UPLOADER_CONF["key"].$filename;
+		$key  = ($prefix ? $this->UPLOADER_CONF["key"] : "").$filename;
 		$file = $redis->get($key);
 
 		$redis->close();
 
-		return $file ? base64_decode($file) : null;
+		return $file ? ($decode ? base64_decode($file) : $file) : null;
 	}
 
 	/**
-	 * Gets stored temporary files
-	 * @param String $filter- File Key Filter (optional)
+	 * Gets stored temporary files keys
+	 * @param String $filter- A key filter (optional)
 	 * @return Array
 	 */
-	protected function getStoredFiles($filter = "")
+	protected function getStoredFileKeys($filter = "")
 	{
 		$redis = self::newRedisClient();
 
-		$key   = $this->UPLOADER_CONF["key"].$filter;
-		$files = $redis->getAll($key);
+		$keys = $redis->keys($this->UPLOADER_CONF["key"].$filter."*");
 
 		$redis->close();
 
-		return $files;
+		return $keys;
 	}
 
 	/**
@@ -191,7 +192,7 @@ trait Uploader
 
 		if (!$file = $this->getStoredFile($filename)) die();
 
-		$finfo = new finfo(FILEINFO_MIME);
+		$finfo = new \finfo(FILEINFO_MIME);
 		$mime  = $finfo->buffer($file);
 
 		$this->response->setStatusCode(200, "OK");
@@ -204,7 +205,20 @@ trait Uploader
 	}
 
 	/**
-	 * Ajax POST - Removes a file in uploader folder
+	 * Removes a file in uploader folder
+	 */
+	protected function removeStoredFile($filename)
+	{
+		$redis = self::newRedisClient();
+
+		$key = $this->UPLOADER_CONF["key"].$filename;
+
+		$redis->del($key);
+		$redis->close();
+	}
+
+	/**
+	 * Ajax POST - Removes a temporary file
 	 */
 	public function removeUploadedFileAction()
 	{
@@ -213,12 +227,7 @@ trait Uploader
 		// validate and filter request params data, second params are the required fields
 		$data = $this->handleRequest(["file" => "string"], "POST");
 
-		$redis = self::newRedisClient();
-
-		$key = $this->UPLOADER_CONF["key"].$data["file"];
-
-		$redis->del($key);
-		$redis->close();
+		$this->removeStoredFile($data["file"]);
 
 		$this->jsonResponse(200);
 	}
@@ -230,9 +239,16 @@ trait Uploader
 	{
 		$this->onlyAjax();
 
-		$files = $this->getStoredFiles();
+		$files = $this->getStoredFileKeys();
 
-		// TODO: delete all
+		if (empty($files)) return $this->jsonResponse(200);
+
+		$redis = self::newRedisClient();
+
+		foreach ($files as $key)
+			$redis->del($key);
+
+		$redis->close();
 
 		$this->jsonResponse(200);
 	}
@@ -245,7 +261,7 @@ trait Uploader
 	 */
 	protected function pushToImageApi($uri = "", $files = null)
 	{
-		$files = $files ?? $this->getUploadedFileKeys();
+		$files = $files ?? $this->getStoredFileKeys();
 
 		if (empty($files)) return [];
 
@@ -274,13 +290,15 @@ trait Uploader
 					continue;
 
 				// create array
-				if (!isset($pushed[$key]))
-					$pushed[$key] = [];
+				if (!isset($pushed[$key])) $pushed[$key] = [];
 
-				// set filename to be saved
-				$conf["filename"] = $file;
+				// set filename to be saved (remove prefix)
+				$conf["filename"] = str_replace($this->UPLOADER_CONF["key"], "", $file);
+
+				$contents = $this->getStoredFile($file, false, false);
+
 				// new resize job
-				$pushed[$key][] = $this->newImageApiJob($job, $this->UPLOADER_CONF["path"].$file, $conf);
+				$pushed[$key][] = $this->newImageApiJob($job, $contents, $conf);
 			}
 		}
 
@@ -290,16 +308,13 @@ trait Uploader
 	/**
 	 * New Image Api Job, files are stored automatically in S3 (curl request)
 	 * @param String $api_uri - The imgapi uri job
-	 * @param String $src - The base64 encoded file
+	 * @param String $contents - The base64 encoded file
 	 * @param Array $config - The config array
 	 */
-	protected function newImageApiJob($api_uri = "", $src = "", $config = [])
+	protected function newImageApiJob($api_uri = "", $contents = "", $config = [])
 	{
-		if (!is_file($src))
-			return null;
-
 		$body = json_encode([
-			"contents" => $src,
+			"contents" => $contents,
 			"config"   => $config
 		]);
 
