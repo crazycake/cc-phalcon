@@ -142,7 +142,7 @@ trait Uploader
 		$file = file_get_contents($src);
 
 		$redis->set($key, base64_encode($file));
-		$redis->expire($key, self::$FILE_EXPIRES * 60);
+		$redis->expire($key, ($this->UPLOADER_CONF["expires"] ?? self::$FILE_EXPIRES) * 60); // minutes
 		$redis->close();
 	}
 
