@@ -52,13 +52,7 @@
 
 		{# favicons #}
 		<link rel="icon" type="image/png" href="{{ static_url('images/favicons/favicon.png') }}" />
-		<link rel="apple-touch-icon" href="{{ static_url('images/favicons/apple-touch-icon.png') }}" />
-
-		{# windows 8 #}
-		{% if client.platform == "Windows" %}
-			<meta name="msapplication-TileColor" content="{{ metas['ms_tile_color'] is not empty ? metas['ms_tile_color'] : '#EDEDED' }}" />
-			<meta name="msapplication-TileImage" content="{{ static_url('images/favicons/mstile.png') }}" />
-		{% endif %}
+		<link rel="apple-touch-icon" href="{{ static_url('images/favicons/favicon-180.png') }}" />
 
 		{# custom metas #}
 		{% if metas['custom'] is not empty %}
