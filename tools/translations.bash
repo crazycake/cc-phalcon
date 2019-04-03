@@ -10,8 +10,7 @@ PROJECT_PATH="$(dirname $(pwd))"
 
 # app namespace
 APP_NAME=${PWD##*/}
-GROUP_NAME=$(pwd | awk -F/ '{print $(NF-2)}')
-CONTAINER_NAME="$GROUP_NAME"_"$APP_NAME"
+CONTAINER_NAME="$(docker ps | grep -o '\w*_'$APP_NAME)"
 
 # help output
 help() {
