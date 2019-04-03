@@ -14,6 +14,7 @@ CONTAINER_NAME="$(docker ps | grep -o '\w*_'$APP_NAME)"
 
 # help output
 help() {
+
 	echo -e "\033[93m > "$APP_NAME" translations CLI \033[0m"
 	echo -e "\033[95m build: build po files in app folder. \033[0m"
 	echo -e "\033[95m find: find for new translations in app folder. \033[0m"
