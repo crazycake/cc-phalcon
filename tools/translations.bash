@@ -2,15 +2,15 @@
 # GetText helper script. Finds translations & compile po files.
 # author: Nicolas Pulido <nicolas.pulido@crazycake.tech>
 
-# interrupt if error raises
-set -e
-
 # current path
 PROJECT_PATH="$(dirname $(pwd))"
 
 # app namespace
 APP_NAME=${PWD##*/}
 CONTAINER_NAME="$(docker ps | grep -o '\w*_'$APP_NAME)"
+
+# interrupt if error raises
+set -e
 
 # help output
 help() {

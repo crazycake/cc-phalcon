@@ -2,9 +2,6 @@
 # Core Installer
 # author: Nicolas Pulido <nicolas.pulido@crazycake.tech>
 
-# interrupt if error raises
-set -e
-echo -e "\033[94mCore Package Installer \033[0m"
 
 # project paths
 PROJECT_PATH="$(pwd)"
@@ -23,6 +20,10 @@ CORE_SRC_VOLT=$CORE_SRC_PATH"volt/"
 
 # main app bash file
 ROOT_TOOL_FILES=("cli")
+
+# interrupt if error raises
+echo -e "\033[94mCore Package Installer \033[0m"
+set -e
 
 # check if cc-phalcon symlink is present
 if [ ! -d $CORE_SRC_PATH ]; then

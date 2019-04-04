@@ -2,9 +2,6 @@
 # Phalcon App CLI
 # author: Nicolas Pulido <nicolas.pulido@crazycake.tech>
 
-# stop script if an error occurs
-set -e
-
 # set project path
 PROJECT_PATH="$(pwd)"
 
@@ -14,6 +11,9 @@ CONTAINER_NAME="$(docker ps | grep -o '\w*_'$APP_NAME)"
 
 # app paths
 TOOLS_PATH=$PROJECT_PATH"/.tools/"
+
+# stop script if an error occurs
+set -e
 
 # help output
 help() {
