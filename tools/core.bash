@@ -2,7 +2,6 @@
 # Core Installer
 # author: Nicolas Pulido <nicolas.pulido@crazycake.tech>
 
-
 # project paths
 PROJECT_PATH="$(pwd)"
 
