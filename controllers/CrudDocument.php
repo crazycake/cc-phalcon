@@ -155,7 +155,7 @@ trait CrudDocument
 		$payload = json_decode($data["payload"]);
 
 		// set object id
-		try { $object_id = empty($payload->_id) ? null : new \MongoDB\BSON\ObjectID(current($payload->_id)); }
+		try { $id = empty($payload->_id) ? null : new \MongoDB\BSON\ObjectID(current($payload->_id)); }
 		catch (\Exception $e) { $this->jsonResponse(400); }
 
 		// format payload
@@ -166,7 +166,7 @@ trait CrudDocument
 			$this->onBeforeSave($payload);
 
 		// insert
-		if (is_null($object_id)) {
+		if (is_null($id)) {
 
 			try { $object = $this->database->{$this->CRUD_CONF["collection"]}->insertOne($payload); }
 			catch (\Exception $e) {
@@ -179,7 +179,7 @@ trait CrudDocument
 				$this->jsonResponse(500);
 			}
 
-			$object_id = $object->getInsertedId();
+			$id = $object->getInsertedId();
 		}
 		// update
 		else {
@@ -187,7 +187,7 @@ trait CrudDocument
 			// unset const props
 			unset($payload->_id, $payload->createdAt);
 
-			try { $this->database->{$this->CRUD_CONF["collection"]}->updateOne(["_id" => $object_id], ['$set' => $payload]); }
+			try { $this->database->{$this->CRUD_CONF["collection"]}->updateOne(["_id" => $id], ['$set' => $payload]); }
 			catch (\Exception $e) {
 
 				$this->logger->error("CrudDocument::saveAction -> update exception: ".$e->getMessage());
@@ -198,7 +198,7 @@ trait CrudDocument
 		}
 
 		// get saved object
-		try { $object = $this->database->{$this->CRUD_CONF["collection"]}->findOne(["_id" => $object_id]); }
+		try { $object = $this->database->{$this->CRUD_CONF["collection"]}->findOne(["_id" => $id]); }
 		catch (\Exception $e) { $object = null; }
 
 		// event
@@ -241,14 +241,14 @@ trait CrudDocument
 
 		$data = $this->handleRequest(["id" => "string"], "POST");
 
-		try { $object_id = new \MongoDB\BSON\ObjectID($data["id"]); }
+		try { $id = new \MongoDB\BSON\ObjectID($data["id"]); }
 		catch (\Exception $e) { $this->jsonResponse(400); }
 
 		// event
 		if (method_exists($this, "onBeforeDelete"))
-			$this->onBeforeDelete($object_id);
+			$this->onBeforeDelete($id);
 
-		$this->database->{$this->CRUD_CONF["collection"]}->deleteOne(["_id" => $object_id]);
+		$this->database->{$this->CRUD_CONF["collection"]}->deleteOne(["_id" => $id]);
 
 		// send response
 		$this->jsonResponse(200);
@@ -271,12 +271,12 @@ trait CrudDocument
 		if (method_exists($this, "onBeforeNullifyValue"))
 			$this->onBeforeNullifyValue($data);
 
-		try { $object_id = new \MongoDB\BSON\ObjectID($data["id"]); }
+		try { $id = new \MongoDB\BSON\ObjectID($data["id"]); }
 		catch (\Exception $e) { $this->jsonResponse(400); }
 
 		$prop = $data["prop"];
 
-		$object = $this->database->{$this->CRUD_CONF["collection"]}->findOne(["_id" => $object_id]);
+		$object = $this->database->{$this->CRUD_CONF["collection"]}->findOne(["_id" => $id]);
 
 		if (empty($object))
 			$this->jsonResponse(400);
@@ -287,10 +287,10 @@ trait CrudDocument
 		// array special case?
 		$cmd = $is_array ? ['$pull' => ["$prop" => $data["value"]]] : ['$set' => ["$prop" => null]];
 
-		$this->database->{$this->CRUD_CONF["collection"]}->updateOne(["_id" => $object_id], $cmd);
+		$this->database->{$this->CRUD_CONF["collection"]}->updateOne(["_id" => $id], $cmd);
 
 		// get updated value
-		$object = $this->database->{$this->CRUD_CONF["collection"]}->findOne(["_id" => $object_id]);
+		$object = $this->database->{$this->CRUD_CONF["collection"]}->findOne(["_id" => $id]);
 
 		$this->jsonResponse(200, ["prop" => "$prop", "value" => $object->{$prop}]);
 	}
