@@ -40,7 +40,7 @@ trait CrudDocument
 	protected function initCrud($conf = [])
 	{
 		$defaults = [
-			"database_uri"      => getenv("MONGO_HOST") ?: "mongodb://mongo",
+			"database_host"     => getenv("MONGO_HOST") ?: "mongodb://mongo",
 			"database_name"     => getenv("MONGO_DB") ?: "app",
 			"collection"        => null,
 			"predictive_search" => false,
@@ -56,11 +56,11 @@ trait CrudDocument
 		$this->CRUD_CONF = $conf;
 
 		// set db URI
-		$this->CRUD_CONF["database_uri"] = $this->CRUD_CONF["database_uri"];
+		$this->CRUD_CONF["database_host"] = $this->CRUD_CONF["database_host"];
 
-		$this->database = (new \MongoDB\Client($this->CRUD_CONF["database_uri"]))->{$this->CRUD_CONF["database_name"]};
+		$this->database = (new \MongoDB\Client($this->CRUD_CONF["database_host"]))->{$this->CRUD_CONF["database_name"]};
 
-		$this->databaseManager = new \MongoDB\Driver\Manager($this->CRUD_CONF["database_uri"]);
+		$this->databaseManager = new \MongoDB\Driver\Manager($this->CRUD_CONF["database_host"]);
 	}
 
 	/**
