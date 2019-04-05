@@ -151,13 +151,10 @@ trait CrudDocument
 		$this->onlyAjax();
 
 		// set required props to be validated
-		$data    = $this->handleRequest(["payload" => "striptags"], "POST");
+		$data = $this->handleRequest(["payload" => "striptags"], "POST");
 
 		try { $payload = \MongoDB\BSON\toPHP(\MongoDB\BSON\fromJSON($data["payload"])); }
 		catch (\Exception $e) { $this->jsonResponse(500); }
-
-		// set object id
-		$id = $payload->_id ?? null;
 
 		// format payload
 		$this->formatPayload($payload);
@@ -165,6 +162,9 @@ trait CrudDocument
 		// event
 		if (method_exists($this, "onBeforeSave"))
 			$this->onBeforeSave($payload);
+
+		// set object id
+		$id = $payload->_id ?? null;
 
 		// insert
 		if (empty($id)) {
