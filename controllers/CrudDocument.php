@@ -152,11 +152,10 @@ trait CrudDocument
 
 		// set required props to be validated
 		$data    = $this->handleRequest(["payload" => "striptags"], "POST");
-		$payload = json_decode($data["payload"]);
+		$payload = \MongoDB\BSON\toPHP(\MongoDB\BSON\fromJSON($data["payload"]));
 
 		// set object id
-		try { $id = empty($payload->_id) ? null : new \MongoDB\BSON\ObjectID(current($payload->_id)); }
-		catch (\Exception $e) { $this->jsonResponse(400); }
+		$id = $payload->_id ?? null;
 
 		// format payload
 		$this->formatPayload($payload);
@@ -166,7 +165,7 @@ trait CrudDocument
 			$this->onBeforeSave($payload);
 
 		// insert
-		if (is_null($id)) {
+		if (empty($id)) {
 
 			try { $object = $this->database->{$this->CRUD_CONF["collection"]}->insertOne($payload); }
 			catch (\Exception $e) {
@@ -183,9 +182,6 @@ trait CrudDocument
 		}
 		// update
 		else {
-
-			// unset const props
-			unset($payload->_id, $payload->createdAt);
 
 			try { $this->database->{$this->CRUD_CONF["collection"]}->updateOne(["_id" => $id], ['$set' => $payload]); }
 			catch (\Exception $e) {
