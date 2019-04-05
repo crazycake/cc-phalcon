@@ -168,7 +168,7 @@ trait CrudDocument
 		if (is_null($object_id)) {
 
 			try { $object = $this->database->{$this->CRUD_CONF["collection"]}->insertOne($payload); }
-			catch (\Exception | Exception $e) {
+			catch (\Exception $e) {
 
 				$this->logger->error("CrudDocument::saveAction -> insert exception: ".$e->getMessage());
 
@@ -187,7 +187,7 @@ trait CrudDocument
 			unset($payload->_id, $payload->createdAt);
 
 			try { $this->database->{$this->CRUD_CONF["collection"]}->updateOne(["_id" => $object_id], ['$set' => $payload]); }
-			catch (\Exception | Exception $e) {
+			catch (\Exception $e) {
 
 				$this->logger->error("CrudDocument::saveAction -> update exception: ".$e->getMessage());
 
@@ -198,7 +198,7 @@ trait CrudDocument
 
 		// get saved object
 		try { $object = $this->database->{$this->CRUD_CONF["collection"]}->findOne(["_id" => $object_id]); }
-		catch (\Exception | Exception $e) { $object = null; }
+		catch (\Exception $e) { $object = null; }
 
 		// event
 		if (method_exists($this, "onAfterSave"))
@@ -222,7 +222,7 @@ trait CrudDocument
 		$id = (new \Phalcon\Filter())->sanitize($id, "string");
 
 		try { $object = $this->database->{$this->CRUD_CONF["collection"]}->findOne(["_id" => (new \MongoDB\BSON\ObjectId($id))]); }
-		catch (\Exception | Exception $e) { $object = null; }
+		catch (\Exception $e) { $object = null; }
 
 		// event
 		if (method_exists($this, "onGet"))
@@ -240,7 +240,8 @@ trait CrudDocument
 
 		$data = $this->handleRequest(["id" => "string"], "POST");
 
-		$object_id = new \MongoDB\BSON\ObjectID($data["id"]);
+		try { $object_id = new \MongoDB\BSON\ObjectID($data["id"]); }
+		catch (\Exception $e) { $this->jsonResponse(400); }
 
 		// event
 		if (method_exists($this, "onBeforeDelete"))
@@ -269,8 +270,10 @@ trait CrudDocument
 		if (method_exists($this, "onBeforeNullifyValue"))
 			$this->onBeforeNullifyValue($data);
 
-		$object_id = new \MongoDB\BSON\ObjectID($data["id"]);
-		$prop      = $data["prop"];
+		try { $object_id = new \MongoDB\BSON\ObjectID($data["id"]); }
+		catch (\Exception $e) { $this->jsonResponse(400); }
+
+		$prop = $data["prop"];
 
 		$object = $this->database->{$this->CRUD_CONF["collection"]}->findOne(["_id" => $object_id]);
 
