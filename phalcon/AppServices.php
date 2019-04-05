@@ -194,16 +194,16 @@ class AppServices
 	 */
 	private function _setMongoService(&$di)
 	{
-		$uri = getenv("MONGO_HOST") ?: "mongodb://mongo";
+		$host = getenv("MONGO_HOST") ?: "mongodb://mongo";
 
-		$di->setShared("mongo", function() use ($uri) {
+		$di->setShared("mongo", function() use ($host) {
 
-			return (new \MongoDB\Client($uri))->{getenv("MONGO_DB") ?: "app"};
+			return (new \MongoDB\Client($host))->{getenv("MONGO_DB") ?: "app"};
 		});
 
-		$di->setShared("mongoManager", function() use ($uri) {
+		$di->setShared("mongoManager", function() use ($host) {
 
-			return new \MongoDB\Driver\Manager($uri);
+			return new \MongoDB\Driver\Manager($host);
 		});
 	}
 

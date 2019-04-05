@@ -1,6 +1,6 @@
 <?php
 /**
- * Document Model (NoSQL)
+ * Document Model (MongoDB)
  * @author Nicolas Pulido <nicolas.pulido@crazycake.tech>
  */
 
@@ -18,12 +18,20 @@ class Document
 	public static $COLLECTION = "";
 
 	/**
+	 * Gets Database client (override for custom connection)
+	 */
+	public static function getClient()
+	{
+		return (\Phalcon\DI::getDefault())->getShared("mongo");
+	}
+
+	/**
 	 * Get by Id
 	 * @param Mixed $id - The document ID (String or ObjectId)
 	 */
 	public static function getById($id)
 	{
-		$mongo = (\Phalcon\DI::getDefault())->getShared("mongo");
+		$mongo = static::getClient();
 
 		try { $object = $mongo->{static::$COLLECTION}->findOne(["_id" => self::toObjectId($id)]); }
 		catch (\Exception $e) { $object = false; }
@@ -39,7 +47,7 @@ class Document
 	 */
 	public static function getByProperties($props, $opts = [])
 	{
-		$mongo = (\Phalcon\DI::getDefault())->getShared("mongo");
+		$mongo = static::getClient();
 
 		try { $object = $mongo->{static::$COLLECTION}->findOne($props, $opts); }
 		catch (\Exception $e) { $object = false; }
@@ -55,7 +63,7 @@ class Document
 	 */
 	public static function getDistinctValues($prop, $case = false)
 	{
-		$mongo = (\Phalcon\DI::getDefault())->getShared("mongo");
+		$mongo = static::getClient();
 
 		$values = $mongo->{static::$COLLECTION}->distinct($prop);
 
@@ -78,7 +86,7 @@ class Document
 	 */
 	public static function updateProperties($search, $props)
 	{
-		$mongo = (\Phalcon\DI::getDefault())->getShared("mongo");
+		$mongo = static::getClient();
 
 		if (!is_array($search))
 			$search = ["_id" => self::toObjectId($search)];
@@ -92,7 +100,7 @@ class Document
 	 */
 	public static function insert($data)
 	{
-		$mongo = (\Phalcon\DI::getDefault())->getShared("mongo");
+		$mongo = static::getClient();
 
 		$insertion = $mongo->{static::$COLLECTION}->insertOne($data);
 		$object_id = $insertion->getInsertedId();
