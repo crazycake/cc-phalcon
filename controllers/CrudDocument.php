@@ -155,7 +155,8 @@ trait CrudDocument
 		$payload = json_decode($data["payload"]);
 
 		// set object id
-		$object_id = empty($payload->_id) ? null : new \MongoDB\BSON\ObjectID(current($payload->_id));
+		try { $object_id = empty($payload->_id) ? null : new \MongoDB\BSON\ObjectID(current($payload->_id)); }
+		catch (\Exception $e) { $this->jsonResponse(400); }
 
 		// format payload
 		$this->formatPayload($payload);
