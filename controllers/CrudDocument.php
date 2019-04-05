@@ -152,7 +152,9 @@ trait CrudDocument
 
 		// set required props to be validated
 		$data    = $this->handleRequest(["payload" => "striptags"], "POST");
-		$payload = \MongoDB\BSON\toPHP(\MongoDB\BSON\fromJSON($data["payload"]));
+
+		try { $payload = \MongoDB\BSON\toPHP(\MongoDB\BSON\fromJSON($data["payload"])); }
+		catch (\Exception $e) { $this->jsonResponse(500); }
 
 		// set object id
 		$id = $payload->_id ?? null;
