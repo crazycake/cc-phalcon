@@ -272,12 +272,7 @@ class AppServices
 		// flash messages
 		$di->setShared("flash", function() {
 
-			$flash = new \Phalcon\Flash\Session([
-				"success" => "success",
-				"error"   => "alert",
-				"notice"  => "notice",
-				"warning" => "warning"
-			]);
+			$flash = new \Phalcon\Flash\Session();
 			// disable auto escape
 			$flash->setAutoescape(false);
 
