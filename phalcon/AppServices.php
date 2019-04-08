@@ -289,7 +289,7 @@ class AppServices
 		// dispatcher event manager
 		$di->setShared("dispatcher", function() {
 
-			$manager = new \Phalcon\Events\Manager;
+			$manager = new \Phalcon\Events\Manager();
 			// handle exceptions and not-found exceptions using Exceptions Plugin
 			$manager->attach("dispatch:beforeException", new ExceptionsPlugin);
 
