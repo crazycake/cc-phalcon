@@ -265,10 +265,6 @@ trait CrudDocument
 			"@value" => "string" // optional
 		], "POST");
 
-		// event
-		if (method_exists($this, "onBeforeNullifyValue"))
-			$this->onBeforeNullifyValue($data);
-
 		try { $id = new \MongoDB\BSON\ObjectID($data["id"]); }
 		catch (\Exception $e) { $this->jsonResponse(400); }
 
