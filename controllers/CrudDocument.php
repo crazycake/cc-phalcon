@@ -286,6 +286,10 @@ trait CrudDocument
 		// get updated value
 		$object = $this->database->{$this->CRUD_CONF["collection"]}->findOne(["_id" => $id]);
 
+		// event
+		if (method_exists($this, "onAfterPullValue"))
+			$this->onAfterPullValue($object, $data);
+
 		$this->jsonResponse(200, ["prop" => "$prop", "value" => $object->{$prop}]);
 	}
 
