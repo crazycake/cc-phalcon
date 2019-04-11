@@ -52,11 +52,10 @@ trait Uploader
 	 */
 	protected function initUploader($conf = [])
 	{
-		if (empty($conf["files"]))
-			throw new Exception("Uploader requires files array config.");
-
 		if (empty($conf["trans"]))
 			$conf["trans"] = \TranslationController::defaultCoreTranslations("uploader");
+
+		$conf["files"] = $conf["files"] ?? [];
 
 		// set conf
 		$this->UPLOADER_CONF = $conf;
