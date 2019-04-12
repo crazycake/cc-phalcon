@@ -111,8 +111,12 @@ trait Uploader
 		// check for rejected uploads
 		if (empty($upload["error"])) {
 
-			// set file name
-			$upload["id"]  = $upload["key"]."_".$upload["tag"]."_".$upload["time"].".".$upload["ext"];
+			// set file name?
+			if (method_exists($this, "newUploadId"))
+				$upload["id"] = $this->newUploadId($upload);
+			else
+				$upload["id"] = $upload["key"]."_".$upload["tag"]."_".$upload["time"].".".$upload["ext"];
+
 			// public url
 			$upload["url"] = $this->baseUrl($this->router->getControllerName()."/file/".$this->cryptify->encryptData($upload["id"]));
 
