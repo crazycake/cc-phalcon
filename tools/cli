@@ -40,6 +40,8 @@ watch)
 
 		echo -e "\033[31mMJML watcher...\033[0m"
 
+		mkdir -p ui/volt/mailing
+
 		./node_modules/mjml/bin/mjml -w ui/mailing/*.volt.mjml -o ui/volt/mailing/
 
 	else
