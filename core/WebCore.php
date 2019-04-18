@@ -36,6 +36,9 @@ abstract class WebCore extends BaseCore implements WebSecurity
 		// redirect non https?
 		$this->_handleHttps();
 
+		// redirect to www subdomain?
+		$this->_handleWww();
+
 		// set client object with its properties (User-Agent)
 		$this->_setClient();
 
@@ -195,8 +198,22 @@ abstract class WebCore extends BaseCore implements WebSecurity
 		if (!$https || $scheme == "https")
 			return;
 
-		// force redirect for non-https request
-		$this->response->redirect(str_replace("http:", "https:", $this->baseUrl($this->getRequestedUri() ?? '')));
+		// redirect non-https
+		$this->response->redirect(str_replace("http:", "https:", $this->baseUrl($this->getRequestedUri() ?? '', 1)));
+	}
+
+	/**
+	 * Handle HTTPS redirection
+	 */
+	private function _handleWww()
+	{
+		$www = getenv("APP_WWW_ONLY") ?: false;
+
+		if (!$www || substr($this->host(), 0, 3) == "www")
+			return;
+
+		// redirect non-www
+		$this->response->redirect(str_replace("://", "://www.", $this->baseUrl($this->getRequestedUri() ?? '', 1)));
 	}
 
 	/**

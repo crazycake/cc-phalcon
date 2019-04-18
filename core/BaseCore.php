@@ -60,20 +60,20 @@ abstract class BaseCore extends Controller
 	 */
 	protected function host($port = 80)
 	{
-		$host       = $this->request->getHttpHost();
-		$host_parts = explode(":", $host);
+		$host  = $this->request->getHttpHost();
+		$parts = explode(":", $host);
 
 		// check if host already has binded a port
-		if (count($host_parts) > 1)
-			$host = current($host_parts);
+		if (count($parts) > 1)
+			$host = current($parts);
 
-		$host_url = empty($port) ? $host : $host.":".$port;
+		$host = empty($port) ? $host : $host.":".$port;
 
 		// remove default port if set
-		if (substr($host_url, -3) == ":80")
-			$host_url = substr($host_url, 0, strlen($host_url) - 3);
+		if (substr($host, -3) == ":80")
+			$host = substr($host, 0, strlen($host) - 3);
 
-		return $host_url;
+		return $host;
 	}
 
 	/**
