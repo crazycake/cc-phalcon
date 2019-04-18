@@ -127,21 +127,19 @@ trait Mailer
 	 */
 	public function adminException($e = "", $data = [])
 	{
-		$error = is_string($e) ? $e : $e->getMessage().". File: ".$e->getFile()." [".$e->getLine()."]";
+		$data["name"]  = $this->config->name." - ".MODULE_NAME;
+		$data["email"] = $this->config->emails->sender;
 
-		$admin_emails = !empty($this->config->emails->admins) ? (array)$this->config->emails->admins : [$this->config->emails->support];
+		$data["message"] = is_string($e) ? $e : $e->getMessage().". File: ".$e->getFile()." [".$e->getLine()."]";
 
-		$data["name"]    = $this->config->name." ".MODULE_NAME;
-		$data["email"]   = $this->config->emails->sender;
-		$data["message"] = "$error\nTrace:\n".(empty($data["trace"]) ? "n/a" : json_encode($data["trace"], JSON_UNESCAPED_SLASHES));
+		if (!empty($data["trace"]))
+			$data["message"] .= "\nTrace:\n".json_encode($data["trace"], JSON_UNESCAPED_SLASHES);
 
 		// extend config
 		$this->MAILER_CONF = array_merge($this->MAILER_CONF, $data);
 
-		$this->logger->debug("Mailer::adminException -> sending exception: ".json_encode($this->MAILER_CONF, JSON_UNESCAPED_SLASHES));
-
 		// sends the message
-		$this->sendMessage("contact", "Admin message", $admin_emails);
+		$this->sendMessage("contact", "Admin Exception", (array)$this->config->emails->admins);
 	}
 
 	/**
