@@ -79,9 +79,9 @@ abstract class App
 
 		switch (MODULE_NAME) {
 
-			case "cli" : $this->_startCli($argv);      break;
-			case "api" : $this->_startApi($routes_fn); break;
-			default    : $this->_startMvc($routes_fn); break;
+			case "cli": $this->_startCli($argv);      break;
+			case "api": $this->_startApi($routes_fn); break;
+			default   : $this->_startMvc($routes_fn); break;
 		}
 	}
 
