@@ -194,7 +194,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 			return;
 
 		// redirect non-https
-		$this->response->redirect(str_replace("http:", "https:", $this->baseUrl($this->getRequestedUri() ?? '', 1)));
+		$this->response->redirect(str_replace("http:", "https:", $this->baseUrl($this->getRequestedUri() ?? '', 1)), true, 301);
 	}
 
 	/**
@@ -208,7 +208,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 			return;
 
 		// redirect non-www
-		$this->response->redirect(str_replace("://", "://www.", $this->baseUrl($this->getRequestedUri() ?? '', 1)));
+		$this->response->redirect(str_replace("://", "://www.", $this->baseUrl($this->getRequestedUri() ?? '', 1)), true, 301);
 	}
 
 	/**
