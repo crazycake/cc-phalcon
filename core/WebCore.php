@@ -88,15 +88,10 @@ abstract class WebCore extends BaseCore implements WebSecurity
 	/**
 	 * Redirect to given URI as GET method
 	 * @param String $uri - The URI to redirect
-	 * @param Array $params - The GET params (optional)
 	 * @param Int $code - The http 3xx code
 	 */
-	protected function redirectTo($uri = "/", $params = [], $code = 302)
+	protected function redirectTo($uri = "/", $code = 302)
 	{
-		// parse get params & append them to the URL
-		if (!empty($params))
-			$uri .= "?".http_build_query($params);
-
 		// set url
 		$url = substr($uri, 0, 4) == "http" ? $uri : $this->baseUrl($uri[0] == "/" ? substr($uri, 1) : $uri);
 		// ss($url);
