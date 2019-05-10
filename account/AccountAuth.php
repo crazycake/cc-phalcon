@@ -51,14 +51,15 @@ trait AccountAuth
 	public function initAccountAuth($conf = [])
 	{
 		$defaults = [
-			"user_entity"    => "user",
-			"user_key"       => "email",
-			"logged_in_uri"  => "account",
-			"logged_out_uri" => "signIn",
-			"activation_uri" => "auth/activation/",
-			"csrf"           => true,
-			"recaptcha"      => false,
-			"loginAttempts"  => 8
+			"user_entity"          => "user",
+			"user_key"             => "email",
+			"logged_in_uri"        => "account",
+			"logged_out_uri"       => "signIn",
+			"activation_uri"       => "auth/activation/",
+			"csrf"                 => true,
+			"recaptcha"            => false,
+			"login_attempts"       => 8,
+			"login_allowed_states" => ["enabled"]
 		];
 
 		// merge confs
@@ -128,14 +129,14 @@ trait AccountAuth
 			$this->saveLoginAttempt($user->_id);
 
 			// basic attempts security
-			if ($this->getLoginAttempts($user->_id) > $this->AUTH_CONF["loginAttempts"])
+			if ($this->getLoginAttempts($user->_id) > $this->AUTH_CONF["login_attempts"])
 				$this->jsonResponse(400, $this->AUTH_CONF["trans"]["AUTH_BLOCKED"]);
 
 			$this->jsonResponse(400, $this->AUTH_CONF["trans"]["AUTH_FAILED"]);
 		}
 
 		// check user account flag
-		if ($user->flag != "enabled")
+		if (!in_array($user->flag, $this->AUTH_CONF["login_allowed_states"]))
 			$this->jsonResponse(400, str_replace("{email}", $user->email, $this->AUTH_CONF["trans"]["STATE_".strtoupper($user->flag)]));
 
 		// success login
