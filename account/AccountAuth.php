@@ -213,9 +213,6 @@ trait AccountAuth
 	{
 		try {
 
-			if ($this->isLoggedIn())
-				throw new Exception("user is already logged in");
-
 			$entity = $this->AUTH_CONF["user_entity"];
 
 			// handle the hash data with parent controller
