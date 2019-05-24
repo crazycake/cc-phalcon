@@ -225,8 +225,10 @@ trait AccountAuth
 			if (!$user || $user->flag == "disabled")
 				throw new Exception("invalid user or missing 'pending' flag, userID: $user->id");
 
+			$user->flag = "enabled";
+
 			// save new account flag state
-			$entity::updateProperties($user_id, ["flag" => "enabled"]);
+			$entity::updateProperties($user_id, ["flag" => $user->flag]);
 
 			// event (can interrupt flux)
 			if (method_exists($this, "onActivationSuccess"))
