@@ -87,7 +87,7 @@ trait Responser
 		$this->response->setHeader("Access-Control-Allow-Origin", "*");
 
 		if (!empty($filename))
-			$this->response->setHeader("Content-Disposition", "attachment; filename='".basename($filename)."'");
+			$this->response->setHeader("Content-Disposition", 'attachment; filename="'.basename($filename).'"');
 
 		$this->response->setContentType($mime_type);
 		// content must be set after content type
