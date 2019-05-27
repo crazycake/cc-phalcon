@@ -75,15 +75,20 @@ trait Responser
 	 * Sends a file to buffer output response
 	 * @param Binary $data - The binary data to send
 	 * @param String $mime_type - The mime type
+	 * @param String $filename - The output filename (optional)
 	 * @return String - The response
 	 */
-	protected function sendFileToBuffer($data = null, $mime_type = "text/plain")
+	protected function sendFileToBuffer($data = null, $mime_type = "text/plain", $filename = null)
 	{
 		if ($this->di->has("view"))
 			$this->view->disable(); // disable view output
 
 		$this->response->setStatusCode(200, "OK");
 		$this->response->setHeader("Access-Control-Allow-Origin", "*");
+
+		if (!empty($filename))
+			$this->response->setHeader("Content-Disposition", "attachment; filename='".basename($filename)."'");
+
 		$this->response->setContentType($mime_type);
 		// content must be set after content type
 		$this->response->setContent($data);
