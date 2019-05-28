@@ -285,14 +285,15 @@ trait AccountAuth
 	/**
 	 * Sends activation mail message with recaptcha validation
 	 * @param Object $user - The user object
+	 * @param String $method - The mailer method
 	 */
-	public function sendActivationMailMessage($user)
+	public function sendActivationMailMessage($user, $method = "accountActivation")
 	{
 		// hash data
 		$token_chain = self::newTokenChainCrypt((string)$user->_id, "activation");
 
 		// send activation account email
-		return $this->sendMailMessage("accountActivation", [
+		return $this->sendMailMessage($method, [
 			"user"  => $user,
 			"email" => $user->email,
 			"url"   => $this->baseUrl($this->AUTH_CONF["activation_uri"].$token_chain)
