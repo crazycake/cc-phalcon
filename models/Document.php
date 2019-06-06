@@ -33,7 +33,7 @@ class Document
 	{
 		$mongo = static::getClient();
 
-		try { $object = $mongo->{static::$COLLECTION}->findOne(["_id" => is_numeric($id) ? $id : self::toObjectId($id)]); }
+		try { $object = $mongo->{static::$COLLECTION}->findOne(["_id" => is_numeric($id) ? (string)$id : self::toObjectId($id)]); }
 		catch (\Exception $e) { $object = false; }
 
 		// return reduced object
