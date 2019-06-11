@@ -112,7 +112,7 @@ trait Requester
 
 		$params = $query_string ? "?".http_build_query($options["payload"]) : "/".$options["payload"];
 
-		$this->logger->debug("Requester::_getRequest [".$options["uri"]."] options: ".print_r($guzzle_options, true));
+		$this->logger->debug("Requester::_getRequest [".$options["uri"]."] options:\n".json_encode($guzzle_options, JSON_UNESCAPED_SLASHES)."\n");
 
 		// new promise
 		$response = $client->request("GET", $options["uri"].$params, $guzzle_options);
@@ -155,7 +155,7 @@ trait Requester
 		if (!empty($options["body"]))
 			$guzzle_options["body"] = $options["body"];
 
-		$this->logger->debug("Requester::_postRequest [".$options["uri"]."] options: ".print_r($guzzle_options, true));
+		$this->logger->debug("Requester::_postRequest [".$options["uri"]."] options:\n".json_encode($guzzle_options, JSON_UNESCAPED_SLASHES)."\n");
 
 		// request action
 		$response = $client->request(strtoupper($options["method"]), $options["uri"], $guzzle_options);
@@ -231,7 +231,7 @@ trait Requester
 		if (strtoupper($options["method"]) == "POST" && !empty($options["payload"]))
 			$out .= $options["payload"];
 
-		$this->logger->debug("Requester::_socketRequest -> sending out request ".print_r($out, true));
+		$this->logger->debug("Requester::_socketRequest -> sending out request:\n".json_encode($out, JSON_UNESCAPED_SLASHES)."\n");
 
 		fwrite($socket, $out);
 		usleep(300000); //0.3s
