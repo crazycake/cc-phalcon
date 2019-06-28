@@ -12,7 +12,7 @@ TOOLS_PATH=$PROJECT_PATH"/.tools/"
 DEST_PATH=$PROJECT_PATH"/core/"
 
 # symlink to core project
-CORE_SRC_PATH="~/workspace/cc-phalcon/"
+CORE_SRC_PATH="$HOME/workspace/cc-phalcon/"
 # sub-paths
 CORE_SRC_TOOLS=$CORE_SRC_PATH"tools/"
 CORE_SRC_VOLT=$CORE_SRC_PATH"volt/"
