@@ -40,11 +40,12 @@ trait CrudDocument
 	protected function initCrud($conf = [])
 	{
 		$defaults = [
-			"database_host"     => getenv("MONGO_HOST") ?: "mongodb://mongo",
-			"database_name"     => getenv("MONGO_DB") ?: "app",
-			"collection"        => null,
-			"predictive_search" => false,
-			"fetch_limit"       => 1000
+			"database_host"      => getenv("MONGO_HOST") ?: "mongodb://mongo",
+			"database_name"      => getenv("MONGO_DB") ?: "app",
+			"collection"         => null,
+			"predictive_search"  => false,
+			"fetch_limit"        => 1000,
+			"fetch_default_sort" => null
 		];
 
 		// merge confs
@@ -110,7 +111,7 @@ trait CrudDocument
 		else {
 
 			// sort default
-			$opts["sort"] = ["_id" => -1];
+			$opts["sort"] = $this->CRUD_CONF["fetch_default_sort"] ?? ["_id" => -1];
 
 			if (!empty($data["sort"]) && !empty($data["order"]))
 				$opts["sort"] = [$data["sort"] => intval($data["order"])];

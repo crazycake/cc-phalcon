@@ -26,6 +26,7 @@ help() {
 	echo -e "\033[95m clean: Clean cache & logs.\033[0m"
 	echo -e "\033[97m > admin commands \033[0m"
 	echo -e "\033[95m core: Install/update core package (requires cc-phalcon project symbolic link). \033[0m"
+	echo -e "\033[95m js: Replace core.js in node_modules (requires cc-js project symbolic link). \033[0m"
 	exit
 }
 
@@ -90,6 +91,18 @@ clean)
 core)
 
 	bash $TOOLS_PATH"core.bash" "${@:2}"
+;;
+
+js)
+
+	CORE_SRC_PATH="~/workspace/cc-js/"
+
+	if [ ! -d $CORE_SRC_PATH]; then
+
+		echo -e "\033[31mProject cc-js not found ($CORE_SRC_PATH) \033[0m" && exit
+	fi
+
+	cp $CORE_SRC_PATH .node_modules/crazycake-js/core.js
 ;;
 
 # defaults

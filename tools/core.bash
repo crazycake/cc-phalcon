@@ -12,7 +12,7 @@ TOOLS_PATH=$PROJECT_PATH"/.tools/"
 DEST_PATH=$PROJECT_PATH"/core/"
 
 # symlink to core project
-CORE_SRC_PATH="$(dirname $(pwd))/cc-phalcon/"
+CORE_SRC_PATH="~/workspace/cc-phalcon/"
 # sub-paths
 CORE_SRC_TOOLS=$CORE_SRC_PATH"tools/"
 CORE_SRC_VOLT=$CORE_SRC_PATH"volt/"
@@ -27,7 +27,7 @@ set -e
 # check if cc-phalcon symlink is present
 if [ ! -d $CORE_SRC_PATH ]; then
 
-	echo -e "\033[31mCore project symlink folder not found ($CORE_SRC_PATH) \033[0m" && exit
+	echo -e "\033[31mProject cc-phalcon not found ($CORE_SRC_PATH) \033[0m" && exit
 fi
 
 copyToolFiles() {
