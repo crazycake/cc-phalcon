@@ -136,7 +136,7 @@ trait CrudDocument
 
 		// event
 		if (method_exists($this, "onAfterQuery"))
-			$this->onAfterQuery($items);
+			$this->onAfterQuery($items, $data);
 
 		$response = ["items" => $items, "totalItems" => $totalItems];
 
