@@ -28,7 +28,7 @@ trait Requester
 	 * + base_url: The request base URL
 	 * + uri: The request URI
 	 * + payload: The encrypted string params data
-	 * + method: The HTTP method (GET, POST)
+	 * + method: The HTTP method (GET, POST, PUT)
 	 * + socket: Makes async call as socket connection
 	 * @return Object - The request object
 	 */
@@ -40,9 +40,8 @@ trait Requester
 			"method"       => "GET",
 			"socket"       => false,
 			"encrypt"      => false,
+			"payload"      => false,
 			"verify_host"  => false,
-			"query-string" => false,
-			"payload"      => "",
 			"timeout"      => self::$REQUEST_TIMEOUT
 		], $options);
 
@@ -60,7 +59,7 @@ trait Requester
 
 			// encrypt payload?
 			if ($options["encrypt"] && !empty($options["payload"]))
-				$this->cryptify->encryptData($options["payload"]);
+				$options["payload"] = $this->cryptify->encryptData($options["payload"]);
 
 			$this->logger->debug("Requester::newRequest -> Options: ".json_encode($options, JSON_UNESCAPED_SLASHES));
 
@@ -107,20 +106,19 @@ trait Requester
 		if (!empty($options["headers"]))
 			$guzzle_options["headers"] = $options["headers"];
 
-		// check params for query strings
-		$query_string = $options["query-string"] || is_array($options["payload"]);
+		// check params
+		if (!empty($options["payload"]))
+			$options["uri"] .= is_array($options["payload"]) ? "?".http_build_query($options["payload"]) : "/".$options["payload"];
 
-		$params = $query_string ? "?".http_build_query($options["payload"]) : "/".$options["payload"];
+		$this->logger->debug("\n--\nRequester::_getRequest [".$options["uri"]."] guzzle_options:\n".json_encode($guzzle_options, JSON_UNESCAPED_SLASHES)."\n");
 
-		$this->logger->debug("\n--\nRequester::_getRequest [".$options["uri"]."] options:\n".json_encode($guzzle_options, JSON_UNESCAPED_SLASHES)."\n");
-
-		// new promise
-		$response = $client->request("GET", $options["uri"].$params, $guzzle_options);
+		// guzzle request
+		$response = $client->request("GET", $options["uri"], $guzzle_options);
 
 		$body = $response->getBody();
 
 		$this->logger->debug("\n--\nRequester::_getRequest -> OK, received response [".$response->getStatusCode()."] length: ".strlen($body).
-							 " -> preview: ".substr($body, 0, 144)." ...\nHeaders: ".json_encode($response->getHeaders(), JSON_UNESCAPED_SLASHES)."\n");
+							 " -> preview: ".substr($body, 0, 160)." ...\nHeaders: ".json_encode($response->getHeaders(), JSON_UNESCAPED_SLASHES)."\n");
 
 		return (string)$body;
 	}
@@ -140,7 +138,6 @@ trait Requester
 
 		// curl options
 		$guzzle_options = [
-			"form_params" => $options["payload"],
 			"curl" => [
 				CURLOPT_SSL_VERIFYHOST => $options["verify_host"] ? 2 : false, // prod_recommended: 2
 				CURLOPT_SSL_VERIFYPEER => $options["verify_host"]              // prod_recommended: true
@@ -151,13 +148,17 @@ trait Requester
 		if (!empty($options["headers"]))
 			$guzzle_options["headers"] = $options["headers"];
 
-		// set body?
-		if (!empty($options["body"]))
-			$guzzle_options["body"] = $options["body"];
+		// json body
+		if (!empty($options["json"]))
+			$guzzle_options["json"] = $options["json"];
 
-		$this->logger->debug("\n--\nRequester::_postRequest [".$options["uri"]."] options:\n".json_encode($guzzle_options, JSON_UNESCAPED_SLASHES)."\n");
+		// params
+		if (!empty($options["payload"]))
+			$guzzle_options["form_params"] = $options["payload"];
 
-		// request action
+		$this->logger->debug("\n--\nRequester::_postRequest [".$options["uri"]."] guzzle_options:\n".json_encode($guzzle_options, JSON_UNESCAPED_SLASHES)."\n");
+
+		// guzzle request
 		$response = $client->request(strtoupper($options["method"]), $options["uri"], $guzzle_options);
 
 		$body = $response->getBody();
@@ -204,20 +205,19 @@ trait Requester
 		}
 		else {
 
-			// query string or body content
+			// as query string or body content
 			$options["payload"] = is_array($options["payload"]) ? http_build_query($options["payload"], "", "&") : "payload=".$options["payload"];
 
 			$length = strlen($options["payload"]);
 		}
 
-		// set output
-		$out = strtoupper($options["method"])." ".$options["path"]." HTTP/1.1\r\n";
+		// set headers
+		$out  = strtoupper($options["method"])." ".$options["path"]." HTTP/1.1\r\n";
 		$out .= "Host: ".$options["host"]."\r\n";
 		$out .= "User-Agent: AppLocalServer\r\n";
 		$out .= "Content-Type: application/x-www-form-urlencoded\r\n";
 		$out .= "Content-Length: ".$length."\r\n";
 
-		// set headers?
 		if (!empty($options["headers"])) {
 
 			foreach ($options["headers"] as $header => $value)
