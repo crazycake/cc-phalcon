@@ -37,12 +37,12 @@ trait Requester
 		$options = array_merge([
 			"base_url"     => "",
 			"uri"          => "",
-			"payload"      => "",
 			"method"       => "GET",
 			"socket"       => false,
 			"encrypt"      => false,
 			"verify_host"  => false,
 			"query-string" => false,
+			"payload"      => "",
 			"timeout"      => self::$REQUEST_TIMEOUT
 		], $options);
 
