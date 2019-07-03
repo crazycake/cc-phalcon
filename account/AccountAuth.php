@@ -136,8 +136,15 @@ trait AccountAuth
 		}
 
 		// check user account flag
-		if (!in_array($user->flag, $this->AUTH_CONF["login_allowed_states"]))
-			$this->jsonResponse(400, str_replace("{email}", $user->email, $this->AUTH_CONF["trans"]["STATE_".strtoupper($user->flag)]));
+		if (!in_array($user->flag, $this->AUTH_CONF["login_allowed_states"])) {
+
+			// special case email validation
+			if ($user->flag == "pending")
+				$this->jsonResponse(400, str_replace("{email}", $user->email, $this->AUTH_CONF["trans"]["STATE_DISABLED"]));
+
+
+			$this->jsonResponse(400, $this->AUTH_CONF["trans"]["STATE_".strtoupper($user->flag)]);
+		}
 
 		// success login
 		$this->newUserSession($user);
