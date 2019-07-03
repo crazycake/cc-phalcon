@@ -76,7 +76,7 @@ trait AccountAuth
 	}
 
 	/**
-	 * Action - Logout
+	 * GET - Logout
 	 */
 	public function logoutAction()
 	{
@@ -91,7 +91,7 @@ trait AccountAuth
 	}
 
 	/**
-	 * Login user by email & pass (POST / XHR)
+	 * POST - Login user by email & pass
 	 */
 	public function loginAction()
 	{
@@ -99,7 +99,7 @@ trait AccountAuth
 		$entity = $this->AUTH_CONF["user_entity"];
 		$params = ["pass" => "string"];
 
-		// user key
+		// user key validation
 		if ($this->AUTH_CONF["user_key"] == "email")
 			$params["email"] = "email";
 		else
@@ -140,8 +140,7 @@ trait AccountAuth
 
 			// special case email validation
 			if ($user->flag == "pending")
-				$this->jsonResponse(400, str_replace("{email}", $user->email, $this->AUTH_CONF["trans"]["STATE_DISABLED"]));
-
+				$this->jsonResponse(400, str_replace("{email}", $user->email, $this->AUTH_CONF["trans"]["STATE_PENDING"]));
 
 			$this->jsonResponse(400, $this->AUTH_CONF["trans"]["STATE_".strtoupper($user->flag)]);
 		}
@@ -154,7 +153,7 @@ trait AccountAuth
 	}
 
 	/**
-	 * Mixed [Normal & XHR] - Register user by email
+	 * POST - Register user by email
 	 */
 	public function registerAction()
 	{
