@@ -156,6 +156,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 	{
 		// set js global object
 		$data = (object)[
+			"env"       => APP_ENV,
 			"version"   => $this->config->version,
 			"name"      => $this->config->name,
 			"baseUrl"   => $this->baseUrl(),
