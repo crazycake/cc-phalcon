@@ -74,7 +74,7 @@ trans)
 
 php)
 
-	echo -e "\033[95mRunning app php CLI... \033[0m"
+	echo -e "\033[95mRunning app php CLI [${@:2}] \033[0m"
 
 	docker exec -it $CONTAINER_NAME bash -c "php /var/www/app/cli/cli.php main ${@:2}"
 ;;

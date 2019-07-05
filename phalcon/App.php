@@ -98,7 +98,7 @@ abstract class App
 
 		if (is_null($argv)) die("Phalcon Console -> no args supplied\n");
 
-		$arguments = [];
+		$arguments = ["params" => []];
 
 		// set args data
 		foreach ($argv as $k => $arg) {
@@ -111,9 +111,6 @@ abstract class App
 				default: $arguments["params"][$k] = $arg; break;
 			}
 		}
-
-		if (!isset($arguments["params"]))
-			$arguments["params"] = [];
 
 		// order params
 		if (count($arguments["params"]) > 0) {
