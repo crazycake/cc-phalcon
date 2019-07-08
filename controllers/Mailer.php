@@ -160,6 +160,8 @@ trait Mailer
 		if (is_string($recipients))
 			$recipients = explode(",", $recipients);
 
+		$recipients = array_unique($recipients); // unique filter
+
 		// set default subject
 		if (empty($subject))
 			$subject = $this->config->name;
