@@ -12,7 +12,7 @@
 
 		{# viewport #}
 		{% if client.isMobile %}
-			<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+			<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=0" vmid="viewport" data-vue-meta="true" />
 
 			{# apple metas #}
 			<meta name="apple-mobile-web-app-capable" content="yes" />
@@ -33,7 +33,7 @@
 			{% endif %}
 
 		{% else %}
-			<meta name="viewport" content="width=device-width,initial-scale=1.0,shrink-to-fit=no" />
+			<meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no" />
 		{% endif %}
 
 		{# IE: force last version of render compatibility mod  #}
