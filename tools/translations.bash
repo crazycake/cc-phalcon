@@ -41,7 +41,7 @@ build)
 		done'
 
 	echo -e "\033[92mDone! \033[0m"
-	;;
+;;
 
 # search and generate pot files
 find)
@@ -88,10 +88,10 @@ find)
 		done'
 
 	echo -e "\033[92mDone! \033[0m"
-	;;
+;;
 
 # defaults
 *)
 	help
-	;;
+;;
 esac

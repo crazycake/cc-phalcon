@@ -31,7 +31,7 @@ class ReCaptcha
 			throw new Exception("ReCaptcha Helper -> Google reCaptcha key is required.");
 
 		// set secret key
-		$this->recaptcha = new \ReCaptcha\ReCaptcha($secret_key);
+		$this->recaptcha = new \ReCaptcha\ReCaptcha($secret_key, new \ReCaptcha\RequestMethod\CurlPost());
 	}
 
 	/**
