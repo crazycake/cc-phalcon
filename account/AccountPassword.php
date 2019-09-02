@@ -33,7 +33,7 @@ trait AccountPassword
 			"user_entity"         => "user",
 			"password_uri"        => "password/create/{hash}",
 			"password_min_length" => 8,
-			"recaptcha"           => false
+			"recaptcha"           => false // for email sending
 		];
 
 		// merge confs

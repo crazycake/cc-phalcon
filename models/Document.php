@@ -29,11 +29,11 @@ class Document
 	 * Get by Id
 	 * @param Mixed $id - The document ID (String or ObjectId)
 	 */
-	public static function getById($id)
+	public static function getById($id, $options = [])
 	{
 		$mongo = static::getClient();
 
-		try { $object = $mongo->{static::$COLLECTION}->findOne(["_id" => is_numeric($id) ? (string)$id : self::toObjectId($id)]); }
+		try { $object = $mongo->{static::$COLLECTION}->findOne(["_id" => is_numeric($id) ? (string)$id : self::toObjectId($id)], $options); }
 		catch (\Exception $e) { $object = false; }
 
 		// return reduced object
