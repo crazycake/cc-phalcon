@@ -80,6 +80,10 @@ trait AccountAuth
 	 */
 	public function logoutAction()
 	{
+		// event
+		if (method_exists($this, "onUserLogout"))
+			$this->onUserLogout();
+
 		// handled by session controller
 		$this->removeUserSession();
 
