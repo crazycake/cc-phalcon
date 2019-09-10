@@ -24,7 +24,7 @@ class Slug
 
 		// If iconv extension is enabled, replace utf8 chars to ascii.
 		if (extension_loaded("iconv"))
-			$clean = iconv("UTF-8", "ASCII//TRANSLIT", $string);
+			$clean = \iconv("UTF-8", "ASCII//TRANSLIT", $string);
 		else
 			$clean = self::_translit($string);
 
