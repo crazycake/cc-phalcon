@@ -69,7 +69,7 @@
 
 		{# Js data #}
 		{% if metas['script'] is not empty %}
-			<script defer src="{{ url(metas['script']) }}"></script>
+			<script defer src="{{ url(metas['script']~'?v='~client.bundle) }}"></script>
 		{% endif %}
 
 		{# Bundle JS (defered) #}
