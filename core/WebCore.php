@@ -228,9 +228,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 			"shortVersion" => $ua["short_version"],
 			"isMobile"     => $ua["is_mobile"],
 			"bundle"       => $this->config->version,
-			"requestedUri" => $this->getRequestedUri(),
-			"requestedUri" => $this->getRequestedUri(),
-			"ip"           => $this->request->getClientAddress()
+			"requestedUri" => $this->getRequestedUri()
 		];
 	}
 
