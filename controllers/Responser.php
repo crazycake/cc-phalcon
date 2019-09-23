@@ -84,7 +84,6 @@ trait Responser
 			$this->view->disable(); // disable view output
 
 		$this->response->setStatusCode(200, "OK");
-		$this->response->setHeader("Access-Control-Allow-Origin", "*");
 
 		if (!empty($filename))
 			$this->response->setHeader("Content-Disposition", 'attachment; filename="'.basename($filename).'"');
@@ -102,7 +101,8 @@ trait Responser
 	 * @param Array $response - The response
 	 * @return String - The response
 	 */
-	protected function outputJsonResponse($response = []) {
+	protected function outputJsonResponse($response = [])
+	{
 
 		// if a view service is set, disable rendering
 		if ($this->di->has("view"))
@@ -110,7 +110,6 @@ trait Responser
 
 		// output the response
 		$this->response->setStatusCode(200, "OK");
-		$this->response->setHeader("Access-Control-Allow-Origin", "*");
 		$this->response->setContentType("application/json");
 		$this->response->setContent(json_encode($response, JSON_UNESCAPED_SLASHES));
 		$this->response->send();
@@ -122,15 +121,14 @@ trait Responser
 	 * @param Mixed $text - Any text string
 	 * @return String - The response
 	 */
-	protected function outputTextResponse($text = "OK") {
-
+	protected function outputTextResponse($text = "OK")
+	{
 		// if a view service is set, disable rendering
 		if ($this->di->has("view"))
 			$this->view->disable(); // disable view output
 
 		// output the response
 		$this->response->setStatusCode(200, "OK");
-		$this->response->setHeader("Access-Control-Allow-Origin", "*");
 		$this->response->setContentType('text/html');
 		$this->response->setContent($text);
 		$this->response->send();
