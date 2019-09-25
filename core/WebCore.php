@@ -181,6 +181,14 @@ abstract class WebCore extends BaseCore implements WebSecurity
 		return $js;
 	}
 
+	/**
+	 * Get client IP
+	 */
+	protected static function getClientIP()
+	{
+		return $_SERVER["HTTP_X_FORWARDED_FOR"] ?? $this->request->getClientAddress();
+	}
+
 	/* --------------------------------------------------- § -------------------------------------------------------- */
 
 	/**
