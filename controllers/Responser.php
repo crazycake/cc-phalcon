@@ -50,6 +50,10 @@ trait Responser
 		// success data
 		if ($code == 200) {
 
+			// serialize object?
+			if (is_object($payload))
+				$payload = json_decode(self::encodeJson($payload), true);
+
 			// redirect or payload
 			if (!empty($payload["redirect"]))
 				$response["redirect"] = $payload["redirect"];
@@ -103,13 +107,10 @@ trait Responser
 		if ($this->di->has("view"))
 			$this->view->disable();
 
-		// safe json conversion
-		$content = json_encode(unserialize(str_replace(['NAN;','INF;'],'0;', serialize($response))), JSON_UNESCAPED_SLASHES);
-
 		// output the response
 		$this->response->setStatusCode(200, "OK");
 		$this->response->setContentType("application/json");
-		$this->response->setContent($content ?: "json parser error: ".json_last_error());
+		$this->response->setContent(self::encodeJson($response));
 		$this->response->send();
 		die();
 	}
@@ -131,5 +132,17 @@ trait Responser
 		$this->response->setContent($text);
 		$this->response->send();
 		die();
+	}
+
+	/**
+	 * Encodes json
+	 * @param Mixed $data - Serilizable data
+	 * @return String - Json encoded
+	 */
+	protected static function encodeJson($data = "")
+	{
+		$output = json_encode(unserialize(str_replace(['NAN;','INF;'],'0;', serialize($data))), JSON_UNESCAPED_SLASHES);
+
+		return $output ?: "json parser error: ".json_last_error();
 	}
 }
