@@ -70,7 +70,7 @@ trait AccountPassword
 
 		// basic attempts security
 		if ($this->getRecoveryInstructionsSent($email) > 2)
-			$this->jsonResponse(400, $this->AUTH_CONF["trans"]["AUTH_BLOCKED"]);
+			$this->jsonResponse(400, $this->PASSWORD_CONF["trans"]["AUTH_BLOCKED"]);
 
 		$entity = $this->PASSWORD_CONF["user_entity"];
 		$user   = $entity::getByProperties(["email" => $email, "flag" => "enabled"]);
