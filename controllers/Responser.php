@@ -50,10 +50,6 @@ trait Responser
 		// success data
 		if ($code == 200) {
 
-			// serialize object?
-			if (is_object($payload))
-				$payload = json_decode(json_encode($payload), true);
-
 			// redirect or payload
 			if (!empty($payload["redirect"]))
 				$response["redirect"] = $payload["redirect"];
