@@ -58,7 +58,7 @@ trait AccountPassword
 		if (empty($email)) throw new Exception("Invalid email");
 
 		// recaptcha validation
-		if ($this->PASSWORD_CONF["recaptcha"] && $this->getRecoveryInstructionsSent($email) > 1) {
+		if ($this->PASSWORD_CONF["recaptcha"] && $this->getRecoveryInstructionsSent($email) > 2) {
 
 			$data = $this->handleRequest([], "POST");
 
@@ -69,7 +69,7 @@ trait AccountPassword
 		}
 
 		// basic attempts security
-		if ($this->getRecoveryInstructionsSent($email) > 2)
+		if ($this->getRecoveryInstructionsSent($email) > 3)
 			$this->jsonResponse(400, $this->PASSWORD_CONF["trans"]["AUTH_BLOCKED"]);
 
 		$entity = $this->PASSWORD_CONF["user_entity"];
