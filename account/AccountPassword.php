@@ -55,8 +55,10 @@ trait AccountPassword
 	 */
 	public function sendRecoveryInstructions($email = "")
 	{
+		if (empty($email)) throw new Exception("Invalid email");
+
 		// recaptcha validation
-		if ($this->PASSWORD_CONF["recaptcha"]) {
+		if ($this->PASSWORD_CONF["recaptcha"] && $this->getRecoveryInstructionsSent($email) > 1) {
 
 			$data = $this->handleRequest([], "POST");
 
@@ -65,6 +67,10 @@ trait AccountPassword
 			if (!$recaptcher->isValid($data["recaptcha"] ?? null, "session", 0.1))
 				return $this->jsonResponse(400, $this->PASSWORD_CONF["trans"]["NOT_HUMAN"]);
 		}
+
+		// basic attempts security
+		if ($this->getRecoveryInstructionsSent($email) > 2)
+			$this->jsonResponse(400, $this->AUTH_CONF["trans"]["AUTH_BLOCKED"]);
 
 		$entity = $this->PASSWORD_CONF["user_entity"];
 		$user   = $entity::getByProperties(["email" => $email, "flag" => "enabled"]);
@@ -84,6 +90,8 @@ trait AccountPassword
 			"url"        => $this->baseUrl($password_uri),
 			"expiration" => self::$TOKEN_EXPIRES["pass"]
 		]);
+
+		$this->saveRecoveryInstructionsSent($email);
 	}
 
 	/**
@@ -193,5 +201,41 @@ trait AccountPassword
 			return true;
 		}
 		catch (Exception $e) { $this->jsonResponse(400, $e->getMessage()); }
+	}
+
+	/**
+	 * Saves recovery instructions sent count
+	 * @param String $email
+	 */
+	protected function saveRecoveryInstructionsSent($email)
+	{
+		$redis = new \Redis();
+		$redis->connect(getenv("REDIS_HOST") ?: "redis");
+
+		$key = "RECOVERY_".$email;
+
+		$attempts = ($redis->exists($key) ? $redis->get($key) : 0) + 1;
+
+		$redis->set($key, $attempts);
+		$redis->expire($key, 3600*6); // hours
+		$redis->close();
+	}
+
+	/**
+	 * Gets recovery instructions sent count
+	 * @param String $email
+	 */
+	protected function getRecoveryInstructionsSent($email)
+	{
+		$redis = new \Redis();
+		$redis->connect(getenv("REDIS_HOST") ?: "redis");
+
+		$key = "RECOVERY_".$email;
+
+		$attempts = $redis->exists($key) ? $redis->get($key) : 0;
+
+		$redis->close();
+
+		return $attempts;
 	}
 }

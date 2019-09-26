@@ -103,15 +103,17 @@ trait Responser
 	 */
 	protected function outputJsonResponse($response = [])
 	{
-
 		// if a view service is set, disable rendering
 		if ($this->di->has("view"))
 			$this->view->disable();
 
+		// safe json conversion
+		$content = json_encode(unserialize(str_replace(['NAN;','INF;'],'0;', serialize($response))), JSON_UNESCAPED_SLASHES);
+
 		// output the response
 		$this->response->setStatusCode(200, "OK");
 		$this->response->setContentType("application/json");
-		$this->response->setContent(json_encode($response, JSON_UNESCAPED_SLASHES));
+		$this->response->setContent($content ?: "json parser error: ".json_last_error());
 		$this->response->send();
 		die();
 	}
