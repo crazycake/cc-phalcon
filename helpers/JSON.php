@@ -9,12 +9,12 @@ namespace CrazyCake\Helpers;
 use Phalcon\Exception;
 
 /**
- * Form Helper
+ * JSON Helper
  */
 class JSON
 {
 	/**
-	 * Safe Encodes Json
+	 * Safe Encodes Json with NAN and INF support
 	 * @param Mixed $data - Serilizable data
 	 * @return String - Json encoded
 	 */
