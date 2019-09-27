@@ -8,6 +8,7 @@ namespace CrazyCake\Core;
 
 use CrazyCake\Phalcon\App;
 use CrazyCake\Helpers\UserAgent;
+use CrazyCake\Helpers\JSON;
 
 /**
  * WebCore for frontend modules
@@ -173,8 +174,12 @@ abstract class WebCore extends BaseCore implements WebSecurity
 
 		$js = "APP = ".json_encode($data, JSON_UNESCAPED_SLASHES).";\n";
 
-		if ($module)
-			$js .= "document.addEventListener('DOMContentLoaded', function() { cc.start({ $module: ".json_encode($store, JSON_UNESCAPED_SLASHES)."}); }, false);\n";
+		if ($module) {
+
+			$output = JSON::safeEncode($store);
+
+			$js .= "document.addEventListener('DOMContentLoaded', function() { cc.start({ $module: $output }); }, false);\n";
+		}
 
 		$js .= "console.log(`App ".$this->config->version." [".\Phalcon\Version::get()." => ".CORE_VERSION."] ".number_format((float)(microtime(true) - APP_ST), 3, ".", "")." s.`);";
 

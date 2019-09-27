@@ -7,6 +7,7 @@
 namespace CrazyCake\Controllers;
 
 use Phalcon\Exception;
+use CrazyCake\Helpers\JSON;
 
 /**
  * HTTP Response Handler
@@ -52,7 +53,7 @@ trait Responser
 
 			// serialize object?
 			if (is_object($payload))
-				$payload = json_decode(self::encodeJson($payload), true);
+				$payload = json_decode(JSON::safeEncode($payload), true);
 
 			// redirect or payload
 			if (!empty($payload["redirect"]))
@@ -110,7 +111,7 @@ trait Responser
 		// output the response
 		$this->response->setStatusCode(200, "OK");
 		$this->response->setContentType("application/json");
-		$this->response->setContent(self::encodeJson($response));
+		$this->response->setContent(JSON::safeEncode($response));
 		$this->response->send();
 		die();
 	}
@@ -132,17 +133,5 @@ trait Responser
 		$this->response->setContent($text);
 		$this->response->send();
 		die();
-	}
-
-	/**
-	 * Encodes json
-	 * @param Mixed $data - Serilizable data
-	 * @return String - Json encoded
-	 */
-	protected static function encodeJson($data = "")
-	{
-		$output = json_encode(unserialize(str_replace(['NAN;','INF;'],'0;', serialize($data))), JSON_UNESCAPED_SLASHES);
-
-		return $output ?: "json parser error: ".json_last_error();
 	}
 }
