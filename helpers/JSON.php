@@ -15,8 +15,8 @@ class JSON
 {
 	/**
 	 * Safe Encodes Json with NAN and INF support
-	 * @param Mixed $data - Serilizable data
-	 * @return String - Json encoded
+	 * @param Mixed $data - Serializable data
+	 * @return String - JSON encoded string
 	 */
 	public static function safeEncode($data = "")
 	{

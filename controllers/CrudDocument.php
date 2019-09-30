@@ -92,7 +92,12 @@ trait CrudDocument
 		// sort by score relevance (full text search)
 		if (!empty($data["search"])) {
 
-			$query['$text']     = ['$search' => $data["search"]];
+			$query = ['$or' => [['$text' => ['$search' => $data["search"]] ]] ];
+
+			// is an ObjectId ?
+			if (preg_match('/^[a-f\d]{24}$/i', $data["search"]))
+				$query['$or'][] = ["_id" => new \MongoDB\BSON\ObjectId($data["search"])];
+
 			$opts["projection"] = ["score" => ['$meta' => "textScore"]];
 			$opts["sort"]       = ["score" => ['$meta' => "textScore"]];
 
@@ -101,8 +106,6 @@ trait CrudDocument
 
 			// search prediction props
 			if (!empty($this->CRUD_CONF["predictive_search"])) {
-
-				$query = ['$or' => [['$text' => $query['$text']]]];
 
 				foreach ($this->CRUD_CONF["predictive_search"] as $prop)
 					$query['$or'][] = [$prop => ['$regex' => $data["search"], '$options' => 'i']];
@@ -221,7 +224,7 @@ trait CrudDocument
 
 		$id = (new \Phalcon\Filter())->sanitize($id, "string");
 
-		try { $object = $this->database->{$this->CRUD_CONF["collection"]}->findOne(["_id" => (new \MongoDB\BSON\ObjectId($id))]); }
+		try { $object = $this->database->{$this->CRUD_CONF["collection"]}->findOne(["_id" => new \MongoDB\BSON\ObjectId($id)]); }
 		catch (\Exception $e) { $object = null; }
 
 		// event
