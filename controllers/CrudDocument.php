@@ -171,7 +171,10 @@ trait CrudDocument
 		$id = $payload->_id ?? null;
 
 		// insert
-		if (empty($id)) {
+		if (empty($payload->createdAt)) {
+
+			// createdAt timestamp
+			$payload->createdAt = new \MongoDB\BSON\UTCDateTime((new \DateTime())->getTimestamp() * 1000);
 
 			try { $object = $this->database->{$this->CRUD_CONF["collection"]}->insertOne($payload); }
 			catch (\Exception $e) {
@@ -311,9 +314,5 @@ trait CrudDocument
 			else if (empty($value))
 				$value = null;
 		}
-
-		// always set a createdAt timestamp
-		if (!isset($payload->createdAt))
-			$payload->createdAt = new \MongoDB\BSON\UTCDateTime((new \DateTime())->getTimestamp() * 1000);
 	}
 }
