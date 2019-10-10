@@ -117,7 +117,11 @@ class AppServices
 
 		$di->setShared("stdout", function() {
 
-			return new \Phalcon\Logger\Adapter\Stream("php://stdout");
+			$stream = new \Phalcon\Logger\Adapter\Stream("php://stdout");
+
+			$stream->setFormatter(new \Phalcon\Logger\Formatter\Line('[%date%][%type%]['.$_SERVER['SERVER_ADDR'].'] %message%'));
+
+			return $stream;
 		});
 
 		// basic http security
