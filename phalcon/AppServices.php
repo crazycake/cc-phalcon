@@ -115,17 +115,10 @@ class AppServices
 			return new \Phalcon\Logger\Adapter\File(STORAGE_PATH."logs/$file.log");
 		});
 
-		// access logger adapter
-		if (MODULE_NAME != "cli") {
+		$di->setShared("stdout", function() {
 
-			$di->setShared("loggerAccess", function() {
-
-				// date now
-				$file = date("d-m-Y");
-
-				return new \Phalcon\Logger\Adapter\File(STORAGE_PATH."logs/access-$file.log");
-			});
-		}
+			return new \Phalcon\Logger\Adapter\Stream("php://stdout");
+		});
 
 		// basic http security
 		$di->setShared("security", function() {
