@@ -149,6 +149,10 @@ trait AccountAuth
 			$this->jsonResponse(400, $this->AUTH_CONF["trans"]["STATE_".strtoupper($user->flag)]);
 		}
 
+		// event
+		if (method_exists($this, "onBeforeLoginUser"))
+			$this->onBeforeLoginUser($user, $data);
+
 		// success login
 		$this->newUserSession($user);
 
