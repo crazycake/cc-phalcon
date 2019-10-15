@@ -168,10 +168,11 @@ trait CrudDocument
 			$this->onBeforeSave($payload);
 
 		// set object id
-		$id = $payload->_id ?? null;
+		$id     = $payload->_id ?? null;
+		$exists = $id ? $this->database->{$this->CRUD_CONF["collection"]}->count(["_id" => $id]) > 0 : false;
 
 		// insert
-		if (empty($payload->createdAt)) {
+		if (!$exists) {
 
 			// createdAt timestamp
 			$payload->createdAt = new \MongoDB\BSON\UTCDateTime((new \DateTime())->getTimestamp() * 1000);
