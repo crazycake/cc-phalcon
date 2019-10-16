@@ -191,6 +191,11 @@ trait AccountAuth
 		$data["flag"]      = "pending";
 		$data["createdAt"] = $entity::toIsoDate();
 
+		// common optionals
+		if (!empty($data["rut"]))       $data["rut"]       = strtolower(ltrim(rtrim($data["rut"])));
+		if (!empty($data["firstName"])) $data["firstName"] = Forms::validateName($data["firstName"]);
+		if (!empty($data["lastName"]))  $data["lastName"]  = Forms::validateName($data["lastName"]);
+
 		// event
 		if (method_exists($this, "onBeforeRegisterUser"))
 			$this->onBeforeRegisterUser($data);
