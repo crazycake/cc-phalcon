@@ -34,6 +34,7 @@ class Document
 		$mongo = static::getClient();
 
 		try { $object = $mongo->{static::$COLLECTION}->findOne(["_id" => is_numeric($id) ? (string)$id : self::toObjectId($id)], $options); }
+
 		catch (\Exception $e) { $object = false; }
 
 		// return reduced object
@@ -50,6 +51,7 @@ class Document
 		$mongo = static::getClient();
 
 		try { $object = $mongo->{static::$COLLECTION}->findOne($props, $opts); }
+
 		catch (\Exception $e) { $object = false; }
 
 		// reduce object
@@ -114,7 +116,8 @@ class Document
 	 */
 	public static function toObjectId($id)
 	{
-		try                   { $id = $id instanceof \MongoDB\BSON\ObjectId ? $id : new \MongoDB\BSON\ObjectId($id); }
+		try { $id = $id instanceof \MongoDB\BSON\ObjectId ? $id : new \MongoDB\BSON\ObjectId($id); }
+
 		catch (\Exception $e) { $id = (string)$id; }
 
 		return $id;
