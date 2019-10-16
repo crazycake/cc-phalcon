@@ -74,8 +74,7 @@ trait CrudDocument
 		// parse query string & assign to data
 		parse_str($this->request->get("query"), $data);
 
-		if (empty($data))
-			$this->jsonResponse(404);
+		if (empty($data)) $this->jsonResponse(404);
 
 		// set limit, skips
 		$limit = $data["limit"] ?? $this->CRUD_CONF["fetch_limit"];
@@ -158,6 +157,7 @@ trait CrudDocument
 		$data = $this->handleRequest(["payload" => "striptags"], "POST");
 
 		try { $payload = \MongoDB\BSON\toPHP(\MongoDB\BSON\fromJSON($data["payload"])); }
+
 		catch (\Exception $e) { $this->jsonResponse(500); }
 
 		// format payload
@@ -178,6 +178,7 @@ trait CrudDocument
 			$payload->createdAt = new \MongoDB\BSON\UTCDateTime((new \DateTime())->getTimestamp() * 1000);
 
 			try { $object = $this->database->{$this->CRUD_CONF["collection"]}->insertOne($payload); }
+
 			catch (\Exception $e) {
 
 				$this->logger->error("CrudDocument::saveAction -> insert exception: ".$e->getMessage());
@@ -194,6 +195,7 @@ trait CrudDocument
 		else {
 
 			try { $this->database->{$this->CRUD_CONF["collection"]}->updateOne(["_id" => $id], ['$set' => $payload]); }
+
 			catch (\Exception $e) {
 
 				$this->logger->error("CrudDocument::saveAction -> update exception: ".$e->getMessage());
@@ -204,7 +206,7 @@ trait CrudDocument
 		}
 
 		// get saved object
-		try { $object = $this->database->{$this->CRUD_CONF["collection"]}->findOne(["_id" => $id]); }
+		try                   { $object = $this->database->{$this->CRUD_CONF["collection"]}->findOne(["_id" => $id]); }
 		catch (\Exception $e) { $object = null; }
 
 		// event
@@ -228,7 +230,10 @@ trait CrudDocument
 
 		$id = (new \Phalcon\Filter())->sanitize($id, "string");
 
-		try { $object = $this->database->{$this->CRUD_CONF["collection"]}->findOne(["_id" => new \MongoDB\BSON\ObjectId($id)]); }
+		try                   { $id = new \MongoDB\BSON\ObjectID($id); }
+		catch (\Exception $e) { $id = (string)$id; }
+
+		try                   { $object = $this->database->{$this->CRUD_CONF["collection"]}->findOne(["_id" => $id]); }
 		catch (\Exception $e) { $object = null; }
 
 		// event
@@ -247,8 +252,8 @@ trait CrudDocument
 
 		$data = $this->handleRequest(["id" => "string"], "POST");
 
-		try { $id = new \MongoDB\BSON\ObjectID($data["id"]); }
-		catch (\Exception $e) { $this->jsonResponse(400); }
+		try                   { $id = new \MongoDB\BSON\ObjectID($data["id"]); }
+		catch (\Exception $e) { $id = (string)$data["id"]; }
 
 		// event
 		if (method_exists($this, "onBeforeDelete"))
@@ -273,15 +278,14 @@ trait CrudDocument
 			"@value" => "string" // optional
 		], "POST");
 
-		try { $id = new \MongoDB\BSON\ObjectID($data["id"]); }
-		catch (\Exception $e) { $this->jsonResponse(400); }
+		try                   { $id = new \MongoDB\BSON\ObjectID($data["id"]); }
+		catch (\Exception $e) { $id = (string)$data["id"]; }
 
 		$prop = $data["prop"];
 
 		$object = $this->database->{$this->CRUD_CONF["collection"]}->findOne(["_id" => $id]);
 
-		if (empty($object))
-			$this->jsonResponse(400);
+		if (empty($object)) $this->jsonResponse(400);
 
 		// check if is array
 		$is_array = $object->{$prop} instanceof \MongoDB\Model\BSONArray;

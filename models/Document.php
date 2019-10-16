@@ -114,8 +114,8 @@ class Document
 	 */
 	public static function toObjectId($id)
 	{
-		try { $id = $id instanceof \MongoDB\BSON\ObjectId ? $id : new \MongoDB\BSON\ObjectId($id); }
-		catch (\Exception $e) { $id = null; }
+		try                   { $id = $id instanceof \MongoDB\BSON\ObjectId ? $id : new \MongoDB\BSON\ObjectId($id); }
+		catch (\Exception $e) { $id = (string)$id; }
 
 		return $id;
 	}
