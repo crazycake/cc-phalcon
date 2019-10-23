@@ -61,7 +61,7 @@ class TaskCore extends Task
 		$assets_path = PROJECT_PATH."public/assets/";
 
 		if (!is_dir($assets_path) || !is_file($assets_path."app.js") || !is_file($assets_path."app.css"))
-			$this->colorize("Missing assets files.", "ERROR", true);
+			$this->colorize("Missing dev assets files (app.js & app.css).", "ERROR", true);
 
 		$current_version = (int)$this->config->version;
 
@@ -97,6 +97,10 @@ class TaskCore extends Task
 		copy($assets_path."app.js", $assets_path."app-".$new_version.".rev.js");
 		// APP CSS
 		copy($assets_path."app.css", $assets_path."app-".$new_version.".rev.css");
+
+		// clean
+		unlink($assets_path."app.js");
+		unlink($assets_path."app.css");
 
 		// output
 		$this->colorize("Created revision assets for version: ".$new_version, "OK", true);
