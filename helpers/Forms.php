@@ -72,7 +72,7 @@ class Forms
 	 * @param String $currency - The price currency
 	 * @return String
 	 */
-	public static function formatPrice($price, $currency)
+	public static function formatPrice($price, $currency = "CLP")
 	{
 		$formatted = $price;
 
@@ -81,6 +81,10 @@ class Forms
 			case "CLP":
 
 				$formatted = str_replace(",", ".", "$".str_replace(".00", "", number_format($formatted))); break;
+
+			case "PEN":
+
+				$formatted = str_replace(",", ".", "S/ ".str_replace(".00", "", number_format($formatted))); break;
 
 			case "USD":
 
