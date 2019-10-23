@@ -117,10 +117,10 @@ abstract class BaseCore extends Controller
 		if (!method_exists($mailer, $method))
 			throw new Exception("BaseCore::sendMailMessage -> method $method is not defined in Mailer Controller.");
 
+		$this->logger->debug("BaseCore::sendMailMessage -> triggered mailer message method [$method]");
+
 		// call mailer class method (reflection)
 		$mailer->{$method}($data);
-
-		$this->logger->debug("BaseCore::sendMailMessage -> queued mailer message [$method]");
 	}
 
 	/**
