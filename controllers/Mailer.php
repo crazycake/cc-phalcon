@@ -192,7 +192,7 @@ trait Mailer
 
 		$body = json_encode($result->body() ?? "", JSON_UNESCAPED_SLASHES);
 
-		$this->logger->debug("Mailer::sendMessage -> mail message sent: ".json_encode($recipients)." [$body]");
+		$this->logger->debug("Mailer::sendMessage -> mail message SENT to: ".json_encode($recipients)." [$body]");
 		return $result;
 	}
 
