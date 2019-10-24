@@ -54,7 +54,7 @@ class Forms
 	}
 
 	/**
-	 * Formats a rut
+	 * Formats a rut with dots
 	 * @param  string $rut - The input rut
 	 * @return String
 	 */
@@ -62,7 +62,7 @@ class Forms
 	{
 		$str = explode("-", $rut);
 
-		return number_format($str[0], 0, "", ".").'-'.$str[1];
+		return number_format($str[0], 0, "", ".").'-'.strotoupper($str[1]);
 	}
 
 	/**
