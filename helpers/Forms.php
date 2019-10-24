@@ -72,9 +72,9 @@ class Forms
 	 */
 	public static function formatEmail($email)
 	{
-		$str = explode("@", $email);
+		$str = explode("@", strtolower(trim($email)));
 
-		return \CrazyCake\Helpers\Slug::generate($str[0] ?? "")."@".\CrazyCake\Helpers\Slug::generate($str[1] ?? "");
+		return \CrazyCake\Helpers\Slug::translit($str[0] ?? "")."@".\CrazyCake\Helpers\Slug::translit($str[1] ?? "");
 	}
 
 	/**

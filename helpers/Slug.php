@@ -26,7 +26,7 @@ class Slug
 		if (extension_loaded("iconv"))
 			$clean = \iconv("UTF-8", "ASCII//TRANSLIT", $string);
 		else
-			$clean = self::_translit($string);
+			$clean = self::translit($string);
 
 		if (!empty($replace))
 			$clean = str_replace((array)$replace, " ", $clean);
@@ -40,9 +40,9 @@ class Slug
 	}
 
 	/**
-	 * Translit string
+	 * Translit string (remove non ISO codes)
 	 */
-	private static function _translit($string)
+	public static function translit($string)
 	{
 		if ( !preg_match('/[\x80-\xff]/', $string) )
 			return $string;
