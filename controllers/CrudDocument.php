@@ -158,7 +158,11 @@ trait CrudDocument
 
 		try { $payload = \MongoDB\BSON\toPHP(\MongoDB\BSON\fromJSON($data["payload"])); }
 
-		catch (\Exception $e) { $this->jsonResponse(500); }
+		catch (\Exception $e) {
+
+			$this->logger->error("CrudDocument::saveAction -> parse exception: ".$e->getMessage(). " -> ".$data["payload"]);
+			$this->jsonResponse(500);
+		}
 
 		// format payload
 		$this->formatPayload($payload);

@@ -66,6 +66,18 @@ class Forms
 	}
 
 	/**
+	 * Formats email
+	 * @param  string $email - The input email
+	 * @return String
+	 */
+	public static function formatEmail($email)
+	{
+		$str = explode("@", $email);
+
+		return \CrazyCake\Helpers\Slug::generate($str[0] ?? "")."@".\CrazyCake\Helpers\Slug::generate($str[1] ?? "");
+	}
+
+	/**
 	 * Formats price.
 	 * @todo Complete other global currency formats
 	 * @param numeric $price - The price numeric value

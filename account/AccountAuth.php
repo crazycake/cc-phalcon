@@ -171,7 +171,7 @@ trait AccountAuth
 		], "POST", $this->AUTH_CONF["csrf"]);
 
 		// lower case email
-		$data["email"] = strtolower(trim($data["email"]));
+		$data["email"] = \CrazyCake\Helpers\Forms::formatEmail($data["email"]);
 
 		// check valid email
 		if (!filter_var($data["email"], FILTER_VALIDATE_EMAIL))
