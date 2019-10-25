@@ -305,7 +305,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 		$js_url  = $this->staticUrl("assets/app.js");
 
 		// set revision file for non local env
-		if (!is_file(PUBLIC_PATH."assets/app.js")) {
+		if (!is_file(PUBLIC_PATH."assets/app.js") || !is_file(PUBLIC_PATH."assets/app.css")) {
 
 			$version = str_replace(".", "", $version);
 			$css_url = str_replace(".css", "-$version.rev.css", $css_url);
