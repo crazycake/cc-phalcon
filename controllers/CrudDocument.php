@@ -317,11 +317,18 @@ trait CrudDocument
 	{
 		foreach ($payload as $key => &$value) {
 
-			if (is_numeric($value))
-				$value = strpos($value, ".") > 0 ? floatval($value) : intval($value);
+			if (is_numeric($value)) {
+
+				if (strpos($value, ".") > 0 && $value < PHP_FLOAT_MAX)
+					$value = floatval($value);
+
+				else if ($value < PHP_INT_MAX)
+					$value = intval($value);
+			}
 
 			else if (empty($value))
 				$value = null;
 		}
+		//~ss($payload);
 	}
 }
