@@ -79,8 +79,7 @@ class Forms
 
 	/**
 	 * Formats price.
-	 * @todo Complete other global currency formats
-	 * @param numeric $price - The price numeric value
+	 * @param Numeric $price - The price numeric value
 	 * @param String $currency - The price currency
 	 * @return String
 	 */
@@ -106,6 +105,17 @@ class Forms
 		}
 
 		return $formatted;
+	}
+
+	/**
+	 * Strips URLs from a given string
+	 * @param String $str - The input string
+	 * @param String $replace - The replace string
+	 * @return String
+	 */
+	public static function stripUrls($str = "", $replace = "")
+	{
+		return preg_replace('/\b((https?|ftp|file):\/\/|www\.)[-A-Z0-9+&@#\/%?=~_|$!:,.;]*[A-Z0-9+&@#\/%=~_|$]/i', $replace, $str);
 	}
 
 	/* --------------------------------------------------- § -------------------------------------------------------- */
