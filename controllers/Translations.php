@@ -50,10 +50,6 @@ trait Translations
 				"NEW_PASS_SAVED"     => "Tu contraseña ha sido guardada.",
 				"PASS_MAIL_SENT"     => "Te hemos enviado un correo a <b>{email}</b> para recuperar tu contraseña."
 			],
-			"MAILER" => [
-				"SUBJECT_ACTIVATION" => "Confirma tu cuenta",
-				"SUBJECT_PASSWORD"   => "Recupera tu contraseña"
-			],
 			"UPLOADER" => [
 				"MAX_SIZE"       => "El archivo {file} excede el máximo tamaño permitido de {size}.",
 				"FILE_TYPE"      => "El archivo {file} no es soportado.",

@@ -39,13 +39,8 @@ trait Mailer
 		// merge confs
 		$conf = array_merge($defaults, $conf);
 
-		if (empty($conf["trans"]))
-			$conf["trans"] = \TranslationController::defaultCoreTranslations("mailer");
-
 		$this->MAILER_CONF = $conf;
 	}
-
-	/* --------------------------------------------------- § -------------------------------------------------------- */
 
 	/**
 	 * Ajax Handler Action - Send the contact to message to our app
@@ -56,7 +51,7 @@ trait Mailer
 		// extend config
 		$this->MAILER_CONF = array_merge($this->MAILER_CONF, $data);
 
-		$subject = "Contacto ".$this->config->name;
+		$subject = "Contact - ".$this->config->name;
 		$to      = $this->config->emails->support;
 
 		// sends email
@@ -64,33 +59,25 @@ trait Mailer
 	}
 
 	/**
-	 * Async Handler - Sends mail for account activation (email validation)
-	 * @param Array $data - The array
+	 * Sends a system mail for exception alert
+	 * @param Mixed $e - An exception object or string message
+	 * @param Object $data - Informative appended data
 	 */
-	public function accountActivation($data = [])
+	public function adminException($e = "", $data = [])
 	{
+		$data["name"]  = $this->config->name." - ".MODULE_NAME;
+		$data["email"] = $this->config->emails->sender;
+
+		$data["message"] = is_string($e) ? $e : $e->getMessage().". File: ".$e->getFile()." [".$e->getLine()."]";
+
+		if (!empty($data["trace"]))
+			$data["message"] .= "\nTrace:\n".json_encode($data["trace"], JSON_UNESCAPED_SLASHES);
+
+		// extend config
 		$this->MAILER_CONF = array_merge($this->MAILER_CONF, $data);
 
-		$subject = $this->MAILER_CONF["trans"]["SUBJECT_ACTIVATION"];
-		$to      = $this->MAILER_CONF["email"];
-
 		// sends the message
-		$this->sendMessage("activation", $subject, $to);
-	}
-
-	/**
-	 * Async Handler - Sends mail for password recovery
-	 * @param Array $data - The array
-	 */
-	public function passwordRecovery($data = [])
-	{
-		$this->MAILER_CONF = array_merge($this->MAILER_CONF, $data);
-
-		$subject = $this->MAILER_CONF["trans"]["SUBJECT_PASSWORD"];
-		$to      = $this->MAILER_CONF["email"];
-
-		// sends the message
-		$this->sendMessage("passwordRecovery", $subject, $to);
+		$this->sendMessage("contact", "Admin Exception", (array)$this->config->emails->admins);
 	}
 
 	/**
@@ -118,28 +105,6 @@ trait Mailer
 		}
 
 		return $html;
-	}
-
-	/**
-	 * Sends a system mail for exception alert
-	 * @param Mixed $e - An exception object or string message
-	 * @param Object $data - Informative appended data
-	 */
-	public function adminException($e = "", $data = [])
-	{
-		$data["name"]  = $this->config->name." - ".MODULE_NAME;
-		$data["email"] = $this->config->emails->sender;
-
-		$data["message"] = is_string($e) ? $e : $e->getMessage().". File: ".$e->getFile()." [".$e->getLine()."]";
-
-		if (!empty($data["trace"]))
-			$data["message"] .= "\nTrace:\n".json_encode($data["trace"], JSON_UNESCAPED_SLASHES);
-
-		// extend config
-		$this->MAILER_CONF = array_merge($this->MAILER_CONF, $data);
-
-		// sends the message
-		$this->sendMessage("contact", "Admin Exception", (array)$this->config->emails->admins);
 	}
 
 	/**
@@ -206,13 +171,11 @@ trait Mailer
 	 */
 	private function _parseAttachments($attachments = null, &$mail)
 	{
-		if (empty($attachments))
-			return;
+		if (empty($attachments)) return;
 
 		foreach ($attachments as $attachment) {
 
-			if (empty($attachment["name"]) || empty($attachment["binary"]))
-				continue;
+			if (empty($attachment["name"]) || empty($attachment["binary"])) continue;
 
 			// attachment
 			$att = new \SendGrid\Attachment();
