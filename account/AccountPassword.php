@@ -58,11 +58,11 @@ trait AccountPassword
 		if (empty($email)) throw new Exception("Invalid email");
 
 		// basic attempts security
-		if ($this->getRecoveryInstructionsSent($email) > 3)
+		if ($this->getRecoveryInstructionsSent($email) >= 4)
 			$this->jsonResponse(400, str_replace("{email}", $this->PASSWORD_CONF["trans"]["PASS_MAIL_SENT"]));
 
 		// recaptcha validation
-		if ($this->PASSWORD_CONF["recaptcha"] && $this->getRecoveryInstructionsSent($email) > 2) {
+		if ($this->PASSWORD_CONF["recaptcha"] && $this->getRecoveryInstructionsSent($email) >= 3) {
 
 			$data = $this->handleRequest([], "POST");
 
