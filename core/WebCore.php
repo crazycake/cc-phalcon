@@ -189,7 +189,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 	/**
 	 * Get client IP
 	 */
-	protected static function getClientIP()
+	public static function getClientIP()
 	{
 		return $_SERVER["HTTP_X_FORWARDED_FOR"] ?? (\Phalcon\DI::getDefault())->getShared("request")->getClientAddress();
 	}

@@ -7,7 +7,9 @@
 
 namespace CrazyCake\Helpers;
 
+use CrazyCake\Core\WebCore;
 use Phalcon\Exception;
+
 
 /**
  * ReCaptcha Helper
@@ -48,14 +50,14 @@ class ReCaptcha
 		$di = \Phalcon\DI::getDefault();
 
 		// get remote address
-		$ip = $di->getShared("request")->getServerAddress();
+		$ip = WebCore::getClientIP();
 
 		// verify response
 		$response = $this->recaptcha->setExpectedAction($action)
 									->setScoreThreshold($score)
 									->verify($token ?? "", $ip);
 
-		$di->getShared("logger")->debug("ReCaptcha Helper -> reCaptcha response: ".json_encode($response->toArray()));
+		$di->getShared("logger")->debug("ReCaptcha Helper -> reCaptcha response [$ip]: ".json_encode($response->toArray()));
 
 		return $response->isSuccess();
 	}
