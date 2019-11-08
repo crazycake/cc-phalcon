@@ -33,7 +33,7 @@ trait AccountPassword
 			"user_entity"         => "user",
 			"password_uri"        => "password/create/{hash}",
 			"password_min_length" => 8,
-			"recaptcha"           => false // for email sending
+			"recaptcha"           => false
 		];
 
 		// merge confs
@@ -57,6 +57,10 @@ trait AccountPassword
 	{
 		if (empty($email)) throw new Exception("Invalid email");
 
+		// basic attempts security
+		if ($this->getRecoveryInstructionsSent($email) > 3)
+			$this->jsonResponse(400, str_replace("{email}", $this->PASSWORD_CONF["trans"]["PASS_MAIL_SENT"]));
+
 		// recaptcha validation
 		if ($this->PASSWORD_CONF["recaptcha"] && $this->getRecoveryInstructionsSent($email) > 2) {
 
@@ -67,10 +71,6 @@ trait AccountPassword
 			if (!$recaptcher->isValid($data["recaptcha"] ?? null, "session", 0.1))
 				return $this->jsonResponse(400, $this->PASSWORD_CONF["trans"]["NOT_HUMAN"]);
 		}
-
-		// basic attempts security
-		if ($this->getRecoveryInstructionsSent($email) > 3)
-			$this->jsonResponse(400, $this->PASSWORD_CONF["trans"]["AUTH_BLOCKED"]);
 
 		$entity = $this->PASSWORD_CONF["user_entity"];
 		$user   = $entity::getByProperties(["email" => $email, "flag" => "enabled"]);
