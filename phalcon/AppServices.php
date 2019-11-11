@@ -256,17 +256,14 @@ class AppServices
 			// set domain for cookie params
 			$host = explode('.', parse_url(APP_BASE_URL, PHP_URL_HOST));
 
-			$secure   = getenv("APP_HTTPS_ONLY") ?: false;
-			$httpOnly = true;
-
 			// session exceptions for shared cookies domain
 			session_set_cookie_params([
 
 				"lifetime" => $expiration,
 				"path"     => "/",
 				"domain"   => getenv("SESSION_DOMAIN") ?: implode(".", $host),
-				"secure"   => $secure,
-				"httpOnly" => $httpOnly,
+				"secure"   => getenv("APP_HTTPS_ONLY") ?: false,
+				"httpOnly" => true,
 				"sameSite" => "Strict",
 			]);
 
