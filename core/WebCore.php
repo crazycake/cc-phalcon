@@ -178,7 +178,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 
 			$output = JSON::safeEncode($store);
 
-			$js .= "document.addEventListener('DOMContentLoaded', function() { cc.start({ $module: $output }); }, false);\n";
+			$js .= "document.addEventListener('DOMContentLoaded', function() { init($output); }, false);\n";
 		}
 
 		$js .= "console.log(`App ".$this->config->version." [".\Phalcon\Version::get()." => ".CORE_VERSION."] ".number_format((float)(microtime(true) - APP_ST), 3, ".", "")." s.`);";
