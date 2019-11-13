@@ -152,7 +152,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 	 * Load js application
 	 * @param Array $store - The store data
 	 */
-	protected function initJsApp($store = [])
+	protected function initJsApp($store = null)
 	{
 		// set js global object
 		$data = (object)[
@@ -171,7 +171,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 		if (class_exists("\TranslationController"))
 			$data->TRANS = \TranslationController::defaultJsTranslations();
 
-		$output = JSON::safeEncode($store);
+		$output = JSON::safeEncode($store ?? (object)[]);
 
 		$js = "APP = ".json_encode($data, JSON_UNESCAPED_SLASHES).";\n";
 
