@@ -150,10 +150,9 @@ abstract class WebCore extends BaseCore implements WebSecurity
 
 	/**
 	 * Load js application
-	 * @param String $module - The module to load
 	 * @param Mixed $store - The store data
 	 */
-	protected function loadJsModule($module = null, $store = null)
+	protected function loadJsModule($store = null)
 	{
 		// set js global object
 		$data = (object)[
@@ -172,14 +171,11 @@ abstract class WebCore extends BaseCore implements WebSecurity
 		if (class_exists("\TranslationController"))
 			$data->TRANS = \TranslationController::defaultJsTranslations();
 
+		$output = JSON::safeEncode($store);
+
 		$js = "APP = ".json_encode($data, JSON_UNESCAPED_SLASHES).";\n";
 
-		if ($module) {
-
-			$output = JSON::safeEncode($store);
-
-			$js .= "document.addEventListener('DOMContentLoaded', function() { init($output); }, false);\n";
-		}
+		$js .= "document.addEventListener('DOMContentLoaded', function() { init($output); }, false);\n";
 
 		$js .= "console.log(`App ".$this->config->version." [".\Phalcon\Version::get()." => ".CORE_VERSION."] ".number_format((float)(microtime(true) - APP_ST), 3, ".", "")." s.`);";
 
