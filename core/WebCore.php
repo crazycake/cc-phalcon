@@ -150,7 +150,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 
 	/**
 	 * Load js application
-	 * @param Mixed $store - The store data
+	 * @param Array $store - The store data
 	 */
 	protected function loadJsModule($store = [])
 	{
