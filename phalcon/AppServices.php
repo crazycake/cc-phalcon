@@ -258,7 +258,6 @@ class AppServices
 
 			// session exceptions for shared cookies domain
 			session_set_cookie_params([
-
 				"lifetime" => $expiration,
 				"path"     => "/",
 				"domain"   => getenv("SESSION_DOMAIN") ?: implode(".", $host),
