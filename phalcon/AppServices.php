@@ -263,11 +263,11 @@ class AppServices
 				"domain"   => getenv("SESSION_DOMAIN") ?: implode(".", $host),
 				"secure"   => getenv("APP_HTTPS_ONLY") ?: false,
 				"httpOnly" => true,
-				"sameSite" => "Strict"
+				//"sameSite" => "Strict"
 			]);
 
 			// set session name & start
-			$session->setName($conf->namespace);
+			$session->setName(getenv("SESSION_NAME") ?: $conf->namespace);
 			$session->start();
 
 			return $session;
