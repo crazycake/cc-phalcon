@@ -42,8 +42,6 @@ trait AccountAuth
 	 */
 	public static $FLAGS = ["pending", "enabled", "disabled"];
 
-	/* --------------------------------------------------- § -------------------------------------------------------- */
-
 	/**
 	 * Initialize Trait
 	 * @param Array $conf - The config array
@@ -113,7 +111,7 @@ trait AccountAuth
 		$data = $this->handleRequest($params, "POST", $this->AUTH_CONF["csrf"]);
 
 		// find user
-		$user = $entity::getByProperties([$this->AUTH_CONF["user_key"] => $data["email"] ?? $data[$this->AUTH_CONF["user_key"]]]);
+		$user = $entity::getByProperties([$this->AUTH_CONF["user_key"] => $data[$this->AUTH_CONF["user_key"]]]);
 
 		if (!$user)
 			$this->jsonResponse(400, $this->AUTH_CONF["trans"]["AUTH_FAILED"]);
@@ -138,6 +136,9 @@ trait AccountAuth
 
 			$this->jsonResponse(400, $this->AUTH_CONF["trans"]["AUTH_FAILED"]);
 		}
+
+		// store validated user
+		$this->session->set("auth-key", $data[$this->AUTH_CONF["user_key"]]);
 
 		// check user account flag
 		if (!in_array($user->flag, $this->AUTH_CONF["login_allowed_states"])) {
