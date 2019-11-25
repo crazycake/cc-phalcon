@@ -125,7 +125,7 @@ abstract class BaseCore extends Controller
 
 	/**
 	 * Handle the request params data validating required parameters.
-	 * Also Check if get/post data is valid, if validation fails send an HTTP code, onSuccess returns a data array.
+	 * Also Check if GET/POST data is valid, if validation fails send an HTTP code, onSuccess returns a data array.
 	 * Required field may have a `@` prefix to establish that is just an optional field to be sanitized.
 	 * Types: `string, email, int, float, alphanum, striptags, trim, lower, upper.`
 	 * @param Array $req_fields - Required fields
