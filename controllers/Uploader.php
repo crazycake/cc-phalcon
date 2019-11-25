@@ -8,7 +8,7 @@ namespace CrazyCake\Controllers;
 
 use Phalcon\Exception;
 use Phalcon\Image\Adapter\GD;
-
+use CrazyCake\Controllers\Translations;
 use CrazyCake\Helpers\Slug;
 
 /**
@@ -53,7 +53,7 @@ trait Uploader
 	protected function initUploader($conf = [])
 	{
 		if (empty($conf["trans"]))
-			$conf["trans"] = \TranslationController::defaultCoreTranslations("uploader");
+			$conf["trans"] = Translations::defaultCoreTranslations("uploader");
 
 		$conf["files"] = $conf["files"] ?? [];
 

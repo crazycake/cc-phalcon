@@ -9,6 +9,7 @@ namespace CrazyCake\Account;
 use Phalcon\Exception;
 
 use CrazyCake\Phalcon\App;
+use CrazyCake\Controllers\Translations;
 use CrazyCake\Helpers\Forms;
 use CrazyCake\Helpers\ReCaptcha;
 
@@ -67,7 +68,7 @@ trait AccountAuth
 		$conf["user_entity"] = App::getClass($conf["user_entity"]);
 
 		if (empty($conf["trans"]))
-			$conf["trans"] = \TranslationController::defaultCoreTranslations("account");
+			$conf["trans"] = Translations::defaultCoreTranslations("account");
 
 		// set configuration
 		$this->AUTH_CONF = $conf;

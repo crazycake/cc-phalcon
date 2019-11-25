@@ -7,6 +7,7 @@
 namespace CrazyCake\Core;
 
 use CrazyCake\Phalcon\App;
+use CrazyCake\Controllers\Translations;
 use CrazyCake\Helpers\UserAgent;
 use CrazyCake\Helpers\JSON;
 
@@ -168,8 +169,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 		$data->UA = $this->client;
 
 		// set translations
-		if (class_exists("\TranslationController"))
-			$data->TRANS = \TranslationController::defaultJsTranslations();
+		$data->TRANS = Translations::defaultJsTranslations();
 
 		$output = JSON::safeEncode($store);
 

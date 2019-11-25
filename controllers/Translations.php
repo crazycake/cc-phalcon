@@ -14,14 +14,14 @@ use Phalcon\Mvc\Controller;
 trait Translations
 {
 	/**
-	 * Core translations handler
+	 * Overridable CoreTranslations
 	 */
-	abstract public function coreTranslations($trans);
+	public static function coreTranslations($trans) { return []; }
 
-	/**
-	 * Javascript translations handler
+	/*
+	 * Overridable CoreTranslations
 	 */
-	abstract public function jsTranslations($trans);
+	public static function jsTranslations($trans) { return []; }
 
 	/**
 	 * Default Controllers Translations
@@ -62,7 +62,7 @@ trait Translations
 		];
 
 		// call handler
-		self::overwrite($dic, self::coreTranslations((\Phalcon\DI::getDefault())->getShared("trans")));
+		self::overwrite($dic, static::coreTranslations((\Phalcon\DI::getDefault())->getShared("trans")));
 
 		// return key translations
 		return $dic[strtoupper($controller)] ?? [];
@@ -85,7 +85,7 @@ trait Translations
 		];
 
 		// call handler
-		self::overwrite($dic, self::jsTranslations((\Phalcon\DI::getDefault())->getShared("trans")));
+		self::overwrite($dic, static::jsTranslations((\Phalcon\DI::getDefault())->getShared("trans")));
 
 		return $dic;
 	}
