@@ -16,12 +16,12 @@ trait Translations
 	/**
 	 * Core translations handler
 	 */
-	abstract public function coreTranslations();
+	abstract public function coreTranslations($trans);
 
 	/**
 	 * Javascript translations handler
 	 */
-	abstract public function jsTranslations();
+	abstract public function jsTranslations($trans);
 
 	/**
 	 * Default Controllers Translations
@@ -29,7 +29,7 @@ trait Translations
 	 */
 	public static function defaultCoreTranslations($controller = "")
 	{
-		$data = [
+		$dic = [
 			"ACCOUNT" => [
 				"AUTH_FAILED"        => "El correo ó contraseña no son válidos.",
 				"AUTH_BLOCKED"       => "Por seguridad, esta cuenta se encuentra temporalmente bloqueada.",
@@ -62,10 +62,10 @@ trait Translations
 		];
 
 		// call handler
-		$data = array_replace_recursive($data, self::coreTranslations());
+		self::overwrite($dic, self::coreTranslations((\Phalcon\DI::getDefault())->getShared("trans")));
 
 		// return key translations
-		return $data[strtoupper($controller)] ?? [];
+		return $dic[strtoupper($controller)] ?? [];
 	}
 
 	/**
@@ -73,7 +73,7 @@ trait Translations
 	 */
 	public static function defaultJsTranslations()
 	{
-		$data = [
+		$dic = [
 			"ALERTS" => [
 				"SERVER_ERROR"     => "Ha ocurrido algo inesperado, por favor inténtalo más tarde.",
 				"SERVER_TIMEOUT"   => "Ha ocurrido un problema de conexión, por favor inténtalo nuevamente.",
@@ -85,6 +85,22 @@ trait Translations
 		];
 
 		// call handler
-		return array_replace_recursive($data, self::jsTranslations());
+		self::overwrite($dic, self::jsTranslations((\Phalcon\DI::getDefault())->getShared("trans")));
+
+		return $dic;
+	}
+
+	/**
+	 * Array combine with overwrite
+	 */
+	private static function overwrite(&$original, $overwrite)
+	{
+		foreach ($overwrite as $key => $value) {
+
+			if (array_key_exists($key, $original) && is_array($value))
+				self::overwrite($original[$key], $overwrite[$key]);
+			else
+				$original[$key] = $value;
+		}
 	}
 }

@@ -64,7 +64,6 @@ find)
 				--language="php" \
 				--from-code=UTF-8 \
 				--keyword='trans' \
-				--keyword='transPlural:1,2' \
 				--package-version=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
 				--package-name="crazycake" \
 				--copyright-holder="CrazyCake" \
