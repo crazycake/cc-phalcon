@@ -14,16 +14,6 @@ use Phalcon\Mvc\Controller;
 trait Translations
 {
 	/**
-	 * Overridable CoreTranslations
-	 */
-	public static function coreTranslations($trans) { return []; }
-
-	/*
-	 * Overridable CoreTranslations
-	 */
-	public static function jsTranslations($trans) { return []; }
-
-	/**
 	 * Default Controllers Translations
 	 * @param String $controller - The Controller name
 	 */
@@ -60,8 +50,9 @@ trait Translations
 			]
 		];
 
-		// call handler
-		self::overwrite($dic, static::coreTranslations((\Phalcon\DI::getDefault())->getShared("trans")));
+		// optional translation controller
+		if (class_exists("\TranslationController") && method_exists("\TranslationController", "coreTranslations"))
+			self::overwrite($dic, \TranslationController::coreTranslations((\Phalcon\DI::getDefault())->getShared("trans")));
 
 		// return key translations
 		return $dic[strtoupper($controller)] ?? [];
@@ -83,8 +74,9 @@ trait Translations
 			]
 		];
 
-		// call handler
-		self::overwrite($dic, static::jsTranslations((\Phalcon\DI::getDefault())->getShared("trans")));
+		// optional translation controller
+		if (class_exists("\TranslationController") && method_exists("\TranslationController", "jsTranslations"))
+			self::overwrite($dic, \TranslationController::jsTranslations((\Phalcon\DI::getDefault())->getShared("trans")));
 
 		return $dic;
 	}
@@ -97,9 +89,9 @@ trait Translations
 		foreach ($overwrite as $key => $value) {
 
 			if (array_key_exists($key, $original) && is_array($value))
-				self::overwrite($original[$key], $overwrite[$key]);
-			else
-				$original[$key] = $value;
+				return self::overwrite($original[$key], $overwrite[$key]);
+
+			$original[$key] = $value;
 		}
 	}
 }
