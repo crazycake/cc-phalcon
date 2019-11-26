@@ -33,12 +33,11 @@ trait Translations
 			"ACCOUNT" => [
 				"AUTH_FAILED"        => "El correo ó contraseña no son válidos.",
 				"AUTH_BLOCKED"       => "Por seguridad, esta cuenta se encuentra temporalmente bloqueada.",
-				"STATE_PENDING"      => "Te hemos enviado un correo de activación a <b>{email}</b>.",
+				"STATE_PENDING"      => "Te hemos enviado un correo de activación a <b>{email}</b> para que actives tu cuenta.",
 				"STATE_DISABLED"     => "Esta cuenta se encuentra desactivada, por favor comunícate con nuestro equipo.",
 				"NOT_FOUND"          => "Esta cuenta no se encuentra registrada o no ha sido activada.",
 				"EMAIL_EXISTS"       => "El correo <b>{email}</b> ya se encuentra registrado.",
 				"ACTIVATION_SUCCESS" => "¡Tu cuenta ha sido activada!",
-				"ACTIVATION_PENDING" => "Te hemos enviado un correo a <b>{email}</b> para que actives tu cuenta.",
 				"NOT_HUMAN"          => "🤖 Para asegurarnos que no eres un robot por favor haz <a href=\"#\">click aquí</a> e inténtalo nuevamente.",
 				"INVALID_NAME"       => "Tu nombre y apellido deben ser válidos.",
 				"INVALID_EMAIL"      => "Tu correo electrónico no es válido.",
