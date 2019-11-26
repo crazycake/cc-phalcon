@@ -217,7 +217,7 @@ trait AccountAuth
 		$this->sendActivationMailMessage($user);
 
 		// set a flash message to show on account controller
-		$message = str_replace("{email}", $user->email, $this->AUTH_CONF["trans"]["STATE_PENDING"]);
+		$message = str_replace("{email}", $user->email, $this->AUTH_CONF["trans"]["ACTIVATION_PENDING"]);
 		$this->flash->success($message);
 
 		// redirect/response
