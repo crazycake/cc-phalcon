@@ -33,13 +33,13 @@ trait Mailer
 	public function initMailer($conf = [])
 	{
 		$defaults = [
-			"from_name" => $this->config->name
+			"from_name"  => $this->config->name,
+			"reply_name" => $this->config->name,
+			"reply_to"   => $this->config->emails->support ?? $this->config->emails->sender
 		];
 
 		// merge confs
-		$conf = array_merge($defaults, $conf);
-
-		$this->MAILER_CONF = $conf;
+		$this->MAILER_CONF = array_merge($defaults, $conf);
 	}
 
 	/**
@@ -77,7 +77,7 @@ trait Mailer
 		$this->MAILER_CONF = array_merge($this->MAILER_CONF, $data);
 
 		// sends the message
-		$this->sendMessage("contact", "Admin Exception", (array)$this->config->emails->admins);
+		$this->sendMessage("contact", "App Exception", (array)$this->config->emails->admins);
 	}
 
 	/**
@@ -134,11 +134,13 @@ trait Mailer
 		$sendgrid = new \SendGrid($this->config->sendgrid->apiKey);
 
 		$from     = new \SendGrid\Email($this->MAILER_CONF["from_name"],  $this->config->emails->sender);
-		$reply_to = new \SendGrid\ReplyTo($this->config->emails->support ?? $this->config->emails->sender, $this->MAILER_CONF["from_name"]);
 
-		$content = new \SendGrid\Content("text/html", $this->inlineHtml($template));
+		$reply_to = new \SendGrid\ReplyTo($this->MAILER_CONF["reply_to"], $this->MAILER_CONF["reply_name"]);
 
-		$mail = new \SendGrid\Mail($from, $subject, (new \SendGrid\Email(null, $recipients[0])), $content);
+		$content  = new \SendGrid\Content("text/html", $this->inlineHtml($template));
+
+		$mail     = new \SendGrid\Mail($from, $subject, (new \SendGrid\Email(null, $recipients[0])), $content);
+
 		$mail->setReplyTo($reply_to);
 
 		// add recipients
