@@ -51,6 +51,10 @@ find)
 	# execute volt compailer in container
 	docker exec -it $CONTAINER_NAME bash -c 'php /var/www/app/cli/cli.php main compileVolt'
 
+	if [ ! -d "$PROJECT_PATH/app/langs" ]; then
+		echo -e "\033[95mMissing folder $PROJECT_PATH/app/langs \033[0m"; exit
+	fi
+
 	echo -e "\033[95mSearching for keyword 'trans' in php files... \033[0m"
 
 	# find files (exclude some folders)
