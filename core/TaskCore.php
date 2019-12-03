@@ -27,9 +27,9 @@ class TaskCore extends Task
 	public function mainAction()
 	{
 		$this->colorize($this->config->name." app CLI | usage: main [task]", "NOTE");
-		$this->colorize("appConfig    Outputs app configuration in JSON format", "INFO");
-		$this->colorize("revAssets    Generates JS & CSS bundles revision files", "INFO");
-		$this->colorize("compileVolt  Compile volt files into cache folder", "INFO");
+		$this->colorize("appConfig \tOutputs app configuration in JSON format", "INFO");
+		$this->colorize("revAssets \tGenerates JS & CSS bundles revision files", "INFO");
+		$this->colorize("compileVolt \tCompile volt files into cache folder", "INFO");
 		$this->colorize("-- § --", "OK");
 	}
 
