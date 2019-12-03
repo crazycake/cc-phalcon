@@ -110,7 +110,9 @@ trait AppLoader
 			"models"      => APP_PATH."models/"
 		];
 
-		foreach ($config["loader"] as $dir) {
+		$loader = $config["loader"] ?? [];
+
+		foreach ($loader as $dir) {
 
 			$paths      = explode("/", $dir, 2);
 			$dirs[$dir] = count($paths) > 1 ? PROJECT_PATH.$paths[0]."/".$paths[1]."/" : APP_PATH.$dir."/";
@@ -124,7 +126,7 @@ trait AppLoader
 		$loader->registerDirs($dirs);
 
 		// 3. Register core static modules
-		$this->loadCoreLibraries($loader, $config["core"]);
+		$this->loadCoreLibraries($loader, $config["core"] ?? []);
 
 		//4.- Register phalcon loader
 		$loader->register();
@@ -140,9 +142,6 @@ trait AppLoader
 	 */
 	private function loadCoreLibraries($loader, $libraries = [])
 	{
-		if (!is_array($libraries))
-			$libraries = [];
-
 		// merge libraries with defaults
 		$libraries = array_merge(self::$CORE_DEFAULT_LIBS, $libraries);
 
