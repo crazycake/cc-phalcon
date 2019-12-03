@@ -51,6 +51,7 @@ find)
 	# execute volt compailer in container
 	docker exec -it $CONTAINER_NAME bash -c 'php /var/www/app/cli/cli.php main compileVolt'
 
+	# check folder exists
 	if [ ! -d "$PROJECT_PATH/app/langs" ]; then
 		echo -e "\033[95mMissing folder $PROJECT_PATH/app/langs \033[0m"; exit
 	fi
