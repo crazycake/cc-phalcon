@@ -6,8 +6,6 @@
 
 namespace CrazyCake\Account;
 
-use Phalcon\Exception;
-
 /**
  * Account Token
  */
@@ -120,13 +118,13 @@ trait AccountToken
 	public static function validateHash($hash = "")
 	{
 		if (empty($hash))
-			throw new Exception("got empty hash");
+			throw new \Exception("got empty hash");
 
 		$data = (\Phalcon\DI::getDefault())->getShared("cryptify")->decryptData($hash, "#");
 
 		// validate data (user_id, token_type and token)
 		if (count($data) < 3)
-			throw new Exception("decrypted data is not 3 dimension array [user_id, token_type, token]");
+			throw new \Exception("decrypted data is not 3 dimension array [user_id, token_type, token]");
 
 		// set vars values
 		list($user_id, $token_type, $token) = $data;
@@ -135,7 +133,7 @@ trait AccountToken
 		$stored_token = self::getToken($user_id, $token_type);
 
 		if (!$stored_token || $token != $stored_token)
-			throw new Exception("no token match found.");
+			throw new \Exception("no token match found.");
 
 		return $data;
 	}

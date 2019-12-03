@@ -7,7 +7,6 @@
 namespace CrazyCake\Core;
 
 use Phalcon\Mvc\Controller;
-use Phalcon\Exception;
 
 use CrazyCake\Phalcon\App;
 use CrazyCake\Controllers\Requester;
@@ -109,13 +108,13 @@ abstract class BaseCore extends Controller
 	{
 		// simple input validation
 		if (empty($method))
-			throw new Exception("BaseCore::sendMailMessage -> method param is required.");
+			throw new \Exception("BaseCore::sendMailMessage -> method param is required.");
 
 		$mailer = new \MailerController();
 
 		// checks that a MailerController exists
 		if (!method_exists($mailer, $method))
-			throw new Exception("BaseCore::sendMailMessage -> method $method is not defined in Mailer Controller.");
+			throw new \Exception("BaseCore::sendMailMessage -> method $method is not defined in Mailer Controller.");
 
 		$this->logger->debug("BaseCore::sendMailMessage -> triggered mailer message method [$method]");
 

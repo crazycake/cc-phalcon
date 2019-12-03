@@ -7,7 +7,6 @@
 namespace CrazyCake\Core;
 
 use Phalcon\CLI\Task;
-use Phalcon\Exception;
 use Phalcon\Mvc\View\Engine\Volt\Compiler as VoltCompiler;
 
 use CrazyCake\Phalcon\App;
@@ -174,7 +173,7 @@ class TaskCore extends Task
 			case "INFO":    $open = "\033[94m"; break; // light blue
 			case "NOTE":    $open = "\033[97m"; break; // white
 
-			default: throw new Exception("CoreTask:_colorize -> invalid message type: ".$type);
+			default: throw new \Exception("CoreTask:_colorize -> invalid message type: ".$type);
 		}
 
 		$output = $open.$text.$close."\n";

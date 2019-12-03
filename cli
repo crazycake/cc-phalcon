@@ -2,7 +2,7 @@
 # cc-phalcon CLI tools
 # author: Nicolas Pulido <nicolas.pulido@crazycake.tech>
 
-# stop execution for exceptions
+# stop execution at error
 set -e
 
 # current path

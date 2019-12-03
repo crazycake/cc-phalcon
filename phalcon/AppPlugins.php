@@ -22,24 +22,24 @@ class ExceptionsPlugin extends \Phalcon\Mvc\User\Plugin
 	{
 		$di = $dispatcher->getDI();
 
-		// handle Phalcon exceptions
+		// Handle Phalcon Exception
 		if ($exception instanceof \Phalcon\Mvc\Dispatcher\Exception) {
 
-			$log_exception = false;
+			$log = false;
 
 			switch ($exception->getCode()) {
 
 				case \Phalcon\Dispatcher::EXCEPTION_NO_DI:
 				case \Phalcon\Dispatcher::EXCEPTION_CYCLIC_ROUTING:
 
-					$log_exception = true;
+					$log = true;
 					$forward = ["controller" => "error", "action" => "internal"];
 					break;
 
 				case \Phalcon\Dispatcher::EXCEPTION_INVALID_PARAMS:
 				case \Phalcon\Dispatcher::EXCEPTION_INVALID_HANDLER:
 
-					$log_exception = true;
+					$log = true;
 					$forward = ["controller" => "error", "action" => "badRequest"];
 					break;
 
@@ -51,8 +51,7 @@ class ExceptionsPlugin extends \Phalcon\Mvc\User\Plugin
 			}
 
 			// log error?
-			if ($log_exception)
-				$di->getShared("logger")->error("App Exception: ".$exception->getMessage()." File: ".$exception->getFile().". Line: ".$exception->getLine());
+			if ($log) $di->getShared("logger")->error("App Exception: ".$exception->getMessage()." File: ".$exception->getFile().". Line: ".$exception->getLine());
 
 			// forward
 			$dispatcher->forward($forward);

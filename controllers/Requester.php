@@ -7,8 +7,6 @@
 
 namespace CrazyCake\Controllers;
 
-use Phalcon\Exception;
-
 use CrazyCake\Phalcon\App;
 
 /**
@@ -72,11 +70,12 @@ trait Requester
 
 			return $this->$action($options);
 		}
-		catch (\Exception | Exception $e) { $ex = $e; }
+		catch (\Exception $e) {
 
-		$this->logger->error("Requester::newRequest -> Failed request: ".$ex->getMessage()."\nOptions: ".json_encode($options, JSON_UNESCAPED_SLASHES));
+			$this->logger->error("Requester::newRequest -> Failed request: ".$e->getMessage()."\nOptions: ".json_encode($options, JSON_UNESCAPED_SLASHES));
 
-		return ["error" => true, "exception" => $ex->getMessage()];
+			return ["error" => $e->getMessage()];
+		}
 	}
 
 	/* --------------------------------------------------- § -------------------------------------------------------- */

@@ -6,8 +6,6 @@
 
 namespace CrazyCake\Helpers;
 
-use Phalcon\Exception;
-
 /**
  * JSON Helper
  */
@@ -22,7 +20,7 @@ class JSON
 	{
 		$output = json_encode(unserialize(str_replace(["d:NAN;", "d:INF;"], "d:000;", serialize($data))), JSON_UNESCAPED_SLASHES);
 
-		if (json_last_error()) throw new Exception("JSON Encode error: ".json_last_error_msg());
+		if (json_last_error()) throw new \Exception("JSON Encode error: ".json_last_error_msg());
 
 		return $output;
 	}

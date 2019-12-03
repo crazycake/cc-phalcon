@@ -8,8 +8,6 @@
 namespace CrazyCake\Helpers;
 
 use CrazyCake\Core\WebCore;
-use Phalcon\Exception;
-
 
 /**
  * ReCaptcha Helper
@@ -25,12 +23,11 @@ class ReCaptcha
 	/**
 	 * Constructor
 	 * @param String $secret_key - The reCaptcha secret key
-	 * @throws Exception
 	 */
 	public function __construct($secret_key = null)
 	{
 		if (empty($secret_key))
-			throw new Exception("ReCaptcha Helper -> Google reCaptcha key is required.");
+			throw new \Exception("ReCaptcha Helper -> Google reCaptcha key is required.");
 
 		// set secret key
 		$this->recaptcha = new \ReCaptcha\ReCaptcha($secret_key, new \ReCaptcha\RequestMethod\CurlPost());

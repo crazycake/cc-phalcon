@@ -6,8 +6,6 @@
 
 namespace CrazyCake\Account;
 
-use Phalcon\Exception;
-
 use CrazyCake\Phalcon\App;
 
 /**

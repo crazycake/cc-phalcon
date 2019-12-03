@@ -6,7 +6,6 @@
 
 namespace CrazyCake\Controllers;
 
-use Phalcon\Exception;
 use CrazyCake\Phalcon\App;
 
 /**
@@ -77,7 +76,7 @@ trait Mailer
 		$this->MAILER_CONF = array_merge($this->MAILER_CONF, $data);
 
 		// sends the message
-		$this->sendMessage("contact", "App Exception", (array)$this->config->emails->admins);
+		$this->sendMessage("contact", "App Error", (array)$this->config->emails->admins);
 	}
 
 	/**
@@ -119,7 +118,7 @@ trait Mailer
 	{
 		// validation
 		if (empty($template) || empty($recipients))
-			throw new Exception("Mailer::sendMessage -> Invalid params data for sending mail");
+			throw new \Exception("Mailer::sendMessage -> Invalid params data for sending mail");
 
 		// parse recipients
 		if (is_string($recipients))

@@ -6,8 +6,6 @@
 
 namespace CrazyCake\Helpers;
 
-use Phalcon\Exception;
-
 /**
  * Form Helper
  */

@@ -7,8 +7,6 @@
 
 namespace CrazyCake\Helpers;
 
-use Phalcon\Exception;
-
 /**
  * Form Helper
  */
@@ -41,8 +39,7 @@ class Images
 	 */
 	public static function resize($filepath = "", $conf = [])
 	{
-		if (!is_file($filepath))
-			throw new Exception("Images::resize -> File not found: $filepath");
+		if (!is_file($filepath)) throw new \Exception("File not found: $filepath");
 
 		// make sure object is an array in all depths
 		$conf = json_decode(json_encode($conf), true);
@@ -105,7 +102,7 @@ class Images
 
 				$resized[] = $new_file;
 			}
-			catch (\Exception | Exception $e) {
+			catch (\Phalcon\Exception | \Exception $e) {
 
 				(\Phalcon\DI::getDefault())->getShared("logger")->error("Images::resize -> failed resizing image $key: ".$e->getMessage());
 			}

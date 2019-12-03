@@ -8,7 +8,6 @@
 namespace CrazyCake\Helpers;
 
 use Phalcon\DI;
-use Phalcon\Exception;
 use Phalcon\Crypt;
 
 /**
@@ -36,7 +35,7 @@ class Cryptify
 	{
 		// validate key is not empty or null
 		if (empty($key))
-			throw new Exception("Cryptify helper -> Key parameter in constructor is required.");
+			throw new \Exception("Cryptify helper -> Key parameter in constructor is required.");
 
 		$this->crypt = new Crypt();
 		$this->crypt->setKey($key);
@@ -86,13 +85,9 @@ class Cryptify
 
 			return $data;
 		}
-		catch (Exception $e) {
+		catch (\Exception $e) {
 
-			$di = \Phalcon\DI::getDefault();
-
-			if ($di->getShared("logger"))
-				$di->getShared("logger")->error("Cryptify -> decryptData failed [$hash]: ".$e->getMessage());
-
+			(\Phalcon\DI::getDefault())->getShared("logger")->error("Cryptify -> decryptData failed [$hash]: ".$e->getMessage());
 			return null;
 		}
 	}

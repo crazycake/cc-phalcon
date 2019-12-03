@@ -6,7 +6,6 @@
 
 namespace CrazyCake\Account;
 
-use Phalcon\Exception;
 use CrazyCake\Phalcon\App;
 use CrazyCake\Controllers\Translations;
 use CrazyCake\Helpers\ReCaptcha;
@@ -56,7 +55,7 @@ trait AccountPassword
 	 */
 	public function sendRecoveryInstructions($email = "")
 	{
-		if (empty($email)) throw new Exception("Invalid email");
+		if (empty($email)) throw new \Exception("Invalid email");
 
 		// basic attempts security
 		if ($this->getRecoveryInstructionsSent($email) >= 4)
@@ -104,7 +103,7 @@ trait AccountPassword
 		try {
 
 			if ($this->isLoggedIn())
-				throw new Exception("user is already logged in");
+				throw new \Exception("user is already logged in");
 
 			// handle the encrypted data with parent controller
 			list($user_id, $token_type, $token) = self::validateHash($hash);
@@ -114,7 +113,7 @@ trait AccountPassword
 
 			return $user_id;
 		}
-		catch (Exception $e) {
+		catch (\Exception $e) {
 
 			$this->logger->error("AccountPassword::newPasswordView -> exception in new password view [$hash]: ".$e->getMessage());
 
@@ -139,11 +138,11 @@ trait AccountPassword
 			$user   = $entity::getById($user_id);
 
 			if (!$user)
-				throw new Exception("got an invalid user [$user_id] when validating hash.");
+				throw new \Exception("got an invalid user [$user_id] when validating hash.");
 
 			// pass length
 			if (strlen($password) < $this->PASSWORD_CONF["password_min_length"])
-				throw new Exception($this->PASSWORD_CONF["trans"]["PASS_TOO_SHORT"]);
+				throw new \Exception($this->PASSWORD_CONF["trans"]["PASS_TOO_SHORT"]);
 
 			// saves new pass
 			$entity::updateProperties($user_id, ["pass" => $this->security->hash($password)]);
@@ -156,7 +155,7 @@ trait AccountPassword
 
 			return true;
 		}
-		catch (Exception $e) {
+		catch (\Exception $e) {
 
 			$this->logger->error("AccountPassword::saveNewPassword -> failed saving new password: ".$e->getMessage());
 
@@ -180,28 +179,28 @@ trait AccountPassword
 				return;
 
 			if (strlen($new_pass) < $this->PASSWORD_CONF["password_min_length"])
-				throw new Exception($this->PASSWORD_CONF["trans"]["PASS_TOO_SHORT"]);
+				throw new \Exception($this->PASSWORD_CONF["trans"]["PASS_TOO_SHORT"]);
 
 			if (!empty($new_pass) && empty($current_pass))
-				throw new Exception($this->PASSWORD_CONF["trans"]["CURRENT_PASS_EMPTY"]);
+				throw new \Exception($this->PASSWORD_CONF["trans"]["CURRENT_PASS_EMPTY"]);
 
 			if (strlen($new_pass) < $this->PASSWORD_CONF["password_min_length"])
-				throw new Exception($this->PASSWORD_CONF["trans"]["PASS_TOO_SHORT"]);
+				throw new \Exception($this->PASSWORD_CONF["trans"]["PASS_TOO_SHORT"]);
 
 			// check current pass input
 			if (empty($user->pass) || !$this->security->checkHash($current_pass, $user->pass))
-				throw new Exception($this->PASSWORD_CONF["trans"]["PASS_DONT_MATCH"]);
+				throw new \Exception($this->PASSWORD_CONF["trans"]["PASS_DONT_MATCH"]);
 
 			// check pass is different to current
 			if ($this->security->checkHash($new_pass, $user->pass))
-				throw new Exception($this->PASSWORD_CONF["trans"]["NEW_PASS_EQUALS"]);
+				throw new \Exception($this->PASSWORD_CONF["trans"]["NEW_PASS_EQUALS"]);
 
 			// saves new pass
 			$entity::updateProperties($this->user_session["id"], ["pass" => $this->security->hash($new_pass)]);
 
 			return true;
 		}
-		catch (Exception $e) { $this->jsonResponse(400, $e->getMessage()); }
+		catch (\Exception $e) { $this->jsonResponse(400, $e->getMessage()); }
 	}
 
 	/**

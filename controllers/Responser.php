@@ -6,7 +6,6 @@
 
 namespace CrazyCake\Controllers;
 
-use Phalcon\Exception;
 use CrazyCake\Helpers\JSON;
 
 /**

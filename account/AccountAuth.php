@@ -6,8 +6,6 @@
 
 namespace CrazyCake\Account;
 
-use Phalcon\Exception;
-
 use CrazyCake\Phalcon\App;
 use CrazyCake\Controllers\Translations;
 use CrazyCake\Helpers\Forms;
@@ -244,7 +242,7 @@ trait AccountAuth
 			$user = $entity::getById($user_id);
 
 			if (!$user || $user->flag == "disabled")
-				throw new Exception("invalid user or missing 'pending' flag, userID: $user->id");
+				throw new \Exception("invalid user or missing 'pending' flag, userID: $user->id");
 
 			$user->flag = "enabled";
 
@@ -264,11 +262,11 @@ trait AccountAuth
 			// redirect/response
 			$this->onAfterLoginUser("activation");
 		}
-		catch (Exception $e) {
+		catch (\Exception $e) {
 
 			$this->view->setVar("error_message", $this->trans->_("Tu cuenta ya está activada."));
 
-			$this->logger->error("AccountAuth::activationAction [$hash] -> exception: ".$e->getMessage());
+			$this->logger->error("AccountAuth::activationAction -> exception [$hash]: ".$e->getMessage());
 			$this->dispatcher->forward(["controller" => "error", "action" => "expired"]);
 		}
 	}
@@ -331,11 +329,11 @@ trait AccountAuth
 
 			$token = self::getToken($token, "access");
 
-			if (!$token) throw new Exception("Invalid token");
+			if (!$token) throw new \Exception("Invalid token");
 
 			return $token;
 		}
-		catch (Exception $e) { $this->jsonResponse(401, $e->getMessage()); }
+		catch (\Exception $e) { $this->jsonResponse(401, $e->getMessage()); }
 	}
 
 	/**
