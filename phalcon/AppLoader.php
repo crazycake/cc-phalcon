@@ -28,7 +28,7 @@ trait AppLoader
 	 * App Core default libs
 	 * @var Array
 	 */
-	protected static $CORE_DEFAULT_LIBS = ["services", "controllers", "core", "helpers", "models", "account"];
+	protected static $CORE_LIBS = ["services", "controllers", "core", "helpers", "models", "account"];
 
 	/**
 	 * Get Module Model Class Name
@@ -126,7 +126,7 @@ trait AppLoader
 		$loader->registerDirs($dirs);
 
 		// 3. Register core static modules
-		$this->loadCoreLibraries($loader, $config["core"] ?? []);
+		$this->loadCoreLibraries($loader);
 
 		//4.- Register phalcon loader
 		$loader->register();
@@ -138,20 +138,16 @@ trait AppLoader
 	 * Use Phar::running() to get path of current phar running
 	 * Use get_included_files() to see all loaded classes
 	 * @param Object $loader - Phalcon loader object
-	 * @param Array $libraries - Libraries required
 	 */
-	private function loadCoreLibraries($loader, $libraries = [])
+	private function loadCoreLibraries($loader)
 	{
-		// merge libraries with defaults
-		$libraries = array_merge(self::$CORE_DEFAULT_LIBS, $libraries);
-
 		// check if lib is runnning in phar file
 		$class_path = \Phar::running() ?: dirname(__DIR__);
 
 		// set library path => namespaces
 		$namespaces = [];
 
-		foreach ($libraries as $lib)
+		foreach (self::$CORE_LIBS as $lib)
 			$namespaces[self::$CORE_NAMESPACE.ucfirst($lib)] = "$class_path/$lib/";
 
 		// register namespaces

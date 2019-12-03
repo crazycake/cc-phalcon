@@ -6,8 +6,7 @@
 		"controllers",
 		"models",
 		"account",
-		"helpers",
-		"checkout"
+		"helpers"
 	],
 	"main"   : "autoload.php",
 	"output" : "cc-phalcon.phar",
