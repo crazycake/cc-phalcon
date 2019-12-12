@@ -87,19 +87,19 @@ trait Translations
 	}
 
 	/**
-	 * Array mergue with overwrite
+	 * Array mergue with haystack
 	 */
-	private static function mergue(&$original, $overwrite)
+	private static function mergue(&$source, $haystack)
 	{
-		foreach ($overwrite as $key => $value) {
+		foreach ($haystack as $key => $value) {
 
 			if (is_array($value)) {
 
-				self::mergue($original[$key], $overwrite[$key]);
+				self::mergue($source[$key], $haystack[$key]);
 				continue;
 			}
 
-			$original[$key] = $value;
+			$source[$key] = $value;
 		}
 	}
 }
