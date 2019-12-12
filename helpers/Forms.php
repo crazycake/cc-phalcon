@@ -42,7 +42,7 @@ class Forms
 	 */
 	public static function formatRut($rut, $dots = false)
 	{
-		$str = explode("-", strotoupper(trim($rut)));
+		$str = explode("-", strtoupper(trim($rut)));
 
 		return $dots ? number_format($str[0], 0, "", ".")."-".$str[1] : $str[0]."-".$str[1];
 	}
