@@ -193,8 +193,8 @@ trait AccountAuth
 
 		// common optionals
 		if (!empty($data["rut"]))       $data["rut"]       = strtolower(ltrim(rtrim($data["rut"])));
-		if (!empty($data["firstName"])) $data["firstName"] = Forms::validateName($data["firstName"]);
-		if (!empty($data["lastName"]))  $data["lastName"]  = Forms::validateName($data["lastName"]);
+		if (!empty($data["firstName"])) $data["firstName"] = Forms::formatName($data["firstName"]);
+		if (!empty($data["lastName"]))  $data["lastName"]  = Forms::formatName($data["lastName"]);
 
 		// event
 		if (method_exists($this, "onBeforeRegisterUser"))

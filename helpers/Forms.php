@@ -36,22 +36,6 @@ class Forms
 	}
 
 	/**
-	 * Validates name and filter weird chars from string.
-	 * @return Mixed
-	 */
-	public static function validateName($name = "")
-	{
-		// validate names
-		$nums = "0123456789";
-
-		if (strcspn($name, $nums) != strlen($name))
-			return false;
-
-		// remove spaces & format to capitalized name
-		return mb_convert_case(ltrim(rtrim($name)), MB_CASE_TITLE, "UTF-8");
-	}
-
-	/**
 	 * Formats a rut with dots
 	 * @param  string $rut - The input rut
 	 * @return String
@@ -61,6 +45,22 @@ class Forms
 		$str = explode("-", $rut);
 
 		return number_format($str[0], 0, "", ".").'-'.strotoupper($str[1]);
+	}
+
+	/**
+	 * Formats name and filter weird chars from string.
+	 * @return Mixed
+	 */
+	public static function formatName($name = "")
+	{
+		// validate names
+		$nums = "0123456789";
+
+		if (strcspn($name, $nums) != strlen($name))
+			return null;
+
+		// remove spaces & format to capitalized name
+		return mb_convert_case(ltrim(rtrim($name)), MB_CASE_TITLE, "UTF-8");
 	}
 
 	/**
