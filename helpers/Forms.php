@@ -36,11 +36,11 @@ class Forms
 	}
 
 	/**
-	 * Formats a rut with dots
+	 * Formats chilean RUT, with dots too
 	 * @param  string $rut - The input rut
 	 * @return String
 	 */
-	public static function formatRut($rut, $dots = true)
+	public static function formatRut($rut, $dots = false)
 	{
 		$str = explode("-", strotoupper(trim($rut)));
 
