@@ -15,9 +15,9 @@ trait Translations
 {
 	/**
 	 * Default Controllers Translations
-	 * @param String $controller - The Controller name
+	 * @param String $category - The category name
 	 */
-	public static function defaultCoreTranslations($controller = "")
+	public static function defaultCoreTranslations($category = "")
 	{
 		$dic = [
 			"ACCOUNT" => [
@@ -51,12 +51,14 @@ trait Translations
 			]
 		];
 
+		$trans = (\Phalcon\DI::getDefault())->getShared("trans");
+
 		// optional translation controller
 		if (class_exists("\TranslationController") && method_exists("\TranslationController", "coreTranslations"))
-			self::overwrite($dic, \TranslationController::coreTranslations((\Phalcon\DI::getDefault())->getShared("trans")));
+			self::mergue($dic, \TranslationController::coreTranslations($trans));
 
 		// return key translations
-		return $dic[strtoupper($controller)] ?? [];
+		return $dic[strtoupper($category)] ?? [];
 	}
 
 	/**
@@ -75,22 +77,27 @@ trait Translations
 			]
 		];
 
+		$trans = (\Phalcon\DI::getDefault())->getShared("trans");
+
 		// optional translation controller
 		if (class_exists("\TranslationController") && method_exists("\TranslationController", "jsTranslations"))
-			self::overwrite($dic, \TranslationController::jsTranslations((\Phalcon\DI::getDefault())->getShared("trans")));
+			self::mergue($dic, \TranslationController::jsTranslations($trans));
 
 		return $dic;
 	}
 
 	/**
-	 * Array combine with overwrite
+	 * Array mergue with overwrite
 	 */
-	private static function overwrite(&$original, $overwrite)
+	private static function mergue(&$original, $overwrite)
 	{
 		foreach ($overwrite as $key => $value) {
 
-			if (array_key_exists($key, $original) && is_array($value))
-				return self::overwrite($original[$key], $overwrite[$key]);
+			if (is_array($value)) {
+
+				self::mergue($original[$key], $overwrite[$key]);
+				continue;
+			}
 
 			$original[$key] = $value;
 		}
