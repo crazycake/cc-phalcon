@@ -40,11 +40,11 @@ class Forms
 	 * @param  string $rut - The input rut
 	 * @return String
 	 */
-	public static function formatRut($rut)
+	public static function formatRut($rut, $dots = true)
 	{
-		$str = explode("-", $rut);
+		$str = explode("-", strotoupper(trim($rut)));
 
-		return number_format($str[0], 0, "", ".").'-'.strotoupper($str[1]);
+		return $dots ? number_format($str[0], 0, "", ".")."-".$str[1] : $str[0]."-".$str[1];
 	}
 
 	/**
