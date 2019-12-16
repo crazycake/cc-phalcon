@@ -81,6 +81,21 @@ class Document
 	}
 
 	/**
+	 * Count
+	 * @param Mixed $search - Array or String
+	 */
+	public static function count($search, $options = [])
+	{
+		$mongo = static::getClient();
+
+		if (!is_array($search))
+			$search = ["_id" => self::toObjectId($search)];
+
+		try { return $mongo->{static::$COLLECTION}->count($search, $options); }
+		catch (\Exception $e) { return 0; }
+	}
+
+	/**
 	 * Updates an array of properties
 	 * @param Mixed $search - Array or String
 	 * @param Array $prop - The properties
