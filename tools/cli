@@ -7,7 +7,7 @@ PROJECT_PATH="$(pwd)"
 
 # app namespace
 APP_NAME=${PWD##*/}
-CONTAINER_NAME="$(docker ps | grep -o '\w*_'$APP_NAME)"
+CONTAINER_NAME="$(docker ps | grep -o '\w*_'$APP_NAME -m 1)"
 
 # app paths
 TOOLS_PATH=$PROJECT_PATH"/.tools/"
