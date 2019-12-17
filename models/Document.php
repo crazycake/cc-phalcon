@@ -26,6 +26,14 @@ class Document
 	}
 
 	/**
+	 * Gets Database manager (override for custom connection)
+	 */
+	public static function getManager()
+	{
+		return (\Phalcon\DI::getDefault())->getShared("mongoManager");
+	}
+
+	/**
 	 * Get by Id
 	 * @param Mixed $id - The document ID (String or ObjectId)
 	 */

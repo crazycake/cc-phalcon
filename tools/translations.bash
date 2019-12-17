@@ -7,7 +7,7 @@ PROJECT_PATH="$(dirname $(pwd))"
 
 # app namespace
 APP_NAME=${PWD##*/}
-CONTAINER_NAME="$(docker ps | grep -o '\w*_'$APP_NAME)"
+CONTAINER_NAME="$(docker ps | grep -o '\w*_'$APP_NAME -m 1)"
 
 # interrupt if error raises
 set -e
