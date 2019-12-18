@@ -166,7 +166,7 @@ class Document
 	 * @param BSON $bsonDate
 	 * @param String $format
 	 */
-	public static function toDateString($bsonDate, $format = "Y/m/d H:i:s")
+	public static function toDateString($bsonDate, $format = "Y-m-d H:i:s")
 	{
 		$tz = new \DateTimeZone(date_default_timezone_get());
 
