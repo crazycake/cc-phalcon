@@ -156,7 +156,7 @@ trait Mailer
 		// send!
 		$result = $sendgrid->client->mail()->send()->post($mail);
 
-		$body = json_encode($result->body() ?? "", JSON_UNESCAPED_SLASHES);
+		$body = json_encode($result->body() ?: "ok", JSON_UNESCAPED_SLASHES);
 
 		$this->logger->debug("Mailer::sendMessage -> mail message SENT to: ".json_encode($recipients)." [$body]");
 		return $result;
