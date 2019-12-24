@@ -52,7 +52,7 @@ class Document
 	/**
 	 * Get by Properties
 	 * @param Array $search - Search array
-	 * @param Array $opts - Options (associative array)
+	 * @param Array $opts - Options
 	 */
 	public static function getByProperties($search, $opts = [])
 	{
