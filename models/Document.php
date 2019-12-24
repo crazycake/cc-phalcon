@@ -174,6 +174,18 @@ class Document
 	}
 
 	/**
+	 * Get Id Date
+	 * @param Mixed $id
+	 * @param String $format
+	 */
+	public static function getIdDate($id, $format = "Y-m-d H:i:s")
+	{
+		$id = self::toObjectId($id);
+
+		return (new DateTime($id->getTimestamp() * 1000))->format($format);
+	}
+
+	/**
 	 * json to mongo object
 	 * @param Mixed[String, Array, Object] $json
 	 * @return object
