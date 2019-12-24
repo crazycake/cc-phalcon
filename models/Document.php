@@ -182,7 +182,7 @@ class Document
 	{
 		$id = self::toObjectId($id);
 
-		return (new DateTime($id->getTimestamp() * 1000))->format($format);
+		return self::toDateString(new \MongoDB\BSON\UTCDateTime($id->getTimestamp() * 1000), $format);
 	}
 
 	/**
