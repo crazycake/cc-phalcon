@@ -51,14 +51,14 @@ class Document
 
 	/**
 	 * Get by Properties
-	 * @param Array $props - Properties (associative array)
+	 * @param Array $search - Search array
 	 * @param Array $opts - Options (associative array)
 	 */
-	public static function getByProperties($props, $opts = [])
+	public static function getByProperties($search, $opts = [])
 	{
 		$mongo = static::getClient();
 
-		try { $object = $mongo->{static::$COLLECTION}->findOne($props, $opts); }
+		try { $object = $mongo->{static::$COLLECTION}->findOne($search, $opts); }
 
 		catch (\Exception $e) { $object = false; }
 
@@ -67,7 +67,7 @@ class Document
 	}
 
 	/**
-	 * Get Distinct Property Values
+	 * Get Property Distinct Values
 	 * @param String $prop - property name
 	 * @param Mixed $case - case flag [UPPER, LOWER]
 	 */
@@ -89,7 +89,7 @@ class Document
 	}
 
 	/**
-	 * Count
+	 * Count documents
 	 * @param Mixed $search - Array or String
 	 */
 	public static function count($search, $options = [])
@@ -100,14 +100,14 @@ class Document
 			$search = ["_id" => self::toObjectId($search)];
 
 		try { return $mongo->{static::$COLLECTION}->count($search, $options); }
+
 		catch (\Exception $e) { return 0; }
 	}
 
 	/**
-	 * Updates an array of properties
+	 * Updates a single document
 	 * @param Mixed $search - Array or String
 	 * @param Array $prop - The properties
-	 * @param String $key - The key index
 	 */
 	public static function updateProperties($search, $props)
 	{
@@ -131,6 +131,20 @@ class Document
 		$object_id = $insertion->getInsertedId();
 
 		return self::getById($object_id);
+	}
+
+	/**
+	 * Deletes a single document
+	 * @param Mixed $search - Array or String
+	 */
+	public static function deleteOne($search)
+	{
+		$mongo = static::getClient();
+
+		if (!is_array($search))
+			$search = ["_id" => self::toObjectId($search)];
+
+		return $mongo->{static::$COLLECTION}->deleteOne($search);
 	}
 
 	/**
