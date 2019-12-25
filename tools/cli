@@ -22,12 +22,21 @@ help() {
 	echo -e "\033[95m watch: Run JS bundler watcher daemon. Option --m for mailing (mjml).\033[0m"
 	echo -e "\033[95m build: Build JS bundle and compile 'po' translation files. \033[0m"
 	echo -e "\033[95m trans: Update translations 'po' file. \033[0m"
+	echo -e "\033[95m logs: Watch Docker logs. \033[0m"
 	echo -e "\033[95m php: Run app php CLI. \033[0m"
 	echo -e "\033[95m clean: Clean cache & logs.\033[0m"
 	echo -e "\033[97m > admin commands \033[0m"
 	echo -e "\033[95m core: Install/update core package (requires cc-phalcon project symbolic link). \033[0m"
 	echo -e "\033[95m cc-js: Links dev core.js to node_modules (requires cc-js project symbolic link). \033[0m"
 	exit
+}
+
+checkContainerIsRunning() {
+
+	# validate container is running
+	if [[ -z "$CONTAINER_NAME" ]]; then
+		echo -e "\033[31mRun application container first!\033[0m" && exit
+	fi
 }
 
 # commands
@@ -53,6 +62,8 @@ watch)
 
 build)
 
+	checkContainerIsRunning
+
 	echo -e "\033[95mBuilding bundle... \033[0m"
 
 	parcel build ui/app.js -d public/assets/ --cache-dir .parcel/ --no-source-maps --detailed-report
@@ -72,7 +83,16 @@ trans)
 	bash $TOOLS_PATH"translations.bash" find
 ;;
 
+logs)
+
+	checkContainerIsRunning
+
+	docker logs -f $CONTAINER_NAME
+;;
+
 php)
+
+	checkContainerIsRunning
 
 	echo -e "\033[95mRunning app php CLI [${@:2}] \033[0m"
 
@@ -80,6 +100,8 @@ php)
 ;;
 
 clean)
+
+	checkContainerIsRunning
 
 	docker exec -it $CONTAINER_NAME bash -c 'find /var/www/storage/cache /var/www/storage/logs -type f \( ! -iname ".*" \) -print0 | xargs -0 rm -f'
 

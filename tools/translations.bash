@@ -10,7 +10,12 @@ APP_NAME=${PWD##*/}
 CONTAINER_NAME="$(docker ps | grep -o '\w*_'$APP_NAME -m 1)"
 
 # interrupt if error raises
-set -e
+set -
+
+# validate container is running
+if [[ -z "$CONTAINER_NAME" ]]; then
+	echo -e "\033[31mRun application container first!\033[0m" && exit
+fi
 
 # help output
 help() {
