@@ -22,8 +22,8 @@ help() {
 	echo -e "\033[95m watch: Run JS bundler watcher daemon. Option --m for mailing (mjml).\033[0m"
 	echo -e "\033[95m build: Build JS bundle and compile 'po' translation files. \033[0m"
 	echo -e "\033[95m trans: Update translations 'po' file. \033[0m"
-	echo -e "\033[95m logs: Watch Docker logs. \033[0m"
 	echo -e "\033[95m php: Run app php CLI. \033[0m"
+	echo -e "\033[95m logs: Watch Docker logs. \033[0m"
 	echo -e "\033[95m clean: Clean cache & logs.\033[0m"
 	echo -e "\033[97m > admin commands \033[0m"
 	echo -e "\033[95m core: Install/update core package (requires cc-phalcon project symbolic link). \033[0m"
@@ -83,13 +83,6 @@ trans)
 	bash $TOOLS_PATH"translations.bash" find
 ;;
 
-logs)
-
-	checkContainerIsRunning
-
-	docker logs -f $CONTAINER_NAME
-;;
-
 php)
 
 	checkContainerIsRunning
@@ -97,6 +90,13 @@ php)
 	echo -e "\033[95mRunning app php CLI [${@:2}] \033[0m"
 
 	docker exec -it $CONTAINER_NAME bash -c "php /var/www/app/cli/cli.php main ${@:2}"
+;;
+
+logs)
+
+	checkContainerIsRunning
+
+	docker logs -f $CONTAINER_NAME
 ;;
 
 clean)
