@@ -58,28 +58,6 @@ trait Mailer
 	}
 
 	/**
-	 * Sends a system mail for exception alert
-	 * @param Mixed $e - An exception object or string message
-	 * @param Object $data - Informative appended data
-	 */
-	public function adminException($e = "", $data = [])
-	{
-		$data["name"]  = $this->config->name." - ".MODULE_NAME;
-		$data["email"] = $this->config->emails->sender;
-
-		$data["message"] = is_string($e) ? $e : $e->getMessage().". File: ".$e->getFile()." [".$e->getLine()."]";
-
-		if (!empty($data["trace"]))
-			$data["message"] .= "\nTrace:\n".json_encode($data["trace"], JSON_UNESCAPED_SLASHES);
-
-		// extend config
-		$this->MAILER_CONF = array_merge($this->MAILER_CONF, $data);
-
-		// sends the message
-		$this->sendMessage("contact", "App Error", (array)$this->config->emails->admins);
-	}
-
-	/**
 	 * Generates a new HTML styled with inline CSS as style attribute
 	 * DI must have simpleView service
 	 * @param String $template - The mail template view
