@@ -6,7 +6,6 @@
 
 namespace CrazyCake\Phalcon;
 
-require "AppLoader.php";
 require "AppServices.php";
 
 /**
@@ -14,13 +13,23 @@ require "AppServices.php";
  */
 abstract class App
 {
-	use AppLoader;
-
 	/**
 	 * Project Path
 	 * @var String
 	 */
 	const PROJECT_PATH = "/var/www/";
+
+	/**
+	 * Core namespace
+	 * @var String
+	 */
+	const CORE_NAMESPACE = "CrazyCake\\";
+
+	/**
+	 * App Core default libs
+	 * @var Array
+	 */
+	const CORE_LIBS = ["services", "controllers", "core", "helpers", "models", "account"];
 
 	/**
 	 * Config function
@@ -79,19 +88,141 @@ abstract class App
 
 		switch (MODULE_NAME) {
 
-			case "cli": $this->_startCli($argv);      break;
-			case "api": $this->_startApi($routes_fn); break;
-			default   : $this->_startMvc($routes_fn); break;
+			case "cli": $this->newCli($argv);      break;
+			case "api": $this->newApi($routes_fn); break;
+			default   : $this->newMvc($routes_fn); break;
 		}
+	}
+
+	/**
+	 * Get Module Model Class Name
+	 * @param String $key - The class module name uncamelize, example: "some_class"
+	 * @param Boolean $prefix - Append prefix (double slash)
+	 * @return String
+	 */
+	public static function getClass($key = "", $prefix = true)
+	{
+		// camelized class name
+		$class_name = \Phalcon\Text::camelize(\Phalcon\Text::uncamelize($key));
+
+		return $prefix ? "\\$class_name" : $class_name;
 	}
 
 	/* --------------------------------------------------- § -------------------------------------------------------- */
 
 	/**
+	 * Set Module Environment properties
+	 */
+	private function setEnvironment()
+	{
+		// default timezone
+		date_default_timezone_set(getenv("APP_TZ") ?: "America/Santiago");
+
+		// get env-vars
+		$env = getenv("APP_ENV") ?: "local";
+
+		// display errors?
+		ini_set("display_errors", (int)($env != "production"));
+		error_reporting(E_ALL);
+
+		$base_url = "http://localhost/";
+
+		// set BASE_URL for non CLI, CGI apps
+		if (php_sapi_name() != "cli") {
+
+			// set default host
+			if (!isset($_SERVER["HTTP_HOST"]))
+				$_SERVER["HTTP_HOST"] = "localhost";
+
+			// set scheme and host
+			$scheme   = $_SERVER["HTTP_X_FORWARDED_PROTO"] ?? "http"; //aws elb headers
+			$host     = $_SERVER["HTTP_HOST"].preg_replace("@/+$@", "", dirname($_SERVER["SCRIPT_NAME"]));
+			$base_url = "$scheme://$host";
+
+			// add missing slash?
+			if (substr($base_url, -1) != "/")
+				$base_url .= "/";
+
+			// remove default port 80 if set
+			$base_url = str_replace(":80/", "/", $base_url);
+		}
+
+		// set environment consts & self vars
+		define("APP_ENV", $env);
+		define("APP_BASE_URL", $base_url);
+	}
+
+	/**
+	 * Load composer libraries
+	 */
+	private function loadComposer()
+	{
+		if (is_file(COMPOSER_PATH."autoload.php"))
+			require COMPOSER_PATH."autoload.php";
+	}
+
+	/**
+	 * Load classes
+	 * @param Array $config - The config array
+	 */
+	private function loadClasses($config = [])
+	{
+		// 1. project dirs
+		$dirs = [
+			"cli"         => APP_PATH."cli/",
+			"controllers" => APP_PATH."controllers/",
+			"models"      => APP_PATH."models/"
+		];
+
+		$loader = $config["loader"] ?? [];
+
+		foreach ($loader as $dir) {
+
+			$paths      = explode("/", $dir, 2);
+			$dirs[$dir] = count($paths) > 1 ? PROJECT_PATH.$paths[0]."/".$paths[1]."/" : APP_PATH.$dir."/";
+		}
+
+		// inverted sort
+		arsort($dirs);
+
+		// 2. Load app directories (components)
+		$loader = new \Phalcon\Loader();
+		$loader->registerDirs($dirs);
+
+		// 3. Register core static modules
+		$this->loadCoreLibraries($loader);
+
+		//4.- Register phalcon loader
+		$loader->register();
+	}
+
+	/**
+	 * Loads static libraries.
+	 * Use Phar::running() to get path of current phar running
+	 * Use get_included_files() to see all loaded classes
+	 * @param Object $loader - Phalcon loader object
+	 */
+	private function loadCoreLibraries($loader)
+	{
+		// check if lib is runnning in phar file
+		$class_path = \Phar::running() ?: dirname(__DIR__);
+
+		// set library path => namespaces
+		$namespaces = [];
+
+		foreach (self::CORE_LIBS as $lib)
+			$namespaces[self::CORE_NAMESPACE.ucfirst($lib)] = "$class_path/$lib/";
+
+		// register namespaces
+		$loader->registerNamespaces($namespaces);
+		//var_dump($namespaces);exit;
+	}
+
+	/**
 	 * Starts an CLI App
 	 * @param Array $argv - Input arguments for CLI
 	 */
-	private function _startCli($argv = null)
+	private function newCli($argv = null)
 	{
 		// new cli app
 		$app = new \Phalcon\CLI\Console($this->di);
@@ -131,7 +262,7 @@ abstract class App
 	 * Starts an API App
 	 * @param Function $routes_fn - A routes function
 	 */
-	private function _startApi($routes_fn = null)
+	private function newApi($routes_fn = null)
 	{
 		// new micro app
 		$app = new \Phalcon\Mvc\Micro($this->di);
@@ -148,7 +279,7 @@ abstract class App
 	 * Starts an MVC App
 	 * @param Function $routes_fn - A routes function
 	 */
-	private function _startMvc($routes_fn = null)
+	private function newMvc($routes_fn = null)
 	{
 		// call routes function?
 		if (is_callable($routes_fn)) {
@@ -169,7 +300,7 @@ abstract class App
 
 		// handle the request
 		if (APP_ENV != "local")
-			ob_start([$this,"_minifyOutput"]);
+			ob_start([$this,"minifyOutput"]);
 
 		echo $output;
 	}
@@ -178,7 +309,7 @@ abstract class App
 	* Minifies HTML output
 	* @param String $buffer - The input buffer
 	*/
-	private function _minifyOutput($buffer)
+	private function minifyOutput($buffer)
 	{
 		$search  = ["/\>[^\S ]+/s", "/[^\S ]+\</s", "/(\s)+/s"];
 		$replace = [">","<","\\1"];
