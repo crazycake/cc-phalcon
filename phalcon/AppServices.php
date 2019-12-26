@@ -86,10 +86,10 @@ class AppServices
 	 */
 	private function _setMainServices(&$di)
 	{
-		// set the config
-		$di->setShared("config", $this->config);
-
 		$conf = $this->config;
+
+		// set the config
+		$di->setShared("config", $conf);
 
 		// the URL component is used to generate all kind of urls in the application
 		$di->setShared("url", function() use ($conf) {
@@ -133,13 +133,10 @@ class AppServices
 			return $security;
 		});
 
-		// extended encryption, cryptify adapter (cryptography helper)
-		if (class_exists("\CrazyCake\Helpers\Cryptify")) {
-
-			$di->setShared("cryptify", function() use ($conf) {
-				return new \CrazyCake\Helpers\Cryptify($conf->cryptKey ?? $conf->namespace);
-			});
-		}
+		// extended encryption (cryptography helper)
+		$di->setShared("cryptify", function() use ($conf) {
+			return new \CrazyCake\Helpers\Cryptify($conf->cryptKey ?? $conf->namespace);
+		});
 
 		// kint options
 		if (class_exists("\Kint")) {
@@ -212,8 +209,7 @@ class AppServices
 	private function _setTranslationServices(&$di)
 	{
 		// check if langs are set
-		if (empty($this->config->langs))
-			return;
+		if (empty($this->config->langs)) return;
 
 		$conf = $this->config;
 
