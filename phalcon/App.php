@@ -67,6 +67,7 @@ abstract class App
 
 		// set app configurations
 		$config = $this->config();
+
 		// set app version
 		$config["version"] = is_file(PROJECT_PATH."version") ? trim(file_get_contents(PROJECT_PATH."version")) : "1";
 
