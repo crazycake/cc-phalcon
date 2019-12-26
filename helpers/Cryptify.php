@@ -53,7 +53,7 @@ class Cryptify
 			return false;
 
 		// encode arrays as json
-		$data = (is_array($data) || is_object($data)) ? json_encode($data, JSON_UNESCAPED_SLASHES) : (string)$data;
+		$data = (is_array($data) || is_object($data)) ? \CrazyCake\Helpers\JSON::safeEncode($data) : (string)$data;
 
 		$encrypted = $this->crypt->encrypt($data);
 

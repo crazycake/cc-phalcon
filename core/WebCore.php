@@ -173,7 +173,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 
 		$output = JSON::safeEncode($store);
 
-		$js = "APP = ".json_encode($data, JSON_UNESCAPED_SLASHES).";\n";
+		$js = "APP = ".JSON::safeEncode($data, JSON_UNESCAPED_SLASHES).";\n";
 
 		$js .= "document.addEventListener('DOMContentLoaded', function() { init($output); }, false);\n";
 

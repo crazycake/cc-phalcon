@@ -90,7 +90,8 @@ class Document
 
 	/**
 	 * Count documents
-	 * @param Mixed $search - Array or String
+	 * @param Mixed $search - Search array or string id
+	 * @param Array $options - Options
 	 */
 	public static function count($search, $options = [])
 	{
@@ -106,7 +107,7 @@ class Document
 
 	/**
 	 * Updates a single document
-	 * @param Mixed $search - Array or String
+	 * @param Mixed $search - Search array or string id
 	 * @param Array $prop - The properties
 	 */
 	public static function updateProperties($search, $props)
@@ -135,7 +136,7 @@ class Document
 
 	/**
 	 * Deletes a single document
-	 * @param Mixed $search - Array or String
+	 * @param Mixed $search - Search array or string id
 	 */
 	public static function deleteOne($search)
 	{
@@ -207,7 +208,7 @@ class Document
 	public static function jsonToMongoObject($json)
 	{
 		if (!is_string($json))
-			$json = json_encode($json);
+			$json = \CrazyCake\Helpers\JSON::safeEncode($json);
 
 		$bson = \MongoDB\BSON\fromJSON($json);
 
