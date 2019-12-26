@@ -104,9 +104,9 @@ abstract class App
 	public static function getClass($key = "", $prefix = true)
 	{
 		// camelized class name
-		$class_name = \Phalcon\Text::camelize(\Phalcon\Text::uncamelize($key));
+		$name = \Phalcon\Text::camelize(\Phalcon\Text::uncamelize($key));
 
-		return $prefix ? "\\$class_name" : $class_name;
+		return $prefix ? "\\$name" : $name;
 	}
 
 	/* --------------------------------------------------- § -------------------------------------------------------- */
@@ -132,8 +132,7 @@ abstract class App
 		if (php_sapi_name() != "cli") {
 
 			// set default host
-			if (!isset($_SERVER["HTTP_HOST"]))
-				$_SERVER["HTTP_HOST"] = "localhost";
+			if (!isset($_SERVER["HTTP_HOST"])) $_SERVER["HTTP_HOST"] = "localhost";
 
 			// set scheme and host
 			$scheme   = $_SERVER["HTTP_X_FORWARDED_PROTO"] ?? "http"; //aws elb headers
@@ -141,8 +140,7 @@ abstract class App
 			$base_url = "$scheme://$host";
 
 			// add missing slash?
-			if (substr($base_url, -1) != "/")
-				$base_url .= "/";
+			if (substr($base_url, -1) != "/") $base_url .= "/";
 
 			// remove default port 80 if set
 			$base_url = str_replace(":80/", "/", $base_url);
