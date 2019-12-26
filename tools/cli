@@ -25,7 +25,7 @@ help() {
 	echo -e "\033[95m php: Run app php CLI. \033[0m"
 	echo -e "\033[95m logs: Watch Docker logs. \033[0m"
 	echo -e "\033[95m clean: Clean cache & logs.\033[0m"
-	echo -e "\033[97m > admin commands \033[0m"
+	echo -e "\033[97m > maintainer commands \033[0m"
 	echo -e "\033[95m core: Install/update core package (requires cc-phalcon project). \033[0m"
 	echo -e "\033[95m cc-js: Links dev core.js to node_modules (requires cc-js project). \033[0m"
 	exit
