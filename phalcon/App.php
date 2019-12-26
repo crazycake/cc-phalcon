@@ -71,6 +71,10 @@ abstract class App
 		// set app version
 		$config["version"] = is_file(PROJECT_PATH."version") ? trim(file_get_contents(PROJECT_PATH."version")) : "1";
 
+		// load sentry
+		if (!empty($config["sentry"]) && class_exists('\Sentry\init'))
+			\Sentry\init(["dsn" => $config["sentry"], "version" => $config["version"]]);
+
 		// app classes (loader)
 		$this->loadClasses($config);
 
