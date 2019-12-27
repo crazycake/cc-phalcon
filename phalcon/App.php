@@ -72,8 +72,8 @@ abstract class App
 		$config["version"] = is_file(PROJECT_PATH."version") ? trim(file_get_contents(PROJECT_PATH."version")) : "1";
 
 		// load sentry
-		if (!empty($config["sentry"]) && class_exists('\Sentry'))
-			\Sentry\init(["dsn" => $config["sentry"], "version" => $config["version"], "environment" => APP_ENV]);
+		if (!empty($config["sentry"]) && class_exists('\Sentry\SentrySdk'))
+			\Sentry\init(["dsn" => $config["sentry"], "release" => $config["version"], "environment" => APP_ENV]);
 
 		// app classes (loader)
 		$this->loadClasses($config);
@@ -105,11 +105,13 @@ abstract class App
 	 */
 	public static function handleException($e)
 	{
-		if ((\Phalcon\DI::getDefault())->has("stdout")) (\Phalcon\DI::getDefault())->getShared("stdout")->error($e->getMessage());
+		$di = \Phalcon\DI::getDefault();
 
-		if ((\Phalcon\DI::getDefault())->has("logger")) (\Phalcon\DI::getDefault())->getShared("logger")->error($e->getMessage());
+		if ($di && $di->has("stdout")) $di->getShared("stdout")->error($e->getMessage());
 
-		if (class_exists('\Sentry')) \Sentry\captureException($e);
+		if ($di && $di->has("logger")) $di->getShared("logger")->error($e->getMessage());
+
+		if (class_exists('\Sentry\SentrySdk')) \Sentry\captureException($e);
 
 		if (APP_ENV != "production") die($e->getMessage());
 	}
