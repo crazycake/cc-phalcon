@@ -190,6 +190,8 @@ abstract class App
 	{
 		if (is_file(COMPOSER_PATH."autoload.php"))
 			require COMPOSER_PATH."autoload.php";
+
+		//ss(get_declared_classes());exit;
 	}
 
 	/**
@@ -246,7 +248,7 @@ abstract class App
 
 		// register namespaces
 		$loader->registerNamespaces($namespaces);
-		//var_dump($namespaces);exit;
+		//ss($namespaces);
 	}
 
 	/**
