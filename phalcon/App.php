@@ -111,7 +111,7 @@ abstract class App
 
 		if ($di && $di->has("logger")) $di->getShared("logger")->error($e->getMessage());
 
-		if (class_exists('\Sentry\SentrySdk')) \Sentry\captureException($e);
+		if (APP_ENV == "production" && class_exists('\Sentry\SentrySdk')) \Sentry\captureException($e);
 
 		if (APP_ENV != "production") die($e->getMessage());
 	}
