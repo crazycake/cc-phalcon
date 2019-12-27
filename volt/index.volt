@@ -3,6 +3,9 @@
  * Root Layout. Phalcon main template.
  * @author Nicolas Pulido <nicolas.pulido@crazycake.tech>
  */
+
+if (empty($client)) die("400 Bad Request");
+
 ?>
 <!DOCTYPE html>
 <html lang="{{ client.lang }}">
