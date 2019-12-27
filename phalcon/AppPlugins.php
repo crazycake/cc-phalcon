@@ -15,20 +15,19 @@ class ExceptionsPlugin extends \Phalcon\Mvc\User\Plugin
 	 * This action is executed before a exception ocurrs.
 	 * @param Event $event - The Phalcon event
 	 * @param Dispatcher $dispatcher - The Phalcon dispatcher
-	 * @param Exception $exception - Any exception
+	 * @param Exception $e - The exception
 	 * @return Boolean
 	 */
-	public function beforeException(\Phalcon\Events\Event $event, \Phalcon\Mvc\Dispatcher $dispatcher, \Exception $exception)
+	public function beforeException(\Phalcon\Events\Event $event, \Phalcon\Mvc\Dispatcher $dispatcher, \Exception $e)
 	{
 		$di      = $dispatcher->getDI();
 		$forward = ["controller" => "error", "action" => "internal"];
-		$log     = true;
+		$report  = true;
 
 		// Handle Phalcon Exception
-		if ($exception instanceof \Phalcon\Mvc\Dispatcher\Exception) {
+		if ($e instanceof \Phalcon\Mvc\Dispatcher\Exception) {
 
-
-			switch ($exception->getCode()) {
+			switch ($e->getCode()) {
 
 				case \Phalcon\Dispatcher::EXCEPTION_NO_DI:
 				case \Phalcon\Dispatcher::EXCEPTION_CYCLIC_ROUTING:
@@ -38,17 +37,21 @@ class ExceptionsPlugin extends \Phalcon\Mvc\User\Plugin
 				case \Phalcon\Dispatcher::EXCEPTION_INVALID_PARAMS:
 				case \Phalcon\Dispatcher::EXCEPTION_INVALID_HANDLER:
 
-					$forward["action"] = "badRequest"; break;
+					$forward["action"] = "badRequest";
+					break;
 
 				case \Phalcon\Dispatcher::EXCEPTION_HANDLER_NOT_FOUND:
 				case \Phalcon\Dispatcher::EXCEPTION_ACTION_NOT_FOUND:
 
-					$forward["action"] = "notFound"; $log = false; break;
+					$forward["action"] = "notFound";
+					$report = false;
+					break;
 			}
 		}
 
-		// log error?
-		if ($log) $di->getShared("logger")->error("App Exception: ".$exception->getMessage()." File: ".$exception->getFile().". Line: ".$exception->getLine());
+		// report error?
+		if ($report)
+			\CrazyCake\Phalcon\App::handleException(new \Exception("Phalcon Exception: '".$e->getMessage()."' ".$e->getFile()." [".$e->getLine()."]", $e->getCode()));
 
 		// handle exception and forward to internal error page
 		$dispatcher->forward($forward);

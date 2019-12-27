@@ -72,8 +72,8 @@ abstract class App
 		$config["version"] = is_file(PROJECT_PATH."version") ? trim(file_get_contents(PROJECT_PATH."version")) : "1";
 
 		// load sentry
-		if (!empty($config["sentry"]) && class_exists('\Sentry\init'))
-			\Sentry\init(["dsn" => $config["sentry"], "version" => $config["version"]]);
+		if (!empty($config["sentry"]) && class_exists('\Sentry'))
+			\Sentry\init(["dsn" => $config["sentry"], "version" => $config["version"], "environment" => APP_ENV]);
 
 		// app classes (loader)
 		$this->loadClasses($config);
@@ -100,6 +100,21 @@ abstract class App
 	}
 
 	/**
+	 * Handle Exception
+	 * @param Exception $e - The exception
+	 */
+	public static function handleException($e)
+	{
+		if ((\Phalcon\DI::getDefault())->has("stdout")) (\Phalcon\DI::getDefault())->getShared("stdout")->error($e->getMessage());
+
+		if ((\Phalcon\DI::getDefault())->has("logger")) (\Phalcon\DI::getDefault())->getShared("logger")->error($e->getMessage());
+
+		if (class_exists('\Sentry')) \Sentry\captureException($e);
+
+		if (APP_ENV != "production") die($e->getMessage());
+	}
+
+	/**
 	 * Get Module Model Class Name
 	 * @param String $key - The class module name uncamelize, example: "some_class"
 	 * @param Boolean $prefix - Append prefix (double slash)
@@ -113,6 +128,7 @@ abstract class App
 		return $prefix ? "\\$name" : $name;
 	}
 
+
 	/* --------------------------------------------------- § -------------------------------------------------------- */
 
 	/**
@@ -123,13 +139,25 @@ abstract class App
 		// default timezone
 		date_default_timezone_set(getenv("APP_TZ") ?: "America/Santiago");
 
-		// get env-vars
-		$env = getenv("APP_ENV") ?: "local";
-
-		// display errors?
-		ini_set("display_errors", (int)($env != "production"));
+		// error handler
 		error_reporting(E_ALL);
 
+		// convert warnings/notices to exceptions
+		set_error_handler(function ($errno, $errstr, $errfile, $errline) {
+
+			self::handleException(new \Exception("App Exception: '$errstr' $errfile [$errline]", $errno));
+		});
+
+		// fatal errors
+		register_shutdown_function(function() {
+
+			$e = (object)error_get_last();
+
+			if (!empty($e->message)) self::handleException(new \Exception("Fatal Exception: '$e->message' $e->file [$e->line]", E_CORE_ERROR));
+		});
+
+		// get env-vars
+		$env      = getenv("APP_ENV") ?: "local";
 		$base_url = "http://localhost/";
 
 		// set BASE_URL for non CLI, CGI apps
