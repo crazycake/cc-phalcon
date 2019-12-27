@@ -20,7 +20,6 @@ class ExceptionsPlugin extends \Phalcon\Mvc\User\Plugin
 	 */
 	public function beforeException(\Phalcon\Events\Event $event, \Phalcon\Mvc\Dispatcher $dispatcher, \Exception $e)
 	{
-		$di      = $dispatcher->getDI();
 		$forward = ["controller" => "error", "action" => "internal"];
 		$report  = true;
 

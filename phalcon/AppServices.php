@@ -135,6 +135,7 @@ class AppServices
 
 		// extended encryption (cryptography helper)
 		$di->setShared("cryptify", function() use ($conf) {
+
 			return new \CrazyCake\Helpers\Cryptify($conf->cryptKey ?? $conf->namespace);
 		});
 
@@ -318,6 +319,7 @@ class AppServices
 	{
 		// setting up the view component
 		$engines = [
+
 			".volt" => function($view, $di_instance) {
 
 				// instance a new volt engine
@@ -392,7 +394,7 @@ class AppServices
 		//++ resizedImagePath
 		$compiler->addFunction("resized_image_path", function($resolvedArgs, $exprArgs) {
 
-			return "CrazyCake\Helpers\Images::resizedImagePath(".$resolvedArgs.")";
+			return "\CrazyCake\Helpers\Images::resizedImagePath($resolvedArgs)";
 		});
 	}
 }
