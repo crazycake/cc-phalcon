@@ -72,7 +72,7 @@ abstract class App
 		$config["version"] = is_file(PROJECT_PATH."version") ? trim(file_get_contents(PROJECT_PATH."version")) : "1";
 
 		// load sentry
-		if (!empty($config["sentry"]) && class_exists('\Sentry\SentrySdk'))
+		if (APP_ENV == "production" && !empty($config["sentry"]) && class_exists('\Sentry\SentrySdk'))
 			\Sentry\init(["dsn" => $config["sentry"], "release" => $config["version"], "environment" => APP_ENV]);
 
 		// app classes (loader)
