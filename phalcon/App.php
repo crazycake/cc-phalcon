@@ -72,7 +72,7 @@ abstract class App
 		$config["version"] = is_file(PROJECT_PATH."version") ? trim(file_get_contents(PROJECT_PATH."version")) : "1";
 
 		// load sentry
-		if (APP_ENV == "production" && !empty($config["sentry"]) && class_exists('\Sentry\SentrySdk'))
+		if (APP_ENV != "local" && !empty($config["sentry"]) && class_exists('\Sentry\SentrySdk'))
 			\Sentry\init(["dsn" => $config["sentry"], "release" => $config["version"], "environment" => APP_ENV]);
 
 		// app classes (loader)
@@ -111,7 +111,7 @@ abstract class App
 
 		if ($di && $di->has("logger")) $di->getShared("logger")->error($e->getMessage());
 
-		if (APP_ENV == "production" && class_exists('\Sentry\SentrySdk')) \Sentry\captureException($e);
+		if (APP_ENV != "local" && class_exists('\Sentry\SentrySdk')) \Sentry\captureException($e);
 
 		if (APP_ENV != "production") die($e->getMessage());
 	}
