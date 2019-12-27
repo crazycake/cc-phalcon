@@ -233,16 +233,16 @@ abstract class App
 	 * Use get_included_files() to see all loaded classes
 	 * @param Object $loader - Phalcon loader object
 	 */
-	private function loadCoreLibraries($loader)
+	private function loadCoreLibraries(&$loader)
 	{
 		// check if lib is runnning in phar file
-		$class_path = \Phar::running() ?: dirname(__DIR__);
+		$path = \Phar::running() ?: dirname(__DIR__);
 
 		// set library path => namespaces
 		$namespaces = [];
 
 		foreach (self::CORE_LIBS as $lib)
-			$namespaces[self::CORE_NAMESPACE.ucfirst($lib)] = "$class_path/$lib/";
+			$namespaces[self::CORE_NAMESPACE.ucfirst($lib)] = "$path/$lib/";
 
 		// register namespaces
 		$loader->registerNamespaces($namespaces);
@@ -321,7 +321,7 @@ abstract class App
 			// apply a routes function
 			$routes_fn($router);
 
-			$this->di->set("router", function() use (&$router) { return $router; });
+			$this->di->set("router", $router);
 		}
 
 		$app = new \Phalcon\Mvc\Application($this->di);
