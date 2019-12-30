@@ -89,6 +89,18 @@ class Document
 	}
 
 	/**
+	 * Find documents
+	 * @param Mixed $search - Search array or string id
+	 * @param Array $options - Options
+	 */
+	public static function find($search, $options = [])
+	{
+		$mongo = static::getClient();
+
+		return $mongo->{static::$COLLECTION}->find($search, $options)->toArray();
+	}
+
+	/**
 	 * Count documents
 	 * @param Mixed $search - Search array or string id
 	 * @param Array $options - Options
