@@ -93,7 +93,7 @@ class Document
 	 * @param Mixed $search - Search array or string id
 	 * @param Array $options - Options
 	 */
-	public static function find($search, $options = [])
+	public static function find($search = [], $options = [])
 	{
 		$mongo = static::getClient();
 
@@ -105,7 +105,7 @@ class Document
 	 * @param Mixed $search - Search array or string id
 	 * @param Array $options - Options
 	 */
-	public static function count($search, $options = [])
+	public static function count($search = [], $options = [])
 	{
 		$mongo = static::getClient();
 
