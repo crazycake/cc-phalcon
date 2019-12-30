@@ -52,13 +52,13 @@ class Document
 	/**
 	 * Get by Properties
 	 * @param Array $search - Search array
-	 * @param Array $opts - Options
+	 * @param Array $options - Options
 	 */
-	public static function getByProperties($search, $opts = [])
+	public static function getByProperties($search, $options = [])
 	{
 		$mongo = static::getClient();
 
-		try { $object = $mongo->{static::$COLLECTION}->findOne($search, $opts); }
+		try { $object = $mongo->{static::$COLLECTION}->findOne($search, $options); }
 
 		catch (\Exception $e) { $object = false; }
 
