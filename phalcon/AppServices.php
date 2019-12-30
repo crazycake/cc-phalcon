@@ -119,7 +119,9 @@ class AppServices
 
 			$stream = new \Phalcon\Logger\Adapter\Stream("php://stdout");
 
-			$stream->setFormatter(new \Phalcon\Logger\Formatter\Line('[%date%][%type%]['.$_SERVER['SERVER_ADDR'].'] %message%'));
+			$ip = php_sapi_name() == "cli" ? "CLI" : \CrazyCake\Core\WebCore::getClientIP();
+
+			$stream->setFormatter(new \Phalcon\Logger\Formatter\Line("[%date%][%type%][$ip] %message%"));
 
 			return $stream;
 		});
