@@ -95,7 +95,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 	protected function redirectTo($uri = "/", $code = 302)
 	{
 		// set url
-		$url = substr($uri, 0, 4) == "http" ? $uri : $this->baseUrl($uri[0] == "/" ? substr($uri, 1) : $uri);
+		$url = substr($uri, 0, 4) == "http" ? $uri : ($this->baseUrl($uri[0] == "/" ? substr($uri, 1) : $uri));
 		// ss($url);
 
 		// validate URI
