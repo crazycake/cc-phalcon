@@ -36,6 +36,7 @@ class Document
 	/**
 	 * Get by Id
 	 * @param Mixed $id - The document ID (String or ObjectId)
+	 * @param Array $options - Options
 	 */
 	public static function getById($id, $options = [])
 	{
