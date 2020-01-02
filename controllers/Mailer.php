@@ -141,7 +141,7 @@ trait Mailer
 	 * @param Object $mail - The sendgrid mail object
 	 * @return Array The parsed array data
 	 */
-	private function _parseAttachments($attachments = null, &$mail)
+	private function _parseAttachments($attachments = [], &$mail)
 	{
 		if (empty($attachments)) return;
 
