@@ -32,9 +32,10 @@ trait Mailer
 	public function initMailer($conf = [])
 	{
 		$defaults = [
-			"from_name"  => $this->config->name,
-			"reply_name" => $this->config->name,
-			"reply_to"   => $this->config->emails->support ?? $this->config->emails->sender
+			"from_name"      => $this->config->name,
+			"reply_name"     => $this->config->name,
+			"reply_to"       => $this->config->emails->support ?? $this->config->emails->sender,
+			"click_tracking" => true
 		];
 
 		// merge confs
@@ -108,33 +109,25 @@ trait Mailer
 		if (empty($subject))
 			$subject = $this->config->name;
 
+		$mail = new \SendGrid\Mail\Mail();
+
+		$mail->setFrom($this->config->emails->sender, $this->MAILER_CONF["from_name"]);
+		$mail->setReplyTo($this->MAILER_CONF["reply_to"], $this->MAILER_CONF["reply_name"]);
+		$mail->setSubject($subject);
+		$mail->addContent("text/html", $this->inlineHtml($template));
+		$mail->setClickTracking($this->MAILER_CONF["click_tracking"], $this->MAILER_CONF["click_tracking"]);
+
+		foreach ($recipients as $email)
+			$mail->addTo($email);
+
 		$sendgrid = new \SendGrid($this->config->sendgrid->apiKey);
-
-		$from     = new \SendGrid\Email($this->MAILER_CONF["from_name"],  $this->config->emails->sender);
-
-		$reply_to = new \SendGrid\ReplyTo($this->MAILER_CONF["reply_to"], $this->MAILER_CONF["reply_name"]);
-
-		$content  = new \SendGrid\Content("text/html", $this->inlineHtml($template));
-
-		$mail     = new \SendGrid\Mail($from, $subject, (new \SendGrid\Email(null, $recipients[0])), $content);
-
-		$mail->setReplyTo($reply_to);
-
-		// add recipients
-		foreach ($recipients as $i => $email) {
-
-			if (empty($i)) continue;
-
-			$mail->personalization[0]->addTo(new \SendGrid\Email(null, $email));
-		}
 
 		// parse attachments
 		$this->_parseAttachments($attachments, $mail);
 
 		// send!
-		$result = $sendgrid->client->mail()->send()->post($mail);
-
-		$body = json_encode($result->body() ?: "ok", JSON_UNESCAPED_SLASHES);
+		$result = $sendgrid->send($mail);
+		$body   = json_encode($result->body() ?: "ok", JSON_UNESCAPED_SLASHES);
 
 		$this->logger->debug("Mailer::sendMessage -> mail message SENT to: ".json_encode($recipients)." [$body]");
 		return $result;
@@ -157,7 +150,8 @@ trait Mailer
 			if (empty($attachment["name"]) || empty($attachment["binary"])) continue;
 
 			// attachment
-			$att = new \SendGrid\Attachment();
+			$att = new \SendGrid\Mail\Attachment();
+
 			$att->setDisposition("attachment");
 			$att->setContentId($attachment["id"] ?? uniqid());
 			$att->setType($attachment["type"] ?? null);
