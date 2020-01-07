@@ -283,7 +283,7 @@ trait Uploader
 				"accessKey"     => $this->config->aws->accessKey,
 				"secretKey"     => $this->config->aws->secretKey,
 				"bucketName"    => $this->config->aws->bucketName,
-				"bucketBaseUri" => ($this->config->aws->bucketBaseUri ?? "/temp").strtolower($uri)
+				"bucketBaseUri" => ($this->config->aws->bucketBaseUri ?? "temp/").strtolower($uri)
 			];
 
 			// set job (img-api)
