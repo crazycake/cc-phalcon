@@ -278,9 +278,13 @@ trait Uploader
 			if (empty($conf["resize"]) && empty($conf["s3push"]))
 				continue;
 
-			// set bucket base uri
-			$conf["s3"] = (array)$this->config->aws->s3;
-			$conf["s3"]["bucketBaseUri"] .= strtolower($uri);
+			// set aws data
+			$conf["s3"] = [
+				"accessKey"     => $this->config->aws->accessKey,
+				"secretKey"     => $this->config->aws->secretKey,
+				"bucketName"    => $this->config->aws->bucketName,
+				"bucketBaseUri" => ($this->config->aws->bucketBaseUri ?? "/temp").strtolower($uri)
+			];
 
 			// set job (img-api)
 			$job = !empty($conf["resize"]) ? "resize" : "s3push";
