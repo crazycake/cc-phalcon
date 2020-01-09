@@ -15,7 +15,7 @@ if (empty($client)) die("400 Bad Request");
 
 		{# viewport #}
 		{% if client.isMobile %}
-			<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" vmid="viewport" data-vue-meta="true" />
+			<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" vmid="viewport" data-vue-meta="1" />
 
 			{# apple metas #}
 			<meta name="apple-mobile-web-app-capable" content="yes" />
@@ -45,7 +45,9 @@ if (empty($client)) die("400 Bad Request");
 		{% endif %}
 
 		{# document metas #}
-		<meta name="description" content="{{ metas['description'] is not empty ? metas['description'] : config.name }}" vmid="description" data-vue-meta="true" />
+		{% if metas['description'] is not empty %}
+			<meta name="description" content="{{ metas['description'] }}" vmid="description" data-vue-meta="1" />
+		{% endif %}
 
 		<meta name="author" content="{{ metas['author'] is not empty ? metas['author'] : 'CrazyCake Technologies' }}" />
 
