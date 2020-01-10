@@ -130,10 +130,10 @@ class Cryptify
 
 		for ($k = 0; $k < $length; $k++) {
 
-			$num  = chr(rand(48,57));
-			$char = strtoupper(chr(rand(97,122)));
-			$p    = rand(1,2);
-			// append
+			$num  = chr(rand(48, 57));
+			$char = strtoupper(chr(rand(97, 122)));
+			$p    = rand(1, 2);
+
 			$code .= ($p == 1) ? $num : $char;
 		}
 
@@ -142,5 +142,20 @@ class Cryptify
 		$replacers    = ["G", "Y", "1", "X", "3"];
 
 		return str_replace($placeholders, $replacers, $code);
+	}
+
+	/**
+	 * Generates a random numeric code
+	 * @param Int $length - The code length
+	 * @return String
+	 */
+	public function newNumeric($length = 8)
+	{
+		$code = "";
+
+		for ($k = 0; $k < $length; $k++)
+			$code .= chr(rand(48, 57));
+
+		return $code;
 	}
 }
