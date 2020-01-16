@@ -89,9 +89,7 @@ trait Responser
 			$this->response->setHeader("Content-Disposition", 'attachment; filename="'.basename($filename).'"');
 
 		$this->response->setContentType($mime_type);
-		// content must be set after content type
-		$this->response->setContent($data);
-
+		$this->response->setContent($data); // content must be set after content type
 		$this->response->send();
 		die();
 	}
