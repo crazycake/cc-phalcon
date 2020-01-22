@@ -118,8 +118,6 @@ class Forms
 		return preg_replace('/\b((https?|ftp|file):\/\/|www\.)[-A-Z0-9+&@#\/%?=~_|$!:,.;]*[A-Z0-9+&@#\/%=~_|$]/i', $replace, $str);
 	}
 
-	/* --------------------------------------------------- § -------------------------------------------------------- */
-
 	/**
 	 * Validates Rut Verification Digit
 	 * @param String $R - The input rut without VD

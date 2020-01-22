@@ -130,9 +130,6 @@ abstract class App
 		return $prefix ? "\\$name" : $name;
 	}
 
-
-	/* --------------------------------------------------- § -------------------------------------------------------- */
-
 	/**
 	 * Set Module Environment properties
 	 */

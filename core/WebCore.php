@@ -85,8 +85,6 @@ abstract class WebCore extends BaseCore implements WebSecurity
 			$this->onBeforeRender();
 	}
 
-	/* --------------------------------------------------- § -------------------------------------------------------- */
-
 	/**
 	 * Redirect to given URI as GET method
 	 * @param String $uri - The URI to redirect

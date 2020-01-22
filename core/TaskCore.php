@@ -32,8 +32,6 @@ class TaskCore extends Task
 		$this->colorize("-- § --", "OK");
 	}
 
-	/* --------------------------------------------------- § -------------------------------------------------------- */
-
 	/**
 	 * Outputs app configuration in JSON format
 	 * @param Array $args - The args array, the 1st arg is the filter config property
@@ -138,8 +136,6 @@ class TaskCore extends Task
 
 		$this->colorize("Compiled $i files.", "OK");
 	}
-
-	/* --------------------------------------------------- § -------------------------------------------------------- */
 
 	/**
 	 * Print Output and finish script
