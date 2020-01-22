@@ -60,8 +60,8 @@ trait Mailer
 	}
 
 	/**
-	 * Generates a new HTML styled with inline CSS as style attribute
-	 * DI must have simpleView service
+	 * Generates a new HTML styled with inline CSS as style attribute.
+	 * DI must have simpleView service.
 	 * @param String $template - The mail template view
 	 * @return String
 	 */
@@ -133,8 +133,6 @@ trait Mailer
 		$this->logger->debug("Mailer::sendMessage -> mail message SENT to: ".json_encode($recipients)." [$body]");
 		return $result;
 	}
-
-	/* --------------------------------------------------- § -------------------------------------------------------- */
 
 	/**
 	 * Parse attachments to be sended to sendgrid API service

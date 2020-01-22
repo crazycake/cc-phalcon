@@ -1,7 +1,7 @@
 <?php
 /**
- * Requester Trait - Can make HTTP requests
- * Requires CoreController, Guzzle library (composer)
+ * Requester Trait - Can make HTTP requests.
+ * Requires CoreController, Guzzle library (composer).
  * @author Nicolas Pulido <nicolas.pulido@crazycake.tech>
  */
 
@@ -77,8 +77,6 @@ trait Requester
 			return ["error" => $e->getMessage()];
 		}
 	}
-
-	/* --------------------------------------------------- § -------------------------------------------------------- */
 
 	/**
 	 * GET request

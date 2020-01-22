@@ -1,6 +1,6 @@
 <?php
 /**
- * Account Auth Trait, common actions for account authorization (login, register with activation)
+ * Account Auth Trait, common actions for account authorization (login, register with activation).
  * @author Nicolas Pulido <nicolas.pulido@crazycake.tech>
  */
 

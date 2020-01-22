@@ -185,6 +185,7 @@ trait Uploader
 
 	/**
 	 * Action - Get file by encrypted path
+	 * @param String $hash - The hash to decode
 	 */
 	public function fileAction($hash = "")
 	{
@@ -208,6 +209,7 @@ trait Uploader
 
 	/**
 	 * Removes a file in uploader folder
+	 * @param String $filename - The filename to remove
 	 */
 	protected function removeStoredFile($filename)
 	{
@@ -258,8 +260,8 @@ trait Uploader
 	/**
 	 * Push uploaded files to Image API
 	 * @param String $uri - The file uri to append
-	 * @return Array - The saved uploaded files
-	 * @return Array - Optional files
+	 * @param Array files - Optional files
+	 * @return Array
 	 */
 	protected function pushToImageApi($uri = "", $files = null)
 	{

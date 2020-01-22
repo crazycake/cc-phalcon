@@ -88,6 +88,8 @@ trait Translations
 
 	/**
 	 * Array mergue with haystack
+	 * @param Array $source - The input source
+	 * @param Array $haystack - The haystack array
 	 */
 	private static function mergue(&$source, $haystack)
 	{

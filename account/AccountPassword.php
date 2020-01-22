@@ -1,6 +1,6 @@
 <?php
 /**
- * Account Password Trait
+ * Account Password Trait.
  * @author Nicolas Pulido <nicolas.pulido@crazycake.tech>
  */
 

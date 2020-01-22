@@ -1,6 +1,6 @@
 <?php
 /**
- * Account Token
+ * Account Token. Handles tokens for activation and password recovery.
  * @author Nicolas Pulido <nicolas.pulido@crazycake.tech>
  */
 

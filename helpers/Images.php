@@ -1,7 +1,7 @@
 <?php
 /**
- * Images Helper
- * Requires Imagick PHP extension
+ * Images Helper.
+ * Requires Imagick PHP extension.
  * @author Nicolas Pulido <nicolas.pulido@crazycake.tech>
  */
 
@@ -14,8 +14,7 @@ class Images
 {
 	/**
 	 * Get resized image path.
-	 * Example: ./media/dj/IMAGE1.jpg?v=5
-	 *          ./media/dj/IMAGE1_TH.jpg?v=5
+	 * Examples: `./media/dj/IMAGE1.jpg?v=5` `./media/dj/IMAGE1_TH.jpg?v=5`
 	 * @param String $path - An image URL
 	 * @param String $key - The suffix key to append
 	 * @return String
@@ -35,7 +34,7 @@ class Images
 	 * Resize input image with config params.
 	 * @param String $filepath - The input filename
 	 * @param Array $conf - The key file configuration
-	 * @return Int total saved
+	 * @return Integer total saved
 	 */
 	public static function resize($filepath = "", $conf = [])
 	{
@@ -102,7 +101,7 @@ class Images
 
 				$resized[] = $new_file;
 			}
-			catch (\Phalcon\Exception | \Exception $e) {
+			catch (\Exception | \Phalcon\Exception $e ) {
 
 				(\Phalcon\DI::getDefault())->getShared("logger")->error("Images::resize -> failed resizing image $key: ".$e->getMessage());
 			}
