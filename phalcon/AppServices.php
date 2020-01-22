@@ -22,7 +22,7 @@ class AppServices
 
 	/**
 	 * Constructor
-	 * @param Object $loaderObj - The app loader instance
+	 * @param Object $config - The app config
 	 */
 	public function __construct($config)
 	{

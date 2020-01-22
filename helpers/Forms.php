@@ -37,7 +37,8 @@ class Forms
 
 	/**
 	 * Formats chilean RUT, with dots too
-	 * @param  string $rut - The input rut
+	 * @param  String $rut - The input rut
+	 * @param  Boolean $dots - Use dots for format
 	 * @return String
 	 */
 	public static function formatRut($rut, $dots = false)
@@ -49,6 +50,7 @@ class Forms
 
 	/**
 	 * Formats name and filter weird chars from string.
+	 * @param  String $name - The input name
 	 * @return Mixed
 	 */
 	public static function formatName($name = "")
@@ -65,7 +67,7 @@ class Forms
 
 	/**
 	 * Formats email
-	 * @param  string $email - The input email
+	 * @param  String $email - The input email
 	 * @return String
 	 */
 	public static function formatEmail($email)
