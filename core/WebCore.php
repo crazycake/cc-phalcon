@@ -150,6 +150,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 	/**
 	 * Load js application
 	 * @param Array $store - The store data
+	 * @return String
 	 */
 	protected function initJsApp($store = null)
 	{
@@ -182,6 +183,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 
 	/**
 	 * Get client IP
+	 * @return String
 	 */
 	public static function getClientIP()
 	{

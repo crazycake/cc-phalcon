@@ -60,10 +60,10 @@ abstract class App
 		define("APP_TS", microtime(true)); // for debugging render time
 
 		// composer libraries (no config required)
-		$this->loadComposer();
+		$this->_loadComposer();
 
 		// environment (loader)
-		$this->setEnvironment();
+		$this->_setEnvironment();
 
 		// set app configurations
 		$config = $this->config();
@@ -76,7 +76,7 @@ abstract class App
 			\Sentry\init(["dsn" => $config["sentry"], "release" => $config["version"], "environment" => APP_ENV]);
 
 		// app classes (loader)
-		$this->loadClasses($config);
+		$this->_loadClasses($config);
 
 		// set DI (services)
 		$this->di = (new AppServices($config))->getDI();
@@ -93,9 +93,9 @@ abstract class App
 
 		switch (MODULE_NAME) {
 
-			case "cli": $this->newCli($argv);      break;
-			case "api": $this->newApi($routes_fn); break;
-			default   : $this->newMvc($routes_fn); break;
+			case "cli": $this->_newCli($argv);      break;
+			case "api": $this->_newApi($routes_fn); break;
+			default   : $this->_newMvc($routes_fn); break;
 		}
 	}
 
@@ -133,7 +133,7 @@ abstract class App
 	/**
 	 * Set Module Environment properties
 	 */
-	private function setEnvironment()
+	private function _setEnvironment()
 	{
 		// default timezone
 		date_default_timezone_set(getenv("APP_TZ") ?: "America/Santiago");
@@ -185,7 +185,7 @@ abstract class App
 	/**
 	 * Load composer libraries
 	 */
-	private function loadComposer()
+	private function _loadComposer()
 	{
 		if (is_file(COMPOSER_PATH."autoload.php"))
 			require COMPOSER_PATH."autoload.php";
@@ -197,7 +197,7 @@ abstract class App
 	 * Load classes
 	 * @param Array $config - The config array
 	 */
-	private function loadClasses($config = [])
+	private function _loadClasses($config = [])
 	{
 		// 1. project dirs
 		$dirs = [
@@ -222,7 +222,7 @@ abstract class App
 		$loader->registerDirs($dirs);
 
 		// 3. Register core static modules
-		$this->loadCoreLibraries($loader);
+		$this->_loadCoreLibraries($loader);
 
 		//4.- Register phalcon loader
 		$loader->register();
@@ -234,7 +234,7 @@ abstract class App
 	 * Use get_included_files() to see all loaded classes
 	 * @param Object $loader - Phalcon loader object
 	 */
-	private function loadCoreLibraries(&$loader)
+	private function _loadCoreLibraries(&$loader)
 	{
 		// check if lib is runnning in phar file
 		$path = \Phar::running() ?: dirname(__DIR__);
@@ -254,7 +254,7 @@ abstract class App
 	 * Starts an CLI App
 	 * @param Array $argv - Input arguments for CLI
 	 */
-	private function newCli($argv = null)
+	private function _newCli($argv = null)
 	{
 		// new cli app
 		$app = new \Phalcon\CLI\Console($this->di);
@@ -294,7 +294,7 @@ abstract class App
 	 * Starts an API App
 	 * @param Function $routes_fn - A routes function
 	 */
-	private function newApi($routes_fn = null)
+	private function _newApi($routes_fn = null)
 	{
 		// new micro app
 		$app = new \Phalcon\Mvc\Micro($this->di);
@@ -311,7 +311,7 @@ abstract class App
 	 * Starts an MVC App
 	 * @param Function $routes_fn - A routes function
 	 */
-	private function newMvc($routes_fn = null)
+	private function _newMvc($routes_fn = null)
 	{
 		// call routes function?
 		if (is_callable($routes_fn)) {
@@ -332,7 +332,7 @@ abstract class App
 
 		// handle the request
 		if (APP_ENV != "local")
-			ob_start([$this,"minifyOutput"]);
+			ob_start([$this,"_minifyOutput"]);
 
 		echo $output;
 	}
@@ -341,7 +341,7 @@ abstract class App
 	* Minifies HTML output
 	* @param String $buffer - The input buffer
 	*/
-	private function minifyOutput($buffer)
+	private function _minifyOutput($buffer)
 	{
 		$search  = ["/\>[^\S ]+/s", "/[^\S ]+\</s", "/(\s)+/s"];
 		$replace = [">","<","\\1"];
