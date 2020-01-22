@@ -56,7 +56,7 @@ trait Translations
 
 		// optional translation controller
 		if (class_exists("\TranslationController") && method_exists("\TranslationController", "coreTranslations"))
-			self::mergue($dic, \TranslationController::coreTranslations($trans));
+			self::merge($dic, \TranslationController::coreTranslations($trans));
 
 		// return key translations
 		return $dic[strtoupper($category)] ?? [];
@@ -83,23 +83,23 @@ trait Translations
 
 		// optional translation controller
 		if (class_exists("\TranslationController") && method_exists("\TranslationController", "jsTranslations"))
-			self::mergue($dic, \TranslationController::jsTranslations($trans));
+			self::merge($dic, \TranslationController::jsTranslations($trans));
 
 		return $dic;
 	}
 
 	/**
-	 * Array mergue with haystack
+	 * Array merge with haystack
 	 * @param Array $source - The input source
 	 * @param Array $haystack - The haystack array
 	 */
-	private static function mergue(&$source, $haystack)
+	private static function merge(&$source, $haystack)
 	{
 		foreach ($haystack as $key => $value) {
 
 			if (is_array($value)) {
 
-				self::mergue($source[$key], $haystack[$key]);
+				self::merge($source[$key], $haystack[$key]);
 				continue;
 			}
 
