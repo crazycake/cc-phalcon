@@ -86,6 +86,7 @@ abstract class BaseCore extends Controller
 
 	/**
 	 * Get the requested URI
+	 * @return String
 	 */
 	protected function getRequestedUri()
 	{

@@ -16,7 +16,7 @@ class Slug
 	 * @param String $string - The input string
 	 * @param Array $replace - Placeholders to be replaced
 	 * @param String $delimiter - A delimiter
-	 * @return Mixed
+	 * @return String
 	 */
 	public static function generate($string = "", $replace = [], $delimiter = "-")
 	{
@@ -41,6 +41,7 @@ class Slug
 	/**
 	 * Translit string (remove non ISO codes)
 	 * @param String $string - The input string
+	 * @return String
 	 */
 	public static function translit($string)
 	{

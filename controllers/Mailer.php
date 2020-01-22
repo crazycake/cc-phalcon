@@ -43,8 +43,8 @@ trait Mailer
 	}
 
 	/**
-	 * Ajax Handler Action - Send the contact to message to our app
-	 * Requires email, name, message POST params
+	 * Ajax Handler Action - Send the contact to message to our app.
+	 * Requires email, name, message POST params.
 	 * @param Array $data - The input data
 	 */
 	public function sendContact($data = [])
@@ -87,12 +87,12 @@ trait Mailer
 	}
 
 	/**
-	 * Sends a message through sendgrid API
+	 * Sends a message through sendgrid API.
 	 * @param String $template - The template name
 	 * @param String $subject - The mail subject
 	 * @param Mixed $recipients - The receiver emails
 	 * @param Array $attachments - Array with sub-array(s) with content, type and name props
-	 * @return Resultset
+	 * @return Array
 	 */
 	public function sendMessage($template, $subject, $recipients, $attachments = [])
 	{

@@ -24,11 +24,11 @@ class UserAgent
 
 	/**
 	 * Constructor
-	 * @param String $u_agent - The client user agent
+	 * @param String $agent - The client user agent
 	 */
-	public function __construct($u_agent = null)
+	public function __construct($agent = null)
 	{
-		$this->user_agent = $u_agent;
+		$this->user_agent = $agent;
 	}
 
 	/**

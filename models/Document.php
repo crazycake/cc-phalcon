@@ -19,6 +19,7 @@ class Document
 
 	/**
 	 * Gets Database client (override for custom connection)
+	 * @return Object
 	 */
 	public static function getClient()
 	{
@@ -27,6 +28,7 @@ class Document
 
 	/**
 	 * Gets Database manager (override for custom connection)
+	 * @return Object
 	 */
 	public static function getManager()
 	{
@@ -37,6 +39,7 @@ class Document
 	 * Get by Id
 	 * @param Mixed $id - The document ID (String or ObjectId)
 	 * @param Array $options - Options
+	 * @return Object
 	 */
 	public static function getById($id, $options = [])
 	{
@@ -54,6 +57,7 @@ class Document
 	 * Get by Properties
 	 * @param Array $search - Search array
 	 * @param Array $options - Options
+	 * @return Object
 	 */
 	public static function getByProperties($search, $options = [])
 	{
@@ -71,6 +75,7 @@ class Document
 	 * Get Property Distinct Values
 	 * @param String $prop - property name
 	 * @param Mixed $case - case flag [UPPER, LOWER]
+	 * @return Array
 	 */
 	public static function getDistinctValues($prop, $case = false)
 	{
@@ -93,6 +98,7 @@ class Document
 	 * Find documents
 	 * @param Mixed $search - Search array or string id
 	 * @param Array $options - Options
+	 * @return Array
 	 */
 	public static function find($search = [], $options = [])
 	{
@@ -105,6 +111,7 @@ class Document
 	 * Count documents
 	 * @param Mixed $search - Search array or string id
 	 * @param Array $options - Options
+	 * @return Integer
 	 */
 	public static function count($search = [], $options = [])
 	{
@@ -122,6 +129,7 @@ class Document
 	 * Updates a single document
 	 * @param Mixed $search - Search array or string id
 	 * @param Array $prop - The properties
+	 * @return Object
 	 */
 	public static function updateProperties($search, $props)
 	{
@@ -136,6 +144,7 @@ class Document
 	/**
 	 * Inserts a new document
 	 * @param Mixed $data - The input data
+	 * @return Object
 	 */
 	public static function insert($data)
 	{
@@ -150,6 +159,7 @@ class Document
 	/**
 	 * Deletes a single document
 	 * @param Mixed $search - Search array or string id
+	 * @return Object
 	 */
 	public static function deleteOne($search)
 	{
@@ -163,7 +173,8 @@ class Document
 
 	/**
 	 * To Mongo Object ID
-	 * @param Mixed $id
+	 * @param Mixed $id - The input id
+	 * @return Object
 	 */
 	public static function toObjectId($id)
 	{
@@ -176,7 +187,8 @@ class Document
 
 	/**
 	 * To ISO date helper
-	 * @param DateTime $date
+	 * @param Mixed $date - The input DateTime or string date
+	 * @return Object
 	 */
 	public static function toIsoDate($date = null)
 	{
@@ -191,8 +203,9 @@ class Document
 
 	/**
 	 * To Date string
-	 * @param BSON $bsonDate
-	 * @param String $format
+	 * @param Object $bsonDate - The BSON date
+	 * @param String $format - The input format
+	 * @return String
 	 */
 	public static function toDateString($bsonDate, $format = "Y-m-d H:i:s")
 	{
@@ -203,8 +216,9 @@ class Document
 
 	/**
 	 * Get Id Date
-	 * @param Mixed $id
+	 * @param Mixed $id - The input id
 	 * @param String $format
+	 * @return String
 	 */
 	public static function getIdDate($id, $format = "Y-m-d H:i:s")
 	{
@@ -214,9 +228,9 @@ class Document
 	}
 
 	/**
-	 * json to mongo object
+	 * JSON to mongo object
 	 * @param Mixed $json - The input JSON
-	 * @return object
+	 * @return Object
 	 */
 	public static function jsonToMongoObject($json)
 	{

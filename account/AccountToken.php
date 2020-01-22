@@ -29,6 +29,7 @@ trait AccountToken
 
 	/**
 	 * Returns a new redis client
+	 * @return Object
 	 */
 	protected static function newRedisClient()
 	{
@@ -58,6 +59,7 @@ trait AccountToken
 	 * Saves a new token
 	 * @param Integer $user_id - The user ID
 	 * @param String $type - The token type
+	 * @return String
 	 */
 	public static function newToken($user_id, $type)
 	{
@@ -98,7 +100,6 @@ trait AccountToken
 	 * Delete Token
 	 * @param String $user_id - The user id
 	 * @param String $type - The token type
-	 * @return String
 	 */
 	public static function deleteToken($user_id, $type)
 	{
@@ -111,7 +112,7 @@ trait AccountToken
 	/**
 	 * Validates user & temp-token data. Hash is an encrypted strig with user_id & token.
 	 * @param String $hash - The hash data
-	 * @return Boolean
+	 * @return Array
 	 */
 	public static function validateHash($hash = "")
 	{

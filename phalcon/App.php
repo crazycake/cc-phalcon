@@ -230,8 +230,8 @@ abstract class App
 
 	/**
 	 * Loads static libraries.
-	 * Use Phar::running() to get path of current phar running
-	 * Use get_included_files() to see all loaded classes
+	 * Use Phar::running() to get path of current phar running.
+	 * Use get_included_files() to see all loaded classes.
 	 * @param Object $loader - Phalcon loader object
 	 */
 	private function _loadCoreLibraries(&$loader)
@@ -340,6 +340,7 @@ abstract class App
 	/**
 	* Minifies HTML output
 	* @param String $buffer - The input buffer
+	* @return String
 	*/
 	private function _minifyOutput($buffer)
 	{

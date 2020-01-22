@@ -43,6 +43,7 @@ class AppServices
 
 	/**
 	 * Set DI for CLI app
+	 * @return Object - The Dependency Injector
 	 */
 	private function _getCliDI()
 	{
@@ -58,6 +59,7 @@ class AppServices
 
 	/**
 	 * Set DI for Mvc app
+	 * @return Object - The Dependency Injector
 	 */
 	private function _getDefaultDI()
 	{
@@ -149,7 +151,6 @@ class AppServices
 
 	/**
 	 * Set Database Services [MySQL, Mongo]
-	 * Uses PECL Driver
 	 * @param Object $di - The DI object
 	 */
 	private function _setDatabaseServices(&$di)

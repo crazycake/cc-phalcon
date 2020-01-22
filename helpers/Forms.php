@@ -79,7 +79,7 @@ class Forms
 
 	/**
 	 * Formats price.
-	 * @param Numeric $price - The price numeric value
+	 * @param Mixed $price - The price numeric value, float or integer.
 	 * @param String $currency - The price currency
 	 * @return String
 	 */

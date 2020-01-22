@@ -34,7 +34,7 @@ class Images
 	 * Resize input image with config params.
 	 * @param String $filepath - The input filename
 	 * @param Array $conf - The key file configuration
-	 * @return Integer total saved
+	 * @return Array
 	 */
 	public static function resize($filepath = "", $conf = [])
 	{

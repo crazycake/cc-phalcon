@@ -304,6 +304,7 @@ trait AccountAuth
 	/**
 	 * Sends activation mail message with recaptcha validation
 	 * @param Object $user - The user object
+	 * @return Object
 	 */
 	public function sendActivationMailMessage($user)
 	{
@@ -321,7 +322,7 @@ trait AccountAuth
 	/**
 	 * Access Token validation for API Auth
 	 * @param String $token - The input token
-	 * @return Object - The token object
+	 * @return Mixed
 	 */
 	protected function validateAccessToken($token = "")
 	{
@@ -338,7 +339,7 @@ trait AccountAuth
 
 	/**
 	 * Saves in redis a new login attempt
-	 * @param String $user_id
+	 * @param String $user_id - The input user ID
 	 */
 	protected function saveLoginAttempt($user_id)
 	{
@@ -356,7 +357,8 @@ trait AccountAuth
 
 	/**
 	 * Get stored login attempts
-	 * @param String $user_id
+	 * @param String $user_id - The input user ID
+	 * @return Integer
 	 */
 	protected function getLoginAttempts($user_id)
 	{

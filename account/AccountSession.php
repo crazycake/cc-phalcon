@@ -95,6 +95,7 @@ trait AccountSession
 	/**
 	 * Redirect to logged_in URI
 	 * @param String $uri - The input uri to redirect
+	 * @return Mixed
 	 */
 	protected function redirectLoggedIn($uri = "account")
 	{
@@ -136,6 +137,7 @@ trait AccountSession
 	/**
 	 * Get logged in user session data
 	 * @return Array - The session array
+	 * @return Mixed
 	 */
 	protected function getUserSession()
 	{
@@ -145,7 +147,6 @@ trait AccountSession
 	/**
 	 * Update user session data
 	 * @param Array $data - Input user data array
-	 * @return Boolean
 	 */
 	protected function updateUserSession($data = [])
 	{

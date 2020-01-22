@@ -68,6 +68,7 @@ trait Uploader
 
 	/**
 	 * Returns a new redis client
+	 * @return Object
 	 */
 	protected static function newRedisClient()
 	{
@@ -94,6 +95,7 @@ trait Uploader
 
 	/**
 	 * Uploads a file
+	 * @return Array - The upload data
 	 */
 	protected function upload()
 	{

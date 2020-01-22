@@ -16,6 +16,7 @@ trait Translations
 	/**
 	 * Default Controllers Translations
 	 * @param String $category - The category name
+	 * @return Array
 	 */
 	public static function defaultCoreTranslations($category = "")
 	{
@@ -63,6 +64,7 @@ trait Translations
 
 	/**
 	 * Default Javascript Translations (Sent to view)
+	 * @return Array
 	 */
 	public static function defaultJsTranslations()
 	{

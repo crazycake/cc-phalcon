@@ -37,7 +37,6 @@ trait Responser
 	 * Sends a JSON response for APIs.
 	 * @param String $code - The app message code.
 	 * @param Object $payload - Payload to send
-	 * @return String - The response
 	 */
 	protected function jsonResponse($code = 200, $payload = null)
 	{
@@ -76,7 +75,6 @@ trait Responser
 	 * @param Binary $data - The binary data to send
 	 * @param String $mime_type - The mime type
 	 * @param String $filename - The output filename (optional)
-	 * @return String - The response
 	 */
 	protected function sendFileToBuffer($data = null, $mime_type = "text/plain", $filename = null)
 	{
@@ -97,7 +95,6 @@ trait Responser
 	/**
 	 * Sets JSON response for output
 	 * @param Array $response - The response
-	 * @return String - The response
 	 */
 	protected function outputJsonResponse($response = [])
 	{
@@ -116,7 +113,6 @@ trait Responser
 	/**
 	 * Sends a simple text response
 	 * @param Mixed $text - Any text string
-	 * @return String - The response
 	 */
 	protected function outputTextResponse($text = "OK")
 	{

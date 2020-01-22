@@ -48,10 +48,10 @@ trait AccountPassword
 	}
 
 	/**
-	 * Send Recovery password email message with further instructions
+	 * Send Recovery password email message with further instructions.
 	 * @param String $email - The user email
 	 */
-	public function sendRecoveryInstructions($email = "")
+	public function sendRecoveryInstructions($email)
 	{
 		if (empty($email)) throw new \Exception("Invalid email");
 
@@ -93,10 +93,11 @@ trait AccountPassword
 	}
 
 	/**
-	 * View - Set New password action (vista donde se crea una nueva contraseña)
+	 * View - Set New password action (view for password creation).
 	 * @param String $hash - The encrypted data as hash
+	 * @return Mixed
 	 */
-	public function newPasswordView($hash = null)
+	public function newPasswordView($hash)
 	{
 		try {
 
@@ -120,8 +121,9 @@ trait AccountPassword
 	}
 
 	/**
-	 * Saves a new password set by the user in the post-recovery password view
+	 * Saves a new password set by the user in the post-recovery password view.
 	 * @param String $password - The input password
+	 * @return Mixed
 	 */
 	public function saveNewPassword($password)
 	{
@@ -165,6 +167,7 @@ trait AccountPassword
 	 * Updates user password with validation
 	 * @param String $new_pass - The new password
 	 * @param String $current_pass - The current user password (input verification)
+	 * @return Mixed
 	 */
 	public function updatePassword($new_pass, $current_pass)
 	{
@@ -203,7 +206,7 @@ trait AccountPassword
 
 	/**
 	 * Saves recovery instructions sent count
-	 * @param String $email
+	 * @param String $email - The input email
 	 */
 	protected function saveRecoveryInstructionsSent($email)
 	{
@@ -221,7 +224,8 @@ trait AccountPassword
 
 	/**
 	 * Gets recovery instructions sent count
-	 * @param String $email
+	 * @param String $email - The input email
+	 * @return Integer
 	 */
 	protected function getRecoveryInstructionsSent($email)
 	{
