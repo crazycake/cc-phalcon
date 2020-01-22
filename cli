@@ -14,7 +14,7 @@ APP_NAMESPACE="$(echo "$APP_NAME" | tr '[:upper:]' '[:lower:]')"
 
 # URLs
 BOX_PHAR_URL="https://github.com/box-project/box2/releases/download/2.7.5/box-2.7.5.phar"
-PHPDOC_PHAR_URL="http://phpdoc.org/phpDocumentor.phar"
+PHPDOC_PHAR_URL="https://phpdoc.org/phpDocumentor.phar"
 
 # local documentation path.
 PHPDOC_INPUT_PATH="./"

@@ -174,8 +174,6 @@ trait AccountSession
 		$this->session->remove("user");
 	}
 
-	/* --------------------------------------------------- § -------------------------------------------------------- */
-
 	/**
 	 * Sets view vars
 	 * @access private

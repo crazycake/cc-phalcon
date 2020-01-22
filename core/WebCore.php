@@ -190,8 +190,6 @@ abstract class WebCore extends BaseCore implements WebSecurity
 		return $_SERVER["HTTP_X_FORWARDED_FOR"] ?? (\Phalcon\DI::getDefault())->getShared("request")->getClientAddress();
 	}
 
-	/* --------------------------------------------------- § -------------------------------------------------------- */
-
 	/**
 	 * Handle HTTPS redirection
 	 */
