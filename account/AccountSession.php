@@ -25,8 +25,6 @@ trait AccountSession
 	 */
 	protected $user_session;
 
-	/* --------------------------------------------------- § -------------------------------------------------------- */
-
 	/**
 	 * Initialize Trait
 	 * @param Array $conf - The config array
@@ -52,8 +50,6 @@ trait AccountSession
 		// set user data for view, filter is passed to exclude some properties
 		$this->_setSessionViewVars($this->user_session);
 	}
-
-	/* --------------------------------------------------- § -------------------------------------------------------- */
 
 	/**
 	 * Check that user is logged in

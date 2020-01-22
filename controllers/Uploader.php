@@ -6,7 +6,6 @@
 
 namespace CrazyCake\Controllers;
 
-use Phalcon\Exception;
 use Phalcon\Image\Adapter\GD;
 use CrazyCake\Controllers\Translations;
 use CrazyCake\Helpers\Slug;
@@ -424,7 +423,7 @@ trait Uploader
 			$conf = $this->UPLOADER_CONF["files"][$key]; // file conf
 
 			if (empty($conf))
-				throw new Exception("Uploader file configuration missing for $key.");
+				throw new \Exception("Uploader file configuration missing for $key.");
 
 			// set defaults
 			$conf["max_size"] = $conf["max_size"] ?? self::$DEFAULT_MAX_SIZE;
@@ -432,11 +431,11 @@ trait Uploader
 
 			// validation: max-size
 			if ($fsize/1024 > $conf["max_size"])
-				throw new Exception(str_replace(["{file}", "{size}"], [$filename, ceil($conf["max_size"]/1024)." MB"], $this->UPLOADER_CONF["trans"]["MAX_SIZE"]));
+				throw new \Exception(str_replace(["{file}", "{size}"], [$filename, ceil($conf["max_size"]/1024)." MB"], $this->UPLOADER_CONF["trans"]["MAX_SIZE"]));
 
 			// validation: file-type
 			if (!in_array($extension, $conf["type"]))
-				throw new Exception(str_replace("{file}", $filename, $this->UPLOADER_CONF["trans"]["FILE_TYPE"]));
+				throw new \Exception(str_replace("{file}", $filename, $this->UPLOADER_CONF["trans"]["FILE_TYPE"]));
 
 			// validation: image size
 			if (empty($conf["isize"]))
@@ -448,26 +447,26 @@ trait Uploader
 
 			// fixed width
 			if (isset($size["w"]) && $size["w"] != $image->getWidth())
-				throw new Exception(str_replace(["{file}", "{w}"], [$filename, $size["w"]], $this->UPLOADER_CONF["trans"]["IMG_WIDTH"]));
+				throw new \Exception(str_replace(["{file}", "{w}"], [$filename, $size["w"]], $this->UPLOADER_CONF["trans"]["IMG_WIDTH"]));
 
 			// fixed height
 			if (isset($size["h"]) && $size["h"] != $image->getHeight())
-				throw new Exception(str_replace(["{file}", "{h}"], [$filename, $size["h"]], $this->UPLOADER_CONF["trans"]["IMG_HEIGHT"]));
+				throw new \Exception(str_replace(["{file}", "{h}"], [$filename, $size["h"]], $this->UPLOADER_CONF["trans"]["IMG_HEIGHT"]));
 
 			// minimun width
 			if (isset($size["mw"]) && $image->getWidth() < $size["mw"])
-				throw new Exception(str_replace(["{file}", "{w}"], [$filename, $size["mw"]], $this->UPLOADER_CONF["trans"]["IMG_MIN_WIDTH"]));
+				throw new \Exception(str_replace(["{file}", "{w}"], [$filename, $size["mw"]], $this->UPLOADER_CONF["trans"]["IMG_MIN_WIDTH"]));
 
 			// minimun width
 			if (isset($size["mh"]) && $image->getHeight() < $size["mh"])
-				throw new Exception(str_replace(["{file}", "{h}"], [$filename, $size["mh"]], $this->UPLOADER_CONF["trans"]["IMG_MIN_HEIGHT"]));
+				throw new \Exception(str_replace(["{file}", "{h}"], [$filename, $size["mh"]], $this->UPLOADER_CONF["trans"]["IMG_MIN_HEIGHT"]));
 
 			$ratio = explode("/", $size["r"] ?? "");
 
 			if (isset($size["r"]) && round($image->getWidth()/$image->getHeight(), 2) != round($ratio[0] / $ratio[1], 2))
-				throw new Exception(str_replace(["{file}", "{r}"], [$filename, $size["r"]], $this->UPLOADER_CONF["trans"]["IMG_RATIO"]));
+				throw new \Exception(str_replace(["{file}", "{r}"], [$filename, $size["r"]], $this->UPLOADER_CONF["trans"]["IMG_RATIO"]));
 		}
-		catch (\Exception | Exception $e) { $upload["error"] = $e->getMessage(); }
+		catch (\Exception | \Phalcon\Exception $e) { $upload["error"] = $e->getMessage(); }
 
 		return $upload;
 	}

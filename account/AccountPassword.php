@@ -47,8 +47,6 @@ trait AccountPassword
 		$this->PASSWORD_CONF = $conf;
 	}
 
-	/* --------------------------------------------------- § -------------------------------------------------------- */
-
 	/**
 	 * Send Recovery password email message with further instructions
 	 * @param String $email - The user email

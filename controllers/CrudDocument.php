@@ -6,8 +6,6 @@
 
 namespace CrazyCake\Controllers;
 
-use Phalcon\Exception;
-
 use CrazyCake\Phalcon\App;
 
 /**
@@ -51,7 +49,7 @@ trait CrudDocument
 		// merge confs
 		$conf = array_merge($defaults, $conf);
 
-		if (empty($conf["collection"])) throw new Exception("Crud requires a collection argument.");
+		if (empty($conf["collection"])) throw new \Exception("Crud requires a collection argument.");
 
 		// set conf
 		$this->CRUD_CONF = $conf;

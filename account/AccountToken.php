@@ -27,8 +27,6 @@ trait AccountToken
 	 */
 	public static $TOKEN_LENGTH = 13;
 
-	/** ------------------------------------------- § ------------------------------------------------ **/
-
 	/**
 	 * Returns a new redis client
 	 */
@@ -58,7 +56,7 @@ trait AccountToken
 
 	/**
 	 * Saves a new token
-	 * @param Int $user_id - The user ID
+	 * @param Integer $user_id - The user ID
 	 * @param String $type - The token type
 	 */
 	public static function newToken($user_id, $type)
