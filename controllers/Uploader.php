@@ -1,6 +1,6 @@
 <?php
 /**
- * Uploader Adapter. Handle uploads, validations & img-api caller.
+ * Uploader Adapter, handle uploads, validations & img-api caller.
  * @author Nicolas Pulido <nicolas.pulido@crazycake.tech>
  */
 
