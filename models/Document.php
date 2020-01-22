@@ -215,7 +215,7 @@ class Document
 
 	/**
 	 * json to mongo object
-	 * @param Mixed[String, Array, Object] $json
+	 * @param Mixed $json - The input JSON
 	 * @return object
 	 */
 	public static function jsonToMongoObject($json)

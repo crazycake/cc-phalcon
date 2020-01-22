@@ -19,7 +19,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 	/**
 	 * Checks Browser Support
 	 * @param String $browser - The browser family [MSIE, Chrome, Firefox, Opera, Safari]
-	 * @param Int $version - The browser short version
+	 * @param Integer $version - The browser short version
 	 *
 	 */
 	abstract protected function checkBrowserSupport($browser, $version);
@@ -90,7 +90,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 	/**
 	 * Redirect to given URI as GET method
 	 * @param String $uri - The URI to redirect
-	 * @param Int $code - The http 3xx code
+	 * @param Integer $code - The http 3xx code
 	 */
 	protected function redirectTo($uri = "/", $code = 302)
 	{

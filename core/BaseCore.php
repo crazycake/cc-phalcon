@@ -54,7 +54,7 @@ abstract class BaseCore extends Controller
 
 	/**
 	 * Host URL
-	 * @param Int $port - The input port
+	 * @param Integer $port - The input port
 	 * @return String - The host URL with port appended
 	 */
 	protected function host($port = 80)

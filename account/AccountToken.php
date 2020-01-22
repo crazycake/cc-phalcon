@@ -77,7 +77,7 @@ trait AccountToken
 
 	/**
 	 * Saves a token if expires and returns the token chain data
-	 * @param Int $user_id - The user ID
+	 * @param Integer $user_id - The user ID
 	 * @param String $type - The token type
 	 * @return String
 	 */

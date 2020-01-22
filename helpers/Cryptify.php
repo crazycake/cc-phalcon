@@ -44,7 +44,7 @@ class Cryptify
 
 	/**
 	 * Encrypts data, example: to be passed in a GET request
-	 * @param Mixed [string|array] $data - The input data to encrypt
+	 * @param Mixed $data - The input data to encrypt
 	 * @return String - The encrypted string hash
 	 */
 	public function encryptData($data = null)
@@ -66,8 +66,8 @@ class Cryptify
 	/**
 	 * Decrypts hashed data
 	 * @param String $hash - The encrypted text
-	 * @param Mixed [boolean|string] $parse - Parses the string from a token (explode) or parses a json (optional)
-	 * @return Mixed string|array - The decrypted string
+	 * @param Mixed $parse - Parses the string from a token (explode) or parses a json (optional)
+	 * @return Mixed - The decrypted string
 	 */
 	public function decryptData($hash = "", $parse = false)
 	{
@@ -94,7 +94,7 @@ class Cryptify
 
 	/**
 	 * Generates a random Hash
-	 * @param Int $length - The hash length, max length 20.
+	 * @param Integer $length - The hash length, max length 20.
 	 * @param String $seed - The string seed
 	 * @return String
 	 */
@@ -121,7 +121,7 @@ class Cryptify
 
 	/**
 	 * Generates a random alphanumeric code
-	 * @param Int $length - The code length
+	 * @param Integer $length - The code length
 	 * @return String
 	 */
 	public function newAlphanumeric($length = 8)
@@ -146,7 +146,7 @@ class Cryptify
 
 	/**
 	 * Generates a random numeric code
-	 * @param Int $length - The code length
+	 * @param Integer $length - The code length
 	 * @return String
 	 */
 	public function newNumeric($length = 8)
