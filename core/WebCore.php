@@ -177,7 +177,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 
 		$js .= "document.addEventListener('DOMContentLoaded', function() { init($output); }, false);\n";
 
-		$js .= "console.log(`App ".$this->config->version." [".\Phalcon\Version::get()." => ".CORE_VERSION."] ".number_format((float)(microtime(true) - APP_ST), 3, ".", "")." s.`);";
+		$js .= "console.log(`App ".$this->config->version." [".\Phalcon\Version::get()." => ".CORE_VERSION."] ".number_format((float)(microtime(true) - APP_TS), 3, ".", "")." s.`);";
 
 		return $js;
 	}
