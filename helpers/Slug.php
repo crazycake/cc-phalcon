@@ -13,10 +13,10 @@ class Slug
 {
 	/**
 	 * Creates a slug to be used for pretty URLs
-	 * @param string $string - The input string
-	 * @param array $replace - Placeholders to be replaced
-	 * @param string $delimiter - A delimiter
-	 * @return mixed
+	 * @param String $string - The input string
+	 * @param Array $replace - Placeholders to be replaced
+	 * @param String $delimiter - A delimiter
+	 * @return Mixed
 	 */
 	public static function generate($string = "", $replace = [], $delimiter = "-")
 	{
@@ -40,6 +40,7 @@ class Slug
 
 	/**
 	 * Translit string (remove non ISO codes)
+	 * @param String $string - The input string
 	 */
 	public static function translit($string)
 	{

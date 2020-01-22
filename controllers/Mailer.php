@@ -45,6 +45,7 @@ trait Mailer
 	/**
 	 * Ajax Handler Action - Send the contact to message to our app
 	 * Requires email, name, message POST params
+	 * @param Array $data - The input data
 	 */
 	public function sendContact($data = [])
 	{

@@ -98,6 +98,7 @@ trait AccountSession
 
 	/**
 	 * Redirect to logged_in URI
+	 * @param String $uri - The input uri to redirect
 	 */
 	protected function redirectLoggedIn($uri = "account")
 	{
@@ -177,7 +178,7 @@ trait AccountSession
 	/**
 	 * Sets view vars
 	 * @access private
-	 * @param Array $filter - A string array of properties to filter
+	 * @param Array $user_session - The user session data
 	 */
 	private function _setSessionViewVars($user_session = [])
 	{
