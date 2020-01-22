@@ -28,7 +28,7 @@ trait Requester
 	 * + payload: The encrypted string params data
 	 * + method: The HTTP method (GET, POST, PUT)
 	 * + socket: Makes async call as socket connection
-	 * @return Object - The request object
+	 * @return Mixed
 	 */
 	protected function newRequest($options = [])
 	{
@@ -123,7 +123,7 @@ trait Requester
 	/**
 	 * POST request
 	 * @param Array $options - The input options
-	 * @return Object - The promise object
+	 * @return Object
 	 */
 	private function _postRequest($options = [])
 	{
@@ -169,7 +169,7 @@ trait Requester
 	/**
 	 * PUT request
 	 * @param Array $options - The input options
-	 * @return Object - The promise object
+	 * @return Object
 	 */
 	private function _putRequest($options = [])
 	{
