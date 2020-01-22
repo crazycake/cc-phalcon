@@ -355,9 +355,3 @@ abstract class App
 		return $buffer;
 	}
 }
-
-/**
- * SD Kint shortcut function
- * @param Mixed $vars - The input vars
- **/
-function ss(...$vars) { s(...$vars); exit; }
