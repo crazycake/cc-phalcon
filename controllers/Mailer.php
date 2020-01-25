@@ -80,7 +80,7 @@ trait Mailer
 			$emogrifier->addExcludedSelector("head");
 			$emogrifier->addExcludedSelector("meta");
 
-			$html = $emogrifier->emogrify(); //inline styles
+			$html = $emogrifier->emogrify();
 		}
 
 		return $html;
