@@ -163,18 +163,18 @@ abstract class App
 		if (php_sapi_name() != "cli") {
 
 			// set default host
-			if (!isset($_SERVER["HTTP_HOST"])) $_SERVER["HTTP_HOST"] = "localhost";
+			if (empty($_SERVER["HTTP_HOST"])) $_SERVER["HTTP_HOST"] = "localhost";
 
 			// set scheme and host
-			$scheme   = $_SERVER["HTTP_X_FORWARDED_PROTO"] ?? "http"; //aws elb headers
-			$host     = $_SERVER["HTTP_HOST"].preg_replace("@/+$@", "", dirname($_SERVER["SCRIPT_NAME"]));
-			$base_url = "$scheme://$host";
+			$scheme   = $_SERVER["HTTP_X_FORWARDED_PROTO"] ?? "http"; // AWS ALB headers
+			$path     = preg_replace("@/+$@", "", dirname($_SERVER["SCRIPT_NAME"]));
+			$base_url = "$scheme://".$_SERVER["HTTP_HOST"].$path;
 
 			// add missing slash?
 			if (substr($base_url, -1) != "/") $base_url .= "/";
 
-			// remove default port 80 if set
-			$base_url = str_replace(":80/", "/", $base_url);
+			// remove default ports if set (80, 443)
+			$base_url = str_replace([":80/", ":443/"], "/", $base_url);
 		}
 
 		// set environment consts & self vars
