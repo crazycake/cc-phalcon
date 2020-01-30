@@ -55,6 +55,10 @@ if (empty($client)) die("400 Bad Request");
 
 		<title>{{ metas['title'] is not empty ? metas['title'] : config.name }}</title>
 
+		{# meta csrf token #}
+		<meta name="csrf-key" content="{{ client.csrfKey }}">
+		<meta name="csrf-value" content="{{ client.csrfValue }}">
+
 		{# favicons #}
 		<link rel="icon" type="image/png" href="{{ static_url('images/favicons/favicon.png') }}" />
 		<link rel="apple-touch-icon" href="{{ static_url('images/favicons/favicon-180.png') }}" />

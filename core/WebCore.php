@@ -154,14 +154,6 @@ abstract class WebCore extends BaseCore implements WebSecurity
 	 */
 	protected function initJsApp($store = null)
 	{
-		// CORS security
-		if (!empty(getenv('APP_CORS'))) {
-
-			$allowed = explode(',', getenv('APP_CORS'));
-
-			if (!in_array($this->host(), $allowed)) return (object)[];
-		}
-
 		// set js global object
 		$data = (object)[
 			"env"       => APP_ENV,
@@ -174,6 +166,9 @@ abstract class WebCore extends BaseCore implements WebSecurity
 
 		// set user agent
 		$data->UA = $this->client;
+
+		// don't expose sensitive data
+		unset($data->UA->csrfKey, $data->UA->csrfValue);
 
 		// set translations
 		$data->TRANS = Translations::defaultJsTranslations();
