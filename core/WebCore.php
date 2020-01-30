@@ -155,9 +155,9 @@ abstract class WebCore extends BaseCore implements WebSecurity
 	protected function initJsApp($store = null)
 	{
 		// CORS security
-		if (!empty(getenv('CORS'))) {
+		if (!empty(getenv('APP_CORS'))) {
 
-			$allowed = explode(',', getenv('CORS'));
+			$allowed = explode(',', getenv('APP_CORS'));
 
 			if (!in_array($this->host, $allowed)) return (object)[];
 		}

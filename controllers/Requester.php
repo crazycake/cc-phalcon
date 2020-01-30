@@ -204,7 +204,6 @@ trait Requester
 
 			// as query string or body content
 			$options["payload"] = is_array($options["payload"]) ? http_build_query($options["payload"], "", "&") : "payload=".$options["payload"];
-
 			$length = strlen($options["payload"]);
 		}
 
@@ -221,7 +220,7 @@ trait Requester
 				$out .= $header.": ".$value."\r\n";
 		}
 
-		// closer
+		// close headers
 		$out .= "Connection: Close\r\n\r\n";
 
 		// data goes in the request body for a POST request
@@ -231,7 +230,7 @@ trait Requester
 		$this->logger->debug("\n--\nRequester::_socketRequest -> sending out request:\n".json_encode($out, JSON_UNESCAPED_SLASHES)."\n");
 
 		fwrite($socket, $out);
-		usleep(300000); //0.3s
+		usleep(300000); // 0.3s
 		fclose($socket);
 	}
 }

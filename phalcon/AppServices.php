@@ -252,20 +252,19 @@ class AppServices
 				$session = new \Phalcon\Session\Adapter\Redis(array_merge($options, ["host" => getenv("REDIS_HOST") ?: "redis"]));
 
 			// set domain for cookie params
-			$host = explode('.', parse_url(APP_BASE_URL, PHP_URL_HOST));
+			$host = parse_url(APP_BASE_URL, PHP_URL_HOST);
 
 			// session exceptions for shared cookies domain
 			session_set_cookie_params([
 				"lifetime" => $expiration,
 				"path"     => "/",
-				"domain"   => getenv("SESSION_DOMAIN") ?: implode(".", $host),
+				"domain"   => getenv("APP_COOKIE_DOMAIN") ?: $host,
 				"secure"   => getenv("APP_HTTPS_ONLY") ?: false,
-				"httpOnly" => true,
-				//"sameSite" => "Strict"
+				"httpOnly" => true
 			]);
 
 			// set session name & start
-			$session->setName(getenv("SESSION_NAME") ?: $conf->namespace);
+			$session->setName(getenv("APP_COOKIE_NAME") ?: $conf->namespace);
 			$session->start();
 
 			return $session;
