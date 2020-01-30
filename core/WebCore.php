@@ -159,7 +159,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 
 			$allowed = explode(',', getenv('APP_CORS'));
 
-			if (!in_array($this->host, $allowed)) return (object)[];
+			if (!in_array($this->host(), $allowed)) return (object)[];
 		}
 
 		// set js global object
