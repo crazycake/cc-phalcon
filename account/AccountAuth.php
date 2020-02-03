@@ -264,7 +264,8 @@ trait AccountAuth
 		}
 		catch (\Exception $e) {
 
-			$this->view->setVar("error_message", $this->trans->_("Tu cuenta ya está activada."));
+			if (!empty($user) && $user->flag == "enabled")
+				$this->view->setVar("error_message", $this->trans->_("Tu cuenta ya está activada."));
 
 			$this->logger->error("AccountAuth::activationAction -> exception [$hash]: ".$e->getMessage());
 			$this->dispatcher->forward(["controller" => "error", "action" => "expired"]);
