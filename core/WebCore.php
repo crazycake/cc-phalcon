@@ -18,12 +18,11 @@ abstract class WebCore extends BaseCore implements WebSecurity
 {
 	/**
 	 * Checks Browser Support
-	 * @param String $platform - The platform
 	 * @param String $browser - The browser family [MSIE, Chrome, Firefox, Opera, Safari]
 	 * @param Integer $version - The browser short version
 	 *
 	 */
-	abstract protected function checkBrowserSupport($platform, $browser, $version);
+	abstract protected function checkBrowserSupport($browser, $version);
 
 	/**
 	 * User agent properties
@@ -50,7 +49,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 			$this->onClientSet();
 
 		// check browser is supported
-		if (!$this->checkBrowserSupport($this->client->platform, $this->client->browser, $this->client->shortVersion) &&
+		if (!$this->checkBrowserSupport($this->client->browser, $this->client->shortVersion) &&
 			$this->router->getControllerName() != "error") {
 
 			return $this->redirectTo("error/oldBrowser");
