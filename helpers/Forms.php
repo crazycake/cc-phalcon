@@ -85,26 +85,16 @@ class Forms
 	 */
 	public static function formatPrice($price, $currency = "CLP")
 	{
-		$formatted = $price;
-
 		switch ($currency) {
 
-			case "CLP":
+			case "CLP": return str_replace(",", ".", "CLP $".str_replace(".00", "", number_format($price)));
 
-				$formatted = str_replace(",", ".", "$".str_replace(".00", "", number_format($formatted))); break;
+			case "PEN": return str_replace(",", ".", "S/ ".str_replace(".00", "", number_format($price)));
 
-			case "PEN":
+			case "USD": return "USD $".$price; break;
 
-				$formatted = str_replace(",", ".", "S/ ".str_replace(".00", "", number_format($formatted))); break;
-
-			case "USD":
-
-				$formatted = "$".$formatted; break;
-
-			default: break;
+			default: return $price;
 		}
-
-		return $formatted;
 	}
 
 	/**
