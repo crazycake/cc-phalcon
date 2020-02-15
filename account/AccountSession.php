@@ -168,8 +168,9 @@ trait AccountSession
 	 */
 	protected function removeUserSession()
 	{
-		// unset all user session data
-		$this->session->remove("user");
+		// unset user session data
+		if ($this->session->has("user"))
+			$this->session->remove("user");
 	}
 
 	/**
