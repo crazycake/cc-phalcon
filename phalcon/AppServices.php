@@ -256,7 +256,8 @@ class AppServices
 				"lifetime" => $expiration,
 				"path"     => "/",
 				"secure"   => getenv("APP_HTTPS_ONLY") ?: false,
-				"httpOnly" => true
+				"httponly" => true,
+				"samesite" => "Lax"
 			];
 
 			if (!empty(getenv("APP_COOKIE_DOMAIN")))
