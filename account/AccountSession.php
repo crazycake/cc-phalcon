@@ -33,7 +33,7 @@ trait AccountSession
 	{
 		$defaults = [
 			"user_entity"        => "user",
-			"ignored_properties" => ["pass", "createdAt"]
+			"ignored_properties" => ["pass", "createdAt", "lastSession", "lastIP"]
 		];
 
 		// merge confs
