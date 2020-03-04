@@ -114,7 +114,7 @@ trait Responser
 	 * Sends a simple text response
 	 * @param Mixed $text - Any text string
 	 */
-	protected function outputTextResponse($text = "OK")
+	protected function outputTextResponse($text = "OK", $mime = "text/plain")
 	{
 		// if a view service is set, disable rendering
 		if ($this->di->has("view"))
@@ -122,7 +122,7 @@ trait Responser
 
 		// output the response
 		$this->response->setStatusCode(200, "OK");
-		$this->response->setContentType('text/html');
+		$this->response->setContentType($mime);
 		$this->response->setContent($text);
 		$this->response->send();
 		die();
