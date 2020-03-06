@@ -51,7 +51,7 @@ trait Responser
 		if ($code == 200) {
 
 			// redirect or payload
-			if (!empty($payload["redirect"]))
+			if (is_array($payload) && !empty($payload["redirect"]))
 				$response["redirect"] = $payload["redirect"];
 			else
 				$response["payload"] = $payload;
