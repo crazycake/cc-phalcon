@@ -24,6 +24,7 @@ trait Responser
 	 * @var Array
 	 */
 	public $RCODES = [
+
 		"200" => "OK",
 		"400" => "Bad Request",
 		"401" => "Unauthorized",
