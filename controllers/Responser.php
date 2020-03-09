@@ -68,28 +68,6 @@ trait Responser
 	}
 
 	/**
-	 * Sends a file to buffer output response
-	 * @param Binary $data - The binary data to send
-	 * @param String $mime_type - The mime type
-	 * @param String $filename - The output filename (optional)
-	 */
-	protected function sendFileToBuffer($data = null, $mime_type = "text/plain", $filename = null)
-	{
-		if ($this->di->has("view"))
-			$this->view->disable(); // disable view output
-
-		$this->response->setStatusCode(200, "OK");
-
-		if (!empty($filename))
-			$this->response->setHeader("Content-Disposition", 'attachment; filename="'.basename($filename).'"');
-
-		$this->response->setContentType($mime_type);
-		$this->response->setContent($data); // content must be set after content type
-		$this->response->send();
-		die();
-	}
-
-	/**
 	 * Sets JSON response for output
 	 * @param Array $response - The response
 	 */
@@ -127,6 +105,28 @@ trait Responser
 		$this->response->setStatusCode(200, "OK");
 		$this->response->setContentType($mime);
 		$this->response->setContent($content);
+		$this->response->send();
+		die();
+	}
+
+	/**
+	 * Sends a file to buffer output response
+	 * @param Binary $data - The binary data to send
+	 * @param String $mime_type - The mime type
+	 * @param String $filename - The output filename (optional)
+	 */
+	protected function sendFileToBuffer($data = null, $mime_type = "text/plain", $filename = null)
+	{
+		if ($this->di->has("view"))
+			$this->view->disable(); // disable view output
+
+		$this->response->setStatusCode(200, "OK");
+
+		if (!empty($filename))
+			$this->response->setHeader("Content-Disposition", 'attachment; filename="'.basename($filename).'"');
+
+		$this->response->setContentType($mime_type);
+		$this->response->setContent($data); // content must be set after content type
 		$this->response->send();
 		die();
 	}
