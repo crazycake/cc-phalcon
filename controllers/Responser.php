@@ -99,19 +99,25 @@ trait Responser
 		if ($this->di->has("view"))
 			$this->view->disable();
 
+		$content = JSON::safeEncode($response);
+
+		// listener
+		if (method_exists($this, "beforeOutputJsonResponse"))
+			$this->beforeOutputJsonResponse($content);
+
 		// output the response
 		$this->response->setStatusCode(200, "OK");
 		$this->response->setContentType("application/json");
-		$this->response->setContent(JSON::safeEncode($response));
+		$this->response->setContent($content);
 		$this->response->send();
 		die();
 	}
 
 	/**
 	 * Sends a simple text response
-	 * @param Mixed $text - Any text string
+	 * @param Mixed $content - Any content string
 	 */
-	protected function outputTextResponse($text = "OK", $mime = "text/plain")
+	protected function outputTextResponse($content = "OK", $mime = "text/plain")
 	{
 		// if a view service is set, disable rendering
 		if ($this->di->has("view"))
@@ -120,7 +126,7 @@ trait Responser
 		// output the response
 		$this->response->setStatusCode(200, "OK");
 		$this->response->setContentType($mime);
-		$this->response->setContent($text);
+		$this->response->setContent($content);
 		$this->response->send();
 		die();
 	}
