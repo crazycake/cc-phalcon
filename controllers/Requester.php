@@ -107,7 +107,7 @@ trait Requester
 		if (!empty($options["payload"]))
 			$options["uri"] .= is_array($options["payload"]) ? "?".http_build_query($options["payload"]) : "/".$options["payload"];
 
-		$this->logger->debug("\n--\nRequester::_getRequest [".$options["uri"]."] guzzle_options:\n".json_encode($guzzle_options, JSON_UNESCAPED_SLASHES)."\n");
+		$this->logger->debug("\n--\nRequester::_getRequest [".$options["base_url"]."][".$options["uri"]."] guzzle_options:\n".json_encode($guzzle_options, JSON_UNESCAPED_SLASHES)."\n");
 
 		// guzzle request
 		$response = $client->request("GET", $options["uri"], $guzzle_options);
@@ -153,7 +153,7 @@ trait Requester
 		if (!empty($options["payload"]))
 			$guzzle_options["form_params"] = $options["payload"];
 
-		$this->logger->debug("\n--\nRequester::_postRequest [".$options["uri"]."] guzzle_options:\n".json_encode($guzzle_options, JSON_UNESCAPED_SLASHES)."\n");
+		$this->logger->debug("\n--\nRequester::_postRequest [".$options["base_url"]."][".$options["uri"]."] guzzle_options:\n".json_encode($guzzle_options, JSON_UNESCAPED_SLASHES)."\n");
 
 		// guzzle request
 		$response = $client->request(strtoupper($options["method"]), $options["uri"], $guzzle_options);
