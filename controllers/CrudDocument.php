@@ -89,7 +89,7 @@ trait CrudDocument
 		// sort by score relevance (full text search)
 		if (!empty($data["search"])) {
 
-			$query = ['$or' => [['$text' => ['$search' => "\"".$data["search"]."\""] ]] ];
+			$query = ['$or' => [['$text' => ['$search' => "\"".$data["search"]."\""] ]]];
 
 			// is an ObjectId ?
 			if (preg_match('/^[a-f\d]{24}$/i', $data["search"]))
