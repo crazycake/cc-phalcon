@@ -163,7 +163,7 @@ trait CrudDocument
 		}
 
 		// format payload
-		$this->formatPayload($payload);
+		static::formatPayload($payload);
 
 		// event
 		if (method_exists($this, "onBeforeSave"))
@@ -311,7 +311,7 @@ trait CrudDocument
 	 * Format payload properties and set correct data types
 	 * @param Object $payload - The payload properties
 	 */
-	protected function formatPayload(&$payload)
+	public static function formatPayload(&$payload)
 	{
 		foreach ($payload as $key => &$value) {
 
