@@ -35,43 +35,15 @@ class AppServices
 	 */
 	public function getDI()
 	{
-		if (MODULE_NAME == "cli")
-			return $this->_getCliDI();
-
-		return $this->_getDefaultDI();
-	}
-
-	/**
-	 * Set DI for CLI app
-	 * @return Object - The Dependency Injector
-	 */
-	private function _getCliDI()
-	{
-		// get a new Micro DI
-		$di = new \Phalcon\DI\FactoryDefault\CLI();
-
-		$this->_setMainServices($di);
-		$this->_setDatabaseServices($di);
-		$this->_setTranslationServices($di);
-
-		return $di;
-	}
-
-	/**
-	 * Set DI for Mvc app
-	 * @return Object - The Dependency Injector
-	 */
-	private function _getDefaultDI()
-	{
 		// get a new Factory DI
-		$di = new \Phalcon\DI\FactoryDefault();
+		$di = MODULE_NAME == "cli" ? new \Phalcon\DI\FactoryDefault\CLI() : new \Phalcon\DI\FactoryDefault();
 
 		$this->_setMainServices($di);
 		$this->_setDatabaseServices($di);
 		$this->_setTranslationServices($di);
 		$this->_setViewServices($di);
 
-		if (MODULE_NAME != "api") {
+		if (MODULE_NAME == "frontend") {
 
 			$this->_setSessionServices($di);
 			$this->_setClientServices($di);
@@ -341,34 +313,38 @@ class AppServices
 			}
 		];
 
-		// simple view service (used for mailing templates)
-		$di->setShared("simpleView", function() use (&$engines) {
+		// simple view service
+		if (is_dir(PROJECT_PATH."ui/volt/")) {
 
-			//simpleView
-			$view = new \Phalcon\Mvc\View\Simple();
-			//set directory views
-			$view->setViewsDir(PROJECT_PATH."ui/volt/");
-			//register volt view engine
-			$view->registerEngines($engines);
+			// simple view service (used for mailing templates)
+			$di->setShared("simpleView", function() use (&$engines) {
 
-			return $view;
-		});
+				//simpleView
+				$view = new \Phalcon\Mvc\View\Simple();
+				//set directory views
+				$view->setViewsDir(PROJECT_PATH."ui/volt/");
+				//register volt view engine
+				$view->registerEngines($engines);
 
-		// skip api for view service
-		if (MODULE_NAME == "api")
-			return;
+				return $view;
+			});
+		}
 
-		// set view service
-		$di->setShared("view", function() use (&$engines) {
+		// view service only for frontend applications
+		if (MODULE_NAME == "frontend") {
 
-			$view = new \Phalcon\Mvc\View();
-			//set directory views
-			$view->setViewsDir(PROJECT_PATH."ui/volt/");
-			//register volt view engine
-			$view->registerEngines($engines);
+			// set view service
+			$di->setShared("view", function() use (&$engines) {
 
-			return $view;
-		});
+				$view = new \Phalcon\Mvc\View();
+				//set directory views
+				$view->setViewsDir(PROJECT_PATH."ui/volt/");
+				//register volt view engine
+				$view->registerEngines($engines);
+
+				return $view;
+			});
+		}
 	}
 
 	/**
