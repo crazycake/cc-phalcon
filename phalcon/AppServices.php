@@ -78,15 +78,19 @@ class AppServices
 			return $url;
 		});
 
-		// global logger adapter
-		$di->setShared("logger", function() {
+		// global logger adapter for non CLI apps
+		if (MODULE_NAME != "cli") {
 
-			// date now
-			$file = date("d-m-Y");
+			$di->setShared("logger", function() {
 
-			return new \Phalcon\Logger\Adapter\File(STORAGE_PATH."logs/$file.log");
-		});
+				// date now
+				$file = date("d-m-Y");
 
+				return new \Phalcon\Logger\Adapter\File(STORAGE_PATH."logs/$file.log");
+			});
+		}
+
+		// stdout for docker logs
 		$di->setShared("stdout", function() {
 
 			$stream = new \Phalcon\Logger\Adapter\Stream("php://stdout");
@@ -127,11 +131,11 @@ class AppServices
 	 */
 	private function _setDatabaseServices(&$di)
 	{
-		//mongo adapter
+		// mongo adapter
 		if (!empty($this->config->mongoService))
 			$this->_setMongoService($di);
 
-		//mysql adapter
+		// mysql adapter
 		if (!empty($this->config->mysqlService))
 			$this->_setMysqlService($di);
 	}
