@@ -130,10 +130,7 @@ trait Mailer
 		$result = $sendgrid->send($mail);
 		$body   = json_encode($result->body() ?: "ok", JSON_UNESCAPED_SLASHES);
 
-		if (MODULE_NAME == "cli")
-			$this->stdout->debug("Mailer::sendMessage -> mail message SENT to: ".json_encode($recipients)." [$body]");
-		else
-			$this->logger->debug("Mailer::sendMessage -> mail message SENT to: ".json_encode($recipients)." [$body]");
+		$this->logger->debug("Mailer::sendMessage -> mail message SENT to: ".json_encode($recipients)." [$body]");
 
 		return $result;
 	}

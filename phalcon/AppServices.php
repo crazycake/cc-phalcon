@@ -78,28 +78,26 @@ class AppServices
 			return $url;
 		});
 
-		// global logger adapter for non CLI apps
-		if (MODULE_NAME != "cli") {
-
-			$di->setShared("logger", function() {
-
-				// date now
-				$file = date("d-m-Y");
-
-				return new \Phalcon\Logger\Adapter\File(STORAGE_PATH."logs/$file.log");
-			});
-		}
-
-		// stdout for docker logs
-		$di->setShared("stdout", function() {
+		$stdout = function() {
 
 			$stream = new \Phalcon\Logger\Adapter\Stream("php://stdout");
 
-			$ip = php_sapi_name() == "cli" ? "CLI" : \CrazyCake\Core\WebCore::getClientIP();
+			$ip = MODULE_NAME == "cli" ? "CLI" : \CrazyCake\Core\WebCore::getClientIP();
 
 			$stream->setFormatter(new \Phalcon\Logger\Formatter\Line("[%date%][%type%][$ip] %message%"));
 
 			return $stream;
+		};
+
+		// stdout for docker logs
+		$di->setShared("stdout", $stdout);
+
+		// global logger adapter
+		$di->setShared("logger", MODULE_NAME == "cli" ? $stdout : function() {
+
+			$file = date("d-m-Y");
+
+			return new \Phalcon\Logger\Adapter\File(STORAGE_PATH."logs/$file.log");
 		});
 
 		// basic http security
