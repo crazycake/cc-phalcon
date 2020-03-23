@@ -296,10 +296,10 @@ class AppServices
 		// setting up the view component
 		$engines = [
 
-			".volt" => function($view, $di_instance) {
+			".volt" => function($view, $di) {
 
 				// instance a new volt engine
-				$volt = new \Phalcon\Mvc\View\Engine\Volt($view, $di_instance);
+				$volt = new \Phalcon\Mvc\View\Engine\Volt($view, $di);
 				// set volt engine options
 				$volt->setOptions([
 					"compiledPath"      => STORAGE_PATH."cache/",
