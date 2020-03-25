@@ -229,7 +229,7 @@ class AppServices
 			$params = [
 				"lifetime" => $expiration,
 				"path"     => "/",
-				"secure"   => getenv("APP_HTTPS_ONLY") ?: false,
+				"secure"   => APP_ENV != "local",
 				"httponly" => true,
 				"samesite" => "Lax"
 			];

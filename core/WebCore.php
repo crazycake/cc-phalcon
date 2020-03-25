@@ -35,12 +35,6 @@ abstract class WebCore extends BaseCore implements WebSecurity
 	 */
 	public function beforeExecuteRoute()
 	{
-		// redirect non https?
-		$this->_handleHttps();
-
-		// redirect to www subdomain?
-		$this->_handleWww();
-
 		// set client object with its properties (User-Agent)
 		$this->_setClient();
 
@@ -191,35 +185,6 @@ abstract class WebCore extends BaseCore implements WebSecurity
 	public static function getClientIP()
 	{
 		return $_SERVER["HTTP_X_FORWARDED_FOR"] ?? (\Phalcon\DI::getDefault())->getShared("request")->getClientAddress();
-	}
-
-	/**
-	 * Handle HTTPS redirection
-	 */
-	private function _handleHttps()
-	{
-		$https  = getenv("APP_HTTPS_ONLY") ?: false;
-		$scheme = $this->getScheme();
-
-		if (!$https || $scheme == "https")
-			return;
-
-		// redirect non-https
-		$this->response->redirect(str_replace("http:", "https:", $this->baseUrl($this->getRequestedUri() ?? '', 1)), true, 301);
-	}
-
-	/**
-	 * Handle HTTPS redirection
-	 */
-	private function _handleWww()
-	{
-		$www = getenv("APP_WWW_ONLY") ?: false;
-
-		if (!$www || substr($this->host(), 0, 3) == "www")
-			return;
-
-		// redirect non-www
-		$this->response->redirect(str_replace("://", "://www.", $this->baseUrl($this->getRequestedUri() ?? '', 1)), true, 301);
 	}
 
 	/**
