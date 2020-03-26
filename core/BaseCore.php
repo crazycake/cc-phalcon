@@ -81,7 +81,7 @@ abstract class BaseCore extends Controller
 	 */
 	protected function getScheme()
 	{
-		return $_SERVER["HTTP_X_FORWARDED_PROTO"] ?? "http"; // aws elb headers
+		return $_SERVER["HTTP_X_FORWARDED_PROTO"] ?? "http"; // AWS ALB headers
 	}
 
 	/**
