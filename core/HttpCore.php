@@ -1,6 +1,6 @@
 <?php
 /**
- * BaseCore, shared methods for WebCore & WsCore.
+ * HttpCore, shared methods for WebCore & WsCore.
  * @author Nicolas Pulido <nicolas.pulido@crazycake.tech>
  */
 
@@ -27,7 +27,7 @@ interface WebSecurity
 /**
  * App Base Core
  */
-abstract class BaseCore extends Controller
+abstract class HttpCore extends Controller
 {
 	use Requester;
 	use Responser;
@@ -76,15 +76,6 @@ abstract class BaseCore extends Controller
 	}
 
 	/**
-	 * Get scheme
-	 * @return String - http or https
-	 */
-	protected function getScheme()
-	{
-		return $_SERVER["HTTP_X_FORWARDED_PROTO"] ?? "http"; // AWS ALB headers
-	}
-
-	/**
 	 * Get the requested URI
 	 * @return String
 	 */
@@ -100,6 +91,24 @@ abstract class BaseCore extends Controller
 	}
 
 	/**
+	 * Get scheme
+	 * @return String - http or https
+	 */
+	public static function getScheme()
+	{
+		return $_SERVER["HTTP_X_FORWARDED_PROTO"] ?? "http"; // AWS ALB headers
+	}
+
+	/**
+	 * Get client IP
+	 * @return String
+	 */
+	public static function getClientIP()
+	{
+		return $_SERVER["HTTP_X_FORWARDED_FOR"] ?? (\Phalcon\DI::getDefault())->getShared("request")->getClientAddress();
+	}
+
+	/**
 	 * Sends a mail message to user asynchronously
 	 * @param String $method - The Mailer method to call
 	 * @param Mixed $data - The data to be passed as args
@@ -109,15 +118,15 @@ abstract class BaseCore extends Controller
 	{
 		// simple input validation
 		if (empty($method))
-			throw new \Exception("BaseCore::sendMailMessage -> method param is required.");
+			throw new \Exception("HttpCore::sendMailMessage -> method param is required.");
 
 		$mailer = new \MailerController();
 
 		// checks that a MailerController exists
 		if (!method_exists($mailer, $method))
-			throw new \Exception("BaseCore::sendMailMessage -> method $method is not defined in Mailer Controller.");
+			throw new \Exception("HttpCore::sendMailMessage -> method $method is not defined in Mailer Controller.");
 
-		$this->logger->debug("BaseCore::sendMailMessage -> triggered mailer message method [$method]");
+		$this->logger->debug("HttpCore::sendMailMessage -> triggered mailer message method [$method]");
 
 		// call mailer class method (reflection)
 		$mailer->{$method}($data);

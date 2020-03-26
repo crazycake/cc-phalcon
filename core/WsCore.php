@@ -11,7 +11,7 @@ use CrazyCake\Phalcon\App;
 /**
  * Common functions for API WS
  */
-abstract class WsCore extends BaseCore
+abstract class WsCore extends HttpCore
 {
 	/**
 	 * Header API Key name

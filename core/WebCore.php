@@ -14,7 +14,7 @@ use CrazyCake\Helpers\JSON;
 /**
  * WebCore for frontend modules
  */
-abstract class WebCore extends BaseCore implements WebSecurity
+abstract class WebCore extends HttpCore implements WebSecurity
 {
 	/**
 	 * Checks Browser Support
@@ -178,14 +178,7 @@ abstract class WebCore extends BaseCore implements WebSecurity
 		return $js;
 	}
 
-	/**
-	 * Get client IP
-	 * @return String
-	 */
-	public static function getClientIP()
-	{
-		return $_SERVER["HTTP_X_FORWARDED_FOR"] ?? (\Phalcon\DI::getDefault())->getShared("request")->getClientAddress();
-	}
+
 
 	/**
 	 * Set the client (user agent) object with its properties

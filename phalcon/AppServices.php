@@ -82,7 +82,7 @@ class AppServices
 
 			$stream = new \Phalcon\Logger\Adapter\Stream("php://stdout");
 
-			$ip = MODULE_NAME == "cli" ? "CLI" : \CrazyCake\Core\WebCore::getClientIP();
+			$ip = MODULE_NAME == "cli" ? "CLI" : \CrazyCake\Core\HttpCore::getClientIP();
 
 			$stream->setFormatter(new \Phalcon\Logger\Formatter\Line("[%date%][%type%][$ip] %message%"));
 
@@ -229,7 +229,7 @@ class AppServices
 			$params = [
 				"lifetime" => $expiration,
 				"path"     => "/",
-				"secure"   => APP_ENV != "local",
+				"secure"   => \CrazyCake\Core\HttpCore::getScheme() == "https",
 				"httponly" => true,
 				"samesite" => "Lax"
 			];

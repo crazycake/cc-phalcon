@@ -7,8 +7,6 @@
 
 namespace CrazyCake\Helpers;
 
-use CrazyCake\Core\WebCore;
-
 /**
  * ReCaptcha Helper
  */
@@ -47,7 +45,7 @@ class ReCaptcha
 		$di = \Phalcon\DI::getDefault();
 
 		// get remote address
-		$ip = WebCore::getClientIP();
+		$ip = \CrazyCake\Core\HttpCore::getClientIP();
 
 		// verify response
 		$response = $this->recaptcha->setExpectedAction($action)
