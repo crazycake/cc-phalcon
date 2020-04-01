@@ -36,15 +36,6 @@ class Document
 	}
 
 	/**
-	 * Gets Logger
-	 * @return Object
-	 */
-	public static function getLogger()
-	{
-		return (\Phalcon\DI::getDefault())->getShared("logger");
-	}
-
-	/**
 	 * Get by Id
 	 * @param Mixed $id - The document ID (String or ObjectId)
 	 * @param Array $options - Options
