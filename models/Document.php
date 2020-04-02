@@ -36,39 +36,54 @@ class Document
 	}
 
 	/**
-	 * Get by Id
-	 * @param Mixed $id - The document ID (String or ObjectId)
+	 * Finds one document
+	 * @param Mixed $query - Query array or id as string / object
 	 * @param Array $options - Options
 	 * @return Object
 	 */
-	public static function getById($id, $options = [])
+	public static function findOne($query, $options = [])
 	{
 		$mongo = static::getClient();
 
-		try { $object = $mongo->{static::$COLLECTION}->findOne(["_id" => is_numeric($id) ? (string)$id : self::toObjectId($id)], $options); }
+		if (!is_array($query))
+			$query = ["_id" => is_numeric($query) ? (string)$query : self::toObjectId($query)];
+
+		try { $object = $mongo->{static::$COLLECTION}->findOne($query, $options); }
 
 		catch (\Exception $e) { $object = false; }
 
-		// return reduced object
 		return $object ? $object->jsonSerialize() : null;
 	}
 
 	/**
-	 * Get by Properties
-	 * @param Array $search - Search array
+	 * Find one or more documents
+	 * @param Mixed $query - Query array
 	 * @param Array $options - Options
-	 * @return Object
+	 * @return Array
 	 */
-	public static function getByProps($search, $options = [])
+	public static function find($query = [], $options = [])
 	{
 		$mongo = static::getClient();
 
-		try { $object = $mongo->{static::$COLLECTION}->findOne($search, $options); }
+		return $mongo->{static::$COLLECTION}->find($query, $options)->toArray();
+	}
 
-		catch (\Exception $e) { $object = false; }
+	/**
+	 * Count documents
+	 * @param Mixed $query - Query array or string id
+	 * @param Array $options - Options
+	 * @return Integer
+	 */
+	public static function count($query = [], $options = [])
+	{
+		$mongo = static::getClient();
 
-		// reduce object
-		return $object ? $object->jsonSerialize() : null;
+		if (!is_array($query))
+			$query = ["_id" => self::toObjectId($query)];
+
+		try { return $mongo->{static::$COLLECTION}->count($query, $options); }
+
+		catch (\Exception $e) { return 0; }
 	}
 
 	/**
@@ -95,66 +110,6 @@ class Document
 	}
 
 	/**
-	 * Find one or more documents
-	 * @param Mixed $search - Search array
-	 * @param Array $options - Options
-	 * @return Array
-	 */
-	public static function find($search = [], $options = [])
-	{
-		$mongo = static::getClient();
-
-		return $mongo->{static::$COLLECTION}->find($search, $options)->toArray();
-	}
-
-	/**
-	 * Count documents
-	 * @param Mixed $search - Search array or string id
-	 * @param Array $options - Options
-	 * @return Integer
-	 */
-	public static function count($search = [], $options = [])
-	{
-		$mongo = static::getClient();
-
-		if (!is_array($search))
-			$search = ["_id" => self::toObjectId($search)];
-
-		try { return $mongo->{static::$COLLECTION}->count($search, $options); }
-
-		catch (\Exception $e) { return 0; }
-	}
-
-	/**
-	 * Updates a single document using $set
-	 * @param Mixed $search - Search array or string id
-	 * @param Array $props - The properties
-	 * @return Object
-	 */
-	public static function updateOne($search, $props)
-	{
-		$mongo = static::getClient();
-
-		if (!is_array($search))
-			$search = ["_id" => self::toObjectId($search)];
-
-		return $mongo->{static::$COLLECTION}->updateOne($search, ['$set' => $props]);
-	}
-
-	/**
-	 * Updates multiple documents using $set
-	 * @param Mixed $search - Search array
-	 * @param Array $prop - The properties
-	 * @return Object
-	 */
-	public static function updateMany($search, $props)
-	{
-		$mongo = static::getClient();
-
-		return $mongo->{static::$COLLECTION}->updateMany($search, ['$set' => $props]);
-	}
-
-	/**
 	 * Inserts a new document
 	 * @param Mixed $data - The input data
 	 * @return Object
@@ -170,35 +125,64 @@ class Document
 	}
 
 	/**
-	 * Deletes a single document
-	 * @param Mixed $search - Search array or string id
+	 * Updates a single document using $set
+	 * @param Mixed $query - Query array or string id
+	 * @param Array $props - The properties
 	 * @return Object
 	 */
-	public static function deleteOne($search)
+	public static function updateOne($query, $props)
 	{
 		$mongo = static::getClient();
 
-		if (!is_array($search))
-			$search = ["_id" => self::toObjectId($search)];
+		if (!is_array($query))
+			$query = ["_id" => self::toObjectId($query)];
 
-		return $mongo->{static::$COLLECTION}->deleteOne($search);
+		return $mongo->{static::$COLLECTION}->updateOne($query, ['$set' => $props]);
+	}
+
+	/**
+	 * Updates multiple documents using $set
+	 * @param Mixed $query - Query array
+	 * @param Array $prop - The properties
+	 * @return Object
+	 */
+	public static function updateMany($query, $props)
+	{
+		$mongo = static::getClient();
+
+		return $mongo->{static::$COLLECTION}->updateMany($query, ['$set' => $props]);
+	}
+
+	/**
+	 * Deletes a single document
+	 * @param Mixed $query - Query array or string id
+	 * @return Object
+	 */
+	public static function deleteOne($query)
+	{
+		$mongo = static::getClient();
+
+		if (!is_array($query))
+			$query = ["_id" => self::toObjectId($query)];
+
+		return $mongo->{static::$COLLECTION}->deleteOne($query);
 	}
 
 	/**
 	 * Deletes multiple documents
-	 * @param Mixed $search - Search array
+	 * @param Array $query - Query array
 	 * @return Object
 	 */
-	public static function deleteMany($search)
+	public static function deleteMany($query)
 	{
 		$mongo = static::getClient();
 
-		return $mongo->{static::$COLLECTION}->deleteMany($search);
+		return $mongo->{static::$COLLECTION}->deleteMany($query);
 	}
 
 	/**
 	 * Converts to Mongo Object ID
-	 * @param Mixed $id - The input id
+	 * @param Mixed $id - The input id as string / object
 	 * @return Object
 	 */
 	public static function toObjectId($id)
@@ -240,19 +224,6 @@ class Document
 	}
 
 	/**
-	 * Get ObjectId Date
-	 * @param Mixed $id - The input id as string or ObjectId
-	 * @param String $format - Date format
-	 * @return String
-	 */
-	public static function getIdDate($id, $format = "Y-m-d H:i:s")
-	{
-		$id = self::toObjectId($id);
-
-		return self::toDateString(new \MongoDB\BSON\UTCDateTime($id->getTimestamp() * 1000), $format);
-	}
-
-	/**
 	 * Converts JSON to Mongo object
 	 * @param Mixed $json - The input JSON
 	 * @return Object
@@ -265,6 +236,19 @@ class Document
 		$bson = \MongoDB\BSON\fromJSON($json);
 
 		return \MongoDB\BSON\toPHP($bson);
+	}
+
+	/**
+	 * Get ObjectId Date
+	 * @param Mixed $id - The input id as string or ObjectId
+	 * @param String $format - Date format
+	 * @return String
+	 */
+	public static function getIdDate($id, $format = "Y-m-d H:i:s")
+	{
+		$id = self::toObjectId($id);
+
+		return self::toDateString(new \MongoDB\BSON\UTCDateTime($id->getTimestamp() * 1000), $format);
 	}
 
 	/**
