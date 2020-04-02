@@ -74,14 +74,14 @@ class Document
 	/**
 	 * Get Property Distinct Values
 	 * @param String $prop - property name
+	 * @param Array $query - The query
 	 * @param Mixed $case - case flag [UPPER, LOWER]
 	 * @return Array
 	 */
-	public static function getDistinctValues($prop, $case = false)
+	public static function getDistinctValues($prop, $query = [], $case = null)
 	{
-		$mongo = static::getClient();
-
-		$values = $mongo->{static::$COLLECTION}->distinct($prop);
+		$mongo  = static::getClient();
+		$values = $mongo->{static::$COLLECTION}->distinct($prop, $query);
 
 		foreach ($values as &$v)
 			$v = empty($case) ? $v : ($case == "UPPER" ? strtoupper($v) : strtolower($v));
