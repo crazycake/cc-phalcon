@@ -68,7 +68,7 @@ trait AccountSession
 
 		$user_class = $this->SESSION_CONF["user_entity"];
 
-		if (!$user_class::getById($user_session["id"]))
+		if (!$user_class::findOne($user_session["id"]))
 			return false;
 
 		return true;

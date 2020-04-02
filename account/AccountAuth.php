@@ -110,7 +110,7 @@ trait AccountAuth
 		$data = $this->handleRequest($params, "POST", $this->AUTH_CONF["csrf"]);
 
 		// find user
-		$user = $entity::getByProps([$this->AUTH_CONF["user_key"] => $data[$this->AUTH_CONF["user_key"]]]);
+		$user = $entity::findOne([$this->AUTH_CONF["user_key"] => $data[$this->AUTH_CONF["user_key"]]]);
 
 		if (!$user)
 			$this->jsonResponse(400, $this->AUTH_CONF["trans"]["AUTH_FAILED"]);
@@ -180,7 +180,7 @@ trait AccountAuth
 		$entity = $this->AUTH_CONF["user_entity"];
 
 		// validate if user exists
-		if ($entity::getByProps(["email" => $data["email"]]))
+		if ($entity::findOne(["email" => $data["email"]]))
 			$this->jsonResponse(400, str_replace("{email}", $data["email"], $this->AUTH_CONF["trans"]["EMAIL_EXISTS"]));
 
 		// remove CSRF key
@@ -239,7 +239,7 @@ trait AccountAuth
 			list($user_id, $token_type, $token) = self::validateHash($hash);
 
 			// check user pending flag
-			$user = $entity::getById($user_id);
+			$user = $entity::findOne($user_id);
 
 			if (!$user || $user->flag == "disabled")
 				throw new \Exception("invalid user or missing 'pending' flag");

@@ -71,7 +71,7 @@ trait AccountPassword
 		}
 
 		$entity = $this->PASSWORD_CONF["user_entity"];
-		$user   = $entity::getByProps(["email" => $email, "flag" => "enabled"]);
+		$user   = $entity::findOne(["email" => $email, "flag" => "enabled"]);
 
 		// if user not exists, send message
 		if (!$user)
@@ -135,7 +135,7 @@ trait AccountPassword
 
 			// get user
 			$entity = $this->PASSWORD_CONF["user_entity"];
-			$user   = $entity::getById($user_id);
+			$user   = $entity::findOne($user_id);
 
 			if (!$user)
 				throw new \Exception("got an invalid user [$user_id] when validating hash.");
@@ -174,7 +174,7 @@ trait AccountPassword
 		try {
 			// get model class name & user
 			$entity = $this->PASSWORD_CONF["user_entity"];
-			$user   = $entity::getById($this->user_session["id"]);
+			$user   = $entity::findOne($this->user_session["id"]);
 
 			if (empty($user) || empty($new_pass) || empty($current_pass))
 				return;

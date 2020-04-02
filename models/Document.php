@@ -121,7 +121,7 @@ class Document
 		$insertion = $mongo->{static::$COLLECTION}->insertOne($data);
 		$object_id = $insertion->getInsertedId();
 
-		return self::getById($object_id);
+		return self::findOne($object_id);
 	}
 
 	/**
