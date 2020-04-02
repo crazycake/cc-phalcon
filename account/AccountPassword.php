@@ -71,7 +71,7 @@ trait AccountPassword
 		}
 
 		$entity = $this->PASSWORD_CONF["user_entity"];
-		$user   = $entity::getByProperties(["email" => $email, "flag" => "enabled"]);
+		$user   = $entity::getByProps(["email" => $email, "flag" => "enabled"]);
 
 		// if user not exists, send message
 		if (!$user)
@@ -145,7 +145,7 @@ trait AccountPassword
 				throw new \Exception($this->PASSWORD_CONF["trans"]["PASS_TOO_SHORT"]);
 
 			// saves new pass
-			$entity::updateProperties($user_id, ["pass" => $this->security->hash($password)]);
+			$entity::updateOne($user_id, ["pass" => $this->security->hash($password)]);
 
 			// new user session
 			$this->newUserSession($user);
@@ -197,7 +197,7 @@ trait AccountPassword
 				throw new \Exception($this->PASSWORD_CONF["trans"]["NEW_PASS_EQUALS"]);
 
 			// saves new pass
-			$entity::updateProperties($this->user_session["id"], ["pass" => $this->security->hash($new_pass)]);
+			$entity::updateOne($this->user_session["id"], ["pass" => $this->security->hash($new_pass)]);
 
 			return true;
 		}

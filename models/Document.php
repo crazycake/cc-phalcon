@@ -59,7 +59,7 @@ class Document
 	 * @param Array $options - Options
 	 * @return Object
 	 */
-	public static function getByProperties($search, $options = [])
+	public static function getByProps($search, $options = [])
 	{
 		$mongo = static::getClient();
 
@@ -75,10 +75,10 @@ class Document
 	 * Get Property Distinct Values
 	 * @param String $prop - property name
 	 * @param Array $query - The query
-	 * @param Mixed $case - case flag [UPPER, LOWER]
+	 * @param Mixed $case - case flag for values [UPPER, LOWER]
 	 * @return Array
 	 */
-	public static function getDistinctValues($prop, $query = [], $case = null)
+	public static function distinct($prop, $query = [], $case = null)
 	{
 		$mongo  = static::getClient();
 		$values = $mongo->{static::$COLLECTION}->distinct($prop, $query);
@@ -95,8 +95,8 @@ class Document
 	}
 
 	/**
-	 * Find documents
-	 * @param Mixed $search - Search array or string id
+	 * Find one or more documents
+	 * @param Mixed $search - Search array
 	 * @param Array $options - Options
 	 * @return Array
 	 */
@@ -126,12 +126,12 @@ class Document
 	}
 
 	/**
-	 * Updates a single document
+	 * Updates a single document using $set
 	 * @param Mixed $search - Search array or string id
-	 * @param Array $prop - The properties
+	 * @param Array $props - The properties
 	 * @return Object
 	 */
-	public static function updateProperties($search, $props)
+	public static function updateOne($search, $props)
 	{
 		$mongo = static::getClient();
 
@@ -139,6 +139,19 @@ class Document
 			$search = ["_id" => self::toObjectId($search)];
 
 		return $mongo->{static::$COLLECTION}->updateOne($search, ['$set' => $props]);
+	}
+
+	/**
+	 * Updates multiple documents using $set
+	 * @param Mixed $search - Search array
+	 * @param Array $prop - The properties
+	 * @return Object
+	 */
+	public static function updateMany($search, $props)
+	{
+		$mongo = static::getClient();
+
+		return $mongo->{static::$COLLECTION}->updateMany($search, ['$set' => $props]);
 	}
 
 	/**
@@ -172,7 +185,19 @@ class Document
 	}
 
 	/**
-	 * To Mongo Object ID
+	 * Deletes multiple documents
+	 * @param Mixed $search - Search array
+	 * @return Object
+	 */
+	public static function deleteMany($search)
+	{
+		$mongo = static::getClient();
+
+		return $mongo->{static::$COLLECTION}->deleteMany($search);
+	}
+
+	/**
+	 * Converts to Mongo Object ID
 	 * @param Mixed $id - The input id
 	 * @return Object
 	 */
@@ -186,8 +211,8 @@ class Document
 	}
 
 	/**
-	 * To ISO date helper
-	 * @param Mixed $date - The input DateTime or string date
+	 * Converts to ISO date
+	 * @param Mixed $date - The input DateTime or date string
 	 * @return Object
 	 */
 	public static function toIsoDate($date = null)
@@ -202,9 +227,9 @@ class Document
 	}
 
 	/**
-	 * To Date string
+	 * Converts to Date string
 	 * @param Object $bsonDate - The BSON date
-	 * @param String $format - The input format
+	 * @param String $format - Date format
 	 * @return String
 	 */
 	public static function toDateString($bsonDate, $format = "Y-m-d H:i:s")
@@ -215,9 +240,9 @@ class Document
 	}
 
 	/**
-	 * Get Id Date
-	 * @param Mixed $id - The input id
-	 * @param String $format
+	 * Get ObjectId Date
+	 * @param Mixed $id - The input id as string or ObjectId
+	 * @param String $format - Date format
 	 * @return String
 	 */
 	public static function getIdDate($id, $format = "Y-m-d H:i:s")
@@ -228,7 +253,7 @@ class Document
 	}
 
 	/**
-	 * JSON to mongo object
+	 * Converts JSON to Mongo object
 	 * @param Mixed $json - The input JSON
 	 * @return Object
 	 */
