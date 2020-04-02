@@ -88,9 +88,9 @@ class Document
 
 	/**
 	 * Get Property Distinct Values
-	 * @param String $prop - property name
+	 * @param String $prop - Property name
 	 * @param Array $query - The query
-	 * @param Mixed $case - case flag for values [UPPER, LOWER]
+	 * @param Mixed $case - Case flag for values [UPPER, LOWER]
 	 * @return Array
 	 */
 	public static function distinct($prop, $query = [], $case = null)
