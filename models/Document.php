@@ -128,29 +128,31 @@ class Document
 	 * Updates a single document using $set
 	 * @param Mixed $query - Query array or string id
 	 * @param Array $props - The properties
+	 * @param Boolean $upsert - Upsert flag
 	 * @return Object
 	 */
-	public static function updateOne($query, $props)
+	public static function updateOne($query, $props, $upsert = false)
 	{
 		$mongo = static::getClient();
 
 		if (!is_array($query))
 			$query = ["_id" => self::toObjectId($query)];
 
-		return $mongo->{static::$COLLECTION}->updateOne($query, ['$set' => $props]);
+		return $mongo->{static::$COLLECTION}->updateOne($query, ['$set' => $props], ["upsert" => $upsert]);
 	}
 
 	/**
 	 * Updates multiple documents using $set
 	 * @param Mixed $query - Query array
 	 * @param Array $prop - The properties
+	 * @param Boolean $upsert - Upsert flag
 	 * @return Object
 	 */
-	public static function updateMany($query, $props)
+	public static function updateMany($query, $props, $upsert = false)
 	{
 		$mongo = static::getClient();
 
-		return $mongo->{static::$COLLECTION}->updateMany($query, ['$set' => $props]);
+		return $mongo->{static::$COLLECTION}->updateMany($query, ['$set' => $props], ["upsert" => $upsert]);
 	}
 
 	/**
