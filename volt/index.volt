@@ -5,53 +5,52 @@
  */
 
 if (empty($client)) die("400 Bad Request");
-
 ?>
 <!DOCTYPE html>
 <html lang="{{ client.lang }}">
 	<head>
 		{# charset #}
-		<meta charset="utf-8" />
+		<meta charset="utf-8">
 
 		{# viewport #}
 		{% if client.isMobile %}
-			<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" vmid="viewport" data-vue-meta="1" />
+			<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" vmid="viewport" data-vue-meta="1">
 
 			{# apple metas #}
-			<meta name="apple-mobile-web-app-capable" content="yes" />
-			<meta name="apple-mobile-web-app-status-bar-style" content="black" />
-			<meta name="apple-mobile-web-app-title" content="{{ config.name }}" />
+			<meta name="apple-mobile-web-app-capable" content="yes">
+			<meta name="apple-mobile-web-app-status-bar-style" content="black">
+			<meta name="apple-mobile-web-app-title" content="{{ config.name }}">
 
 			{# android metas #}
-			<meta name="mobile-web-app-capable" content="yes" />
-			<meta name="application-name" content="{{ config.name }}" />
+			<meta name="mobile-web-app-capable" content="yes">
+			<meta name="application-name" content="{{ config.name }}">
 
 			{# PWA metas #}
 			{% if metas['theme_color'] is not empty %}
-				<meta name="theme-color" content="{{ metas['theme_color'] }}" />
+				<meta name="theme-color" content="{{ metas['theme_color'] }}">
 			{% endif %}
 
 			{% if metas['manifest'] is not empty %}
-				<link rel="manifest" href="{{ url('manifest.json') }}" />
+				<link rel="manifest" href="{{ url('manifest.json') }}">
 			{% endif %}
 
 		{% else %}
-			<meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no" />
+			<meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
 		{% endif %}
 
 		{# IE: force last version of render compatibility mod  #}
 		{% if client.browser == "MSIE" %}
-			<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+			<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		{% endif %}
 
 		{# document metas #}
 		{% if metas['description'] is not empty %}
-			<meta name="description" content="{{ metas['description'] }}" vmid="description" data-vue-meta="1" />
+			<meta name="description" content="{{ metas['description'] }}" vmid="description" data-vue-meta="1">
 		{% endif %}
 
-		<meta name="author" content="{{ metas['author'] is not empty ? metas['author'] : 'CrazyCake Technologies' }}" />
+		<meta name="author" content="{{ metas['author'] is not empty ? metas['author'] : 'CrazyCake Technologies' }}">
 
-		<meta name="robots" content="{{ metas['disallow_robots'] is not empty ? 'noindex,nofollow' : 'index,follow' }}" />
+		<meta name="robots" content="{{ metas['disallow_robots'] is not empty ? 'noindex,nofollow' : 'index,follow' }}">
 
 		<title>{{ metas['title'] is not empty ? metas['title'] : config.name }}</title>
 
@@ -60,8 +59,8 @@ if (empty($client)) die("400 Bad Request");
 		<meta name="csrf-value" content="{{ client.csrfValue }}">
 
 		{# favicons #}
-		<link rel="icon" type="image/png" href="{{ static_url('images/favicons/favicon.png') }}" />
-		<link rel="apple-touch-icon" href="{{ static_url('images/favicons/favicon-180.png') }}" />
+		<link rel="icon" type="image/png" href="{{ static_url('images/favicons/favicon.png') }}">
+		<link rel="apple-touch-icon" href="{{ static_url('images/favicons/favicon-180.png') }}">
 
 		{# custom metas #}
 		{% if metas['custom'] is not empty %}
@@ -74,7 +73,7 @@ if (empty($client)) die("400 Bad Request");
 		{% endif %}
 
 		{# Bundle CSS #}
-		<link id="style" rel="stylesheet" type="text/css" href="{{ css_url }}" />
+		<link id="style" rel="stylesheet" type="text/css" href="{{ css_url }}">
 
 		{# Js data #}
 		{% if metas['script'] is not empty %}
@@ -86,7 +85,7 @@ if (empty($client)) die("400 Bad Request");
 
 		{# Google Tag Manager [HEAD] #}
 		{% if config.google.gtmID is not empty %}
-			<script>
+			<script defer>
 				(function(w,d,s,l,i){
 					w[l]=w[l]||[];w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});
 					var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';
@@ -95,6 +94,21 @@ if (empty($client)) die("400 Bad Request");
 					f.parentNode.insertBefore(j,f);
 				})(window,document,'script','dataLayer','{{ config.google.gtmID }}');
 			</script>
+		{% endif %}
+
+		{# Google Analytics (async loading) #}
+		{% else if config.google.analyticsUA is not empty %}
+			<script defer>
+				window.ga=function(){ga.q.push(arguments)};ga.q=[];ga.l=+new Date;
+				ga('create','{{ config.google.analyticsUA }}','auto');
+				ga('send','pageview');
+			</script>
+			<script async defer src="https://www.google-analytics.com/analytics.js"></script>
+		{% endif %}
+
+		{# reCaptcha plugin #}
+		{% if config.google.reCaptchaID is not empty %}
+			<script async defer src="https://www.google.com/recaptcha/api.js?onload=onRecaptchaLoaded&render={{ config.google.reCaptchaID }}&hl={{ client.lang }}"></script>
 		{% endif %}
 
 	</head>
@@ -107,27 +121,12 @@ if (empty($client)) die("400 Bad Request");
 			{{ get_content() }}
 		</div>
 
-		{# Google Analytics (async loading) #}
-		{% if config.google.analyticsUA is not empty %}
-			<script defer>
-				window.ga=function(){ga.q.push(arguments)};ga.q=[];ga.l=+new Date;
-				ga('create','{{ config.google.analyticsUA }}','auto');
-				ga('send','pageview');
-			</script>
-			<script async defer src="https://www.google-analytics.com/analytics.js"></script>
-		{% endif %}
-
 		{# Google Tag Manager [BODY] #}
 		{% if config.google.gtmID is not empty %}
 			<noscript>
 				<iframe src="https://www.googletagmanager.com/ns.html?id={{ config.google.gtmID }}" height="0" width="0" style="display:none;visibility:hidden;">
 				</iframe>
 			</noscript>
-		{% endif %}
-
-		{# reCaptcha plugin #}
-		{% if config.google.reCaptchaID is not empty %}
-			<script async defer src="https://www.google.com/recaptcha/api.js?onload=onRecaptchaLoaded&render={{ config.google.reCaptchaID }}&hl={{ client.lang }}"></script>
 		{% endif %}
 
 		{# JS disabled fallback #}
