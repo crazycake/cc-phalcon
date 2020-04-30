@@ -94,10 +94,8 @@ if (empty($client)) die("400 Bad Request");
 					f.parentNode.insertBefore(j,f);
 				})(window,document,'script','dataLayer','{{ config.google.gtmID }}');
 			</script>
-		{% endif %}
-
 		{# Google Analytics (async loading) #}
-		{% else if config.google.analyticsUA is not empty %}
+		{% elseif config.google.analyticsUA is not empty %}
 			<script defer>
 				window.ga=function(){ga.q.push(arguments)};ga.q=[];ga.l=+new Date;
 				ga('create','{{ config.google.analyticsUA }}','auto');
