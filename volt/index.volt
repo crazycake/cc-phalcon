@@ -85,7 +85,7 @@ if (empty($client)) die("400 Bad Request");
 
 		{# Google Tag Manager [HEAD] #}
 		{% if config.google.gtmID is not empty %}
-			<script defer>
+			<script>
 				(function(w,d,s,l,i){
 					w[l]=w[l]||[];w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});
 					var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';
@@ -96,7 +96,7 @@ if (empty($client)) die("400 Bad Request");
 			</script>
 		{# Google Analytics (async loading) #}
 		{% elseif config.google.analyticsUA is not empty %}
-			<script defer>
+			<script>
 				window.ga=function(){ga.q.push(arguments)};ga.q=[];ga.l=+new Date;
 				ga('create','{{ config.google.analyticsUA }}','auto');
 				ga('send','pageview');
