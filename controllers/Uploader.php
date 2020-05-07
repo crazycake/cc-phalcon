@@ -290,7 +290,7 @@ trait Uploader
 			];
 
 			// set job (img-api)
-			$job = !empty($conf["resize"]) ? "resize" : "s3push";
+			$job = isset($conf["resize"]) ? "resize" : "s3push";
 
 			// loop through files
 			foreach ($files as $file) {
