@@ -278,6 +278,7 @@ trait Uploader
 
 		foreach ($this->UPLOADER_CONF["files"] as $key => $conf) {
 
+
 			if (empty($conf["resize"]) && empty($conf["s3push"]))
 				continue;
 
@@ -291,6 +292,7 @@ trait Uploader
 
 			// set job (img-api)
 			$job = isset($conf["resize"]) ? "resize" : "s3push";
+
 
 			// loop through files
 			foreach ($files as $file) {
