@@ -62,7 +62,7 @@ class Forms
 			return null;
 
 		// remove spaces & format to capitalized name
-		return mb_convert_case(ltrim(rtrim($name)), MB_CASE_TITLE, "UTF-8");
+		return mb_convert_case(trim($name), MB_CASE_TITLE, "UTF-8");
 	}
 
 	/**

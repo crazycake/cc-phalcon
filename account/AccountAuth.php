@@ -192,7 +192,7 @@ trait AccountAuth
 		$data["createdAt"] = $entity::toIsoDate();
 
 		// common optionals
-		if (!empty($data["rut"]))       $data["rut"]       = strtolower(ltrim(rtrim($data["rut"])));
+		if (!empty($data["rut"]))       $data["rut"]       = strtolower(trim($data["rut"]));
 		if (!empty($data["firstName"])) $data["firstName"] = Forms::formatName($data["firstName"]);
 		if (!empty($data["lastName"]))  $data["lastName"]  = Forms::formatName($data["lastName"]);
 

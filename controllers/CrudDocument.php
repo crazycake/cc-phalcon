@@ -84,7 +84,7 @@ trait CrudDocument
 		$query = [];
 		$opts  = ["limit" => intval($limit), "skip" => intval($data["skip"] ?? 0)];
 
-		$data["search"] = rtrim(ltrim($data["search"] ?? ""));
+		$data["search"] = trim($data["search"] ?? "");
 
 		// sort by score relevance (full text search)
 		if (!empty($data["search"])) {
