@@ -20,11 +20,6 @@ abstract class WsCore extends HttpCore
 	const HEADER_API_KEY = "API-KEY";
 
 	/**
-	 * Welcome message for API server status
-	 */
-	abstract protected function welcome();
-
-	/**
 	 * Not found service catcher
 	 */
 	public function serviceNotFound()
