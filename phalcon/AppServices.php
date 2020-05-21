@@ -148,6 +148,7 @@ class AppServices
 		$di->setShared("mysql", function() {
 
 			return new \Phalcon\Db\Adapter\Pdo\Mysql([
+
 				"host"     => getenv("MYSQL_HOST") ?: "mysql",
 				"port"     => 3306,
 				"dbname"   => "app",
@@ -192,6 +193,7 @@ class AppServices
 		$di->setShared("trans", function() use ($conf) {
 
 			return new \CrazyCake\Helpers\GetText([
+
 				"domain"    => "app",
 				"supported" => (array)$conf->langs,
 				"directory" => APP_PATH."langs/"
@@ -213,6 +215,7 @@ class AppServices
 			$expiration = 3600*($conf->sessionExpiration ?? 8); // hours
 
 			$options = [
+
 				"uniqueId"   => $conf->namespace,
 				"lifetime"   => $expiration,
 				"prefix"     => "_".strtoupper($conf->namespace)."_",
@@ -227,6 +230,7 @@ class AppServices
 
 			// set cookies params
 			$params = [
+
 				"lifetime" => $expiration,
 				"path"     => "/",
 				"secure"   => \CrazyCake\Core\HttpCore::getScheme() == "https",
