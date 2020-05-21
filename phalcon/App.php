@@ -201,6 +201,7 @@ abstract class App
 	{
 		// 1. project dirs
 		$dirs = [
+
 			"cli"         => APP_PATH."cli/",
 			"controllers" => APP_PATH."controllers/",
 			"models"      => APP_PATH."models/"
