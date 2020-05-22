@@ -269,8 +269,8 @@ abstract class WebCore extends HttpCore implements WebSecurity
 		// for dev always set a random version
 		else {
 
-			$css_url .= "?".uniqid();
-			$js_url  .= "?".uniqid();
+			$css_url .= "?v=".uniqid();
+			$js_url  .= "?v=".uniqid();
 		}
 		//ss($css_url, $js_url);
 
