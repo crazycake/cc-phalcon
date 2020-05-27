@@ -115,6 +115,10 @@ trait AccountAuth
 		if (!$user)
 			$this->jsonResponse(400, $this->AUTH_CONF["trans"]["AUTH_FAILED"]);
 
+		// basic attempts security
+		if ($this->getLoginAttempts($user->_id) > $this->AUTH_CONF["login_attempts"])
+			$this->jsonResponse(400, $this->AUTH_CONF["trans"]["AUTH_BLOCKED"]);
+
 		// recaptcha validation
 		if ($this->AUTH_CONF["recaptcha"] && $this->getLoginAttempts($user->_id) >= 3) {
 
@@ -128,10 +132,6 @@ trait AccountAuth
 		if (!$this->security->checkHash($data["pass"], $user->pass ?? '')) {
 
 			$this->saveLoginAttempt($user->_id);
-
-			// basic attempts security
-			if ($this->getLoginAttempts($user->_id) > $this->AUTH_CONF["login_attempts"])
-				$this->jsonResponse(400, $this->AUTH_CONF["trans"]["AUTH_BLOCKED"]);
 
 			$this->jsonResponse(400, $this->AUTH_CONF["trans"]["AUTH_FAILED"]);
 		}
