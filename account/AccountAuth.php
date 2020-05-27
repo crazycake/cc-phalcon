@@ -112,15 +112,13 @@ trait AccountAuth
 		// find user
 		$user = $entity::findOne([$this->AUTH_CONF["user_key"] => $data[$this->AUTH_CONF["user_key"]]]);
 
-		if (!$user)
-			$this->jsonResponse(400, $this->AUTH_CONF["trans"]["AUTH_FAILED"]);
+		if (!$user) $this->jsonResponse(400, $this->AUTH_CONF["trans"]["AUTH_FAILED"]);
 
-		// basic attempts security
-		if ($this->getLoginAttempts($user->_id) > $this->AUTH_CONF["login_attempts"])
-			$this->jsonResponse(400, $this->AUTH_CONF["trans"]["AUTH_BLOCKED"]);
+		// get login attempts
+		$attempts = $this->getLoginAttempts($user->_id);
 
 		// recaptcha validation
-		if ($this->AUTH_CONF["recaptcha"] && $this->getLoginAttempts($user->_id) >= 3) {
+		if ($this->AUTH_CONF["recaptcha"] && $attempts >= 3) {
 
 			$recaptcher = new ReCaptcha($this->config->google->reCaptchaKey);
 
@@ -128,7 +126,10 @@ trait AccountAuth
 				return $this->jsonResponse(400, $this->AUTH_CONF["trans"]["NOT_HUMAN"]);
 		}
 
-		// password hash validation
+		// basic attempts security
+		if ($attempts > $this->AUTH_CONF["login_attempts"]) $this->jsonResponse(400, $this->AUTH_CONF["trans"]["AUTH_BLOCKED"]);
+
+		// password validation
 		if (!$this->security->checkHash($data["pass"], $user->pass ?? '')) {
 
 			$this->saveLoginAttempt($user->_id);
