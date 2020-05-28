@@ -106,7 +106,7 @@ if (empty($client)) die("400 Bad Request");
 
 		{# reCaptcha plugin #}
 		{% if config.google.reCaptchaID is not empty %}
-			<script async defer src="https://www.google.com/recaptcha/api.js?onload=onRecaptchaLoaded&render={{ config.google.reCaptchaID }}&hl={{ client.lang }}"></script>
+			<script async defer src="https://www.google.com/recaptcha/api.js?render={{ config.google.reCaptchaID }}&hl={{ client.lang }}"></script>
 		{% endif %}
 
 	</head>
