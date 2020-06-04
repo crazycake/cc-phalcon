@@ -135,10 +135,10 @@ abstract class WebCore extends HttpCore implements WebSecurity
 		if (!$this->request->isPost())
 			return true;
 
-		if (empty($this->client->csrfKey))
+		if (empty($this->client->csrfToken))
 			return false;
 
-		return $this->client->csrfValue == $this->request->getPost($this->client->csrfKey);
+		return $this->client->csrfToken == $this->request->getHeader('X-Csrf-Token');
 	}
 
 	/**
@@ -162,7 +162,7 @@ abstract class WebCore extends HttpCore implements WebSecurity
 		$data->UA = $this->client;
 
 		// don't expose sensitive data
-		unset($data->UA->csrfKey, $data->UA->csrfValue);
+		unset($data->UA->csrfToken);
 
 		// set translations
 		$data->TRANS = Translations::defaultJsTranslations();
@@ -231,22 +231,23 @@ abstract class WebCore extends HttpCore implements WebSecurity
 	private function _setCSRF()
 	{
 		// check if CSRF was already created
-		if (!$this->session->has("csrf")) {
+		if (!$this->session->has("csrfToken")) {
 
-			$key   = $this->security->getTokenKey();
-			$value = $this->security->getToken();
+			$token = $this->security->getToken();
 
 			// save it in session
-			$this->session->set("csrf", [$key, $value]);
+			$this->session->set("csrfToken", $token);
+
+			// ! remove old approach
+			if ($this->session->has("csrf")) $this->session->remove("csrf");
 		}
 		else {
 
-			list($key, $value) = $this->session->get("csrf");
+			$token = $this->session->get("csrfToken");
 		}
 
 		// update client props
-		$this->client->csrfKey   = $key;
-		$this->client->csrfValue = $value;
+		$this->client->csrfToken = $token;
 	}
 
 	/**

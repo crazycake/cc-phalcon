@@ -184,9 +184,6 @@ trait AccountAuth
 		if ($entity::findOne(["email" => $data["email"]]))
 			$this->jsonResponse(400, str_replace("{email}", $data["email"], $this->AUTH_CONF["trans"]["EMAIL_EXISTS"]));
 
-		// remove CSRF key
-		unset($data[$this->client->csrfKey]);
-
 		// set properties
 		$data["pass"]      = empty($data["pass"]) ? null : $this->security->hash($data["pass"]);
 		$data["flag"]      = "pending";
