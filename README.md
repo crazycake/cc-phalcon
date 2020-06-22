@@ -3,7 +3,7 @@ CrazyCake Phalcon Core
 
 ## PhalconPHP
 
-Current Version: `3.x`
+Current Version: `4.x`
 
 ## Box Project
 
