@@ -34,26 +34,25 @@ class TaskCore extends Task
 
 	/**
 	 * Outputs app configuration in JSON format
-	 * @param Array $args - The args array, the 1st arg is the filter config property
+	 * @param String $prop - The property name
 	 */
-	public function appConfigAction($args = [])
+	public function appConfigAction($prop = "")
 	{
 		$conf = $this->config;
 
-		if (empty($args))
+		if (empty($prop))
 			$this->output($conf, true);
 
-		if (!isset($conf->{$args[0]}))
+		if (!isset($conf->{$prop}))
 			$this->colorize("No value found for argument.", "ERROR", true);
 
-		$this->output($conf->{$args[0]}, true);
+		$this->output($conf->{$prop}, true);
 	}
 
 	/**
 	 * Generates revision assets names inside public assets module folder
-	 * @param Array $args - The input params
 	 */
-	public function revAssetsAction($args = [])
+	public function revAssetsAction()
 	{
 		$assets_path = PROJECT_PATH."public/assets/";
 
@@ -105,9 +104,8 @@ class TaskCore extends Task
 
 	/**
 	 * Compiles all volt files
-	 * @param Array $args - The args array
 	 */
-	public function compileVoltAction($args = [])
+	public function compileVoltAction()
 	{
 		$conf = $this->config;
 

@@ -9,7 +9,7 @@ namespace CrazyCake\Phalcon;
 /**
  * Class ExceptionsPlugin.
  */
-class ExceptionsPlugin extends \Phalcon\Mvc\User\Plugin
+class ExceptionsPlugin extends \Phalcon\Di\Injectable
 {
 	/**
 	 * This action is executed before a exception ocurrs.
