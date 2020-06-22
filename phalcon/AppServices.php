@@ -78,26 +78,35 @@ class AppServices
 			return $url;
 		});
 
-		$stdout = function() {
-
-			$stream = new \Phalcon\Logger\Adapter\Stream("php://stdout");
-
-			$ip = MODULE_NAME == "cli" ? "CLI" : \CrazyCake\Core\HttpCore::getClientIP();
-
-			$stream->setFormatter(new \Phalcon\Logger\Formatter\Line("[%date%][%type%][$ip] %message%"));
-
-			return $stream;
-		};
-
-		// stdout for docker logs
-		$di->setShared("stdout", $stdout);
 
 		// global logger adapter
 		$di->setShared("logger", MODULE_NAME == "cli" ? $stdout : function() {
 
-			$file = date("d-m-Y");
+			// CLI
+			if (MODULE_NAME == "cli" ) {
 
-			return new \Phalcon\Logger\Adapter\File(STORAGE_PATH."logs/$file.log");
+				$adpater = new \Phalcon\Logger\Adapter\Stream("php://stdout");
+
+				$adpater->setFormatter(new \Phalcon\Logger\Formatter\Line("[%date%][%type%][CLI] %message%"));
+
+				$adapters = ["main" => $adpater];
+			}
+			// Http
+			else {
+
+				$ip = \CrazyCake\Core\HttpCore::getClientIP();
+
+				$adpater1 = new \Phalcon\Logger\Adapter\Stream(STORAGE_PATH."logs/".date("d-m-Y").".log");
+				$adpater2 = new \Phalcon\Logger\Adapter\Stream("php://stdout");
+
+				$adpater1->setFormatter(new \Phalcon\Logger\Formatter\Line("[%date%][%type%][CLI] %message%"));
+				$adpater2->setFormatter(new \Phalcon\Logger\Formatter\Line("[%date%][%type%][$ip] %message%"));
+
+				$adapters = ["main" => $adpater1, "stdout" => $adpater2];
+			}
+
+
+			return new \Phalcon\Logger("messages", $adapters);
 		});
 
 		// basic http security
@@ -306,8 +315,8 @@ class AppServices
 				$volt = new \Phalcon\Mvc\View\Engine\Volt($view, $din);
 				// set volt engine options
 				$volt->setOptions([
-					"compiledPath"      => STORAGE_PATH."cache/",
-					"compiledSeparator" => "_",
+					"path"      => STORAGE_PATH."cache/",
+					"separator" => "_",
 				]);
 
 				// get compiler

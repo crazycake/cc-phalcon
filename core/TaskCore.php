@@ -112,8 +112,8 @@ class TaskCore extends Task
 		// new volt compiler
 		$compiler = new VoltCompiler();
 		$compiler->setOptions([
-			"compiledPath"      => STORAGE_PATH."cache/",
-			"compiledSeparator" => "_",
+			"path"      => STORAGE_PATH."cache/",
+			"separator" => "_",
 		]);
 		// extend functions
 		AppServices::setVoltCompilerFunctions($compiler);

@@ -107,8 +107,6 @@ abstract class App
 	{
 		$di = \Phalcon\DI::getDefault();
 
-		if ($di && $di->has("stdout")) $di->getShared("stdout")->error($e->getMessage());
-
 		if ($di && $di->has("logger")) $di->getShared("logger")->error($e->getMessage());
 
 		if (APP_ENV != "local" && class_exists('\Sentry\SentrySdk')) \Sentry\captureException($e);
