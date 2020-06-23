@@ -303,7 +303,7 @@ abstract class App
 			$routes_fn($app);
 
 		// handle the request
-		echo $app->handle();
+		echo $app->handle($_SERVER["REQUEST_URI"] ?? "/");
 	}
 
 	/**
@@ -327,7 +327,7 @@ abstract class App
 		$app = new \Phalcon\Mvc\Application($this->di);
 
 		// set output
-		$output = $app->handle()->getContent();
+		$output = $app->handle($_SERVER["REQUEST_URI"] ?? "/")->getContent();
 
 		// handle the request
 		if (APP_ENV != "local")

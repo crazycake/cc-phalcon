@@ -39,7 +39,7 @@ class AppServices
 		$di = MODULE_NAME == "cli" ? new \Phalcon\DI\FactoryDefault\CLI() : new \Phalcon\DI\FactoryDefault();
 
 		$this->_setMainServices($di);
-		$this->_setDatabaseServices($di);
+		$this->_setMongoService($di);
 		$this->_setTranslationServices($di);
 		$this->_setViewServices($di);
 
@@ -80,7 +80,7 @@ class AppServices
 
 
 		// global logger adapter
-		$di->setShared("logger", MODULE_NAME == "cli" ? $stdout : function() {
+		$di->setShared("logger", function() {
 
 			// CLI
 			if (MODULE_NAME == "cli" ) {
@@ -133,48 +133,12 @@ class AppServices
 	}
 
 	/**
-	 * Set Database Services [MySQL, Mongo]
-	 * @param Object $di - The DI object
-	 */
-	private function _setDatabaseServices(&$di)
-	{
-		// mongo adapter
-		if (!empty($this->config->mongoService))
-			$this->_setMongoService($di);
-
-		// mysql adapter
-		if (!empty($this->config->mysqlService))
-			$this->_setMysqlService($di);
-	}
-
-	/**
-	 * Set MySQL Service
-	 * @param Object $di - The DI object
-	 */
-	private function _setMysqlService(&$di)
-	{
-		// mysql adapter
-		$di->setShared("mysql", function() {
-
-			return new \Phalcon\Db\Adapter\Pdo\Mysql([
-
-				"host"     => getenv("MYSQL_HOST") ?: "mysql",
-				"port"     => 3306,
-				"dbname"   => "app",
-				"username" => getenv("MYSQL_USER") ?: "root",
-				"password" => getenv("MYSQL_PWD") ?: "root",
-				"options"  => [\PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"]
-			]);
-		});
-	}
-
-	/**
 	 * Set Mongo Service
 	 * @param Object $di - The DI object
 	 */
 	private function _setMongoService(&$di)
 	{
-		$host = getenv("MONGO_HOST") ?: "mongodb://mongo";
+		if (!$host = getenv("MONGO_HOST")) return;
 
 		$di->setShared("mongo", function() use ($host) {
 
