@@ -66,7 +66,7 @@ class AppServices
 		// the URL component is used to generate all kind of urls in the application
 		$di->setShared("url", function() use ($conf) {
 
-			$url = new \Phalcon\Mvc\Url();
+			$url = new \Phalcon\Url();
 			// base URL
 			$url->setBaseUri(APP_BASE_URL);
 
@@ -232,10 +232,11 @@ class AppServices
 				"index"      => 1
 			];
 
+
 			if (!empty($conf->sessionFiles))
-				$session = new \Phalcon\Session\Adapter\Files($options);
+				$adapter = new \Phalcon\Session\Adapter\Stream(array_merge($options, ["savePath" => STORAGE_PATH."sessions"]));
 			else
-				$session = new \Phalcon\Session\Adapter\Redis(array_merge($options, ["host" => getenv("REDIS_HOST") ?: "redis"]));
+				$adapter = new \Phalcon\Session\Adapter\Redis(array_merge($options, ["host" => getenv("REDIS_HOST") ?: "redis"]));
 
 			// set cookies params
 			$params = [
@@ -252,7 +253,10 @@ class AppServices
 
 			session_set_cookie_params($params);
 
-			// set session name & start
+			// session instance
+			$session = new \Phalcon\Session\Manager();
+
+			$session->setAdapter($adapter);
 			$session->setName(getenv("APP_COOKIE_NAME") ?: $conf->namespace);
 			$session->start();
 

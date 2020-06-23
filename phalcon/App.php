@@ -123,7 +123,7 @@ abstract class App
 	public static function getClass($key = "", $prefix = true)
 	{
 		// camelized class name
-		$name = \Phalcon\Text::camelize(\Phalcon\Text::uncamelize($key));
+		$name = \Phalcon\Helper\Str::camelize(\Phalcon\Helper\Str::uncamelize($key));
 
 		return $prefix ? "\\$name" : $name;
 	}
