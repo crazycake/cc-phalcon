@@ -28,19 +28,19 @@ class ExceptionsPlugin extends \Phalcon\Di\Injectable
 
 			switch ($e->getCode()) {
 
-				case \Phalcon\Dispatcher::EXCEPTION_NO_DI:
-				case \Phalcon\Dispatcher::EXCEPTION_CYCLIC_ROUTING:
+				case \Phalcon\Dispatcher\Exception::EXCEPTION_NO_DI:
+				case \Phalcon\Dispatcher\Exception::EXCEPTION_CYCLIC_ROUTING:
 
 					break;
 
-				case \Phalcon\Dispatcher::EXCEPTION_INVALID_PARAMS:
-				case \Phalcon\Dispatcher::EXCEPTION_INVALID_HANDLER:
+				case \Phalcon\Dispatcher\Exception::EXCEPTION_INVALID_PARAMS:
+				case \Phalcon\Dispatcher\Exception::EXCEPTION_INVALID_HANDLER:
 
 					$forward["action"] = "badRequest";
 					break;
 
-				case \Phalcon\Dispatcher::EXCEPTION_HANDLER_NOT_FOUND:
-				case \Phalcon\Dispatcher::EXCEPTION_ACTION_NOT_FOUND:
+				case \Phalcon\Dispatcher\Exception::EXCEPTION_HANDLER_NOT_FOUND:
+				case \Phalcon\Dispatcher\Exception::EXCEPTION_ACTION_NOT_FOUND:
 
 					$forward["action"] = "notFound";
 					$report = false;

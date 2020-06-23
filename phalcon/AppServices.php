@@ -58,20 +58,20 @@ class AppServices
 	 */
 	private function _setMainServices(&$di)
 	{
-		$conf = $this->config;
+		$config = $this->config;
 
 		// set the config
-		$di->setShared("config", $conf);
+		$di->setShared("config", $config);
 
 		// the URL component is used to generate all kind of urls in the application
-		$di->setShared("url", function() use ($conf) {
+		$di->setShared("url", function() use ($config) {
 
 			$url = new \Phalcon\Url();
 			// base URL
 			$url->setBaseUri(APP_BASE_URL);
 
 			// get static url
-			$static_url = $conf->staticUrl ?? APP_BASE_URL;
+			$static_url = $config->staticUrl ?? APP_BASE_URL;
 
 			$url->setStaticBaseUri($static_url);
 
@@ -119,9 +119,9 @@ class AppServices
 		});
 
 		// extended encryption (cryptography helper)
-		$di->setShared("cryptify", function() use ($conf) {
+		$di->setShared("cryptify", function() use ($config) {
 
-			return new \CrazyCake\Helpers\Cryptify($conf->cryptKey ?? $conf->namespace);
+			return new \CrazyCake\Helpers\Cryptify($config->cryptKey ?? $config->namespace);
 		});
 
 		// kint options
@@ -161,14 +161,14 @@ class AppServices
 		// check if langs are set
 		if (empty($this->config->langs)) return;
 
-		$conf = $this->config;
+		$config = $this->config;
 
-		$di->setShared("trans", function() use ($conf) {
+		$di->setShared("trans", function() use ($config) {
 
 			return new \CrazyCake\Helpers\GetText([
 
 				"domain"    => "app",
-				"supported" => (array)$conf->langs,
+				"supported" => (array)$config->langs,
 				"directory" => APP_PATH."langs/"
 			]);
 		});
@@ -180,27 +180,27 @@ class AppServices
 	 */
 	private function _setSessionServices(&$di)
 	{
-		$conf = $this->config;
+		$config = $this->config;
+
+		// check for non-session apps
+		if (isset($config->session) && empty($config->session)) return;
 
 		// session adapter
-		$di->setShared("session", function() use ($conf) {
+		$di->setShared("session", function() use ($config) {
 
-			$expiration = 3600*($conf->sessionExpiration ?? 8); // hours
+			$expiration = 3600*($config->sessionExpiration ?? 8); // hours
 
-			$options = [
+			$factory = new \Phalcon\Storage\AdapterFactory(new \Phalcon\Storage\SerializerFactory());
 
-				"uniqueId"   => $conf->namespace,
+			$adapter = new \Phalcon\Session\Adapter\Redis($factory, [
+
+				"host"       => getenv("REDIS_HOST") ?: "redis",
+				"uniqueId"   => $config->namespace,
 				"lifetime"   => $expiration,
-				"prefix"     => "_".strtoupper($conf->namespace)."_",
+				"prefix"     => "_".strtoupper($config->namespace)."_",
 				"persistent" => false,
 				"index"      => 1
-			];
-
-
-			if (!empty($conf->sessionFiles))
-				$adapter = new \Phalcon\Session\Adapter\Stream(array_merge($options, ["savePath" => STORAGE_PATH."sessions"]));
-			else
-				$adapter = new \Phalcon\Session\Adapter\Redis(array_merge($options, ["host" => getenv("REDIS_HOST") ?: "redis"]));
+			]);
 
 			// set cookies params
 			$params = [
@@ -221,7 +221,7 @@ class AppServices
 			$session = new \Phalcon\Session\Manager();
 
 			$session->setAdapter($adapter);
-			$session->setName(getenv("APP_COOKIE_NAME") ?: $conf->namespace);
+			$session->setName(getenv("APP_COOKIE_NAME") ?: $config->namespace);
 			$session->start();
 
 			return $session;

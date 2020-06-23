@@ -143,7 +143,7 @@ class TaskCore extends Task
 	protected function output($output = "OK", $json_encode = false)
 	{
 		if ($json_encode)
-			$output = \CrazyCake\Helpers\JSON::safeEncode($output, JSON_UNESCAPED_SLASHES);
+			$output = \CrazyCake\Helpers\JSON::safeEncode($output);
 
 		die($output.PHP_EOL);
 	}
