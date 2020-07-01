@@ -138,7 +138,10 @@ class AppServices
 	 */
 	private function _setMongoService(&$di)
 	{
-		if (!$host = getenv("MONGO_HOST")) return;
+		// check for no-mongo apps
+		if (isset($config->mongo) && empty($config->mongo)) return;
+
+		$host = getenv("MONGO_HOST") ?: "mongodb://mongo";
 
 		$di->setShared("mongo", function() use ($host) {
 
@@ -182,7 +185,7 @@ class AppServices
 	{
 		$config = $this->config;
 
-		// check for non-session apps
+		// check for no-session apps
 		if (isset($config->session) && empty($config->session)) return;
 
 		// session adapter
