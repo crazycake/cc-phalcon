@@ -60,8 +60,10 @@ class GetText extends GetTextAdapter
 		$this->supported_langs = $options["supported"];
 		//ss($options);
 
+		$factory = new \Phalcon\Translate\InterpolatorFactory();
+
 		// call parent constructor
-		parent::__construct([
+		parent::__construct($factory, [
 			"locale"        => $this->default_locale,
 			"defaultDomain" => $options["domain"],
 			"directory"     => $options["directory"],

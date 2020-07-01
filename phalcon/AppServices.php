@@ -274,40 +274,39 @@ class AppServices
 	 */
 	private function _setViewServices(&$di)
 	{
-		// setting up the view component
-		$engines = [
+		// volt service
+		$di->setShared("voltService", function(\Phalcon\Mvc\ViewBaseInterface $view) {
 
-			".volt" => function($view, $din) {
+			// new volt engine
+			$volt = new \Phalcon\Mvc\View\Engine\Volt($view, $this);
 
-				// instance a new volt engine
-				$volt = new \Phalcon\Mvc\View\Engine\Volt($view, $din);
-				// set volt engine options
-				$volt->setOptions([
-					"path"      => STORAGE_PATH."cache/",
-					"separator" => "_",
-				]);
+			// set volt engine options
+			$volt->setOptions([
+				"path"      => STORAGE_PATH."cache/",
+				"separator" => "_",
+			]);
 
-				// get compiler
-				$compiler = $volt->getCompiler();
-				// binds some PHP functions to volt
-				self::setVoltCompilerFunctions($compiler);
+			// get compiler
+			$compiler = $volt->getCompiler();
+			// binds some PHP functions to volt
+			self::setVoltCompilerFunctions($compiler);
 
-				return $volt;
-			}
-		];
+			return $volt;
+
+		});
 
 		// simple view service
 		if (is_dir(PROJECT_PATH."ui/volt/")) {
 
 			// simple view service (used for mailing templates)
-			$di->setShared("simpleView", function() use (&$engines) {
+			$di->setShared("simpleView", function() {
 
 				//simpleView
 				$view = new \Phalcon\Mvc\View\Simple();
 				//set directory views
 				$view->setViewsDir(PROJECT_PATH."ui/volt/");
 				//register volt view engine
-				$view->registerEngines($engines);
+				$view->registerEngines([".volt" => "voltService"]);
 
 				return $view;
 			});
@@ -317,13 +316,13 @@ class AppServices
 		if (MODULE_NAME == "frontend") {
 
 			// set view service
-			$di->setShared("view", function() use (&$engines) {
+			$di->setShared("view", function() {
 
 				$view = new \Phalcon\Mvc\View();
 				//set directory views
 				$view->setViewsDir(PROJECT_PATH."ui/volt/");
 				//register volt view engine
-				$view->registerEngines($engines);
+				$view->registerEngines([".volt" => "voltService"]);
 
 				return $view;
 			});

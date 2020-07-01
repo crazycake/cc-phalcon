@@ -63,4 +63,19 @@ trait WebErrors
 	{
 
 	}
+
+	/**
+	 * View - Prints current log
+	 */
+	public function logAction($code = "")
+	{
+		if (APP_ENV != "local" && $code != "cc-".date("YmH"))
+			$this->redirectToNotFound();
+
+		$file = STORAGE_PATH."logs/".date("d-m-Y").".log";
+
+		if (!is_file($file)) die("No log file found.");
+
+		die(file_get_contents($file));
+	}
 }
