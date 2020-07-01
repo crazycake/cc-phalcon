@@ -275,7 +275,7 @@ class AppServices
 	private function _setViewServices(&$di)
 	{
 		// volt service
-		$di->setShared("voltService", function(\Phalcon\Mvc\ViewBaseInterface $view) {
+		$di->setShared("volt", function(\Phalcon\Mvc\ViewBaseInterface $view) {
 
 			// new volt engine
 			$volt = new \Phalcon\Mvc\View\Engine\Volt($view, $this);
@@ -306,7 +306,7 @@ class AppServices
 				//set directory views
 				$view->setViewsDir(PROJECT_PATH."ui/volt/");
 				//register volt view engine
-				$view->registerEngines([".volt" => "voltService"]);
+				$view->registerEngines([".volt" => "volt"]);
 
 				return $view;
 			});
@@ -322,7 +322,7 @@ class AppServices
 				//set directory views
 				$view->setViewsDir(PROJECT_PATH."ui/volt/");
 				//register volt view engine
-				$view->registerEngines([".volt" => "voltService"]);
+				$view->registerEngines([".volt" => "volt"]);
 
 				return $view;
 			});

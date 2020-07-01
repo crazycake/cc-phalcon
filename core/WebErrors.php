@@ -76,6 +76,6 @@ trait WebErrors
 
 		if (!is_file($file)) die("No log file found.");
 
-		die(file_get_contents($file));
+		ss(file_get_contents($file));
 	}
 }
