@@ -199,14 +199,14 @@ class AppServices
 
 				"host"       => getenv("REDIS_HOST") ?: "redis",
 				"uniqueId"   => $config->namespace,
+				"prefix"     => "_PHCR_".strtoupper($config->namespace)."_",
 				"lifetime"   => $expiration,
-				"prefix"     => "_".strtoupper($config->namespace)."_",
 				"persistent" => false,
 				"index"      => 1
 			]);
 
 			// set cookies params
-			$params = [
+			$cookie = [
 
 				"lifetime" => $expiration,
 				"path"     => "/",
@@ -216,9 +216,9 @@ class AppServices
 			];
 
 			if (!empty(getenv("APP_COOKIE_DOMAIN")))
-				$params["domain"] = getenv("APP_COOKIE_DOMAIN");
+				$cookie["domain"] = getenv("APP_COOKIE_DOMAIN");
 
-			session_set_cookie_params($params);
+			session_set_cookie_params($cookie);
 
 			// session instance
 			$session = new \Phalcon\Session\Manager();
@@ -226,6 +226,7 @@ class AppServices
 			$session->setAdapter($adapter);
 			$session->setName(getenv("APP_COOKIE_NAME") ?: $config->namespace);
 			$session->start();
+			//ss($adapter, $session);
 
 			return $session;
 		});
