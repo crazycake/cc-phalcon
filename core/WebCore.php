@@ -167,7 +167,7 @@ abstract class WebCore extends HttpCore implements WebSecurity
 		// set translations
 		$data->TRANS = Translations::defaultJsTranslations();
 
-		$output = "`".JSON::safeEncode($store)."`";
+		$output = "`".JSON::safeEncode($store ?: (object)[])."`";
 
 		$js = "APP = JSON.parse(`".JSON::safeEncode($data)."`);\n";
 
