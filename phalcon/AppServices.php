@@ -203,7 +203,7 @@ class AppServices
 			$adapter = new RedisAdapter($factory, [
 
 				"host"       => getenv("REDIS_HOST") ?: "redis",
-				"prefix"     => "_PHCR_".strtoupper($config->namespace)."_",
+				"prefix"     => "SID_".strtoupper($config->namespace)."_",
 				"lifetime"   => $expiration,
 				"persistent" => false,
 				"index"      => 1
