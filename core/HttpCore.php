@@ -223,7 +223,7 @@ abstract class HttpCore extends Controller
 			$value = $this->filter->sanitize($data[$field], $data_type);
 
 			if ($data_type == "email")
-				$value = strtolower($value);
+				$value = strtolower(trim($value));
 		}
 		else
 			$value = $data[$field]; // raw
