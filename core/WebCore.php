@@ -203,7 +203,7 @@ abstract class WebCore extends HttpCore implements WebSecurity
 	/**
 	 * Set app language for translations
 	 */
-	private function _setLanguage()
+	private function _setLanguage($lang = "")
 	{
 		// get langs config (set by App)
 		$langs = (array)$this->config->langs;
@@ -211,18 +211,18 @@ abstract class WebCore extends HttpCore implements WebSecurity
 		// set default lang if only one available, otherwise check lang from session
 		if (count($langs) == 1)
 			$lang = $langs[0];
-		else
-			$lang = !is_null($this->session) && $this->session->has("lang") ? $this->session->get("lang") : $this->request->getBestLanguage();
+
+		else if (empty($lang))
+			$lang = $this->request->getBestLanguage();
 
 		// filter lang
-		$lang = substr(trim(strtolower($lang)), 0, 2);
+		$lang = substr(strtolower(trim($lang)), 0, 2);
 
 		// set client language
 		$this->client->lang = $lang;
 
 		// set translation service
-		if (!is_null($this->trans))
-			$this->trans->setLanguage($lang);
+		if (!empty($this->trans)) $this->trans->setLanguage($lang);
 	}
 
 	/**
