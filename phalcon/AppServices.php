@@ -70,10 +70,8 @@ class AppServices
 			// base URL
 			$url->setBaseUri(APP_BASE_URL);
 
-			// get static url
-			$static_url = $config->staticUrl ?? APP_BASE_URL;
-
-			$url->setStaticBaseUri($static_url);
+			// set static url
+			$url->setStaticBaseUri($config->staticUrl ?? APP_BASE_URL);
 
 			return $url;
 		});
@@ -85,24 +83,26 @@ class AppServices
 			// CLI
 			if (MODULE_NAME == "cli" ) {
 
-				$adpater = new \Phalcon\Logger\Adapter\Stream("php://stdout");
+				$main = new \Phalcon\Logger\Adapter\Stream("php://stdout");
 
-				$adpater->setFormatter(new \Phalcon\Logger\Formatter\Line("[%date%][%type%][CLI] %message%"));
+				$main->setFormatter(new \Phalcon\Logger\Formatter\Line("[%date%][%type%][CLI] %message%"));
 
-				$adapters = ["main" => $adpater];
+				$adapters = ["main" => $main];
 			}
 			// Http
 			else {
 
 				$ip = \CrazyCake\Core\HttpCore::getClientIP();
 
-				$adpater1 = new \Phalcon\Logger\Adapter\Stream(STORAGE_PATH."logs/".date("d-m-Y").".log");
-				$adpater2 = new \Phalcon\Logger\Adapter\Stream("php://stdout");
+				$main = new \Phalcon\Logger\Adapter\Stream(STORAGE_PATH."logs/".date("d-m-Y").".log");
 
-				$adpater1->setFormatter(new \Phalcon\Logger\Formatter\Line("[%date%][%type%][CLI] %message%"));
-				$adpater2->setFormatter(new \Phalcon\Logger\Formatter\Line("[%date%][%type%][$ip] %message%"));
+				$main->setFormatter(new \Phalcon\Logger\Formatter\Line("[%date%][%type%][CLI] %message%"));
 
-				$adapters = ["main" => $adpater1, "stdout" => $adpater2];
+				$stdout = new \Phalcon\Logger\Adapter\Stream("php://stdout");
+
+				$stdout->setFormatter(new \Phalcon\Logger\Formatter\Line("[%date%][%type%][$ip] %message%"));
+
+				$adapters = ["main" => $main, "stdout" => $stdout];
 			}
 
 
@@ -138,6 +138,8 @@ class AppServices
 	 */
 	private function _setMongoService(&$di)
 	{
+		$config = $this->config;
+
 		// check for no-mongo apps
 		if (isset($config->mongo) && empty($config->mongo)) return;
 
@@ -161,9 +163,6 @@ class AppServices
 	 */
 	private function _setTranslationServices(&$di)
 	{
-		// check if langs are set
-		if (empty($this->config->langs)) return;
-
 		$config = $this->config;
 
 		$di->setShared("trans", function() use ($config) {
