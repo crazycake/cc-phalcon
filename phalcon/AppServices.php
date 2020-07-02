@@ -196,7 +196,7 @@ class AppServices
 		// session adapter
 		$di->setShared("session", function() use ($config) {
 
-			$expiration = 3600*($config->sessionExpiration ?? 8); // hours
+			$expiration = 3600*($config->sessionExpiration ?? 24); // hours
 
 			$factory = new \Phalcon\Storage\AdapterFactory(new \Phalcon\Storage\SerializerFactory());
 
