@@ -203,7 +203,6 @@ class AppServices
 			$adapter = new RedisAdapter($factory, [
 
 				"host"       => getenv("REDIS_HOST") ?: "redis",
-				"uniqueId"   => $config->namespace,
 				"prefix"     => "_PHCR_".strtoupper($config->namespace)."_",
 				"lifetime"   => $expiration,
 				"persistent" => false,
@@ -228,10 +227,8 @@ class AppServices
 			// session instance
 			$session = new \Phalcon\Session\Manager();
 
-			$session->setAdapter($adapter);
-			$session->setName(getenv("APP_COOKIE_NAME") ?: $config->namespace);
-			$session->start();
-			//ss($adapter, $session);
+			$session->setAdapter($adapter)
+					->start();
 
 			return $session;
 		});
