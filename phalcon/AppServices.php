@@ -26,7 +26,7 @@ class AppServices
 	 */
 	public function __construct($config)
 	{
-		$this->config = new \Phalcon\Config($config);
+		$this->config = $config;
 	}
 
 	/**
@@ -167,7 +167,7 @@ class AppServices
 
 		$di->setShared("trans", function() use ($config) {
 
-			$langs = (array)$config->langs;
+			$langs = $config->langs;
 
 			$trans = new \CrazyCake\Helpers\GetText([
 
@@ -175,6 +175,7 @@ class AppServices
 				"supported" => $langs,
 				"directory" => APP_PATH."langs/"
 			]);
+
 			// default language
 			$trans->setLanguage($langs[0]);
 

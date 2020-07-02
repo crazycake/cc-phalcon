@@ -196,7 +196,7 @@ abstract class WebCore extends HttpCore implements WebSecurity
 	 */
 	private function _setLanguage()
 	{
-		$langs = (array)$this->config->langs;
+		$langs = $this->config->langs;
 
 		// check if lang don't change
 		if (count($langs) == 1 || !$this->request->hasQuery("lang"))

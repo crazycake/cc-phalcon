@@ -65,18 +65,18 @@ abstract class App
 		// environment (loader)
 		$this->_setEnvironment();
 
-		// set app configurations
-		$config = $this->config();
+		// parse app config as object
+		$config = json_decode(json_encode($this->config()));
 
 		// set app version
-		$config["version"] = is_file(PROJECT_PATH."version") ? trim(file_get_contents(PROJECT_PATH."version")) : "1";
+		$config->version = is_file(PROJECT_PATH."version") ? trim(file_get_contents(PROJECT_PATH."version")) : "1";
 
 		// load sentry
-		if (APP_ENV != "local" && !empty($config["sentry"]) && class_exists('\Sentry\SentrySdk'))
-			\Sentry\init(["dsn" => $config["sentry"], "release" => $config["version"], "environment" => APP_ENV]);
+		if (APP_ENV != "local" && !empty($config->sentry) && class_exists('\Sentry\SentrySdk'))
+			\Sentry\init(["dsn" => $config->sentry, "release" => $config->version, "environment" => APP_ENV]);
 
 		// app classes (loader)
-		$this->_loadClasses($config);
+		$this->_loadClasses($config->loader ?? []);
 
 		// set DI (services)
 		$this->di = (new AppServices($config))->getDI();
@@ -195,7 +195,7 @@ abstract class App
 	 * Load classes
 	 * @param Array $config - The config array
 	 */
-	private function _loadClasses($config = [])
+	private function _loadClasses($loader = [])
 	{
 		// 1. project dirs
 		$dirs = [
@@ -204,8 +204,6 @@ abstract class App
 			"controllers" => APP_PATH."controllers/",
 			"models"      => APP_PATH."models/"
 		];
-
-		$loader = $config["loader"] ?? [];
 
 		foreach ($loader as $dir) {
 
