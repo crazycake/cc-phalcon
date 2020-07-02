@@ -394,6 +394,7 @@ trait Uploader
 	{
 		// get file properties
 		$filename  = $file->getName();
+
 		$pieces    = explode(".", $filename);
 		$extension = strtolower(end($pieces));
 		$mimetype  = $file->getRealType();      // real file MIME type

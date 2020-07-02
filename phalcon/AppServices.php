@@ -234,13 +234,11 @@ class AppServices
 		});
 
 		// flash messages
-		$di->setShared("flash", function() {
+		$di->setShared("flash", function() use ($di) {
 
-			$flash = new \Phalcon\Flash\Session();
-			// disable auto escape
-			$flash->setAutoescape(false);
+			$escaper = new \Phalcon\Escaper();
 
-			return $flash;
+			return new \Phalcon\Flash\Session($escaper, $di->getShared("session"));
 		});
 	}
 
