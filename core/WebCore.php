@@ -238,21 +238,10 @@ abstract class WebCore extends HttpCore implements WebSecurity
 	 */
 	private function _setCSRF()
 	{
+		$token = $this->security->getSessionToken();
+
 		// check if CSRF was already created
-		if (!$this->session->has("csrfToken")) {
-
-			$token = $this->security->getToken();
-
-			// save it in session
-			$this->session->set("csrfToken", $token);
-
-			// ! remove old approach
-			if ($this->session->has("csrf")) $this->session->remove("csrf");
-		}
-		else {
-
-			$token = $this->session->get("csrfToken");
-		}
+		if (empty($token)) $token = $this->security->getToken();
 
 		// update client props
 		$this->client->csrfToken = $token;

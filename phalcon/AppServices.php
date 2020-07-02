@@ -200,7 +200,7 @@ class AppServices
 
 			$factory = new \Phalcon\Storage\AdapterFactory(new \Phalcon\Storage\SerializerFactory());
 
-			$adapter = new \Phalcon\Session\Adapter\Redis($factory, [
+			$adapter = new Ray($factory, [
 
 				"host"       => getenv("REDIS_HOST") ?: "redis",
 				"uniqueId"   => $config->namespace,
@@ -365,5 +365,19 @@ class AppServices
 
 			return "\CrazyCake\Helpers\Images::resizedImagePath($resolvedArgs)";
 		});
+	}
+}
+
+class Ray extends \Phalcon\Session\Adapter\Redis
+{
+
+	public $adapter;
+
+	/**
+	 * constructor
+	 */
+	public function __construct($factory, $options)
+	{
+		$this->adapter = $factory->newInstance("redis", $options);
 	}
 }
