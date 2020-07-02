@@ -95,7 +95,7 @@ class AppServices
 
 				$main = new \Phalcon\Logger\Adapter\Stream(STORAGE_PATH."logs/".date("d-m-Y").".log");
 
-				$main->setFormatter(new \Phalcon\Logger\Formatter\Line("[%date%][%type%][CLI] %message%"));
+				$main->setFormatter(new \Phalcon\Logger\Formatter\Line("[%date%][%type%][$ip] %message%"));
 
 				$stdout = new \Phalcon\Logger\Adapter\Stream("php://stdout");
 
