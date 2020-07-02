@@ -319,7 +319,7 @@ abstract class App
 			// apply a routes function
 			$routes_fn($router);
 
-			$this->di->set("router", $router);
+			$this->di->setShared("router", $router);
 		}
 
 		$app = new \Phalcon\Mvc\Application($this->di);
