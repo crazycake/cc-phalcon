@@ -200,7 +200,7 @@ class AppServices
 
 			$factory = new \Phalcon\Storage\AdapterFactory(new \Phalcon\Storage\SerializerFactory());
 
-			$adapter = new Ray($factory, [
+			$adapter = new RedisAdapter($factory, [
 
 				"host"       => getenv("REDIS_HOST") ?: "redis",
 				"uniqueId"   => $config->namespace,
@@ -368,11 +368,12 @@ class AppServices
 	}
 }
 
-class Ray extends \Phalcon\Session\Adapter\Redis
+/**
+ * Redis Adapter
+ * ! Temporary class for Redis Adapter (prefix hardcoded bug)
+ */
+class RedisAdapter extends \Phalcon\Session\Adapter\Redis
 {
-
-	public $adapter;
-
 	/**
 	 * constructor
 	 */
