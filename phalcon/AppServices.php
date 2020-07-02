@@ -168,12 +168,18 @@ class AppServices
 
 		$di->setShared("trans", function() use ($config) {
 
-			return new \CrazyCake\Helpers\GetText([
+			$langs = (array)$config->langs;
+
+			$trans = new \CrazyCake\Helpers\GetText([
 
 				"domain"    => "app",
-				"supported" => (array)$config->langs,
+				"supported" => $langs,
 				"directory" => APP_PATH."langs/"
 			]);
+			// default language
+			$trans->setLanguage($langs[0]);
+
+			return $trans;
 		});
 	}
 

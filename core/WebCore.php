@@ -38,19 +38,12 @@ abstract class WebCore extends HttpCore implements WebSecurity
 		// set client object with its properties (User-Agent)
 		$this->_setClient();
 
-		// event (for crawlers)
-		if (method_exists($this, "onClientSet"))
-			$this->onClientSet();
+		// browser support
+		$supported = $this->checkBrowserSupport($this->client->browser, $this->client->shortVersion);
 
-		// check browser is supported
-		if (!$this->checkBrowserSupport($this->client->browser, $this->client->shortVersion) &&
-			$this->router->getControllerName() != "error") {
-
-			return $this->redirectTo("error/oldBrowser");
-		}
-
-		// set language translations
-		$this->_setLanguage();
+		// redirect if not supported
+		if (!$supported && $this->router->getControllerName() != "error")
+			$this->redirectTo("error/oldBrowser");
 
 		// set CSRF
 		$this->_setCSRF();
@@ -195,34 +188,10 @@ abstract class WebCore extends HttpCore implements WebSecurity
 			"version"      => $ua["version"],
 			"shortVersion" => $ua["short_version"],
 			"isMobile"     => $ua["is_mobile"],
+			"lang"         => $this->trans->getLanguage(),
 			"bundle"       => $this->config->version,
 			"requestedUri" => $this->getRequestedUri()
 		];
-	}
-
-	/**
-	 * Set app language for translations
-	 */
-	private function _setLanguage($lang = "")
-	{
-		// get langs config (set by App)
-		$langs = (array)$this->config->langs;
-
-		// set default lang if only one available, otherwise check lang from session
-		if (count($langs) == 1)
-			$lang = $langs[0];
-
-		else if (empty($lang))
-			$lang = $this->request->getBestLanguage();
-
-		// filter lang
-		$lang = substr(strtolower(trim($lang)), 0, 2);
-
-		// set client language
-		$this->client->lang = $lang;
-
-		// set translation service
-		if (!empty($this->trans)) $this->trans->setLanguage($lang);
 	}
 
 	/**
