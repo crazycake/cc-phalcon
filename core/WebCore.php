@@ -52,6 +52,9 @@ abstract class WebCore extends HttpCore implements WebSecurity
 	 */
 	public function beforeExecuteRoute()
 	{
+		// set language
+		$this->_setLanguage();
+
 		// set client object with its properties (User-Agent)
 		$this->_setClient();
 
@@ -188,7 +191,25 @@ abstract class WebCore extends HttpCore implements WebSecurity
 		return $js;
 	}
 
+	/**
+	 * Set Language
+	 */
+	private function _setLanguage()
+	{
+		$langs = (array)$this->config->langs;
 
+		// check if lang don't change
+		if (count($langs) == 1 || !$this->request->hasQuery("lang"))
+			return;
+
+		$lang = strtolower(trim($this->request->getQuery("lang")));
+
+		// validate lang
+		if (!in_array($lang, $langs)) $lang = $langs[0];
+
+		// set language
+		$this->trans->setLanguage($lang);
+	}
 
 	/**
 	 * Set the client (user agent) object with its properties
