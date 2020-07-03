@@ -76,7 +76,7 @@ if (empty($client)) die("400 Bad Request");
 
 		{# Js data #}
 		{% if metas['script'] is not empty %}
-			<script defer src="{{ url(metas['script']~'?v='~client.bundle) }}"></script>
+			<script defer src="{{ url(metas['script']) }}"></script>
 		{% endif %}
 
 		{# Bundle JS (defered) #}
