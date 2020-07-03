@@ -4,7 +4,7 @@
  * @author Nicolas Pulido <nicolas.pulido@crazycake.tech>
  */
 
-if (empty($client)) die("400 Bad Request");
+if (empty($client) || empty($client->browser)) die("400 Bad Request");
 ?>
 <!DOCTYPE html>
 <html lang="{{ client.lang }}">
@@ -111,7 +111,7 @@ if (empty($client)) die("400 Bad Request");
 	</head>
 	{# flushes the buffer (optimization) #}
 	<?php flush(); ?>
-	<body class="{{ 'ux ua-'~client.browser|lower~' '~client.platform|lower }}">
+	<body class="{{ 'ux ua-'~client.browser|lower }}">
 
 		{# app content wrapper #}
 		<div id="app">
