@@ -228,6 +228,7 @@ class AppServices
 			$session = new \Phalcon\Session\Manager();
 
 			$session->setAdapter($adapter)
+					->setName(getenv("APP_SESSION_NAME") ?: $conf->namespace)
 					->start();
 
 			return $session;
