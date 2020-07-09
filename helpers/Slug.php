@@ -20,13 +20,7 @@ class Slug
 	 */
 	public static function generate($string = "", $replace = [], $delimiter = "-")
 	{
-		$clean = $string;
-
-		// If iconv extension is enabled, replace utf8 chars to ascii.
-		if (extension_loaded("iconv"))
-			$clean = \iconv("UTF-8", "ASCII//TRANSLIT", $string);
-		else
-			$clean = self::translit($string);
+		$clean = self::translit($string);
 
 		if (!empty($replace))
 			$clean = str_replace((array)$replace, " ", $clean);
