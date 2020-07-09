@@ -115,7 +115,7 @@ trait Requester
 		$body = $response->getBody();
 
 		$this->logger->debug("\n--\nRequester::_getRequest -> OK, received response [".$response->getStatusCode()."] length: ".strlen($body).
-							 " -> preview: ".substr($body, 0, 160)." ...\nHeaders: ".json_encode($response->getHeaders(), JSON_UNESCAPED_SLASHES)."\n");
+							 " -> preview: ".substr($body, 0, 300)." ...\nHeaders: ".json_encode($response->getHeaders(), JSON_UNESCAPED_SLASHES)."\n");
 
 		return (string)$body;
 	}
@@ -161,7 +161,7 @@ trait Requester
 		$body = $response->getBody();
 
 		$this->logger->debug("\n--\nRequester::_postRequest -> OK, received response [".$response->getStatusCode()."] length: ".strlen($body).
-							 " -> preview: ".substr($body, 0, 144)." ...\nHeaders: ".json_encode($response->getHeaders(), JSON_UNESCAPED_SLASHES)."\n");
+							 " -> preview: ".substr($body, 0, 300)." ...\nHeaders: ".json_encode($response->getHeaders(), JSON_UNESCAPED_SLASHES)."\n");
 
 		return (string)$body;
 	}
