@@ -32,17 +32,11 @@ trait AccountSession
 	public function initAccountSession($conf = [])
 	{
 		$defaults = [
-			"user_entity"        => "user",
-			"ignored_properties" => ["pass", "createdAt", "lastSession", "lastIP"]
+			"ignored_properties" => ["pass", "createdAt", "lastSession", "lastSID", "lastIP"]
 		];
 
-		// merge confs
-		$conf = array_merge($defaults, $conf);
-
-		// append class prefixes
-		$conf["user_entity"] = App::getClass($conf["user_entity"]);
-
-		$this->SESSION_CONF = $conf;
+		// merge & set conf
+		$this->SESSION_CONF = array_merge($defaults, $conf);
 
 		// set session var
 		$this->user_session = $this->getUserSession();
@@ -66,9 +60,10 @@ trait AccountSession
 		if (empty($user_session["id"]) || empty($user_session["auth"]))
 			return false;
 
-		$user_class = $this->SESSION_CONF["user_entity"];
+		$user_class = $user_session["entity"] ?? false;
 
-		if (!$user_class::findOne($user_session["id"]))
+		// NOTE: compat with no entity saved
+		if (!$user_class || !$user_class::findOne($user_session["id"]))
 			return false;
 
 		return true;
@@ -105,12 +100,14 @@ trait AccountSession
 	/**
 	 * Stores a new user session
 	 * @param Object $user - User object
+	 * @param String $entity - User entity
 	 */
-	protected function newUserSession($user)
+	protected function newUserSession($user, $entity)
 	{
 		// set user data
-		$session         = json_decode(json_encode($user), true);
-		$session["auth"] = true;
+		$session           = json_decode(json_encode($user), true);
+		$session["entity"] = App::getClass($entity);
+		$session["auth"]   = true;
 
 		// mongo ID special case
 		if (!empty($session["_id"])) {

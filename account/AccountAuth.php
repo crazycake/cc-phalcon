@@ -21,8 +21,9 @@ trait AccountAuth
 	/**
 	 * Event on user logged in (session)
 	 * @param Object $user - The user object
+	 * @param String $entity - The user entity
 	 */
-	abstract public function newUserSession($user);
+	abstract public function newUserSession($user, $entity);
 
 	/**
 	 * Session Destructor with autoredirection (session)
@@ -155,7 +156,7 @@ trait AccountAuth
 			$this->onBeforeLoginUser($user, $data);
 
 		// success login
-		$this->newUserSession($user);
+		$this->newUserSession($user, $entity);
 
 		// event (can interrupt flux)
 		$this->onAfterLoginUser("login");
@@ -255,7 +256,7 @@ trait AccountAuth
 			$this->flash->success($this->AUTH_CONF["trans"]["ACTIVATION_SUCCESS"]);
 
 			// success login
-			$this->newUserSession($user);
+			$this->newUserSession($user, $entity);
 
 			// redirect/response
 			$this->onAfterLoginUser("activation");

@@ -148,7 +148,7 @@ trait AccountPassword
 			$entity::updateOne($user_id, ["pass" => $this->security->hash($password)]);
 
 			// new user session
-			$this->newUserSession($user);
+			$this->newUserSession($user, $entity);
 
 			// delete token
 			$this->deleteToken($user_id, $token_type);
