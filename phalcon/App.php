@@ -117,13 +117,13 @@ abstract class App
 	/**
 	 * Get Module Model Class Name
 	 * @param String $key - The class module name uncamelize, example: "some_class"
-	 * @param Boolean $prefix - Append prefix (double slash)
+	 * @param Boolean $prefix - Append prefix
 	 * @return String
 	 */
 	public static function getClass($key = "", $prefix = true)
 	{
 		// camelized class name
-		$name = \Phalcon\Helper\Str::camelize(\Phalcon\Helper\Str::uncamelize($key));
+		$name = \Phalcon\Helper\Str::camelize(\Phalcon\Helper\Str::uncamelize(str_replace("\\", "", $key)));
 
 		return $prefix ? "\\$name" : $name;
 	}
