@@ -106,7 +106,7 @@ trait AccountSession
 	{
 		// set user data
 		$session           = json_decode(json_encode($user), true);
-		$session["entity"] = $entity;
+		$session["entity"] = App::getClass($entity);
 		$session["auth"]   = true;
 
 		// mongo ID special case
