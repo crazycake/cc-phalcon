@@ -63,7 +63,7 @@ trait AccountSession
 		// get user session
 		$user_session = $this->session->get("user");
 
-		if (empty($user_session) || empty($user_session["id"]) || empty($user_session["auth"]))
+		if (empty($user_session["id"]) || empty($user_session["auth"]))
 			return false;
 
 		$user_class = $this->SESSION_CONF["user_entity"];
