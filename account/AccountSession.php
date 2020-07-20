@@ -60,7 +60,8 @@ trait AccountSession
 		if (empty($user_session["id"]) || empty($user_session["auth"]))
 			return false;
 
-		$user_class = $user_session["entity"] ?? false;
+		// get entity
+		$user_class = !empty($user_session["entity"]) ? App::getClass($user_session["entity"]) : false;
 
 		// NOTE: compat with no entity saved
 		if (!$user_class || !$user_class::findOne($user_session["id"]))
@@ -106,7 +107,7 @@ trait AccountSession
 	{
 		// set user data
 		$session           = json_decode(json_encode($user), true);
-		$session["entity"] = App::getClass($entity);
+		$session["entity"] = strtolower(str_replace("\\", "", $entity));
 		$session["auth"]   = true;
 
 		// mongo ID special case
