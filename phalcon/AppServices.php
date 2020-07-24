@@ -354,6 +354,8 @@ class AppServices
 		$compiler->addFunction("intval", "intval");
 		//++ number_format
 		$compiler->addFunction("number_format", "number_format");
+		//++ rawurlencode
+		$compiler->addFunction("rawurlencode", "rawurlencode");
 		//++ in_array
 		$compiler->addFunction("in_array", "in_array");
 		//++ resizedImagePath
