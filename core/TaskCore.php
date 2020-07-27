@@ -72,13 +72,6 @@ class TaskCore extends Task
 			if (is_dir($f) || strpos($f, ".rev.") === false)
 				continue;
 
-			// keep 1st & 2nd-last versions only, numeric validation
-			preg_match_all('/\d+/', $f, $file_ver);
-			$file_ver = current($file_ver[0]);
-
-			if (empty($current_version - (int)$file_ver))
-				continue;
-
 			$this->colorize("Removing asset $assets_path$f", "NOTE");
 
 			unlink($assets_path.$f);
