@@ -64,6 +64,10 @@ build)
 
 	checkContainerIsRunning
 
+	echo -e "\033[95mCleaning code splits... \033[0m"
+
+	find public/assets -type f \( ! -iname "app*" \) -exec rm -f {} \;
+
 	echo -e "\033[95mBuilding bundle... \033[0m"
 
 	parcel build ui/app.js --no-source-maps --out-dir public/assets/ --public-url public/assets/ --cache-dir .parcel/ --detailed-report 20
