@@ -214,7 +214,7 @@ abstract class App
 		// inverted sort
 		arsort($dirs);
 
-		// 2. Load app directories (components)
+		// 2. Load app directories
 		$loader = new \Phalcon\Loader();
 		$loader->registerDirs($dirs);
 
