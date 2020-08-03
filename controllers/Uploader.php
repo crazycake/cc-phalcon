@@ -63,7 +63,7 @@ trait Uploader
 		$this->headers = $this->request->getHeaders();
 
 		// set key for user uploads
-		$this->UPLOADER_CONF["key"] = $this->client->csrfToken."_";
+		$this->UPLOADER_CONF["key"] = ($this->client->csrfToken ?? uniqid())."_";
 	}
 
 	/**
