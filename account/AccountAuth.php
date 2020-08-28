@@ -118,17 +118,17 @@ trait AccountAuth
 		// get login attempts
 		$attempts = $this->getLoginAttempts($user->_id);
 
+		// basic attempts security
+		if ($attempts > $this->AUTH_CONF["login_attempts"]) $this->jsonResponse(400, $this->AUTH_CONF["trans"]["AUTH_BLOCKED"]);
+
 		// recaptcha validation
 		if ($this->AUTH_CONF["recaptcha"] && $attempts >= 3) {
 
 			$recaptcher = new ReCaptcha($this->config->google->reCaptchaKey);
 
-			if (!$recaptcher->isValid($data["recaptcha"] ?? null, "session", 0.3))
+			if (!$recaptcher->isValid($data["recaptcha"] ?? null, "session", 0.2))
 				return $this->jsonResponse(400, $this->AUTH_CONF["trans"]["NOT_HUMAN"]);
 		}
-
-		// basic attempts security
-		if ($attempts > $this->AUTH_CONF["login_attempts"]) $this->jsonResponse(400, $this->AUTH_CONF["trans"]["AUTH_BLOCKED"]);
 
 		// password validation
 		if (!$this->security->checkHash($data["pass"], $user->pass ?? '')) {
