@@ -50,7 +50,7 @@ if (empty($client) || empty($client->browser)) die("400 Bad Request");
 
 		<meta name="author" content="{{ metas['author'] is not empty ? metas['author'] : 'CrazyCake Technologies' }}">
 
-		<meta name="robots" content="{{ metas['disallow_robots'] is not empty ? 'noindex,nofollow' : 'index,follow' }}">
+		<meta name="robots" content="{{ metas['disallow_robots'] is not empty ? 'noindex,nofollow' : 'index,follow' }}" vmid="robots" data-vue-meta="1">
 
 		<title>{{ metas['title'] is not empty ? metas['title'] : config.name }}</title>
 
