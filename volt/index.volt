@@ -111,7 +111,12 @@ if (empty($client) || empty($client->browser)) die("400 Bad Request");
 	</head>
 	{# flushes the buffer (optimization) #}
 	<?php flush(); ?>
-	<body class="{{ 'ux ua-'~client.browser|lower }}">
+	{# body classes #}
+	{% if metas['body_classes'] is not empty %}
+		<body class="{{ 'ux ua-'~client.browser|lower }}">
+	{% else %}
+		<body>
+	{% endif %}
 
 		{# app content wrapper #}
 		<div id="app">
