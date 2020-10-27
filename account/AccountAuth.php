@@ -138,7 +138,7 @@ trait AccountAuth
 			$this->jsonResponse(400, $this->AUTH_CONF["trans"]["AUTH_FAILED"]);
 		}
 
-		// store validated user
+		// store validated user (for resend activation)
 		$this->session->set("auth-key", $data[$this->AUTH_CONF["user_key"]]);
 
 		// check user account flag
