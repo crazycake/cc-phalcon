@@ -80,7 +80,7 @@ trait AccountSession
 			return true;
 
 		// for ajax request or API mode sends a forbidden warning
-		if ($this->request->isAjax() || MODULE_NAME == "api")
+		if ($this->request->isAjax())
 			$this->jsonResponse(401);
 
 		// forward to logout

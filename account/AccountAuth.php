@@ -85,7 +85,7 @@ trait AccountAuth
 		// handled by session controller
 		$this->removeUserSession();
 
-		if ($this->request->isAjax() || MODULE_NAME == "api")
+		if ($this->request->isAjax())
 			$this->jsonResponse(200);
 
 		// redirect to given url, login as default
@@ -216,10 +216,6 @@ trait AccountAuth
 		// set a flash message to show on account controller
 		$message = str_replace("{email}", $user->email, $this->AUTH_CONF["trans"]["ACTIVATION_PENDING"]);
 		$this->flash->success($message);
-
-		// redirect/response
-		if (MODULE_NAME == "api")
-			$this->jsonResponse(200, ["message" => $message]);
 
 		$this->redirectTo($this->AUTH_CONF["logged_out_uri"]);
 	}

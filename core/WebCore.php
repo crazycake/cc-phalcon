@@ -111,7 +111,7 @@ abstract class WebCore extends HttpCore implements WebSecurity
 		}
 
 		// is ajax?
-		if ($this->request->isAjax() || MODULE_NAME == "api")
+		if ($this->request->isAjax())
 			return $this->jsonResponse(200, ["redirect" => $url]);
 
 		$this->response->redirect($url, true, $code);
