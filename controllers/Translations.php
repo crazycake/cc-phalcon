@@ -30,7 +30,7 @@ trait Translations
 				"EMAIL_EXISTS"       => "El correo <b>{email}</b> ya se encuentra registrado.",
 				"ACTIVATION_SUCCESS" => "¡Tu cuenta ha sido activada!",
 				"ACTIVATION_PENDING" => "Te hemos enviado un correo de activación a <b>{email}</b> para que actives tu cuenta.",
-				"NOT_HUMAN"          => "🤖 Para asegurarnos que no eres un robot por favor haz <a href='#'>click aquí</a> e inténtalo nuevamente.",
+				"NOT_HUMAN"          => "🤖 Para asegurarnos que no eres un robot por favor haz <a href='#'>clic aquí</a> e inténtalo nuevamente.",
 				"INVALID_NAME"       => "Tu nombre y apellido deben ser válidos.",
 				"INVALID_EMAIL"      => "Tu correo electrónico no es válido.",
 				"PASS_TOO_SHORT"     => "Debes ingresar una contraseña de al menos 8 caracteres.",
@@ -75,7 +75,7 @@ trait Translations
 				"NOT_FOUND"        => "Esta acción está deshabilitada, por favor inténtalo más tarde.",
 				"ACCESS_FORBIDDEN" => "Tu sesión ha caducado, debes iniciar sesión nuevamente.",
 				"CSRF"             => "La aplicación ha estado inactiva por mucho tiempo, refréscala haciendo ".
-										"<a href='javascript:location.reload();'>click aquí</a>."
+										"<a href='javascript:location.reload();'>clic aquí</a>."
 			]
 		];
 
