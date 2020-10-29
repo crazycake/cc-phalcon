@@ -170,7 +170,7 @@ abstract class WebCore extends HttpCore implements WebSecurity
 			"staticUrl" => $this->staticUrl()
 		];
 
-		if (!empty($this->session)) $data->flash = $this->flash->getMessages() ?: [];
+		if (!empty($this->session)) $data->flash = $this->flash->getMessages() ?: (object)[];
 
 		// set user agent
 		$data->UA = $this->client;
