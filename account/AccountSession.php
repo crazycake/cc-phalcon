@@ -32,7 +32,7 @@ trait AccountSession
 	public function initAccountSession($conf = [])
 	{
 		$defaults = [
-			"ignored_properties" => ["pass", "createdAt", "lastSession", "lastSID", "lastIP"]
+			"ignored_properties" => ["pass", "createdAt", "lastSession", "lastSid", "lastIp"]
 		];
 
 		// merge & set conf
