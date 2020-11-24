@@ -286,6 +286,7 @@ trait Uploader
 			$conf["s3"] = [
 				"accessKey"     => $this->config->aws->accessKey,
 				"secretKey"     => $this->config->aws->secretKey,
+				"bucketRegion"  => $this->config->aws->bucketRegion ?? "",
 				"bucketName"    => $this->config->aws->bucketName,
 				"bucketBaseUri" => ($this->config->aws->bucketBaseUri ?? "temp/").strtolower($uri)
 			];
