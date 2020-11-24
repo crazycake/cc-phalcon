@@ -38,7 +38,7 @@ class UserAgent
 	public function parseUserAgent()
 	{
 		// parse user agent (loaded library method from composer)
-		$data = parse_user_agent($this->user_agent);
+		$data = \donatj\UserAgent\parse_user_agent($this->user_agent);
 
 		// get the short version
 		$short_version = $data["version"] ? current(explode(".", $data["version"])) : false;
