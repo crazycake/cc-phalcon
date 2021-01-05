@@ -126,7 +126,7 @@ trait Uploader
 		}
 
 		// remove local file
-		unlink($file->getTempName());
+		@unlink($file->getTempName());
 
 		return $upload;
 	}
