@@ -197,7 +197,7 @@ trait Requester
 		// data goes in the path for a GET request
 		if (strtoupper($options["method"]) == "GET") {
 
-			$options["path"] .= $options["payload"];
+			$options["path"] .= is_array($options["payload"]) ? ("?".http_build_query($options["payload"])) : "";
 			$length = 0;
 		}
 		else {
