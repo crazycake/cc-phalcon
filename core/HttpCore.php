@@ -200,7 +200,7 @@ abstract class HttpCore extends Controller
 	 * @link https://docs.phalcon.io/4.0/en/filter#filter
 	 * @param Array $data - The input data
 	 * @param String $field - The field name
-	 * @param String $data_type - The data type (int, string, array, json, email)
+	 * @param String $data_type - The data type (int, string, array, email, striptags, json)
 	 * @return Mixed
 	 */
 	private function _validateParam($data, $field, $data_type)
