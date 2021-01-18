@@ -125,7 +125,7 @@ trait Uploader
 			$this->storeFile($file->getTempName(), $upload["id"]);
 		}
 
-		// remove local file
+		// remove local file (silenced)
 		@unlink($file->getTempName());
 
 		return $upload;
