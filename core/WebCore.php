@@ -36,6 +36,7 @@ abstract class WebCore extends HttpCore implements WebSecurity
 	public static $CRAWLERS = [
 		"Googlebot",
 		"Googlebot-News",
+		"Google-Site-Verification",
 		"AdsBot-Google",
 		"Mediapartners-Google",
 		"Bingbot",
