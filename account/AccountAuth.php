@@ -237,7 +237,7 @@ trait AccountAuth
 			$user = $entity::findOne($user_id);
 
 			if (!$user || $user->flag == "disabled")
-				throw new \Exception("invalid user or missing 'pending' flag");
+				throw new \Exception("invalid user or account is disabled");
 
 			$user->flag = "enabled";
 
