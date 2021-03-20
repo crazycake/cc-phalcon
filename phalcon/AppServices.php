@@ -190,7 +190,6 @@ class AppServices
 			$expiration = 3600*($config->sessionExpiration ?? 24); // hours
 
 			$factory = new \Phalcon\Storage\AdapterFactory(new \Phalcon\Storage\SerializerFactory());
-
 			$adapter = new \Phalcon\Session\Adapter\Redis($factory, [
 
 				"host"       => getenv("REDIS_HOST") ?: "redis",
@@ -223,7 +222,7 @@ class AppServices
 					->start();
 
 			// if fixed, forces to regenerate session-id
-			if (self::_isSessionFixed()) $session->regenerateId();
+			if (self::_isSessionFixed($adapter)) $session->regenerateId();
 
 			return $session;
 		});
@@ -327,14 +326,13 @@ class AppServices
 	 * Checks if Cookie Header has SID fixed (session fixation protection)
 	 * @param Object $compiler - The compiler object
 	 */
-	private static function _isSessionFixed() {
+	private static function _isSessionFixed($adapter)
+	{
+		// get SID
+		$sid = $_COOKIE[getenv("APP_SESSION_NAME") ?: "SID"] ?? false;
 
-		// check if cookie exists
-		if ($token = $_COOKIE[getenv("APP_SESSION_NAME") ?: "SID"] ?? false) {
-
-			// check token length
-			if (strlen($token) < ini_get("session.sid_length")) return true;
-		}
+		// check if SID exists
+		if ($sid && empty($adapter->read($sid))) return true;
 
 		return false;
 	}
