@@ -191,7 +191,7 @@ class AppServices
 
 			$factory = new \Phalcon\Storage\AdapterFactory(new \Phalcon\Storage\SerializerFactory());
 
-			$adapter = new RedisAdapter($factory, [
+			$adapter = new \Phalcon\Session\Adapter\Redis($factory, [
 
 				"host"       => getenv("REDIS_HOST") ?: "redis",
 				"prefix"     => "SID_".strtoupper($config->namespace)."_",

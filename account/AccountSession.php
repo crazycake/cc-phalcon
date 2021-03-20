@@ -167,8 +167,11 @@ trait AccountSession
 	protected function removeUserSession()
 	{
 		// destroy session
-		if ($this->session->has("user"))
+		if ($this->session->has("user")) {
+
+			$this->session->regenerateId();
 			$this->session->destroy();
+		}
 	}
 
 	/**
