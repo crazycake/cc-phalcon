@@ -216,7 +216,7 @@ class AppServices
 			session_set_cookie_params($cookie);
 
 			// cookie validation for session fixation
-			$isSessionFixation = function() {
+			$isSessionFixed = function() {
 
 				if (!empty($_SERVER['HTTP_COOKIE'])) {
 
@@ -237,7 +237,7 @@ class AppServices
 					->start();
 
 			// regenrate token if is fixed
-			if ($isSessionFixation()) $session->regenerateId();
+			if ($isSessionFixed()) $session->regenerateId();
 
 			return $session;
 		});
