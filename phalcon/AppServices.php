@@ -215,12 +215,29 @@ class AppServices
 
 			session_set_cookie_params($cookie);
 
+			// cookie validation for session fixation
+			$isSessionFixation = function() {
+
+				if (!empty($_SERVER['HTTP_COOKIE'])) {
+
+					$token = substr($_SERVER['HTTP_COOKIE'], strpos($_SERVER['HTTP_COOKIE'], session_get_cookie_params()["domain"]."=") + 1);
+
+					// check token length
+					if (strlen($token) < ini_get("session.sid_length")) return true;
+				}
+
+				return false;
+			};
+
 			// session instance
 			$session = new \Phalcon\Session\Manager();
 
 			$session->setAdapter($adapter)
 					->setName(getenv("APP_SESSION_NAME") ?: "SID")
 					->start();
+
+			// regenrate token if is fixed
+			if ($isSessionFixation()) $session->regenerateId();
 
 			return $session;
 		});
@@ -346,20 +363,5 @@ class AppServices
 		$compiler->addFunction("in_array", "in_array");
 		//++ resizedImagePath
 		$compiler->addFunction("resized_image_path", fn($resolvedArgs, $exprArgs) => "\CrazyCake\Helpers\Images::resizedImagePath($resolvedArgs)");
-	}
-}
-
-/**
- * Redis Adapter
- * ! Temporary class for Redis Adapter (prefix hardcoded bug)
- */
-class RedisAdapter extends \Phalcon\Session\Adapter\Redis
-{
-	/**
-	 * Constructor
-	 */
-	public function __construct($factory, $options)
-	{
-		$this->adapter = $factory->newInstance("redis", $options);
 	}
 }
