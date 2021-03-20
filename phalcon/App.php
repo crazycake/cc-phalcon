@@ -140,7 +140,7 @@ abstract class App
 		error_reporting(E_ALL);
 
 		// convert warnings/notices to exceptions
-		set_error_handler(function ($errno, $errstr, $errfile, $errline) {
+		set_error_handler(function($errno, $errstr, $errfile, $errline) {
 
 			self::handleException(new \Exception("App Exception: '$errstr' $errfile [$errline]", $errno));
 		});

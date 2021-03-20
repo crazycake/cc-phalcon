@@ -118,10 +118,7 @@ class AppServices
 		});
 
 		// extended encryption (cryptography helper)
-		$di->setShared("cryptify", function() use ($config) {
-
-			return new \CrazyCake\Helpers\Cryptify($config->cryptKey ?? $config->namespace);
-		});
+		$di->setShared("cryptify", fn() => new \CrazyCake\Helpers\Cryptify($config->cryptKey ?? $config->namespace));
 
 		// kint options
 		if (class_exists("\Kint")) {
@@ -144,15 +141,9 @@ class AppServices
 
 		$host = getenv("MONGO_HOST") ?: "mongodb://mongo";
 
-		$di->setShared("mongo", function() use ($host) {
+		$di->setShared("mongo", fn() => (new \MongoDB\Client($host))->{getenv("MONGO_DB") ?: "app"});
 
-			return (new \MongoDB\Client($host))->{getenv("MONGO_DB") ?: "app"};
-		});
-
-		$di->setShared("mongoManager", function() use ($host) {
-
-			return new \MongoDB\Driver\Manager($host);
-		});
+		$di->setShared("mongoManager", fn() => new \MongoDB\Driver\Manager($host));
 	}
 
 	/**
@@ -235,12 +226,7 @@ class AppServices
 		});
 
 		// flash messages
-		$di->setShared("flash", function() use ($di) {
-
-			$escaper = new \Phalcon\Escaper();
-
-			return new \Phalcon\Flash\Session($escaper, $di->getShared("session"));
-		});
+		$di->setShared("flash", fn() => new \Phalcon\Flash\Session(new \Phalcon\Escaper(), $di->getShared("session")));
 	}
 
 	/**
@@ -359,10 +345,7 @@ class AppServices
 		//++ in_array
 		$compiler->addFunction("in_array", "in_array");
 		//++ resizedImagePath
-		$compiler->addFunction("resized_image_path", function($resolvedArgs, $exprArgs) {
-
-			return "\CrazyCake\Helpers\Images::resizedImagePath($resolvedArgs)";
-		});
+		$compiler->addFunction("resized_image_path", fn($resolvedArgs, $exprArgs) => "\CrazyCake\Helpers\Images::resizedImagePath($resolvedArgs)");
 	}
 }
 

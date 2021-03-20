@@ -260,10 +260,6 @@ class Document
 	 */
 	public static function flattenArray($array = []) {
 
-		return !is_array($array) ? [$array] : array_reduce($array, function ($c, $a) {
-
-			return array_merge($c, static::flattenArray($a));
-
-		}, []);
+		return is_array($array) ? array_reduce($array, fn($c, $a) => array_merge($c, static::flattenArray($a)), []) : [$array];
 	}
 }
