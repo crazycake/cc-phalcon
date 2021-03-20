@@ -218,9 +218,8 @@ class AppServices
 			// cookie validation for session fixation
 			$isSessionFixed = function() {
 
-				$token = $_COOKIE[getenv("APP_SESSION_NAME") ?: "SID"] ?? null;
-
-				if (!empty($token)) {
+				// check if cookie exists
+				if ($token = $_COOKIE[getenv("APP_SESSION_NAME") ?: "SID"] ?? null) {
 
 					// check token length
 					if (strlen($token) < ini_get("session.sid_length")) return true;
@@ -236,7 +235,7 @@ class AppServices
 					->setName(getenv("APP_SESSION_NAME") ?: "SID")
 					->start();
 
-			// regenerate session-id if fixed
+			// if fixed, forces to regenerate session-id
 			if ($isSessionFixed()) $session->regenerateId();
 
 			return $session;
