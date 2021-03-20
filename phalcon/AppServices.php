@@ -215,19 +215,6 @@ class AppServices
 
 			session_set_cookie_params($cookie);
 
-			// cookie validation for session fixation
-			$isSessionFixed = function() {
-
-				// check if cookie exists
-				if ($token = $_COOKIE[getenv("APP_SESSION_NAME") ?: "SID"] ?? false) {
-
-					// check token length
-					if (strlen($token) < ini_get("session.sid_length")) return true;
-				}
-
-				return false;
-			};
-
 			// session instance
 			$session = new \Phalcon\Session\Manager();
 
@@ -236,7 +223,7 @@ class AppServices
 					->start();
 
 			// if fixed, forces to regenerate session-id
-			if ($isSessionFixed()) $session->regenerateId();
+			if (self::_isSessionFixed()) $session->regenerateId();
 
 			return $session;
 		});
@@ -334,6 +321,22 @@ class AppServices
 				return $view;
 			});
 		}
+	}
+
+	/**
+	 * Checks if Cookie Header has SID fixed (session fixation protection)
+	 * @param Object $compiler - The compiler object
+	 */
+	private static function _isSessionFixed() {
+
+		// check if cookie exists
+		if ($token = $_COOKIE[getenv("APP_SESSION_NAME") ?: "SID"] ?? false) {
+
+			// check token length
+			if (strlen($token) < ini_get("session.sid_length")) return true;
+		}
+
+		return false;
 	}
 
 	/**
