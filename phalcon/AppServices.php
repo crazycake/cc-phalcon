@@ -356,7 +356,7 @@ class AppServices
 class RedisAdapter extends \Phalcon\Session\Adapter\Redis
 {
 	/**
-	 * constructor
+	 * Constructor
 	 */
 	public function __construct($factory, $options)
 	{
