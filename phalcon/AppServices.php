@@ -218,9 +218,9 @@ class AppServices
 			// cookie validation for session fixation
 			$isSessionFixed = function() {
 
-				if (!empty($_SERVER['HTTP_COOKIE'])) {
+				$token = $_COOKIE[getenv("APP_SESSION_NAME") ?: "SID"] ?? null;
 
-					$token = substr($_SERVER['HTTP_COOKIE'], strpos($_SERVER['HTTP_COOKIE'], session_get_cookie_params()["domain"]."=") + 1);
+				if (!empty($token)) {
 
 					// check token length
 					if (strlen($token) < ini_get("session.sid_length")) return true;
