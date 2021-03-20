@@ -236,7 +236,7 @@ class AppServices
 					->setName(getenv("APP_SESSION_NAME") ?: "SID")
 					->start();
 
-			// regenrate token if is fixed
+			// regenerate session-id if fixed
 			if ($isSessionFixed()) $session->regenerateId();
 
 			return $session;
