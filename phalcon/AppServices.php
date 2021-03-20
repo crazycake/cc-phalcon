@@ -210,8 +210,8 @@ class AppServices
 				"samesite" => "Lax"
 			];
 
-			if (!empty(getenv("APP_COOKIE_DOMAIN")))
-				$cookie["domain"] = getenv("APP_COOKIE_DOMAIN");
+			// cookie domain
+			if (!empty(getenv("APP_COOKIE_DOMAIN"))) $cookie["domain"] = getenv("APP_COOKIE_DOMAIN");
 
 			session_set_cookie_params($cookie);
 
@@ -219,7 +219,7 @@ class AppServices
 			$isSessionFixed = function() {
 
 				// check if cookie exists
-				if ($token = $_COOKIE[getenv("APP_SESSION_NAME") ?: "SID"] ?? null) {
+				if ($token = $_COOKIE[getenv("APP_SESSION_NAME") ?: "SID"] ?? false) {
 
 					// check token length
 					if (strlen($token) < ini_get("session.sid_length")) return true;
