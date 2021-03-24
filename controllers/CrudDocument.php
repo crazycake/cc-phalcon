@@ -227,8 +227,7 @@ trait CrudDocument
 	{
 		$this->onlyAjax();
 
-		if (empty($id))
-			$this->jsonResponse(400);
+		if (empty($id)) $this->jsonResponse(400);
 
 		$id = $this->filter->sanitize($id, "alnum");
 
