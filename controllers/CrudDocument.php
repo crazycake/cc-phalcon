@@ -230,7 +230,7 @@ trait CrudDocument
 		if (empty($id))
 			$this->jsonResponse(400);
 
-		$id = (new \Phalcon\Filter())->sanitize($id, "string");
+		$id = (new \Phalcon\Filter\FilterFactory())->newInstance()->sanitize($id, "alnum");
 
 		try                   { $id = new \MongoDB\BSON\ObjectID($id); }
 		catch (\Exception $e) { $id = (string)$id; }
