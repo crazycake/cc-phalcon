@@ -107,17 +107,17 @@ trait Requester
 		if (!empty($options["payload"]))
 			$options["uri"] .= is_array($options["payload"]) ? "?".http_build_query($options["payload"]) : "/".$options["payload"];
 
-		$this->logger->debug("\n--\nRequester::_getRequest [".$options["base_url"]."][".$options["uri"]."] guzzle_options:\n".json_encode($guzzle_options, JSON_UNESCAPED_SLASHES)."\n");
+		$this->logger->debug("\n--\nRequester::".$options["method"]." [".$options["base_url"]."][".$options["uri"]."] guzzle_options:\n".json_encode($guzzle_options, JSON_UNESCAPED_SLASHES)."\n");
 
 		// guzzle request
 		$response = $client->request("GET", $options["uri"], $guzzle_options);
 
-		$body = $response->getBody();
+		$body = (string)$response->getBody();
 
-		$this->logger->debug("\n--\nRequester::_getRequest -> OK, received response [".$response->getStatusCode()."] length: ".strlen($body).
+		$this->logger->debug("\n--\nRequester::".$options["method"]." -> OK, received response [".$response->getStatusCode()."] length: ".strlen($body).
 							 " -> preview: ".substr($body, 0, 300)." [".strlen($body)."]\nHeaders: ".json_encode($response->getHeaders(), JSON_UNESCAPED_SLASHES)."\n");
 
-		return (string)$body;
+		return empty($body) ? $response->getStatusCode() : $body;
 	}
 
 	/**
@@ -153,17 +153,17 @@ trait Requester
 		if (!empty($options["payload"]))
 			$guzzle_options["form_params"] = $options["payload"];
 
-		$this->logger->debug("\n--\nRequester::_postRequest [".$options["base_url"]."][".$options["uri"]."] guzzle_options:\n".json_encode($guzzle_options, JSON_UNESCAPED_SLASHES)."\n");
+		$this->logger->debug("\n--\nRequester::".$options["method"]." [".$options["base_url"]."][".$options["uri"]."] guzzle_options:\n".json_encode($guzzle_options, JSON_UNESCAPED_SLASHES)."\n");
 
 		// guzzle request
 		$response = $client->request(strtoupper($options["method"]), $options["uri"], $guzzle_options);
 
-		$body = $response->getBody();
+		$body = (string)$response->getBody();
 
-		$this->logger->debug("\n--\nRequester::_postRequest -> OK, received response [".$response->getStatusCode()."] length: ".strlen($body).
+		$this->logger->debug("\n--\nRequester::".$options["method"]." -> OK, received response [".$response->getStatusCode()."] length: ".strlen($body).
 							 " -> preview: ".substr($body, 0, 300)." [".strlen($body)."]\nHeaders: ".json_encode($response->getHeaders(), JSON_UNESCAPED_SLASHES)."\n");
 
-		return (string)$body;
+		return empty($body) ? $response->getStatusCode() : $body;
 	}
 
 	/**
@@ -227,7 +227,7 @@ trait Requester
 		if (strtoupper($options["method"]) == "POST" && !empty($options["payload"]))
 			$out .= $options["payload"];
 
-		$this->logger->debug("\n--\nRequester::_socketRequest -> sending out request:\n".json_encode($out, JSON_UNESCAPED_SLASHES)."\n");
+		$this->logger->debug("\n--\nRequester::SOCKET -> sending out request:\n".json_encode($out, JSON_UNESCAPED_SLASHES)."\n");
 
 		fwrite($socket, $out);
 		usleep(300000); // 0.3s
