@@ -47,6 +47,7 @@ abstract class WebCore extends HttpCore implements WebSecurity
 		"Twitterbot",
 		"Screaming",
 		"SemrushBot",
+		"AhrefsBot",
 		"Sitemap"
 	];
 
