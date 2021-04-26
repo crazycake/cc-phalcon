@@ -57,7 +57,7 @@ class TaskCore extends Task
 		$assets_path = PROJECT_PATH."public/assets/";
 
 		if (!is_dir($assets_path) || !is_file($assets_path."app.js") || !is_file($assets_path."app.css"))
-			return $this->colorize("Skipping dev assets files (app.js & app.css).", "INFO", true);
+			return $this->colorize("Missing dev assets files (app.js & app.css).", "ERROR", true);
 
 		$current_version = (int)$this->config->version;
 
