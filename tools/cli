@@ -6,8 +6,9 @@
 PROJECT_PATH="$(pwd)"
 
 # app namespace
+GROUP_NAME=$(basename $(dirname $(dirname $(pwd))))
 APP_NAME=${PWD##*/}
-CONTAINER_NAME="$(docker ps | grep -o '\w*_'$APP_NAME -m 1)"
+CONTAINER_NAME="$(docker ps | grep -o '\w*'$GROUP_NAME'_'$APP_NAME -m 1)"
 
 # app paths
 TOOLS_PATH=$PROJECT_PATH"/.tools/"
@@ -18,7 +19,7 @@ set -e
 # help output
 help() {
 
-	echo -e "\033[93m > $APP_NAME webapp CLI [$CONTAINER_NAME] \033[0m"
+	echo -e "\033[93m > $APP_NAME webapp CLI [$GROUP_NAME -> $CONTAINER_NAME] \033[0m"
 	echo -e "\033[95m watch: Run JS bundler watcher daemon. Option --m for mailing (mjml).\033[0m"
 	echo -e "\033[95m build: Build JS bundle and compile 'po' translation files. \033[0m"
 	echo -e "\033[95m trans: Update translations 'po' file. \033[0m"
