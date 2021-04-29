@@ -1,6 +1,10 @@
 CrazyCake Phalcon Core
 ======================
 
+## PHP
+
+Current Version: `7.4.x`
+
 ## PhalconPHP
 
 Current Version: `4.x`
