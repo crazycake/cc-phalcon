@@ -99,7 +99,7 @@ trait AccountAuth
 	{
 		// get model classes
 		$entity = $this->AUTH_CONF["user_entity"];
-		$params = ["pass" => "string"];
+		$params = ["pass" => "raw"];
 
 		// user key validation
 		if ($this->AUTH_CONF["user_key"] == "email")
@@ -169,7 +169,7 @@ trait AccountAuth
 	{
 		$data = $this->handleRequest([
 			"email" => "email",
-			"@pass" => "string"
+			"@pass" => "raw"
 		], "POST", $this->AUTH_CONF["csrf"]);
 
 		// lower case email
