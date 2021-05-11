@@ -41,6 +41,7 @@ trait CrudDocument
 			"database_host"      => getenv("MONGO_HOST") ?: "mongodb://mongo",
 			"database_name"      => getenv("MONGO_DB") ?: "app",
 			"collection"         => null,
+			"text_search"        => true,
 			"predictive_search"  => false,
 			"fetch_limit"        => 1000,
 			"fetch_default_sort" => null
@@ -77,8 +78,7 @@ trait CrudDocument
 		// set limit, skips
 		$limit = $data["limit"] ?? $this->CRUD_CONF["fetch_limit"];
 
-		if ($limit > $this->CRUD_CONF["fetch_limit"])
-			$limit = $this->CRUD_CONF["fetch_limit"];
+		if ($limit > $this->CRUD_CONF["fetch_limit"]) $limit = $this->CRUD_CONF["fetch_limit"];
 
 		// defaults
 		$query = [];
@@ -89,15 +89,24 @@ trait CrudDocument
 		// sort by score relevance (full text search)
 		if (!empty($data["search"])) {
 
-			$query = ['$or' => [['$text' => ['$search' => "\"".$data["search"]."\""] ]]];
+			$query['$or'] = [];
+
+			// text search
+			if ($this->CRUD_CONF["text_search"])
+				$query['$or'][] = ['$text' => ['$search' => "\"".$data["search"]."\""] ];
 
 			// is an ObjectId ?
 			if (preg_match('/^[a-f\d]{24}$/i', $data["search"]))
 				$query['$or'][] = ["_id" => new \MongoDB\BSON\ObjectId($data["search"])];
 
-			$opts["projection"] = ["score" => ['$meta' => "textScore"]];
-			$opts["sort"]       = ["score" => ['$meta' => "textScore"]];
+			// text search
+			if ($this->CRUD_CONF["text_search"]) {
 
+				$opts["projection"] = ["score" => ['$meta' => "textScore"]];
+				$opts["sort"]       = ["score" => ['$meta' => "textScore"]];
+			}
+
+			// sort
 			if (!empty($data["sort"]) && !empty($data["order"]))
 				$opts["sort"][$data["sort"]] = intval($data["order"]);
 
