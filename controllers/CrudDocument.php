@@ -161,7 +161,7 @@ trait CrudDocument
 		$this->onlyAjax();
 
 		// set required props to be validated
-		$data = $this->handleRequest(["payload" => "raw"], "POST");
+		$data = $this->handleRequest(["payload" => "striptags"], "POST");
 
 		try { $payload = \MongoDB\BSON\toPHP(\MongoDB\BSON\fromJSON($data["payload"])); }
 
