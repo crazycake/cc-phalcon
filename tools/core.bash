@@ -27,7 +27,7 @@ set -e
 # check if cc-phalcon symlink is present
 if [ ! -d $CORE_SRC_PATH ]; then
 
-	echo -e "\033[31mProject cc-phalcon not found ($CORE_SRC_PATH) \033[0m" && exit
+	echo -e "\033[31mProject cc-phalcon not found ($CORE_SRC_PATH) \033[0m" && exit 1
 fi
 
 copyToolFiles() {

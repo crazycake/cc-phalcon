@@ -36,7 +36,7 @@ checkContainerIsRunning() {
 
 	# validate container is running
 	if [[ -z "$CONTAINER_NAME" ]]; then
-		echo -e "\033[31mRun application container first!\033[0m" && exit
+		echo -e "\033[31mRun application container first!\033[0m" && exit 1
 	fi
 }
 
@@ -125,12 +125,12 @@ cc-js)
 	# validations
 	if [ ! -d $CORE_SRC_PATH ]; then
 
-		echo -e "\033[31mProject cc-js not found ($CORE_SRC_PATH) \033[0m" && exit
+		echo -e "\033[31mProject cc-js not found ($CORE_SRC_PATH) \033[0m" && exit 1
 	fi
 
 	if [ ! -d "$PROJECT_PATH/node_modules/crazycake-js" ]; then
 
-		echo -e "\033[31mFolder ./node_modules/crazycake-js not found ($CORE_SRC_PATH) \033[0m" && exit
+		echo -e "\033[31mFolder ./node_modules/crazycake-js not found ($CORE_SRC_PATH) \033[0m" && exit 1
 	fi
 
 	# create sym link
