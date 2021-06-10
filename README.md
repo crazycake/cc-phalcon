@@ -1,18 +1,29 @@
 CrazyCake Phalcon Core
 ======================
 
-## PHP
+## Requeriments
 
-Current Version: `7.4.x`
++ PHP `v7.4.x`
++ Phalcon `v4.x`
 
-## PhalconPHP
 
-Current Version: `4.x`
+## Projects setup
+
+Projects must have the following file path
+
+```bash
+~/workspace/{company-name}/{project-code}/{project-code}-{project-name}
+
+# example
+~/workspace/crazycake/cc/cc-frontend
+```
+
 
 ## Box Project
 
 - Used for building PHP phar files.
 - Documentation [ref](http://box-project.org/)
+
 
 ### Commands
 
