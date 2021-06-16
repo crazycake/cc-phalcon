@@ -49,6 +49,9 @@ class UserAgent
 		$data["is_crawler"]    = (new \Jaybizzle\CrawlerDetect\CrawlerDetect())->isCrawler();
 		$data["is_legacy"]     = $this->_isUserAgentLegacy($data);
 
+		// special cases
+		$data["is_analyser"] = !empty(preg_match('/chrome-lighthouse|gtmetrix/i'));
+
 		return $data;
 	}
 
