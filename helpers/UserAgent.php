@@ -50,7 +50,7 @@ class UserAgent
 		$data["is_legacy"]     = $this->_isUserAgentLegacy($data);
 
 		// special cases
-		$data["is_analyser"] = !empty(preg_match('/prerendercrawler|chrome-lighthouse|gtmetrix/i'));
+		$data["is_analyser"] = !empty(preg_match('/prerendercrawler|chrome-lighthouse|gtmetrix/i', $this->user_agent));
 
 		return $data;
 	}
