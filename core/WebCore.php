@@ -210,7 +210,7 @@ abstract class WebCore extends HttpCore implements WebSecurity
 			"version"      => $ua["version"],
 			"shortVersion" => $ua["short_version"],
 			"isMobile"     => $ua["is_mobile"],
-			"isCrawler"    => iua["is_crawler"],
+			"isCrawler"    => $ua["is_crawler"],
 			"lang"         => $this->trans->getLanguage(),
 			"bundle"       => $this->config->version,
 			"requestedUri" => $this->getRequestedUri()
