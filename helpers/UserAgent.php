@@ -4,6 +4,7 @@
  * Requires composer donatj/phpuseragentparser, mobiledetect/mobiledetectlib
  * @link https://github.com/donatj/PhpUserAgent
  * @link https://github.com/serbanghita/Mobile-Detect/
+ * @link https://github.com/JayBizzle/Crawler-Detect
  * @author Nicolas Pulido <nicolas.pulido@crazycake.tech>
  */
 
@@ -45,11 +46,8 @@ class UserAgent
 
 		$data["short_version"] = $short_version;
 		$data["is_mobile"]     = (new Mobile_Detect())->isMobile();
+		$data["is_crawler"]    = (new \Jaybizzle\CrawlerDetect\CrawlerDetect())->isCrawler();
 		$data["is_legacy"]     = $this->_isUserAgentLegacy($data);
-
-		// ++ special cases
-		if (preg_match('/sitemap|adsbot-google|mediapartners-google|google-site-verification|semrushbot|ahrefsbot/i', $this->user_agent, $matches))
-			$data["browser"] = ucwords($matches[0]);
 
 		return $data;
 	}

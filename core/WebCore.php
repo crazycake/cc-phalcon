@@ -31,27 +31,6 @@ abstract class WebCore extends HttpCore implements WebSecurity
 	public $client;
 
 	/**
-	 * Crawlers
-	 */
-	public static $CRAWLERS = [
-		"Googlebot",
-		"Googlebot-Image",
-		"Googlebot-News",
-		"Google-Site-Verification",
-		"AdsBot-Google",
-		"Mediapartners-Google",
-		"Bingbot",
-		"Slurp",
-		"facebookexternalhit",
-		"Facebot",
-		"Twitterbot",
-		"Screaming",
-		"SemrushBot",
-		"AhrefsBot",
-		"Sitemap"
-	];
-
-	/**
 	 * BeforeExecuteRoute event
 	 */
 	public function beforeExecuteRoute()
@@ -231,7 +210,7 @@ abstract class WebCore extends HttpCore implements WebSecurity
 			"version"      => $ua["version"],
 			"shortVersion" => $ua["short_version"],
 			"isMobile"     => $ua["is_mobile"],
-			"isCrawler"    => in_array($ua["browser"], static::$CRAWLERS),
+			"isCrawler"    => iua["is_crawler"],
 			"lang"         => $this->trans->getLanguage(),
 			"bundle"       => $this->config->version,
 			"requestedUri" => $this->getRequestedUri()
