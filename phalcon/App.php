@@ -73,7 +73,7 @@ abstract class App
 
 		// load sentry
 		if (APP_ENV != "local" && !empty($config->sentry) && class_exists('\Sentry\SentrySdk'))
-			\Sentry\init(["dsn" => $config->sentry, "release" => $config->version, "environment" => APP_ENV]);
+			\Sentry\init(["release" => $config->version, "environment" => APP_ENV, ...(array)$config->sentry]);
 
 		// app classes (loader)
 		$this->_loadClasses($config->loader ?? []);
