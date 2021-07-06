@@ -93,14 +93,15 @@ if (empty($client) || empty($client->browser)) die("400 Bad Request");
 					f.parentNode.insertBefore(j,f);
 				})(window,document,'script','dataLayer','{{ config.google.gtmID }}');
 			</script>
-		{# Google Analytics (async loading) #}
+		{# Google Analytics (gtag) #}
 		{% elseif config.google.analyticsUA is not empty %}
+			<script async defer src="https://www.googletagmanager.com/gtag/js?id={{ config.google.analyticsUA }}"></script>
 			<script>
-				window.ga=function(){ga.q.push(arguments)};ga.q=[];ga.l=+new Date;
-				ga('create','{{ config.google.analyticsUA }}','auto');
-				ga('send','pageview');
+				window.dataLayer = window.dataLayer || [];
+				function gtag(){dataLayer.push(arguments);}
+				gtag('js', new Date());
+				gtag('config', '{{ config.google.analyticsUA }}');
 			</script>
-			<script async defer src="https://www.google-analytics.com/analytics.js"></script>
 		{% endif %}
 
 		{# reCaptcha plugin #}
