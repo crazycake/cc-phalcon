@@ -46,7 +46,7 @@ class Document
 		$mongo = static::getClient();
 
 		if (!is_array($query))
-			$query = ["_id" => is_numeric($query) ? (string)$query : self::toObjectId($query)];
+			$query = ["_id" => is_numeric($query) && strlen($query) != 24 ? (string)$query : self::toObjectId($query)];
 
 		try { $object = $mongo->{static::$COLLECTION}->findOne($query, $options); }
 
