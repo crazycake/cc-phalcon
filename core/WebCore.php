@@ -86,13 +86,6 @@ abstract class WebCore extends HttpCore implements WebSecurity
 		$url = substr($uri, 0, 4) == "http" ? $uri : ($this->baseUrl($uri[0] == "/" ? substr($uri, 1) : $uri));
 		// ss($url);
 
-		// validate URI
-		if (filter_var($url, FILTER_VALIDATE_URL) === false) {
-
-			$this->logger->debug("WebCore::redirectTo -> got an invalid URL: $url");
-			$url = $this->baseUrl("error/notFound");
-		}
-
 		// is ajax?
 		if ($this->request->isAjax())
 			return $this->jsonResponse(200, ["redirect" => $url]);
