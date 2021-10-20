@@ -14,7 +14,7 @@ if (empty($client) || empty($client->browser)) die("400 Bad Request");
 
 		{# viewport #}
 		{% if client.isMobile %}
-			<meta name="viewport" content="width=device-width,initial-scale=1" vmid="viewport" data-vue-meta="1">
+			<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=5" vmid="viewport" data-vue-meta="1">
 
 			{# apple metas #}
 			<meta name="apple-mobile-web-app-capable" content="yes">
