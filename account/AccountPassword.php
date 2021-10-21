@@ -57,7 +57,7 @@ trait AccountPassword
 
 		// basic attempts security
 		if ($this->getRecoveryInstructionsSent($email) >= 4)
-			$this->jsonResponse(400, str_replace("{email}", $this->PASSWORD_CONF["trans"]["PASS_MAIL_SENT"]));
+			$this->jsonResponse(400, str_replace("{email}", $email, $this->PASSWORD_CONF["trans"]["PASS_MAIL_SENT"]));
 
 		// recaptcha validation
 		if ($this->PASSWORD_CONF["recaptcha"] && $this->getRecoveryInstructionsSent($email) >= 3) {
