@@ -142,7 +142,7 @@ abstract class App
 		// convert warnings/notices to exceptions
 		set_error_handler(function($errno, $errstr, $errfile, $errline) {
 
-			self::handleException(new \Exception("App Exception: '$errstr' $errfile [$errline]", $errno));
+			self::handleException(new \Exception("App Warning: '$errstr' $errfile [$errline]", $errno));
 		});
 
 		// fatal errors
