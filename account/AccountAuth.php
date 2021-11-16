@@ -78,12 +78,12 @@ trait AccountAuth
 	 */
 	public function logoutAction()
 	{
+		// handled by session controller
+		$this->removeUserSession();
+
 		// event
 		if (method_exists($this, "onUserLogout"))
 			$this->onUserLogout();
-
-		// handled by session controller
-		$this->removeUserSession();
 
 		if ($this->request->isAjax())
 			$this->jsonResponse(200);
