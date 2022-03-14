@@ -57,7 +57,8 @@ trait AccountAuth
 			"csrf"                 => true,
 			"recaptcha"            => false,
 			"login_attempts"       => 8,
-			"login_allowed_states" => ["enabled"]
+			"login_block_time"     => 8, // hours
+			"login_allowed_states" => ["enabled"],
 		];
 
 		// merge confs
@@ -133,7 +134,7 @@ trait AccountAuth
 		// password validation
 		if (!$this->security->checkHash($data["pass"], $user->pass ?? '')) {
 
-			$this->saveLoginAttempt($user->_id);
+			$this->saveLoginAttempt($user->_id, $this->AUTH_CONF["login_block_time"]);
 
 			$this->jsonResponse(400, $this->AUTH_CONF["trans"]["AUTH_FAILED"]);
 		}
@@ -336,8 +337,9 @@ trait AccountAuth
 	/**
 	 * Saves in redis a new login attempt
 	 * @param String $user_id - The input user ID
+	 * @param Int $expire - Expire time in hours
 	 */
-	protected function saveLoginAttempt($user_id)
+	protected function saveLoginAttempt($user_id, $expire)
 	{
 		$redis = new \Redis();
 		$redis->connect(getenv("REDIS_HOST") ?: "redis");
@@ -347,7 +349,7 @@ trait AccountAuth
 		$attempts = ($redis->exists($key) ? $redis->get($key) : 0) + 1;
 
 		$redis->set($key, $attempts);
-		$redis->expire($key, 3600*6); // hours
+		$redis->expire($key, 3600*$expire); // hours
 		$redis->close();
 	}
 
