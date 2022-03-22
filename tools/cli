@@ -125,7 +125,7 @@ watch)
 
 	else
 
-		parcel watch ui/app.js --no-autoinstall --no-source-maps --out-dir public/assets/ --public-url public/assets/ --cache-dir .parcel/
+		parcel watch ui/app.js --no-autoinstall --no-source-maps --dist-dir public/assets/ --public-url public/assets/ --cache-dir .parcel/
 	fi
 ;;
 
@@ -139,7 +139,7 @@ build)
 
 	echo -e "\033[95mBuilding bundle... \033[0m"
 
-	parcel build ui/app.js --no-source-maps --out-dir public/assets/ --public-url public/assets/ --cache-dir .parcel/ --detailed-report 40
+	parcel build ui/app.js --no-source-maps --dist-dir public/assets/ --public-url public/assets/ --cache-dir .parcel/ --detailed-report 40
 
 	echo -e "\033[95mExecuting container '$CONTAINER_NAME' tasks... \033[0m"
 
